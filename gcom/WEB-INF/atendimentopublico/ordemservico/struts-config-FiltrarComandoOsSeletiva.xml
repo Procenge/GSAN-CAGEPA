@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="ConsultarComandoOsSeletivaActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ConsultarComandoOsSeletivaActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action  name="ConsultarComandoOsSeletivaActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ExibirFiltrarComandoOsSeletivaoAction"
+			scope="session" path="/exibirFiltrarComandoOsSeletivaoAction">
+			<forward name="filtrarComandoOsSeletiva"
+				path="/jsp/atendimentopublico/ordemservico/ordem_servico_filtrar_comando_os_seletiva.jsp"/>
+		</action>
+
+		<action name="ConsultarComandoOsSeletivaActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.FiltrarComandoOsSeletivaAction"
+			path="/filtrarComandoOsSeletivaAction" scope="session">
+			<forward name="exibirResultadoPesquisaComandoOsSeletiva"
+				path="/jsp/atendimentopublico/ordemservico/ordem_servico_seletica_filtrar_resultado_pesquisa.jsp" />
+			
+			<forward name="consultarComandoOsSeletiva"
+				path="/exibirConsultarComandoOsSeletivaoAction.do" />
+		</action>
+
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

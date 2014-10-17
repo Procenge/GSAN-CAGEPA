@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+
+	<form-beans>
+		<form-bean
+			name="ExecutarBatchDynaForm"
+			type="org.apache.struts.action.DynaActionForm">	
+			<form-property name="idGrupoFaturamento" type="java.lang.String"/>     
+			<form-property name="tipoProcesso" type="java.lang.String"/>     		
+			<form-property name="listaGrupos" type="java.lang.String"/>
+			<form-property name="anoMesReferencia" type="java.lang.String"/>
+			<form-property name="anoMesRefInicial" type="java.lang.String"/>
+			<form-property name="anoMesRefFinal" type="java.lang.String"/>
+			<form-property name="idsCliente" type="java.lang.String"/>
+			<form-property name="listaReferencias" type="java.lang.String"/>	
+			<form-property name="idAvisoCorreto" type="java.lang.String"/>	
+			<form-property name="idMovimentoDuplicado" type="java.lang.String"/>	
+			
+		</form-bean>
+
+	</form-beans>
+	<action-mappings>
+	
+		<action name="ExecutarBatchDynaForm"
+			type="gcom.gui.cadastro.ExibirExecutarBatchAction" validate="false"
+			path="/exibirExecutarBatchAction">
+			<forward name="exibirExecutarBatch"
+				path="/jsp/batch/batch_executar.jsp"/>
+		</action>
+		<action name="ExecutarBatchDynaForm" 
+			type="gcom.batch.ExecutarBatch" validate="false"
+			path="/executarBatch">
+		</action>
+	</action-mappings>
+</struts-config>

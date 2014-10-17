@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE tiles-definitions PUBLIC   
+        "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"   
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">  
+    
+<tiles-definitions>
+  
+     <definition name="tilesInfracaoTipoInserir" extends="tilesTemplate">
+        <put name="titulo" value="Inserir Tipo de Infração" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_tipo_inserir.jsp" type="page"/>
+    </definition>
+    
+    
+     <definition name="tilesInfracaoTipoFiltrar" extends="tilesTemplate">
+        <put name="titulo" value="Filtrar Tipo de Infração" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_tipo_filtrar.jsp" type="page"/>
+    </definition>
+    
+    
+     <definition name="tilesInfracaoTipoManter" extends="tilesTemplate">
+        <put name="titulo" value="Manter Tipo de Infração" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_tipo_manter.jsp" type="page"/>
+    </definition>
+    
+    
+     <definition name="tilesInfracaoTipoAtualizar" extends="tilesTemplate">
+        <put name="titulo" value="Atualizar Tipo de Infração" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_tipo_atualizar.jsp" type="page"/>
+    </definition>
+
+</tiles-definitions>

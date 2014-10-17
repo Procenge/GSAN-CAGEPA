@@ -1,0 +1,196 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+<action-mappings>
+		<!-- VERIFICAR MATRICULA CPF/CNPJ-->
+		<action path="/agenciavirtual/verificarRelacaoMatriculaCpfCnpjWebservice"
+			type="gcom.agenciavirtual.imovel.VerificarRelacaoMatriculaCpfCnpjWebservice" />
+
+		<!-- EMITIR SEGUNDA VIA DE CONTA -->
+		<action path="/agenciavirtual/emissaoContaSegundaViaWebservice"
+			type="gcom.agenciavirtual.cobranca.EmissaoContaSegundaViaWebservice" />
+
+		<!-- OBTER DEBITOS DO IMOVEL -->
+		<action path="/agenciavirtual/obterDebitosWebservice"
+			type="gcom.agenciavirtual.cobranca.ObterDebitosWebservice" />
+			
+		<!-- CONSULTAR HISTORICO DE CONSUMOS E LEITURAS -->
+		<action path="/agenciavirtual/consultarHistoricoConsumosLeiturasWebservice"
+			type="gcom.agenciavirtual.imovel.ConsultarHistoricoConsumosLeiturasWebservice" />
+			
+		<!-- PESQUISAR MUNICIPIO -->
+		<action path="/agenciavirtual/pesquisarMunicipioWebservice"
+			type="gcom.agenciavirtual.cadastro.geografico.PesquisarMunicipioWebservice" />
+
+		<!-- CONSULTA LOGRADOURO -->
+		<action path="/agenciavirtual/pesquisaLogradouroWebservice"
+			type="gcom.agenciavirtual.cadastro.endereco.PesquisaLogradouroWebservice" />
+
+		<!-- PESQUISAR BAIRRO -->
+		<action path="/agenciavirtual/pesquisarBairroWebservice"
+			type="gcom.agenciavirtual.cadastro.geografico.PesquisarBairroWebservice" />
+			
+		<!-- PESQUISAR TIPO DE PAVIMENTO DE RUA -->
+		<action path="/agenciavirtual/pesquisarTipoPavimentoRuaWebservice"
+			type="gcom.agenciavirtual.cadastro.geral.PesquisarTipoPavimentoRuaWebservice" />
+			
+		<!-- CONSULTAR HISTÓRICO DE SOLICITAÇÕES (REGISTRO DE ATENDIMENTO) -->
+		<action path="/agenciavirtual/consultarHistoricoSolicitacoesWebservice"
+			type="gcom.agenciavirtual.imovel.ConsultarHistoricoSolicitacoesWebservice" />
+			
+		<!-- INSERIR REGISTRO DE ATENDIMENTO -->
+		<action path="/agenciavirtual/inserirRegistroAtendimentoWebservice"
+			type="gcom.agenciavirtual.atendimento.InserirRegistroAtendimentoWebservice" />
+        
+		<!-- Serviços AcquaGIS -->
+		        
+		<!-- GET RA -->
+		<action path="/atendimentoraos/getRA" 
+			type="gcom.acquagis.atendimento.GetRAWebservice" />
+
+		<!-- GET OS -->
+		<action path="/atendimentoraos/getOS" 
+			type="gcom.acquagis.atendimento.GetOSWebservice" />
+
+		<!-- GET DETALHES RA -->
+		<action path="/atendimentoraos/getDetalhesRA" 
+			type="gcom.acquagis.atendimento.GetDetalhesRAWebservice" />
+        
+		<!-- GET DETALHES RA -->
+		<action path="/atendimentoraos/getDetalhesOS" 
+			type="gcom.acquagis.atendimento.GetDetalhesOSWebservice" />
+			
+		<!-- Serviços Agência Virtual - Campanha de Premiação -->
+		        
+		<!-- CONSULTAR DADOS CAMPANHA -->
+		<action path="/agenciavirtual/consultarDadosCampanhaWebService" 
+			type="gcom.agenciavirtual.cobranca.campanhapremiacao.ConsultarDadosCampanhaWebService" />      
+			
+		<!-- CONSULTAR ENDEREÇO IMÓVEL -->
+		<action path="/agenciavirtual/consultarEnderecoImovelWebService" 
+			type="gcom.agenciavirtual.cobranca.campanhapremiacao.ConsultarEnderecoImovelWebService" />    
+			
+		<!-- CONSULTAR ESTADO (UF) -->
+		<action path="/agenciavirtual/consultarEstadoWebService" 
+			type="gcom.agenciavirtual.cobranca.campanhapremiacao.ConsultarEstadoWebService" />   
+			
+		<!-- CONSULTAR ÓRGÃO EXPEDIDOR -->
+		<action path="/agenciavirtual/consultarOrgaoExpedidorWebService" 
+			type="gcom.agenciavirtual.cobranca.campanhapremiacao.ConsultarOrgaoExpedidorWebService" />
+			
+		<!-- CONSULTAR TIPO TELEFONE -->
+		<action path="/agenciavirtual/consultarTipoTelefoneWebService" 
+			type="gcom.agenciavirtual.cobranca.campanhapremiacao.ConsultarTipoTelefoneWebService" />
+			
+		<!-- CONSULTAR DDD -->
+		<action path="/agenciavirtual/consultarDDDWebService" 
+			type="gcom.agenciavirtual.cobranca.campanhapremiacao.ConsultarDDDWebService" />
+			
+		<!-- EFETUAR INSCRIÇÃO CAMPANHA PREMIAÇÃO -->
+		<action path="/agenciavirtual/efetuarInscricaoCampanhaPremiacaoWebService" 
+			type="gcom.agenciavirtual.cobranca.campanhapremiacao.EfetuarInscricaoCampanhaPremiacaoWebService" />
+			
+		<!-- CONSULTAR INSCRICAO IMOVEL -->
+		<action path="/agenciavirtual/consultarInscricaoImovelWebService" 
+			type="gcom.agenciavirtual.cobranca.campanhapremiacao.ConsultarInscricaoImovelWebService" />
+			
+		<!-- VERIFICAR SE IMOVEL RESIDENCIAL -->
+		<action path="/agenciavirtual/verificarImovelResidencialWebService" 
+			type="gcom.agenciavirtual.cobranca.campanhapremiacao.VerificarImovelResidencialWebService" />
+			
+		<!-- EMITIR COMPROVANTE INSCRICAO CAMPANHA PREMIACAO -->
+		<action path="/agenciavirtual/emitirComprovanteInscricaoCampanhaPremiacaoWebService" 
+			type="gcom.agenciavirtual.cobranca.campanhapremiacao.EmitirComprovanteInscricaoCampanhaPremiacaoWebService" />
+			
+		<!-- VALIDAR DOCUMENTO CAMPANHA PREMIACAO -->
+		<action path="/agenciavirtual/validarDocumentoCampanhaPremiacaoWebService" 
+			type="gcom.agenciavirtual.cobranca.campanhapremiacao.ValidarDocumentoCampanhaPremiacaoWebService" />
+			
+		<!--  -->
+		
+		<action path="/agenciavirtual/consultarPagamentosWebService" 
+			type="gcom.agenciavirtual.imovel.ConsultarPagamentosWebService" />
+			
+		<action path="/agenciavirtual/emitirDeclaracaoAnualQuitacaoDebitosWebService" 
+			type="gcom.agenciavirtual.imovel.EmitirDeclaracaoAnualQuitacaoDebitosWebService" />
+			
+		<action path="/agenciavirtual/informarVencimentoAlternativoWebService" 
+			type="gcom.agenciavirtual.imovel.InformarVencimentoAlternativoWebService" />
+        
+        <action path="/agenciavirtual/inserirDiaVencimentoAlternativoWebService" 
+			type="gcom.agenciavirtual.imovel.InserirDiaVencimentoAlternativoWebService" />
+			
+		<action path="/agenciavirtual/incluirResultadoPesquisaSatisfacaoWebService" 
+			type="gcom.agenciavirtual.atendimento.IncluirResultadoPesquisaSatisfacaoWebService" />
+			
+		<action path="/agenciavirtual/verificarExisteDadosEmitirDeclaracaoAnualQuitacaoDebitosWebService" 
+			type="gcom.agenciavirtual.imovel.VerificarExisteDadosEmitirDeclaracaoAnualQuitacaoDebitosWebService" />
+			
+		<!--  CONSULTAR REFERENCIAS ENDERECO-->
+		<action path="/agenciavirtual/consultarReferenciasEnderecoWebService" 
+		type="gcom.agenciavirtual.imovel.ConsultarReferenciasEnderecoWebService" />
+		
+		<!--  CONSULTAR TIPOS DE CLIENTE ESPECIAL-->
+		<action path="/agenciavirtual/pesquisarClienteTipoEspecialWebService" 
+		type="gcom.agenciavirtual.cadastro.cliente.PesquisarClienteTipoEspecialWebService" />
+		
+		<!--  CONSULTAR CEP A PARTIR DE LOGRADOURO E BAIRRO-->
+		<action path="/agenciavirtual/pesquisarCepPorLogradouroBairroWebService" 
+		type="gcom.agenciavirtual.cadastro.endereco.PesquisarCepPorLogradouroBairroWebService" />
+		
+		
+		<!--  CONSULTAR TIPOS DE CLIENTE -->
+		<action path="/agenciavirtual/pesquisarClienteTipoWebService" 
+		type="gcom.agenciavirtual.cadastro.cliente.PesquisarClienteTipoWebService" />
+		
+		<!--  CONSULTAR CLIENTES RELACIONADOS AO IMOVEL-->
+		<action path="/agenciavirtual/consultarClientesRelacionadosImovelWebService" 
+		type="gcom.agenciavirtual.imovel.ConsultarClientesRelacionadosImovelWebService" />
+		
+		<!-- CONSULTAR PROFISSOES -->
+		<action path="/agenciavirtual/consultarProfissoesWebService" 
+			type="gcom.agenciavirtual.cadastro.geral.ConsultarProfissoesWebService" />
+			
+			
+		<!-- CONSULTAR RACA -->
+		<action path="/agenciavirtual/pesquisarRacaWebService" 
+			type="gcom.agenciavirtual.cadastro.geral.PesquisarRacaWebService" />
+			
+		<!-- CONSULTAR NACIONALIDADE -->
+		<action path="/agenciavirtual/pesquisarNacionalidadeWebService" 
+			type="gcom.agenciavirtual.cadastro.geral.PesquisarNacionalidadeWebService" />
+			
+		<!-- CONSULTAR ESTADO CIVIL -->
+		<action path="/agenciavirtual/pesquisarEstadoCivilWebService" 
+			type="gcom.agenciavirtual.cadastro.geral.PesquisarEstadoCivilWebService" />
+			
+			
+		<!-- CLIENTE -->	
+		<action path="/agenciavirtual/pesquisarClienteWebService" 
+		type="gcom.agenciavirtual.cadastro.cliente.PesquisarClienteWebService" />	
+		
+		<action path="/agenciavirtual/inserirClienteWebService" 
+		type="gcom.agenciavirtual.cadastro.cliente.InserirClienteWebService" />
+		
+		<action path="/agenciavirtual/atualizarClienteWebService" 
+		type="gcom.agenciavirtual.cadastro.cliente.AtualizarClienteWebService" />
+		
+		<!-- EXTRATO DE DÉBITO -->
+		<action path="/agenciavirtual/emitirExtratoDeDebitoWebService" 
+		type="gcom.agenciavirtual.cobranca.EmitirExtratoDeDebitoWebService" />
+		
+		<!-- CALCULAR CONTA -->
+		<action path="/agenciavirtual/calcularContaWebService" 
+		type="gcom.agenciavirtual.faturamento.CalcularContaWebService" />
+				
+		<action path="/agenciavirtual/calcularConsumoEstimadoWebService" 
+		type="gcom.agenciavirtual.micromedicao.CalcularConsumoEstimadoWebService" />
+		
+		<action path="/agenciavirtual/emitirCertidaoNegativaDeDebitosWebService" 
+		type="gcom.agenciavirtual.cobranca.EmitirCertidaoNegativaDeDebitosWebService" />
+				
+	</action-mappings>
+
+	<message-resources null="false" parameter="gcom.properties.application" />
+</struts-config>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE tiles-definitions PUBLIC   
+        "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"   
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">  
+    
+<tiles-definitions>
+
+    <definition name="tilesCampannhaPremiacaoFiltrar" extends="tilesTemplate">
+        <put name="titulo" value="Filtrar Premiação da Campanha" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/campanhapremiacao/campanha_premiacao_filtrar.jsp" type="page"/>
+    </definition>
+    
+    <definition name="tilesConsultarDadosPremiacoesUnidade" extends="tilesTemplate">
+        <put name="titulo" value="Consultar Dados das Premiações da Unidade" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/campanhapremiacao/dado_premiacao_unidade_consultar.jsp" type="page"/>
+    </definition>
+  
+</tiles-definitions>  
+

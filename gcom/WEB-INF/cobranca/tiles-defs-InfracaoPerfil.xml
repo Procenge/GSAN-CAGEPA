@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE tiles-definitions PUBLIC   
+        "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"   
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">  
+    
+<tiles-definitions>
+  
+
+    <definition name="tilesInfracaoPerfilInserir" extends="tilesTemplate">
+        <put name="titulo" value="Inserir Infração Perfil" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_perfil_inserir.jsp" type="page"/>
+    </definition>
+    
+    
+    <definition name="tilesInfracaoPerfilFiltrar" extends="tilesTemplate">
+        <put name="titulo" value="Filtrar Infração Perfil" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_perfil_filtrar.jsp" type="page"/>
+    </definition>
+    
+    
+    <definition name="tilesInfracaoPerfilManter" extends="tilesTemplate">
+        <put name="titulo" value="Manter Infração Perfil" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_perfil_manter.jsp" type="page"/>
+    </definition>
+    
+    
+    <definition name="tilesInfracaoPerfilAtualizar" extends="tilesTemplate">
+        <put name="titulo" value="Atualizar Infração Perfil" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_perfil_atualizar.jsp" type="page"/>
+    </definition>
+    
+    <definition name="tilesInfracaoPerfilDebitoTipoInserir" extends="tilesTemplate">
+        <put name="titulo" value="Adicionar Infração Perfil Debito Tipo" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_perfil_debito_tipo_adicionar.jsp" type="page"/>
+    </definition>
+
+</tiles-definitions>  
+

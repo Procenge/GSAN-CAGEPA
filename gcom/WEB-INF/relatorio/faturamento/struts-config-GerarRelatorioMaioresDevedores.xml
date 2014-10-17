@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="GerarRelatorioMaioresDevedoresActionForm"
+			type="gcom.gui.relatorio.faturamento.GerarRelatorioMaioresDevedoresActionForm" />					
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<!-- Gerar Relatório Maiores Devedores - Auhtor: Victon Malcolm  Data: 12/09/2013-->
+		<action name="GerarRelatorioMaioresDevedoresActionForm"
+			type="gcom.gui.relatorio.faturamento.ExibirGerarRelatorioMaioresDevedoresAction"
+			validate="true" scope="session"
+			path="/exibirGerarRelatorioMaioresDevedoresAction">
+			<forward name="exibirGerarMaioresDevedores"
+				path="/jsp/relatorio/faturamento/maiores_devedores_relatorio_gerar.jsp" />
+		</action>
+		<action name="GerarRelatorioMaioresDevedoresActionForm"
+			type="gcom.gui.relatorio.faturamento.GerarRelatorioMaioresDevedoresAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioMaioresDevedoresAction">
+		</action>
+
+	</action-mappings>
+
+</struts-config>

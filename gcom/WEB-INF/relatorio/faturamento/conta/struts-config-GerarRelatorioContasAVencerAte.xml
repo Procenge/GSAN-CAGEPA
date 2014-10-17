@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<data-sources />
+	<form-beans>
+		<form-bean name="GerarRelatorioContasAVencerAteDynaActionForm"
+			type="org.apache.struts.action.DynaActionForm">
+			
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="p_anoreferencia"
+				type="java.lang.String" />
+			<form-property
+				name="p_nValor"
+				type="java.lang.String" />
+		</form-bean>					
+	</form-beans>
+	<global-exceptions />
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		
+		<action name="GerarRelatorioContasAVencerAteDynaActionForm"
+			type="gcom.relatorio.faturamento.conta.ExibirGerarRelatorioContasAVencerAteAction"
+			validate="false" scope="session"
+			path="/exibirGerarRelatorioContasAVencerAteAction">
+			<forward name="exibirGerarRelatorioContasAVencerAteAction"
+				path="/jsp/relatorio/faturamento/conta/relatorio_contas_a_vencer_ate_gerar.jsp" />
+		</action>
+		<action
+			path="/gerarRelatorioContasAVencerAteAction"
+			type="br.com.procenge.geradorrelatorio.gui.GeradorRelatorioAction"
+			scope="request"
+			name="GerarRelatorioContasAVencerAteDynaActionForm"
+			parameter="acao">
+
+			<exception
+				handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO"
+				type="br.com.procenge.comum.exception.PCGException"
+				path="/telaPrincipal.do" />
+
+			<forward name="paginaPrincipal" path="/telaPrincipal.do" />
+
+		</action>	
+		
+	</action-mappings>
+
+</struts-config>

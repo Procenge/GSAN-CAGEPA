@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean
+			name="ConsumoMedioImovelPopupActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ConsumoMedioImovelPopupActionForm" />
+		<form-bean
+			name="ImovelEmissaoOrdensSeletivasActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ImovelEmissaoOrdensSeletivasActionForm" />
+	</form-beans>
+
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action
+			name="ConsumoMedioImovelPopupActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ExibirInserirConsumoMedioImovelPopupAction"
+			validate="false"
+			scope="session"
+			path="/exibirInserirConsumoMedioImovelPopupAction">
+			<forward
+				name="exibirInserirConsumoMedioImovelPopup"
+				path="/jsp/atendimentopublico/ordemservico/consumo_medio_imovel_popup.jsp" />
+		</action>
+
+		<action
+			name="ConsumoMedioImovelPopupActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.InserirConsumoMedioImovelPopupAction"
+			validate="false"
+			scope="session"
+			path="/inserirConsumoMedioImovelPopupAction">
+			<forward
+				name="inserirConsumoMedioImovelPopup"
+				path="/jsp/atendimentopublico/ordemservico/consumo_medio_imovel_popup.jsp" />
+		</action>
+
+		<action name="ImovelEmissaoOrdensSeletivasActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.RemoverConsumoMedioImovelAction"
+			validate="false" scope="session"
+			path="/removerConsumoMedioImovelAction">
+			<forward name="atualizarConsumoMedioImovel"
+				path="/filtrarImovelEmissaoOrdensSeletivasWizardAction.do?action=exibirFiltrarImovelEmissaoOrdensSeletivasCaracteristicas" />
+		</action>
+
+	</action-mappings>
+
+	<message-resources
+		null="false"
+		parameter="gcom.properties.application" />
+
+</struts-config>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+	 	<form-bean name="OrgaoExternoFiltrarActionForm"  type="org.apache.struts.action.DynaActionForm">
+	 			<form-property name="codigo" type="java.lang.String"/>
+	 			<form-property name="descricao" type="java.lang.String"/>
+	 			<form-property name="tipoPesquisa" type="java.lang.String"/>
+	 			<form-property name="indicadorUso" type="java.lang.String"/>
+	 			<form-property name="atualizar" type="java.lang.String"/>
+	    </form-bean>
+	    
+	    <form-bean name="OrgaoExternoAtualizarActionForm"  type="org.apache.struts.action.DynaActionForm">
+	 			<form-property name="codigo" type="java.lang.String"/>
+	 			<form-property name="descricao" type="java.lang.String"/>
+	 			<form-property name="indicadorUso" type="java.lang.String"/>
+	    </form-bean>
+	    
+	    
+	</form-beans>
+
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="OrgaoExternoFiltrarActionForm" 
+			type="gcom.gui.cobranca.ExibirFiltrarOrgaoExternoAction"
+			validate="false" scope="session" path="/exibirFiltrarOrgaoExternoAction">
+			
+			<forward name="exibirFiltrarOrgaoExternoAction" path="/jsp/cobranca/orgao_externo_filtrar.jsp" />
+		</action>
+		
+		<action name="OrgaoExternoFiltrarActionForm" 
+			type="gcom.gui.cobranca.FiltrarOrgaoExternoAction"
+			validate="false" scope="session" path="/filtrarOrgaoExternoAction">
+			
+			<forward name="retornarFiltroOrgaoExterno" path="/exibirManterOrgaoExternoAction.do" />
+			<forward name="exibirAtualizarOrgaoExterno" path="/exibirAtualizarOrgaoExternoAction.do" />
+		</action>
+		
+		<action name="PesquisarActionForm"
+			type="gcom.gui.cobranca.ExibirManterOrgaoExternoAction"
+			scope="session" path="/exibirManterOrgaoExternoAction">
+			
+			<forward name="manterOrgaoExterno" path="/jsp/cobranca/orgao_externo_manter.jsp" />
+			<forward name="filtrarOrgaoExterno" path="/exibirFiltrarOrgaoExternoAction.do" />
+		</action>
+		
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.cobranca.RemoverOrgaoExternoAction"
+			validate="false" input="/exibirManterOrgaoExternoActionAction.do"
+			scope="request" path="/removerOrgaoExternoAction" />
+		
+		<action name="OrgaoExternoAtualizarActionForm"
+			type="gcom.gui.cobranca.ExibirAtualizarOrgaoExternoAction"
+			validate="false" scope="session"
+			path="/exibirAtualizarOrgaoExternoAction">
+			
+			<forward name="atualizarOrgaoExterno" path="/jsp/cobranca/orgao_externo_atualizar.jsp" />
+		</action>
+		
+		<action name="OrgaoExternoAtualizarActionForm"
+			type="gcom.gui.cobranca.AtualizarOrgaoExternoAction"
+			validate="true" input="/exibirAtualizarOrgaoExternoAction.do"
+			scope="session" path="/atualizarOrgaoExternoAction" />
+		
+	</action-mappings>
+
+	<message-resources null="false" parameter="gcom.properties.application" />
+		
+</struts-config>

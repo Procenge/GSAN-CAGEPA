@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="GerarRelatorioGrandesConsumidoresActionForm"
+			type="gcom.gui.relatorio.cadastro.imovel.GerarRelatorioGrandesConsumidoresActionForm" />
+	</form-beans>
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="GerarRelatorioGrandesConsumidoresActionForm"
+			type="gcom.gui.relatorio.cadastro.imovel.ExibirGerarRelatorioGrandesConsumidoresAction"
+			validate="true" path="/exibirGerarRelatorioGrandesConsumidoresAction">
+
+			<forward name="exibirGerarRelatorioGrandesConsumidores"
+				path="/jsp/relatorio/cadastro/relatorio_grandes_consumidores_gerar.jsp" />
+
+		</action>
+
+		<action name="GerarRelatorioGrandesConsumidoresActionForm"
+			type="gcom.gui.relatorio.cadastro.imovel.GerarRelatorioGrandesConsumidoresAction"
+			validate="true" path="/gerarRelatorioGrandesConsumidoresAction" />
+
+	</action-mappings>
+
+</struts-config>

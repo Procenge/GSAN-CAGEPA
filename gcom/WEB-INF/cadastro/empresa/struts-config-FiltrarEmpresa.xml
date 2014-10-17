@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="FiltrarEmpresaActionForm"
+			type="gcom.gui.cadastro.empresa.FiltrarEmpresaActionForm" />
+	</form-beans>
+	<global-forwards />
+	<action-mappings>
+
+		<action name="FiltrarEmpresaActionForm"
+				type="gcom.gui.cadastro.empresa.ExibirFiltrarEmpresaAction"
+				validate="true" scope="session"
+				path="/exibirFiltrarEmpresaAction">
+			<forward name="filtrarEmpresa"	path="/jsp/cadastro/empresa/empresa_filtrar.jsp" />
+		</action>
+		<action name="FiltrarEmpresaActionForm"
+				type="gcom.gui.cadastro.empresa.FiltrarEmpresaAction"
+				validate="true" 
+				scope="session"
+				path="/filtrarEmpresaAction">
+			<forward name="exibirManterEmpresa" path="/exibirManterEmpresaAction.do" />
+			<!-- <forward name="exibirAtualizarEmpresa" path="/exibirAtualizarEmpresaAction.do" /> -->
+			<!-- <forward name="retornarFiltroEmpresa" path="/exibirManterEmpresaAction.do" /> -->
+		</action>
+
+	</action-mappings>
+	<message-resources null="false" parameter="gcom.properties.application" />
+</struts-config>

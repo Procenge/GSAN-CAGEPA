@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<data-sources />
+	<form-beans>
+		<form-bean name="relacaoReligacaoEspecialDiaForm" type="org.apache.struts.action.DynaActionForm">
+		    <form-property name="idUnidade" type="java.lang.String"/>
+		    <form-property name="nomeUnidade" type="java.lang.String"/>
+		    <form-property name="periodoInicio" type="java.lang.String"/>
+		    <form-property name="periodoFim" type="java.lang.String"/>
+		    <form-property name="grupo" type="java.lang.String"/>
+		    <form-property name="setor" type="java.lang.String[]"/>
+		    <form-property name="bairro" type="java.lang.String[]"/>
+		    <form-property name="servicoTipo" type="java.lang.String[]"/>
+		    <form-property name="setorSelecionado" type="java.lang.String[]"/>
+		    <form-property name="bairrosSelecionado" type="java.lang.String[]"/>
+		    <form-property name="servicoTipoSelecionado" type="java.lang.String[]"/>
+		</form-bean>
+	</form-beans>
+	<global-exceptions />
+	<global-forwards />
+
+	<action-mappings>
+
+		<action path="/relatorioReligacaoEspecialDiaAction"
+			type="gcom.gui.cobranca.RelImovReligacaoEspecialDiaAction" scope="session"
+			parameter="acao" name="relacaoReligacaoEspecialDiaForm">
+
+			<forward name="mesmaPagina" path="tilesRelacaoImoveisReligacaoEspDia" />
+
+		</action>
+
+
+	</action-mappings>
+	<controller />
+</struts-config>

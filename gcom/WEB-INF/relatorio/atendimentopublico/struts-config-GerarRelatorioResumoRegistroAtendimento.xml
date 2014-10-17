@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="GerarRelatorioResumoRegistroAtendimentoActionForm"
+			type="gcom.gui.relatorio.atendimentopublico.registroatendimento.GerarRelatorioResumoRegistroAtendimentoActionForm" />
+	</form-beans>
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="GerarRelatorioResumoRegistroAtendimentoActionForm"
+			type="gcom.gui.relatorio.atendimentopublico.registroatendimento.ExibirGerarRelatorioResumoRegistroAtendimentoAction"
+			validate="true" path="/exibirGerarRelatorioResumoRegistroAtendimentoAction">
+
+			<forward name="exibirGerarRelatorioResumoRegistroAtendimento"
+				path="/jsp/relatorio/atendimentopublico/relatorio_resumo_registro_atendimento_gerar.jsp" />
+
+		</action>
+
+		<action name="GerarRelatorioResumoRegistroAtendimentoActionForm"
+			type="gcom.gui.relatorio.atendimentopublico.registroatendimento.GerarRelatorioResumoRegistroAtendimentoAction"
+			validate="true" path="/gerarRelatorioResumoRegistroAtendimentoAction" />
+
+	</action-mappings>
+
+</struts-config>

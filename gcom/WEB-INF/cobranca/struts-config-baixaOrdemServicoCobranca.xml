@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+
+<struts-config>
+	
+	<form-beans>
+		<form-bean name="BaixaOrdemServicoCobrancaForm"	type="org.apache.struts.action.DynaActionForm">
+			<form-property name="arquivo" type="org.apache.struts.upload.FormFile"/>
+		</form-bean>
+		
+	</form-beans>
+	
+	<action-mappings>
+
+		<action path="/exibirTelaBaixaOrdemServicoCobranca"
+				type="gcom.gui.cobranca.BaixaOrdemServicoCobrancaAction"
+				name="BaixaOrdemServicoCobrancaForm"
+				parameter="action"
+				validate="true" 
+				scope="session">
+			<forward name="forwardTelaBaixaOrdemServicoCobranca" path="tilesTelaBaixaOrdemServicoCobranca" />
+		</action>
+		
+		<action path="/baixaOrdemServicoCobranca"
+				type="gcom.gui.cobranca.BaixaOrdemServicoCobrancaAction"
+				name="BaixaOrdemServicoCobrancaForm"
+				parameter="action"
+				validate="true" 
+				scope="session">
+			<forward name="forwardTelaBaixaOrdemServicoCobranca" path="tilesTelaBaixaOrdemServicoCobranca" />
+		</action>
+		
+	</action-mappings>
+		
+</struts-config>

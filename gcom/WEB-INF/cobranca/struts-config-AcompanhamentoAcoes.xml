@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="acompanhamentoAcoesForm"  type="org.apache.struts.action.DynaActionForm">
+		    <form-property name="tipoComando" type="java.lang.String"/>
+ 			<form-property name="acaoSelecionada" type="java.lang.String"/>
+ 			<form-property name="empresaSelecionada" type="java.lang.String"/>
+ 			<form-property name="idCobrancaAcaoAtividadeComando" type="java.lang.String"/>
+ 			<form-property name="idCobrancaAcaoAtividadeCronograma" type="java.lang.String"/>
+ 			<form-property name="periodoInicio" type="java.lang.String"/>
+ 			<form-property name="periodoFim" type="java.lang.String"/>
+ 			<form-property name="tituloCobrancaAcaoAtividadeComando" type="java.lang.String"/>
+ 			<form-property name="descricaoGrupo" type="java.lang.String"/>
+		</form-bean>
+	</form-beans>
+
+	<action-mappings>
+	
+		<action
+		    name="acompanhamentoAcoesForm"
+			type="gcom.gui.cobranca.GerarAcompanhamentoAcoesAction"
+			validate="false" 
+			scope="session" 
+			path="/acompanhamentoAcoesAction"
+			parameter="acao">
+			
+			<forward name="mesmaPagina"	path="tilesAcompanhamentoAcoes" />
+		</action>
+		
+	</action-mappings>
+</struts-config>

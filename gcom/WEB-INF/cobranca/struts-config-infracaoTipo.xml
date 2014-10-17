@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="InfracaoTipoActionForm"
+			type="gcom.gui.cobranca.InfracaoTipoActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		<!-- Exibir Inserir -->
+		<action  name="InfracaoTipoActionForm"
+				 type="gcom.gui.cobranca.ExibirInserirInfracaoTipoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirInserirInfracaoTipoAction">
+			
+			<forward name="inserirInfracaoTipo" path="tilesInfracaoTipoInserir" />
+		</action>
+		
+		<!-- Inserir -->
+		<action name="InfracaoTipoActionForm"
+				type="gcom.gui.cobranca.InserirInfracaoTipoAction"
+				validate="false" 
+				scope="session" 
+				path="/inserirInfracaoTipoAction"/>
+			
+		<!-- Exibir filtrar -->
+		<action  name="InfracaoTipoActionForm"
+				 type="gcom.gui.cobranca.ExibirFiltrarInfracaoTipoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirFiltrarInfracaoTipoAction"> 
+			<forward name="exibirFiltrarInfracaoTipo" path="tilesInfracaoTipoFiltrar" />	 
+		</action>
+				
+		<!-- Filtrar -->
+		<action  name="InfracaoTipoActionForm"
+				 type="gcom.gui.cobranca.FiltrarInfracaoTipoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/filtrarInfracaoTipoAction">
+			<forward name="retornarFiltroInfracaoTipo" path="/exibirManterInfracaoTipoAction.do" />
+			<forward name="exibirAtualizarInfracaoTipo" path="/exibirAtualizarInfracaoTipoAction.do" />
+		</action>
+		<!-- Exibir Manter -->
+		<action  name="ManutencaoRegistroActionForm"
+				 type="gcom.gui.cobranca.ExibirManterInfracaoTipoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirManterInfracaoTipoAction"> 
+			<forward name="exibirManterInfracaoTipo" path="/jsp/cobranca/infracao_tipo_manter.jsp" />
+		</action>
+			
+		<!-- Excluir -->
+		<action  name="ManutencaoRegistroActionForm"
+				 type="gcom.gui.cobranca.RemoverInfracaoTipoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/removerInfracaoTipoAction">
+		</action>
+			
+		<!-- Exibir Atualizar -->
+		<action  name="InfracaoTipoActionForm"
+				 type="gcom.gui.cobranca.ExibirAtualizarInfracaoTipoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirAtualizarInfracaoTipoAction"> 
+			<forward name="exibirAtualizarInfracaoTipo" path="tilesInfracaoTipoAtualizar" />	
+		</action>
+				
+		<!--  Atualizar -->
+		<action  name="InfracaoTipoActionForm"
+				 type="gcom.gui.cobranca.AtualizarInfracaoTipoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/atualizarInfracaoTipoAction"> </action>
+				 
+		
+		<!-- PESQUISA -->
+		<action name="InfracaoTipoActionForm"
+			type="gcom.gui.cobranca.ExibirPesquisarInfracaoTipoAction"
+			validate="true" path="/exibirPesquisarInfracaoTipoAction">
+			
+			<forward name="pesquisarInfracaoTipo" path="/jsp/cobranca/infracao_tipo_pesquisar.jsp" />
+		</action>
+		
+		<action name="InfracaoTipoActionForm"
+			type="gcom.gui.cobranca.PesquisarInfracaoTipoAction"
+			validate="true"
+			input="/exibirPesquisarInfracaoTipoAction.do" scope="session"
+			path="/pesquisarInfracaoTipoAction">
+			
+			<forward name="listaInfracaoTipoResultado" path="/jsp/cobranca/infracao_tipo_resultado_pesquisa.jsp" />
+		</action>
+		
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

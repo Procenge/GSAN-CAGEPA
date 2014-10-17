@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="ConsultarImovelActionForm"
+			type="gcom.gui.cadastro.imovel.ConsultarImovelActionForm" />			
+
+		<form-bean name="DocumentoCobrancaItemActionForm"
+			type="gcom.gui.cadastro.imovel.DocumentoCobrancaItemActionForm" />
+						
+		<form-bean name="CalculoConsumoEstimadoForm"
+			type="gcom.gui.micromedicao.CalculoConsumoEstimadoForm" />			
+
+			
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<!-- [UC0472] CONSULTAR IMOVEL Auhtor: Rafael Santos Data:07/09/2006-->
+		<action name="ConsultarImovelActionForm"
+			type="gcom.gui.cadastro.imovel.ExibirConsultarImovelAction"
+			validate="false" input="/exibirConsultarImovelAction.do"
+			scope="session" path="/exibirConsultarImovelAction">
+			<forward name="exibirConsultarImovelAction"
+				path="/consultarImovelWizardAction.do?action=exibirConsultarImovelDebitosAction" />			
+			
+		</action>
+		
+		<!-- [UC0472] CONSULTAR IMOVEL Auhtor: Rafael Santos Data:07/09/2006-->		
+		<action name="ConsultarImovelActionForm"
+			type="gcom.gui.cadastro.imovel.ConsultarImovelWizardAction"
+			validate="false" parameter="action" scope="session"
+			path="/consultarImovelWizardAction">
+			<forward name="consultarImovelDadosCadastrais"
+				path="/jsp/cadastro/imovel/imovel_consultar_cadastro.jsp" />
+			<forward name="consultarImovelDadosComplementares"
+				path="/jsp/cadastro/imovel/imovel_consultar_dados_complementares.jsp" />
+			<forward name="consultarImovelAnaliseMedicaoConsumo"
+				path="/jsp/cadastro/imovel/imovel_consultar_analise_medicao_consumo.jsp" />
+			<forward name="consultarImovelHistoricoFaturamento"
+				path="/jsp/cadastro/imovel/imovel_consultar_historico_faturamento.jsp" />
+			<forward name="consultarImovelDebitos"
+				path="/jsp/cadastro/imovel/imovel_consultar_debitos.jsp" />
+			<forward name="consultarImovelPagamentos"
+				path="/jsp/cadastro/imovel/imovel_consultar_pagamentos.jsp" />
+			<forward name="consultarImovelDevolucoes"
+				path="/jsp/cadastro/imovel/imovel_consultar_devolucoes.jsp" />
+			<forward name="consultarImovelDocumentosCobranca"
+				path="/jsp/cadastro/imovel/imovel_consultar_documentos_cobranca.jsp" />
+			<forward name="consultarImovelParcelamentosDebitos"
+				path="/jsp/cadastro/imovel/imovel_consultar_parcelamentos_debitos.jsp" />
+			<forward name="consultarImovelRegistroAtendimento"
+				path="/jsp/cadastro/imovel/imovel_consultar_registro_atendimento.jsp" />
+			<forward name="consultarImovelHistoricoAlteracao"
+				path="/jsp/cadastro/imovel/imovel_consultar_historico_alteracao.jsp" />
+
+		</action>
+
+		<!-- PopUp de Documentos de Cobranca -->		
+		<action name="DocumentoCobrancaItemActionForm" 
+			type="gcom.gui.cadastro.imovel.ExibirDocumentoCobrancaItemAction"
+			validate="false" path="/exibirDocumentoCobrancaItemAction">
+			<forward name="exibirDocumentoCobrancaItem"
+				path="/jsp/cadastro/imovel/imovel_consultar_documentos_cobranca_popup.jsp" />
+		</action>
+
+		<!-- PopUp de Parcelmento de Debito -->		
+		<action name="ParcelamentoDebitoActionForm"
+			type="gcom.gui.cadastro.imovel.ExibirConsultarParcelamentoDebitoPopupAction"
+			scope="request" path="/exibirConsultarParcelamentoDebitoPopupAction">
+			<forward name="exibirConsultarParcelamentoDebitoPopup"
+				path="/jsp/cadastro/imovel/imovel_consultar_parcelamento_debito_popup.jsp" />
+		</action>
+
+		<action 
+			type="gcom.gui.cadastro.imovel.CancelarConsultarImovelAction"
+			validate="false"
+			path="/cancelarConsultarImovelAction" >
+		</action>
+		
+		<action path="/exibirObterCalculoConsumoEstimadoAction" type="gcom.gui.micromedicao.ExibirObterCalculoConsumoEstimadoAction" name="CalculoConsumoEstimadoForm">
+		  <forward name="exibirObterCalculoConsumoEstimado" path="/jsp/micromedicao/exibir_obter_calculo_consumo_estimado_popup.jsp"/>
+		</action>
+		
+		<!-- GERAR RELATORIO MEDIÇÃO E CONSULTA DA LIGAÇÃO DE ÁGUA -->
+		<action name="ConsultarImovelActionForm"
+			type="gcom.gui.relatorio.atendimentopublico.GerarRelatorioResumoImovelMicromedicaoAction"
+			scope="session" path="/gerarRelatorioResumoImovelMicromedicaoAction" />
+			
+		<action name="ConsultarImovelActionForm"
+			type="gcom.gui.relatorio.cobranca.GerarRelatorioDebitosConsultarAction"
+			scope="session" path="/gerarRelatorioDebitosConsultarAction" />
+
+		
+	</action-mappings>
+
+</struts-config>

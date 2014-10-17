@@ -1,0 +1,31 @@
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>	
+		<form-bean name="ConsultarAuditoriaAlteracoesClientesActionForm" type="gcom.gui.seguranca.acesso.transacao.ConsultarAuditoriaAlteracoesClientesActionForm" />	
+	</form-beans>
+	
+	<global-forwards/>
+	
+	<action-mappings>
+		<action name="ConsultarAuditoriaAlteracoesClientesActionForm" 
+			type="gcom.gui.seguranca.acesso.transacao.ExibirConsultarAuditoriaAlteracoesClientesAction" 
+			scope="session" path="/exibirConsultarAuditoriaAlteracoesClientesAction">
+			
+			<forward name="exibirConsultarAuditoriaAlteracoesClientes" path="tilesAuditoriaAlteracoesClientes" />		
+		</action>
+	
+	 	<action name="ConsultarAuditoriaAlteracoesClientesActionForm" 
+	 			type="gcom.gui.seguranca.acesso.transacao.ConsultarAuditoriaAlteracoesClientesAction"
+				scope="session" 
+				path="/consultarAuditoriaAlteracoesClientesAction">
+			
+			<forward name="consultarAuditoriaAlteracoesClientes" path="tilesAuditoriaAlteracoesClientesResultado" />
+		
+		</action>  
+
+	</action-mappings>
+
+	<message-resources null="false" parameter="gcom.properties.application" />
+
+</struts-config>

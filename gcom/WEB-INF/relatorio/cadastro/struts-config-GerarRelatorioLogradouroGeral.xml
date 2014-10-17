@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="GerarRelatorioLogradouroGeralActionForm"
+			type="gcom.gui.relatorio.cadastro.endereco.GerarRelatorioLogradouroGeralActionForm" />
+	</form-beans>
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="GerarRelatorioLogradouroGeralActionForm"
+			type="gcom.gui.relatorio.cadastro.endereco.ExibirGerarRelatorioLogradouroGeralAction"
+			validate="true" path="/exibirGerarRelatorioLogradouroGeralAction">
+
+			<forward name="exibirGerarRelatorioLogradouroGeral"
+				path="/jsp/relatorio/cadastro/relatorio_logradouro_geral_gerar.jsp" />
+
+		</action>
+
+		<action name="GerarRelatorioLogradouroGeralActionForm"
+			type="gcom.gui.relatorio.cadastro.endereco.GerarRelatorioLogradouroGeralAction"
+			validate="true" path="/gerarRelatorioLogradouroGeralAction" />
+		
+		<action name="GerarRelatorioLogradouroGeralActionForm"
+			type="gcom.gui.relatorio.cadastro.endereco.ProcessarGerarRelatorioLogradouroGeralAction"
+			validate="true" path="/processarGerarRelatorioLogradouroGeralAction" />
+
+	</action-mappings>
+
+</struts-config>

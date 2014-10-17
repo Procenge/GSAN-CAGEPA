@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="FiltrarAtualizacaoCadastralColetorDadosActionForm"
+			type="gcom.gui.cadastro.imovel.FiltrarAtualizacaoCadastralColetorDadosActionForm" />
+		<form-bean name="ManterAtualizacaoCadastralColetorDadosActionForm"
+			type="gcom.gui.cadastro.imovel.ManterAtualizacaoCadastralColetorDadosActionForm" />
+		<form-bean name="ConsultarAtualizacaoCadastralColetorDadosActionForm"
+			type="gcom.gui.cadastro.imovel.ConsultarAtualizacaoCadastralColetorDadosActionForm" />
+
+
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="FiltrarAtualizacaoCadastralColetorDadosActionForm"
+			type="gcom.gui.cadastro.imovel.ExibirFiltrarAtualizacaoCadastralColetorDadosAction"
+			validate="false" 
+			path="/exibirFiltrarAtualizacaoCadastralColetorDadosAction">
+			<forward name="exibirFiltrarAtualizacaoCadastralColetorDados"
+				path="/jsp/cadastro/imovel/atualizacao_informacoes_cadastrais_coletor_filtrar.jsp" />
+		</action>
+		<action name="FiltrarAtualizacaoCadastralColetorDadosActionForm"
+			type="gcom.gui.cadastro.imovel.FiltrarAtualizacaoCadastralColetorDadosAction" scope="session"
+			validate="false" path="/filtrarAtualizacaoCadastralColetorDadosAction">
+			<forward name="exibirConsultarAtualizacaoCadastralColetorDados"
+				path="/exibirConsultarAtualizacaoCadastralColetorDadosAction.do" />
+			<forward name="exibirManterAtualizacaoCadastralColetorDados"
+				path="/exibirManterAtualizacaoCadastralColetorDadosAction.do" />
+		</action>
+		<action name="ManterAtualizacaoCadastralColetorDadosActionForm" 
+			type="gcom.gui.cadastro.imovel.ExibirManterAtualizacaoCadastralColetorDadosAction"
+			path="/exibirManterAtualizacaoCadastralColetorDadosAction"
+			scope="session" >
+			<forward name="manterAtualizacaoCadastralColetorDados"
+				path="/jsp/cadastro/imovel/atualizacao_informacoes_cadastrais_coletor_manter.jsp" />
+		</action>
+		<action type="gcom.gui.cadastro.imovel.ExibirConsultarAtualizacaoCadastralColetorDadosAction" 
+			name="ConsultarAtualizacaoCadastralColetorDadosActionForm" 
+			path="/exibirConsultarAtualizacaoCadastralColetorDadosAction" validate="false">
+			<forward name="exibirConsultarAtualizacaoCadastralColetorDados" path="/jsp/cadastro/imovel/atualizacao_informacoes_cadastrais_coletor_consultar.jsp"/>
+		</action>
+		<action name="FiltrarAtualizacaoCadastralColetorDadosActionForm" validate="false"
+			type="gcom.gui.relatorio.cadastro.imovel.GerarRelatorioAtualizacaoCadastralColetorDadosAction"
+			scope="session" path="/gerarRelatorioAtualizacaoCadastralColetorDadosAction" />
+	</action-mappings>
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

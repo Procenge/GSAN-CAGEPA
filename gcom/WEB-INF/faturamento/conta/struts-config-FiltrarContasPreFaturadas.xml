@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="FiltrarContasPreFaturadasActionForm" 
+			type="gcom.gui.faturamento.conta.FiltrarContasPreFaturadasActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+  <action-mappings>
+	   <action 
+	   		name="FiltrarContasPreFaturadasActionForm"
+			type="gcom.gui.faturamento.conta.ExibirFiltrarContasPreFaturadasAction"
+			scope="session" 
+			validate="true"
+			path="/exibirFiltrarContasPreFaturadasAction">
+			<forward
+			 	name="exibirFiltrarContasPreFaturadas"
+				path="/jsp/faturamento/conta/filtrar_contas_pre_faturadas.jsp"
+			 />
+		</action>
+		
+		<action 
+			name="FiltrarContasPreFaturadasActionForm"
+			type="gcom.gui.faturamento.conta.FiltrarContasPreFaturadaAction"
+			path="/filtrarContasPreFaturadaAction">
+			<forward 
+				name="consultaFaturamentoContasPreFaturadas"
+				path="/exibirResultadoFiltrarContasPreFaturadasAction.do"
+			/>
+		</action>
+		
+		<action name="FiltrarContasPreFaturadasActionForm"
+			type="gcom.gui.relatorio.faturamento.conta.GerarRelatorioContasPreFaturadasAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioContasPreFaturadasAction" />
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+
+</struts-config>

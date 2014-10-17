@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="GerarRelatorioEstatisticoAtendimentoPorRacaCorActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.GerarRelatorioEstatisticoAtendimentoPorRacaCorActionForm" />
+	</form-beans>
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="GerarRelatorioEstatisticoAtendimentoPorRacaCorActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ExibirGerarRelatorioEstatisticoAtendimentoPorRacaCorAction"
+			validate="true" 
+			scope="session"	
+			path="/exibirGerarRelatorioEstatisticoAtendimentoPorRacaCorAction">
+
+			<forward name="exibirGerarRelatorioEstatisticoAtendimentoPorRacaCor"
+				path="/jsp/atendimentopublico/ordemservico/relatorio_estatistico_atendimento_raca_cor.jsp" />
+
+		</action>
+
+		<action name="GerarRelatorioEstatisticoAtendimentoPorRacaCorActionForm"
+			type="gcom.gui.relatorio.atendimentopublico.GerarRelatorioEstatisticoAtendimentoPorRacaCorAction"
+			validate="true" 
+			scope="session"	
+			path="/gerarRelatorioEstatisticoAtendimentoPorRacaCorAction" />
+
+	</action-mappings>
+
+</struts-config>

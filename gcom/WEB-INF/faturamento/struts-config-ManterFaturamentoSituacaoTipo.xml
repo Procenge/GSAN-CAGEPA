@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="ManutencaoRegistroActionForm" type="gcom.gui.ManutencaoRegistroActionForm" />
+		
+		<form-bean name="InserirFaturamentoSituacaoTipoActionForm" type="org.apache.struts.action.DynaActionForm">
+			<form-property name="idFaturamentoSituacaoTipo" type="java.lang.String" />
+			<form-property name="descricao" type="java.lang.String" />
+			<form-property name="indicadorParalisacaoFaturamento" type="java.lang.String" initial="2"/>
+			<form-property name="indicadorParalisacaoLeitura" type="java.lang.String" initial="2"/>
+			<form-property name="indicadorUso" type="java.lang.String" initial="1"/>
+			<form-property name="indicadorValidoAgua" type="java.lang.String" initial="2"/>
+			<form-property name="indicadorValidoEsgoto" type="java.lang.String" initial="2"/>
+			<form-property name="indicadorPercentualEsgoto" type="java.lang.String" initial="2"/>
+			<form-property name="indicadorFaturamentoParalisacaoEsgoto" type="java.lang.String" initial="2"/>
+			<form-property name="leituraAnormalidadeLeituraComLeitura" type="java.lang.String" />
+			<form-property name="leituraAnormalidadeLeituraSemLeitura" type="java.lang.String" />
+			<form-property name="leituraAnormalidadeConsumoComLeitura" type="java.lang.String" />
+			<form-property name="leituraAnormalidadeConsumoSemLeitura" type="java.lang.String" />
+		</form-bean>			
+			
+		<form-bean name="FiltrarFaturamentoSituacaoTipoActionForm" type="org.apache.struts.action.DynaActionForm">
+			<form-property name="idFaturamentoSituacaoTipo" type="java.lang.String" />
+			<form-property name="descricao" type="java.lang.String" />
+			<form-property name="indicadorParalisacaoFaturamento" type="java.lang.String" initial="3"/>
+			<form-property name="indicadorParalisacaoLeitura" type="java.lang.String" initial="3"/>
+			<form-property name="indicadorUso" type="java.lang.String" initial="3"/>
+			<form-property name="indicadorValidoAgua" type="java.lang.String" initial="3"/>
+			<form-property name="indicadorValidoEsgoto" type="java.lang.String" initial="3"/>
+			<form-property name="indicadorPercentualEsgoto" type="java.lang.String" initial="3"/>
+			<form-property name="indicadorFaturamentoParalisacaoEsgoto" type="java.lang.String" initial="3"/>
+			<form-property name="leituraAnormalidadeLeituraComLeitura" type="java.lang.String" />
+			<form-property name="leituraAnormalidadeLeituraSemLeitura" type="java.lang.String" />
+			<form-property name="leituraAnormalidadeConsumoComLeitura" type="java.lang.String" />
+			<form-property name="leituraAnormalidadeConsumoSemLeitura" type="java.lang.String" />
+			<form-property name="checkAtualizar" type="java.lang.String" initial="1"/>
+			<form-property name="tipoPesquisaDescricao" type="java.lang.String" initial="2"/>
+		</form-bean>
+	</form-beans>
+	
+	<global-forwards />
+	<action-mappings>
+	
+	<!-- INSERIR -->
+	<action name="InserirFaturamentoSituacaoTipoActionForm"
+				type="gcom.gui.faturamento.faturamentosituacaotipo.ExibirInserirFaturamentoSituacaoTipoAction"
+				validate="true" 
+				scope="session"
+				path="/exibirInserirFaturamentoSituacaoTipoAction">
+			<forward name="inserirFaturamentoSituacaoTipo"	path="/jsp/faturamento/faturamentosituacaotipo/faturamentosituacaotipo_inserir.jsp" />
+		</action>
+		<action name="InserirFaturamentoSituacaoTipoActionForm"
+				type="gcom.gui.faturamento.faturamentosituacaotipo.InserirFaturamentoSituacaoTipoAction"
+				validate="true" 
+				scope="session"
+				path="/inserirFaturamentoSituacaoTipoAction">
+		</action>
+		
+	<!-- FILTRAR -->
+	<action name="FiltrarFaturamentoSituacaoTipoActionForm"
+				type="gcom.gui.faturamento.faturamentosituacaotipo.ExibirFiltrarFaturamentoSituacaoTipoAction"
+				validate="true" scope="session"
+				path="/exibirFiltrarFaturamentoSituacaoTipoAction">
+			<forward name="filtrarFaturamentoSituacaoTipo"	path="/jsp/faturamento/faturamentosituacaotipo/faturamentosituacaotipo_filtrar.jsp" />
+		</action>
+		<action name="FiltrarFaturamentoSituacaoTipoActionForm"
+				type="gcom.gui.faturamento.faturamentosituacaotipo.FiltrarFaturamentoSituacaoTipoAction"
+				validate="true" 
+				scope="session"
+				path="/filtrarFaturamentoSituacaoTipoAction">
+			<forward name="exibirManterFaturamentoSituacaoTipo" path="/exibirManterFaturamentoSituacaoTipoAction.do" />
+
+		</action>	
+	
+	<!-- MANTER -->
+	<action name="FiltrarFaturamentoSituacaoTipoActionForm" 
+		type="gcom.gui.faturamento.faturamentosituacaotipo.ExibirManterFaturamentoSituacaoTipoAction" 
+		scope="session" validate="false"
+		path="/exibirManterFaturamentoSituacaoTipoAction">
+		<forward name="exibirManterFaturamentoSituacaoTipo" path="/jsp/faturamento/faturamentosituacaotipo/faturamentosituacaotipo_manter.jsp" />
+		<forward name="atualizarFaturamentoSituacaoTipo" path="/exibirAtualizarFaturamentoSituacaoTipoAction.do?filtrar=sim" />
+	</action>	
+
+	
+	<action name="ManutencaoRegistroActionForm"
+		type="gcom.gui.faturamento.faturamentosituacaotipo.RemoverFaturamentoSituacaoTipoAction"
+		validate="false" input="/exibirManterFaturamentoSituacaoTipoAction.do"
+		scope="request" path="/removerFaturamentoSituacaoTipoAction">
+	</action>
+	
+	
+	<action name="InserirFaturamentoSituacaoTipoActionForm"
+      	type="gcom.gui.faturamento.faturamentosituacaotipo.ExibirAtualizarFaturamentoSituacaoTipoAction"
+      	validate="false" scope="session"
+      	path="/exibirAtualizarFaturamentoSituacaoTipoAction">
+		<forward name="atualizarFaturamentoSituacaoTipo" path="/jsp/faturamento/faturamentosituacaotipo/faturamentosituacaotipo_atualizar.jsp" />
+		<forward name="filtrarFaturamentoSituacaoTipo"	path="/jsp/faturamento/faturamentosituacaotipo/faturamentosituacaotipo_filtrar.jsp" />
+	</action>
+	
+
+	<action name="InserirFaturamentoSituacaoTipoActionForm" 
+			type="gcom.gui.faturamento.faturamentosituacaotipo.AtualizarFaturamentoSituacaoTipoAction" 
+			scope="request" path="/atualizarFaturamentoSituacaoTipoAction"/>
+			
+	
+
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+		
+</struts-config>

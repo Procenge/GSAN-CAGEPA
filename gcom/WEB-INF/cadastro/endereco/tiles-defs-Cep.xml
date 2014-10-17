@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE tiles-definitions PUBLIC   
+        "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"   
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">  
+    
+<tiles-definitions>
+
+    <definition name="tilesCepFiltrar" extends="tilesTemplate">
+        <put name="titulo" value="Filtrar Cep" type="string"/>
+    	<put name="corpo" value="/jsp/cadastro/endereco/cep_filtrar.jsp" type="page"/>
+    </definition>
+    
+    <definition name="tilesCepAtualizar" extends="tilesTemplate">
+        <put name="titulo" value="Atualizar Cep" type="string"/>
+    	<put name="corpo" value="/jsp/cadastro/endereco/cep_atualizar.jsp" type="page"/>
+    </definition>
+    
+
+</tiles-definitions>  
+

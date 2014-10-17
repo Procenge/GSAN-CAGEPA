@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<data-sources />
+	<form-beans>
+
+		<form-bean
+			name="RelatorioFaturamentoTarifaSocialForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="ANO_MES_FAT"
+				type="java.lang.Integer" />
+			<form-property
+				name="GERENCIA_REGIONAL"
+				type="java.lang.String" />
+			<form-property
+				name="PARM_NMEMPRESA"
+				type="java.lang.String" />
+		</form-bean>
+
+	</form-beans>
+	<global-exceptions />
+	<global-forwards />
+
+	<action-mappings>
+
+		
+		<action
+			path="/gerarRelatorioFaturamentoTarifaSocial"
+			type="br.com.procenge.geradorrelatorio.gui.GeradorRelatorioAction"
+			scope="request"
+			name="RelatorioFaturamentoTarifaSocialForm"
+			parameter="acao">
+
+			<exception
+				handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO"
+				type="br.com.procenge.comum.exception.PCGException"
+				path="/telaPrincipal.do" />
+
+			<forward name="paginaPrincipal" path="/telaPrincipal.do" />
+
+		</action>
+
+	</action-mappings>
+	<controller />
+</struts-config>

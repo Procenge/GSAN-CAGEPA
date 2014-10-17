@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="InformarDadosLeituraAnormalidadeActionForm"
+			type="gcom.gui.micromedicao.leitura.InformarDadosLeituraAnormalidadeActionForm" />
+			
+	</form-beans>
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="InformarDadosLeituraAnormalidadeActionForm"
+			type="gcom.gui.micromedicao.leitura.ExibirInformarDadosLeituraAnormalidadeAction"
+			validate="false" scope="session"
+			path="/exibirInformarDadosLeituraAnormalidadeAction">
+			
+			<forward name="exibirInformarDadosLeituraAnormalidadeAction"
+				path="/jsp/micromedicao/leitura/informar_dados_leitura_anormalidade.jsp" />
+				
+			<forward name="pesquisarDadosImovelLeituraAnormalidade"
+				path="/jsp/micromedicao/leitura/pesquisar_dados_imovel_leitura_anormalidade.jsp" />
+		</action>
+		<action name="InformarDadosLeituraAnormalidadeActionForm"
+			type="gcom.gui.micromedicao.leitura.InformarDadosLeituraAnormalidadeAction"
+			validate="false" scope="session"
+			path="/informarLeituraDadosAnormalidadeAction">
+		</action>
+		
+	</action-mappings>
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

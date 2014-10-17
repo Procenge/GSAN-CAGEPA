@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="InserirDebitoACobrarRateioMacromedidoresActionForm"
+			type="gcom.gui.faturamento.debito.InserirDebitoACobrarRateioMacromedidoresActionForm" />
+	</form-beans>
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		<!-- Exibir Inserir -->
+		<action  name="InserirDebitoACobrarRateioMacromedidoresActionForm"
+				 type="gcom.gui.faturamento.debito.ExibirInserirDebitoACobrarRateioMacromedidoresAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirInserirDebitoACobrarRateioMacromedidoresAction">
+			
+			<forward name="inserirDebitoACobrarRateioMacromedidores" path="tilesInserirDebitoACobrarRateioMacromedidores" />
+		</action>	
+	
+		<!-- Inserir -->
+		<action name="InserirDebitoACobrarRateioMacromedidoresActionForm"
+				type="gcom.gui.faturamento.debito.InserirDebitoACobrarRateioMacromedidoresAction"
+				validate="false" 
+				scope="session" 
+				path="/inserirDebitoACobrarRateioMacromedidoresAction"/>
+				
+	</action-mappings>
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

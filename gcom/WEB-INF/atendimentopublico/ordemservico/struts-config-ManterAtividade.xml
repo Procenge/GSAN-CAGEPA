@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="ManutencaoRegistroActionForm"
+			type="gcom.gui.ManutencaoRegistroActionForm" />
+		<form-bean name="AtividadeActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.AtividadeActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ExibirManterAtividadeAction"
+			validate="false" scope="session"
+			path="/exibirManterAtividadeAction">
+			<forward name="manterAtividade"
+				path="/jsp/atendimentopublico/ordemservico/atividade_manter.jsp" />
+			<forward name="exibirAtualizarAtividade"
+				path="/exibirAtualizarAtividadeAction.do" />
+		</action>
+
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.RemoverAtividadeAction" scope="session"
+			path="/removerAtividadeAction">
+		</action>
+		
+		<action name="AtividadeActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ExibirAtualizarAtividadeAction"
+			validate="false" scope="session"
+			path="/exibirAtualizarAtividadeAction">
+			<forward name="atualizarAtividade"
+				path="/jsp/atendimentopublico/ordemservico/atividade_atualizar.jsp" />
+		</action>
+		<action name="AtividadeActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.AtualizarAtividadeAction"
+			validate="true" scope="session"
+			path="/atualizarAtividadeAction">
+		</action>
+
+	</action-mappings>
+
+</struts-config>

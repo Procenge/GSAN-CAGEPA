@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="FiltroEficienciaCobrancaRelatorioActionForm" type="gcom.gui.cobranca.FiltroEficienciaCobrancaRelatorioActionForm" />
+	</form-beans>
+
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="FiltroEficienciaCobrancaRelatorioActionForm" 
+			type="gcom.gui.cobranca.ExibirFiltrarEficienciaCobrancaRelatorioAction"
+			validate="false" scope="session" path="/exibirFiltrarEficienciaCobrancaRelatorioAction">
+			
+			<forward name="exibirFiltrarEficienciaCobrancaRelatorioAction" path="/jsp/cobranca/eficiencia_cobranca_relatorio_filtrar.jsp" />
+		</action>
+		
+		<action name="FiltroEficienciaCobrancaRelatorioActionForm" 
+			type="gcom.gui.cobranca.GerarRelatorioEficienciaCobrancaAction"
+			validate="false" scope="session" path="/gerarRelatorioEficienciaCobrancaAction"/>
+	</action-mappings>
+
+	<message-resources null="false" parameter="gcom.properties.application" />
+		
+</struts-config>

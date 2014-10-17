@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="GerarRelatorioContasEmAtrasoPorIdadeDividaActionForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="P_LOC_FIN"
+				type="java.lang.String" />
+			<form-property
+				name="P_LOC_INI"
+				type="java.lang.String" />
+			<form-property
+				name="P_AM_REF"
+				type="java.lang.String" />
+			<form-property
+				name="P_GR_FIN"
+				type="java.lang.String" />
+			<form-property
+				name="P_GR_INI"
+				type="java.lang.String" />
+			<form-property
+				name="P_SET_FIN"
+				type="java.lang.String" />
+			<form-property
+				name="P_SET_INI"
+				type="java.lang.String" />
+			<form-property
+				name="P_TP_RELATORIO"
+				type="java.lang.String" />
+			<form-property
+				name="nomeLocalidadeInicial"
+				type="java.lang.String" />
+			<form-property
+				name="nomeSetorFaturamentoInicial"
+				type="java.lang.String" />
+			<form-property
+				name="nomeLocalidadeFinal"
+				type="java.lang.String" />
+			<form-property
+				name="nomeSetorFaturamentoFinal"
+				type="java.lang.String" />
+				<form-property
+				name="P_UNE_FIN"
+				type="java.lang.String" />
+			<form-property
+				name="P_UNE_INI"
+				type="java.lang.String" />
+		</form-bean>					
+	</form-beans>
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		
+		<action name="GerarRelatorioContasEmAtrasoPorIdadeDividaActionForm"
+			type="gcom.gui.relatorio.cobranca.ExibirGerarRelatorioContasEmAtrasoPorIdadeDividaAction"
+			validate="false" scope="session"
+			path="/exibirGerarRelatorioContasEmAtrasoPorIdadeDividaAction">
+			<forward name="exibirGerarRelatorioContasEmAtrasoPorIdadeDividaAction" 
+				path="/jsp/relatorio/cobranca/relatorio_contas_atraso_idade_divida_gerar.jsp" />
+				
+		</action>
+
+		<action
+			name="GerarRelatorioContasEmAtrasoPorIdadeDividaActionForm"
+			type="br.com.procenge.geradorrelatorio.gui.GeradorRelatorioAction"
+			scope="request"
+			path="/gerarRelatorioContasEmAtrasoPorIdadeDividaAction"
+			parameter="acao">
+
+			<exception
+				handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO"
+				type="br.com.procenge.comum.exception.PCGException"
+				path="/telaPrincipal.do" />
+
+			<forward name="paginaPrincipal" path="/telaPrincipal.do" />
+		</action>			
+		
+	</action-mappings>
+
+</struts-config>

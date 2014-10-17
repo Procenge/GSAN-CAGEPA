@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="ApresentarItensDebitosPrescritosActionForm"
+			type="gcom.gui.cobranca.prescricao.ApresentarItensDebitosPrescritosActionForm" />
+		<form-bean name="ManutencaoRegistroActionForm" type="gcom.gui.ManutencaoRegistroActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+	
+		<action name="ManutencaoRegistroActionForm" 
+			type="gcom.gui.cobranca.prescricao.ExibirAcompanharImovelComDebitosPrescritosAction" 
+			scope="session" 
+			validate="false"
+			path="/exibirAcompanharImovelComDebitosPrescritosAction">
+			<forward name="acompanharImovelComDebitosPrescritos" path="/jsp/cobranca/prescricao/imoveis_com_debitos_prescritos_acompanhar.jsp" />
+			<forward name="apresentarItensDebitosPrescritos" path="/exibirApresentarItensDebitosPrescritosAction.do" />
+		</action>
+
+		<action name="ApresentarItensDebitosPrescritosActionForm"
+			type="gcom.gui.cobranca.prescricao.ExibirApresentarItensDebitosPrescritosAction"
+			validate="false" scope="session"
+			path="/exibirApresentarItensDebitosPrescritosAction">
+
+			<forward name="apresentarItensDebitosPrescritos"
+				path="/jsp/cobranca/prescricao/imovel_com_debitos_prescritos_itens_apresentar.jsp" />
+		</action>
+
+		<action name="ApresentarItensDebitosPrescritosActionForm" 
+			type="gcom.gui.relatorio.cobranca.prescricao.GerarRelatorioAcompanhamentoDebitosPrescritosAction"
+					scope="session" path="/gerarRelatorioAcompanhamentoDebitosPrescritosAction" />
+					
+		<action name="ApresentarItensDebitosPrescritosActionForm" 
+			type="gcom.gui.cobranca.prescricao.DesmarcarPrescricaoDebitosAction"
+					scope="session" path="/desmarcarPrescricaoDebitosAction" />
+		
+	</action-mappings>
+
+	<message-resources null="false" parameter="gcom.properties.application" />
+</struts-config>

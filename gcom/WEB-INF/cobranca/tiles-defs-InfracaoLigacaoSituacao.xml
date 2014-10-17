@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE tiles-definitions PUBLIC   
+        "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"   
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">  
+    
+<tiles-definitions>
+  
+
+     <definition name="tilesInfracaoLigacaoSituacaoInserir" extends="tilesTemplate">
+       	<put name="titulo" value="Inserir Situação da Infração da Ligação" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_ligacao_situacao_inserir.jsp" type="page"/>
+    </definition>
+    
+    
+     <definition name="tilesInfracaoLigacaoSituacaoFiltrar" extends="tilesTemplate">
+        <put name="titulo" value="Filtrar Situação da Infração da Ligação" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_ligacao_situacao_filtrar.jsp" type="page"/>
+    </definition>
+    
+    
+     <definition name="tilesInfracaoLigacaoSituacaoManter" extends="tilesTemplate">
+        <put name="titulo" value="Manter Situação da Infracao da Ligação" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_ligacao_situacao_manter.jsp" type="page"/>
+    </definition>
+    
+    
+     <definition name="tilesInfracaoLigacaoSituacaoAtualizar" extends="tilesTemplate">
+        <put name="titulo" value="Atualizar Situação da Infração da Ligação" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_ligacao_situacao_atualizar.jsp" type="page"/>
+    </definition>
+
+</tiles-definitions>  
+

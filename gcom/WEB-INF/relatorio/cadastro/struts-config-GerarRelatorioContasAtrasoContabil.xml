@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<data-sources />
+	<form-beans>
+		<form-bean name="GerarRelatorioContasAtrasoContabilDynaForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="P_AM_REF"
+				type="java.lang.String" />
+		</form-bean>					
+	</form-beans>
+	<global-exceptions />
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		
+		<action name="GerarRelatorioContasAtrasoContabilDynaForm"
+			type="gcom.gui.relatorio.cadastro.imovel.ExibirGerarRelatorioContasAtrasoContabilAction"
+			validate="true" scope="session" 
+			path="/exibirGerarRelatorioContasAtrasoContabilAction">
+			
+			<forward name="exibirGerarRelatorioContasAtrasoContabilAction" 
+				path="/jsp/relatorio/cadastro/relatorio_contas_atraso_contabil_gerar.jsp" />
+				
+		</action>
+		
+		<action
+			path="/gerarRelatoriosAction"
+			type="br.com.procenge.geradorrelatorio.gui.GeradorRelatorioAction"
+			scope="request"
+			name="GerarRelatorioContasAtrasoContabilDynaForm"
+			parameter="acao">
+
+			<exception
+				handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO"
+				type="br.com.procenge.comum.exception.PCGException"
+				path="/telaPrincipal.do" />
+
+			<forward name="paginaPrincipal" path="/telaPrincipal.do" />
+
+		</action>
+		
+	</action-mappings>
+
+</struts-config>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="InfracaoImovelSituacaoActionForm"
+			type="gcom.gui.cobranca.InfracaoImovelSituacaoActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		<!-- Exibir Inserir -->
+		<action  name="InfracaoImovelSituacaoActionForm"
+				 type="gcom.gui.cobranca.ExibirInserirInfracaoImovelSituacaoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirInserirInfracaoImovelSituacaoAction">
+			
+			<forward name="inserirInfracaoImovelSituacao" path="tilesInfracaoImovelSituacaoInserir" />
+		</action>
+		
+		<!-- Inserir -->
+		<action name="InfracaoImovelSituacaoActionForm"
+				type="gcom.gui.cobranca.InserirInfracaoImovelSituacaoAction"
+				validate="false" 
+				scope="session" 
+				path="/inserirInfracaoImovelSituacaoAction"/>
+			
+		<!-- Exibir filtrar -->
+		<action  name="InfracaoImovelSituacaoActionForm"
+				 type="gcom.gui.cobranca.ExibirFiltrarInfracaoImovelSituacaoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirFiltrarInfracaoImovelSituacaoAction"> 
+			<forward name="exibirFiltrarInfracaoImovelSituacao" path="tilesInfracaoImovelSituacaoFiltrar" />	 
+		</action>
+				
+		<!-- Filtrar -->
+		<action  name="InfracaoImovelSituacaoActionForm"
+				 type="gcom.gui.cobranca.FiltrarInfracaoImovelSituacaoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/filtrarInfracaoImovelSituacaoAction"> 
+			<forward name="retornarFiltroInfracaoImovelSituacao" path="/exibirManterInfracaoImovelSituacaoAction.do" />
+			<forward name="exibirAtualizarInfracaoImovelSituacao" path="/exibirAtualizarInfracaoImovelSituacaoAction.do" />
+		</action>
+		<!-- Exibir Manter -->
+		<action  name="ManutencaoRegistroActionForm"
+				 type="gcom.gui.cobranca.ExibirManterInfracaoImovelSituacaoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirManterInfracaoImovelSituacaoAction"> 
+			<forward name="exibirManterInfracaoImovelSituacao" path="/jsp/cobranca/infracao_imovel_situacao_manter.jsp" />
+		</action>
+			
+		<!-- Excluir -->
+		<action  name="ManutencaoRegistroActionForm"
+				 type="gcom.gui.cobranca.RemoverInfracaoImovelSituacaoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/removerInfracaoImovelSituacaoAction">
+		</action>
+			
+		<!-- Exibir Atualizar -->
+		<action  name="InfracaoImovelSituacaoActionForm"
+				 type="gcom.gui.cobranca.ExibirAtualizarInfracaoImovelSituacaoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirAtualizarInfracaoImovelSituacaoAction"> 
+			<forward name="exibirAtualizarInfracaoImovelSituacao" path="tilesInfracaoImovelSituacaoAtualizar" />	
+		</action>
+				
+		<!--  Atualizar -->
+		<action  name="InfracaoImovelSituacaoActionForm"
+				 type="gcom.gui.cobranca.AtualizarInfracaoImovelSituacaoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/atualizarInfracaoImovelSituacaoAction"> </action>
+		
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

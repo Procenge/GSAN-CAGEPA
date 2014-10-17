@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<data-sources />
+	<form-beans>
+		<form-bean name="GerarRelatorioTabulacaoPagamentosPorResponsavelForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="P_DT_REALIZACAO_FIN"
+				type="java.lang.String" />
+			<form-property
+				name="P_DT_REALIZACAO_INI"
+				type="java.lang.String" />
+			<form-property
+				name="P_CLI_FIN"
+				type="java.lang.String" />
+			<form-property
+				name="P_CLI_INI"
+				type="java.lang.String" />
+			<form-property
+				name="P_TP_CLI_FIN"
+				type="java.lang.String" />
+			<form-property
+				name="P_TP_CLI_INI"
+				type="java.lang.String" />
+			<form-property 
+				name="nomeClienteInicial" 
+				type="java.lang.String" />
+			<form-property 
+				name="nomeClienteFinal" 
+				type="java.lang.String" />
+			<form-property
+				name="p_resp_final_hide"
+				type="java.lang.String" />
+			<form-property
+				name="p_resp_inicial_hide"
+				type="java.lang.String" />
+			<form-property 
+				name="nomeClienteInicial_hide" 
+				type="java.lang.String" />
+			<form-property 
+				name="nomeClienteFinal_hide" 
+				type="java.lang.String" />
+						
+		</form-bean>					
+	</form-beans>
+	<global-exceptions />
+	<global-forwards />
+
+	<action-mappings>
+
+		<action name="GerarRelatorioTabulacaoPagamentosPorResponsavelForm"
+			type="gcom.gui.relatorio.arrecadacao.pagamento.ExibirGerarRelatorioTabulacaoPagamentosPorResponsavelAction"
+			validate="false" scope="session"
+			path="/exibirGerarRelatorioTabulacaoPagamentosPorResponsavelAction">
+			<forward name="exibirGerarRelatorioTabulacaoPagamentosPorResponsavelAction"
+				path="/jsp/arrecadacao/pagamento/relatorio_tabulacao_pagamentos_por_responsavel.jsp" />
+		</action>
+		<action
+			path="/gerarRelatorioTabulacaoPagamentosPorResponsavelAction"
+			type="br.com.procenge.geradorrelatorio.gui.GeradorRelatorioAction"
+			scope="request"
+			name="GerarRelatorioTabulacaoPagamentosPorResponsavelForm"
+			parameter="acao">
+
+			<exception
+				handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO"
+				type="br.com.procenge.comum.exception.PCGException"
+				path="/telaPrincipal.do" />
+
+			<forward name="paginaPrincipal" path="/telaPrincipal.do" />
+
+		</action>
+
+	</action-mappings>
+	<controller />
+</struts-config>

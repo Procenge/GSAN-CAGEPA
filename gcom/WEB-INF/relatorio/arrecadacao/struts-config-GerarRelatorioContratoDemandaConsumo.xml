@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="GerarRelatorioContratoDemandaConsumoActionForm"
+			type="gcom.relatorio.faturamento.GerarRelatorioContratoDemandaConsumoActionForm" />
+	</form-beans>
+
+	<action-mappings>
+		
+		<action name="GerarRelatorioContratoDemandaConsumoActionForm"
+			type="gcom.relatorio.faturamento.ExibirGerarRelatorioContratoDemandaConsumoAction"
+			validate="true" scope="session"
+			path="/exibirGerarRelatorioContratoDemandaConsumoAction">
+			<forward name="exibirGerarRelatorioContratoDemandaConsumo"
+				path="/jsp/relatorio/faturamento/relatorio_contrato_demanda_consumo.jsp" />
+		</action>
+
+		<action name="GerarRelatorioContratoDemandaConsumoActionForm"
+			type="gcom.relatorio.faturamento.GerarRelatorioContratoDemandaConsumoAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioContratoDemandaConsumoAction" />
+
+	</action-mappings>
+	<controller />
+</struts-config>

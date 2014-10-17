@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="InserirDistritoOperacionalActionForm"
+			type="gcom.gui.operacional.InserirDistritoOperacionalActionForm" />
+			
+		
+			
+	</form-beans>
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="InserirDistritoOperacionalActionForm"
+			type="gcom.gui.operacional.ExibirInserirDistritoOperacionalAction" validate="true" scope="session" 
+			path="/exibirInserirDistritoOperacionalAction">
+			<forward name="inserirDistritoOperacional"
+				path="/jsp/operacional/distrito_operacional_inserir.jsp" />
+		</action>
+
+		<action name="InserirDistritoOperacionalActionForm" 
+			type="gcom.gui.operacional.InserirDistritoOperacionalAction"
+			validate="true" scope="session" path="/inserirDistritoOperacionalAction">
+		</action>
+		
+		<action name="InserirDistritoOperacionalActionForm"
+			type="gcom.gui.cadastro.unidadeoperacional.RemoverInserirDistritoOperacionalColecaoEnderecoAction"
+			validate="false" scope="session"
+			path="/removerInserirDistritoOperacionalColecaoEnderecoAction">
+			<forward name="exibirInserirUnidadeOperacionalAction"
+				path="/exibirInserirDistritoOperacionalAction.do" />
+		</action>
+		
+		<action name="InserirDistritoOperacionalActionForm"
+			type="gcom.gui.cadastro.unidadeoperacional.RemoverAtualizarDistritoOperacionalColecaoEnderecoAction"
+			validate="false" scope="session"
+			path="/removerAlterarDistritoOperacionalColecaoEnderecoAction">
+			<forward name="exibirAtualizarDistritoOperacionalAction"
+				path="/exibirAtualizarDistritoOperacionalAction.do?recarregar=true" />
+		</action>
+		
+		
+
+	</action-mappings>
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

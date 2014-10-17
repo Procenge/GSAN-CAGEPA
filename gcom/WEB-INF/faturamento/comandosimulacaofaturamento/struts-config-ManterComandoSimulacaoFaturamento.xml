@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+	
+		<form-bean name="ManutencaoRegistroActionForm"
+			type="gcom.gui.ManutencaoRegistroActionForm" />
+		<form-bean name="AtualizarComandoSimulacaoFaturamentoActionForm"
+			type="gcom.gui.faturamento.comandosimulacaofaturamento.AtualizarComandoSimulacaoFaturamentoActionForm" />
+		<form-bean name="FiltrarComandoSimulacaoFaturamentoActionForm"
+			type="gcom.gui.faturamento.comandosimulacaofaturamento.FiltrarComandoSimulacaoFaturamentoActionForm" />
+	</form-beans>
+	
+	<global-forwards />
+
+	<action-mappings>
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.faturamento.comandosimulacaofaturamento.ExibirManterComandoSimulacaoFaturamentoAction"
+			validate="false" scope="session"
+			path="/exibirManterComandoSimulacaoFaturamentoAction">
+			<forward name="exibirManterComandoSimulacaoFaturamento"
+				path="/jsp/faturamento/comandosimulacaofaturamento/faturamento_simulacao_comando_manter.jsp" />
+			<forward name="exibirAtualizarComandoSimulacaoFaturamento" path="/exibirAtualizarComandoSimulacaoFaturamentoAction.do" />
+		</action>
+
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.faturamento.comandosimulacaofaturamento.RemoverComandoSimulacaoFaturamentoAction" scope="request"
+			path="/removerComandoSimulacaoFaturamentoAction">
+		</action>
+		
+		<action name="AtualizarComandoSimulacaoFaturamentoActionForm"
+			type="gcom.gui.faturamento.comandosimulacaofaturamento.ExibirAtualizarComandoSimulacaoFaturamentoAction"
+			validate="false" scope="session"
+			path="/exibirAtualizarComandoSimulacaoFaturamentoAction">
+			<forward name="atualizarComandoSimulacaoFaturamento"
+				path="/jsp/faturamento/comandosimulacaofaturamento/faturamento_simulacao_comando_atualizar.jsp" />
+		</action>
+		<action name="AtualizarComandoSimulacaoFaturamentoActionForm"
+			type="gcom.gui.faturamento.comandosimulacaofaturamento.AtualizarComandoSimulacaoFaturamentoAction"
+			validate="true" scope="session"
+			path="/atualizarComandoSimulacaoFaturamentoAction">
+		</action>
+
+	</action-mappings>
+
+</struts-config>

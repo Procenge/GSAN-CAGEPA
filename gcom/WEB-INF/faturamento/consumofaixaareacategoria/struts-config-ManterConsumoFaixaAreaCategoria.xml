@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>  
+
+	<form-beans>
+			
+		<form-bean name="AtualizarConsumoFaixaAreaCategoriaActionForm"
+			type="gcom.gui.faturamento.consumofaixaareacategoria.AtualizarConsumoFaixaAreaCategoriaActionForm" />
+	
+		<form-bean name="ManutencaoRegistroActionForm" 
+			type="gcom.gui.ManutencaoRegistroActionForm" />
+			
+	</form-beans>
+
+	<global-forwards />
+	
+	
+	<action-mappings> 	
+		<action  name="ManutencaoRegistroActionForm"  
+			type="gcom.gui.faturamento.consumofaixaareacategoria.ExibirManterConsumoFaixaAreaCategoriaAction"
+			validate="false" scope="session" path="/exibirManterConsumoFaixaAreaCategoriaAction">
+			
+			<forward name="manterConsumoFaixaAreaCategoria"
+				path="/jsp/faturamento/consumofaixaareacategoria/consumo_faixa_area_categoria_manter.jsp" />
+			
+			<forward name="exibirAtualizarConsumoFaixaAreaCategoria"
+				path="/exibirAtualizarConsumoFaixaAreaCategoriaAction.do" /> 
+		</action>
+		
+		<action  name="ManutencaoRegistroActionForm"  
+			type="gcom.gui.faturamento.consumofaixaareacategoria.RemoverConsumoFaixaAreaCategoriaAction"
+			validate="false" scope="session" path="/removerConsumoFaixaAreaCategoriaAction">
+		</action>
+		
+		<action name="AtualizarConsumoFaixaAreaCategoriaActionForm"  
+			type="gcom.gui.faturamento.consumofaixaareacategoria.ExibirAtualizarConsumoFaixaAreaCategoriaAction"
+			validate="false" scope="session" path="/exibirAtualizarConsumoFaixaAreaCategoriaAction">
+			
+			<forward name="atualizarConsumoFaixaAreaCategoria"	
+					 path="/jsp/faturamento/consumofaixaareacategoria/consumo_faixa_area_categoria_atualizar.jsp" />
+		</action>
+		
+		<action name="AtualizarConsumoFaixaAreaCategoriaActionForm"  
+			type="gcom.gui.faturamento.consumofaixaareacategoria.AtualizarConsumoFaixaAreaCategoriaAction"
+			validate="false" scope="session" path="/atualizarConsumoFaixaAreaCategoriaAction">
+		</action>		
+		
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+		
+</struts-config>

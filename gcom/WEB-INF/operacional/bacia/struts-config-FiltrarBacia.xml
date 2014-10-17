@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+	<form-bean name="FiltrarBaciaActionForm"
+   type="gcom.gui.operacional.bacia.FiltrarBaciaActionForm" />
+ </form-beans>
+  <!--******************* PÁGINAS GLOBAIS *******************-->
+ <global-forwards />
+ <action-mappings>
+ 
+ 			<!--INICIO Bacia -->
+		<action name="FiltrarBaciaActionForm"
+			type="gcom.gui.operacional.bacia.ExibirFiltrarBaciaAction"
+			path="/exibirFiltrarBaciaAction"
+			scope="session" >
+			<forward name="filtrarBacia"
+				path="/jsp/operacional/bacia/bacia_filtrar.jsp" />
+		</action>
+		<action name="FiltrarBaciaActionForm"
+			type="gcom.gui.operacional.bacia.FiltrarBaciaAction"
+			path="/filtrarBaciaAction" >
+			
+			<forward name="exibirManterBaciaAction" path="/exibirManterBaciaAction.do" />
+		</action>
+		
+	<!--FIM MANTER SETOR COMERCIAL-->
+
+</action-mappings>
+ <message-resources null="false" parameter="gcom.properties.application" />
+</struts-config>

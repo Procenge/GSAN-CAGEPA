@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean
+			name="ImovelConsumoFaixaAreaCategoriaPopupActionForm"
+			type="gcom.gui.cadastro.imovel.ImovelConsumoFaixaAreaCategoriaPopupActionForm" />
+	</form-beans>
+
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action
+			name="ImovelConsumoFaixaAreaCategoriaPopupActionForm"
+			type="gcom.gui.cadastro.imovel.ExibirImovelConsumoFaixaAreaCategoriaPopupAction"
+			validate="false"
+			scope="session"
+			path="/exibirImovelConsumoFaixaAreaCategoriaPopupAction">
+			<forward
+				name="exibirImovelConsumoFaixaAreaCategoriaPopup"
+				path="/jsp/cadastro/imovel/imovel_consumo_faixa_area_categoria_popup.jsp" />
+		</action>
+
+		<action
+			name="ImovelConsumoFaixaAreaCategoriaPopupActionForm"
+			type="gcom.gui.cadastro.imovel.InserirImovelConsumoFaixaAreaCategoriaPopupAction"
+			validate="false"
+			scope="session"
+			path="/inserirImovelConsumoFaixaAreaCategoriaPopupAction">
+			<forward
+				name="inserirImovelConsumoFaixaAreaCategoriaPopup"
+				path="/jsp/cadastro/imovel/imovel_consumo_faixa_area_categoria_popup.jsp" />
+		</action>
+
+	</action-mappings>
+
+	<message-resources
+		null="false"
+		parameter="gcom.properties.application" />
+
+</struts-config>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="PesquisarServicoTipoAssociadoActionForm"
+				   type="gcom.gui.atendimentopublico.ordemservico.PesquisarServicoTipoAssociadoActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		<action name="PesquisarServicoTipoAssociadoActionForm"
+				type="gcom.gui.atendimentopublico.ordemservico.ExibirPesquisarServicoTipoAssociadoAction"
+				validate="false" 
+				scope="session"
+				path="/exibirPesquisarServicoTipoAssociadoAction">
+			<forward name="exibirServicoTipoAssociadoPopup" 
+					 path="/jsp/atendimentopublico/ordemservico/servico_tipo_associados_adicionar_popup.jsp" />
+		</action>
+		
+		<action name="PesquisarServicoTipoAssociadoActionForm"
+				type="gcom.gui.atendimentopublico.ordemservico.PesquisarServicoTipoAssociadoAction"
+				validate="true"
+				scope="session"
+				path="/pesquisarServicoTipoAssociadoAction">
+			<forward name="pesquisarServicoTipoAssociadoAction"
+					 path="/jsp/atendimentopublico/ordemservico/servico_tipo_associados_adicionar_popup.jsp" />
+		</action>
+ 		
+	</action-mappings>
+	<message-resources null="false" parameter="gcom.properties.application" />
+</struts-config>

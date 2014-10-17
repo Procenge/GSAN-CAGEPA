@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="AtualizarImovelCobrancaAdministrativaActionForm"
+			type="gcom.gui.cobranca.cobrancaadministrativa.AtualizarImovelCobrancaAdministrativaActionForm" />
+		<form-bean name="RetirarImovelCobrancaAdministrativaActionForm"
+			type="gcom.gui.cobranca.cobrancaadministrativa.RetirarImovelCobrancaAdministrativaActionForm" />
+		<form-bean name="ManutencaoRegistroActionForm" type="gcom.gui.ManutencaoRegistroActionForm" />
+		<form-bean name="ConsultarDadosContratoEmpresaCobrancaAdministrativaActionForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="nomeEmpresa"
+				type="java.lang.String" />
+		</form-bean>
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+	
+		<action name="RetirarImovelCobrancaAdministrativaActionForm" 
+			type="gcom.gui.cobranca.cobrancaadministrativa.ExibirManterImovelCobrancaAdministrativaAction" 
+			scope="session" 
+			validate="false"
+			path="/exibirManterImovelCobrancaAdministrativaAction">
+			<forward name="manterImovelCobrancaAdministrativa" path="/jsp/cobranca/cobrancaadministrativa/imovel_cobranca_administrativa_manter.jsp" />
+			<forward name="atualizarImovelCobrancaAdministrativa" path="/exibirAtualizarImovelCobrancaAdministrativaAction.do" />
+		</action>
+		
+		<action
+			name="RetirarImovelCobrancaAdministrativaActionForm"
+			type="gcom.gui.cobranca.cobrancaadministrativa.ExibirInformarMotivoRetiradaCobrancaAdministrativaAction"
+			validate="false" 
+			scope="request"
+			path="/exibirInformarMotivoRetiradaCobrancaAdministrativaAction">
+			<forward name="informarMotivoRetiradaCobrancaAdministrativa"
+				path="/jsp/cobranca/cobrancaadministrativa/imovel_cobranca_administrativa_motivo_retirada_informar.jsp" />
+		</action>
+
+		<action name="RetirarImovelCobrancaAdministrativaActionForm"
+			type="gcom.gui.cobranca.cobrancaadministrativa.RetirarImovelCobrancaAdministrativaAction"
+			scope="request"
+			validate="true" 
+			path="/retirarImovelCobrancaAdministrativaAction">
+			
+			<forward name="informarMotivoRetiradaCobrancaAdministrativa" 
+				path="/jsp/cobranca/cobrancaadministrativa/imovel_cobranca_administrativa_motivo_retirada_informar.jsp" /> 
+		</action>
+		
+		<action name="ConsultarDadosContratoEmpresaCobrancaAdministrativaActionForm"
+			type="gcom.gui.cobranca.cobrancaadministrativa.ExibirConsultarDadosContratoEmpresaCobrancaAdministrativaAction"
+			validate="false" scope="session"
+			path="/exibirConsultarDadosContratoEmpresaCobrancaAdministrativaAction">
+			<forward name="exibirConsultarDadosContratoEmpresaCobrancaAdministrativa" 
+				path="/jsp/cobranca/cobrancaadministrativa/empresa_contrato_cobranca_administrativa_consultar.jsp" />
+				
+		</action>
+			
+		<action name="AtualizarImovelCobrancaAdministrativaActionForm"
+			type="gcom.gui.cobranca.cobrancaadministrativa.ExibirAtualizarImovelCobrancaAdministrativaAction"
+			validate="false" scope="session"
+			path="/exibirAtualizarImovelCobrancaAdministrativaAction">
+
+			<forward name="atualizarImovelCobrancaAdministrativa"
+				path="/jsp/cobranca/cobrancaadministrativa/imovel_cobranca_administrativa_atualizar.jsp" />
+		</action>
+
+		<action name="AtualizarImovelCobrancaAdministrativaActionForm" 
+			type="gcom.gui.relatorio.cobranca.administrativa.GerarRelatorioImoveisEmCobrancaAdministrativaAction"
+					scope="session" path="/gerarRelatorioImoveisEmCobrancaAdministrativaAction" />
+		
+	</action-mappings>
+
+	<message-resources null="false" parameter="gcom.properties.application" />
+</struts-config>

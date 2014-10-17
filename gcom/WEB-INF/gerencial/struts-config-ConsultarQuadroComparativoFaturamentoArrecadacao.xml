@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="ConsultarQuadroComparativoFaturamentoArrecadacaoActionForm"
+			type="gcom.gui.gerencial.ConsultarQuadroComparativoFaturamentoArrecadacaoActionForm" />
+	</form-beans>
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="ConsultarQuadroComparativoFaturamentoArrecadacaoActionForm"
+			type="gcom.gui.gerencial.ExibirConsultarQuadroComparativoFaturamentoArrecadacaoAction"
+			validate="true" path="/exibirConsultarQuadroComparativoFaturamentoArrecadacaoAction">
+
+			<forward name="exibirConsultarQuadroComparativoFaturamentoArrecadacaoAction"
+				path="/jsp/gerencial/quadro_comparativo_faturamento_arrecadacao_consultar.jsp" />
+		</action>
+
+		<action name="ConsultarQuadroComparativoFaturamentoArrecadacaoActionForm"
+			type="gcom.gui.gerencial.ConsultarQuadroComparativoFaturamentoArrecadacaoAction"
+			validate="true" path="/consultarQuadroComparativoFaturamentoArrecadacaoAction">
+
+			<forward name="consultarQuadroComparativoFaturamentoArrecadacao"
+				path="/jsp/gerencial/quadro_comparativo_faturamento_arrecadacao_resultado.jsp" />
+		</action>
+		
+		<action name="ConsultarQuadroComparativoFaturamentoArrecadacaoActionForm"
+			type="gcom.gui.relatorio.gerencial.GerarRelatorioQuadroComparativoFaturamentoArrecadacaoAction"
+			validate="true" 
+			path="/gerarRelatorioQuadroComparativoFaturamentoArrecadacaoAction" />
+		
+
+	</action-mappings>
+</struts-config>

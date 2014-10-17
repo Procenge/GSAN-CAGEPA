@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+ <data-sources/>
+ <form-beans>
+ 
+ 	<form-bean name="produtividadeMensalExecucaoServicoForm"  type="org.apache.struts.action.DynaActionForm">
+ 			<form-property name="tipoComando" type="java.lang.String"/>
+ 			<form-property name="acaoSelecionada" type="java.lang.Integer"/>
+ 			<form-property name="empresaSelecionada" type="java.lang.Integer[]"/>
+ 			<form-property name="idCobrancaAcaoAtividadeComando" type="java.lang.String"/>
+ 			<form-property name="idCobrancaAcaoAtividadeCronograma" type="java.lang.String"/>
+ 			<form-property name="padraoPeriodo" type="java.lang.String"/>
+ 			<form-property name="periodoInicio" type="java.lang.String"/>
+ 			<form-property name="periodoFim" type="java.lang.String"/>
+ 			<form-property name="periodoMesInicio" type="java.lang.String"/>
+ 			<form-property name="periodoMesFim" type="java.lang.String"/>
+ 			<form-property name="periodoAnoInicio" type="java.lang.String"/>
+ 			<form-property name="periodoAnoFim" type="java.lang.String"/>
+ 			<form-property name="localidade" type="java.lang.Integer"/>
+ 			<form-property name="grupo" type="java.lang.Integer[]"/>
+ 			<form-property name="setor" type="java.lang.Integer[]"/>
+ 			<form-property name="bairro" type="java.lang.Integer[]"/>
+ 			<form-property name="grupoServico" type="java.lang.Integer[]"/>
+ 			<form-property name="subGrupoServico" type="java.lang.Integer[]"/>
+ 			<form-property name="servico" type="java.lang.Integer[]"/>
+ 			<form-property name="tipoCorte" type="java.lang.Integer[]"/>
+ 			<form-property name="tipoSupressao" type="java.lang.Integer[]"/>
+ 			<form-property name="tituloCobrancaAcaoAtividadeComando" type="java.lang.String"/>
+ 			<form-property name="descricaoGrupo" type="java.lang.String"/>
+    </form-bean>
+     	    
+  </form-beans>
+ <global-exceptions/>
+ <global-forwards/>
+ 
+ <action-mappings>
+  
+ <action path="/produtividadeMensalExecucaoServicoAction" 
+             type="gcom.gui.cobranca.FiltrarProdutividadeMensalExecucaoServicoAction"
+             scope="session"
+             parameter="acao"
+             name="produtividadeMensalExecucaoServicoForm">
+                        
+            <forward name="mesmaPagina" path="tilesProdutividadeMensalExecucaoServico"/>
+                       
+ </action>
+ 
+ <action path="/gerarRelProdutividadeMensalExecucaoServicoAction" 
+             type="gcom.gui.cobranca.GerarRelatorioProdutividadeMensalExecucaoServicoAction"
+             scope="session"
+             parameter="acao"
+             name="produtividadeMensalExecucaoServicoForm">
+             
+              <forward name="mesmaPagina" path="tilesProdutividadeMensalExecucaoServico"/>
+                    
+ </action>
+  
+  </action-mappings>
+ <controller/>
+ </struts-config>

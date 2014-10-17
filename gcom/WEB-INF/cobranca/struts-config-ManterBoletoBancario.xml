@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="AtualizarBoletoBancarioActionForm"
+			type="gcom.gui.cobranca.AtualizarBoletoBancarioActionForm" />
+		<form-bean name="CancelarBoletoBancarioActionForm"
+			type="gcom.gui.cobranca.CancelarBoletoBancarioActionForm" />
+		<form-bean name="ManutencaoRegistroActionForm"
+			type="gcom.gui.ManutencaoRegistroActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.cobranca.ExibirTotalizadorBoletoBancarioAction"
+			validate="false" scope="request" path="/exibirTotalizadorBoletoBancarioAction">
+			<forward name="exibirTotalizadorBoletoBancarioAction" path="/jsp/cobranca/boleto_bancario_totalizador.jsp" />
+		</action>
+
+		<action name="CancelarBoletoBancarioActionForm"
+			type="gcom.gui.cobranca.ExibirManterBoletoBancarioAction"
+			validate="false" scope="request" path="/exibirManterBoletoBancarioAction">
+			<forward name="exibirManterBoletoBancarioAction" path="/jsp/cobranca/boleto_bancario_manter.jsp" />
+			<forward name="exibirAtualizarBoletoBancarioAction" path="/exibirAtualizarBoletoBancarioAction.do" />
+			<forward name="exibirTotalizadorBoletoBancarioAction" path="/exibirTotalizadorBoletoBancarioAction.do" />
+		</action>
+
+		<action name="AtualizarBoletoBancarioActionForm"
+			type="gcom.gui.cobranca.ExibirAtualizarBoletoBancarioAction"
+			validate="false" scope="session"
+			path="/exibirAtualizarBoletoBancarioAction">
+			<forward name="atualizarBoletoBancario" path="/jsp/cobranca/boleto_bancario_atualizar.jsp" />
+		</action>
+
+		<action name="AtualizarBoletoBancarioActionForm"
+			type="gcom.gui.cobranca.AtualizarBoletoBancarioAction"
+			validate="true" scope="request"
+			path="/atualizarBoletoBancarioAction">
+		</action>
+		
+		<action name="CancelarBoletoBancarioActionForm"
+			type="gcom.gui.cobranca.ExibirCancelarBoletoBancarioAction"
+			validate="false" scope="request"
+			path="/exibirCancelarBoletoBancarioAction">
+			<forward name="exibirCancelarBoletoBancarioAction" path="/jsp/cobranca/boleto_bancario_cancelar.jsp" />
+		</action>
+
+		<action name="CancelarBoletoBancarioActionForm"
+			type="gcom.gui.cobranca.CancelarBoletoBancarioAction"
+			validate="true" scope="request"
+			path="/cancelarBoletoBancarioAction">
+			<forward name="exibirCancelarBoletoBancarioAction" path="/jsp/cobranca/boleto_bancario_cancelar.jsp" />
+		</action>
+
+		<action name="CancelarBoletoBancarioActionForm"
+			type="gcom.gui.relatorio.cobranca.GerarRelatorioBoletosBancariosAction"
+			scope="request" path="/gerarRelatorioBoletosBancariosAction">
+		</action>
+
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+
+</struts-config>

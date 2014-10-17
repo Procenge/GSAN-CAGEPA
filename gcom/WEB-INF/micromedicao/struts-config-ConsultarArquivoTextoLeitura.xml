@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="ConsultarArquivoTextoLeituraActionForm"
+			type="gcom.gui.micromedicao.ConsultarArquivoTextoLeituraActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<action name="ConsultarArquivoTextoLeituraActionForm"
+			type="gcom.gui.micromedicao.ExibirConsultarArquivoTextoLeituraAction"
+			validate="true" scope="session"
+			path="/exibirConsultarArquivoTextoLeituraAction">
+
+			<forward name="consultarArquivoTextoLeitura"
+				path="/jsp/micromedicao/arquivo_texto_Leitura_consultar.jsp" />
+		</action>
+
+		<action name="ConsultarArquivoTextoLeituraActionForm"
+			type="gcom.micromedicao.ConsultarArquivoTextoLeituraAction"
+			validate="false" scope="session"
+			path="/consultarArquivoTextoLeituraAction">
+			<forward name="consultarArquivoTextoLeitura"
+				path="/jsp/micromedicao/arquivo_texto_Leitura_consultar.jsp" />
+		</action>
+
+		<action type="gcom.micromedicao.RetornarArquivoTxtLeituraAction"
+			path="/retornarArquivoTxtLeituraAction">
+		</action>
+		
+		<action name="ConsultarArquivoTextoLeituraActionForm"
+			type="gcom.gui.micromedicao.LiberarArquivoTextoLeituraAction"
+			validate="true" scope="session"
+			path="/liberarArquivoTextoLeituraAction">
+		</action>
+
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+
+</struts-config>

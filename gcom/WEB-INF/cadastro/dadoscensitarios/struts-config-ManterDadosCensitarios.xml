@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="AtualizarDadosCensitariosActionForm"
+			type="gcom.gui.cadastro.dadoscensitarios.AtualizarDadosCensitariosActionForm" />
+		<form-bean name="FiltrarDadosCensitariosActionForm"
+			type="gcom.gui.cadastro.dadoscensitarios.FiltrarDadosCensitariosActionForm" />
+		
+	</form-beans>
+
+	<global-forwards />
+
+	<action-mappings>
+
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.cadastro.dadoscensitarios.ExibirManterDadosCensitariosAction"
+			validate="false" scope="session"
+			path="/exibirManterDadosCensitariosAction">
+
+			<forward name="exibirManterDadosCensitarios"
+				path="/jsp/cadastro/dadoscensitarios/dados_censitarios_manter.jsp" />
+
+			<forward name="exibirAtualizarDadosCensitarios"
+				path="/exibirAtualizarDadosCensitariosAction.do" />
+		</action>
+
+		<action name="AtualizarDadosCensitariosActionForm"
+			type="gcom.gui.cadastro.dadoscensitarios.ExibirAtualizarDadosCensitariosAction"
+			validate="false" scope="session"
+			path="/exibirAtualizarDadosCensitariosAction">
+
+			<forward name="dadosCensitariosAtualizar"
+				path="/jsp/cadastro/dadoscensitarios/dados_censitarios_atualizar.jsp" />
+		</action>
+
+		<action name="AtualizarDadosCensitariosActionForm"
+			type="gcom.gui.cadastro.dadoscensitarios.AtualizarDadosCensitariosAction"
+			validate="true" scope="session"
+			path="/atualizarDadosCensitariosAction">
+
+		</action>
+
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.cadastro.dadoscensitarios.RemoverDadosCensitariosAction"
+			 scope="request" path="/removerDadosCensitariosAction">
+
+		</action>
+	
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+
+</struts-config>

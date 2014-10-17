@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="ExibirResultadoFiltrarContasPreFaturadasActionForm" 
+		type="gcom.gui.faturamento.conta.ExibirResultadoFiltrarContasPreFaturadasActionForm" />	
+		<form-bean name="AtualizarSituacaoContaActionForm"
+			type="gcom.gui.faturamento.conta.AtualizarSituacaoContaActionForm" />					
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<action 
+			name="FiltrarContasPreFaturadasActionForm" 
+			type="gcom.gui.faturamento.conta.ExibirResultadoFiltrarContasPreFaturadasAction" 
+			scope="session" 
+			validate="true" 
+			path="/exibirResultadoFiltrarContasPreFaturadasAction">
+			<forward 
+				name="consultaFaturamentoContasPreFaturadas" 
+				path="/jsp/faturamento/conta/consulta_faturamento_contas_pre_faturadas.jsp"
+			 />
+			 <forward 
+			 	name="atualizarSituacaoConta" 
+			 	path="/exibirAtualizarSituacaoContaAction.do"
+			  />
+		</action>
+		
+		<action name="AtualizarSituacaoContaActionForm"
+			type="gcom.gui.faturamento.conta.ExibirAtualizarSituacaoContaAction"
+			validate="false" scope="session"
+			path="/exibirAtualizarSituacaoContaAction">
+			<forward name="atualizarSituacaoConta" path="/jsp/faturamento/conta/conta_atualizar_situacao.jsp" />
+		</action>
+
+		<action name="AtualizarSituacaoContaActionForm"
+			type="gcom.gui.faturamento.conta.AtualizarSituacaoContaAction"
+			validate="true" scope="request"
+			path="/atualizarSituacaoContaAction">
+		</action>
+		
+		
+	</action-mappings>
+</struts-config>

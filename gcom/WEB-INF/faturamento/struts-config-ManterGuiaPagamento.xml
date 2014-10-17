@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+
+		<form-bean name="ManterGuiaPagamentoActionForm"
+			type="gcom.gui.faturamento.guiapagamento.ManterGuiaPagamentoActionForm" />
+		<form-bean name="AtualizarGuiaPagamentoActionForm"
+			type="gcom.gui.faturamento.guiapagamento.AtualizarGuiaPagamentoActionForm" />
+		<form-bean name="FiltrarGuiaPagamentoActionForm"
+			type="gcom.gui.faturamento.guiapagamento.FiltrarGuiaPagamentoActionForm" />
+		
+		
+	</form-beans>
+
+	<global-forwards />
+
+	<action-mappings>
+
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.faturamento.guiapagamento.ExibirManterGuiaPagamentoAction"
+			validate="false" scope="session"
+			path="/exibirManterGuiaPagamentoAction">
+
+			<forward name="exibirManterGuiaPagamento"
+				path="/jsp/faturamento/guiapagamento/guia_pagamento_manter.jsp" />
+
+			<forward name="exibirAtualizarGuiaPagamento"
+				path="/exibirAtualizarGuiaPagamentoAction.do" />
+		</action>
+
+		<action name="AtualizarGuiaPagamentoActionForm"
+			type="gcom.gui.faturamento.guiapagamento.ExibirAtualizarGuiaPagamentoAction"
+			validate="false" scope="session"
+			path="/exibirAtualizarGuiaPagamentoAction">
+
+			<forward name="guiaPagamentoAtualizar"
+				path="/jsp/faturamento/guiapagamento/guia_pagamento_atualizar.jsp" />
+		</action>	
+
+		<action name="AtualizarGuiaPagamentoActionForm"
+			type="gcom.gui.faturamento.guiapagamento.AtualizarGuiaPagamentoAction"
+			validate="true" scope="session"
+			path="/atualizarGuiaPagamentoAction">
+
+		</action>
+		
+		<action name="AtualizarGuiaPagamentoActionForm"
+			type="gcom.gui.faturamento.guiapagamento.ExibirAlterarVencimentoPrestacoesGuiaPagamentoAction"
+			validate="true" scope="session"
+			path="/exibirAlterarVencimentoPrestacoesGuiaPagamentoAction">
+			
+			<forward name="exibirAlterarVencimentoPrestacoesGuiaPagamento"
+				path="/jsp/faturamento/guiapagamento/guia_pagamento_alterar_vencimento_prestacoes.jsp" />
+		</action>
+		
+		<action name="AtualizarGuiaPagamentoActionForm"
+			type="gcom.gui.faturamento.guiapagamento.AlterarVencimentoPrestacoesGuiaPagamentoAction"
+			validate="true" scope="session"
+			path="/alterarVencimentoPrestacoesGuiaPagamentoAction">
+
+		</action>
+
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.faturamento.guiapagamento.RemoverGuiaPagamentoAction"
+			 scope="request" path="/removerGuiaPagamentoAction">
+
+		</action>
+		<action name="FiltrarGuiaPagamentoActionForm"
+			type="gcom.gui.faturamento.guiapagamento.GerarRelatorioGuiaPagamentoManterAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioGuiaPagamentoManterAction" />
+			
+		<action name="AtualizarGuiaPagamentoActionForm"
+			type="gcom.gui.relatorio.arrecadacao.pagamento.GerarRelatorioEmitirGuiaPagamentoAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioEmitirGuiaPagamentoActionCancelar" />
+			
+		<action name="AtualizarGuiaPagamentoActionForm"
+			type="gcom.gui.faturamento.ManterGuiaPagamentoAction" scope="session"
+			validate="true" path="/manterGuiaPagamentoAction" />
+	
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+
+</struts-config>

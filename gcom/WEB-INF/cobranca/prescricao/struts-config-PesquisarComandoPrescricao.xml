@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="PesquisarComandoPrescricaoActionForm"
+			type="gcom.gui.cobranca.prescricao.PesquisarComandoPrescricaoActionForm" />			
+			
+	</form-beans>
+
+	<global-forwards />
+
+	<action-mappings>
+
+		<action name="PesquisarComandoPrescricaoActionForm"
+			type="gcom.gui.cobranca.prescricao.ExibirPesquisarComandoPrescricaoAction"
+			validate="false" scope="session"
+			path="/exibirPesquisarComandoPrescricaoAction">
+			<forward name="exibirPesquisarComandoPrescricao"
+				path="/jsp/cobranca/prescricao/comando_prescricao_pesquisar.jsp" />
+		</action>
+		
+		<action name="PesquisarComandoPrescricaoActionForm"
+			type="gcom.gui.cobranca.prescricao.PesquisarComandoPrescricaoAction" scope="session"
+			path="/pesquisarComandoPrescricaoAction">
+			<forward name="retornarPesquisarComandoPrescricao"
+				path="/exibirResultadoPesquisaComandoPrescricaoAction.do" />
+		</action>
+		
+		<action type="gcom.gui.cobranca.prescricao.ExibirResultadoPesquisaComandoPrescricaoAction"
+			path="/exibirResultadoPesquisaComandoPrescricaoAction">
+			<forward name="exibirResultadoPesquisaComandoPrescricao"
+				path="/jsp/cobranca/prescricao/comando_prescricao_resultado_pesquisa.jsp" />
+		</action>		
+		
+		<action type="gcom.gui.cobranca.prescricao.ExibirResultadoPesquisaComandoPrescricaoParametrosAction"
+			path="/exibirResultadoPesquisaComandoPrescricaoParametrosAction">
+			
+			<forward name="exibirResultadoPesquisaComandoPrescricaoParametros"
+				path="/jsp/cobranca/prescricao/comando_prescricao_parametros_popup.jsp" />
+		</action>		
+	
+	</action-mappings>
+
+</struts-config>

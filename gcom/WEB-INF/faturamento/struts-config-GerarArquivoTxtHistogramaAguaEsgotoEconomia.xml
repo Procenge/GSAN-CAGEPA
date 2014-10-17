@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="EmissaoHistogramaEsgotoEconomiaDadosInformarActionForm"
+			type="gcom.gui.faturamento.EmissaoHistogramaEsgotoEconomiaDadosInformarActionForm" />
+	</form-beans>
+
+	<!--******************* P?GINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		
+		<action name="EmissaoHistogramaEsgotoEconomiaDadosInformarActionForm"
+			type="gcom.gui.faturamento.ExibirGerarArquivoHistogramaAguaEsgotoEconomiaAction"
+			validate="true" 
+			scope="session"
+			path="/exibirGerarArquivoTextoHistogramaAguaEsgotoEconomia">
+			
+			<forward name="exibirGerarArquivoHistogramaAguaEsgotoEconomia" 
+				path="/jsp/faturamento/gerar_arquivo_histograma_agua_esgoto_economia.jsp" />
+				
+			<forward name="histogramaAguaEsgotoEconomiaInformarFaixa"
+				path="/jsp/faturamento/histograma_agua_esgoto_economia_categoria_faixa_adicionar_popup.jsp" />	
+								
+		</action>
+		
+		<action name="EmissaoHistogramaEsgotoEconomiaDadosInformarActionForm"
+			type="gcom.gui.faturamento.GerarArquivoHistogramaAguaEsgotoEconomiaAction"
+			validate="true" 
+			scope="session"
+			path="/gerarArquivoHistogramaAguaEsgotoEconomia" />
+					
+	</action-mappings>
+
+</struts-config>

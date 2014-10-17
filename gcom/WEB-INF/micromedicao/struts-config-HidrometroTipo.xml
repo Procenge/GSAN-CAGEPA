@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+ <data-sources/>
+ <form-beans>
+ 	<form-bean name="InserirHidrometroTipoActionForm" type="gcom.gui.micromedicao.hidrometro.InserirHidrometroTipoActionForm"/>
+  	<form-bean name="ManterHidrometroTipoActionForm" type="gcom.gui.ManutencaoRegistroActionForm"/>
+  	<form-bean name="FiltrarHidrometroTipoActionForm" type="gcom.gui.micromedicao.hidrometro.FiltrarHidrometroTipoActionForm"/>
+  	<form-bean name="AtualizarHidrometroTipoActionForm" type="gcom.gui.micromedicao.hidrometro.AtualizarHidrometroTipoActionForm"/>
+ </form-beans>
+ <global-exceptions/>
+ <!--******************* PÁGINAS GLOBAIS *******************-->
+ <global-forwards/>
+ <action-mappings>
+	 <action name="InserirHidrometroTipoActionForm"
+	   path="/exibirInserirHidrometroTipoAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.ExibirInserirHidrometroTipoAction" validate="true">
+	   <forward name="inserirHidrometroTipo" path="/jsp/micromedicao/hidrometro/hidrometro_tipo_inserir.jsp"/>
+	  </action>
+	  <action name="InserirHidrometroTipoActionForm"
+	   path="/inserirHidrometroTipoAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.InserirHidrometroTipoAction" validate="true"/>
+	  <action name="FiltrarHidrometroTipoActionForm"
+	   path="/exibirFiltrarHidrometroTipoAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.ExibirFiltrarHidrometroTipoAction" validate="true">
+	   <forward name="exibirFiltrarHidrometroTipo" path="/jsp/micromedicao/hidrometro/hidrometro_tipo_filtrar.jsp"/>
+	  </action>
+	  <action name="FiltrarHidrometroTipoActionForm"
+	   path="/filtrarHidrometroTipoAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.FiltrarHidrometroTipoAction" validate="true">
+	   <forward name="exibirManterHidrometroTipo" path="/exibirManterHidrometroTipoAction.do"/>
+	  </action>
+	  <action name="ManterHidrometroTipoActionForm"
+	   path="/exibirManterHidrometroTipoAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.ExibirManterHidrometroTipoAction" validate="true">
+	   <forward name="exibirManterHidrometroTipo" path="/jsp/micromedicao/hidrometro/hidrometro_tipo_manter.jsp"/>
+	   <forward name="exibirAtualizarHidrometroTipo" path="/exibirAtualizarHidrometroTipoAction.do"/>
+	  </action>
+	  <action name="AtualizarHidrometroTipoActionForm"
+	   path="/exibirAtualizarHidrometroTipoAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.ExibirAtualizarHidrometroTipoAction" validate="true">
+	   <forward name="atualizarHidrometroTipo" path="/jsp/micromedicao/hidrometro/hidrometro_tipo_atualizar.jsp"/>
+	  </action>
+	  <action name="ManutencaoRegistroActionForm"
+	   path="/removerHidrometroTipoAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.RemoverHidrometroTipoAction" validate="false"/>
+	  <action name="AtualizarHidrometroTipoActionForm"
+	   path="/atualizarHidrometroTipoAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.AtualizarHidrometroTipoAction" validate="false"/>
+ </action-mappings>
+ <controller/>
+ <message-resources null="false" parameter="gcom.properties.application"/>
+</struts-config>

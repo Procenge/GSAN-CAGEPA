@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+
+		<form-bean name="InformarEntregaDevolucaoDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.InformarEntregaDevolucaoDocumentoCobrancaActionForm" />
+
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<!-- [UC3044] Informar Entrega/Devolução de Documentos de Cobrança Auhtor: Carlos Chrystian Data:02/03/2012-->
+		<action name="InformarEntregaDevolucaoDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.ExibirInformarEntregaDevolucaoDocumentoCobrancaAction"
+			scope="session" path="/exibirInformarEntregaDevolucaoDocumentoCobrancaAction">
+			<forward name="exibirInformarEntregaDevolucaoDocumentoCobrancaAction"
+				path="/jsp/cobranca/informar_entrega_devolucao_documento_cobranca.jsp" />
+		</action>
+	
+		<action name="InformarEntregaDevolucaoDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.InformarEntregaDevolucaoDocumentoCobrancaAction"
+			scope="session" path="/informarEntregaDevolucaoDocumentoCobrancaAction">
+				<forward name="telaSucesso"
+				path="/jsp/util/sucesso.jsp" />
+		</action>
+	
+		<action name="InformarDescricaoParecerPopupActionForm"
+			type="gcom.gui.cobranca.ExibirInformarDescricaoParecerPopupAction"
+			validate="false" scope="request" path="/exibirInformarDescricaoParecerPopupAction">
+			<forward name="exibirInformarDescricaoParecerPopupAction" path="/exibirInformarDescricaoParecerPopupAction.do" />
+		</action>
+
+	</action-mappings>
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+
+		<form-bean name="InserirDadosCensitariosActionForm"
+			type="gcom.gui.cadastro.dadoscensitarios.InserirDadosCensitariosActionForm" />
+
+	</form-beans>
+
+	<global-forwards />
+
+
+	<action-mappings>
+
+		<action name="InserirDadosCensitariosActionForm"
+			type="gcom.gui.cadastro.dadoscensitarios.ExibirInserirDadosCensitariosAction"
+			validate="false" parameter="action" scope="session"
+			path="/exibirInserirDadosCensitariosAction">
+
+			<forward name="exibirInserirDadosCensitariosAction"
+				path="/jsp/cadastro/dadoscensitarios/dados_censitarios_inserir.jsp" />
+
+		</action>
+
+		<action name="InserirDadosCensitariosActionForm"
+			type="gcom.gui.cadastro.dadoscensitarios.InserirDadosCensitariosAction"
+			validate="true" scope="session" path="/inserirDadosCensitariosAction">
+		</action>
+		
+		<action
+			type="gcom.gui.cadastro.dadoscensitarios.CancelarInserirDadosCensitariosAction"
+			validate="false" path="/cancelarInserirDadosCensitariosAction" />
+
+	</action-mappings>
+
+	<message-resources null="false" parameter="gcom.properties.application" />
+
+</struts-config>

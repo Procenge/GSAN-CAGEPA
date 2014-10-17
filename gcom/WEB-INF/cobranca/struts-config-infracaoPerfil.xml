@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="InfracaoPerfilActionForm"
+			type="gcom.gui.cobranca.InfracaoPerfilActionForm" />
+		<form-bean name="InfracaoPerfilDebitoTipoActionForm"
+			type="gcom.gui.cobranca.InfracaoPerfilDebitoTipoActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		<!-- Exibir Inserir -->
+		<action  name="InfracaoPerfilActionForm"
+				 type="gcom.gui.cobranca.ExibirInserirInfracaoPerfilAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirInserirInfracaoPerfilAction">
+			
+			<forward name="exibirInserirInfracaoPerfil" path="tilesInfracaoPerfilInserir" />
+		</action>
+		
+		<!-- Inserir -->
+		<action name="InfracaoPerfilActionForm"
+				type="gcom.gui.cobranca.InserirInfracaoPerfilAction"
+				validate="false" 
+				scope="session" 
+				path="/inserirInfracaoPerfilAction"/>
+			
+		<!-- Exibir filtrar -->
+		<action  name="InfracaoPerfilActionForm"
+				 type="gcom.gui.cobranca.ExibirFiltrarInfracaoPerfilAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirFiltrarInfracaoPerfilAction"> 
+			<forward name="exibirFiltrarInfracaoPerfil" path="tilesInfracaoPerfilFiltrar" />	 
+		</action>
+				
+		<!-- Filtrar -->
+		<action  name="InfracaoPerfilActionForm"
+				 type="gcom.gui.cobranca.FiltrarInfracaoPerfilAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/filtrarInfracaoPerfilAction">
+			<forward name="retornarFiltroInfracaoPerfil" path="/exibirManterInfracaoPerfilAction.do" />
+			<forward name="exibirAtualizarInfracaoPerfil" path="/exibirAtualizarInfracaoPerfilAction.do" />
+		</action>
+		<!-- Exibir Manter -->
+		<action  name="ManutencaoRegistroActionForm"
+				 type="gcom.gui.cobranca.ExibirManterInfracaoPerfilAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirManterInfracaoPerfilAction"> 
+			<forward name="exibirManterInfracaoPerfil" path="/jsp/cobranca/infracao_perfil_manter.jsp" />
+		</action>
+			
+		<!-- Excluir -->
+		<action  name="ManutencaoRegistroActionForm"
+				 type="gcom.gui.cobranca.RemoverInfracaoPerfilAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/removerInfracaoPerfilAction">
+		</action>
+			
+		<!-- Exibir Atualizar -->
+		<action  name="InfracaoPerfilActionForm"
+				 type="gcom.gui.cobranca.ExibirAtualizarInfracaoPerfilAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirAtualizarInfracaoPerfilAction"> 
+			<forward name="exibirAtualizarInfracaoPerfil" path="tilesInfracaoPerfilAtualizar" />	
+		</action>
+				
+		<!--  Atualizar -->
+		<action  name="InfracaoPerfilActionForm"
+				 type="gcom.gui.cobranca.AtualizarInfracaoPerfilAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/atualizarInfracaoPerfilAction"> </action>
+				 
+		<!-- Adicionar -->
+		<action name="InfracaoPerfilActionForm"
+				type="gcom.gui.cobranca.AdicionarInfracaoPerfilAction"
+				validate="false"
+				scope="session"
+				path="/adicionarInfracaoPerfilAction">
+			<forward name="exibirInserirInfracaoPerfil" path="tilesInfracaoPerfilInserir"/>
+		</action>
+		
+		<!-- Adicionar -->
+		<action name="InfracaoPerfilDebitoTipoActionForm"
+				type="gcom.gui.cobranca.AdicionarInfracaoPerfilDebitoTipoAction"
+				validate="false"
+				scope="session"
+				path="/exibirInserirInfracaoPerfilDebitoTipo">
+			<forward name="exibirInserirInfracaoDebitPerfilDebitoTipo" path="/jsp/cobranca/infracao_perfil_debito_tipo_adicionar.jsp"/>
+		</action>
+		
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

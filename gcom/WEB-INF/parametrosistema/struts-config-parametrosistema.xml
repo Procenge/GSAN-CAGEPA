@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<data-sources />
+	<form-beans>
+
+		<form-bean name="parametroSistemaForm" type="org.apache.struts.action.DynaActionForm">
+			<form-property name="chavePrimaria" type="java.lang.Long" />
+			<form-property name="versao" type="java.lang.Integer" />
+			<form-property name="strUltimaAlteracao" type="java.lang.String" />
+			<form-property name="codigo" type="java.lang.String" />
+			<form-property name="descricao" type="java.lang.String" />
+			<form-property name="valor" type="java.lang.String" />
+			<form-property name="tipo" type="java.lang.Integer" />
+			<form-property name="uso" type="java.lang.Integer" />
+			<form-property name="descricaoValor" type="java.lang.String" />
+			<form-property name="novoValor" type="java.lang.String" />
+		</form-bean>
+		<form-bean name="parametroSistemaActionForm"
+			type="gcom.gui.seguranca.sistema.ParametroSistemaActionForm">
+		</form-bean>
+	</form-beans>
+	<global-exceptions />
+	<global-forwards />
+
+	<action-mappings>
+
+
+		<action path="/consultarParametroSistema"  name="parametroSistemaActionForm"
+			type="br.com.procenge.parametrosistema.gui.ParametroSistemaAction"
+			scope="request" parameter="acao">
+
+			<forward name="exibirConsultarParametroSistema" path="tilesExibirConsultarParametroSistema" />
+			
+			<forward name="exibirParametroSistemaFiltrado" path="tilesexibirParametroSistemaFiltrado" />
+		</action>
+
+		<action path="/exibirFormAlteracaoParametroSistema"
+			type="br.com.procenge.parametrosistema.gui.ParametroSistemaAction"
+			name="parametroSistemaForm" scope="request" parameter="acao">
+
+			<exception handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO" type="br.com.procenge.comum.exception.PCGException"
+				path="/consultarParametroSistema.do?acao=consultarParametroSistema" />
+
+			<forward name="sucesso" path="tilesExibirFormAlteracaoParametroSistema" />
+
+		</action>
+
+		<action path="/alterarParametroSistema"
+			type="br.com.procenge.parametrosistema.gui.ParametroSistemaAction"
+			scope="request" name="parametroSistemaForm" parameter="acao">
+
+			<exception handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO" type="br.com.procenge.comum.exception.PCGException"
+				path="tilesExibirFormAlteracaoParametroSistema" />
+
+			<forward name="exibirFormAlteracaoParametroSistema" path="tilesExibirFormAlteracaoParametroSistema" />
+
+			<forward name="sucesso"
+				path="/consultarParametroSistema.do?acao=consultarParametroSistema" />
+			<forward name="popup" path="/jsp/parametrosistema/atualizarDescricaoParametroSistemaValor.jsp" />
+
+		</action>
+		<action path="/inserirParametroSistemaValor"
+			type="br.com.procenge.parametrosistema.gui.ParametroSistemaAction"
+			scope="request" name="parametroSistemaForm" parameter="acao">
+
+			<exception handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO" type="br.com.procenge.comum.exception.PCGException"
+				path="tilesExibirFormAlteracaoParametroSistema" />
+
+			<forward name="exibirFormAlteracaoParametroSistema" path="tilesExibirFormAlteracaoParametroSistema" />
+
+			<forward name="sucesso"
+				path="/consultarParametroSistema.do?acao=consultarParametroSistema" />
+			<forward name="popup" path="/jsp/parametrosistema/atualizarDescricaoParametroSistemaValor.jsp" />
+
+		</action>
+		
+		<action path="/removerParametroSistemaValor"
+			type="br.com.procenge.parametrosistema.gui.ParametroSistemaAction"
+			scope="request" name="parametroSistemaForm" parameter="acao">
+
+			<exception handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO" type="br.com.procenge.comum.exception.PCGException"
+				path="tilesExibirFormAlteracaoParametroSistema" />
+
+			<forward name="exibirFormAlteracaoParametroSistema" path="tilesExibirFormAlteracaoParametroSistema" />
+
+			<forward name="sucesso"
+				path="/consultarParametroSistema.do?acao=consultarParametroSistema" />
+			<forward name="popup" path="/jsp/parametrosistema/atualizarDescricaoParametroSistemaValor.jsp" />
+
+		</action>
+		<action path="/atualizarParametroSistemaValor"
+			type="br.com.procenge.parametrosistema.gui.ParametroSistemaAction"
+			scope="request" name="parametroSistemaForm" parameter="acao">
+
+			<exception handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO" type="br.com.procenge.comum.exception.PCGException"
+				path="tilesExibirFormAlteracaoParametroSistema" />
+
+			<forward name="exibirFormAlteracaoParametroSistema" path="tilesExibirFormAlteracaoParametroSistema" />
+
+			<forward name="sucesso"
+				path="/consultarParametroSistema.do?acao=consultarParametroSistema" />
+			<forward name="popup" path="/jsp/parametrosistema/atualizarDescricaoParametroSistemaValor.jsp" />
+
+		</action>
+		
+
+	</action-mappings>
+	<controller />
+</struts-config>

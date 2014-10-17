@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." default="eclipse" name="GSAN script build" >
+	
+	<property name="lib.home" value="../lib" />
+	<property name="nomeWAR" value="deploy/gcom.ear/gcom.war" />
+	<property name="jaspers" value="deploy/gcom.ear/reports.jar" />
+	<property name="reports" value="reports" />
+	<property name="JasperReports.home" value="${lib.home}/JasperReports-3.7.3" />
+	<property environment="env"/>
+	
+	<target depends="createDeployMirron, jasperReports, version, configWebXML" name="eclipse"></target>
+	<target name="version" description="Versionar aplicação">
+		<replace file="${nomeWAR}/jsp/util/rodape.jsp" propertyFile="ant/gsan_build.properties">
+			<replacefilter token="[versaoApp]" property="versaoApp" />
+		</replace>
+	</target>
+	<target name="configWebXML" description="Ajusta o caminho dos RECURSOS EXTERNOS do GSAN no WEB.XML">
+		<fail unless="env.GSAN_REC_EXT_HOME" message="GSAN_REC_EXT_HOME não encontrada. Deve existir uma variável de ambiente, GSAN_REC_EXT_HOME, apontado para a pasta de recursos externos do GSAN. Ex.: 'C:\GSAN\recursoExterno\'"/>
+		<echo message="Setando RECURSOS EXTERNOS para: ${env.GSAN_REC_EXT_HOME}" />
+		<replace file="${nomeWAR}/WEB-INF/web.xml">
+			<replacefilter token="/GSAN/recursoExterno/" value="${env.GSAN_REC_EXT_HOME}"/>
+		</replace>
+	</target>
+	
+	<target name="jasperReports" description="Compilar os Relatórios">
+
+			<mkdir dir="${jaspers}" />
+			<delete>
+	    		<fileset dir="${reports}" includes="**/*.jasper"/>
+	    		<fileset dir="${jaspers}" includes="**/*.jasper"/>
+	  		</delete>
+
+			<taskdef name="jrc" classname="net.sf.jasperreports.ant.JRAntCompileTask">
+				<classpath> 
+					<fileset dir="${JasperReports.home}">
+						<include name="*.jar" />
+					</fileset>
+				</classpath>
+			</taskdef>
+
+			<jrc srcdir="${reports}" destdir="${jaspers}" tempdir="${jaspers}" keepjava="false" xmlvalidation="true">
+				<classpath>
+					<fileset dir="${JasperReports.home}">
+						<include name="*.jar" />
+					</fileset>
+				</classpath>
+			</jrc>
+		</target>
+
+  <condition property="isWindows">
+    <os family="windows" />
+  </condition>
+
+  <condition property="isUnix">
+    <os family="unix" />
+  </condition>
+
+  <target name="doWindows" if="isWindows">
+    <echo message="Criando drive espelho para deploy [Z:]" />
+  	 <exec executable="cmd.exe">
+  	      	<arg value="/c"/>
+  	      	<arg value="substRelease.bat"/>
+  	      </exec>
+  </target>
+
+  <target name="doUnix" if="isUnix">
+  	<echo message="Criando espelho para deploy [${basedir}../deploy]" />
+    <exec executable="bash" newenvironment="false">
+    	<arg value="create_deploy_mirron.sh"/>
+    	<arg value="${basedir}/deploy"/>
+    </exec>
+  </target>
+
+  <target name="createDeployMirron" depends="doWindows, doUnix">
+    <echo message="Dados do ambiente de deploy" />
+    <echo message="os.name = ${os.name}" />
+    <echo message="os.arch = ${os.arch}" />
+    <echo message="os.version = ${os.version}" />
+  </target>
+
+</project>

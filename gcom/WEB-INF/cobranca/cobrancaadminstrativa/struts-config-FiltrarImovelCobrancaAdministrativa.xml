@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="FiltrarImovelCobrancaAdministrativaActionForm"
+			type="gcom.gui.cobranca.cobrancaadministrativa.FiltrarImovelCobrancaAdministrativaActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action  name="FiltrarImovelCobrancaAdministrativaActionForm"
+			type="gcom.gui.cobranca.cobrancaadministrativa.ExibirFiltrarImovelCobrancaAdministrativaAction"
+			scope="session" path="/exibirFiltrarImovelCobrancaAdministrativaAction">
+			<forward name="filtrarImovelCobrancaAdministrativa"
+				path="/jsp/cobranca/cobrancaadministrativa/imovel_cobranca_administrativa_filtrar.jsp" />
+		</action>
+
+		<action name="FiltrarImovelCobrancaAdministrativaActionForm"
+			type="gcom.gui.cobranca.cobrancaadministrativa.FiltrarImovelCobrancaAdministrativaAction"
+			path="/filtrarImovelCobrancaAdministrativaAction">
+			<forward name="exibirManterImovelCobrancaAdministrativa"
+				path="/exibirManterImovelCobrancaAdministrativaAction.do" />
+		</action>
+
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

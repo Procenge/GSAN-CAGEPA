@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="GerarRelatorioPosicaoContasAReceberContabilActionForm"
+			type="gcom.gui.relatorio.financeiro.GerarRelatorioPosicaoContasAReceberContabilActionForm" />
+
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<action name="GerarRelatorioPosicaoContasAReceberContabilActionForm"
+			type="gcom.gui.relatorio.financeiro.ExibirGerarRelatorioPosicaoContasAReceberContabilAction"
+			input="/exibirGerarRelatorioPosicaoContasAReceberContabilAction.do"
+			path="/exibirGerarRelatorioPosicaoContasAReceberContabilAction">
+			<forward name="exibirGerarRelatorioPosicaoContasAReceberContabil"
+				path="/jsp/relatorio/financeiro/posicao_contas_a_receber_contabil_gerar_relatorio.jsp" />
+		</action>
+		<action name="GerarRelatorioPosicaoContasAReceberContabilActionForm"
+			type="gcom.gui.relatorio.financeiro.GerarRelatorioPosicaoContasAReceberContabilAction"
+			input="/exibirGerarRelatorioPosicaoContasAReceberContabilAction.do"
+			path="/gerarRelatorioPosicaoContasAReceberContabilAction" />
+
+	</action-mappings>
+
+</struts-config>

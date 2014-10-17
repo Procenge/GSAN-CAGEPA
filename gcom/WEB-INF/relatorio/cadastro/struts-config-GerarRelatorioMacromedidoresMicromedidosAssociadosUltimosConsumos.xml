@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="GerarRelatorioMacromedidoresMicromedidosAssociadosUltimosConsumosActionForm"
+			type="gcom.gui.relatorio.cadastro.imovel.GerarRelatorioMacromedidoresMicromedidosAssociadosUltimosConsumosActionForm" />
+	</form-beans>
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="GerarRelatorioMacromedidoresMicromedidosAssociadosUltimosConsumosActionForm"
+			type="gcom.gui.relatorio.cadastro.imovel.ExibirGerarRelatorioMacromedidoresMicromedidosAssociadosUltimosConsumosAction"
+			validate="true" path="/exibirGerarRelatorioMacromedidoresMicromedidosAssociadosUltimosConsumos">
+
+			<forward name="exibirGerarRelatorioMacromedidoresMicromedidosAssociadosUltimosConsumos"
+				path="/jsp/relatorio/cadastro/relatorio_macromedidores_micromedidos_associados_ultimos_consumos_gerar.jsp" />
+
+		</action>
+		
+		<action name="GerarRelatorioMacromedidoresMicromedidosAssociadosUltimosConsumosActionForm"
+			type="gcom.gui.relatorio.cadastro.imovel.GerarRelatorioMacromedidoresMicromedidosAssociadosUltimosConsumosAction"
+			validate="true" path="/gerarRelatorioMacromedidoresMicromedidosAssociadosUltimosConsumosAction" />
+		
+		<action name="GerarRelatorioMacromedidoresMicromedidosAssociadosUltimosConsumosActionForm"
+			type="gcom.gui.relatorio.cadastro.imovel.ProcessarGerarRelatorioMacromedidoresMicromedidosAssociadosUltimosConsumosAction"
+			validate="true" path="/processarGerarRelatorioMacromedidoresMicromedidosAssociadosUltimosConsumosAction" />
+
+	</action-mappings>
+
+</struts-config>

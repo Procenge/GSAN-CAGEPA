@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean
+			name="ManutencaoRegistroActionForm"
+			type="gcom.gui.ManutencaoRegistroActionForm" />
+		<form-bean
+			name="AtualizarTramiteEspecificacaoActionForm"
+			type="gcom.gui.atendimentopublico.registroatendimento.AtualizarTramiteEspecificacaoActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action
+			name="ManutencaoRegistroActionForm"
+			type="gcom.gui.atendimentopublico.registroatendimento.ExibirManterTramiteEspecificacaoAction"
+			validate="false"
+			scope="session"
+			path="/exibirManterTramiteEspecificacaoAction">
+			<forward
+				name="exibirManterTramiteEspecificacaoAction"
+				path="/jsp/atendimentopublico/registroatendimento/tramite_especificacao_manter.jsp" />
+			<forward
+				name="atualizarTramiteEspecificacao"
+				path="/exibirAtualizarTramiteEspecificacaoAction.do?filtrar=sim" />
+		</action>
+
+		<action
+			name="ManutencaoRegistroActionForm"
+			type="gcom.gui.atendimentopublico.registroatendimento.RemoverTramiteEspecificacaoAction"
+			validate="false"
+			input="/exibirManterTramiteEspecificacaoAction.do"
+			scope="request"
+			path="/removerTramiteEspecificacaoAction">
+		</action>
+
+		<action
+			name="AtualizarTramiteEspecificacaoActionForm"
+			type="gcom.gui.atendimentopublico.registroatendimento.ExibirAtualizarTramiteEspecificacaoAction"
+			validate="false"
+			scope="session"
+			path="/exibirAtualizarTramiteEspecificacaoAction">
+			<forward
+				name="atualizarTramiteEspecificacao"
+				path="/jsp/atendimentopublico/registroatendimento/tramite_especificacao_atualizar.jsp" />
+		</action>
+
+		<action
+			name="AtualizarTramiteEspecificacaoActionForm"
+			type="gcom.gui.atendimentopublico.registroatendimento.AtualizarTramiteEspecificacaoAction"
+			validate="true"
+			scope="request"
+			path="/atualizarTramiteEspecificacaoAction">
+		</action>
+
+	</action-mappings>
+
+	<message-resources
+		null="false"
+		parameter="gcom.properties.application" />
+
+</struts-config>

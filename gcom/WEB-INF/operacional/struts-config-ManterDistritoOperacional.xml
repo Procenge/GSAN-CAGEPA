@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+
+		<form-bean name="ManterDistritoOperacionalActionForm"
+			type="gcom.gui.operacional.ManterDistritoOperacionalActionForm" />
+
+		<form-bean name="AtualizarDistritoOperacionalActionForm"
+			type="gcom.gui.operacional.AtualizarDistritoOperacionalActionForm" />
+
+		<form-bean name="ManutencaoRegistroActionForm"
+			type="gcom.gui.ManutencaoRegistroActionForm" />
+			
+		<form-bean name="ManterDadoDistritoOperacionalActionForm"
+			type="gcom.gui.operacional.ManterDadoDistritoOperacionalActionForm" />	
+
+	</form-beans>
+
+	<global-forwards />
+
+
+	<action-mappings>
+		<action name="ManterDistritoOperacionalActionForm"
+			type="gcom.gui.operacional.ExibirManterDistritoOperacionalAction"
+			validate="false" scope="session"
+			path="/exibirManterDistritoOperacionalAction">
+
+			<forward name="manterDistritoOperacional"
+				path="/jsp/operacional/distrito_operacional_manter.jsp" />
+
+			<forward name="exibirAtualizarDistritoOperacional"
+				path="/exibirAtualizarDistritoOperacionalAction.do" />
+		</action>
+
+		<action name="AtualizarDistritoOperacionalActionForm"
+			type="gcom.gui.operacional.ExibirAtualizarDistritoOperacionalAction"
+			validate="false" scope="session"
+			path="/exibirAtualizarDistritoOperacionalAction">
+
+			<forward name="atualizarDistritoOperacional"
+				path="/jsp/operacional/distrito_operacional_atualizar.jsp" />
+		</action>
+
+		<action name="AtualizarDistritoOperacionalActionForm"
+			type="gcom.gui.operacional.AtualizarDistritoOperacionalAction"
+			validate="false" scope="session" path="/atualizarDistritoOperacionalAction">
+
+		</action>
+		
+		<action name="InserirDistritoOperacionalActionForm"
+			type="gcom.gui.cadastro.unidadeoperacional.RemoverAtualizarDistritoOperacionalColecaoEnderecoAction"
+			validate="false" scope="session"
+			path="/removerAtualizarDistritoOperacionalColecaoEnderecoAction">
+			<forward name="exibirAtualizarDistritoOperacionalAction"
+				path="/exibirAtualizarDistritoOperacionalAction.do?recarregar=true" />
+		</action>
+
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.operacional.RemoverDistritoOperacionalAction"
+			validate="false" scope="session" path="/removerDistritoOperacionalAction">
+
+		</action>
+		
+		<action name="ManterDadoDistritoOperacionalActionForm"
+			type="gcom.gui.operacional.ExibirManterDadoDistritoOperacionalAction"
+			validate="false" scope="session"
+			path="/exibirManterDadoDistritoOperacionalAction">
+			<forward name="exibirManterDadoDistritoOperacionalAction"
+				path="/jsp/operacional/dado_distrito_operacional_manter.jsp" />
+		</action>
+		
+		<action name="ManterDadoDistritoOperacionalActionForm"
+			type="gcom.gui.operacional.InserirDadoDistritoOperacionalAction"
+			validate="false" scope="session"
+			path="/inserirDadoDistritoOperacionalAction">
+			<forward name="exibirManterDadoDistritoOperacionalAction"
+				path="/exibirManterDadoDistritoOperacionalAction.do" />
+		</action>
+		
+		<action name="ManterDadoDistritoOperacionalActionForm"
+			type="gcom.gui.operacional.ExibirAtualizarDadoDistritoOperacionalAction"
+			validate="false" scope="session"
+			path="/exibirAtualizarDadoDistritoOperacionalAction">
+			<forward name="atualizarDadoDistritoOperacional"
+				path="/jsp/operacional/dado_distrito_operacional_manter.jsp" />
+		</action>
+		
+		<action name="ManterDadoDistritoOperacionalActionForm"
+			type="gcom.gui.operacional.AtualizarDadoDistritoOperacionalAction"
+			validate="false" scope="session"
+			path="/atualizarDadoDistritoOperacionalAction">
+			<forward name="exibirManterDadoDistritoOperacionalAction"
+				path="/exibirManterDadoDistritoOperacionalAction.do" />
+		</action>
+		
+		<action name="ManterDadoDistritoOperacionalActionForm"
+			type="gcom.gui.operacional.RemoverDadoDistritoOperacionalAction"
+			validate="false" scope="session"
+			path="/removerDadoDistritoOperacionalAction">
+			<forward name="exibirManterDadoDistritoOperacionalAction"
+				path="/exibirManterDadoDistritoOperacionalAction.do" />
+		</action>
+
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+
+</struts-config>

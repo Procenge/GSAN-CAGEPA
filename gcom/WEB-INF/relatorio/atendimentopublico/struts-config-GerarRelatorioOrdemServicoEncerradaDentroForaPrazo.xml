@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="GerarRelatorioOrdemServicoEncerradaDentroForaPrazoActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.GerarRelatorioOrdemServicoEncerradaDentroForaPrazoActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	
+	<action-mappings>
+		<action name="GerarRelatorioOrdemServicoEncerradaDentroForaPrazoActionForm"  
+			type="gcom.gui.relatorio.atendimentopublico.ordemservico.ExibirGerarRelatorioOrdemServicoEncerradaDentroForaPrazoAction" 
+			validate="true"	
+			scope="session"	
+			path="/exibirGerarRelatorioOrdemServicoEncerradaDentroForaPrazoAction">
+			
+			<forward name="exibirRelatorioOrdemServicoEncerradaDentroForaPrazo" path="/jsp/relatorio/atendimentopublico/relatorio_ordem_servico_encerrada_dentro_fora_prazo.jsp" />
+		</action>
+		
+		<action name="GerarRelatorioOrdemServicoEncerradaDentroForaPrazoActionForm"  
+			type="gcom.gui.relatorio.atendimentopublico.GerarRelatorioOrdemServicoEncerradaDentroForaPrazoAction" 
+			validate="true"	
+			scope="session"	
+			path="/gerarRelatorioOrdemServicoEncerradaDentroForaPrazoAction">
+		</action>
+	</action-mappings>
+</struts-config>

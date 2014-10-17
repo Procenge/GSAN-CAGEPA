@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="InserirContratoDemandaConsumoActionForm"
+			type="gcom.gui.cadastro.imovel.InserirContratoDemandaConsumoActionForm" />
+		<form-bean name="ManterContratoDemandaConsumoActionForm"
+			type="gcom.gui.cadastro.imovel.ManterContratoDemandaConsumoActionForm" />
+			<form-bean name="AtualizarContratoDemandaConsumoActionForm"
+			type="gcom.gui.cadastro.imovel.AtualizarContratoDemandaConsumoActionForm" />
+	</form-beans>
+
+	<!--******************* P?GINAS GLOBAIS *******************-->
+	<action-mappings>
+		
+		<action name="InserirContratoDemandaConsumoActionForm" 
+			type="gcom.gui.cadastro.imovel.ExibirInserirContratoDemandaConsumoAction"
+			validate="true" path="/exibirInserirContratoDemandaConsumoAction" scope="session">
+			<forward name="exibirInserirContratoDemandaConsumo"
+				path="/jsp/cadastro/imovel/contrato_demanda_consumo_inserir.jsp" />
+		</action>
+		
+		<action name="InserirContratoDemandaConsumoActionForm" 
+			type="gcom.gui.cadastro.imovel.InserirContratoDemandaConsumoAction"
+			validate="true" path="/inserirContratoDemandaConsumoAction" scope="session">
+		</action>
+		
+		<action name="ManterContratoDemandaConsumoActionForm" 
+			type="gcom.gui.cadastro.imovel.ExibirFiltrarContratoDemandaConsumoAction"
+			validate="true" path="/exibirFiltrarContratoDemandaConsumoAction" scope="session">
+			<forward name="exibirFiltrarContratoDemandaConsumo"
+				path="/jsp/cadastro/imovel/contrato_demanda_consumo_filtrar.jsp" />
+		</action>
+		
+		<action name="ManterContratoDemandaConsumoActionForm" 
+			type="gcom.gui.cadastro.imovel.FiltrarContratoDemandaConsumoAction"
+			validate="true" path="/filtrarContratoDemandaConsumoAction" scope="session">
+			<forward name="exibirManterContratoDemandaConsumo"
+				path="/exibirManterContratoDemandaConsumoAction.do" />
+		</action>
+		
+		<action name="ManutencaoRegistroActionForm" 
+			type="gcom.gui.cadastro.imovel.ExibirManterContratoDemandaConsumoAction"
+			validate="true" path="/exibirManterContratoDemandaConsumoAction" scope="session">
+			<forward name="exibirManterContratoDemandaConsumo"
+				path="/jsp/cadastro/imovel/contrato_demanda_consumo_manter.jsp" />
+		</action>
+		
+		<action name="ManutencaoRegistroActionForm" 
+			type="gcom.gui.cadastro.imovel.RemoverContratoDemandaConsumoAction"
+			validate="true" path="/removerContratoDemandaConsumoAction" scope="session">
+		</action>
+		
+		<action name="AtualizarContratoDemandaConsumoActionForm" 
+			type="gcom.gui.cadastro.imovel.ExibirAtualizarContratoDemandaConsumoAction"
+			validate="true" path="/exibirAtualizarContratoDemandaConsumoAction" scope="session">
+			<forward name="exibirAtualizarContratoDemandaConsumo"
+				path="/jsp/cadastro/imovel/contrato_demanda_consumo_atualizar.jsp" />
+		</action>
+		
+		<action name="AtualizarContratoDemandaConsumoActionForm" 
+			type="gcom.gui.cadastro.imovel.AtualizarContratoDemandaConsumoAction"
+			validate="true" path="/atualizarContratoDemandaConsumoAction" scope="session">
+		</action>
+
+	</action-mappings>
+
+
+	
+</struts-config>

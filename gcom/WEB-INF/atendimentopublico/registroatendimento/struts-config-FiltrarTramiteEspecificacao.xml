@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean
+			name="FiltrarTramiteEspecificacaoActionForm"
+			type="gcom.gui.atendimentopublico.registroatendimento.FiltrarTramiteEspecificacaoActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action
+			name="FiltrarTramiteEspecificacaoActionForm"
+			type="gcom.gui.atendimentopublico.registroatendimento.ExibirFiltrarTramiteEspecificacaoAction"
+			validate="true"
+			scope="session"
+			path="/exibirFiltrarTramiteEspecificacaoAction">
+			<forward
+				name="filtrarTramiteEspecificacao"
+				path="/jsp/atendimentopublico/registroatendimento/tramite_especificacao_filtrar.jsp" />
+		</action>
+
+		<action
+			name="FiltrarTramiteEspecificacaoActionForm"
+			type="gcom.gui.atendimentopublico.registroatendimento.FiltrarTramiteEspecificacaoAction"
+			validate="true"
+			scope="session"
+			path="/filtrarTramiteEspecificacaoAction">
+			<forward
+				name="exibirManterTramiteEspecificacaoAction"
+				path="/exibirManterTramiteEspecificacaoAction.do" />
+		</action>
+
+	</action-mappings>
+
+	<message-resources
+		null="false"
+		parameter="gcom.properties.application" />
+
+</struts-config>

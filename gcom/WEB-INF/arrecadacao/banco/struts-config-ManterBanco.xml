@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="ManutencaoRegistroActionForm" type="gcom.gui.ManutencaoRegistroActionForm" />
+		
+		<form-bean name="InserirBancoActionForm" type="org.apache.struts.action.DynaActionForm">
+			<form-property name="idBanco" type="java.lang.String" />
+			<form-property name="nome" type="java.lang.String" />
+			<form-property name="nomeAbreviado" type="java.lang.String" />
+			<form-property name="indicadorUso" type="java.lang.String" initial="3"/>
+		</form-bean>			
+			
+		<form-bean name="FiltrarBancoActionForm" type="org.apache.struts.action.DynaActionForm">
+			<form-property name="idBanco" type="java.lang.String" />
+			<form-property name="nome" type="java.lang.String" />
+			<form-property name="nomeAbreviado" type="java.lang.String" />
+			<form-property name="checkAtualizar" type="java.lang.String" initial="1"/>
+			<form-property name="tipoPesquisa" type="java.lang.String" initial="2"/>
+			<form-property name="indicadorUso" type="java.lang.String" initial="3"/>
+		</form-bean>
+	</form-beans>
+	
+	<global-forwards />
+	<action-mappings>
+	
+	<!-- INSERIR -->
+	<action name="InserirBancoActionForm"
+				type="gcom.gui.arrecadacao.banco.ExibirInserirBancoAction"
+				validate="true" 
+				scope="session"
+				path="/exibirInserirBancoAction">
+			<forward name="inserirBanco"	path="/jsp/arrecadacao/banco/banco_inserir.jsp" />
+		</action>
+		<action name="InserirBancoActionForm"
+				type="gcom.gui.arrecadacao.banco.InserirBancoAction"
+				validate="true" 
+				scope="session"
+				path="/inserirBancoAction">
+		</action>
+		
+	<!-- FILTRAR -->
+	<action name="FiltrarBancoActionForm"
+				type="gcom.gui.arrecadacao.banco.ExibirFiltrarBancoAction"
+				validate="true" scope="session"
+				path="/exibirFiltrarBancoAction">
+			<forward name="filtrarBanco"	path="/jsp/arrecadacao/banco/banco_filtrar.jsp" />
+		</action>
+		<action name="FiltrarBancoActionForm"
+				type="gcom.gui.arrecadacao.banco.FiltrarBancoAction"
+				validate="true" 
+				scope="session"
+				path="/filtrarBancoAction">
+			<forward name="exibirManterBanco" path="/exibirManterBancoAction.do" />
+
+		</action>	
+	
+	<!-- MANTER -->
+	<action name="FiltrarBancoActionForm" 
+		type="gcom.gui.arrecadacao.banco.ExibirManterBancoAction" 
+		scope="session" validate="false"
+		path="/exibirManterBancoAction">
+		<forward name="exibirManterBanco" path="/jsp/arrecadacao/banco/banco_manter.jsp" />
+		<forward name="atualizarBanco" path="/exibirAtualizarBancoAction.do?filtrar=sim" />
+	</action>	
+
+	
+	<action name="ManutencaoRegistroActionForm"
+		type="gcom.gui.arrecadacao.banco.RemoverBancoAction"
+		validate="false" input="/exibirManterBancoAction.do"
+		scope="request" path="/removerBancoAction">
+	</action>
+	
+	
+	<action name="InserirBancoActionForm"
+      	type="gcom.gui.arrecadacao.banco.ExibirAtualizarBancoAction"
+      	validate="false" scope="session"
+      	path="/exibirAtualizarBancoAction">
+		<forward name="atualizarBanco" path="/jsp/arrecadacao/banco/banco_atualizar.jsp" />
+		<forward name="filtrarBanco"	path="/jsp/arrecadacao/banco/banco_filtrar.jsp" />
+	</action>
+	
+
+	<action name="InserirBancoActionForm" 
+			type="gcom.gui.arrecadacao.banco.AtualizarBancoAction" 
+			scope="request" path="/atualizarBancoAction"/>
+			
+	
+
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+		
+</struts-config>

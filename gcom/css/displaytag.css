@@ -1,0 +1,329 @@
+.dataTable {
+	background-color: #99CCFF; */
+	border: 0px;
+	font-size: 9pt;
+	margin: 5px;
+	width: 98%;
+}
+
+table.dataTable {
+	margin: 0 auto;
+	clear: both;
+	width: 100%;
+}
+
+.dataTable th {
+	border-right: 0px;
+	padding-left: 0px;
+	padding-right: 12px;
+	font-family: arial, helvetica, sans-serif;
+	font-weight: bold;
+	color: #000000;
+	background-color: #99CCFF;
+	margin-right: 10px;
+	white-space: nowrap;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.dataTable th a,th a:visited {
+	color: #000000;
+	font-family: arial, helvetica, sans-serif;
+}
+
+.dataTable  td {
+	/*font-family: verdana, arial, helvetica, sans-serif;*/
+	padding-left: 2px;
+}
+
+.dataTable tr.total td {
+	white-space: nowrap;
+	vertical-align: top;
+	font-weight: bold;
+	border-top: 1px solid black;
+	padding-bottom: 10px;
+}
+
+.dataTable tr.total td.customer {
+	visibility: hidden;
+}
+
+.dataTable td.hidden {
+	display: none;
+}
+
+.dataTable th.hidden {
+	display: none;
+}
+
+.dataTable th.r {
+	text-align: right;
+	padding-right: 10px;
+}
+
+.dataTable th.c {
+	text-align: center;
+}
+
+.dataTable td.r {
+	text-align: right;
+	padding-right: 10px;
+}
+
+.dataTable td.c {
+	text-align: center;
+}
+
+.dataTable  tr.odd {
+	background-color: #cbe5fe;
+}
+
+.dataTable tr.even {
+	background-color: #FFFFFF;
+}
+
+.dataTable th a,.dataTable th a:visited {
+	text-align: left;
+	font-family: arial, helvetica, sans-serif;
+	color: #000000;
+}
+
+.dataTable th a:hover {
+	color: #000000;
+	font-family: arial, helvetica, sans-serif;
+	background-color: transparent;
+}
+
+table.dataTable thead th:active,table.dataTable thead td:active {
+	outline: none;
+}
+
+.pagelinks {
+	color: #999999;
+	margin: 5px;
+}
+
+.pagelinks img {
+	vertical-align: middle;
+}
+
+span.export {
+	padding: 0 4px 1px 20px;
+	font-size: x-small;
+	text-align: center;
+}
+
+span.excel {
+	background-image: url(../images/ico_file_excel.png);
+	background-repeat: no-repeat;
+	width: 16px;
+}
+
+span.csv {
+	background-image: url(../images/ico_file_csv.png);
+	background-repeat: no-repeat;
+	width: 16px;
+}
+
+span.xml {
+	background-image: url(../images/ico_file_xml.png);
+	background-repeat: no-repeat;
+	width: 16px;
+}
+
+span.pdf {
+	background-image: url(../images/ico_file_pdf.png);
+	background-repeat: no-repeat;
+	width: 16px;
+}
+
+span.rtf {
+	background-image: url(../images/ico_file_rtf.png);
+	background-repeat: no-repeat;
+	width: 16px;
+}
+
+.dataTable tr.rowMouseOver {
+	background-image: url(../images/selected.gif);
+	background-repeat: repeat-x;
+	background-color: #ffff99;
+}
+
+.pageHeader {
+	height: 60px;
+	background-image: url(../images/header.gif);
+	background-repeat: repeat-x;
+}
+
+.pageHeaderText {
+	font-size: 30px;
+	margin-left: 5px;
+	color: whitesmoke;
+	font-family: "century gothic", verdana, arial, helvetica, sans-serif;
+	font-weight: bold;
+	text-align: left;
+	display: inline;
+	white-space: nowrap;
+}
+
+.leftMenu {
+	white-space: nowrap;
+	height: 100%;
+	background-color: #d6cfe6;
+	font-family: verdana, arial, helvetica, sans-serif;
+}
+
+.content {
+	width: 100%;
+	padding: 10px;
+}
+
+.rightColumn {
+	width: 3px;
+}
+
+.customer {
+	width: 20%;
+	text-align: left;
+}
+
+.orderNumber {
+	width: 10%;
+	text-align: left;
+}
+
+.orderDate {
+	text-align: center;
+	width: 10%;
+}
+
+.productName {
+	width: 25%;
+}
+
+.quantity {
+	text-align: center;
+	width: 10%;
+}
+
+.lineItemTotal {
+	text-align: right;
+	width: 15%;
+	padding-right: 10px;
+}
+
+.logo {
+	border-top: 1px solid #000066;
+	border-left: 1px solid #000066;
+	border-bottom: 1px solid #000066;
+	display: inline;
+	text-align: right;
+}
+
+.code {
+	font-family: verdana, arial, helvetica, "courier new", monospace;
+	font-size: 9pt;
+}
+
+.borderedInline {
+	display: inline;
+	border: 1px solid black;
+}
+
+.dataTable tr.andamento {
+	background-color: #CBFFB9;
+}
+
+.dataTable tr.futuro {
+	background-color: #B3CBFF;
+}
+
+.dataTable tr.encerrado {
+	background-color: #FF0000;
+}
+
+/* dataTable Consultar Parametros do Sistema */
+.dataTables_filter {
+	width: 50%;
+	float: left;
+	text-align: left;
+	font-weight: bold;
+	padding: 10px 0px 10px 20px;
+}
+
+.dataTables_length {
+	width: 40%;
+	float: right;
+	text-align: left;
+	padding: 10px 0px 10px 5px;
+	font-weight: bold;
+}
+
+.dataTables_paginate {
+	float: right;
+	cursor: pointer;
+	text-decoration: underline;
+	padding: 2px 2px 0px 2px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+@
+-moz-document url-prefix   () { .dataTables_paginate {
+	
+	width: 50px;
+}
+
+}
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	.dataTables_paginate {
+		padding: 2px 2px 2px 2px;
+		width: 280px;
+		position: relative;
+	}
+}
+
+.dataTables_info {
+	text-align: left;
+	padding: 2px 2px 0px 5px;
+	float: left;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.paging_full_numbers span.paginate_button,.paging_full_numbers span.paginate_active
+	{
+	border: none;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	padding: 2px 2px;
+	margin: 1px 0px 0px -0px;
+	*cursor: hand;
+}
+
+.paging_full_numbers span.paginate_button:hover,.paging_full_numbers span.paginate_active:hover
+	{
+	color: #304860;
+}
+
+.paging_full_numbers span.paginate_button:active,.paging_full_numbers span.paginate_active:active
+	{
+	color: red;
+}
+
+.dataTable .sorting {
+	background: url('../imagens/sort_both.png') no-repeat center right;
+}
+
+.dataTable .sorting_asc {
+	background: url('../imagens/sort_asc.png') no-repeat center right;
+}
+
+.dataTable .sorting_desc {
+	background: url('../imagens/sort_desc.png') no-repeat center right;
+}
+
+.parametroSistema th {
+	text-decoration: none;
+	cursor: default;
+}

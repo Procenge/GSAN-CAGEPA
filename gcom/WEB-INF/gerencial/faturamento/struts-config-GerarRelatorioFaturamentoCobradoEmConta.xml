@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<data-sources />
+	<form-beans>
+		<form-bean name="GerarRelatorioFaturamentoCobradoEmContaForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="P_MES_ANO_REFERENCIA"
+				type="java.lang.String" />
+			<form-property
+				name="GRUPO_I"
+				type="java.lang.Integer" />
+			<form-property
+				name="GRUPO_F"
+				type="java.lang.Integer" />	
+			<form-property
+				name="nomeGrupoInicial"
+				type="java.lang.String" />			
+			<form-property
+				name="nomeGrupoFinal"
+				type="java.lang.String" />	
+			<form-property
+				name="LOCA_I"
+				type="java.lang.Integer" />
+			<form-property
+				name="LOCA_F"
+				type="java.lang.Integer" />	
+			<form-property
+				name="nomeLocalidadeInicial"
+				type="java.lang.String" />			
+			<form-property
+				name="nomeLocalidadeFinal"
+				type="java.lang.String" />
+			<form-property
+				name="localidadeInicialEncontrada"
+				type="java.lang.String" />			
+			<form-property
+				name="localidadeFinalEncontrada"
+				type="java.lang.String" />	
+		</form-bean>					
+	</form-beans>
+	<global-exceptions />
+	<global-forwards />
+
+	<action-mappings>
+
+		<action name="GerarRelatorioFaturamentoCobradoEmContaForm"
+			type="gcom.gui.faturamento.ExibirGerarRelatorioFaturamentoCobradoEmContaAction"
+			validate="false" scope="session"
+			path="/exibirGerarRelatorioFaturamentoCobradoEmContaAction">
+			<forward name="exibirGerarRelatorioFaturamentoCobradoEmContaAction"
+				path="/jsp/gerencial/faturamento/relatorio_faturamento_cobrado_conta.jsp" />
+		</action>
+		<action
+			path="/gerarRelatorioFaturamentoCobradoEmContaAction"
+			type="br.com.procenge.geradorrelatorio.gui.GeradorRelatorioAction"
+			scope="request"
+			name="GerarRelatorioFaturamentoCobradoEmContaForm"
+			parameter="acao">
+
+			<exception
+				handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO"
+				type="br.com.procenge.comum.exception.PCGException"
+				path="/telaPrincipal.do" />
+
+			<forward name="paginaPrincipal" path="/telaPrincipal.do" />
+
+		</action>
+
+	</action-mappings>
+	<controller />
+</struts-config>

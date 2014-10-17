@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="FiltrarDadosCensitariosActionForm"
+			type="gcom.gui.cadastro.dadoscensitarios.FiltrarDadosCensitariosActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		<action name="FiltrarDadosCensitariosActionForm" 
+			type="gcom.gui.cadastro.dadoscensitarios.ExibirFiltrarDadosCensitariosAction" 
+			validate="false" 
+			scope="session" 
+			path="/exibirFiltrarDadosCensitariosAction">
+			
+			<forward name="filtrarDadosCensitarios"
+				path="/jsp/cadastro/dadoscensitarios/dados_censitarios_filtrar.jsp" />
+		</action>
+		
+		<action name="FiltrarDadosCensitariosActionForm" 
+			type="gcom.gui.cadastro.dadoscensitarios.FiltrarDadosCensitariosAction" 
+			validate="true" 
+			scope="session" 
+			path="/filtrarDadosCensitariosAction">
+			<forward name="exibirManterDadosCensitarios" 
+			path="/exibirManterDadosCensitariosAction.do" />
+		</action>
+		
+		
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+		
+</struts-config>

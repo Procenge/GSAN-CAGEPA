@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="InserirDadosEncerramentoOrdemServicoActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.InserirDadosEncerramentoOrdemServicoActionForm" />
+			
+	</form-beans>
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="InserirDadosEncerramentoOrdemServicoActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ExibirInserirDadosEncerramentoOrdemServicoAction" 
+			validate="true" scope="session" path="/exibirInserirDadosEncerramentoOrdemServicoAction">
+			<forward name="inserirDadosEncerramentoOrdemServico"
+				path="/jsp/atendimentopublico/ordemservico/dados_encerramento_os_inserir_popup.jsp" />
+		</action>
+
+		<action name="InserirDadosEncerramentoOrdemServicoActionForm" 
+			type="gcom.gui.atendimentopublico.ordemservico.InserirDadosEncerramentoOrdemServicoAction"
+			validate="true" scope="session" path="/inserirDadosEncerramentoOrdemServicoAction">
+			<forward name="inserirDadosEncerramentoOrdemServico"
+				path="/jsp/atendimentopublico/ordemservico/dados_encerramento_os_inserir_popup.jsp" />
+		</action>
+		
+	</action-mappings>
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

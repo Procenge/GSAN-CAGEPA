@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="InfracaoLigacaoSituacaoActionForm"
+			type="gcom.gui.cobranca.InfracaoLigacaoSituacaoActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		<!-- Exibir Inserir -->
+		<action  name="InfracaoLigacaoSituacaoActionForm"
+				 type="gcom.gui.cobranca.ExibirInserirInfracaoLigacaoSituacaoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirInserirInfracaoLigacaoSituacaoAction">
+			
+			<forward name="inserirInfracaoLigacaoSituacao" path="tilesInfracaoLigacaoSituacaoInserir" />
+		</action>
+		
+		<!-- Inserir -->
+		<action name="InfracaoLigacaoSituacaoActionForm"
+				type="gcom.gui.cobranca.InserirInfracaoLigacaoSituacaoAction"
+				validate="false" 
+				scope="session" 
+				path="/inserirInfracaoLigacaoSituacaoAction"/>
+			
+		<!-- Exibir filtrar -->
+		<action  name="InfracaoLigacaoSituacaoActionForm"
+				 type="gcom.gui.cobranca.ExibirFiltrarInfracaoLigacaoSituacaoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirFiltrarInfracaoLigacaoSituacaoAction"> 
+			<forward name="exibirFiltrarInfracaoLigacaoSituacao" path="tilesInfracaoLigacaoSituacaoFiltrar" />	 
+		</action>
+				
+		<!-- Filtrar -->
+		<action  name="InfracaoLigacaoSituacaoActionForm"
+				 type="gcom.gui.cobranca.FiltrarInfracaoLigacaoSituacaoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/filtrarInfracaoLigacaoSituacaoAction">
+			<forward name="retornarFiltroInfracaoLigacaoSituacao" path="/exibirManterInfracaoLigacaoSituacaoAction.do" />
+			<forward name="exibirAtualizarInfracaoLigacaoSituacao" path="/exibirAtualizarInfracaoLigacaoSituacaoAction.do" />
+		</action>
+		<!-- Exibir Manter -->
+		<action  name="ManutencaoRegistroActionForm"
+				 type="gcom.gui.cobranca.ExibirManterInfracaoLigacaoSituacaoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirManterInfracaoLigacaoSituacaoAction"> 
+			<forward name="exibirManterInfracaoLigacaoSituacao" path="/jsp/cobranca/infracao_ligacao_situacao_manter.jsp" />
+		</action>
+			
+		<!-- Excluir -->
+		<action  name="ManutencaoRegistroActionForm"
+				 type="gcom.gui.cobranca.RemoverInfracaoLigacaoSituacaoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/removerInfracaoLigacaoSituacaoAction">
+		</action>
+			
+		<!-- Exibir Atualizar -->
+		<action  name="InfracaoLigacaoSituacaoActionForm"
+				 type="gcom.gui.cobranca.ExibirAtualizarInfracaoLigacaoSituacaoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirAtualizarInfracaoLigacaoSituacaoAction"> 
+			<forward name="exibirAtualizarInfracaoLigacaoSituacao" path="tilesInfracaoLigacaoSituacaoAtualizar" />	
+		</action>
+				
+		<!--  Atualizar -->
+		<action  name="InfracaoLigacaoSituacaoActionForm"
+				 type="gcom.gui.cobranca.AtualizarInfracaoLigacaoSituacaoAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/atualizarInfracaoLigacaoSituacaoAction"> </action>
+		
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

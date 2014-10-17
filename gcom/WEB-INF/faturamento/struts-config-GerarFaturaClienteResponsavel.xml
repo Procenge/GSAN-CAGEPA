@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	
+	<form-beans>
+		<form-bean name="GerarFaturaClienteResponsavelActionForm"
+			type="gcom.gui.faturamento.GerarFaturaClienteResponsavelActionForm" />
+	</form-beans>
+	
+	<global-forwards />
+	
+	<action-mappings>
+		
+		<action name="GerarFaturaClienteResponsavelActionForm"
+			type="gcom.gui.faturamento.ExibirGerarFaturaClienteResponsavelAction"
+			scope="session"
+			validate="true" 
+			path="/exibirGerarFaturaClienteResponsavelAction">
+			<forward name="exibirGerarFatura" 
+				path="/jsp/faturamento/gerar_fatura_cliente_responsavel.jsp" />
+		</action>
+		
+		<action name="GerarFaturaClienteResponsavelActionForm"
+			type="gcom.gui.faturamento.FiltrarContasParaFaturaClienteResponsavelAction"
+			scope="session"
+			validate="true" 
+			path="/filtrarContasParaFaturaClienteResponsavelAction">
+			<forward name="exibirContasParaFaturaClienteResponsavel" 
+				path="/jsp/faturamento/gerar_fatura_cliente_responsavel_contas.jsp" />
+		</action>
+		
+		<action name="GerarFaturaClienteResponsavelActionForm"
+			type="gcom.gui.faturamento.GerarFaturaClienteResponsavelAction"
+			scope="session"
+			validate="true" 
+			path="/gerarFaturaClienteResponsavelAction" />
+		
+		<action
+			type="gcom.gui.relatorio.faturamento.EmitirRelatorioFaturaClienteResponsavelAction"
+			validate="true" scope="session"
+			path="/emitirRelatorioFaturaClienteResponsavelAction" />
+			
+	</action-mappings>
+
+</struts-config>

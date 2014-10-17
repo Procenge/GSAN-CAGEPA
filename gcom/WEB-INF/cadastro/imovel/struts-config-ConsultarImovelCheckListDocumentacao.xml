@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="ImovelCheckListDocumentacaoForm"
+			type="gcom.gui.cadastro.imovel.ImovelCheckListDocumentacaoForm" />
+
+
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="ImovelCheckListDocumentacaoForm"
+			type="gcom.gui.cadastro.imovel.ExibirConsultarImovelCheckListDocumentacaoAction"
+			validate="false" parameter="action" scope="session"
+			path="/exibirConsultarImovelCheckListDocumentacaoAction">
+			<forward name="atualizarImovelCheckListDocumentacaoAction"
+				path="/jsp/cadastro/imovel/imovel_check_list_documentacao_consultar.jsp" />
+		</action>
+		
+		<action name="ImovelCheckListDocumentacaoForm"
+			type="gcom.gui.cadastro.imovel.AtualizarImovelCheckListDocumentacaoAction"
+			validate="false" scope="session"
+			path="/atualizarImovelCheckListDocumentacaoAction">
+		</action>
+
+	</action-mappings>
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

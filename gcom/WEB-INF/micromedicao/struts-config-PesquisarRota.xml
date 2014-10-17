@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+
+<struts-config>
+	<form-beans>
+
+		<form-bean name="PesquisarRotaActionForm"
+			type="gcom.gui.micromedicao.PesquisarRotaActionForm">
+		</form-bean>
+	</form-beans>
+	
+	<action-mappings>
+
+		<action name="PesquisarRotaActionForm"
+			type="gcom.gui.micromedicao.PesquisarRotaAction"
+			path="/pesquisarRotaAction"
+			scope="session">
+			<forward name="pesquisarRota"
+				path="/jsp/micromedicao/rota_resultado_pesquisa.jsp" />
+		</action>
+		<action name="PesquisarRotaActionForm"
+			type="gcom.gui.micromedicao.ExibirPesquisarRotaAction"
+			path="/exibirPesquisarRotaAction"
+			scope="session">
+			
+			<forward name="exibirPesquisarRota"
+				path="/jsp/micromedicao/rota_pesquisar.jsp" />
+		</action>
+
+	</action-mappings>
+	<!--******************* ARQUIVO DE PROPRIEDADES *******************-->
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+
+</struts-config>

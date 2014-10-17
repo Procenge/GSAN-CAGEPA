@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE tiles-definitions PUBLIC   
+        "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"   
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">  
+    
+<tiles-definitions>
+
+    <definition name="tilesAuditoriaCancelamentoRevisaoContas" extends="tilesTemplate">
+        <put name="titulo" value="Consultar Auditoria Cancelamento Revisao Contas" type="string"/>
+    	<put name="corpo" value="/jsp/seguranca/acesso/transacao/auditoria_cancelamento_revisao_contas_consultar.jsp" type="page"/>
+    </definition>
+    <definition name="tilesAuditoriaCancelamentoRevisaoContasResultado" extends="tilesTemplate">
+        <put name="titulo" value="Consultar Auditoria Cancelamento Revisao Contas" type="string"/>
+    	<put name="corpo" value="/jsp/seguranca/acesso/transacao/auditoria_cancelamento_revisao_contas_resultado.jsp" type="page"/>
+    </definition>
+    
+
+</tiles-definitions>  
+

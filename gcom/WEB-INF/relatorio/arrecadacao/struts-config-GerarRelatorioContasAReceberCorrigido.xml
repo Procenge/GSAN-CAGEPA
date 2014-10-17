@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<!-- André Lopes -->
+	
+	<form-beans>
+		<form-bean name="FiltrarRelatorioContasAReceberCorrigidoActionForm" 
+			type="gcom.gui.relatorio.arrecadacao.FiltrarRelatorioContasAReceberCorrigidoActionForm" />
+	</form-beans>
+
+	<global-forwards />
+	<action-mappings>
+		
+		<action name="FiltrarRelatorioContasAReceberCorrigidoActionForm"
+			    type="gcom.gui.relatorio.arrecadacao.ExibirRelatorioContasAReceberCorrigidoAction"
+			    validate="true" 
+			    path="/exibirRelatorioContasAReceberCorrigidoAction">
+			<forward name="exibirGerarRelatorioContasAReceberCorrigido" path="/jsp/relatorio/arrecadacao/relatorio_contas_a_receber_corrigido.jsp" />
+		</action>
+
+		<action name="FiltrarRelatorioContasAReceberCorrigidoActionForm"
+				type="gcom.gui.relatorio.arrecadacao.GerarRelatorioContasAReceberCorrigidoAction"
+				validate="false" 
+				path="/gerarRelatorioContasAReceberCorrigidoAction">			
+		</action>				
+		
+	</action-mappings>
+
+	
+</struts-config>

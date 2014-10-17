@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="InserirMensagemTipoSolicitacaoEspecificacaoActionForm"
+			type="gcom.gui.atendimentopublico.registroatendimento.InserirMensagemTipoSolicitacaoEspecificacaoActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		<action name="InserirMensagemTipoSolicitacaoEspecificacaoActionForm"
+			type="gcom.gui.atendimentopublico.registroatendimento.ExibirInserirMensagemTipoSolicitacaoEspecificacaoAction"
+			validate="true" scope="session"
+			path="/exibirInserirMensagemTipoSolicitacaoEspecificacaoAction">
+			<forward name="inserirMensagemTipoSolicitacaoEspecificacao"
+				path="/jsp/atendimentopublico/registroatendimento/solicitacao_mensagem_tipo_inserir.jsp" />
+		</action>
+		
+		<action name="InserirMensagemTipoSolicitacaoEspecificacaoActionForm"
+			type="gcom.gui.atendimentopublico.registroatendimento.InserirMensagemTipoSolicitacaoEspecificacaoAction"
+			validate="true" scope="session"
+			path="/inserirMensagemTipoSolicitacaoEspecificacaoAction" />
+
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

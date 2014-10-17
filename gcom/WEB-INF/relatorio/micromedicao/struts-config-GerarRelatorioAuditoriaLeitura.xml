@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<data-sources />
+	<form-beans>
+
+		<form-bean
+			name="GerarRelatorioAuditoriaLeituraDynaForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="descricaoLocalidade"
+				type="java.lang.String" />
+			<form-property
+				name="localidadeID"
+				type="java.lang.String" />
+			<form-property
+				name="descricaoSetorComercial"
+				type="java.lang.String" />
+			<form-property
+				name="setorComercialCD"
+				type="java.lang.String" />
+			<form-property
+				name="setorComercialID"
+				type="java.lang.String" />
+			<form-property
+				name="cdRota"
+				type="java.lang.String" />
+			<form-property
+				name="descricaoRota"
+				type="java.lang.String" />
+			<form-property
+				name="P_GP_FATURAMENTO"
+				type="java.lang.String" />
+			<form-property
+				name="tipoRelatorio"
+				type="java.lang.String" />			
+			
+		</form-bean>
+
+	</form-beans>
+	<global-exceptions />
+	
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<action name="GerarRelatorioAuditoriaLeituraDynaForm"
+			type="gcom.gui.relatorio.micromedicao.ExibirGerarRelatorioAuditoriaLeituraAction"
+			validate="false" scope="session" 
+			path="/exibirGerarRelatorioAuditoriaLeituraAction">
+			
+			<forward name="exibirGerarRelatorioAuditoriaLeituraAction"
+				path="/jsp/relatorio/micromedicao/relatorio_auditoria_leitura_filtrar.jsp" />
+				
+		</action>
+		
+		<action name="GerarRelatorioAuditoriaLeituraDynaForm"
+				type="gcom.gui.relatorio.micromedicao.GerarRelatorioAuditoriaLeituraAction"
+				validate="false" scope="session"
+				path="/gerarRelatorioAuditoriaLeituraAction" >
+			<forward name="ExibirGerarRelatorioAuditoriaLeitura"
+				path="/exibirGerarRelatorioAuditoriaLeituraAction.do" />
+				
+		</action>
+	</action-mappings>
+
+
+</struts-config>

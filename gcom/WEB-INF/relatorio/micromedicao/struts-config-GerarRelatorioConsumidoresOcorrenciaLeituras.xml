@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="GerarRelatorioConsumidoresOcorrenciaLeiturasForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="p_nAmRef"
+				type="java.lang.String" />
+			<form-property
+				name="p_nUF"
+				type="java.lang.String" />
+			<form-property
+				name="p_nGrupo"
+				type="java.lang.String" />
+			<form-property
+				name="p_nRegiao"
+				type="java.lang.String" />
+			<form-property
+				name="p_nUnidNegocio"
+				type="java.lang.String" />
+			<form-property
+				name="p_nLocVinculada"
+				type="java.lang.String" />
+			<form-property
+				name="p_nLocalidade"
+				type="java.lang.String" />
+			<form-property
+				name="p_nCodSetor"
+				type="java.lang.String" />
+			<form-property
+				name="p_nQuadra"
+				type="java.lang.String" />
+			<form-property
+				name="nomeLocalidadeVinculada"
+				type="java.lang.String" />
+			<form-property
+				name="nomeLocalidade"
+				type="java.lang.String" />
+			<form-property
+				name="nomeSetorComercial"
+				type="java.lang.String" />
+			<form-property
+				name="p_sExibirTotalSetor"
+				type="java.lang.String" />
+			<form-property
+				name="p_sExibirTotalLocalidade"
+				type="java.lang.String" />
+			<form-property
+				name="p_sExibirTotalLocaVinculada"
+				type="java.lang.String" />
+			<form-property
+				name="p_sExibirTotalUnidNegocio"
+				type="java.lang.String" />									
+			<form-property
+				name="p_sExibirTotalRegiao"
+				type="java.lang.String" />
+			<form-property
+				name="p_sExibirTotalGrupo"
+				type="java.lang.String" />
+			<form-property
+				name="p_sExibirTotalEstado"
+				type="java.lang.String" />
+			<form-property
+				name="p_sExibirTotalQuadra"
+				type="java.lang.String" />		
+		</form-bean>					
+	</form-beans>
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		
+		<action name="GerarRelatorioConsumidoresOcorrenciaLeiturasForm"
+			type="gcom.gui.relatorio.micromedicao.ExibirRelatorioConsumidoresOcorrenciaLeiturasAction"
+			validate="false" scope="session"
+			path="/exibirRelatorioConsumidoresOcorrenciaLeiturasAction">
+			<forward name="exibirRelatorioConsumidoresOcorrenciaLeiturasAction" 
+				path="/jsp/relatorio/micromedicao/relatorio_consumidores_ocorrencia_leituras.jsp" />
+				
+		</action>
+
+		<action
+			name="GerarRelatorioConsumidoresOcorrenciaLeiturasForm"
+			type="br.com.procenge.geradorrelatorio.gui.GeradorRelatorioAction"
+			scope="request"
+			path="/gerarRelatorioConsumidoresOcorrenciaLeiturasAction"
+			parameter="acao">
+
+			<exception
+				handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO"
+				type="br.com.procenge.comum.exception.PCGException"
+				path="/telaPrincipal.do" />
+
+			<forward name="paginaPrincipal" path="/telaPrincipal.do" />
+		</action>			
+		
+	</action-mappings>
+
+</struts-config>

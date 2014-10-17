@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+ <data-sources/>
+ <form-beans>
+ 	<form-bean name="InserirProfissaoActionForm" type="gcom.gui.cadastro.cliente.InserirProfissaoActionForm"/>
+  	<form-bean name="ManterProfissaoActionForm" type="gcom.gui.ManutencaoRegistroActionForm"/>
+  	<form-bean name="FiltrarProfissaoActionForm" type="gcom.gui.cadastro.cliente.FiltrarProfissaoActionForm"/>
+  	<form-bean name="AtualizarProfissaoActionForm" type="gcom.gui.cadastro.cliente.AtualizarProfissaoActionForm"/>
+ </form-beans>
+ <global-exceptions/>
+ <!--******************* PÁGINAS GLOBAIS *******************-->
+ <global-forwards/>
+ <action-mappings>
+	 <action name="InserirProfissaoActionForm"
+	   path="/exibirInserirProfissaoAction" scope="session"
+	   type="gcom.gui.cadastro.cliente.ExibirInserirProfissaoAction" validate="true">
+	   <forward name="inserirProfissao" path="/jsp/cadastro/cliente/profissao_inserir.jsp"/>
+	  </action>
+	  <action name="InserirProfissaoActionForm"
+	   path="/inserirProfissaoAction" scope="session"
+	   type="gcom.gui.cadastro.cliente.InserirProfissaoAction" validate="true"/>
+	  <action name="FiltrarProfissaoActionForm"
+	   path="/exibirFiltrarProfissaoAction" scope="session"
+	   type="gcom.gui.cadastro.cliente.ExibirFiltrarProfissaoAction" validate="true">
+	   <forward name="exibirFiltrarProfissao" path="/jsp/cadastro/cliente/profissao_filtrar.jsp"/>
+	  </action>
+	  <action name="FiltrarProfissaoActionForm"
+	   path="/filtrarProfissaoAction" scope="session"
+	   type="gcom.gui.cadastro.cliente.FiltrarProfissaoAction" validate="true">
+	   <forward name="exibirManterProfissao" path="/exibirManterProfissaoAction.do"/>
+	  </action>
+	  <action name="ManterProfissaoActionForm"
+	   path="/exibirManterProfissaoAction" scope="session"
+	   type="gcom.gui.cadastro.cliente.ExibirManterProfissaoAction" validate="true">
+	   <forward name="exibirManterProfissao" path="/jsp/cadastro/cliente/profissao_manter.jsp"/>
+	   <forward name="exibirAtualizarProfissao" path="/exibirAtualizarProfissaoAction.do"/>
+	  </action>
+	  <action name="AtualizarProfissaoActionForm"
+	   path="/exibirAtualizarProfissaoAction" scope="session"
+	   type="gcom.gui.cadastro.cliente.ExibirAtualizarProfissaoAction" validate="true">
+	   <forward name="atualizarProfissao" path="/jsp/cadastro/cliente/profissao_atualizar.jsp"/>
+	  </action>
+	  <action name="ManutencaoRegistroActionForm"
+	   path="/removerProfissaoAction" scope="session"
+	   type="gcom.gui.cadastro.cliente.RemoverProfissaoAction" validate="false"/>
+	  <action name="AtualizarProfissaoActionForm"
+	   path="/atualizarProfissaoAction" scope="session"
+	   type="gcom.gui.cadastro.cliente.AtualizarProfissaoAction" validate="false"/>
+ </action-mappings>
+ <controller/>
+ <message-resources null="false" parameter="gcom.properties.application"/>
+</struts-config>

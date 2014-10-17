@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+
+		<form-bean name="ReprogramarOrdemServicoActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ReprogramarOrdemServicoActionForm" />
+
+	</form-beans>
+
+	<global-forwards />
+
+	<action-mappings>
+
+		<action name="ReprogramarOrdemServicoActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ExibirReprogramarOrdemServicoAction"
+			validate="true" 
+			input="/exibirReprogramarOrdemServicoAction.do"
+			scope="session" 
+			path="/exibirReprogramarOrdemServicoAction">
+			<forward name="exibirReprogramarOrdemServico"
+				path="/jsp/atendimentopublico/ordemservico/ordem_servico_reprogramar.jsp" />
+		</action>
+		
+		<action name="ReprogramarOrdemServicoActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ReprogramarOrdemServicoAction"
+			validate="true" 
+			input="/reprogramarOrdemServicoAction.do"
+			scope="session" 
+			path="/reprogramarOrdemServicoAction">
+			<forward name="ordemServicoReprogramadas"
+				path="/jsp/atendimentopublico/ordemservico/ordem_servico_reprogramar.jsp" />
+		</action>
+		
+			
+	</action-mappings>
+	<!--********************************************************************************-->
+	<!--******************* ARQUIVO DE PROPRIEDADES *******************-->
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+
+</struts-config>

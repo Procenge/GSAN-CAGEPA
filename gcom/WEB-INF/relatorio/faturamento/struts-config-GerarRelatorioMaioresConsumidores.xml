@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="GerarRelatorioMaioresConsumidoresActionForm"
+			type="gcom.gui.relatorio.faturamento.GerarRelatorioMaioresConsumidoresActionForm" />					
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<!-- Gerar Relatório Maiores Consumidores - Auhtor: Victon Malcolm  Data: 12/09/2013-->
+		<action name="GerarRelatorioMaioresConsumidoresActionForm"
+			type="gcom.gui.relatorio.faturamento.ExibirGerarRelatorioMaioresConsumidoresAction"
+			validate="true" scope="session"
+			path="/exibirGerarRelatorioMaioresConsumidoresAction">
+			<forward name="exibirGerarMaioresConsumidores"
+				path="/jsp/relatorio/faturamento/maiores_consumidores_relatorio_gerar.jsp" />
+		</action>
+		<action name="GerarRelatorioMaioresConsumidoresActionForm"
+			type="gcom.gui.relatorio.faturamento.GerarRelatorioMaioresConsumidoresAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioMaioresConsumidoresAction">
+		</action>
+
+	</action-mappings>
+
+</struts-config>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir=".." default="Instalador" name="Instalador de Versao/Revisao">
+
+	<tstamp>
+		<format property="horas" pattern="k:mm:ss" locale="br" />
+		<format property="data" pattern="dd/MM/yyyy" locale="br" />
+	</tstamp> 
+	
+	<property file="ant/buildInstalador.properties" />
+	
+	<target name ="TrataTipoInstalador">
+		
+		<input addproperty="TipoInstalador" validargs="VERSAO,REVISAO" defaultvalue="REVISAO" message="Tipo de Instalador?"/>	
+		<fail unless="TipoInstalador" message="Voce precisa informar o número da versão."/>
+		
+		<input addproperty="email" validargs="SIM,NÃO" defaultvalue="SIM" message="Deseja enviar email de comunicação da geração?"/>  
+		<fail unless="email" message="Voce precisa informar uma opção válida ."/>
+		
+		<input addproperty="version" validargs="2.11,2.10" defaultvalue="2.11" message="Número da versão (mesmo da aplicação). Ex:2.10"/>	
+		<fail unless="version" message="Voce precisa informar o número da versão."/>
+		
+	</target>
+		
+
+	<target name="validaGeracao">
+		
+		<condition property="InstVersao" value="VERSAO">
+				<equals arg1="${TipoInstalador}" arg2="VERSAO"/>
+		</condition>
+		<condition property="InstRevisao" value="REVISAO">
+				<equals arg1="${TipoInstalador}" arg2="REVISAO"/>
+		</condition>
+		
+	</target>
+	
+	<target name="init">
+	    <condition property="validaEmail" value="${email}">
+	           <equals arg1="${email}" arg2="SIM"/>
+	     </condition> 
+	</target>
+	
+	<target name="PerguntaRevisao" if="InstRevisao">
+		<input addproperty="revision" message="Número da revisão (mesmo da aplicação). Ex:40.0"/>	
+		<fail unless="revision" message="Voce precisa informar o número da revisão."/>
+	</target>
+	
+	<target name="clean">
+		<delete>
+				<fileset dir="${basedir}/deploy" includes="*.exe"/>
+		</delete>
+	</target>
+	
+	
+	<target name="MigradorEDocVersao" if="InstVersao">
+		<unzip src="${CaminhoVersoes}\${version}\Migrador\Migrador${version}.zip" dest="${basedir}\deploy\Migrador"/>
+		<copy file="${CaminhoSPGDoc}\Versoes\Versão ${version}\Versao ${version}.pdf" todir="${basedir}\deploy\Documentacao\pdf" preservelastmodified="true" force="true" overwrite="true"/>
+		<copy file="${CaminhoSPGDoc}\Guia de Migração\Guia de Migracao da Versao Revisao.pdf" todir="${basedir}\deploy\Documentacao\pdf" preservelastmodified="true" force="true" overwrite="true"/>
+		<unzip src="${CaminhoSPGHelp}\HTML.zip" dest="${basedir}\deploy\Documentacao\HTML"/>
+	</target>
+	
+	<target name="MigradorEDocRevisao" if="InstRevisao">
+		
+		<unzip src="${CaminhoRevisoes}\${version}\Migrador\Migrador${version}r${revision}.zip" dest="${basedir}\deploy\Migrador"/>
+		<copy file="${CaminhoSPGDoc}\Revisoes\Revisão ${version}\Revisao ${version}.pdf" todir="${basedir}\deploy\Documentacao\pdf" preservelastmodified="true" force="true" overwrite="true"/>
+		<copy file="${CaminhoSPGDoc}\Guia de Migração\Guia de Migracao da Versao Revisao.pdf" todir="${basedir}\deploy\Documentacao\pdf" preservelastmodified="true" force="true" overwrite="true"/>
+		<unzip src="${CaminhoSPGHelp}\HTML.zip" dest="${basedir}\deploy\Documentacao\HTML"/>
+		
+	</target>
+	
+	<target name="PropertynsisVersao" if="InstVersao">
+		
+	    <property name="nsis.commonoptions" value="&quot;/DVERSAO=${version}&quot;  &quot;/DARQVERSAO=${CaminhoSPGinstalador}\BuildVersao&quot; &quot;/DSRCDEPLOY=${basedir}\deploy&quot;"/>			
+		<property name="nsis.options" value="${nsis.commonoptions} &quot;/DNOMESISTEMA=${Produto}&quot; /DOUTFILE=${Produto}${version}.exe  &quot;/DPRODUCT_NAME=${Desc_Produto} ${version}&quot;"/>
+		<property name="nsis.file" value ="${CaminhoSPGinstalador}\BuildVersao\nsis\instalador.nsis"/>
+	</target>
+	
+	<target name="PropertynsisRevisao" if="InstRevisao">
+		<property name="nsis.commonoptions" value="&quot;/DVERSAO=${version}&quot; &quot;/DREVISAO=${revision}&quot; &quot;/DSRCDEPLOY=${basedir}\deploy&quot;"/>			
+		<property name="nsis.options" value="${nsis.commonoptions} &quot;/DNOMESISTEMA=${Produto}&quot; /DOUTFILE=${Produto}${version}r${revision}.exe  &quot;/DPRODUCT_NAME=${Desc_Produto} ${version} Revisão ${revision}&quot;"/>
+		<property name="nsis.file" value ="${CaminhoSPGinstalador}/BuildRevisao/nsis/revisao.nsi"/>	
+
+	</target>
+
+	<target name="packmodule" description="Execução do NSIS">	
+		<echo>${nsis.file}</echo>
+		<echo>${nsis.options}</echo>
+		<nsis script="${nsis.file}" options="${nsis.options}"/>
+	</target>
+	
+	<target name="CopyExeVersao" if="InstVersao">
+			<copy file="${basedir}\deploy\${Produto}${version}.exe" todir="${CaminhoVersoes}\${version}\Aplicacao" preservelastmodified="true" force="true" overwrite="true"/>
+		    <copy file="${basedir}\deploy\${Produto}${version}.exe" todir="\\orlando\hudson" preservelastmodified="true" force="true" overwrite="true"/>		
+	</target>
+
+	<target name="CopyExeRevisao" if="InstRevisao">
+			<copy file="${basedir}\deploy\${Produto}${version}r${revision}.exe" todir="${CaminhoRevisoes}\${version}\Aplicacao" preservelastmodified="true" force="true" overwrite="true"/>
+		    <copy file="${basedir}\deploy\${Produto}${version}r${revision}.exe" todir="\\orlando\hudson" preservelastmodified="true" force="true" overwrite="true"/>
+	</target>
+	
+	<target name="LimpaDeploy">
+		<delete dir="${basedir}/deploy/Documentacao"/>
+		<delete dir="${basedir}/deploy/Migrador"/>
+		<delete file="${basedir}/deploy/${Produto}${version}r${revision}.exe"/>
+	</target>
+	
+	<target name="alterardatasistema">
+		<replaceregexp byline="true">
+			<regexp pattern=":.*.*/td.*$" />
+			<substitution expression=": ${version}r${revision} - ${data} - ${horas} &lt;/td&gt;" />
+			<fileset dir="${basedir}\deploy\gcom.ear\gcom.war\jsp\util">
+				<include name="**/rodape.jsp" />
+			</fileset>
+		</replaceregexp>
+	</target>
+	
+	<target name="emailGeracao" if="validaEmail" depends="init">
+		<mail mailhost="10.50.254.222" mailport="25" subject="Iniciando geração de versão ${version}r${revision} no servidor ORLANDO" failonerror="true" messageMimeType="text/html" >
+	
+			<from address="GerenciaDeConfiguracao@procenge.com.br" />
+			<to address="GSAN-Desenvolvimento@matriz.procenge.com.br" />
+			<to address="Pitang-Desenvolvedores@procenge.com.br" />
+			<to address="GSAN-Estagiarios@matriz.procenge.com.br" />
+			<cc address="GerenciadeConfiguracao@matriz.procenge.com.br" />
+			<cc address="Documentacao-Procenge@matriz.procenge.com.br" />
+			<bcc address="vinicius.medeiros@procenge.com.br" />
+			<bcc address="valdyr.amorim@procenge.com.br" />
+			<bcc address="gabriel.oliveira@procenge.com.br" />
+			<bcc address="rafael.beckman@procenge.com.br" />
+			
+			<message><![CDATA[ <font face="Calibri" >
+				Prezados, a geração da versão <b>${version}r${revision}</b> do GSAN no servidor <b>ORLANDO</b> foi iniciada.<br>
+				Após o término da geração enviaremos um email de confirmação.<br>
+				<br>
+				Att,<br>
+				Gerência de Configuração.
+				</font>
+			]]></message>
+	
+		</mail>
+	</target>
+	
+	
+	<target depends="TrataTipoInstalador,validaGeracao,PerguntaRevisao,alterardatasistema,clean,MigradorEDocVersao,MigradorEDocRevisao,emailGeracao,PropertynsisVersao,PropertynsisRevisao,packmodule,CopyExeVersao,CopyExeRevisao,LimpaDeploy" name="Instalador"/>
+	
+	<!--MACRO CRIADA PARA CHAMADA O NSIS-->
+	
+	<property name="nsis.tool" value="makensis.exe"/>
+	  
+	    <macrodef name="nsis">
+	    <attribute name="script"/>
+	    <attribute name="options"/>
+	    <sequential>
+	      <exec dir="." executable="${nsis.tool}" failonerror="true">
+	        <arg line="@{options} &quot;@{script}&quot;"/>
+	      </exec>
+	    </sequential>
+	  </macrodef>
+
+</project>

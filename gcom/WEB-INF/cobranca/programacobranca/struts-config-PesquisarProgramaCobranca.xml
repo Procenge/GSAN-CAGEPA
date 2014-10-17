@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="PesquisarProgramaCobrancaActionForm"
+			type="gcom.gui.cobranca.programacobranca.PesquisarProgramaCobrancaActionForm" />
+	</form-beans>
+
+	<global-forwards />
+
+	<action-mappings>
+		<action name="PesquisarProgramaCobrancaActionForm"
+			type="gcom.gui.cobranca.programacobranca.ExibirPesquisarProgramaCobrancaAction"
+			validate="true" scope="session"
+			path="/exibirPesquisarProgramaCobrancaAction">
+			<forward name="exibirPesquisarProgramaCobrancaAction"
+				path="/jsp/cobranca/programacobranca/programacobranca_pesquisar.jsp" />
+		</action>
+		<action name="PesquisarProgramaCobrancaActionForm"
+			type="gcom.gui.cobranca.programacobranca.PesquisarProgramaCobrancaAction"
+			validate="true" scope="session"
+			path="/pesquisarProgramaCobrancaAction">
+			<forward name="pesquisarProgramaCobrancaResultado"
+				path="/jsp/cobranca/programacobranca/programacobranca_pesquisar_resultado.jsp" />
+		</action>
+		
+		<action
+			type="gcom.gui.cobranca.programacobranca.ExibirPesquisarProgramaCobrancaResultadoAction"
+			validate="true" path="/exibirPesquisarProgramaCobrancaResultadoAction">
+		</action>
+	</action-mappings>
+</struts-config>

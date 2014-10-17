@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean 
+		    name="AtualizarPerfilLigacaoEsgotoActionForm"
+			type="gcom.gui.atendimentopublico.ligacaoesgoto.AtualizarPerfilLigacaoEsgotoActionForm"/> 
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+				
+			
+		<action name="AtualizarPerfilLigacaoEsgotoActionForm"  
+			type="gcom.gui.atendimentopublico.ligacaoesgoto.ExibirAtualizarPerfilLigacaoEsgotoAction" 
+			validate="true"
+			scope="session"
+			path="/exibirAtualizarPerfilLigacaoEsgotoAction">
+			<forward name="exibirAtualizarPerfilLigacaoEsgotoAction"
+			path="/jsp/atendimentopublico/ligacaoesgoto/ligacao_esgoto_perfil_atualizar.jsp" />
+		</action>
+
+		<action name="AtualizarPerfilLigacaoEsgotoActionForm"
+			type="gcom.gui.atendimentopublico.ligacaoesgoto.AtualizarPerfilLigacaoEsgotoAction"
+			validate="true" scope="session"
+			path="/atualizarPerfilLigacaoEsgotoAction">
+			
+			<forward name="encerrarOrdemServicoAction"
+				path="/encerrarOrdemServicoAction.do" />
+				
+		</action>
+ 
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+		
+</struts-config>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="FiltrarImoveisComDebitosPrescritosActionForm"
+			type="gcom.gui.cobranca.prescricao.FiltrarImoveisComDebitosPrescritosActionForm" />
+	</form-beans>
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="FiltrarImoveisComDebitosPrescritosActionForm"
+			type="gcom.gui.cobranca.prescricao.ExibirFiltrarImoveisComDebitosPrescritosAction"
+			validate="true" path="/exibirFiltrarImoveisComDebitosPrescritosAction">
+
+			<forward name="exibirFiltrarImoveisComDebitosPrescritos"
+				path="/jsp/cobranca/prescricao/imoveis_com_debitos_prescritos_filtrar.jsp" />
+
+		</action>
+
+		<action name="FiltrarImoveisComDebitosPrescritosActionForm"
+			type="gcom.gui.cobranca.prescricao.FiltrarImoveisComDebitosPrescritosAction"
+			validate="true" path="/filtrarImoveisComDebitosPrescritosAction">
+			
+			<forward name="exibirAcompanharImovelComDebitosPrescritos"
+				path="/exibirAcompanharImovelComDebitosPrescritosAction.do" /> 
+		</action>
+
+	</action-mappings>
+	<message-resources null="false" parameter="gcom.properties.application" />
+
+</struts-config>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="SuprimirImovelEsgotoJudicialActionForm"
+			type="gcom.gui.cadastro.imovel.SuprimirImovelEsgotoJudicialActionForm" />
+	</form-beans>
+	<global-forwards />
+	<action-mappings>
+
+		<action name="SuprimirImovelEsgotoJudicialActionForm"
+				type="gcom.gui.cadastro.imovel.ExibirSuprimirImovelEsgotoJudicialAction"
+				validate="true" 
+				scope="session"
+				path="/exibirSuprimirImovelEsgotoJudicialAction">
+			<forward name="suprimirImovelEsgotoJudicial" path="/jsp/cadastro/imovel/imovel_esgoto_judicial_suprimir.jsp" />
+			
+		</action>
+		<action name="SuprimirImovelEsgotoJudicialActionForm"
+				type="gcom.gui.cadastro.imovel.SuprimirImovelEsgotoJudicialAction"
+				validate="true" 
+				scope="session"
+				path="/efetuarSuprimirImovelEsgotoJudicialAction">
+		</action>
+
+	</action-mappings>
+	<message-resources null="false" parameter="gcom.properties.application" />
+</struts-config>

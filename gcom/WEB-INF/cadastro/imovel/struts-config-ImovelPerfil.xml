@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+ <data-sources/>
+ <form-beans>
+ 	<form-bean name="InserirImovelPerfilActionForm" type="gcom.gui.cadastro.imovel.InserirImovelPerfilActionForm"/>
+  	<form-bean name="ManterImovelPerfilActionForm" type="gcom.gui.ManutencaoRegistroActionForm"/>
+  	<form-bean name="FiltrarImovelPerfilActionForm" type="gcom.gui.cadastro.imovel.FiltrarImovelPerfilActionForm"/>
+  	<form-bean name="AtualizarImovelPerfilActionForm" type="gcom.gui.cadastro.imovel.AtualizarImovelPerfilActionForm"/>
+ </form-beans>
+ <global-exceptions/>
+ <!--******************* PÁGINAS GLOBAIS *******************-->
+ <global-forwards/>
+ <action-mappings>
+	 <action name="InserirImovelPerfilActionForm"
+	   path="/exibirInserirImovelPerfilAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.ExibirInserirImovelPerfilAction" validate="true">
+	   <forward name="inserirImovelPerfil" path="/jsp/cadastro/imovel/imovel_perfil_inserir.jsp"/>
+	  </action>
+	  <action name="InserirImovelPerfilActionForm"
+	   path="/inserirImovelPerfilAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.InserirImovelPerfilAction" validate="true"/>
+	  <action name="FiltrarImovelPerfilActionForm"
+	   path="/exibirFiltrarImovelPerfilAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.ExibirFiltrarImovelPerfilAction" validate="true">
+	   <forward name="exibirFiltrarImovelPerfil" path="/jsp/cadastro/imovel/imovel_perfil_filtrar.jsp"/>
+	  </action>
+	  <action name="FiltrarImovelPerfilActionForm"
+	   path="/filtrarImovelPerfilAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.FiltrarImovelPerfilAction" validate="true">
+	   <forward name="exibirManterImovelPerfil" path="/exibirManterImovelPerfilAction.do"/>
+	  </action>
+	  <action name="ManterImovelPerfilActionForm"
+	   path="/exibirManterImovelPerfilAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.ExibirManterImovelPerfilAction" validate="true">
+	   <forward name="exibirManterImovelPerfil" path="/jsp/cadastro/imovel/imovel_perfil_manter.jsp"/>
+	   <forward name="exibirAtualizarImovelPerfil" path="/exibirAtualizarImovelPerfilAction.do"/>
+	  </action>
+	  <action name="AtualizarImovelPerfilActionForm"
+	   path="/exibirAtualizarImovelPerfilAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.ExibirAtualizarImovelPerfilAction" validate="true">
+	   <forward name="atualizarImovelPerfil" path="/jsp/cadastro/imovel/imovel_perfil_atualizar.jsp"/>
+	  </action>
+	  <action name="ManutencaoRegistroActionForm"
+	   path="/removerImovelPerfilAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.RemoverImovelPerfilAction" validate="false"/>
+	  <action name="AtualizarImovelPerfilActionForm"
+	   path="/atualizarImovelPerfilAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.AtualizarImovelPerfilAction" validate="false"/>
+ </action-mappings>
+ <controller/>
+ <message-resources null="false" parameter="gcom.properties.application"/>
+</struts-config>

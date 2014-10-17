@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+ <data-sources/>
+ <form-beans>
+ 
+ 	<form-bean name="autorizarServicoForm"  type="org.apache.struts.action.DynaActionForm">
+ 			<form-property name="idServicoAssociado" type="java.lang.Integer[]"/>
+            <form-property name="dataProgramacaoInformada" type="java.lang.String[]"/>
+            <form-property name="idEquipeInformada" type="java.lang.Integer[]"/>
+            <form-property name="bloquearDataProgramacao" type="java.lang.Boolean[]"/>
+            <form-property name="descricaoServicoAssociado" type="java.lang.String[]"/>
+    </form-bean>
+    
+ </form-beans>
+ <global-exceptions/>
+ <global-forwards/>
+ 
+ 
+ <action-mappings>
+  
+ <action path="/mostrarAutorizarServicoAssociado" 
+             type="gcom.gui.atendimentopublico.ordemservico.AutorizarServicoAssociadoAction"
+             scope="request"
+             name="autorizarServicoForm"
+             parameter="acao">
+                        
+            <forward name="sucesso" path="tilesExibirAutorizarServicosAssociados"/>
+            <forward name="sucessoPopup" path="tilesExibirAutorizarServicosAssociadosPopup"/>
+                       
+ </action>
+ 
+ 
+ 
+ <action path="/autorizarServicoAssociado" 
+             type="gcom.gui.atendimentopublico.ordemservico.AutorizarServicoAssociadoAction"
+             name="autorizarServicoForm"
+             scope="request"
+             parameter="acao">
+                      
+             <exception handler="br.com.procenge.util.StrutsExceptionHandler"
+                        key="ERRO_NEGOCIO"
+                        type="gcom.util.FachadaException" path="/mostrarAutorizarServicoAssociado.do?acao=mostrarAutorizarServicoAssociado" /> 
+             <exception handler="br.com.procenge.util.StrutsExceptionHandler"
+                        key="ERRO_NEGOCIO"
+                        type="br.com.procenge.comum.exception.PCGException" path="/mostrarAutorizarServicoAssociado.do?acao=mostrarAutorizarServicoAssociado" /> 
+                        
+            <forward name="gerarOrdemServicoAction" path="/gerarOrdemServicoAction.do"/>
+            <forward name="encerrarOrdemServicoAction" path="/encerrarOrdemServicoAction.do"/>
+            <forward name="encerrarOrdemServicoPopupAction" path="/encerrarOrdemServicoPopupAction.do"/>
+            <forward name="alterarSituacaoLigacaoAction" path="/alterarSituacaoLigacaoAction.do"/>
+            <forward name="informarRetornoOSFiscalizacaoAction" path="/informarRetornoOSFiscalizacaoAction.do"/>
+            
+ </action>
+ 
+ 
+   <action path="/cancelarAutorizarServicoAssociado" 
+             type="gcom.gui.atendimentopublico.ordemservico.AutorizarServicoAssociadoAction"
+             name="autorizarServicoForm"
+             scope="request"
+             parameter="acao">
+
+            <forward name="filtrarOrdemServicoAction" path="/filtrarOrdemServicoAction.do"/>
+            <forward name="exibirAlterarSituacaoLigacaoAction" path="/exibirAlterarSituacaoLigacaoAction.do"/>
+ </action>
+
+
+ </action-mappings>
+ <controller/>
+ </struts-config>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="GerarRelatorioSituacaoEspecialFaturamentoActionForm"
+			type="gcom.gui.relatorio.faturamento.GerarRelatorioSituacaoEspecialFaturamentoActionForm" />
+	</form-beans>
+
+	<global-forwards />
+
+	<action-mappings>
+		<action name="GerarRelatorioSituacaoEspecialFaturamentoActionForm"
+			type="gcom.gui.relatorio.faturamento.ExibirGerarRelatorioSituacaoEspecialFaturamentoAction"
+			validate="true" scope="session"
+			path="/exibirGerarRelatorioSituacaoEspecialFaturamentoAction">
+			<forward name="exibirGerarRelatorioSituacaoEspecialFaturamento"
+				path="/jsp/relatorio/faturamento/relatorio_situacao_especial_faturamento.jsp" />
+		</action>
+
+		<action name="GerarRelatorioSituacaoEspecialFaturamentoActionForm"
+			type="gcom.gui.relatorio.faturamento.GerarRelatorioSituacaoEspecialFaturamentoAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioSituacaoEspecialFaturamentoAction" />
+
+	</action-mappings>
+
+</struts-config>

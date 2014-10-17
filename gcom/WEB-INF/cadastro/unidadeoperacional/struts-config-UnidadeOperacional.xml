@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="InserirUnidadeOperacionalActionForm"
+			type="gcom.gui.cadastro.unidadeoperacional.InserirUnidadeOperacionalActionForm" />	
+		<form-bean name="ManterUnidadeOperacionalActionForm"
+			type="gcom.gui.cadastro.unidadeoperacional.ManterUnidadeOperacionalActionForm" />
+		<form-bean name="AtualizarUnidadeOperacionalActionForm"
+			type="gcom.gui.cadastro.unidadeoperacional.AtualizarUnidadeOperacionalActionForm" />	
+			
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA Inserir Unidade Operacional *******************-->
+		<action name="InserirUnidadeOperacionalActionForm"
+			type="gcom.gui.cadastro.unidadeoperacional.ExibirInserirUnidadeOperacionalAction"
+			validate="false" scope="session"
+			path="/exibirInserirUnidadeOperacionalAction">
+			<forward name="exibirInserirUnidadeOperacionalAction"
+				path="/jsp/cadastro/unidadeoperacional/unidade_operacional_inserir.jsp" />
+		</action>
+		
+		<action name="InserirUnidadeOperacionalActionForm"
+			type="gcom.gui.cadastro.unidadeoperacional.InserirUnidadeOperacionalAction"
+			validate="false" scope="session"
+			path="/inserirUnidadeOperacionalAction">
+		</action>
+		
+		<action name="InserirUnidadeOperacionalActionForm"
+			type="gcom.gui.cadastro.unidadeoperacional.RemoverInserirUnidadeOperacionalColecaoEnderecoAction"
+			validate="false" scope="session"
+			path="/removerInserirUnidadeOperacionalColecaoEnderecoAction">
+			<forward name="exibirInserirUnidadeOperacionalAction"
+				path="/exibirInserirUnidadeOperacionalAction.do" />
+		</action>
+		
+		<!--******************* PÁGINA Manter Unidade Operacional *******************-->
+		
+		<action  name="ManterUnidadeOperacionalActionForm"  
+			type="gcom.gui.cadastro.unidadeoperacional.ExibirManterUnidadeOperacionalAction"
+			validate="false" 
+			scope="session" 
+			path="/exibirManterUnidadeOperacionalAction">
+			
+			<forward name="manterUnidadeOperacional"
+				path="/jsp/cadastro/unidadeoperacional/unidade_operacional_manter.jsp" />
+			
+		</action>
+		
+		
+		<action name="AtualizarUnidadeOperacionalActionForm"  
+			type="gcom.gui.cadastro.unidadeoperacional.ExibirAtualizarUnidadeOperacionalAction"
+			validate="false" 
+			scope="session" 
+			path="/exibirAtualizarUnidadeOperacionalAction">
+			
+			<forward name="atualizarUnidadeOperacional"
+				path="/jsp/cadastro/unidadeoperacional/unidade_operacional_atualizar.jsp" />
+		</action>
+		
+		<action name="InserirUnidadeOperacionalActionForm"
+			type="gcom.gui.cadastro.unidadeoperacional.RemoverAtualizarUnidadeOperacionalColecaoEnderecoAction"
+			validate="false" scope="session"
+			path="/removerAlterarUnidadeOperacionalColecaoEnderecoAction">
+			<forward name="exibirAtualizarUnidadeOperacionalAction"
+				path="/exibirAtualizarUnidadeOperacionalAction.do?recarregar=true" />
+		</action>
+		
+		<action name="AtualizarUnidadeOperacionalActionForm"  
+			type="gcom.gui.cadastro.unidadeoperacional.AtualizarUnidadeOperacionalAction"
+			validate="false" 
+			scope="session" 
+			path="/atualizarUnidadeOperacionalAction">
+			
+		</action>
+		
+		<action name="ManutencaoRegistroActionForm"  
+			type="gcom.gui.cadastro.unidadeoperacional.RemoverUnidadeOperacionalAction"
+			validate="false" 
+			scope="session" 
+			path="/removerUnidadeOperacionalAction">
+		</action>	
+		
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.cadastro.unidadeoperacional.GerarRelatorioUnidadeOperacionalManterAction"
+			scope="session" path="/gerarRelatorioUnidadeOperacionalManterAction" />
+		
+	</action-mappings>
+
+</struts-config>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="PesquisarRotaLeituristaActionForm"
+			type="gcom.gui.micromedicao.leitura.PesquisarRotaLeituristaActionForm" />
+			
+	</form-beans>
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	
+	<action-mappings>
+		<action name="PesquisarRotaLeituristaActionForm"
+			type="gcom.gui.micromedicao.leitura.ExibirPesquisarRotaLeituristaAction"
+			validate="false" scope="session"
+			path="/exibirPesquisarRotaLeituristaAction">
+			
+			<forward name="exibirPesquisarRotaLeituristaAction"
+				path="/jsp/micromedicao/leitura/pesquisa_rota_leiturista.jsp" />
+				
+		</action>
+		
+		
+		<action name="PesquisarRotaLeituristaActionForm"
+			type="gcom.gui.micromedicao.leitura.PesquisarRotaLeituristaAction"
+			validate="false" scope="session"
+			path="/pesquisarRotaLeituristaAction">
+			
+			<forward name="resultadoPesquisarRotaLeituristaAction"
+				path="/jsp/micromedicao/leitura/resultado_rota_leiturista_pesquisa.jsp" />
+				
+		</action>
+		
+	</action-mappings>
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

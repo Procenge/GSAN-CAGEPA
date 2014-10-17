@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="GerarRelatorioQuadroHidrometrosActionForm"
+			type="gcom.gui.relatorio.micromedicao.GerarRelatorioQuadroHidrometrosActionForm" />										
+	
+		<form-bean name="GerarRelatorioQuadroHidrometrosSituacaoActionForm"
+			type="gcom.gui.relatorio.micromedicao.GerarRelatorioQuadroHidrometrosSituacaoActionForm" />					
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA PRINCIPAL QUADRO HIDROMETROS*******************-->
+		<action name="GerarRelatorioQuadroHidrometrosActionForm"
+			type="gcom.gui.relatorio.micromedicao.ExibirGerarRelatorioQuadroHidrometrosAction"
+			validate="true" scope="session"
+			path="/exibirGerarRelatorioQuadroHidrometrosAction">
+			<forward name="exibirGerarRelatorioQuadroHidrometros"
+				path="/jsp/relatorio/micromedicao/relatorio_quadro_hidrometros_gerar.jsp" />
+		</action>
+		<action name="GerarRelatorioQuadroHidrometrosActionForm"
+			type="gcom.gui.relatorio.micromedicao.GerarRelatorioQuadroHidrometrosAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioQuadroHidrometrosAction">
+		</action>
+		
+		<!--******************* PÁGINA PRINCIPAL QUADRO HIDROMETROS SITUAÇÃO*******************-->
+		<action name="GerarRelatorioQuadroHidrometrosSituacaoActionForm"
+			type="gcom.gui.relatorio.micromedicao.ExibirGerarRelatorioQuadroHidrometrosSituacaoAction"
+			validate="true" scope="session"
+			path="/exibirGerarRelatorioQuadroHidrometrosSituacaoAction">
+			<forward name="exibirGerarRelatorioQuadroHidrometrosSituacao"
+				path="/jsp/relatorio/micromedicao/relatorio_quadro_hidrometros_situacao_gerar.jsp" />
+		</action>
+		<action name="GerarRelatorioQuadroHidrometrosSituacaoActionForm"
+			type="gcom.gui.relatorio.micromedicao.GerarRelatorioQuadroHidrometrosSituacaoAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioQuadroHidrometrosSituacaoAction">
+		</action>
+
+
+	</action-mappings>
+
+</struts-config>

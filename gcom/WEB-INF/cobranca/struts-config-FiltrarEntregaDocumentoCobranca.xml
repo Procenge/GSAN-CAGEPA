@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="FiltrarEntregaDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.FiltrarEntregaDocumentoCobrancaActionForm" />			
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<!-- [UC3028] Filtrar Documento Cobrança para Informar Entrega Auhtor: Cinthya Cavalcanti Data:07/12/2011-->
+		<action name="FiltrarEntregaDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.ExibirFiltrarEntregaDocumentoCobrancaAction"
+			scope="session" path="/exibirFiltrarEntregaDocumentoCobrancaAction">
+			<forward name="filtrarEntregaDocumentoCobrancaAction"
+				path="/jsp/cobranca/documento_cobranca_informar_entrega_filtrar.jsp" />
+		</action>
+		
+		<!--INICIO PESQUISAR QUADRA-->
+		<action name="PesquisarActionForm"
+			type="gcom.gui.cadastro.localidade.ExibirPesquisarQuadraAction"
+			path="/exibirPesquisarQuadraAction">
+			<forward name="pesquisarQuadra"
+				path="/jsp/cadastro/localidade/quadra_resultado_pesquisa.jsp" />
+		</action>
+		
+		<!-- [UC3029] Informar Entrega do Documento Cobrança Entrega Auhtor: Cinthya Cavalcanti Data:14/12/2011-->
+		<action name="FiltrarEntregaDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.FiltrarEntregaDocumentoCobrancaAction"
+			scope="session" path="/filtrarEntregaDocumentoCobrancaAction">
+			<forward name="exibirInformarEntregaDocumentoCobrancaAction"
+				path="/exibirInformarEntregaDocumentoCobrancaAction.do" />
+		</action>
+		
+	</action-mappings>
+
+</struts-config>

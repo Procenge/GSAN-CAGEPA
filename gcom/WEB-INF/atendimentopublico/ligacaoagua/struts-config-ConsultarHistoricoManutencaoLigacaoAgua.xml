@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="FiltrarHistoricoManutencaoLigacaoAguaActionForm"
+			type="gcom.gui.atendimentopublico.ligacaoagua.FiltrarHistoricoManutencaoLigacaoAguaActionForm" />
+	</form-beans>
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="FiltrarHistoricoManutencaoLigacaoAguaActionForm"
+			type="gcom.gui.atendimentopublico.ligacaoagua.ExibirFiltrarHistoricoManutencaoLigacaoAguaAction"
+			validate="true" path="/exibirFiltrarHistoricoManutencaoLigacaoAguaAction">
+
+			<forward name="exibirFiltrarHistoricoManutencaoLigacaoAguaAction"
+				path="/jsp/atendimentopublico/ligacaoagua/historico_manutencao_ligacao_agua_filtrar.jsp" />
+
+		</action>
+
+		<action name="FiltrarHistoricoManutencaoLigacaoAguaActionForm"
+			type="gcom.gui.atendimentopublico.ligacaoagua.ConsultarHistoricoManutencaoLigacaoAguaAction"
+			validate="true" path="/consultarHistoricoManutencaoLigacaoAguaAction">
+
+			<forward name="consultarHistoricoManutencaoLigacaoAgua"
+				path="/jsp/atendimentopublico/ligacaoagua/historico_manutencao_ligacao_agua_consultar.jsp" />
+
+		</action>
+
+	</action-mappings>
+
+</struts-config>

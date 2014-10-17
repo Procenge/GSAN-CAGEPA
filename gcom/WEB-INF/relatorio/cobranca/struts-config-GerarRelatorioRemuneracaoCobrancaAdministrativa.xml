@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="GerarRelatorioRemuneracaoCobrancaAdministrativaActionForm"
+			type="gcom.gui.relatorio.cobranca.GerarRelatorioRemuneracaoCobrancaAdministrativaActionForm" />
+	</form-beans>
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="GerarRelatorioRemuneracaoCobrancaAdministrativaActionForm"
+			type="gcom.gui.relatorio.cobranca.ExibirGerarRelatorioRemuneracaoCobrancaAdministrativaAction"
+			validate="true" path="/exibirGerarRelatorioRemuneracaoCobrancaAdministrativaAction">
+
+			<forward name="exibirGerarRelatorioRemuneracaoCobrancaAdministrativaModelo1"
+				path="/jsp/relatorio/cobranca/relatorio_remuneracao_cobranca_administrativa_gerar_modelo_1.jsp" />
+				
+			<forward name="exibirGerarRelatorioRemuneracaoCobrancaAdministrativaModelo2"
+				path="/jsp/relatorio/cobranca/relatorio_remuneracao_cobranca_administrativa_gerar_modelo_2.jsp" />
+
+		</action>
+
+		<action name="GerarRelatorioRemuneracaoCobrancaAdministrativaActionForm"
+			type="gcom.gui.relatorio.cobranca.GerarRelatorioRemuneracaoCobrancaAdministrativaAction"
+			validate="true" path="/gerarRelatorioRemuneracaoCobrancaAdministrativaAction" />
+
+	</action-mappings>
+
+</struts-config>

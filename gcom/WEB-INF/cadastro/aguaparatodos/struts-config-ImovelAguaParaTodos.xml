@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="ManterImovelAguaParaTodosActionForm"
+			type="gcom.gui.cadastro.aguaparatodos.ManterImovelAguaParaTodosActionForm" />	
+		<form-bean name="GerarGuiaImovelAguaParaTodosActionForm"
+			type="gcom.gui.cadastro.aguaparatodos.GerarGuiaImovelAguaParaTodosActionForm" />	
+		<form-bean name="ConsultarImovelAguaParaTodosActionForm"
+			type="gcom.gui.cadastro.aguaparatodos.ConsultarImovelAguaParaTodosActionForm" />	
+		<form-bean name="FaturamentoHistoricoAguaParaTodosActionForm"
+			type="gcom.gui.cadastro.aguaparatodos.FaturamentoHistoricoAguaParaTodosActionForm" />	
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA ManterImovelAguaParaTodosActionForm *******************-->
+		<action name="ManterImovelAguaParaTodosActionForm"
+			type="gcom.gui.cadastro.aguaparatodos.ExibirManterImovelAguaParaTodosAction"
+			validate="false" scope="session"
+			path="/exibirManterImovelAguaParaTodosAction">
+			<forward name="exibirManterImovelAguaParaTodos"
+				path="/jsp/cadastro/aguaparatodos/imovel_agua_para_todos_manter.jsp" />
+		</action>
+		
+		<action name="ManterImovelAguaParaTodosActionForm"
+			type="gcom.gui.cadastro.aguaparatodos.ManterImovelAguaParaTodosAction"
+			validate="false" scope="session"
+			path="/manterImovelAguaParaTodosAction">
+			<forward name="manterImovelAguaParaTodos"
+				path="/jsp/cadastro/aguaparatodos/imovel_agua_para_todos_manter.jsp" />
+		</action>
+		
+		<!--******************* PÁGINA GerarGuiaImovelAguaParaTodosActionForm *******************-->
+		<action name="GerarGuiaImovelAguaParaTodosActionForm"
+			type="gcom.gui.cadastro.aguaparatodos.ExibirGerarGuiaImovelAguaParaTodosAction"
+			validate="false" scope="session"
+			path="/exibirGerarGuiaImovelAguaParaTodosAction">
+			<forward name="exibirGerarGuiaImovelAguaParaTodos"
+				path="/jsp/cadastro/aguaparatodos/imovel_agua_para_todos_gerar_guia.jsp" />
+		</action>
+		
+		<action name="GerarGuiaImovelAguaParaTodosActionForm"
+			type="gcom.gui.cadastro.aguaparatodos.GerarGuiaImovelAguaParaTodosAction"
+			validate="false" scope="session"
+			path="/gerarGuiaImovelAguaParaTodosAction">
+			<forward name="gerarGuiaImovelAguaParaTodos"
+				path="/jsp/cadastro/aguaparatodos/imovel_agua_para_todos_gerar_guia.jsp" />
+		</action>
+
+		<!--******************* PÁGINA ConsultarImovelAguaParaTodosActionForm *******************-->
+		
+		<action name="ConsultarImovelAguaParaTodosActionForm"
+			type="gcom.gui.cadastro.aguaparatodos.ExibirConsultarImovelAguaParaTodosAction"
+			validate="false" scope="session"
+			path="/exibirConsultarImovelAguaParaTodosAction">
+			<forward name="exibirConsultarImovelAguaParaTodos"
+				path="/jsp/cadastro/aguaparatodos/imovel_agua_para_todos_consultar.jsp" />
+		</action>
+		
+		<action name="ConsultarImovelAguaParaTodosActionForm"
+			type="gcom.gui.cadastro.aguaparatodos.ConsultarImovelAguaParaTodosAction"
+			validate="false" scope="session"
+			path="/consultarImovelAguaParaTodosAction">
+			<forward name="consultarImovelAguaParaTodos"
+				path="/jsp/cadastro/aguaparatodos/imovel_agua_para_todos_detalhe.jsp" />
+		</action>
+		
+		<!--******************* PÁGINA FaturamentoHistoricoAguaParaTodosActionForm *******************-->
+		
+		<action name="FaturamentoHistoricoAguaParaTodosActionForm"
+			type="gcom.gui.cadastro.aguaparatodos.FaturamentoHistoricoAguaParaTodosAction"
+			validate="false" scope="session"
+			path="/consultarFaturamentoHistoricoAguaParaTodosAction">
+			<forward name="consultarFaturamentoHistoricoAguaParaTodos"
+				path="/jsp/cadastro/aguaparatodos/faturamento_historico_agua_para_todos.jsp" />
+		</action>
+	</action-mappings>
+
+</struts-config>

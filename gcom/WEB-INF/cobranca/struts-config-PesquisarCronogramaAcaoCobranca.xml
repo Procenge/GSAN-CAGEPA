@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="PesquisarCronogramaAcaoCobrancaActionForm"	type="gcom.gui.cobranca.PesquisarCronogramaAcaoCobrancaActionForm" />			
+	</form-beans>
+	<global-forwards />
+
+	<action-mappings>
+		<action name="PesquisarCronogramaAcaoCobrancaActionForm"
+			type="gcom.gui.cobranca.ExibirPesquisarCronogramaAcaoCobrancaAction"
+			validate="false" scope="session" path="/exibirPesquisarCronogramaAcaoCobrancaAction">
+			
+			<forward name="exibirPesquisarCronogramaAcaoCobrancaAction" path="/jsp/cobranca/cronograma_acao_cobranca_pesquisar.jsp" />
+		</action>
+		
+		<action name="PesquisarCronogramaAcaoCobrancaActionForm"
+			type="gcom.gui.cobranca.PesquisarCronogramaAcaoCobrancaAction" scope="session"  path="/pesquisarCronogramaAcaoCobrancaAction">
+			
+			<forward name="retornarPesquisarCronogramaAcaoCobranca" path="/exibirResultadoPesquisaCronogramaAcaoCobrancaAction.do" />
+		</action>
+		
+		<action type="gcom.gui.cobranca.ExibirResultadoPesquisaCronogramaAcaoCobrancaAction"
+			path="/exibirResultadoPesquisaCronogramaAcaoCobrancaAction">
+			
+			<forward name="exibirResultadoPesquisaCronogramaAcaoCobrancaAction" path="/jsp/cobranca/cronograma_acao_cobranca_resultado_pesquisa.jsp" />
+		</action>		
+		
+		<action type="gcom.gui.cobranca.ExibirResultadoPesquisaCronogramaAcaoCobrancaParametrosAction"
+			path="/exibirResultadoPesquisaCronogramaAcaoCobrancaParametros">
+		
+			<forward name="exibirResultadoPesquisaCronogramaAcaoCobrancaParametros" path="/jsp/cobranca/cronograma_acao_cobranca_parametros_popup.jsp" />
+		</action>		
+		
+		<action type="gcom.gui.cobranca.ExibirResultadoPesquisaCronogramaAcaoCobrancaCriteriosAction"
+			path="/exibirResultadoPesquisaCronogramaAcaoCobrancaCriteriosAction">
+		
+			<forward name="exibirResultadoPesquisaCronogramaAcaoCobrancaCriteriosAction" path="/jsp/cobranca/cronograma_acao_cobranca_criterio_popup.jsp" />
+		</action>		
+		
+	</action-mappings>
+
+</struts-config>

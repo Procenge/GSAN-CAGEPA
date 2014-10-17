@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<data-sources />
+	<form-beans>
+
+		<form-bean
+			name="GerarRelatorioContasEmitidasDynaForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="P_AM_REF"
+				type="java.lang.String" />
+			<form-property
+				name="P_GP_FATURAMENTO"
+				type="java.lang.String" />
+			<form-property
+				name="P_CL_TP_ESP"
+				type="java.lang.String" />
+			<form-property
+				name="tipoRelatorio"
+				type="java.lang.String" />			
+			
+		</form-bean>
+
+	</form-beans>
+	<global-exceptions />
+	
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<action name="GerarRelatorioContasEmitidasDynaForm"
+			type="gcom.gui.relatorio.faturamento.conta.ExibirGerarRelatorioContasEmitidasAction"
+			validate="false" scope="session" 
+			path="/exibirGerarRelatorioContasEmitidasAction">
+			
+			<forward name="exibirGerarRelatorioContasEmitidasAction"
+				path="/jsp/relatorio/faturamento/conta/contas_emitidas_gerar_relatorio.jsp" />
+				
+		</action>
+		
+		<action name="GerarRelatorioContasEmitidasDynaForm"
+				scope="request"
+				type="br.com.procenge.geradorrelatorio.gui.GeradorRelatorioAction"
+				path="/gerarRelatorioContasEmitidasAction"
+				parameter="acao" />
+
+	</action-mappings>
+
+
+</struts-config>

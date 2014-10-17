@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="FiltrarCepActionForm"
+			type="gcom.gui.cadastro.endereco.FiltrarCepActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+			
+		<!-- Exibir filtrar -->
+		<action  name="FiltrarCepActionForm"
+				 type="gcom.gui.cadastro.endereco.ExibirFiltrarCepAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirFiltrarCepAction"> 
+			<forward name="exibirFiltrarCep" path="tilesCepFiltrar" />	 
+		</action>
+				
+		<!-- Filtrar -->
+		<action  name="FiltrarCepActionForm"
+				 type="gcom.gui.cadastro.endereco.FiltrarCepAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/filtrarCepAction"> 
+			<forward name="retornarFiltroCep" path="/exibirManterCepAction.do" />
+			<forward name="exibirAtualizarCep" path="/exibirAtualizarCepAction.do" />
+		</action>
+		<!-- Exibir Manter -->
+		<action  name="ManutencaoRegistroActionForm"
+				 type="gcom.gui.cadastro.endereco.ExibirManterCepAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirManterCepAction"> 
+			<forward name="exibirManterCep" path="/jsp/cadastro/endereco/cep_manter.jsp" />
+		</action>
+			
+		<!-- Excluir -->
+		<action  name="ManutencaoRegistroActionForm"
+				 type="gcom.gui.cadastro.endereco.RemoverCepAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/removerCepAction">
+		</action>
+			
+		<!-- Exibir Atualizar -->
+		<action  name="AtualizarCepActionForm"
+				 type="gcom.gui.cadastro.endereco.ExibirAtualizarCepAction"
+				 validate="false" 
+				 scope="session" 
+				 path="/exibirAtualizarCepAction"> 
+			<forward name="exibirAtualizarCep" path="tilesCepAtualizar" />	
+		</action>
+				
+		<!--  Atualizar -->
+		<action  name="AtualizarCepActionForm"
+				 type="gcom.gui.cadastro.endereco.AtualizarCepAction"
+				 validate="true" 
+				 scope="session" 
+				 path="/atualizarCepAction"> </action>
+				 
+		<!--  Relatório -->
+		<action name="GerarRelatorioCepManterAction"
+			type="gcom.gui.relatorio.cadastro.endereco.GerarRelatorioCepManterAction"
+			validate="true" path="/gerarRelatorioCepManterAction" />
+				 			 
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="InformarEntregaDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.InformarEntregaDocumentoCobrancaActionForm" />			
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<!-- [UC3029] Informar Entrega do Documento Cobrança Entrega Auhtor: Cinthya Cavalcanti Data:14/12/2011-->
+		<action name="InformarEntregaDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.ExibirInformarEntregaDocumentoCobrancaAction"
+			scope="session" path="/exibirInformarEntregaDocumentoCobrancaAction">
+			<forward name="informarEntregaDocumentoCobrancaAction"
+				path="/jsp/cobranca/documento_cobranca_informar_entrega_manter.jsp" />
+		</action>
+		
+		<action name="InformarEntregaDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.InformarEntregaDocumentoCobrancaAction"
+			scope="session" path="/informarEntregaDocumentoCobrancaAction">
+				<forward name="telaSucesso"
+				path="/jsp/util/sucesso.jsp" />
+		</action>
+		
+		
+		
+	</action-mappings>
+
+</struts-config>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="FiltrarCampanhaPremiacaoActionForm"
+			type="gcom.gui.cobranca.campanhapremiacao.FiltrarCampanhaPremiacaoActionForm" />
+
+
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="FiltrarCampanhaPremiacaoActionForm"
+			type="gcom.gui.cobranca.campanhapremiacao.ExibirFiltrarCampanhaPremiacaoAction"
+			validate="false" scope="session"
+			path="/ExibirFiltrarCampanhaPremiacaoAction">
+			<forward name="filtrarCampanhaPremiacaoAction"	path="tilesCampannhaPremiacaoFiltrar" />
+<!-- 			<forward name="consultarInscricaoCampanhaPremiacao" -->
+<!-- 				path="/jsp/cobranca/campanhapremiacao/campanha_premiacao_inscricao_consultar.jsp" /> -->
+		</action>
+		
+		<action name="FiltrarCampanhaPremiacaoActionForm"
+			type="gcom.gui.cobranca.campanhapremiacao.FiltrarCampanhaPremiacaoAction"
+			validate="false" scope="session"
+			path="/FiltrarCampanhaPremiacaoAction">
+			<forward name="ExibirManterCampanhaPremiacao" path="/ExibirManterCampanhaPremiacaoAction.do" />
+		</action>
+		
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.cobranca.campanhapremiacao.ExibirManterCampanhaPremiacaoAction"
+			validate="false" scope="session"
+			path="/ExibirManterCampanhaPremiacaoAction">
+			<forward name="ExibirManterCampanhaPremiacao" path="/jsp/cobranca/campanhapremiacao/campanha_premiacao_manter.jsp" />
+			<forward name="filtrarCampanhaPremiacao" path="/FiltrarCampanhaPremiacaoAction.do" />
+		</action>
+		
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.cobranca.campanhapremiacao.ConsultarDadosPremiacoesUnidadeAction"
+			validate="false" scope="session"
+			path="/ConsultarDadosPremiacoesUnidadeAction">
+			<forward name="ConsultarDadosPremiacoesUnidade" path="/jsp/cobranca/campanhapremiacao/dado_premiacao_unidade_consultar.jsp" />
+		</action>
+		
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.cobranca.campanhapremiacao.ConsultarDadosPremiacaoInscricaoAction"
+			validate="false" scope="session"
+			path="/ConsultarDadosPremiacaoInscricaoAction">
+			<forward name="ConsultarDadosPremiacaoInscricao" path="/jsp/cobranca/campanhapremiacao/dado_premiacao_inscricao_consultar.jsp" />
+		</action>
+		
+	</action-mappings>
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

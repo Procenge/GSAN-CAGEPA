@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="GerarRelatorioUsuarioDebitoAutomaticoActionForm"
+			type="gcom.gui.relatorio.cadastro.cliente.GerarRelatorioUsuarioDebitoAutomaticoActionForm" />
+	</form-beans>
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="GerarRelatorioUsuarioDebitoAutomaticoActionForm"
+			type="gcom.gui.relatorio.cadastro.cliente.ExibirGerarRelatorioUsuarioDebitoAutomaticoAction"
+			validate="true" path="/exibirGerarRelatorioUsuarioDebitoAutomaticoAction">
+
+			<forward name="exibirGerarRelatorioUsuarioDebitoAutomatico"
+				path="/jsp/relatorio/cadastro/relatorio_usuario_debito_automatico_gerar.jsp" />
+
+		</action>
+
+		<action name="GerarRelatorioUsuarioDebitoAutomaticoActionForm"
+			type="gcom.gui.relatorio.cadastro.cliente.GerarRelatorioUsuarioDebitoAutomaticoAction"
+			validate="true" path="/gerarRelatorioUsuarioDebitoAutomaticoAction" />
+
+	</action-mappings>
+
+</struts-config>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="ManutencaoRegistroActionForm" type="gcom.gui.ManutencaoRegistroActionForm" />
+		<form-bean name="AtualizarEmpresaActionForm" type="gcom.gui.cadastro.empresa.AtualizarEmpresaActionForm" />
+	</form-beans>
+	<global-forwards />
+	<action-mappings>
+
+	<action name="ManutencaoRegistroActionForm" 
+		type="gcom.gui.cadastro.empresa.ExibirManterEmpresaAction" 
+		scope="session" validate="false"
+		path="/exibirManterEmpresaAction">
+		<forward name="exibirManterEmpresa" path="/jsp/cadastro/empresa/empresa_manter.jsp" />
+		<forward name="atualizarEmpresa" path="/exibirAtualizarEmpresaAction.do?filtrar=sim" />
+	</action>	
+
+	
+	<action name="ManutencaoRegistroActionForm"
+		type="gcom.gui.cadastro.empresa.RemoverEmpresaAction"
+		validate="false" input="/exibirManterEmpresaAction.do"
+		scope="request" path="/removerEmpresaAction">
+	</action>
+	
+	
+	<action name="AtualizarEmpresaActionForm"
+      	type="gcom.gui.cadastro.empresa.ExibirAtualizarEmpresaAction"
+      	validate="false" scope="session"
+      	path="/exibirAtualizarEmpresaAction">
+		<forward name="atualizarEmpresa" path="/jsp/cadastro/empresa/empresa_atualizar.jsp" />
+	</action>
+	
+	<!--Exibir Logomarca -->
+		<action 
+			type="gcom.gui.cadastro.empresa.ExibirLogomarcaEmpresaAction"
+			path="/exibirLogomarcaEmpresaAction"
+			validate="false"
+			scope="session" >
+			<!-- PRA QUE ESTE FORWARD???
+			<forward name="exibirLogomarcaEmpresa"
+				path="/jsp/cadastro/empresa/logomarca_empresa.jsp" />
+				 -->
+		</action>
+	
+	<action name="AtualizarEmpresaActionForm" 
+			type="gcom.gui.cadastro.empresa.AtualizarEmpresaAction" 
+			scope="request" path="/atualizarEmpresaAction"/>
+
+	</action-mappings>
+	<message-resources null="false" parameter="gcom.properties.application" />
+</struts-config>

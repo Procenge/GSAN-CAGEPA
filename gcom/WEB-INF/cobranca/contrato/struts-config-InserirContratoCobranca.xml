@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans> 
+		<form-bean name="InserirContratoCobrancaActionForm" 
+			type="gcom.gui.cobranca.contrato.InserirContratoCobrancaActionForm" />
+		<form-bean name="AdicionarRemuneracaoSucessoContratoActionForm" 
+			type="gcom.gui.cobranca.contrato.AdicionarRemuneracaoSucessoContratoActionForm" />
+		<form-bean name="AdicionarRemuneracaoProdutividadeContratoActionForm" 
+			type="gcom.gui.cobranca.contrato.AdicionarRemuneracaoProdutividadeContratoActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<action name="InserirContratoCobrancaActionForm"
+			type="gcom.gui.cobranca.contrato.ExibirInserirContratoCobrancaAction"
+			scope="session"
+			validate="true" path="/exibirInserirContratoCobrancaAction">
+			<forward name="contratoCobrancaInserir"
+				path="/jsp/cobranca/contrato/contrato_cobranca_inserir.jsp" />				
+		</action>
+		<action name="InserirContratoCobrancaActionForm"
+			type="gcom.gui.cobranca.contrato.InserirContratoCobrancaAction"
+			scope="session"
+			validate="true" path="/inserirContratoCobrancaAction" />
+			
+			
+		<action name="AdicionarRemuneracaoSucessoContratoActionForm"
+			type="gcom.gui.cobranca.contrato.ExibirAdicionarRemuneracaoSucessoContratoAction"
+			validate="true" scope="request"
+			path="/exibirAdicionarRemuneracaoSucessoContratoAction">
+			<forward name="exibirAdicionarRemuneracaoSucessoContrato"
+				path="/jsp/cobranca/contrato/adicionar_remuneracao_sucesso_contrato.jsp" />
+		</action>
+		<action name="AdicionarRemuneracaoSucessoContratoActionForm"
+			type="gcom.gui.cobranca.contrato.AdicionarRemuneracaoSucessoContratoAction"
+			validate="true" scope="request"
+			path="/adicionarRemuneracaoSucessoContratoAction">
+			<forward name="exibirAdicionarRemuneracaoSucessoContrato"
+				path="/jsp/cobranca/contrato/adicionar_remuneracao_sucesso_contrato.jsp" />
+		</action>
+		
+		<action name="AdicionarRemuneracaoProdutividadeContratoActionForm"
+			type="gcom.gui.cobranca.contrato.ExibirAdicionarRemuneracaoProdutividadeContratoAction"
+			validate="true" scope="request"
+			path="/exibirAdicionarRemuneracaoProdutividadeContratoAction">
+			<forward name="exibirAdicionarRemuneracaoProdutividadeContrato"
+				path="/jsp/cobranca/contrato/adicionar_remuneracao_produtividade_contrato.jsp" />
+		</action>
+		<action name="AdicionarRemuneracaoProdutividadeContratoActionForm"
+			type="gcom.gui.cobranca.contrato.AdicionarRemuneracaoProdutividadeContratoAction"
+			validate="true" scope="request"
+			path="/adicionarRemuneracaoProdutividadeContratoAction">
+			<forward name="exibirAdicionarRemuneracaoProdutividadeContrato"
+				path="/jsp/cobranca/contrato/adicionar_remuneracao_produtividade_contrato.jsp" />
+		</action>
+		
+		<action name="InserirContratoCobrancaActionForm"
+			type="gcom.gui.cobranca.contrato.RemoverRemuneracaoSucessoAction"
+			validate="false" scope="session"
+			path="/removerRemuneracaoSucessoActionInserirContrato">
+
+			<forward name="exibirInserirContrato"
+				path="/exibirInserirContratoCobrancaAction.do?reloadPage=OK" />
+
+		</action>
+		
+		<action name="InserirContratoCobrancaActionForm"
+			type="gcom.gui.cobranca.contrato.RemoverRemuneracaoProdutividadeAction"
+			validate="false" scope="session"
+			path="/removerRemuneracaoProdutividadeActionInserirContrato">
+
+			<forward name="exibirInserirContrato"
+				path="/exibirInserirContratoCobrancaAction.do?reloadPage=OK" />
+
+		</action>
+		
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

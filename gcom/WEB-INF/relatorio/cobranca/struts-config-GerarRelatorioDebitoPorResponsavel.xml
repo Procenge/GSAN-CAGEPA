@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<data-sources />
+	<form-beans>
+		<form-bean name="GerarRelatorioDebitoPorResponsavelActionForm"
+			type="gcom.gui.relatorio.cobranca.GerarRelatorioDebitoPorResponsavelActionForm" />								
+	</form-beans>
+	<global-exceptions />
+	<global-forwards />
+
+	<action-mappings>
+
+		<action name="GerarRelatorioDebitoPorResponsavelActionForm"
+			type="gcom.gui.relatorio.cobranca.ExibirGerarRelatorioDebitoPorResponsavelAction"
+			validate="true"
+			path="/exibirGerarRelatorioDebitoPorResponsavelAction">
+			<forward name="exibirGerarRelatorioDebitoPorResponsavel"
+				path="/jsp/cobranca/relatorio_debito_por_responsavel_gerar.jsp" />
+		</action>
+		
+		<action name="GerarRelatorioDebitoPorResponsavelActionForm"
+			type="gcom.gui.relatorio.cobranca.GerarRelatorioDebitoPorResponsavelAction"
+			validate="true" path="/gerarRelatorioDebitoPorResponsavelAction" />
+
+	</action-mappings>
+	<controller />
+</struts-config>

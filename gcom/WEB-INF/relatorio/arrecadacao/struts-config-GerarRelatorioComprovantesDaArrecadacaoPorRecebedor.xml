@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean
+			name="GerarRelatorioComprovantesDaArrecadacaoPorRecebedorActionForm"
+			type="gcom.gui.relatorio.arrecadacao.GerarRelatorioComprovantesDaArrecadacaoPorRecebedorActionForm" />
+	</form-beans>
+
+	<global-forwards />
+
+	<action-mappings>
+		<action
+			name="GerarRelatorioComprovantesDaArrecadacaoPorRecebedorActionForm"
+			type="gcom.gui.relatorio.arrecadacao.ExibirGerarRelatorioComprovantesDaArrecadacaoPorRecebedorAction"
+			validate="true" scope="session"
+			path="/exibirGerarRelatorioComprovantesDaArrecadacaoPorRecebedorAction">
+			<forward name="exibirGerarRelatorioComprovantesDaArrecadacaoPorRecebedor"
+				path="/jsp/relatorio/arrecadacao/relatorio_comprovantes_da_arrecadacao_por_recebedor.jsp" />
+		</action>
+
+		<action
+			name="GerarRelatorioComprovantesDaArrecadacaoPorRecebedorActionForm"
+			type="gcom.gui.relatorio.arrecadacao.GerarRelatorioComprovantesDaArrecadacaoPorRecebedorAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioComprovantesDaArrecadacaoPorRecebedorAction" />
+
+	</action-mappings>
+
+</struts-config>

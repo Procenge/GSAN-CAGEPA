@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="ManutencaoRegistroActionForm" type="gcom.gui.ManutencaoRegistroActionForm" />
+		
+		<form-bean name="InserirFaturamentoGrupoActionForm" type="org.apache.struts.action.DynaActionForm">
+			<form-property name="idFaturamentoGrupo" type="java.lang.String" />
+			<form-property name="descricao" type="java.lang.String" />
+			<form-property name="descricaoAbreviada" type="java.lang.String"/>
+			<form-property name="indicadorUso" type="java.lang.String" initial="1"/>
+			<form-property name="anoMesReferencia" type="java.lang.String"/>
+			<form-property name="diaVencimento" type="java.lang.String"/>
+			<form-property name="indicadorVencimentoMesFatura" type="java.lang.String" initial="2"/>
+		</form-bean>			
+			
+		<form-bean name="FiltrarFaturamentoGrupoActionForm" type="org.apache.struts.action.DynaActionForm">
+			<form-property name="idFaturamentoGrupo" type="java.lang.String" />
+			<form-property name="descricao" type="java.lang.String" />
+			<form-property name="descricaoAbreviada" type="java.lang.String"/>
+			<form-property name="indicadorUso" type="java.lang.String" initial="3"/>
+			<form-property name="anoMesReferencia" type="java.lang.String"/>
+			<form-property name="diaVencimento" type="java.lang.String"/>
+			<form-property name="indicadorVencimentoMesFatura" type="java.lang.String" initial="3"/>
+			<form-property name="checkAtualizar" type="java.lang.String" initial="1"/>
+			<form-property name="tipoPesquisaDescricao" type="java.lang.String" initial="2"/>
+		</form-bean>
+	</form-beans>
+	
+	<global-forwards />
+	<action-mappings>
+	
+	<!-- INSERIR -->
+	<action name="InserirFaturamentoGrupoActionForm"
+				type="gcom.gui.faturamento.faturamentogrupo.ExibirInserirFaturamentoGrupoAction"
+				validate="true" 
+				scope="session"
+				path="/exibirInserirFaturamentoGrupoAction">
+			<forward name="inserirFaturamentoGrupo"	path="/jsp/faturamento/faturamentogrupo/faturamentogrupo_inserir.jsp" />
+		</action>
+		<action name="InserirFaturamentoGrupoActionForm"
+				type="gcom.gui.faturamento.faturamentogrupo.InserirFaturamentoGrupoAction"
+				validate="true" 
+				scope="session"
+				path="/inserirFaturamentoGrupoAction">
+		</action>
+		
+	<!-- FILTRAR -->
+	<action name="FiltrarFaturamentoGrupoActionForm"
+				type="gcom.gui.faturamento.faturamentogrupo.ExibirFiltrarFaturamentoGrupoAction"
+				validate="true" scope="session"
+				path="/exibirFiltrarFaturamentoGrupoAction">
+			<forward name="filtrarFaturamentoGrupo"	path="/jsp/faturamento/faturamentogrupo/faturamentogrupo_filtrar.jsp" />
+		</action>
+		<action name="FiltrarFaturamentoGrupoActionForm"
+				type="gcom.gui.faturamento.faturamentogrupo.FiltrarFaturamentoGrupoAction"
+				validate="true" 
+				scope="session"
+				path="/filtrarFaturamentoGrupoAction">
+			<forward name="exibirManterFaturamentoGrupo" path="/exibirManterFaturamentoGrupoAction.do" />
+
+		</action>	
+	
+	<!-- MANTER -->
+	<action name="FiltrarFaturamentoGrupoActionForm" 
+		type="gcom.gui.faturamento.faturamentogrupo.ExibirManterFaturamentoGrupoAction" 
+		scope="session" validate="false"
+		path="/exibirManterFaturamentoGrupoAction">
+		<forward name="exibirManterFaturamentoGrupo" path="/jsp/faturamento/faturamentogrupo/faturamentogrupo_manter.jsp" />
+		<forward name="atualizarFaturamentoGrupo" path="/exibirAtualizarFaturamentoGrupoAction.do?filtrar=sim" />
+	</action>	
+
+	
+	<action name="ManutencaoRegistroActionForm"
+		type="gcom.gui.faturamento.faturamentogrupo.RemoverFaturamentoGrupoAction"
+		validate="false" input="/exibirManterFaturamentoGrupoAction.do"
+		scope="request" path="/removerFaturamentoGrupoAction">
+	</action>
+	
+	
+	<action name="InserirFaturamentoGrupoActionForm"
+      	type="gcom.gui.faturamento.faturamentogrupo.ExibirAtualizarFaturamentoGrupoAction"
+      	validate="false" scope="session"
+      	path="/exibirAtualizarFaturamentoGrupoAction">
+		<forward name="atualizarFaturamentoGrupo" path="/jsp/faturamento/faturamentogrupo/faturamentogrupo_atualizar.jsp" />
+		<forward name="filtrarFaturamentoGrupo"	path="/jsp/faturamento/faturamentogrupo/faturamentogrupo_filtrar.jsp" />
+	</action>
+	
+
+	<action name="InserirFaturamentoGrupoActionForm" 
+			type="gcom.gui.faturamento.faturamentogrupo.AtualizarFaturamentoGrupoAction" 
+			scope="request" path="/atualizarFaturamentoGrupoAction"/>
+			
+	
+
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+		
+</struts-config>

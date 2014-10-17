@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+ <data-sources/>
+ <form-beans>
+ 	<form-bean name="InserirHidrometroLocalArmazenagemActionForm" type="gcom.gui.micromedicao.hidrometro.InserirHidrometroLocalArmazenagemActionForm"/>
+  	<form-bean name="ManterHidrometroLocalArmazenagemActionForm" type="gcom.gui.ManutencaoRegistroActionForm"/>
+  	<form-bean name="FiltrarHidrometroLocalArmazenagemActionForm" type="gcom.gui.micromedicao.hidrometro.FiltrarHidrometroLocalArmazenagemActionForm"/>
+  	<form-bean name="AtualizarHidrometroLocalArmazenagemActionForm" type="gcom.gui.micromedicao.hidrometro.AtualizarHidrometroLocalArmazenagemActionForm"/>
+ </form-beans>
+ <global-exceptions/>
+ <!--******************* PÁGINAS GLOBAIS *******************-->
+ <global-forwards/>
+ <action-mappings>
+	 <action name="InserirHidrometroLocalArmazenagemActionForm"
+	   path="/exibirInserirHidrometroLocalArmazenagemAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.ExibirInserirHidrometroLocalArmazenagemAction" validate="true">
+	   <forward name="inserirHidrometroLocalArmazenagem" path="/jsp/micromedicao/hidrometro/hidrometro_local_armazenagem_inserir.jsp"/>
+	  </action>
+	  <action name="InserirHidrometroLocalArmazenagemActionForm"
+	   path="/inserirHidrometroLocalArmazenagemAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.InserirHidrometroLocalArmazenagemAction" validate="true"/>
+	  <action name="FiltrarHidrometroLocalArmazenagemActionForm"
+	   path="/exibirFiltrarHidrometroLocalArmazenagemAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.ExibirFiltrarHidrometroLocalArmazenagemAction" validate="true">
+	   <forward name="exibirFiltrarHidrometroLocalArmazenagem" path="/jsp/micromedicao/hidrometro/hidrometro_local_armazenagem_filtrar.jsp"/>
+	  </action>
+	  <action name="FiltrarHidrometroLocalArmazenagemActionForm"
+	   path="/filtrarHidrometroLocalArmazenagemAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.FiltrarHidrometroLocalArmazenagemAction" validate="true">
+	   <forward name="exibirManterHidrometroLocalArmazenagem" path="/exibirManterHidrometroLocalArmazenagemAction.do"/>
+	  </action>
+	  <action name="ManterHidrometroLocalArmazenagemActionForm"
+	   path="/exibirManterHidrometroLocalArmazenagemAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.ExibirManterHidrometroLocalArmazenagemAction" validate="true">
+	   <forward name="exibirManterHidrometroLocalArmazenagem" path="/jsp/micromedicao/hidrometro/hidrometro_local_armazenagem_manter.jsp"/>
+	   <forward name="exibirAtualizarHidrometroLocalArmazenagem" path="/exibirAtualizarHidrometroLocalArmazenagemAction.do"/>
+	  </action>
+	  <action name="AtualizarHidrometroLocalArmazenagemActionForm"
+	   path="/exibirAtualizarHidrometroLocalArmazenagemAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.ExibirAtualizarHidrometroLocalArmazenagemAction" validate="true">
+	   <forward name="atualizarHidrometroLocalArmazenagem" path="/jsp/micromedicao/hidrometro/hidrometro_local_armazenagem_atualizar.jsp"/>
+	  </action>
+	  <action name="ManutencaoRegistroActionForm"
+	   path="/removerHidrometroLocalArmazenagemAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.RemoverHidrometroLocalArmazenagemAction" validate="false"/>
+	  <action name="AtualizarHidrometroLocalArmazenagemActionForm"
+	   path="/atualizarHidrometroLocalArmazenagemAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.AtualizarHidrometroLocalArmazenagemAction" validate="false"/>
+ </action-mappings>
+ <controller/>
+ <message-resources null="false" parameter="gcom.properties.application"/>
+</struts-config>

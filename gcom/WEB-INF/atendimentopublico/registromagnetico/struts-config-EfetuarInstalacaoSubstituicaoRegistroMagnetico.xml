@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="EfetuarInstalacaoSubstituicaoRegistroMagneticoActionForm"
+			type="gcom.gui.atendimentopublico.registromagnetico.EfetuarInstalacaoSubstituicaoRegistroMagneticoActionForm" />
+	</form-beans>
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	
+	<action-mappings>
+
+		<action name="EfetuarInstalacaoSubstituicaoRegistroMagneticoActionForm"
+			type="gcom.gui.atendimentopublico.registromagnetico.ExibirEfetuarInstalacaoSubstituicaoRegistroMagneticoAction"
+			validate="true" scope="session"
+			path="/exibirEfetuarInstalacaoSubstituicaoRegistroMagneticoAction">
+			<forward name="efetuarInstalacaoSubstituicaoRegistroMagnetico"
+				path="/jsp/atendimentopublico/registromagnetico/instalacao_substituicao_registro_magnetico_efetuar.jsp" />
+			<forward name="pesquisarFuncionario"
+				path="/exibirPesquisarFuncionarioAction.do?caminhoRetornoTelaPesquisaMaterial=exibirEfetuarInstalacaoSubstituicaoRegistroMagneticoAction" />
+		</action>
+
+		<action name="EfetuarInstalacaoSubstituicaoRegistroMagneticoActionForm"
+			type="gcom.gui.atendimentopublico.registromagnetico.EfetuarInstalacaoSubstituicaoRegistroMagneticoAction"
+			validate="true" scope="session"
+			path="/efetuarInstalacaoSubstituicaoRegistroMagneticoAction">
+			
+			<forward name="encerrarOrdemServicoAction"
+				path="/encerrarOrdemServicoAction.do" />
+				
+			<forward name="encerrarOrdemServicoPopupAction"
+				path="/encerrarOrdemServicoPopupAction.do" />
+		</action>
+
+	</action-mappings>
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE tiles-definitions PUBLIC   
+        "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"   
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">  
+    
+<tiles-definitions>
+  
+
+    <definition name="tilesInfracaoImovelSituacaoInserir" extends="tilesTemplate">
+        <put name="titulo" value="Inserir Situacao da Infração do Imóvel" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_imovel_situacao_inserir.jsp" type="page"/>
+    </definition>
+    
+    
+    <definition name="tilesInfracaoImovelSituacaoFiltrar" extends="tilesTemplate">
+        <put name="titulo" value="Filtrar Situacao da Infração do Imóvel" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_imovel_situacao_filtrar.jsp" type="page"/>
+    </definition>
+    
+    
+    <definition name="tilesInfracaoImovelSituacaoManter" extends="tilesTemplate">
+        <put name="titulo" value="Manter Situacao da Infração do Imóvel" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_imovel_situacao_manter.jsp" type="page"/>
+    </definition>
+    
+    
+    <definition name="tilesInfracaoImovelSituacaoAtualizar" extends="tilesTemplate">
+        <put name="titulo" value="Atualizar Situacao da Infração do Imóvel" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/infracao_imovel_situacao_atualizar.jsp" type="page"/>
+    </definition>
+    
+
+</tiles-definitions>  
+

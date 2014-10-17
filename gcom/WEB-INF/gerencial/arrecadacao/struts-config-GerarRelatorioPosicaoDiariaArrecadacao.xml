@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<data-sources />
+	<form-beans>
+		<form-bean name="GerarRelatorioPosicaoDiariaArrecadacaoForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="P_MES_ANO_REFERENCIA"
+				type="java.lang.String" />
+		</form-bean>					
+	</form-beans>
+	<global-exceptions />
+	<global-forwards />
+
+	<action-mappings>
+
+		<action name="GerarRelatorioPosicaoDiariaArrecadacaoForm"
+			type="gcom.gerencial.arrecadacao.ExibirGerarRelatorioPosicaoDiariaArrecadacaoAction"
+			validate="false" scope="session"
+			path="/exibirGerarRelatorioPosicaoDiariaArrecadacaoAction">
+			<forward name="exibirGerarRelatorioPosicaoDiariaArrecadacaoAction"
+				path="/jsp/gerencial/arrecadacao/relatorio_posicao_diaria_arrecadacao.jsp" />
+		</action>
+		<action
+			path="/gerarRelatorioPosicaoDiariaArrecadacao"
+			type="br.com.procenge.geradorrelatorio.gui.GeradorRelatorioAction"
+			scope="request"
+			name="GerarRelatorioPosicaoDiariaArrecadacaoForm"
+			parameter="acao">
+
+			<exception
+				handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO"
+				type="br.com.procenge.comum.exception.PCGException"
+				path="/telaPrincipal.do" />
+
+			<forward name="paginaPrincipal" path="/telaPrincipal.do" />
+
+		</action>
+
+	</action-mappings>
+	<controller />
+</struts-config>

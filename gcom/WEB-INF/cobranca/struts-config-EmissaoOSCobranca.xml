@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+ <data-sources/>
+ <form-beans>
+ 
+ 	<form-bean name="emissaoOrdemServicoForm"  type="org.apache.struts.action.DynaActionForm">
+ 			<form-property name="OSSelecionadas" type="java.lang.String[]"/>
+ 			<form-property name="agenteSelecionado" type="java.lang.Integer"/>
+ 			<form-property name="listaOSFiltrada" type="java.util.ArrayList"/>
+    </form-bean>
+    
+ 	
+    <form-bean name="FiltrarEmitirOSCobrancaActionForm" type="gcom.gui.cobranca.FiltrarEmitirOSCobrancaActionForm" />
+  </form-beans>
+ <global-exceptions/>
+ <global-forwards/>
+ 
+ <action-mappings>
+  
+ <action path="/emitirOSCobrancaAction" 
+             type="gcom.gui.cobranca.EmitirOSCobrancaAction"
+             scope="session"
+             parameter="acao"
+             name="emissaoOrdemServicoForm">
+                        
+            <forward name="mesmaPagina" path="tilesEmitirOSCobranca"/>
+                       
+ </action>
+ 
+    <!-- ********************** exibirFiltrarEmitirOSCobranca ********************** -->
+ <action path="/exibirFiltrarEmitirOSCobrancaAction" 
+             type="gcom.gui.cobranca.ExibirFiltrarEmitirOSCobrancaAction"
+             scope="session"
+             name="FiltrarEmitirOSCobrancaActionForm">
+                        
+            <forward name="sucesso" path="tilesExibirFiltrarEmitirOSCobranca"/>
+ </action>
+ <action path="/filtrarEmitirOSCobrancaAction" 
+             type="gcom.gui.cobranca.FiltrarEmitirOSCobrancaAction"
+             scope="session"
+             name="FiltrarEmitirOSCobrancaActionForm">
+                        
+            <forward name="sucesso" path="tilesFiltrarEmitirOSCobranca"/>
+ </action>
+    <!-- ********************** exibirFiltrarEmitirOSCobranca ********************** -->
+ 
+  </action-mappings>
+ <controller/>
+ </struts-config>

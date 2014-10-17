@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean 
+		    name="EfetuarReligacaoAguaComInstalacaoTubeteMagneticoActionForm"
+			type="gcom.gui.atendimentopublico.EfetuarReligacaoAguaComInstalacaoTubeteMagneticoActionForm" /> 
+	</form-beans>
+
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+				
+			
+		<action name="EfetuarReligacaoAguaComInstalacaoTubeteMagneticoActionForm"  
+			type="gcom.gui.atendimentopublico.ExibirEfetuarReligacaoAguaComInstalacaoTubeteMagneticoAction" 
+			validate="true"
+			scope="session"
+			path="/exibirEfetuarReligacaoAguaComInstalacaoTubeteMagneticoAction" >		
+			<forward name="efetuarReligacaoAguaComInstalacaoTubeteMagnetico"
+			path="/jsp/atendimentopublico/ligacaoagua/religacao_agua_com_instalacao_tubete_magnetico_efetuar.jsp" />		      
+			<forward name="pesquisarFuncionario"
+				path="/exibirPesquisarFuncionarioAction.do?caminhoRetornoTelaPesquisaMaterial=exibirEfetuarReligacaoAguaComInstalacaoTubeteMagneticoAction" />
+		</action>
+
+		<action name="EfetuarReligacaoAguaComInstalacaoTubeteMagneticoActionForm"
+			type="gcom.gui.atendimentopublico.EfetuarReligacaoAguaComInstalacaoTubeteMagneticoAction"
+			validate="true" scope="session"
+			path="/efetuarReligacaoAguaComInstalacaoTubeteMagneticoAction">
+			
+			<forward name="encerrarOrdemServicoAction"
+				path="/encerrarOrdemServicoAction.do" />
+				
+			<forward name="encerrarOrdemServicoPopupAction"
+				path="/encerrarOrdemServicoPopupAction.do" />
+		</action> 
+ 
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+		
+</struts-config>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+ <data-sources/>
+ <form-beans>
+ 	<form-bean name="InserirPadraoConstrucaoActionForm" type="gcom.gui.cadastro.imovel.InserirPadraoConstrucaoActionForm"/>
+  	<form-bean name="ManterPadraoConstrucaoActionForm" type="gcom.gui.ManutencaoRegistroActionForm"/>
+  	<form-bean name="FiltrarPadraoConstrucaoActionForm" type="gcom.gui.cadastro.imovel.FiltrarPadraoConstrucaoActionForm"/>
+  	<form-bean name="AtualizarPadraoConstrucaoActionForm" type="gcom.gui.cadastro.imovel.AtualizarPadraoConstrucaoActionForm"/>
+ </form-beans>
+ <global-exceptions/>
+ <!--******************* PÁGINAS GLOBAIS *******************-->
+ <global-forwards/>
+ <action-mappings>
+	 <action name="InserirPadraoConstrucaoActionForm"
+	   path="/exibirInserirPadraoConstrucaoAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.ExibirInserirPadraoConstrucaoAction" validate="true">
+	   <forward name="inserirPadraoConstrucao" path="/jsp/cadastro/imovel/padrao_construcao_inserir.jsp"/>
+	  </action>
+	  <action name="InserirPadraoConstrucaoActionForm"
+	   path="/inserirPadraoConstrucaoAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.InserirPadraoConstrucaoAction" validate="true"/>
+	  <action name="FiltrarPadraoConstrucaoActionForm"
+	   path="/exibirFiltrarPadraoConstrucaoAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.ExibirFiltrarPadraoConstrucaoAction" validate="true">
+	   <forward name="exibirFiltrarPadraoConstrucao" path="/jsp/cadastro/imovel/padrao_construcao_filtrar.jsp"/>
+	  </action>
+	  <action name="FiltrarPadraoConstrucaoActionForm"
+	   path="/filtrarPadraoConstrucaoAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.FiltrarPadraoConstrucaoAction" validate="true">
+	   <forward name="exibirManterPadraoConstrucao" path="/exibirManterPadraoConstrucaoAction.do"/>
+	  </action>
+	  <action name="ManterPadraoConstrucaoActionForm"
+	   path="/exibirManterPadraoConstrucaoAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.ExibirManterPadraoConstrucaoAction" validate="true">
+	   <forward name="exibirManterPadraoConstrucao" path="/jsp/cadastro/imovel/padrao_construcao_manter.jsp"/>
+	   <forward name="exibirAtualizarPadraoConstrucao" path="/exibirAtualizarPadraoConstrucaoAction.do"/>
+	  </action>
+	  <action name="AtualizarPadraoConstrucaoActionForm"
+	   path="/exibirAtualizarPadraoConstrucaoAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.ExibirAtualizarPadraoConstrucaoAction" validate="true">
+	   <forward name="atualizarPadraoConstrucao" path="/jsp/cadastro/imovel/padrao_construcao_atualizar.jsp"/>
+	  </action>
+	  <action name="ManutencaoRegistroActionForm"
+	   path="/removerPadraoConstrucaoAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.RemoverPadraoConstrucaoAction" validate="false"/>
+	  <action name="AtualizarPadraoConstrucaoActionForm"
+	   path="/atualizarPadraoConstrucaoAction" scope="session"
+	   type="gcom.gui.cadastro.imovel.AtualizarPadraoConstrucaoAction" validate="false"/>
+ </action-mappings>
+ <controller/>
+ <message-resources null="false" parameter="gcom.properties.application"/>
+</struts-config>

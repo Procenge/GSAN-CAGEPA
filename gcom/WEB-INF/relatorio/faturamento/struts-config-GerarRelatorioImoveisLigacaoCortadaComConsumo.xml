@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean
+			name="GerarRelatorioImoveisLigacaoCortadaComConsumoDynaForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="P_AM_REF"
+				type="java.lang.String" />
+			<form-property
+				name="P_GP_FATURAMENTO"
+				type="java.lang.String" />
+			<form-property
+				name="P_CL_TP_ESP"
+				type="java.lang.String" />	
+			
+		</form-bean>
+		
+	</form-beans>
+	<global-exceptions />
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<!-- [UC0637] Gerar Relatórios Volumes Faturados Auhtor: Rafael Corrêa Data:12/09/2007-->
+		<action name="GerarRelatorioImoveisLigacaoCortadaComConsumoDynaForm"
+			type="gcom.gui.relatorio.faturamento.ExibirGerarRelatorioImoveisLigacaoCortadaComConsumoAction"
+			validate="true" scope="session"
+			path="/exibirGerarRelatorioImoveisLigacaoCortadaComConsumoAction">
+			<forward name="exibirGerarRelatorioImoveisLigacaoCortadaComConsumo"
+				path="/jsp/relatorio/faturamento/relatorio_imoveis_ligacao_cortada_com_consumo_gerar.jsp" />
+		</action>
+		<action name="GerarRelatorioImoveisLigacaoCortadaComConsumoDynaForm"
+			type="gcom.gui.relatorio.faturamento.GerarRelatorioImoveisLigacaoCortadaComConsumoAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioImoveisLigacaoCortadaComConsumoAction">
+		</action>
+
+	</action-mappings>
+
+</struts-config>

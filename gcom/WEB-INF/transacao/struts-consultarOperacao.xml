@@ -1,0 +1,56 @@
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		
+		<form-bean name="FiltrarOperacaoEfetuadaActionForm" type="gcom.gui.seguranca.acesso.transacao.FiltrarOperacaoEfetuadaActionForm" />
+		<form-bean name="ExibirConsultarOperacaoEfetuadaActionForm" type="gcom.gui.seguranca.acesso.transacao.ExibirConsultarOperacaoEfetuadaActionForm" />
+		<form-bean name="ConsultarOperacaoEfetuadaActionForm" type="gcom.gui.seguranca.acesso.transacao.ConsultarOperacaoEfetuadaActionForm" />		
+
+	</form-beans>
+
+	<global-forwards/>
+
+	<action-mappings>
+	
+	 	<action name="FiltrarOperacaoEfetuadaActionForm" 
+	 			type="gcom.gui.seguranca.acesso.transacao.ExibirFiltrarOperacaoEfetuadaAction"
+				scope="session" 
+				path="/exibirFiltrarOperacaoEfetuadaAction">
+			
+			<forward name="filtrar" path="/jsp/seguranca/acesso/transacao/operacao_efetuada_filtrar.jsp" />
+		</action>  
+
+		<action name="FiltrarOperacaoEfetuadaActionForm" 
+			type="gcom.gui.seguranca.acesso.transacao.FiltrarOperacaoEfetuadaAction"
+		 	input="/exibirFiltrarOperacaoEfetuadaAction.do" 
+		 	scope="session" 
+		 	path="/filtrarOperacaoEfetuadaAction">
+		 	
+			<forward name="exibirConsultaOperacaoEfetuada" path="/exibirConsultarOperacaoEfetuadaAction.do" />
+		</action>
+
+		<action name="ExibirConsultarOperacaoEfetuadaActionForm" 
+			type="gcom.gui.seguranca.acesso.transacao.ExibirConsultarOperacaoEfetuadaAction" 
+			scope="session" path="/exibirConsultarOperacaoEfetuadaAction">
+			
+			<forward name="consultaOperacaoEfetuada" path="/jsp/seguranca/acesso/transacao/operacao_efetuada_consulta.jsp" />
+			
+		</action>
+		
+		<action name="ConsultarOperacaoEfetuadaActionForm" type="gcom.gui.seguranca.acesso.transacao.ConsultarOperacaoEfetuadaAction" 
+		scope="session" path="/consultarOperacaoEfetuadaAction">
+			<forward name="exibirOperacaoEfetuada" path="/jsp/seguranca/acesso/transacao/operacao_efetuada_exibir.jsp" />
+		</action>
+		
+		<action name="FiltrarOperacaoEfetuadaActionForm"
+			type="gcom.gui.relatorio.transacao.GerarRelatorioConsultarOperacaoAction"
+			scope="session" path="/gerarRelatorioConsultarOperacaoEfetuadaAction" />
+	
+		
+
+	</action-mappings>
+	<!--********************************************************************************-->
+	<!--******************* ARQUIVO DE PROPRIEDADES *******************-->
+	<message-resources null="false" parameter="gcom.properties.application" />
+
+</struts-config>

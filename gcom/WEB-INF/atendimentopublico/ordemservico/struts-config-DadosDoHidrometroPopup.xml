@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean
+			name="DadosDoHidrometroPopupActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.DadosDoHidrometroPopupActionForm" />
+		<form-bean
+			name="ImovelEmissaoOrdensSeletivasActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ImovelEmissaoOrdensSeletivasActionForm" />
+	</form-beans>
+
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action
+			name="DadosDoHidrometroPopupActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ExibirInserirDadosDoHidrometroPopupAction"
+			validate="false"
+			scope="session"
+			path="/exibirInserirDadosDoHidrometroPopupAction">
+			<forward
+				name="exibirInserirDadosDoHidrometroPopup"
+				path="/jsp/atendimentopublico/ordemservico/dados_do_hidrometro_popup.jsp" />
+		</action>
+
+		<action
+			name="DadosDoHidrometroPopupActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.InserirDadosDoHidrometroPopupAction"
+			validate="false"
+			scope="session"
+			path="/inserirDadosDoHidrometroPopupAction">
+			<forward
+				name="inserirDadosDoHidrometroPopup"
+				path="/jsp/atendimentopublico/ordemservico/dados_do_hidrometro_popup.jsp" />
+		</action>
+
+		<action name="ImovelEmissaoOrdensSeletivasActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.RemoverDadosDoHidrometroAction"
+			validate="false" scope="session"
+			path="/removerDadosDoHidrometroAction">
+			<forward name="atualizarDadosDoHidrometro"
+				path="/filtrarImovelEmissaoOrdensSeletivasWizardAction.do?action=exibirFiltrarImovelEmissaoOrdensSeletivasHidrometro" />
+		</action>
+
+	</action-mappings>
+
+	<message-resources
+		null="false"
+		parameter="gcom.properties.application" />
+
+</struts-config>

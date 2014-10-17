@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="ManutencaoRegistroActionForm" type="gcom.gui.ManutencaoRegistroActionForm" />
+		<form-bean name="AtualizarContratoCobrancaActionForm" type="gcom.gui.cobranca.contrato.AtualizarContratoCobrancaActionForm" />
+	</form-beans>
+	<global-forwards />
+	<action-mappings>
+
+	<action name="ManutencaoRegistroActionForm" 
+		type="gcom.gui.cobranca.contrato.ExibirManterContratoCobrancaAction" 
+		scope="session" validate="false"
+		path="/exibirManterContratoCobrancaAction">
+		<forward name="exibirManterContratoCobranca" path="/jsp/cobranca/contrato/contrato_cobranca_manter.jsp" />
+		<forward name="atualizarContratoCobranca" path="/exibirAtualizarContratoCobrancaAction.do?filtrar=sim" />
+	</action>
+
+	
+	<action name="ManutencaoRegistroActionForm"
+		type="gcom.gui.cobranca.contrato.RemoverContratoCobrancaAction"
+		validate="false" input="/exibirManterContratoCobrancaAction.do"
+		scope="request" path="/removerContratoCobrancaAction">
+	</action>
+	
+	<action name="AtualizarContratoCobrancaActionForm"
+      	type="gcom.gui.cobranca.contrato.ExibirAtualizarContratoCobrancaAction"
+      	validate="false" scope="session"
+      	path="/exibirAtualizarContratoCobrancaAction">
+		<forward name="atualizarContratoCobranca" path="/jsp/cobranca/contrato/contrato_cobranca_atualizar.jsp" />
+	</action>
+	
+	<action name="AtualizarContratoCobrancaActionForm"
+		type="gcom.gui.cobranca.contrato.RemoverRemuneracaoSucessoAction"
+		validate="false" scope="session"
+		path="/removerRemuneracaoSucessoActionAlterarContrato">
+
+		<forward name="exibirAlterarContrato"
+			path="/exibirAtualizarContratoCobrancaAction.do?reloadPage=OK" />
+
+	</action>
+	
+	<action name="AtualizarContratoCobrancaActionForm"
+		type="gcom.gui.cobranca.contrato.RemoverRemuneracaoProdutividadeAction"
+		validate="false" scope="session"
+		path="/removerRemuneracaoProdutividadeActionAlterarContrato">
+
+		<forward name="exibirAlterarContrato"
+			path="/exibirAtualizarContratoCobrancaAction.do?reloadPage=OK" />
+			
+		<forward name="exibirInserirContrato"
+			path="/exibirInserirContratoCobrancaAction.do?reloadPage=OK" />
+
+	</action>
+	
+	<action name="AtualizarContratoCobrancaActionForm" 
+			type="gcom.gui.cobranca.contrato.AtualizarContratoCobrancaAction" 
+			validate="false"
+			scope="session" path="/atualizarContratoCobrancaAction"/>
+
+	</action-mappings>
+	<message-resources null="false" parameter="gcom.properties.application" />
+</struts-config>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="ManutencaoRegistroActionForm" type="gcom.gui.ManutencaoRegistroActionForm" />
+		<form-bean name="AtualizarProgramaCobrancaActionForm" type="gcom.gui.cobranca.programacobranca.AtualizarProgramaCobrancaActionForm" />
+	</form-beans>
+	<global-forwards />
+	<action-mappings>
+
+	<action name="ManutencaoRegistroActionForm" 
+		type="gcom.gui.cobranca.programacobranca.ExibirManterProgramaCobrancaAction" 
+		scope="session" validate="false"
+		path="/exibirManterProgramaCobrancaAction">
+		<forward name="exibirManterProgramaCobranca" path="/jsp/cobranca/programacobranca/programacobranca_manter.jsp" />
+		<forward name="atualizarProgramaCobranca" path="/exibirAtualizarProgramaCobrancaAction.do?filtrar=sim" />
+	</action>	
+
+	<action name="ManutencaoRegistroActionForm"
+		type="gcom.gui.cobranca.programacobranca.RemoverProgramaCobrancaAction"
+		validate="false" input="/exibirManterProgramaCobrancaAction.do"
+		scope="request" path="/removerProgramaCobrancaAction">
+	</action>
+	
+	<action name="AtualizarProgramaCobrancaActionForm"
+      	type="gcom.gui.cobranca.programacobranca.ExibirAtualizarProgramaCobrancaAction"
+      	validate="false" scope="session"
+      	path="/exibirAtualizarProgramaCobrancaAction">
+		<forward name="atualizarProgramaCobranca" path="/jsp/cobranca/programacobranca/programacobranca_atualizar.jsp" />
+	</action>
+	
+	<action name="AtualizarProgramaCobrancaActionForm" 
+			type="gcom.gui.cobranca.programacobranca.AtualizarProgramaCobrancaAction" 
+			scope="request" path="/atualizarProgramaCobrancaAction"/>
+
+	</action-mappings>
+	<message-resources null="false" parameter="gcom.properties.application" />
+</struts-config>

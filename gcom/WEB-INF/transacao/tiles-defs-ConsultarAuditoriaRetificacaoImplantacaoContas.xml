@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE tiles-definitions PUBLIC   
+        "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"   
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">  
+    
+<tiles-definitions>
+
+    <definition name="tilesAuditoriaRetificacaoImplantacaoContas" extends="tilesTemplate">
+        <put name="titulo" value="Consultar Auditoria Retificacao Implantacao Contas" type="string"/>
+    	<put name="corpo" value="/jsp/seguranca/acesso/transacao/auditoria_retificacao_implantacao_contas_consultar.jsp" type="page"/>
+    </definition>
+    <definition name="tilesAuditoriaRetificacaoImplantacaoContasResultado" extends="tilesTemplate">
+        <put name="titulo" value="Consultar Auditoria Retificacao Implantacao Contas" type="string"/>
+    	<put name="corpo" value="/jsp/seguranca/acesso/transacao/auditoria_retificacao_implantacao_contas_resultado.jsp" type="page"/>
+    </definition>
+    
+
+</tiles-definitions>  
+

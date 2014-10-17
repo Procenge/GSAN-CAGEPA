@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<data-sources />
+	<form-beans>
+		<form-bean name="GerarRelatorioDynaForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="mesAno"
+				type="java.lang.String" />
+			<form-property
+				name="psTipoRelatorio"
+				type="java.lang.String" />
+			<form-property
+				name="psCodigoLocalidade"
+				type="java.lang.String" />
+			<form-property
+				name="gerenciaRegionalporLocalidadeId"
+				type="java.lang.String" />
+			<form-property
+				name="gerenciaRegionalId"
+				type="java.lang.String" />
+			<form-property
+				name="psCodigoUnidade"
+				type="java.lang.String" />
+				
+		</form-bean>					
+	</form-beans>
+	<global-exceptions />
+	<global-forwards />
+
+	<action-mappings>
+		<action name="GerarRelatorioDynaForm"
+			type="gcom.gui.relatorio.faturamento.ExibirGerarRelatorioAction"
+			path="/exibirGerarRelatorioAction"
+			validate="false"
+			scope="session">
+			<forward name="exibirGerarRelatorioAction"
+				path="/jsp/relatorio/faturamento/relatorio_tipo_relatorio.jsp" />
+		</action>
+		
+		<action
+			path="/gerarRelatorioAction"
+			type="br.com.procenge.geradorrelatorio.gui.GeradorRelatorioAction"
+			scope="request"
+			name="GerarRelatorioDynaForm"
+			parameter="acao">
+
+			<exception
+				handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO"
+				type="br.com.procenge.comum.exception.PCGException"
+				path="/telaPrincipal.do" />
+
+			<forward name="paginaPrincipal" path="/telaPrincipal.do" />
+
+		</action>
+		
+	
+
+	</action-mappings>
+	<controller />
+</struts-config>

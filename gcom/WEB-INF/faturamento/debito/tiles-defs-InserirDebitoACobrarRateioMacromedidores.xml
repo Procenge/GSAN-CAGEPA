@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE tiles-definitions PUBLIC   
+        "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"   
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">  
+    
+<tiles-definitions>
+  
+    <definition name="tilesInserirDebitoACobrarRateioMacromedidores" extends="tilesTemplate">
+        <put name="titulo" value="Inserir Debito A Cobrar Rateio Macromedidores" type="string"/>
+    	<put name="corpo" value="/jsp/faturamento/debito/inserir_debito_a_cobrar_rateio_macromedidores.jsp" type="page"/>
+    </definition>
+    
+</tiles-definitions>  
+

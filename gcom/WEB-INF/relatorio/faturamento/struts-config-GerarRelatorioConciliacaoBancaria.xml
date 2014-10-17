@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<data-sources />
+	<form-beans>
+		<form-bean name="GerarRelatorioConciliacaoBancariaDynaForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="mesAno"
+				type="java.lang.String" />
+			<form-property
+				name="psTipoRelatorio"
+				type="java.lang.String" />
+			<form-property
+				name="psRelatorioTipo"
+				type="java.lang.String" />
+				
+		</form-bean>					
+	</form-beans>
+	<global-exceptions />
+	<global-forwards />
+
+	<action-mappings>
+		<action name="GerarRelatorioConciliacaoBancariaDynaForm"
+			type="gcom.gui.relatorio.faturamento.ExibirGerarRelatorioConciliacaoAction"
+			path="/exibirGerarRelatorioConciliacaoAction"
+			validate="false"
+			scope="session">
+			<forward name="exibirGerarRelatorioConciliacaoAction"
+				path="/jsp/relatorio/faturamento/relatorio_conciliacao_bancaria.jsp" />
+		</action>
+		
+		<action
+			path="/gerarRelatorioConciliacaoAction"
+			type="gcom.relatorio.faturamento.GerarRelatorioConciliacaoAction"
+			scope="request"
+			name="GerarRelatorioConciliacaoBancariaDynaForm"
+			parameter="acao">
+
+			<exception
+				handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO"
+				type="br.com.procenge.comum.exception.PCGException"
+				path="/telaPrincipal.do" />
+
+			<forward name="paginaPrincipal" path="/telaPrincipal.do" />
+
+		</action>
+		
+	
+
+	</action-mappings>
+	<controller />
+</struts-config>

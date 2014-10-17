@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="FiltrarCancelarDebitoACobrarRateioMacromedidoresActionForm"
+			type="gcom.gui.faturamento.debito.FiltrarCancelarDebitoACobrarRateioMacromedidoresActionForm" />
+	</form-beans>
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="FiltrarCancelarDebitoACobrarRateioMacromedidoresActionForm"
+			type="gcom.gui.faturamento.debito.ExibirFiltrarCancelarDebitoACobrarRateioMacromedidoresAction"
+			validate="true" scope="session"
+			path="/exibirFiltrarCancelarDebitoACobrarRateioMacromedidoresAction">
+			<forward name="filtrarCancelarDebitoACobrarRateioMacromedidores"
+				path="/jsp/faturamento/debito/cancelar_debito_a_cobrar_rateio_macromedidores_filtrar.jsp" />
+		</action>
+
+		<action name="FiltrarCancelarDebitoACobrarRateioMacromedidoresActionForm"
+			type="gcom.gui.faturamento.debito.FiltrarCancelarDebitoACobrarRateioMacromedidoresAction"
+			validate="true" scope="session" path="/filtrarCancelarDebitoACobrarRateioMacromedidoresAction">
+			<forward name="exibirCancelarDebitoACobrarRateioMacromedidoresAction"
+				path="/exibirCancelarDebitoACobrarRateioMacromedidoresAction.do" />
+		</action>
+		
+		<action name="FiltrarCancelarDebitoACobrarRateioMacromedidoresActionForm"
+			type="gcom.gui.faturamento.debito.ExibirCancelarDebitoACobrarRateioMacromedidoresAction"
+			validate="true" scope="session"
+			path="/exibirCancelarDebitoACobrarRateioMacromedidoresAction">
+			<forward name="cancelarDebitoACobrarRateioMacromedidores"
+				path="/jsp/faturamento/debito/cancelar_debito_a_cobrar_rateio_macromedidores.jsp" />
+		</action>
+		
+		<action name="FiltrarCancelarDebitoACobrarRateioMacromedidoresActionForm"
+			type="gcom.gui.faturamento.debito.CancelarDebitoACobrarRateioMacromedidoresAction"
+			validate="true" scope="session" path="/cancelarDebitoACobrarRateioMacromedidoresAction">
+		</action>
+
+	</action-mappings>
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

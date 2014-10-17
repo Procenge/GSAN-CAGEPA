@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+ <data-sources/>
+ <form-beans>
+ 	<form-bean name="InserirHidrometroMotivoBaixaActionForm" type="gcom.gui.micromedicao.hidrometro.InserirHidrometroMotivoBaixaActionForm"/>
+  	<form-bean name="ManterHidrometroMotivoBaixaActionForm" type="gcom.gui.ManutencaoRegistroActionForm"/>
+  	<form-bean name="FiltrarHidrometroMotivoBaixaActionForm" type="gcom.gui.micromedicao.hidrometro.FiltrarHidrometroMotivoBaixaActionForm"/>
+  	<form-bean name="AtualizarHidrometroMotivoBaixaActionForm" type="gcom.gui.micromedicao.hidrometro.AtualizarHidrometroMotivoBaixaActionForm"/>
+ </form-beans>
+ <global-exceptions/>
+ <!--******************* PÁGINAS GLOBAIS *******************-->
+ <global-forwards/>
+ <action-mappings>
+	 <action name="InserirHidrometroMotivoBaixaActionForm"
+	   path="/exibirInserirHidrometroMotivoBaixaAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.ExibirInserirHidrometroMotivoBaixaAction" validate="true">
+	   <forward name="inserirHidrometroMotivoBaixa" path="/jsp/micromedicao/hidrometro/hidrometro_motivo_baixa_inserir.jsp"/>
+	  </action>
+	  
+	  <action name="InserirHidrometroMotivoBaixaActionForm"
+	   path="/inserirHidrometroMotivoBaixaAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.InserirHidrometroMotivoBaixaAction" validate="true"/>
+	   
+	  <action name="FiltrarHidrometroMotivoBaixaActionForm"
+	   path="/exibirFiltrarHidrometroMotivoBaixaAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.ExibirFiltrarHidrometroMotivoBaixaAction" validate="true">
+	   <forward name="exibirFiltrarHidrometroMotivoBaixa" path="/jsp/micromedicao/hidrometro/hidrometro_motivo_baixa_filtrar.jsp"/>
+	  </action>
+	  
+	  <action name="FiltrarHidrometroMotivoBaixaActionForm"
+	   path="/filtrarHidrometroMotivoBaixaAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.FiltrarHidrometroMotivoBaixaAction" validate="true">
+	   <forward name="exibirManterHidrometroMotivoBaixa" path="/exibirManterHidrometroMotivoBaixaAction.do"/>
+	  </action>
+	  
+	  <action name="ManterHidrometroMotivoBaixaActionForm"
+	   path="/exibirManterHidrometroMotivoBaixaAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.ExibirManterHidrometroMotivoBaixaAction" validate="true">
+	   <forward name="exibirManterHidrometroMotivoBaixa" path="/jsp/micromedicao/hidrometro/hidrometro_motivo_baixa_manter.jsp"/>
+	   <forward name="exibirAtualizarHidrometroMotivoBaixa" path="/exibirAtualizarHidrometroMotivoBaixaAction.do"/>
+	  </action>
+	  
+	  <action name="AtualizarHidrometroMotivoBaixaActionForm"
+	   path="/exibirAtualizarHidrometroMotivoBaixaAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.ExibirAtualizarHidrometroMotivoBaixaAction" validate="true">
+	   <forward name="atualizarHidrometroMotivoBaixa" path="/jsp/micromedicao/hidrometro/hidrometro_motivo_baixa_atualizar.jsp"/>
+	  </action>
+	  
+	  <action name="ManutencaoRegistroActionForm"
+	   path="/removerHidrometroMotivoBaixaAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.RemoverHidrometroMotivoBaixaAction" validate="false"/>
+	   
+	  <action name="AtualizarHidrometroMotivoBaixaActionForm"
+	   path="/atualizarHidrometroMotivoBaixaAction" scope="session"
+	   type="gcom.gui.micromedicao.hidrometro.AtualizarHidrometroMotivoBaixaAction" validate="false"/>
+ </action-mappings>
+ <controller/>
+ <message-resources null="false" parameter="gcom.properties.application"/>
+</struts-config>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<data-sources />
+	<form-beans>
+		<form-bean name="GerarRelatorioContasAtrasoDynaActionForm"
+			type="org.apache.struts.action.DynaActionForm">
+			
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="GRAND_USU"
+				type="java.lang.String" />
+			<form-property
+				name="IND_PARCEL_ATRASO"
+				type="java.lang.String" />
+			<form-property
+				name="QTD_CONTAS"
+				type="java.lang.Integer" />	
+			<form-property
+				name="VAL_DEBITO"
+				type="java.lang.String" />	
+			<form-property
+				name="SIT_AGUA"
+				type="java.lang.String" />
+			<form-property
+				name="SIT_ESGOTO"
+				type="java.lang.String" />
+			<form-property
+				name="TIPO_RELATORIO"
+				type="java.lang.String" />	
+			<form-property
+				name="REG_I"
+				type="java.lang.Integer" />
+			<form-property
+				name="REG_F"
+				type="java.lang.Integer" />		
+			<form-property
+				name="LOCA_I"
+				type="java.lang.Integer" />
+			<form-property
+				name="LOCA_F"
+				type="java.lang.Integer" />	
+			<form-property
+				name="QUAD_I"
+				type="java.lang.Integer" />
+			<form-property
+				name="QUAD_F"
+				type="java.lang.Integer" />
+			<form-property
+				name="SETOR_I"
+				type="java.lang.Integer" />
+			<form-property
+				name="SETOR_F"
+				type="java.lang.Integer" />	
+			<form-property
+				name="GRUPO_I"
+				type="java.lang.Integer" />
+			<form-property
+				name="GRUPO_F"
+				type="java.lang.Integer" />
+			<form-property
+				name="ROTA_I"
+				type="java.lang.Integer" />
+			<form-property
+				name="ROTA_F"
+				type="java.lang.Integer" />
+			<form-property
+				name="LOTE_I"
+				type="java.lang.Integer" />
+			<form-property
+				name="LOTE_F"
+				type="java.lang.Integer" />
+			<form-property
+				name="SLOTE_I"
+				type="java.lang.Integer" />
+			<form-property
+				name="SLOTE_F"
+				type="java.lang.Integer" />
+			<form-property
+				name="CAT_I"
+				type="java.lang.Integer" />
+			<form-property
+				name="CAT_F"
+				type="java.lang.Integer" />
+			<form-property
+				name="SCAT_I"
+				type="java.lang.Integer" />
+			<form-property
+				name="SCAT_F"
+				type="java.lang.Integer" />
+			<form-property
+				name="REF_I"
+				type="java.lang.String" />
+			<form-property
+				name="REF_F"
+				type="java.lang.String" />			
+			<form-property
+				name="UNE_I"
+				type="java.lang.Integer" />
+			<form-property
+				name="UNE_F"
+				type="java.lang.Integer" />
+
+			<!-- NOVOS NÃO ESPECIFICADO NA OC. -->
+			<form-property
+				name="RESP_I"
+				type="java.lang.Integer" />
+			<form-property
+				name="RESP_F"
+				type="java.lang.Integer" />
+
+			<form-property
+				name="nomeLocalidadeInicial"
+				type="java.lang.String" />			
+			<form-property
+				name="nomeLocalidadeFinal"
+				type="java.lang.String" />
+			<form-property
+				name="localidadeInicialEncontrada"
+				type="java.lang.String" />
+			<form-property
+				name="localidadeFinalEncontrada"
+				type="java.lang.String" />
+			<form-property
+				name="nomeSetorComercialInicial"
+				type="java.lang.String" />
+			<form-property
+				name="nomeSetorComercialFinal"
+				type="java.lang.String" />
+			<form-property
+				name="setorComercialInicialEncontrado"
+				type="java.lang.String" />
+			<form-property
+				name="setorComercialFinalEncontrado"
+				type="java.lang.String" />
+			<form-property
+				name="nomeResponsavelInicial"
+				type="java.lang.String" />
+			<form-property
+				name="nomeResponsavelFinal"
+				type="java.lang.String" />
+			<form-property
+				name="clienteInexistente"
+				type="java.lang.String" />
+			<form-property
+				name="p_indicadorOrdenacao"
+				type="java.lang.String" />
+			
+		</form-bean>					
+	</form-beans>
+	<global-exceptions />
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		
+		<action name="GerarRelatorioContasAtrasoDynaActionForm"
+			type="gcom.relatorio.faturamento.conta.ExibirGerarRelatorioContasAtrasoAction"
+			validate="false" scope="session"
+			path="/exibirGerarRelatorioContasAtrasoAction">
+			<forward name="exibirGerarRelatorioContasAtrasoAction"
+				path="/jsp/relatorio/cadastro/relatorio_contas_atraso_gerar.jsp" />
+		</action>
+		<action
+			path="/gerarRelatorioContasAtrasoAction"
+			type="br.com.procenge.geradorrelatorio.gui.GeradorRelatorioAction"
+			scope="request"
+			name="GerarRelatorioContasAtrasoDynaActionForm"
+			parameter="acao">
+
+			<exception
+				handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO"
+				type="br.com.procenge.comum.exception.PCGException"
+				path="/telaPrincipal.do" />
+
+			<forward name="paginaPrincipal" path="/telaPrincipal.do" />
+
+		</action>	
+		
+	</action-mappings>
+
+</struts-config>

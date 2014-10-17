@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+    <!--******************* PAGINAS GLOBAIS *******************-->
+
+    <form-beans>
+        <form-bean
+            name="ExecutarGerarIntegracaoSpedPisCofinsDynaForm"
+            type="org.apache.struts.action.DynaActionForm"> 
+            <form-property name="referenciaBase" type="java.lang.String"/>            
+        </form-bean>
+
+    </form-beans>
+    <action-mappings>
+    
+        <action name="ExecutarGerarIntegracaoSpedPisCofinsDynaForm"
+            type="gcom.gui.financeiro.ExibirExecutarGerarIntegracaoSpedPisCofinsAction" validate="false" path="/exibirExecutarGerarIntegracaoSpedPisCofinsAction">
+            <forward name="exibirExecutarGerarIntegracaoSpedPisCofins" path="tilesExibirExecutarGerarIntegracaoSpedPisCofins"/>
+        </action>
+        <action name="ExecutarGerarIntegracaoSpedPisCofinsDynaForm" 
+            type="gcom.gui.financeiro.ExecutarGerarIntegracaoSpedPisCofinsAction" validate="false" path="/executarGerarIntegracaoSpedPisCofins">
+        </action>
+    </action-mappings>
+</struts-config>

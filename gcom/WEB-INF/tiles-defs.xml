@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE tiles-definitions PUBLIC   
+        "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"   
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">  
+    <tiles-definitions>
+    
+     <definition name="tilesTemplate" path="/jsp/comum/template.jsp"> 
+        <put name="topo" value="/jsp/util/titulo.jsp" type="page" />
+        <put name="titulo" value="" type="string" />
+        <put name="cabecalho" value="/jsp/util/cabecalho.jsp" type="page" />
+        <put name="menu" value="/jsp/util/menu.jsp" type="page" />
+        <put name="informacoes_usuario" value="/jsp/util/informacoes_usuario.jsp" type="page" />
+        <put name="mensagens" value="/jsp/util/mensagens.jsp" type="page" />
+        <put name="corpo" value="" type="page" />
+        <put name="rodape" value="/jsp/util/rodape.jsp" type="page"/>   
+    </definition>
+
+    <definition name="tilesExibirConsultarParametroSistema" extends="tilesTemplate">     
+    	<put name="titulo" value="Parâmetros do sistema" type="string" />
+        <put name="corpo" value="/jsp/parametrosistema/consultarParametroSistema.jsp" type="page" />    
+    </definition>
+    
+    <definition name="tilesexibirParametroSistemaFiltrado" extends="tilesTemplate">     
+    	<put name="titulo" value="Parâmetros do sistema" type="string" />
+        <put name="corpo" value="/jsp/parametrosistema/exibirParametroSistemaFiltrado.jsp" type="page" />    
+    </definition>
+    
+    <definition name="tilesExibirFormAlteracaoParametroSistema" extends="tilesTemplate">     
+    	<put name="titulo" value="Parâmetros do sistema" type="string" />
+        <put name="corpo" value="/jsp/parametrosistema/alterarParametroSistema.jsp" type="page" />    
+    </definition>
+    
+    <definition name="tilesExibirAutorizarServicosAssociados" extends="tilesTemplate">     
+    	<put name="titulo" value="Autorizar Serviços Associados" type="string" />
+        <put name="corpo" value="/jsp/atendimentopublico/ordemservico/autorizar_servico_associado.jsp" type="page" />    
+    </definition>
+    
+    <definition name="tilesExibirAutorizarServicosAssociadosPopup" path="/jsp/comum/templatePopup.jsp">
+    	<put name="titulo" value="Autorizar Serviços Associados" type="string" />
+    	<put name="corpo" value="/jsp/atendimentopublico/ordemservico/autorizar_servico_associado.jsp" type="page" />
+    </definition>
+
+    <definition name="tilesEmitirOSCobranca" extends="tilesTemplate">
+        <put name="titulo" value="Emitir OS Cobrança" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/cobranca_emitir_os.jsp" type="page"/>
+    </definition>
+    
+    <!-- ********************** exibirFiltrarEmitirOSCobranca ********************** -->
+    <definition name="tilesExibirFiltrarEmitirOSCobranca" extends="tilesTemplate">
+        <put name="titulo" value="Filtrar Emitir OS Cobrança" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/cobranca_filtrar_emitir_os.jsp" type="page"/>
+    </definition>
+    <definition name="tilesFiltrarEmitirOSCobranca" extends="tilesTemplate">
+        <put name="titulo" value="Comandos de Cobrança (Ordens de Serviço)" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/cobranca_filtrar_emitir_os_passo2.jsp" type="page"/>
+    </definition>
+    <!-- ********************** exibirFiltrarEmitirOSCobranca ********************** -->
+    
+    <!-- ********************** Baixa de Ordem de Serviço de Cobranca ********************** -->
+     <definition name="tilesTelaBaixaOrdemServicoCobranca" extends="tilesTemplate">
+        <put name="titulo" value="Baixa de Ordem de Serviço de Cobrança" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/cobranca_baixa_ordem_servico.jsp" type="page"/>
+    </definition>
+    
+    <!-- ********************** Baixa de Ordem de Serviço de Cobranca ********************** -->
+    
+
+
+	<definition name="tilesProdutividadeMensalExecucaoServico" extends="tilesTemplate">
+        <put name="titulo" value="Produtividade de Execução de Serviço" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/cobranca_produtividade_mensal_exec_serv_filtrar.jsp" type="page"/>
+    </definition>
+    <!-- *********************************************************************************** -->
+    
+	<definition name="tilesAcompanhamentoAcoes" extends="tilesTemplate">
+        <put name="titulo" value="Acompanhamento de Ações" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/cobranca_gerar_acompanhamento_acoes_filtrar.jsp" type="page"/>
+    </definition>
+    
+    <!-- *************** Relação de Imóveis com Religação Especial por Dia ***************** -->
+    <definition name="tilesRelacaoImoveisReligacaoEspDia" extends="tilesTemplate">
+        <put name="titulo" value="Relação de Imóveis com Religação Especial por Dia" type="string"/>
+    	<put name="corpo" value="/jsp/cobranca/cobranca_relatorio_religacao_especial_dia.jsp" type="page"/>
+    </definition>
+
+    <definition name="tilesExibirExecutarGerarIntegracaoSpedPisCofins" extends="tilesTemplate">     
+        <put name="titulo" value="Gerar Integração Sped Pis/Cofins" type="string" />
+        <put name="corpo" value="/jsp/finaceiro/gerar_integracao_sped_pis_cofins.jsp" type="page" />    
+    </definition>
+</tiles-definitions>    
+    

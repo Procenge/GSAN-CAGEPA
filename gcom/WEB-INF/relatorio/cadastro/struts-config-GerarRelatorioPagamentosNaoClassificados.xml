@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<data-sources />
+	<form-beans>
+
+		<form-bean
+			name="RelatorioPagamentosNaoClassificadosForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="P_AM_ARRECADACAO"
+				type="java.lang.String" />
+			<form-property
+				name="P_AG_DP_ARRECADACAO_FIN"
+				type="java.lang.String" />
+			<form-property
+				name="P_AG_DP_ARRECADACAO_INI"
+				type="java.lang.String" />
+			<form-property
+				name="P_BC_DP_ARRECADACAO_FIN"
+				type="java.lang.String" />
+			<form-property
+				name="P_BC_DP_ARRECADACAO_INI"
+				type="java.lang.String" />
+			<form-property
+				name="P_ST_PG_FIN"
+				type="java.lang.String" />
+			<form-property
+				name="P_ST_PG_INI"
+				type="java.lang.String" />
+			
+		</form-bean>
+
+	</form-beans>
+	<global-exceptions />
+	<global-forwards />
+
+
+	
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+
+	<action-mappings>
+		
+		<action name="RelatorioPagamentosNaoClassificadosForm"
+			type="gcom.gui.relatorio.cadastro.imovel.ExibirGerarRelatorioPagamentosNaoClassificadosAction"
+			validate="false" scope="session" 
+			path="/exibirGerarRelatorioPagamentosNaoClassificadosAction">
+			
+			<forward name="exibirGerarRelatorioPagamentosNaoClassificadosAction" 
+				path="/jsp/relatorio/cadastro/relatorio_pagamentos_nao_classificados_gerar.jsp" />
+				
+		</action>
+		
+		<action
+			path="/gerarRelatorioPagamentosNaoClassificadosAction"
+			type="br.com.procenge.geradorrelatorio.gui.GeradorRelatorioAction"
+			scope="request"
+			name="RelatorioPagamentosNaoClassificadosForm"
+			parameter="acao">
+
+			
+
+		</action>	
+		
+	</action-mappings>
+
+</struts-config>

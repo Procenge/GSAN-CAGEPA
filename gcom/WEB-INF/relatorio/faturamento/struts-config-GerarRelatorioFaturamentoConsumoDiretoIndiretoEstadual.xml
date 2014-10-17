@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="GerarRelatorioFaturamentoConsumoDiretoIndiretoEstadualActionForm"
+			type="gcom.gui.relatorio.faturamento.GerarRelatorioFaturamentoConsumoDiretoIndiretoEstadualActionForm" />					
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<!-- [UC3114] Gerar Relatório Faturamento e Consumo Direto e Indireto Estadual - Auhtor: Victon Malcolm  Data: 26/09/2013-->
+		<action name="GerarRelatorioFaturamentoConsumoDiretoIndiretoEstadualActionForm"
+			type="gcom.gui.relatorio.faturamento.ExibirGerarRelatorioFaturamentoConsumoDiretoIndiretoEstadualAction"
+			validate="true" scope="session"
+			path="/exibirGerarRelatorioFaturamentoConsumoDiretoIndiretoEstadualAction">
+			<forward name="exibirGerarFaturamentoConsumoDiretoIndiretoEstadual"
+				path="/jsp/relatorio/faturamento/faturamento_consumo_direto_indireto_estadual_relatorio_gerar.jsp" />
+		</action>
+		<action name="GerarRelatorioFaturamentoConsumoDiretoIndiretoEstadualActionForm"
+			type="gcom.gui.relatorio.faturamento.GerarRelatorioFaturamentoConsumoDiretoIndiretoEstadualAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioFaturamentoConsumoDiretoIndiretoEstadualAction">
+		</action>
+
+	</action-mappings>
+
+</struts-config>
