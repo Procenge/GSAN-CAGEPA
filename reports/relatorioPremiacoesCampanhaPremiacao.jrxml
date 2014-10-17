@@ -1,0 +1,926 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="relatorioContasEmitidas"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Landscape"
+		 pageWidth="842"
+		 pageHeight="595"
+		 columnWidth="782"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="tipoFormatoRelatorio" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NM_ESTADO" isForPrompting="false" class="java.lang.String"/>
+
+	<field name="getDsTituloCampanha" class="java.lang.String"/>
+	<field name="getDsPremio" class="java.lang.String"/>
+	<field name="getNuOrdemPremiacao" class="java.lang.String"/>
+	<field name="getDtSorteio" class="java.lang.String"/>
+	<field name="getNuInscricao" class="java.lang.String"/>
+	<field name="getIdImovel" class="java.lang.String"/>
+	<field name="getNmCliente" class="java.lang.String"/>
+	<field name="getCdTipoRelacaoClienteImovel" class="java.lang.String"/>
+	<field name="getNuCPF" class="java.lang.String"/>
+	<field name="getNuCNPJ" class="java.lang.String"/>
+	<field name="getNuRG" class="java.lang.String"/>
+	<field name="getDtEmissaoRG" class="java.lang.String"/>
+	<field name="getOrgaoExpedidorRG" class="java.lang.String"/>
+	<field name="getEstadoRG" class="java.lang.String"/>
+	<field name="getDtNascimentoCliente" class="java.lang.String"/>
+	<field name="getNmMaeCliente" class="java.lang.String"/>
+	<field name="getDsEmailCliente" class="java.lang.String"/>
+	<field name="getDtRetiradaPremio" class="java.lang.String"/>
+	<field name="getNmUsuarioRespEntregaPremio" class="java.lang.String"/>
+	<field name="getDtCancelamentoPremiacao" class="java.lang.String"/>
+	<field name="getNmUsuarioRespCancelPremiacao" class="java.lang.String"/>
+	<field name="getDsMotivoCancelPremiacao" class="java.lang.String"/>
+	<field name="getDsUnidadePremiacao" class="java.lang.String"/>
+	<field name="getDsUnidadePremiacaoLinha3" class="java.lang.String"/>
+	<field name="getDsEnderecoImovel" class="java.lang.String"/>
+	<field name="getQtdPremios" class="java.lang.String"/>
+
+	<variable name="qtdPremiacoes" class="java.lang.Integer" resetType="Group" resetGroup="unidadePremiacao" calculation="Count">
+		<variableExpression><![CDATA[$F{getIdImovel}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
+	</variable>
+	<variable name="qtdPremiacoesGeral" class="java.lang.Integer" resetType="Report" calculation="Count">
+		<variableExpression><![CDATA[$F{getIdImovel}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
+	</variable>
+	<variable name="qtdPremiacoesCanceladas" class="java.lang.Integer" resetType="Group" resetGroup="unidadePremiacao" calculation="Count">
+		<variableExpression><![CDATA[$F{getDsMotivoCancelPremiacao}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
+	</variable>
+	<variable name="qtdPremiacoesCanceladasGeral" class="java.lang.Integer" resetType="Report" calculation="Count">
+		<variableExpression><![CDATA[$F{getDsMotivoCancelPremiacao}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
+	</variable>
+	<variable name="qtdPremiosGeral" class="java.lang.Integer" resetType="Report" calculation="Sum">
+		<variableExpression><![CDATA[new Integer($F{getQtdPremios})]]></variableExpression>
+		<initialValueExpression><![CDATA[new Integer(0)]]></initialValueExpression>
+	</variable>
+
+		<group  name="unidadePremiacao" isStartNewPage="true" isReprintHeaderOnEachPage="true" >
+			<groupExpression><![CDATA[$F{getDsUnidadePremiacao}]]></groupExpression>
+			<groupHeader>
+			<band height="15"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="0"
+						width="782"
+						height="12"
+						key="textField-214"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getDsUnidadePremiacao} != null ? $F{getDsUnidadePremiacao} : ""]]></textFieldExpression>
+				</textField>
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="50"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="113"
+						y="14"
+						width="41"
+						height="12"
+						key="textField"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{qtdPremiacoes}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="14"
+						width="113"
+						height="12"
+						key="textField-237"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Qtde.Premiações:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="1"
+						y="28"
+						width="175"
+						height="12"
+						key="textField-238"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Qtde.Premiações Canceladas:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="0"
+						width="94"
+						height="12"
+						key="textField-239"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Qtde.Prêmios:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="175"
+						y="28"
+						width="66"
+						height="12"
+						key="textField"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{qtdPremiacoesCanceladas}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="93"
+						y="0"
+						width="66"
+						height="12"
+						key="textField"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getQtdPremios}]]></textFieldExpression>
+				</textField>
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="81"  isSplitAllowed="false" >
+				<rectangle radius="0" >
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="0"
+						width="782"
+						height="76"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-5"/>
+					<graphicElement stretchType="NoStretch" fill="Solid" >
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+</graphicElement>
+				</rectangle>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="724"
+						y="4"
+						width="29"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-185"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$V{PAGE_NUMBER} + "/"]]></textFieldExpression>
+				</textField>
+				<image  scaleImage="FillFrame" vAlign="Middle" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="10"
+						y="4"
+						width="67"
+						height="55"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="image-1"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<graphicElement stretchType="NoStretch" fill="Solid" >
+					<pen lineWidth="0.0" lineStyle="Solid"/>
+</graphicElement>
+					<imageExpression class="java.lang.String"><![CDATA[$P{imagem}]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="89"
+						y="21"
+						width="600"
+						height="16"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-6"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA["COMPANHIA DE SANEAMENTO DE  "  + $P{P_NM_ESTADO}]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="696"
+						y="0"
+						width="0"
+						height="76"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-10"/>
+					<graphicElement stretchType="NoStretch" fill="Solid" >
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+</graphicElement>
+				</line>
+				<textField isStretchWithOverflow="false" pattern="dd/MM/yyyy" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Transparent"
+						x="699"
+						y="19"
+						width="81"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-158"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="CP1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.util.Date"><![CDATA[new Date()]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="HH:mm:ss" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Transparent"
+						x="699"
+						y="33"
+						width="80"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-162"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="CP1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.util.Date"><![CDATA[new Date()]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="698"
+						y="46"
+						width="80"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-161"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier" size="8" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["320"]]></textFieldExpression>
+				</textField>
+				<line direction="TopDown">
+					<reportElement
+						mode="Opaque"
+						x="84"
+						y="0"
+						width="0"
+						height="76"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="line-13"/>
+					<graphicElement stretchType="NoStretch" fill="Solid" >
+					<pen lineWidth="1.0" lineStyle="Solid"/>
+</graphicElement>
+				</line>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="699"
+						y="4"
+						width="25"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-125"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[PAG]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Report" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="753"
+						y="4"
+						width="27"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-186"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="90"
+						y="4"
+						width="599"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-142"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[GSAN - SISTEMA INTEGRADO DE GESTÃO DE SERVIÇOS DE SANEAMENTO]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="90"
+						y="40"
+						width="599"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-205"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Relação das Premiações da Campanha "  + $F{getDsTituloCampanha}]]></textFieldExpression>
+				</textField>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="91"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="1"
+						width="44"
+						height="12"
+						key="textField-206"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Prêmio:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="436"
+						y="1"
+						width="108"
+						height="12"
+						key="textField-207"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Ordem Premiação:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="603"
+						y="1"
+						width="91"
+						height="12"
+						key="textField-208"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Data Sorteio:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="43"
+						y="1"
+						width="392"
+						height="12"
+						key="textField-209"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getDsPremio}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="544"
+						y="1"
+						width="53"
+						height="12"
+						key="textField-210"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getNuOrdemPremiacao}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="694"
+						y="1"
+						width="87"
+						height="12"
+						key="textField-211"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getDtSorteio}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="15"
+						width="114"
+						height="12"
+						key="textField-212"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Número Inscrição:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="176"
+						y="15"
+						width="55"
+						height="12"
+						key="textField-213"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Imóvel:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="283"
+						y="15"
+						width="163"
+						height="12"
+						key="textField-215"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getDsUnidadePremiacaoLinha3}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="228"
+						y="15"
+						width="55"
+						height="12"
+						key="textField-216"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getIdImovel}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="109"
+						y="15"
+						width="67"
+						height="12"
+						key="textField-217"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getNuInscricao}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="445"
+						y="15"
+						width="67"
+						height="12"
+						key="textField-218"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Endereço:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="505"
+						y="15"
+						width="277"
+						height="12"
+						key="textField-219"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getDsEnderecoImovel}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="29"
+						width="112"
+						height="12"
+						key="textField-220"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Nome do Cliente:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="100"
+						y="29"
+						width="336"
+						height="12"
+						key="textField-221"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getNmCliente}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="438"
+						y="29"
+						width="110"
+						height="12"
+						key="textField-222"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Tipo de Relação:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="538"
+						y="29"
+						width="242"
+						height="12"
+						key="textField-223"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getCdTipoRelacaoClienteImovel}.equals("1") ? "Usuário" : $F{getCdTipoRelacaoClienteImovel}.equals("2") ? "Responsável" : $F{getCdTipoRelacaoClienteImovel}.equals("3") ? "Usuário e Responsável" : ""]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="43"
+						width="46"
+						height="12"
+						key="textField-224"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[( $F{getNuCPF} != null ? "CPF:" : "CNPJ:" )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="38"
+						y="43"
+						width="122"
+						height="12"
+						key="textField-225"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[( $F{getNuCPF} != null ? $F{getNuCPF} : $F{getNuCNPJ} )]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="161"
+						y="43"
+						width="127"
+						height="12"
+						key="textField-226"/>
+					<box></box>
+					<textElement textAlignment="Left" isStyledText="true">
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($F{getDtEmissaoRG} != null ? "<b>Dt. Emissão:</b> "+ $F{getDtEmissaoRG} : "")]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="288"
+						y="43"
+						width="145"
+						height="12"
+						key="textField-227"/>
+					<box></box>
+					<textElement textAlignment="Left" isStyledText="true">
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($F{getOrgaoExpedidorRG} != null ? "<b>Órgão Exp.:</b> "+ $F{getOrgaoExpedidorRG} : "")]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="433"
+						y="43"
+						width="56"
+						height="12"
+						key="textField-228"/>
+					<box></box>
+					<textElement textAlignment="Left" isStyledText="true">
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($F{getEstadoRG} != null ? "<b>Estado:</b> "+ $F{getEstadoRG} : "")]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="489"
+						y="43"
+						width="74"
+						height="12"
+						key="textField-229"/>
+					<box></box>
+					<textElement textAlignment="Left" isStyledText="true">
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($F{getDtNascimentoCliente} != null ? "<b>Dt. Nasc.:</b> "+ $F{getDtNascimentoCliente} : "")]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="563"
+						y="43"
+						width="126"
+						height="12"
+						key="textField-230"/>
+					<box></box>
+					<textElement textAlignment="Left" isStyledText="true">
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($F{getNmMaeCliente} != null ? "<b>Nome da Mãe:</b> "+ $F{getNmMaeCliente} : "")]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="689"
+						y="43"
+						width="93"
+						height="12"
+						key="textField-231"/>
+					<box></box>
+					<textElement textAlignment="Left" isStyledText="true">
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($F{getDsEmailCliente} != null ? "<b>E-mail:</b> "+ $F{getDsEmailCliente} : "")]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="1"
+						y="57"
+						width="191"
+						height="12"
+						key="textField-232"/>
+					<box></box>
+					<textElement textAlignment="Left" isStyledText="true">
+						<font fontName="Courier New" pdfFontName="Courier"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getDtRetiradaPremio} != null ? "<b>Dt. Retirada Prêmio:</b> "+ $F{getDtRetiradaPremio} : ""]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="201"
+						y="57"
+						width="401"
+						height="12"
+						key="textField-233"/>
+					<box></box>
+					<textElement textAlignment="Left" isStyledText="true">
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($F{getNmUsuarioRespEntregaPremio} != null ? "<b>Usuário Resp. Entrega Prêmio:</b> "+ $F{getNmUsuarioRespEntregaPremio} : "")]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="71"
+						width="172"
+						height="12"
+						key="textField-234"/>
+					<box></box>
+					<textElement textAlignment="Left" isStyledText="true">
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($F{getDtCancelamentoPremiacao} != null ? "<b>Dt. Cancel. Prêmio:</b> "+ $F{getDtCancelamentoPremiacao} : "")]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="172"
+						y="71"
+						width="362"
+						height="12"
+						key="textField-235"/>
+					<box></box>
+					<textElement textAlignment="Left" isStyledText="true">
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($F{getNmUsuarioRespCancelPremiacao} != null ? "<b>Usuário Resp. Cancel. Prêmio:</b> "+ $F{getNmUsuarioRespCancelPremiacao} : "")]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="534"
+						y="71"
+						width="248"
+						height="12"
+						key="textField-236"/>
+					<box></box>
+					<textElement textAlignment="Left" isStyledText="true">
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[($F{getDsMotivoCancelPremiacao} != null ? "<b>Mot. Canc. Premiação:</b> "+ $F{getDsMotivoCancelPremiacao} : "")]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<lastPageFooter>
+			<band height="45"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="14"
+						width="113"
+						height="12"
+						key="textField-241"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Qtde.Premiações:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="113"
+						y="14"
+						width="40"
+						height="12"
+						key="textField"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{qtdPremiacoesGeral}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="1"
+						y="28"
+						width="175"
+						height="12"
+						key="textField-242"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Qtde.Premiações Canceladas:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="175"
+						y="28"
+						width="66"
+						height="12"
+						key="textField"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{qtdPremiacoesCanceladasGeral}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="-1"
+						y="0"
+						width="94"
+						height="12"
+						key="textField-243"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Qtde.Prêmios:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="93"
+						y="0"
+						width="66"
+						height="12"
+						key="textField"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$V{qtdPremiosGeral}]]></textFieldExpression>
+				</textField>
+			</band>
+		</lastPageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

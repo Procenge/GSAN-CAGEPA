@@ -1,0 +1,679 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="relatorioContratoPrestacaoServicoCAERD"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="enderecoEmpresa" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="nomeEmpresaSigla" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="nomeEmpresaCompleto" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="cepEmpresa" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="municipioEmpresa" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="estadoEmpresa" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="cnpjEmpresa" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="inscricaoEstadualEmpresa" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="mesAtualPortugues" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="estadoEmpresaSigla" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="diaAtual" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="anoAtual" isForPrompting="false" class="java.lang.String"/>
+
+	<field name="getIndicadorPessoaFisica" class="java.lang.String"/>
+	<field name="getNumeroPagina" class="java.lang.String"/>
+	<field name="getProfissaoCliente" class="java.lang.String"/>
+	<field name="getRgCliente" class="java.lang.String"/>
+	<field name="getOrgaoEmissorRgCliente" class="java.lang.String"/>
+	<field name="getUfRgCliente" class="java.lang.String"/>
+	<field name="getInscricaoImovel" class="java.lang.String"/>
+	<field name="getEnderecoImovel" class="java.lang.String"/>
+	<field name="getNomeAtendente" class="java.lang.String"/>
+	<field name="getMatriculaAtendente" class="java.lang.String"/>
+	<field name="getNomeClienteProprietario" class="java.lang.String"/>
+	<field name="getCpfClienteProprietario" class="java.lang.String"/>
+	<field name="getRgClienteProprietario" class="java.lang.String"/>
+	<field name="getNomeCliente" class="java.lang.String"/>
+	<field name="getIdImovel" class="java.lang.String"/>
+	<field name="getMunicipio" class="java.lang.String"/>
+	<field name="getNumeroContrato" class="java.lang.String"/>
+	<field name="getEnderecoCliente" class="java.lang.String"/>
+	<field name="getCpfCliente" class="java.lang.String"/>
+	<field name="getOrgaoEmissorRgClienteProprietario" class="java.lang.String"/>
+	<field name="getUfRgClienteProprietario" class="java.lang.String"/>
+	<field name="getEstadoCivilCliente" class="java.lang.String"/>
+	<field name="getNacionalidadeCliente" class="java.lang.String"/>
+
+
+		<group  name="pagina" >
+			<groupExpression><![CDATA[$F{getNumeroPagina}]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="57"  isSplitAllowed="true" >
+				<rectangle>
+					<reportElement
+						x="1"
+						y="4"
+						width="534"
+						height="51"
+						key="rectangle-1">
+							<printWhenExpression><![CDATA[new Boolean(!$F{getNumeroPagina}.equals("3"))]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="2"
+						y="38"
+						width="532"
+						height="16"
+						key="staticText-18">
+							<printWhenExpression><![CDATA[new Boolean(!$F{getNumeroPagina}.equals("3"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[DE ÁGUA E/OU PRESTAÇÃO DE SERVIÇO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="2"
+						y="23"
+						width="532"
+						height="16"
+						key="staticText-19">
+							<printWhenExpression><![CDATA[new Boolean(!$F{getNumeroPagina}.equals("3"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[CONTRATO DE ADESÃO DE SERVIÇO PÚBLICO DE ABASTECIMENTO]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="7"
+						width="532"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-25">
+							<printWhenExpression><![CDATA[new Boolean(!$F{getNumeroPagina}.equals("3"))]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{nomeEmpresaCompleto}+ " – " +$P{nomeEmpresaSigla}]]></textFieldExpression>
+				</textField>
+				<image  vAlign="Middle" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="3"
+						y="7"
+						width="57"
+						height="44"
+						key="image-1">
+							<printWhenExpression><![CDATA[new Boolean(!$F{getNumeroPagina}.equals("3"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<graphicElement stretchType="NoStretch"/>
+					<imageExpression class="java.lang.String"><![CDATA[$P{imagem}]]></imageExpression>
+				</image>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="688"  isSplitAllowed="false" >
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="1"
+						y="6"
+						width="534"
+						height="365"
+						key="textField-22"
+						isPrintRepeatedValues="false">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Justified" lineSpacing="1_1_2">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["\n\n4.0 – DAS INFRAÇÕES PUNÍVEIS AO USUÁRIO:"
++"\n\na) Intervenção de qualquer modo nas instalações de água e esgotos da " +$P{nomeEmpresaSigla}+ "."
++"\nb) Ligação clandestina de qualquer canalização à rede distribuidora da " +$P{nomeEmpresaSigla}+ "."
++"\nc) Violar e/ou retirar o hidrômetro, por qualquer que seja o motivo."
++"\nd) Usar a instalação predial da " +$P{nomeEmpresaSigla}+ " com água que não procede do sistema de abastecimento de água da " +$P{nomeEmpresaSigla}+ "."
++"\ne) Derivação clandestina para outro imóvel."
++"\nf) Usar bomba de sucção ou qualquer outro dispositivo que succione a água diretamente do ramal predial ou da rede de distribuição."
++"\ng) Violar o lacre das ligações cortadas."
++"\nh) Religar a água cortada sem autorização da " +$P{nomeEmpresaSigla}+ "."
++"\ni) Lançamento de águas pluviais e de piscina nas instalações de água ou esgoto da " +$P{nomeEmpresaSigla}+ "."
++"\nj) Construir fossa e/ou sumidouro a distância inferior a 2 (dois) metros da rede pública de abastecimento de água."
+
++"\n\n5.0 – DAS PENALIDADES:"
++"\n\nPara cada infração cometida pelo cliente, haverá cobrança de notificação/multa, conforme a gravidade da ocorrência."
+
++"\n\n6.0 – DA RESCISÃO CONTRATUAL:"
++"\n\nA " +$P{nomeEmpresaSigla}+ " pode a qualquer momento suprimir o fornecimento de água do cliente/usuário que estiver em débito, extrapoladas todas as formas de negociações."
+
++"\n\n\nQuaisquer dúvidas que surgirem decorrentes deste Contrato poderá ser consultado o Regulamento dos Serviços Públicos de Água e Esgotos Sanitários da " +$P{nomeEmpresaSigla}+ " (Decreto 4334 de 22.09.89), a disposição nas Lojas de Serviços da " +$P{nomeEmpresaSigla}+ "."
+
++"\n\nFica eleito o Foro da Comarca de " +$F{getMunicipio}+", para dirimir quaisquer questões surgidas na execução ou interpretação deste Contrato, renunciando-se a qualquer outro, por mais privilegiado que seja."
+
++"\n\nE por estarem assim, justos e contratados, assinam o presente instrumento em 02(duas) vias de igual teor."]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="1"
+						y="119"
+						width="534"
+						height="563"
+						key="OBJETO DO CONTRATO">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Justified" lineSpacing="1_1_2">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["1.0 - OBJETO DO CONTRATO:"
++"\n\nPrestação de serviços de abastecimento de água tratada e esgotamento sanitário, de acordo com os padrões estabelecidos no Decreto Lei nº4334/89 e na Lei Federal nº 11.445/2007, e normas internas vigentes, conforme consta no cadastro  da " +$P{nomeEmpresaSigla}+ ", a qual é de responsabilidade do USUÁRIO; o imóvel descrito abaixo: "
++"\nMatrícula: " + $F{getIdImovel} + " - Inscrição: " + $F{getInscricaoImovel}
++"\nNome: " +$F{getNomeCliente}
++"\nEndereço: " + $F{getEnderecoImovel}
+
++"\n\n2.0 – DEVERES DA " +$P{nomeEmpresaSigla}
++"\n\na) Executar ligação de água somente quando constatadas a qualidade e a totalidade dos materiais solicitados ao cliente, assim como, a existência de reservatório de água com capacidade mínima de 500 litros, com bóia."
++"\nb) Inspecionar as instalações hidráulicas do imóvel, antes de executar a ligação de água/esgoto, e posteriormente, a qualquer tempo, quando julgar necessário."
++"\nc) Fornecer água tratada até o ponto de entrega do imóvel (cavalete)."
++"\nd) Interromper o fornecimento de água por necessidade de manutenção de redes; execução de prolongamentos e serviços técnicos."
++"\ne) Requisitar força policial quando houver impedimento por parte do cliente do desempenho dos serviços."
++"\nf) Orientar e esclarecer quanto aos métodos para manutenção da qualidade da água."
+
++"\n\n3.0 – DEVERES DO USUÁRIO:"
++"\n\na) Adquirir os materiais solicitados pela " +$P{nomeEmpresaSigla}+ ", conforme o padrão de qualidade exigido."
++"\nb) Efetuar a instalação hidráulica do imóvel dentro dos padrões estabelecidos pela " +$P{nomeEmpresaSigla}+ "."
++"\nc) Reservar, utilizar e manter a qualidade da água após o ponto de entrega (cavalete)."
++"\nd) Reparar ou substituir, dentro do prazo determinado pela " +$P{nomeEmpresaSigla}+ ", as instalações internas defeituosas que estejam possibilitando o desperdício ou a poluição da água."
++"\ne) Informar a " +$P{nomeEmpresaSigla}+ " qualquer alteração no imóvel que resulte em mudança de categoria ou economia (construção/reforma). As alterações que ocorram na categoria de consumo do imóvel, a pedido do usuário ou decorrente de atualização cadastral da " +$P{nomeEmpresaSigla}+ ", serão adequadas aos valores tarifários correspondentes vigentes, a partir da data da sua ocorrência, sem retroagir em nenhuma  hipótese esta revisão."
++"\nf) Apresentar na " +$P{nomeEmpresaSigla}+ " documento informando da venda ou transferência do imóvel, a " +$P{nomeEmpresaSigla}+ " não fará transferência ou rescisão do Contrato sem que haja comunicação expressa."
++"\ng) Deverá o usuário comunicar a " +$P{nomeEmpresaSigla}+ " a rescisão antecipada ou renovação (prorrogação) do contrato de locação, apresentando uma cópia, a fim de ser emitido, pactuado e assinado novo Contrato de Adesão de Serviço Público, pois, na falta  da comunicação em tempo hábil de 30 dias, após o encerramento da vigência da locação será atribuído automaticamente ao proprietário a responsabilidade dos faturamentos futuros. "
++"\nh) Responder pelos danos causados aos hidrômetros e reguladores de consumo do imóvel. Exceto por calamidade pública."
++"\ni) A conservação da instalação predial do imóvel."
++"\nj) Solicitar a " +$P{nomeEmpresaSigla}+ " qualquer reparo, substituição ou modificação do ramal predial."
++"\nl) Pagar a conta de água no prazo previsto na mesma."
++"\nm) Reclamar contra a conta emitida, desde que o faça até 30 dias após seu vencimento, se as contas anteriores estiverem quitadas."
++"\nn) Procurar a Loja de Serviços da " +$P{nomeEmpresaSigla}+ "  para solicitar a segunda via da conta, quando não receber a mesma no imóvel, pois o não recebimento da conta não desobriga o cliente do pagamento."
++"\no) A conta não paga até 60 (sessenta) dias após o vencimento, e não impugnada neste período, será encaminhada para cobrança judicial."]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="1"
+						y="2"
+						width="534"
+						height="123"
+						key="textField-8">
+							<printWhenExpression><![CDATA[new Boolean($F{getIndicadorPessoaFisica}.equals("1") && $F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Justified" lineSpacing="1_1_2">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["\nPelo presente termo de Contrato de Adesão de Serviço Público de Abastecimento de Água e/ou de Serviços n.º " + $F{getNumeroContrato} + ", estabelecido pela Instrução Normativa da " +$P{nomeEmpresaSigla}+ ", que entre si celebram a " +$P{nomeEmpresaCompleto}+ " – " +$P{nomeEmpresaSigla}+ ", Sociedade de Economia Mista, criada pelo Decreto Lei 490 de 4 de março de 1969, com endereço da sede na " +$P{enderecoEmpresa}+ ", na cidade de " +$P{municipioEmpresa}+ "-" +$P{estadoEmpresaSigla}+ ", inscrita no CNPJ sob nº " +$P{cnpjEmpresa}+ ", registrada na Junta Comercial do Estado sob nº 11.3.0000011, Inscrição Estadual nº " +$P{inscricaoEstadualEmpresa}+ ", doravante denominada simplesmente, " +$P{nomeEmpresaSigla}+ ", e de outro lado, " +$F{getNomeCliente}+ ", " +$F{getNacionalidadeCliente}+ ", " +$F{getEstadoCivilCliente}+ ", " +$F{getProfissaoCliente}+ ", inscrito no CPF sob o n° " +$F{getCpfCliente}+ ", RG n° " +$F{getRgCliente}+ ", " +$F{getOrgaoEmissorRgCliente}+ "/" +$F{getUfRgCliente}+ ", residente e domiciliado(a) na " +$F{getEnderecoCliente}+ ", denominado simplesmente de USUÁRIO, tem justos e contratados, que mutuamente aceitam a seguir:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="1"
+						y="2"
+						width="534"
+						height="123"
+						key="textField-23">
+							<printWhenExpression><![CDATA[new Boolean($F{getIndicadorPessoaFisica}.equals("2") && $F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Justified" lineSpacing="1_1_2">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["\nPelo presente termo de Contrato de Adesão de Serviço Público de Abastecimento de Água e/ou de Serviços n.º " + $F{getNumeroContrato} + ", estabelecido pela Instrução Normativa da " +$P{nomeEmpresaSigla}+ ", que entre si celebram a " +$P{nomeEmpresaCompleto}+ " – " +$P{nomeEmpresaSigla}+ ", Sociedade de Economia Mista, criada pelo Decreto Lei 490 de 4 de março de 1969, com endereço da sede na " +$P{enderecoEmpresa}+ ", na cidade de " +$P{municipioEmpresa}+ "-" +$P{estadoEmpresaSigla}+ ", inscrita no CNPJ sob nº " +$P{cnpjEmpresa}+ ", registrada na Junta Comercial do Estado sob nº 11.3.0000011, Inscrição Estadual nº " +$P{inscricaoEstadualEmpresa}+ ", doravante denominada simplesmente, " +$P{nomeEmpresaSigla}+ ", e de outro lado, " +$F{getNomeCliente}+ ", inscrito no CNPJ sob o n° " +$F{getCpfCliente}+ " endereço " +$F{getEnderecoCliente}+ ", denominado simplesmente de USUÁRIO, tem justos e contratados, que mutuamente aceitam a seguir:"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="220"
+						y="608"
+						width="141"
+						height="10"
+						key="NomeFuncionario">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getNomeAtendente}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="220"
+						y="619"
+						width="141"
+						height="10"
+						key="MatriculaFuncionario">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getMatriculaAtendente}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="176"
+						y="608"
+						width="49"
+						height="10"
+						key="LabelNomeFuncionario">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<text><![CDATA[Nome:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="342"
+						y="487"
+						width="25"
+						height="10"
+						key="staticText-15">
+							<printWhenExpression><![CDATA[new Boolean($F{getIndicadorPessoaFisica}.equals("2") && $F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<text><![CDATA[CNPJ:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="8"
+						y="487"
+						width="24"
+						height="10"
+						key="staticText-14">
+							<printWhenExpression><![CDATA[new Boolean($F{getCpfClienteProprietario}.length() > 14 && $F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<text><![CDATA[CNPJ:]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="8"
+						y="470"
+						width="185"
+						height="0"
+						key="line-1">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="342"
+						y="470"
+						width="185"
+						height="0"
+						key="line-2">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="176"
+						y="603"
+						width="185"
+						height="0"
+						key="line-3">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="8"
+						y="476"
+						width="26"
+						height="10"
+						key="staticText-3">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<text><![CDATA[Nome:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="8"
+						y="487"
+						width="23"
+						height="10"
+						key="staticText-9">
+							<printWhenExpression><![CDATA[new Boolean($F{getCpfClienteProprietario}.length() <= 14 && $F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<text><![CDATA[CPF:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="8"
+						y="500"
+						width="24"
+						height="10"
+						key="staticText-10">
+							<printWhenExpression><![CDATA[new Boolean($F{getCpfClienteProprietario}.length() <= 14 && $F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<text><![CDATA[RG:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="342"
+						y="475"
+						width="26"
+						height="10"
+						key="staticText-11">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<text><![CDATA[Nome:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="342"
+						y="487"
+						width="25"
+						height="10"
+						key="staticText-12">
+							<printWhenExpression><![CDATA[new Boolean($F{getIndicadorPessoaFisica}.equals("1") && $F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<text><![CDATA[CPF:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="342"
+						y="499"
+						width="26"
+						height="10"
+						key="staticText-13">
+							<printWhenExpression><![CDATA[new Boolean($F{getIndicadorPessoaFisica}.equals("1") && $F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<text><![CDATA[RG:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="35"
+						y="476"
+						width="158"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getNomeClienteProprietario}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="35"
+						y="488"
+						width="158"
+						height="10"
+						key="textField-10">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getCpfClienteProprietario}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="35"
+						y="500"
+						width="157"
+						height="10"
+						key="textField-11">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getRgClienteProprietario} + " - " + $F{getOrgaoEmissorRgClienteProprietario} + "/" + $F{getUfRgClienteProprietario}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="370"
+						y="475"
+						width="156"
+						height="10"
+						key="textField-12">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getNomeCliente}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="370"
+						y="487"
+						width="156"
+						height="10"
+						key="textField-13">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getCpfCliente}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="370"
+						y="499"
+						width="156"
+						height="10"
+						key="textField-14">
+							<printWhenExpression><![CDATA[new Boolean($F{getIndicadorPessoaFisica}.equals("1") && $F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getRgCliente} + " - " + $F{getOrgaoEmissorRgCliente} + "/" + $F{getUfRgCliente}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="176"
+						y="619"
+						width="49"
+						height="10"
+						key="LabelMatriculaFuncionario">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<text><![CDATA[Matrícula:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="1"
+						y="373"
+						width="534"
+						height="15"
+						key="CidadeData"
+						positionType="Float">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("2"))]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getMunicipio}+", "+$P{diaAtual}+ " de " +$P{mesAtualPortugues}+ " de " +$P{anoAtual}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="50"  isSplitAllowed="false" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="1"
+						y="1"
+						width="534"
+						height="12"
+						key="textField-15">
+							<printWhenExpression><![CDATA[new Boolean(!$F{getNumeroPagina}.equals("3"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Center">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["AV. PINHEIRO MACHADO, 2112 – Bairro São Cristóvão – PORTO VELHO-RO – CEP: 76.804-046"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="1"
+						y="13"
+						width="534"
+						height="12"
+						key="textField-16">
+							<printWhenExpression><![CDATA[new Boolean(!$F{getNumeroPagina}.equals("3"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Center">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["FAX:(0xx69) 3216-1785 TELEFONE: 0800-647-1950"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="1"
+						y="37"
+						width="534"
+						height="12"
+						key="textField-17">
+							<printWhenExpression><![CDATA[new Boolean(!$F{getNumeroPagina}.equals("3"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Center">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["SITE: www.caerd-ro.com.br"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="1"
+						y="25"
+						width="534"
+						height="12"
+						key="textField-18">
+							<printWhenExpression><![CDATA[new Boolean(!$F{getNumeroPagina}.equals("3"))]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Center">
+						<font fontName="Courier New" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["CNPJ 05.914.254.001-39 – JUCER 11.3.0000011.1- SUFRAMA 710007.30-2- INSCR.EST. 00000000.27648-1"]]></textFieldExpression>
+				</textField>
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</summary>
+</jasperReport>

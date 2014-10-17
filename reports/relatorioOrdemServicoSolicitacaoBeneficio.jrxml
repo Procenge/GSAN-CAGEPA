@@ -1,0 +1,1417 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="relatorioOrdemServicoSolicitacaoBeneficio"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Landscape"
+		 pageWidth="548"
+		 pageHeight="409"
+		 columnWidth="548"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+
+		<background>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="365"  isSplitAllowed="true" >
+				<rectangle>
+					<reportElement
+						x="365"
+						y="94"
+						width="182"
+						height="39"
+						key="rectangle-32"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle>
+					<reportElement
+						x="183"
+						y="94"
+						width="182"
+						height="39"
+						key="rectangle-31"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle>
+					<reportElement
+						x="1"
+						y="94"
+						width="182"
+						height="39"
+						key="rectangle-30"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="0"
+						y="9"
+						width="96"
+						height="10"
+						key="staticText-1"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Motivo da Solicitação:]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="1"
+						y="27"
+						width="545"
+						height="14"
+						key="rectangle-1"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="0"
+						y="28"
+						width="546"
+						height="13"
+						key="staticText-2"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[SOLICITAÇÃO DE BENEFICIO]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="1"
+						y="41"
+						width="545"
+						height="14"
+						key="rectangle-2"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="0"
+						y="42"
+						width="546"
+						height="13"
+						key="staticText-3"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[SITUAÇÃO SÓCIO ECONÔMICA]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="1"
+						y="81"
+						width="182"
+						height="14"
+						key="rectangle-3"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="0"
+						y="82"
+						width="182"
+						height="13"
+						key="staticText-6"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[SITUAÇÃO FUNCIONAL]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="63"
+						width="47"
+						height="10"
+						key="staticText-47"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Profissão:]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="114"
+						y="10"
+						width="8"
+						height="8"
+						key="rectangle-12"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="131"
+						y="10"
+						width="97"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-48"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Parcelamento]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="243"
+						y="10"
+						width="8"
+						height="8"
+						key="rectangle-13"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="260"
+						y="10"
+						width="97"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-49"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Reparcelamento]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="373"
+						y="10"
+						width="8"
+						height="8"
+						key="rectangle-14"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="390"
+						y="10"
+						width="156"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-52"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[___________________________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="47"
+						y="64"
+						width="187"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-53"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[________________________________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="250"
+						y="63"
+						width="78"
+						height="10"
+						key="staticText-54"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Local de Trabalho:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="328"
+						y="64"
+						width="217"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-55"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[____________________________________________________]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="184"
+						y="81"
+						width="182"
+						height="14"
+						key="rectangle-15"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="183"
+						y="82"
+						width="182"
+						height="13"
+						key="staticText-56"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[VÍNCULO FUNCIONAL]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="365"
+						y="81"
+						width="182"
+						height="14"
+						key="rectangle-16"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="364"
+						y="82"
+						width="182"
+						height="13"
+						key="staticText-57"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[POSSUI TRANSPORTE PRÓPRIO]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="4"
+						y="99"
+						width="8"
+						height="8"
+						key="rectangle-17"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="17"
+						y="99"
+						width="53"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-58"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Ativo]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="4"
+						y="111"
+						width="8"
+						height="8"
+						key="rectangle-18"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="17"
+						y="111"
+						width="53"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-59"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Pensionista]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="93"
+						y="99"
+						width="8"
+						height="8"
+						key="rectangle-19"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="106"
+						y="99"
+						width="53"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-60"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Aposentado]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="93"
+						y="111"
+						width="8"
+						height="8"
+						key="rectangle-20"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="106"
+						y="111"
+						width="53"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-61"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Encontado]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="4"
+						y="123"
+						width="8"
+						height="8"
+						key="rectangle-21"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="17"
+						y="123"
+						width="53"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-62"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Desempregado]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="189"
+						y="99"
+						width="8"
+						height="8"
+						key="rectangle-22"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="202"
+						y="99"
+						width="53"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-63"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Proprietário]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="189"
+						y="111"
+						width="8"
+						height="8"
+						key="rectangle-23"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="202"
+						y="111"
+						width="53"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-64"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Pensionista]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="268"
+						y="99"
+						width="8"
+						height="8"
+						key="rectangle-24"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="281"
+						y="99"
+						width="83"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-65"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Assal. Permanente]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="268"
+						y="111"
+						width="8"
+						height="8"
+						key="rectangle-25"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="281"
+						y="111"
+						width="82"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-66"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Autonome Irregular]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="378"
+						y="99"
+						width="8"
+						height="8"
+						key="rectangle-26"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="391"
+						y="99"
+						width="52"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-67"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Sim]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="448"
+						y="99"
+						width="8"
+						height="8"
+						key="rectangle-28"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="461"
+						y="99"
+						width="83"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-69"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Não]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="365"
+						y="146"
+						width="182"
+						height="38"
+						key="rectangle-33"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle>
+					<reportElement
+						x="183"
+						y="146"
+						width="182"
+						height="38"
+						key="rectangle-34"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle>
+					<reportElement
+						x="1"
+						y="146"
+						width="182"
+						height="38"
+						key="rectangle-35"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle>
+					<reportElement
+						x="1"
+						y="133"
+						width="182"
+						height="14"
+						key="rectangle-36"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="0"
+						y="134"
+						width="182"
+						height="13"
+						key="staticText-71"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[SITUAÇÃO DO IMÓVEL]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="184"
+						y="133"
+						width="182"
+						height="14"
+						key="rectangle-37"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="183"
+						y="134"
+						width="182"
+						height="13"
+						key="staticText-72"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[NÚMERO DE COMODOS]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="365"
+						y="133"
+						width="182"
+						height="14"
+						key="rectangle-38"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="364"
+						y="134"
+						width="182"
+						height="13"
+						key="staticText-73"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[N. PESSOAS SERVIDAS]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="4"
+						y="150"
+						width="8"
+						height="8"
+						key="rectangle-39"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="17"
+						y="150"
+						width="53"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-74"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Próprio]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="4"
+						y="162"
+						width="8"
+						height="8"
+						key="rectangle-40"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="17"
+						y="162"
+						width="53"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-75"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Alugado]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="93"
+						y="150"
+						width="8"
+						height="8"
+						key="rectangle-41"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="106"
+						y="150"
+						width="53"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-76"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Cedido]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="93"
+						y="162"
+						width="8"
+						height="8"
+						key="rectangle-42"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="106"
+						y="162"
+						width="53"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-77"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Financiado]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="4"
+						y="174"
+						width="8"
+						height="8"
+						key="rectangle-43"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="17"
+						y="174"
+						width="53"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-78"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Invasão]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="189"
+						y="150"
+						width="8"
+						height="8"
+						key="rectangle-44"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="202"
+						y="150"
+						width="53"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-79"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Sala]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="189"
+						y="162"
+						width="8"
+						height="8"
+						key="rectangle-45"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="202"
+						y="162"
+						width="53"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-80"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[WC]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="268"
+						y="150"
+						width="8"
+						height="8"
+						key="rectangle-46"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="281"
+						y="150"
+						width="83"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-81"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Garagem]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="268"
+						y="162"
+						width="8"
+						height="8"
+						key="rectangle-47"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="281"
+						y="162"
+						width="82"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-82"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Quartos]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="378"
+						y="150"
+						width="8"
+						height="8"
+						key="rectangle-48"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="391"
+						y="150"
+						width="152"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-83"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Maior de 18 Anos]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="378"
+						y="162"
+						width="8"
+						height="8"
+						key="rectangle-49"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="391"
+						y="162"
+						width="152"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-84"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Menores de 18 Anos]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="189"
+						y="174"
+						width="8"
+						height="8"
+						key="rectangle-52"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="202"
+						y="174"
+						width="53"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-87"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Cozinha]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="281"
+						y="174"
+						width="82"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-88"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Outros]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="268"
+						y="174"
+						width="8"
+						height="8"
+						key="rectangle-53"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle>
+					<reportElement
+						x="1"
+						y="197"
+						width="545"
+						height="61"
+						key="rectangle-54"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle>
+					<reportElement
+						x="1"
+						y="184"
+						width="545"
+						height="14"
+						key="rectangle-55"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="1"
+						y="184"
+						width="546"
+						height="13"
+						key="staticText-89"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[RENDA FAMILIAR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="3"
+						y="203"
+						width="93"
+						height="10"
+						key="staticText-90"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Salário Titular (R$):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="95"
+						y="204"
+						width="80"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-91"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[________________________________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="3"
+						y="216"
+						width="80"
+						height="10"
+						key="staticText-92"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Outras Rendas (R$):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="82"
+						y="217"
+						width="93"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-93"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[________________________________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="2"
+						y="273"
+						width="174"
+						height="10"
+						key="staticText-98"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Irregularidades Encontradas no Imóvel:]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="166"
+						y="279"
+						width="380"
+						height="0"
+						key="line-1"/>
+					<graphicElement stretchType="NoStretch">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+</graphicElement>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="0"
+						y="295"
+						width="546"
+						height="0"
+						key="line-2"/>
+					<graphicElement stretchType="NoStretch">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+</graphicElement>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="0"
+						y="311"
+						width="220"
+						height="0"
+						key="line-3"/>
+					<graphicElement stretchType="NoStretch">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+</graphicElement>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="0"
+						y="326"
+						width="546"
+						height="0"
+						key="line-4"/>
+					<graphicElement stretchType="NoStretch">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+</graphicElement>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="0"
+						y="341"
+						width="546"
+						height="0"
+						key="line-5"/>
+					<graphicElement stretchType="NoStretch">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+</graphicElement>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="0"
+						y="355"
+						width="546"
+						height="0"
+						key="line-6"/>
+					<graphicElement stretchType="NoStretch">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+</graphicElement>
+				</line>
+				<staticText>
+					<reportElement
+						x="227"
+						y="303"
+						width="53"
+						height="10"
+						key="staticText-99"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Observações:]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="280"
+						y="311"
+						width="265"
+						height="0"
+						key="line-7"/>
+					<graphicElement stretchType="NoStretch">
+					<pen lineWidth="0.5" lineStyle="Solid"/>
+</graphicElement>
+				</line>
+				<staticText>
+					<reportElement
+						x="3"
+						y="230"
+						width="103"
+						height="10"
+						key="staticText-100"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Renda Complementar (R$):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="3"
+						y="243"
+						width="48"
+						height="10"
+						key="staticText-101"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Total (R$):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="52"
+						y="244"
+						width="123"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-102"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[________________________________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="106"
+						y="231"
+						width="69"
+						height="8"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-103"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[________________________________________________]]></text>
+				</staticText>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</summary>
+</jasperReport>

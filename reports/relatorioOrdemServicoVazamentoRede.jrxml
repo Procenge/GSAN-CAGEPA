@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="relatorioOrdemServicoVazamentoRede"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="548"
+		 pageHeight="842"
+		 columnWidth="548"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+
+		<background>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="365"  isSplitAllowed="true" >
+				<rectangle>
+					<reportElement
+						x="1"
+						y="3"
+						width="546"
+						height="14"
+						key="rectangle-1"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="0"
+						y="3"
+						width="547"
+						height="13"
+						key="staticText-1"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[VAZAMENTO DE REDE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="21"
+						width="90"
+						height="10"
+						key="staticText-2"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Número da Casa (No.):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="31"
+						width="120"
+						height="10"
+						key="staticText-3"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Diametro do Distribudor (D):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="41"
+						width="137"
+						height="10"
+						key="staticText-4"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Profundidade do Distribudor (P):]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="89"
+						y="31"
+						width="160"
+						height="0"
+						key="line-1"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="120"
+						y="41"
+						width="129"
+						height="0"
+						key="line-2"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="137"
+						y="51"
+						width="112"
+						height="0"
+						key="line-3"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="262"
+						y="31"
+						width="170"
+						height="10"
+						key="staticText-5"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Distância entre a Rede e o Meio Fio (d):]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="262"
+						y="41"
+						width="127"
+						height="10"
+						key="staticText-6"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Número de Registros Fechados:]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="432"
+						y="41"
+						width="115"
+						height="0"
+						key="line-4"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="389"
+						y="51"
+						width="158"
+						height="0"
+						key="line-5"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="0"
+						y="118"
+						width="145"
+						height="0"
+						key="line-6"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="0"
+						y="174"
+						width="145"
+						height="0"
+						key="line-7"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="390"
+						y="118"
+						width="157"
+						height="0"
+						key="line-8"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="390"
+						y="174"
+						width="157"
+						height="0"
+						key="line-9"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="194"
+						y="118"
+						width="145"
+						height="0"
+						key="line-10"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="194"
+						y="174"
+						width="145"
+						height="0"
+						key="line-11"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement
+						x="144"
+						y="70"
+						width="1"
+						height="48"
+						key="line-12"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement
+						x="144"
+						y="174"
+						width="1"
+						height="48"
+						key="line-13"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement
+						x="194"
+						y="70"
+						width="1"
+						height="48"
+						key="line-14"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement
+						x="194"
+						y="174"
+						width="1"
+						height="48"
+						key="line-15"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement
+						x="338"
+						y="70"
+						width="1"
+						height="48"
+						key="line-16"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement
+						x="338"
+						y="174"
+						width="1"
+						height="48"
+						key="line-17"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement
+						x="390"
+						y="70"
+						width="1"
+						height="48"
+						key="line-18"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement
+						x="390"
+						y="174"
+						width="1"
+						height="48"
+						key="line-19"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement
+						x="212"
+						y="83"
+						width="1"
+						height="35"
+						key="line-20"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement
+						x="229"
+						y="83"
+						width="1"
+						height="35"
+						key="line-21"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="BottomUp">
+					<reportElement
+						x="248"
+						y="83"
+						width="1"
+						height="35"
+						key="line-22"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="231"
+						y="94"
+						width="14"
+						height="10"
+						key="staticText-7"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[No.]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="228"
+						y="125"
+						width="20"
+						height="0"
+						key="line-23"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="254"
+						y="120"
+						width="12"
+						height="10"
+						key="staticText-8"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[D=]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="238"
+						y="129"
+						width="0"
+						height="26"
+						key="line-24"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="254"
+						y="155"
+						width="12"
+						height="10"
+						key="staticText-9"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[P=]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="228"
+						y="160"
+						width="20"
+						height="0"
+						key="line-25"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<rectangle>
+					<reportElement
+						x="1"
+						y="233"
+						width="546"
+						height="14"
+						key="rectangle-2"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="0"
+						y="233"
+						width="547"
+						height="13"
+						key="staticText-10"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[PAVIMENTAÇÃO DEMOLIDA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="251"
+						width="82"
+						height="10"
+						key="staticText-11"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tipo do Pavimento:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="291"
+						width="54"
+						height="10"
+						key="staticText-12"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Quantidade:]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="82"
+						y="261"
+						width="127"
+						height="0"
+						key="line-26"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="54"
+						y="301"
+						width="128"
+						height="0"
+						key="line-27"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="354"
+						y="251"
+						width="55"
+						height="10"
+						key="staticText-13"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Quantidade:]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="409"
+						y="261"
+						width="138"
+						height="0"
+						key="line-28"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<rectangle>
+					<reportElement
+						x="1"
+						y="272"
+						width="546"
+						height="14"
+						key="rectangle-3"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="0"
+						y="272"
+						width="547"
+						height="13"
+						key="staticText-14"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[REATERRO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="245"
+						y="138"
+						width="12"
+						height="10"
+						key="staticText-15"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[d=]]></text>
+				</staticText>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</summary>
+</jasperReport>

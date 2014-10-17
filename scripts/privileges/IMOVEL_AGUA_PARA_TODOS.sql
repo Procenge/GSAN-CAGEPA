@@ -1,0 +1,1 @@
+grant all privileges on gsan_admin.IMOVEL_AGUA_PARA_TODOS to gsan_oper;

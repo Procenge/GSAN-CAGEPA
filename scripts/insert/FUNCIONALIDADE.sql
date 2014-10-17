@@ -1,0 +1,181 @@
+-- FUNCIONALIDADE
+-- Hebert Falcão
+INSERT INTO FUNCIONALIDADE
+ (FNCD_ID,
+ MODU_ID,
+ FNCD_DSFUNCIONALIDADE,
+ FNCD_DSCAMINHOMENU,
+ FNCD_DSCAMINHOURL,
+ FNCD_ICPONTOENTRADA,
+ FNCD_DSABREVIADO,
+ FNCD_NNORDEMMENU,
+ FNCD_ICNOVAJANELA)
+VALUES
+ ('1096',
+ '1',
+ 'Exibir Consumo por Faixa de Área e Categoria do Imóvel',
+ 'Gsan/Cadastro/Imovel',
+ 'exibirImovelConsumoFaixaAreaCategoriaPopupAction.do',
+ '2',
+ 'EGUCI',
+ '0',
+ '2');
+
+INSERT INTO FUNCIONALIDADE
+ (FNCD_ID,
+ MODU_ID,
+ FNCD_DSFUNCIONALIDADE,
+ FNCD_DSCAMINHOMENU,
+ FNCD_DSCAMINHOURL,
+ FNCD_ICPONTOENTRADA,
+ FNCD_DSABREVIADO,
+ FNCD_NNORDEMMENU,
+ FNCD_ICNOVAJANELA)
+VALUES
+ ('1097',
+ '1',
+ 'Inserir Consumo por Faixa de Área e Categoria do Imóvel',
+ 'Gsan/Cadastro/Imovel',
+ 'inserirImovelConsumoFaixaAreaCategoriaPopupAction.do',
+ '2',
+ 'IGUCI',
+ '0',
+ '2');
+ 
+ -- Bruno Ferreira dos Santos
+ INSERT INTO FUNCIONALIDADE
+ (FNCD_ID, 
+ MODU_ID, 
+ FNCD_DSFUNCIONALIDADE, 
+ FNCD_DSCAMINHOMENU, 
+ FNCD_DSCAMINHOURL, 
+ FNCD_ICPONTOENTRADA, 
+ FNCD_DSABREVIADO, 
+ FNCD_NNORDEMMENU, 
+ FNCD_ICNOVAJANELA)
+VALUES 
+ ('1095', 
+ '1', 
+ 'Inserir Cliente Responsável', 
+ 'Gsan/Cadastro/Cliente', 
+ 'exibirInserirClienteResponsavelAction.do', 
+ '2', 
+ 'ICR', 
+ '0', 
+ '2');
+ 
+ INSERT INTO FUNCIONALIDADE
+ (FNCD_ID, 
+ MODU_ID, 
+ FNCD_DSFUNCIONALIDADE, 
+ FNCD_DSCAMINHOMENU, 
+ FNCD_DSCAMINHOURL, 
+ FNCD_ICPONTOENTRADA, 
+ FNCD_DSABREVIADO, 
+ FNCD_NNORDEMMENU, 
+ FNCD_ICNOVAJANELA)
+VALUES 
+ ('2015', 
+ '1', 
+ 'Atualizar Cliente Responsável', 
+ 'Gsan/Cadastro/Cliente', 
+ 'exibirAtualizarClienteResponsavelAction.do', 
+ '2', 
+ 'ACR', 
+ '0', 
+ '2');
+
+--Péricles Tavares
+
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2014,10,'Manter Setor Abastecimento',current_timestamp,'Gsan/Operacional/Setor Abastecimento','exibirFiltrarSetorAbastecimentoAction.do?menu=sim',1,'ManSetAba',12001500090000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2013,10,'Inserir Setor Abastecimento',current_timestamp,'Gsan/Operacional/Setor Abastecimento','exibirInserirSetorAbastecimentoAction.do?menu=sim',1,'InsSetAba',12001500090000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2012,10,'Manter Zona Abastecimento',current_timestamp,'Gsan/Operacional/Zona Abastecimento','exibirFiltrarZonaAbastecimentoAction.do?menu=sim',1,'ManZonAba',12001400090000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2011,10,'Inserir Zona Abastecimento',current_timestamp,'Gsan/Operacional/Zona Abastecimento','exibirInserirZonaAbastecimentoAction.do?menu=sim',1,'InsZonAba',12001400090000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2010,10,'Manter Unidade Operacional',current_timestamp,'Gsan/Operacional/Unidade Operacional','exibirManterUnidadeOperacionalAction.do',1,'ManUniOpe',12001300090000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2009,10,'Inserir Unidade Operacional',current_timestamp,'Gsan/Operacional/Unidade Operacional','exibirInserirUnidadeOperacionalAction.do?menu=sim',1,'InsUniOpe',12001300090000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2008,10,'Manter Sistema de Abastecimento',current_timestamp,'Gsan/Operacional/Sistema de Abastecimento','exibirFiltrarSistemaAbastecimentoAction.do?menu=sim',1,'ManSisAba',12001300090000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2007,10,'Inserir Sistema de Abastecimento',current_timestamp,'Gsan/Operacional/Sistema de Abastecimento','exibirInserirSistemaAbastecimentoAction.do?menu=sim',1,'InsSisAba',12001200090000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2005,10,'Manter Dados Operacionais da Localidade',current_timestamp,'Gsan/Operacional/Dados Operacionais da Localidade','exibirFiltrarLocalidadeDadoOperacionalAction.do?menu=sim',1,'ManDadOpLo',12001000060000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2004,10,'Inserir Dados Operacionais da Localidade',current_timestamp,'Gsan/Operacional/Dados Operacionais da Localidade','exibirInserirLocalidadeDadoOperacionalAction.do?menu=sim',1,'InsDadOpLo',1200900070000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2003,10,'Manter Sub-Bacia',current_timestamp,'Gsan/Operacional/Sub-Bacia','exibirFiltrarSubBaciaAction.do?menu=sim',1,'ManSubBac',1200800060000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2002,10,'Inserir Sub-Bacia',current_timestamp,'Gsan/Operacional/Sub-Bacia','exibirInserirSubBaciaAction.do?menu=sim',1,'InsSubBac',1200700060000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2001,10,'Manter Bacia',current_timestamp,'Gsan/Operacional/Bacia','exibirFiltrarBaciaAction.do?menu=sim',1,'ManBacia',1200600060000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2000,10,'Inserir Bacia',current_timestamp,'Gsan/Operacional/Bacia','exibirInserirBaciaAction.do?menu=sim',1,'InsBacia',1200600050000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (1099,10,'Manter Sub-Sistema Esgoto',current_timestamp,'Gsan/Operacional/Sub-Sistema Esgoto','exibirFiltrarSubSistemaEsgotoAction.do?menu=sim',1,'ManSubEsg',1200500040000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (1098,10,'Inserir Sub-Sistema Esgoto',current_timestamp,'Gsan/Operacional/Sub-Sistema Esgoto','exibirInserirSubSistemaEsgotoAction.do?menu=sim',1,'InsSubEsg',1200500030000,2);
+
+--Bruno Ferreira dos Santos
+insert into funcionalidade values (2038,1,'Manter Imovel Agua para Todos',sysdate,'Gsan/Cadastro/Imovel/Programa Agua para Todos','exibirManterImovelAguaParaTodosAction.do',1,'MIAPT',99999999999999,2)
+insert into funcionalidade values (2039,1,'Consultar Imóvel Agua Para Todos',sysdate,'Gsan/Cadastro/Imovel/Programa Agua para Todos','exibirConsultarImovelAguaParaTodosAction.do',1,'CIAPT',99999999999999,2)
+
+
+--Anderson Italo
+INSERT INTO FUNCIONALIDADE (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) 
+VALUES (SQ_FUNCIONALIDADE.nextVal,9,'Relatorio Logradouro Geral',{ts '2011-01-25 14:49:06.937'},'Gsan/Relatorios/Cadastro','exibirGerarRelatorioLogradouroGeralAction.do',1,'RelLogGer',0,2);
+
+-- Isaac Silva
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2057,1,'Suprimir Esgoto Judicialmente',current_timestamp,'Gsan/Cadastro/Imovel/Esgoto Judicialmente','exibirSuprimirImovelEsgotoJudicialAction.do?menu=sim',1,'ManSEsJUD',12001000060000,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2058,1,'Religar Esgoto Suprimido Judicialmente',current_timestamp,'Gsan/Cadastro/Imovel/Esgoto Judicialmente','exibirReligarSuprimidoImovelEsgotoJudicialAction.do?menu=sim',1,'MaRSEsJUD',12001000060000,2);
+
+--Anderson Italo
+INSERT INTO FUNCIONALIDADE (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) 
+VALUES (SQ_FUNCIONALIDADE.nextVal,1,'Inserir Dados Censitarios',{ts '2011-01-25 14:49:06.937'},'Gsan/Cadastro/Dados Censitarios','exibirInserirDadosCensitariosAction.do',1,'ExInDaCe',0,2);
+
+--Anderson Italo
+INSERT INTO FUNCIONALIDADE (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) 
+VALUES (SQ_FUNCIONALIDADE.nextVal,1,'Exibir Manter Dados Censitarios',current_timestamp,'Gsan/Cadastro/Dados Censitarios','exibirManterDadosCensitariosAction.do',2,'ExMaDaCe',0,2);
+
+INSERT INTO FUNCIONALIDADE (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) 
+VALUES (SQ_FUNCIONALIDADE.nextVal,1,'Atualizar Dados Censitarios',current_timestamp,'Gsan/Cadastro/Dados Censitarios','exibirAtualizarDadosCensitariosAction.do',2,'ExAtDaCe',0,2);
+
+-- Péricles Tavares
+INSERT INTO FUNCIONALIDADE (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2099,9,'Relatório de Macromedidores e Micromedidos Associados',current_timestamp,'Gsan/Relatorios/Cadastro','gerarRelatorioMicromedidoresAction.do',1,'RelMicro',1,2);
+INSERT INTO FUNCIONALIDADE (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2101,9,'Relatório de Macromedidores e Micromedidos Consumos',current_timestamp,'Gsan/Relatorios/Cadastro','exibirGerarRelatorioMacromedidoresMicromedidosAssociadosUltimosConsumos.do',1,'GerRelMacr',0,2);
+
+--Anderson Italo
+INSERT INTO FUNCIONALIDADE (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) 
+VALUES (SQ_FUNCIONALIDADE.nextVal,9,'Relatorio Grandes Consumidores',current_timestamp,'Gsan/Relatorios/Cadastro','exibirGerarRelatorioGrandesConsumidoresAction.do',1,'RelGraCon',0,2);
+
+--Ailton Sousa
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) 
+	VALUES (2103,6,'Manter Mensagem Solicitacao Tipo Especificacao',current_timestamp,'Gsan/Atendimento ao Publico/Registro Atendimento/Mensagem Automatica','exibirFiltrarMensagemTipoSolicitacaoEspecificacaoAction.do?menu=sim',1,'MaSoTpEMsg',100200200300,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) 
+	VALUES (2102,6,'Inserir Mensagem Solicitacao Tipo Especificacao',current_timestamp,'Gsan/Atendimento ao Publico/Registro Atendimento/Mensagem Automatica','exibirInserirMensagemTipoSolicitacaoEspecificacaoAction.do?menu=sim',1,'InSoTpEMsg',100200200250,2);
+	
+--Anderson Italo
+INSERT INTO FUNCIONALIDADE (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) 
+VALUES (SQ_FUNCIONALIDADE.nextVal,9,'Relatorio Usuarios em Debito Automatico',current_timestamp,'Gsan/Relatorios/Cadastro','exibirGerarRelatorioUsuarioDebitoAutomaticoAction.do',1,'RelUsDeAu',0,2);
+
+--Ailton Sousa
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) 
+	VALUES (2105,7,'Manter Consumo por Faixa de Área e Categoria',current_timestamp,'Gsan/Faturamento/Consumo por Faixa de Área e Categoria','exibirFiltrarConsumoFaixaAreaCategoriaAction.do?menu=sim',1,'ManGruUsu',200080010040,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) 
+	VALUES (2104,7,'Inserir Consumo por Faixa de Área e Categoria',current_timestamp,'Gsan/Faturamento/Consumo por Faixa de Área e Categoria','exibirInserirConsumoFaixaAreaCategoriaAction.do?menu=sim',1,'InGruUsu',200080010030,2);
+	
+--Anderson Italo
+INSERT INTO FUNCIONALIDADE (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) 
+VALUES (SQ_FUNCIONALIDADE.nextVal,6,'Relatorio Resumo de Registro de Atendimento',current_timestamp,'Gsan/Relatorios/Atendimento ao Publico','exibirGerarRelatorioResumoRegistroAtendimentoAction.do',1,'RelReReAt',0,2);
+
+--Ailton Sousa
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) 
+	VALUES (2107,1,'Manter Tramite por Especificacao',current_timestamp,'Gsan/Atendimento ao Publico/Registro Atendimento/Tipo de Solicitacao/Tramite','exibirFiltrarTramiteEspecificacaoAction.do?menu=sim',1,'ManTraEsp',100200200400,2);
+INSERT INTO funcionalidade (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) 
+	VALUES (2106,1,'Inserir Tramite por Especificacao',current_timestamp,'Gsan/Atendimento ao Publico/Registro Atendimento/Tipo de Solicitacao/Tramite','exibirInserirTramiteEspecificacaoAction.do?menu=sim',1,'InTraEsp',100200200300,2);
+
+--Isaac Silva
+Insert into FUNCIONALIDADE (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) values (2158,9,'Relatorio Estatistica de Atendimento por Atendente',current_timestamp,'Gsan/Relatorios/Atendimento ao Publico','exibirFiltrarEstatisticaAtendimentoAtendente.do',1,'ReEstAtAte',1000010020000,2);
+
+--Anderson Italo
+INSERT INTO FUNCIONALIDADE (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) 
+VALUES (SQ_FUNCIONALIDADE.nextVal,6,'Relatorio Gestao de Registro de Atendimento',current_timestamp,'Gsan/Relatorios/Atendimento ao Publico','exibirGerarRelatorioGestaoRegistroAtendimentoAction.do',1,'RelGeReAt',0,2);
+
+Insert into FUNCIONALIDADE (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) values (2197,9,'Relatorio de Produtividade de Equipe',to_timestamp('04/04/11 10:41:46,355000000','DD/MM/RR HH24:MI:SS,FF'),'Gsan/Relatorios/Atendimento ao Publico','exibirGerarRelatorioAcompanhamentoExecucaoOSAction.do?tipoRelatorio=2',1,'RPE',999999999999,2);
+
+INSERT INTO FUNCIONALIDADE (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_DSCAMINHOMENU, FNCD_DSCAMINHOURL, FNCD_ICPONTOENTRADA, FNCD_DSABREVIADO, FNCD_NNORDEMMENU, FNCD_ICNOVAJANELA) VALUES ('2198', '9', 'Relatorio Res de Ordens de Servico Nao Exec por Equipe', 'Gsan/Relatorios/Atendimento ao Publico', 'exibirGerarRelatorioAcompanhamentoExecucaoOSAction.do?tipoRelatorio=3', '1', 'RPE3', '0', '2')
+
+INSERT INTO FUNCIONALIDADE (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_DSCAMINHOMENU, FNCD_DSCAMINHOURL, FNCD_ICPONTOENTRADA, FNCD_DSABREVIADO, FNCD_NNORDEMMENU, FNCD_ICNOVAJANELA) VALUES ('2199', '9', 'Relatorio Res de Ordens de Servico Encerradas', 'Gsan/Relatorios/Atendimento ao Publico', 'exibirGerarRelatorioAcompanhamentoExecucaoOSAction.do?tipoRelatorio=4', '1', 'RPE4', '0', '2')
+
+
+-- Hebert Falcão
+-- CR84384
+INSERT INTO FUNCIONALIDADE (FNCD_ID,MODU_ID,FNCD_DSFUNCIONALIDADE,FNCD_TMULTIMAALTERACAO,FNCD_DSCAMINHOMENU,FNCD_DSCAMINHOURL,FNCD_ICPONTOENTRADA,FNCD_DSABREVIADO,FNCD_NNORDEMMENU,FNCD_ICNOVAJANELA) VALUES (2220,5,'Consultar Historico de Instalacao de Hidrometro Popup',current_timestamp,'Gsan/Micromedicao/Hidrometro','consultarHistoricoInstalacaoHidrometroPopupAction.do',1,'ConHisPo',0,2);

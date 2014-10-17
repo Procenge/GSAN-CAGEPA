@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="relatorioArquivoDeclaracaoAnualQuitacaoDebitos"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="imagemAssinatura" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="msg" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="dataPorExtenso" isForPrompting="false" class="java.lang.String"/>
+
+	<field name="inscricao" class="java.lang.String"/>
+	<field name="usuario" class="java.lang.String"/>
+	<field name="endereco" class="java.lang.String"/>
+	<field name="matricula" class="java.lang.String"/>
+	<field name="codigoResponsavel" class="java.lang.String"/>
+	<field name="sequencialImpressao" class="java.lang.String"/>
+	<field name="ciclo" class="java.lang.String"/>
+	<field name="anoBase" class="java.lang.String"/>
+	<field name="local" class="java.lang.String"/>
+	<field name="setor" class="java.lang.String"/>
+	<field name="rota" class="java.lang.String"/>
+	<field name="segmento" class="java.lang.String"/>
+	<field name="lote" class="java.lang.String"/>
+	<field name="sublote" class="java.lang.String"/>
+
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="575"  isSplitAllowed="true" >
+				<image  vAlign="Middle" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="6"
+						y="5"
+						width="67"
+						height="55"
+						key="image-1"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<graphicElement stretchType="NoStretch"/>
+					<imageExpression class="java.lang.String"><![CDATA[$P{imagem}]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement
+						x="2"
+						y="66"
+						width="183"
+						height="35"
+						key="staticText-23"/>
+					<box>					<pen lineWidth="0.25" lineStyle="Solid"/>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<text><![CDATA[ Inscrição]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="4"
+						y="168"
+						width="129"
+						height="37"
+						key="staticText-24"/>
+					<box>					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<text><![CDATA[ Matrícula]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="202"
+						y="66"
+						width="332"
+						height="35"
+						key="staticText-26"/>
+					<box>					<pen lineWidth="0.25" lineStyle="Solid"/>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<text><![CDATA[ Usuário]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="3"
+						y="107"
+						width="531"
+						height="55"
+						key="staticText-27"/>
+					<box>					<pen lineWidth="0.25" lineStyle="Solid"/>
+					<topPen lineWidth="0.0" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<text><![CDATA[ Endereço do Imóvel]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="6"
+						y="182"
+						width="122"
+						height="18"
+						key="textField"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{matricula}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="7"
+						y="121"
+						width="400"
+						height="36"
+						key="textField"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{endereco}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="4"
+						y="78"
+						width="176"
+						height="18"
+						key="textField"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{inscricao}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="204"
+						y="78"
+						width="328"
+						height="18"
+						key="textField"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{usuario}]]></textFieldExpression>
+				</textField>
+				<line direction="TopDown">
+					<reportElement
+						x="46"
+						y="550"
+						width="218"
+						height="1"
+						key="line-4"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="41"
+						y="486"
+						width="223"
+						height="19"
+						key="textField"/>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Bottom">
+						<font fontName="Courier New"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{dataPorExtenso}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="226"
+						y="168"
+						width="109"
+						height="37"
+						key="staticText-29"/>
+					<box>					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<text><![CDATA[ Cod. Resp.]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="228"
+						y="182"
+						width="80"
+						height="18"
+						key="textField-21"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{codigoResponsavel}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="431"
+						y="168"
+						width="103"
+						height="37"
+						key="staticText-30"/>
+					<box>					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<text><![CDATA[ Seq./Ciclo]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="442"
+						y="182"
+						width="43"
+						height="18"
+						key="textField-22"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{sequencialImpressao}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="46"
+						y="552"
+						width="218"
+						height="19"
+						key="staticText-31"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Superintendência Comercial]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="2"
+						y="264"
+						width="531"
+						height="134"
+						key="staticText-32"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.25" lineColor="#000000"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Helvetica" size="10" isBold="false"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="155"
+						y="273"
+						width="218"
+						height="19"
+						key="staticText-33"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[CERTIDÃO DE QUITAÇÃO ANUAL]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="489"
+						y="182"
+						width="43"
+						height="18"
+						key="textField-23"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{ciclo}]]></textFieldExpression>
+				</textField>
+				<image  evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="46"
+						y="524"
+						width="218"
+						height="24"
+						key="image-2"/>
+					<box></box>
+					<graphicElement stretchType="NoStretch"/>
+					<imageExpression class="java.lang.String"><![CDATA[$P{imagemAssinatura}]]></imageExpression>
+				</image>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="12"
+						y="311"
+						width="506"
+						height="57"
+						key="textField-24"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" pdfFontName="Courier" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{msg}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="12"
+						y="369"
+						width="506"
+						height="19"
+						key="staticText-34"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Esta Certidão de quitação não abrange parcelas vincendas e serviços a cobrar.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="4"
+						y="211"
+						width="69"
+						height="37"
+						key="staticText-35"/>
+					<box>					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<text><![CDATA[ Local]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="6"
+						y="225"
+						width="60"
+						height="18"
+						key="textField-25"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{local}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="80"
+						y="211"
+						width="69"
+						height="37"
+						key="staticText-36"/>
+					<box>					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<text><![CDATA[ Setor]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="82"
+						y="225"
+						width="60"
+						height="18"
+						key="textField-26"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{setor}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="156"
+						y="211"
+						width="69"
+						height="37"
+						key="staticText-37"/>
+					<box>					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<text><![CDATA[ Rota]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="158"
+						y="225"
+						width="60"
+						height="18"
+						key="textField-27"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{rota}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="232"
+						y="211"
+						width="69"
+						height="37"
+						key="staticText-38"/>
+					<box>					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<text><![CDATA[ Segmento]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="234"
+						y="225"
+						width="60"
+						height="18"
+						key="textField-28"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{segmento}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="308"
+						y="211"
+						width="69"
+						height="37"
+						key="staticText-39"/>
+					<box>					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<text><![CDATA[ Lote]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="310"
+						y="225"
+						width="60"
+						height="18"
+						key="textField-29"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{lote}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="384"
+						y="211"
+						width="69"
+						height="37"
+						key="staticText-40"/>
+					<box>					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<text><![CDATA[ Sublote]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="386"
+						y="225"
+						width="60"
+						height="18"
+						key="textField-30"/>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font fontName="Courier New" size="10"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{sublote}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

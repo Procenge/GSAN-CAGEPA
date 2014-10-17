@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="relatorioOrdemServicoReligacaoMedicaoIndiv"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="548"
+		 pageHeight="842"
+		 columnWidth="548"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+
+	<field name="marcaHidrometro" class="java.lang.String"/>
+	<field name="tipoHidrometro" class="java.lang.String"/>
+	<field name="dataInstalacaoHidrometro" class="java.lang.String"/>
+	<field name="numeroHidrometro" class="java.lang.String"/>
+	<field name="localInstalacaoHidrometro" class="java.lang.String"/>
+	<field name="capacidadeHidrometro" class="java.lang.String"/>
+	<field name="tipoProtecaoHidrometro" class="java.lang.String"/>
+	<field name="diametroHidrometro" class="java.lang.String"/>
+	<field name="dataCorte" class="java.lang.String"/>
+	<field name="numeroSeloCorte" class="java.lang.String"/>
+	<field name="numeroLeituraCorte" class="java.lang.String"/>
+	<field name="idDescricaoCorteTipo" class="java.lang.String"/>
+
+		<background>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="365"  isSplitAllowed="true" >
+				<rectangle>
+					<reportElement
+						x="1"
+						y="17"
+						width="546"
+						height="14"
+						key="rectangle-1"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="0"
+						y="18"
+						width="547"
+						height="13"
+						key="staticText-1"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[DADOS DO HIDRÔMETRO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="55"
+						width="68"
+						height="10"
+						key="staticText-2"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Data Instalação:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="68"
+						y="55"
+						width="89"
+						height="10"
+						key="textField-1"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{dataInstalacaoHidrometro}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="149"
+						y="35"
+						width="31"
+						height="10"
+						key="staticText-3"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Número:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="180"
+						y="35"
+						width="111"
+						height="10"
+						key="textField-2"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{numeroHidrometro}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="149"
+						y="45"
+						width="72"
+						height="10"
+						key="staticText-4"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Local Instalação:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="221"
+						y="45"
+						width="71"
+						height="10"
+						key="textField-3"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{localInstalacaoHidrometro}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="297"
+						y="35"
+						width="49"
+						height="10"
+						key="staticText-5"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Capacidade:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="346"
+						y="35"
+						width="66"
+						height="10"
+						key="textField-4"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{capacidadeHidrometro}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="421"
+						y="35"
+						width="40"
+						height="10"
+						key="staticText-6"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Diametro:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="461"
+						y="35"
+						width="86"
+						height="10"
+						key="textField-5"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{diametroHidrometro}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="297"
+						y="45"
+						width="60"
+						height="10"
+						key="staticText-7"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tipo Proteção:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="357"
+						y="45"
+						width="189"
+						height="10"
+						key="textField-6"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{tipoProtecaoHidrometro}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="0"
+						y="45"
+						width="26"
+						height="10"
+						key="staticText-8"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tipo:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="26"
+						y="45"
+						width="117"
+						height="10"
+						key="textField-7"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{tipoHidrometro}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="26"
+						y="35"
+						width="117"
+						height="10"
+						key="textField-8"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{marcaHidrometro}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="0"
+						y="35"
+						width="26"
+						height="10"
+						key="staticText-9"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Marca:]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="1"
+						y="3"
+						width="546"
+						height="14"
+						key="rectangle-2"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="0"
+						y="4"
+						width="547"
+						height="13"
+						key="staticText-10"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[RELIGAÇÃO / RESTABELECIMENTO]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="1"
+						y="70"
+						width="546"
+						height="14"
+						key="rectangle-3"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="0"
+						y="71"
+						width="547"
+						height="13"
+						key="staticText-11"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[DADOS ÚLTIMO CORTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="97"
+						width="37"
+						height="10"
+						key="staticText-12"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Leitura:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="87"
+						width="62"
+						height="10"
+						key="staticText-13"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tipo do Corte:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="280"
+						y="97"
+						width="52"
+						height="10"
+						key="staticText-15"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[No. do Selo:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="280"
+						y="87"
+						width="60"
+						height="10"
+						key="staticText-16"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Data do Corte:]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="1"
+						y="120"
+						width="546"
+						height="14"
+						key="rectangle-4"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="0"
+						y="120"
+						width="547"
+						height="13"
+						key="staticText-17"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[PAVIMENTAÇÃO DEMOLIDA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="138"
+						width="83"
+						height="10"
+						key="staticText-18"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tipo do Pavimento:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="178"
+						width="56"
+						height="10"
+						key="staticText-19"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Quantidade:]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="71"
+						y="148"
+						width="150"
+						height="0"
+						key="line-1"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="44"
+						y="188"
+						width="150"
+						height="0"
+						key="line-2"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="354"
+						y="138"
+						width="55"
+						height="10"
+						key="staticText-20"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Quantidade:]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="397"
+						y="148"
+						width="150"
+						height="0"
+						key="line-3"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<rectangle>
+					<reportElement
+						x="1"
+						y="159"
+						width="546"
+						height="14"
+						key="rectangle-5"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="0"
+						y="159"
+						width="547"
+						height="13"
+						key="staticText-21"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[REATERRO]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="62"
+						y="87"
+						width="211"
+						height="10"
+						key="textField-10"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{idDescricaoCorteTipo}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="37"
+						y="97"
+						width="235"
+						height="10"
+						key="textField-11"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{numeroLeituraCorte}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="340"
+						y="87"
+						width="201"
+						height="10"
+						key="textField-12"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{dataCorte}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="332"
+						y="97"
+						width="208"
+						height="10"
+						key="textField-13"/>
+					<box></box>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{numeroSeloCorte}]]></textFieldExpression>
+				</textField>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</summary>
+</jasperReport>

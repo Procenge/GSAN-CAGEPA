@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+	<session-factory name="Gcom">
+		<property name="hibernate.connection.driver_class">
+			oracle.jdbc.driver.OracleDriver
+		</property>
+		<property name="hibernate.connection.password">
+			oper#60d
+		</property>
+		<property name="hibernate.connection.url">
+			jdbc:oracle:thin:@10.50.254.111:1521:GSANDES
+		</property>
+		<property name="hibernate.connection.username">
+			GSAN_OPER
+		</property>
+		<property name="hibernate.dialect">
+			org.hibernate.dialect.Oracle9Dialect
+		</property>
+		<property name="hibernate.connection.provider_class">
+			org.hibernate.connection.DriverManagerConnectionProvider
+		</property>
+		
+		
+	
+
+	</session-factory>
+
+</hibernate-configuration>

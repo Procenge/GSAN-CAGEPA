@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="relatorioConfissaoParcelamento"
+		 columnCount="2"
+		 printOrder="Horizontal"
+		 orientation="Landscape"
+		 pageWidth="842"
+		 pageHeight="595"
+		 columnWidth="391"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="tipoFormatoRelatorio" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="cnpj" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="inscricaoEstadual" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["C:\\Implantacao\\CVSROOT\\Gcom\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="empresa" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="qtdeParcelas" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
+
+	<field name="getMatriculaImovel" class="java.lang.String"/>
+	<field name="getNomeCliente" class="java.lang.String"/>
+	<field name="getEndereco" class="java.lang.String"/>
+	<field name="getCpfCnpj" class="java.lang.String"/>
+	<field name="getTelefone" class="java.lang.String"/>
+	<field name="getDataParcelamento" class="java.lang.String"/>
+	<field name="getFaturasEmAberto" class="java.lang.String"/>
+	<field name="getServicosACobrar" class="java.lang.String"/>
+	<field name="getAtualizacaoMonetaria" class="java.lang.String"/>
+	<field name="getJurosMora" class="java.lang.String"/>
+	<field name="getMulta" class="java.lang.String"/>
+	<field name="getGuiaPagamento" class="java.lang.String"/>
+	<field name="getParcelamentoACobrar" class="java.lang.String"/>
+	<field name="getTotalDebitos" class="java.lang.String"/>
+	<field name="getDescontoAcrescimo" class="java.lang.String"/>
+	<field name="getDescontosAntiguidade" class="java.lang.String"/>
+	<field name="getDescontoInatividade" class="java.lang.String"/>
+	<field name="getCreditosARealizar" class="java.lang.String"/>
+	<field name="getTotalDescontos" class="java.lang.String"/>
+	<field name="getValorEntrada" class="java.lang.String"/>
+	<field name="getNumeroParcelas" class="java.lang.String"/>
+	<field name="getValorParcela" class="java.lang.String"/>
+	<field name="getSolicitacaoRestabelecimento" class="java.lang.String"/>
+	<field name="getValorASerParcelado" class="java.lang.String"/>
+	<field name="getValorASerNegociado" class="java.lang.String"/>
+	<field name="getArrayJRDetalhamento" class="java.lang.Object"/>
+	<field name="getPagina" class="java.lang.String"/>
+	<field name="getIdFuncionario" class="java.lang.String"/>
+	<field name="getIdParcelamento" class="java.lang.String"/>
+	<field name="getUnidadeUsuario" class="java.lang.String"/>
+	<field name="getMunicipioData" class="java.lang.String"/>
+	<field name="getCpfClienteParcelamento" class="java.lang.String"/>
+	<field name="getNomeClienteParcelamento" class="java.lang.String"/>
+	<field name="getCodigoEmpresaFebraban" class="java.lang.String"/>
+	<field name="getRgCliente" class="java.lang.String"/>
+	<field name="getMatriculaUsuario" class="java.lang.String"/>
+	<field name="getNomeUsuario" class="java.lang.String"/>
+	<field name="getMunicipio" class="java.lang.String"/>
+	<field name="getMesAnoFinalParcelamento" class="java.lang.String"/>
+	<field name="getMesAnoInicioParcelamento" class="java.lang.String"/>
+	<field name="getValorJuros" class="java.lang.String"/>
+	<field name="getValorDescontoSancoesRegulamentares" class="java.lang.String"/>
+	<field name="getValorDescontoTarifaSocial" class="java.lang.String"/>
+
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="100"  isSplitAllowed="true" >
+				<image  vAlign="Middle" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="16"
+						y="14"
+						width="67"
+						height="55"
+						key="image-1"/>
+					<box></box>
+					<graphicElement stretchType="NoStretch"/>
+					<imageExpression class="java.lang.String"><![CDATA[$P{imagem}]]></imageExpression>
+				</image>
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="315"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						x="0"
+						y="14"
+						width="389"
+						height="20"
+						key="staticText-1"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font isBold="true"/>
+					</textElement>
+				<text><![CDATA[TERMO DE CONFISSÃO E PARCELAMENTO DE DÍVIDA]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="38"
+						width="389"
+						height="40"
+						key="textField-1"/>
+					<box></box>
+					<textElement>
+						<font/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Pelo presente instrumento particular de confissão e parcelamento de dívida, de um lado" +  $P{empresa}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

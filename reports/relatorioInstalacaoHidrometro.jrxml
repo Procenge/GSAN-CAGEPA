@@ -1,0 +1,3028 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="relatorioInstalacaoHidrometro"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="nomeEmpresa" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NM_ESTADO" isForPrompting="false" class="java.lang.String"/>
+
+	<field name="solicitacao" class="java.lang.String"/>
+	<field name="endereco" class="java.lang.String"/>
+	<field name="numero" class="java.lang.String"/>
+	<field name="complemento" class="java.lang.String"/>
+	<field name="me" class="java.lang.String"/>
+	<field name="bairro" class="java.lang.String"/>
+	<field name="referencia" class="java.lang.String"/>
+	<field name="inscricao" class="java.lang.String"/>
+	<field name="solicitante" class="java.lang.String"/>
+	<field name="telefone" class="java.lang.String"/>
+	<field name="ligacao" class="java.lang.String"/>
+	<field name="grupo" class="java.lang.String"/>
+	<field name="enderecoEntrega" class="java.lang.String"/>
+	<field name="tipoFaturamento" class="java.lang.String"/>
+	<field name="tipoLigacao" class="java.lang.String"/>
+	<field name="numeroRA" class="java.lang.String"/>
+	<field name="numeroOS" class="java.lang.String"/>
+	<field name="enderecoEmpresa" class="java.lang.String"/>
+	<field name="emailEmpresa" class="java.lang.String"/>
+	<field name="telefoneEmpresa" class="java.lang.String"/>
+	<field name="dataSolicitacao" class="java.lang.String"/>
+	<field name="idServico" class="java.lang.String"/>
+	<field name="descricaoServico" class="java.lang.String"/>
+	<field name="especificacao" class="java.lang.String"/>
+	<field name="categoria" class="java.lang.String"/>
+	<field name="setorHidraulico" class="java.lang.String"/>
+	<field name="situacao" class="java.lang.String"/>
+	<field name="idImovel" class="java.lang.String"/>
+	<field name="proprietario" class="java.lang.String"/>
+	<field name="agenteAssociado" class="java.lang.String"/>
+	<field name="observacaoRA" class="java.lang.String"/>
+	<field name="unidadeAtendimento" class="java.lang.String"/>
+	<field name="pontoReferencia" class="java.lang.String"/>
+	<field name="numeroHidrometro" class="java.lang.String"/>
+	<field name="tipoRelacao" class="java.lang.String"/>
+
+		<background>
+			<band height="0"  isSplitAllowed="false" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="802"  isSplitAllowed="false" >
+				<rectangle>
+					<reportElement
+						x="0"
+						y="0"
+						width="534"
+						height="75"
+						key="rectangle-156"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle radius="3" >
+					<reportElement
+						x="377"
+						y="351"
+						width="157"
+						height="31"
+						key="rectangle-138"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle radius="3" >
+					<reportElement
+						x="400"
+						y="108"
+						width="134"
+						height="19"
+						key="rectangle-134"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle radius="3" >
+					<reportElement
+						x="321"
+						y="86"
+						width="118"
+						height="19"
+						key="rectangle-133"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle radius="3" >
+					<reportElement
+						x="2"
+						y="108"
+						width="396"
+						height="19"
+						key="rectangle-131"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle radius="3" >
+					<reportElement
+						x="239"
+						y="130"
+						width="175"
+						height="19"
+						key="rectangle-130"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle radius="3" >
+					<reportElement
+						x="416"
+						y="130"
+						width="118"
+						height="19"
+						key="rectangle-129"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle radius="3" >
+					<reportElement
+						x="2"
+						y="130"
+						width="234"
+						height="19"
+						key="rectangle-128"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle radius="3" >
+					<reportElement
+						x="2"
+						y="296"
+						width="372"
+						height="19"
+						key="rectangle-126"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle radius="3" >
+					<reportElement
+						x="2"
+						y="274"
+						width="532"
+						height="19"
+						key="rectangle-105"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="89"
+						y="277"
+						width="444"
+						height="12"
+						key="staticText-299"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( ) Cx. Plástica]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="75"
+						y="43"
+						width="350"
+						height="12"
+						forecolor="#000000"
+						key="staticText-143"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="9" isBold="true" isItalic="false"/>
+					</textElement>
+				<text><![CDATA[INSTALAÇÃO DE HIDRÔMETRO]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="127"
+						y="57"
+						width="69"
+						height="16"
+						key="textField-4">
+							<printWhenExpression><![CDATA[new Boolean($F{idImovel} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{idImovel}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="286"
+						y="57"
+						width="52"
+						height="16"
+						key="textField-5">
+							<printWhenExpression><![CDATA[new Boolean($F{setorHidraulico} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{setorHidraulico}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="200"
+						y="57"
+						width="86"
+						height="16"
+						key="staticText-148"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Setor Hidráulico:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="78"
+						y="57"
+						width="49"
+						height="16"
+						key="staticText-149"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Matrícula:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="40"
+						y="133"
+						width="195"
+						height="12"
+						key="textField-9">
+							<printWhenExpression><![CDATA[new Boolean($F{bairro} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{bairro}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="49"
+						y="112"
+						width="338"
+						height="12"
+						key="textField-11">
+							<printWhenExpression><![CDATA[new Boolean($F{endereco} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{endereco}+", "+$F{numero}+", "+ $F{complemento}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="347"
+						y="90"
+						width="93"
+						height="12"
+						key="textField-12">
+							<printWhenExpression><![CDATA[new Boolean($F{inscricao} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{inscricao}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="323"
+						y="90"
+						width="25"
+						height="12"
+						key="staticText-157"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Insc:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="5"
+						y="133"
+						width="61"
+						height="12"
+						key="staticText-162"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Bairro:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="5"
+						y="112"
+						width="61"
+						height="12"
+						key="staticText-166"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Endereço:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="342"
+						y="57"
+						width="32"
+						height="16"
+						key="staticText-169"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Grupo:]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="4"
+						y="749"
+						width="529"
+						height="1"
+						key="line"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<rectangle>
+					<reportElement
+						x="4"
+						y="550"
+						width="167"
+						height="122"
+						key="rectangle-58"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<line direction="TopDown">
+					<reportElement
+						x="131"
+						y="551"
+						width="1"
+						height="121"
+						key="line-28"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="4"
+						y="594"
+						width="166"
+						height="1"
+						key="line-45"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="4"
+						y="579"
+						width="166"
+						height="1"
+						key="line-46"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="374"
+						y="57"
+						width="44"
+						height="16"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{grupo}!=null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{grupo}]]></textFieldExpression>
+				</textField>
+				<line direction="TopDown">
+					<reportElement
+						x="4"
+						y="564"
+						width="166"
+						height="1"
+						key="line-51"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="245"
+						y="133"
+						width="113"
+						height="12"
+						key="staticText-293"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Categoria no cadastro:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="350"
+						y="133"
+						width="58"
+						height="12"
+						key="textField-33">
+							<printWhenExpression><![CDATA[new Boolean($F{categoria} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{categoria}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="418"
+						y="133"
+						width="37"
+						height="12"
+						key="staticText-294"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Nº ME:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="449"
+						y="133"
+						width="83"
+						height="12"
+						key="textField-34">
+							<printWhenExpression><![CDATA[new Boolean($F{me} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{me}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="5"
+						y="277"
+						width="76"
+						height="12"
+						key="staticText-297"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Proteção do HM:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="126"
+						y="277"
+						width="98"
+						height="12"
+						key="staticText-298"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( ) Sem proteção]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="392"
+						y="277"
+						width="142"
+						height="12"
+						key="staticText-300"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( ) Cx. Polipropileno (PEAD)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="5"
+						y="299"
+						width="93"
+						height="12"
+						key="staticText-301"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Local Instalação:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="92"
+						y="299"
+						width="52"
+						height="12"
+						key="staticText-302"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Passeio]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="150"
+						y="299"
+						width="48"
+						height="12"
+						key="staticText-303"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Jardim]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="205"
+						y="299"
+						width="52"
+						height="12"
+						key="staticText-304"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Mureta]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="262"
+						y="299"
+						width="50"
+						height="12"
+						key="staticText-305"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Parede]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="317"
+						y="299"
+						width="57"
+						height="12"
+						key="staticText-306"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Garagem]]></text>
+				</staticText>
+				<rectangle radius="3" >
+					<reportElement
+						x="377"
+						y="296"
+						width="157"
+						height="19"
+						key="rectangle-127"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="379"
+						y="299"
+						width="142"
+						height="12"
+						key="staticText-307"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Local Inst.:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="437"
+						y="295"
+						width="96"
+						height="12"
+						key="staticText-308"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Dentro do Imóvel]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="437"
+						y="306"
+						width="91"
+						height="12"
+						key="staticText-309"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Fora do Imóvel]]></text>
+				</staticText>
+				<rectangle radius="3" >
+					<reportElement
+						x="2"
+						y="86"
+						width="316"
+						height="19"
+						key="rectangle-132"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="32"
+						y="90"
+						width="281"
+						height="12"
+						key="textField-36">
+							<printWhenExpression><![CDATA[new Boolean($F{proprietario} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{proprietario}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="6"
+						y="90"
+						width="51"
+						height="12"
+						key="staticText-311"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Nome:]]></text>
+				</staticText>
+				<rectangle radius="3" >
+					<reportElement
+						x="2"
+						y="318"
+						width="371"
+						height="31"
+						key="rectangle-135"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="6"
+						y="320"
+						width="93"
+						height="12"
+						key="staticText-312"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Sit Ramal:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="76"
+						y="320"
+						width="52"
+						height="12"
+						key="staticText-313"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Padrão]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="193"
+						y="320"
+						width="48"
+						height="12"
+						key="staticText-314"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Fundos]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="291"
+						y="320"
+						width="77"
+						height="12"
+						key="staticText-315"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Cano Borracha]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="291"
+						y="334"
+						width="68"
+						height="12"
+						key="staticText-318"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Exposto]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="193"
+						y="334"
+						width="62"
+						height="12"
+						forecolor="#000000"
+						key="staticText-317"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Vazamento]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="76"
+						y="334"
+						width="77"
+						height="12"
+						forecolor="#000000"
+						key="staticText-316"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Caçimba/Poço]]></text>
+				</staticText>
+				<rectangle radius="3" >
+					<reportElement
+						x="377"
+						y="318"
+						width="157"
+						height="31"
+						key="rectangle-136"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="379"
+						y="320"
+						width="93"
+						height="12"
+						key="staticText-319"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Categoria:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="474"
+						y="320"
+						width="59"
+						height="12"
+						key="staticText-320"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Comercial]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="381"
+						y="334"
+						width="74"
+						height="12"
+						key="staticText-321"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Industrial]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="479"
+						y="334"
+						width="51"
+						height="12"
+						key="staticText-322"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Público]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="432"
+						y="320"
+						width="77"
+						height="12"
+						forecolor="#000000"
+						key="staticText-323"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Resid.]]></text>
+				</staticText>
+				<rectangle radius="3" >
+					<reportElement
+						x="2"
+						y="351"
+						width="371"
+						height="31"
+						key="rectangle-137"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="6"
+						y="353"
+						width="93"
+						height="12"
+						key="staticText-324"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Tipo Imóvel:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="76"
+						y="353"
+						width="52"
+						height="12"
+						key="staticText-325"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Luxo]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="154"
+						y="353"
+						width="69"
+						height="12"
+						key="staticText-326"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Alta Renda]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="276"
+						y="353"
+						width="77"
+						height="12"
+						key="staticText-327"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Média Renda]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="276"
+						y="367"
+						width="111"
+						height="12"
+						key="staticText-328"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Baixa Renda Beco]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="154"
+						y="367"
+						width="118"
+						height="12"
+						forecolor="#000000"
+						key="staticText-329"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Baixa Renda Palafita]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="76"
+						y="367"
+						width="77"
+						height="12"
+						forecolor="#000000"
+						key="staticText-330"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Baixa Renda]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="379"
+						y="353"
+						width="126"
+						height="12"
+						key="staticText-331"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Remanejamento da Rede:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="381"
+						y="367"
+						width="74"
+						height="12"
+						key="staticText-332"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Sim]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="479"
+						y="367"
+						width="51"
+						height="12"
+						key="staticText-333"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Não]]></text>
+				</staticText>
+				<rectangle radius="3" >
+					<reportElement
+						x="2"
+						y="385"
+						width="371"
+						height="31"
+						key="rectangle-139"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="6"
+						y="387"
+						width="93"
+						height="12"
+						key="staticText-334"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Pavimento Calçada:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="99"
+						y="387"
+						width="44"
+						height="12"
+						key="staticText-335"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Terra]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="195"
+						y="387"
+						width="53"
+						height="12"
+						key="staticText-336"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Cimento]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="302"
+						y="387"
+						width="57"
+						height="12"
+						key="staticText-337"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Bloquete]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="302"
+						y="400"
+						width="70"
+						height="12"
+						key="staticText-338"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Outros]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="195"
+						y="400"
+						width="92"
+						height="12"
+						forecolor="#000000"
+						key="staticText-339"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Cerâmica]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="99"
+						y="400"
+						width="57"
+						height="12"
+						forecolor="#000000"
+						key="staticText-340"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Ladrilho]]></text>
+				</staticText>
+				<rectangle radius="3" >
+					<reportElement
+						x="377"
+						y="385"
+						width="157"
+						height="31"
+						key="rectangle-140"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="379"
+						y="387"
+						width="126"
+						height="12"
+						key="staticText-341"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Caixa D'água:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="445"
+						y="387"
+						width="74"
+						height="12"
+						key="staticText-342"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Sim]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="487"
+						y="387"
+						width="47"
+						height="12"
+						key="staticText-343"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Não]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="379"
+						y="400"
+						width="147"
+						height="12"
+						key="staticText-344"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Volume: ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="412"
+						y="403"
+						width="121"
+						height="12"
+						key="staticText-345"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[________________________]]></text>
+				</staticText>
+				<rectangle radius="3" >
+					<reportElement
+						x="2"
+						y="419"
+						width="532"
+						height="31"
+						key="rectangle-141"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="6"
+						y="421"
+						width="128"
+						height="12"
+						key="staticText-346"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Motivo da Não Instalação:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="134"
+						y="421"
+						width="71"
+						height="12"
+						key="staticText-347"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Não Permite]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="213"
+						y="421"
+						width="92"
+						height="12"
+						key="staticText-348"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Sem Atendimento]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="314"
+						y="421"
+						width="82"
+						height="12"
+						key="staticText-349"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Área Alagadiça]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="314"
+						y="434"
+						width="89"
+						height="12"
+						key="staticText-350"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Não Localizado]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="213"
+						y="434"
+						width="92"
+						height="12"
+						forecolor="#000000"
+						key="staticText-351"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Rede Interna]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="134"
+						y="434"
+						width="57"
+						height="12"
+						forecolor="#000000"
+						key="staticText-352"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Demolido]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="404"
+						y="421"
+						width="70"
+						height="12"
+						key="staticText-354"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[( )Desabitado]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="452"
+						width="99"
+						height="12"
+						key="staticText-355"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Ações realizadas:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="5"
+						y="467"
+						width="528"
+						height="12"
+						key="staticText-356"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[________________________________________________________________________________________________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="5"
+						y="484"
+						width="528"
+						height="12"
+						key="staticText-357"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[________________________________________________________________________________________________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="5"
+						y="501"
+						width="528"
+						height="12"
+						key="staticText-358"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[________________________________________________________________________________________________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="4"
+						y="517"
+						width="528"
+						height="12"
+						key="staticText-359"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[________________________________________________________________________________________________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="7"
+						y="551"
+						width="124"
+						height="12"
+						key="staticText-362"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[DESCRIÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="134"
+						y="551"
+						width="34"
+						height="12"
+						key="staticText-363"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[QTD]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="567"
+						width="155"
+						height="12"
+						key="staticText-364"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Adap.Macho Pead de 20mm x 1/2"]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="5"
+						y="609"
+						width="166"
+						height="1"
+						key="line-113"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="5"
+						y="624"
+						width="166"
+						height="1"
+						key="line-115"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="5"
+						y="654"
+						width="166"
+						height="1"
+						key="line-117"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="5"
+						y="639"
+						width="166"
+						height="1"
+						key="line-118"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="6"
+						y="582"
+						width="155"
+						height="12"
+						key="staticText-365"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Bucha Redução PVC de 3/4 x 1/2"]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="597"
+						width="155"
+						height="12"
+						key="staticText-366"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Caixa de Concreto]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="612"
+						width="155"
+						height="12"
+						key="staticText-367"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Caixa Preta (polipropileno)]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="627"
+						width="155"
+						height="12"
+						key="staticText-368"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Cap de PVC c/ rosca de 1/2"]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="642"
+						width="155"
+						height="12"
+						key="staticText-369"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Hidrômetro completo de 1/2"]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="184"
+						y="550"
+						width="167"
+						height="122"
+						key="rectangle-142"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<line direction="TopDown">
+					<reportElement
+						x="311"
+						y="551"
+						width="1"
+						height="121"
+						key="line-119"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="184"
+						y="594"
+						width="166"
+						height="1"
+						key="line-120"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="184"
+						y="579"
+						width="166"
+						height="1"
+						key="line-121"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="184"
+						y="564"
+						width="166"
+						height="1"
+						key="line-122"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="187"
+						y="551"
+						width="124"
+						height="12"
+						key="staticText-370"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[DESCRIÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="314"
+						y="551"
+						width="34"
+						height="12"
+						key="staticText-371"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[QTD]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="186"
+						y="567"
+						width="155"
+						height="12"
+						key="staticText-372"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Luva de PVC c/ rosca de 1/2]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="185"
+						y="609"
+						width="166"
+						height="1"
+						key="line-123"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="185"
+						y="624"
+						width="166"
+						height="1"
+						key="line-124"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="185"
+						y="654"
+						width="166"
+						height="1"
+						key="line-125"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="185"
+						y="639"
+						width="166"
+						height="1"
+						key="line-126"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="186"
+						y="582"
+						width="155"
+						height="12"
+						key="staticText-373"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Joelho 90º PVC c/ rosca de 3/4]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="186"
+						y="597"
+						width="155"
+						height="12"
+						key="staticText-374"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Joelho 90º PVC s/r. 25mm x 3/4"]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="186"
+						y="612"
+						width="155"
+						height="12"
+						key="staticText-375"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Joelho adap. Pead de 20 x 1/2]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="186"
+						y="627"
+						width="155"
+						height="12"
+						key="staticText-376"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Joelho PVC c/ rosca de 1/2]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="186"
+						y="642"
+						width="155"
+						height="12"
+						key="staticText-377"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Luva de red. c/ rosca 3/4 x 1/2]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						x="365"
+						y="550"
+						width="167"
+						height="122"
+						key="rectangle-143"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<line direction="TopDown">
+					<reportElement
+						x="492"
+						y="551"
+						width="1"
+						height="121"
+						key="line-127"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="365"
+						y="594"
+						width="166"
+						height="1"
+						key="line-128"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="365"
+						y="579"
+						width="166"
+						height="1"
+						key="line-129"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="365"
+						y="564"
+						width="166"
+						height="1"
+						key="line-130"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="368"
+						y="551"
+						width="124"
+						height="12"
+						key="staticText-378"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[DESCRIÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="495"
+						y="551"
+						width="34"
+						height="12"
+						key="staticText-379"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[QTD]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="367"
+						y="567"
+						width="155"
+						height="12"
+						key="staticText-380"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Niple de PVC c/ rosca de 1/2]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="366"
+						y="609"
+						width="166"
+						height="1"
+						key="line-131"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="366"
+						y="624"
+						width="166"
+						height="1"
+						key="line-132"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="366"
+						y="654"
+						width="166"
+						height="1"
+						key="line-133"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="366"
+						y="639"
+						width="166"
+						height="1"
+						key="line-134"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="367"
+						y="582"
+						width="155"
+						height="12"
+						key="staticText-381"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Niple de PVC c/ rosca de 3/4]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="367"
+						y="597"
+						width="155"
+						height="12"
+						key="staticText-382"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Registro Macho/Femea 1/2]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="367"
+						y="612"
+						width="155"
+						height="12"
+						key="staticText-383"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tubo de PVC c/ rosca de 1/2]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="367"
+						y="627"
+						width="155"
+						height="12"
+						key="staticText-384"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tubo de polietileno pead de 20mm]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="367"
+						y="642"
+						width="155"
+						height="12"
+						key="staticText-385"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tubo de PVC c/rosca de 3/4]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="186"
+						y="657"
+						width="155"
+						height="12"
+						key="staticText-386"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Luva de red. PVC s/r. de 20mm x 1/2]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="367"
+						y="657"
+						width="155"
+						height="12"
+						key="staticText-387"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tubo de PVC soldável de 20mm]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="5"
+						y="678"
+						width="124"
+						height="12"
+						key="staticText-388"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Cliente:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="726"
+						width="306"
+						height="12"
+						key="staticText-390"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Assinatura:_________________________________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="5"
+						y="754"
+						width="141"
+						height="12"
+						key="staticText-391"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Fiscal:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="216"
+						y="754"
+						width="141"
+						height="12"
+						key="staticText-392"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Empresa:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="408"
+						y="753"
+						width="125"
+						height="12"
+						key="staticText-393"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Data: _____/_____/_____]]></text>
+				</staticText>
+				<image  vAlign="Middle" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="4"
+						y="10"
+						width="67"
+						height="55"
+						key="image-1"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<graphicElement stretchType="NoStretch"/>
+					<imageExpression class="java.lang.String"><![CDATA[$P{imagem}]]></imageExpression>
+				</image>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="427"
+						y="22"
+						width="106"
+						height="9"
+						key="textField"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center">
+						<font size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{agenteAssociado}]]></textFieldExpression>
+				</textField>
+				<image  scaleImage="RetainShape" vAlign="Top" hAlign="Right" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="429"
+						y="775"
+						width="106"
+						height="27"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="barcode-1"/>
+					<box></box>
+					<graphicElement stretchType="NoStretch" fill="Solid" />
+					<imageExpression class="java.awt.Image"><![CDATA[it.businesslogic.ireport.barcode.BcImage.getBarcodeImage(13,$F{numeroOS},false,false,null,0,0)]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement
+						x="440"
+						y="35"
+						width="28"
+						height="16"
+						key="staticText-394"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<text><![CDATA[OS:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="467"
+						y="35"
+						width="61"
+						height="16"
+						key="textField-37">
+							<printWhenExpression><![CDATA[new Boolean($F{grupo}!=null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{numeroOS}]]></textFieldExpression>
+				</textField>
+				<rectangle radius="3" >
+					<reportElement
+						x="2"
+						y="151"
+						width="532"
+						height="19"
+						key="rectangle-144"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="6"
+						y="155"
+						width="108"
+						height="12"
+						key="staticText-395"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Ponto de Referência:]]></text>
+				</staticText>
+				<rectangle radius="3" >
+					<reportElement
+						x="2"
+						y="214"
+						width="532"
+						height="19"
+						key="rectangle-145"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="6"
+						y="218"
+						width="92"
+						height="12"
+						key="staticText-396"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Observação da RA:]]></text>
+				</staticText>
+				<rectangle radius="3" >
+					<reportElement
+						x="2"
+						y="172"
+						width="255"
+						height="19"
+						key="rectangle-146"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="6"
+						y="176"
+						width="108"
+						height="12"
+						key="staticText-397"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Tipo de Solicitação:]]></text>
+				</staticText>
+				<rectangle radius="3" >
+					<reportElement
+						x="2"
+						y="193"
+						width="222"
+						height="19"
+						key="rectangle-147"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle radius="3" >
+					<reportElement
+						x="260"
+						y="172"
+						width="274"
+						height="19"
+						key="rectangle-148"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="265"
+						y="176"
+						width="112"
+						height="12"
+						key="staticText-398"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Especificação do Tipo:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="197"
+						width="108"
+						height="12"
+						key="staticText-399"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Data da Solicitação:]]></text>
+				</staticText>
+				<rectangle radius="3" >
+					<reportElement
+						x="227"
+						y="193"
+						width="150"
+						height="19"
+						key="rectangle-149"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="230"
+						y="197"
+						width="108"
+						height="12"
+						key="staticText-400"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Unidade Atendimento:]]></text>
+				</staticText>
+				<rectangle radius="3" >
+					<reportElement
+						x="379"
+						y="193"
+						width="155"
+						height="19"
+						key="rectangle-151"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="383"
+						y="197"
+						width="76"
+						height="12"
+						key="staticText-401"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Nº Hidrômetro:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="89"
+						y="218"
+						width="440"
+						height="12"
+						key="textField-38">
+							<printWhenExpression><![CDATA[new Boolean($F{inscricao} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{observacaoRA}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="106"
+						y="155"
+						width="423"
+						height="12"
+						key="textField-39">
+							<printWhenExpression><![CDATA[new Boolean($F{inscricao} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{pontoReferencia}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="453"
+						y="197"
+						width="73"
+						height="12"
+						key="textField-40">
+							<printWhenExpression><![CDATA[new Boolean($F{inscricao} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{numeroHidrometro}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="330"
+						y="197"
+						width="44"
+						height="12"
+						key="textField-41">
+							<printWhenExpression><![CDATA[new Boolean($F{inscricao} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{unidadeAtendimento}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="106"
+						y="197"
+						width="115"
+						height="12"
+						key="textField-42">
+							<printWhenExpression><![CDATA[new Boolean($F{inscricao} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{dataSolicitacao}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="106"
+						y="176"
+						width="149"
+						height="12"
+						key="textField-43">
+							<printWhenExpression><![CDATA[new Boolean($F{inscricao} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{solicitacao}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="374"
+						y="176"
+						width="155"
+						height="12"
+						key="textField-44">
+							<printWhenExpression><![CDATA[new Boolean($F{inscricao} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{especificacao}]]></textFieldExpression>
+				</textField>
+				<rectangle radius="3" >
+					<reportElement
+						x="313"
+						y="235"
+						width="221"
+						height="36"
+						key="rectangle-153"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<rectangle radius="3" >
+					<reportElement
+						x="2"
+						y="235"
+						width="308"
+						height="36"
+						key="rectangle-154"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="5"
+						y="237"
+						width="76"
+						height="12"
+						key="staticText-403"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Nº Hidrômetro:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="317"
+						y="237"
+						width="61"
+						height="12"
+						key="staticText-404"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Lacre:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="5"
+						y="533"
+						width="528"
+						height="12"
+						key="staticText-405"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[________________________________________________________________________________________________________________]]></text>
+				</staticText>
+				<rectangle radius="3" >
+					<reportElement
+						x="442"
+						y="86"
+						width="92"
+						height="19"
+						key="rectangle-155"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="444"
+						y="90"
+						width="65"
+						height="12"
+						key="staticText-406"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Situação:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="488"
+						y="90"
+						width="43"
+						height="12"
+						key="textField-45">
+							<printWhenExpression><![CDATA[new Boolean($F{situacao}!=null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{situacao}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="403"
+						y="112"
+						width="69"
+						height="12"
+						key="staticText-407"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[Tipo relação:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="460"
+						y="112"
+						width="72"
+						height="12"
+						key="textField-46">
+							<printWhenExpression><![CDATA[new Boolean($F{situacao}!=null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{tipoRelacao}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="5"
+						y="693"
+						width="525"
+						height="25"
+						key="textField"/>
+					<box></box>
+					<textElement textAlignment="Justified">
+						<font fontName="Courier New" pdfFontName="Helvetica" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Declaro ter tomado conhecimento de que foi realizada na data de hoje a instalação de hidrômetro em minha matrícula junto à " + $P{nomeEmpresa}]]></textFieldExpression>
+				</textField>
+				<line direction="TopDown">
+					<reportElement
+						x="72"
+						y="1"
+						width="0"
+						height="74"
+						key="line-135"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="426"
+						y="1"
+						width="0"
+						height="74"
+						key="line-136"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="75"
+						y="2"
+						width="350"
+						height="27"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-408"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[GSAN - SISTEMA INTEGRADO DE GESTÃO DE SERVIÇOS DE SANEAMENTO]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="75"
+						y="27"
+						width="350"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-47"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["COMPANHIA DE SANEAMENTO DE  "  + $P{P_NM_ESTADO}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

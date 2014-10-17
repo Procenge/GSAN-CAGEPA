@@ -1,0 +1,2152 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="relatorioReligacoes"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Landscape"
+		 pageWidth="842"
+		 pageHeight="595"
+		 columnWidth="782"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NM_ESTADO" isForPrompting="false" class="java.lang.String"/>
+
+	<field name="inscricao1" class="java.lang.String"/>
+	<field name="inscricao2" class="java.lang.String"/>
+	<field name="matricula1" class="java.lang.String"/>
+	<field name="matricula2" class="java.lang.String"/>
+	<field name="roteiro1" class="java.lang.String"/>
+	<field name="roteiro2" class="java.lang.String"/>
+	<field name="hm1" class="java.lang.String"/>
+	<field name="hm2" class="java.lang.String"/>
+	<field name="programa1" class="java.lang.String"/>
+	<field name="programa2" class="java.lang.String"/>
+	<field name="cliente1" class="java.lang.String"/>
+	<field name="cliente2" class="java.lang.String"/>
+	<field name="endereco1" class="java.lang.String"/>
+	<field name="endereco2" class="java.lang.String"/>
+	<field name="bairro1" class="java.lang.String"/>
+	<field name="bairro2" class="java.lang.String"/>
+	<field name="numero1" class="java.lang.String"/>
+	<field name="numero2" class="java.lang.String"/>
+	<field name="categoria2" class="java.lang.String"/>
+	<field name="categoria" class="java.lang.String"/>
+	<field name="tipoLigacao" class="java.lang.String"/>
+	<field name="tipoLigacao2" class="java.lang.String"/>
+	<field name="ra1" class="java.lang.String"/>
+	<field name="ra2" class="java.lang.String"/>
+	<field name="numeroPagina1" class="java.lang.String"/>
+	<field name="numeroPagina2" class="java.lang.String"/>
+	<field name="tipoServico1" class="java.lang.String"/>
+	<field name="tipoServico2" class="java.lang.String"/>
+	<field name="tipoRelacao1" class="java.lang.String"/>
+	<field name="tipoRelacao2" class="java.lang.String"/>
+
+
+		<group  name="AvisoCorte" >
+			<groupExpression><![CDATA[$V{PAGE_NUMBER}]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="555"  isSplitAllowed="true" >
+				<rectangle>
+					<reportElement
+						x="2"
+						y="1"
+						width="367"
+						height="52"
+						key="rectangle-1"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="45"
+						y="3"
+						width="238"
+						height="22"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-154"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[GSAN - SISTEMA INTEGRADO DE GESTÃO DE SERVIÇOS DE SANEAMENTO]]></text>
+				</staticText>
+				<image  scaleImage="FillFrame" vAlign="Middle" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="3"
+						y="8"
+						width="33"
+						height="36"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="image-1">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<graphicElement stretchType="NoStretch" fill="Solid" />
+					<imageExpression class="java.lang.String"><![CDATA[$P{imagem}]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="49"
+						y="41"
+						width="226"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-1">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[RELIGAÇÕES]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" pattern="dd/MM/yyyy HH.mm.ss" isBlankWhenNull="false" evaluationTime="Report" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="296"
+						y="15"
+						width="69"
+						height="10"
+						key="textField-1">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Right">
+						<font pdfFontName="Helvetica-Oblique" size="7" isItalic="true"/>
+					</textElement>
+				<textFieldExpression   class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+						<anchorNameExpression><![CDATA["ok"]]></anchorNameExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="70"
+						width="103"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-2">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Justified" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="9" isBold="true" isItalic="false" isUnderline="true" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[DADOS DO CLIENTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="2"
+						y="85"
+						width="35"
+						height="12"
+						key="staticText-3">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Matrícula:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="36"
+						y="85"
+						width="69"
+						height="12"
+						key="textField-2">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{matricula1}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="112"
+						y="85"
+						width="34"
+						height="12"
+						key="staticText-4">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Inscrição:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="145"
+						y="85"
+						width="65"
+						height="12"
+						key="textField-3">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{inscricao1}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="236"
+						y="85"
+						width="16"
+						height="12"
+						key="staticText-6">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[HM:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="252"
+						y="85"
+						width="53"
+						height="12"
+						key="textField-5">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{hm1}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="2"
+						y="100"
+						width="30"
+						height="12"
+						key="staticText-8">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Cliente:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="32"
+						y="100"
+						width="199"
+						height="12"
+						key="textField-7">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{cliente1}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="2"
+						y="115"
+						width="37"
+						height="12"
+						key="staticText-9">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Endereço:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="39"
+						y="115"
+						width="187"
+						height="12"
+						key="textField-8">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{endereco1}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="236"
+						y="115"
+						width="27"
+						height="12"
+						key="staticText-10">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Bairro:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="263"
+						y="115"
+						width="99"
+						height="12"
+						key="textField-9">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{bairro1}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="417"
+						y="70"
+						width="101"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-26">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Justified" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="9" isBold="true" isItalic="false" isUnderline="true" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[DADOS DO CLIENTE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="417"
+						y="115"
+						width="37"
+						height="12"
+						key="staticText-33">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Endereço:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="454"
+						y="115"
+						width="187"
+						height="12"
+						key="textField-23">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8" isBold="false"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{endereco2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="293"
+						y="5"
+						width="74"
+						height="10"
+						key="staticText-43">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Oblique" size="7" isItalic="true"/>
+					</textElement>
+				<text><![CDATA[Data/Hora Impressão:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="2"
+						y="130"
+						width="53"
+						height="12"
+						key="staticText-71">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tipo Ligação:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="51"
+						y="130"
+						width="54"
+						height="12"
+						key="textField-47">
+							<printWhenExpression><![CDATA[new Boolean ($F{tipoLigacao} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{tipoLigacao}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="417"
+						y="130"
+						width="53"
+						height="12"
+						key="staticText-72">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tipo Ligação:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="466"
+						y="130"
+						width="52"
+						height="12"
+						key="textField-48">
+							<printWhenExpression><![CDATA[new Boolean ($F{tipoLigacao2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{tipoLigacao2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="112"
+						y="130"
+						width="53"
+						height="12"
+						key="staticText-73">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Categoria:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="151"
+						y="130"
+						width="85"
+						height="12"
+						key="textField-49">
+							<printWhenExpression><![CDATA[new Boolean ($F{categoria} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{categoria}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="527"
+						y="130"
+						width="53"
+						height="12"
+						key="staticText-74">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Categoria:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="567"
+						y="130"
+						width="77"
+						height="12"
+						key="textField-50">
+							<printWhenExpression><![CDATA[new Boolean ($F{categoria2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{categoria2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="149"
+						width="145"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-75">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Justified" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Helvetica-BoldOblique" size="11" isBold="true" isItalic="true" isUnderline="true" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[DADOS DA RELIGAÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="417"
+						y="149"
+						width="145"
+						height="14"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-76">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Justified" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Helvetica-BoldOblique" size="11" isBold="true" isItalic="true" isUnderline="true" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[DADOS DA RELIGAÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="3"
+						y="170"
+						width="124"
+						height="12"
+						key="staticText-77">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Data da Religação:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="134"
+						y="170"
+						width="64"
+						height="12"
+						key="staticText-78">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Horário: ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="206"
+						y="170"
+						width="80"
+						height="12"
+						key="staticText-79">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Leitura: ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="293"
+						y="170"
+						width="73"
+						height="12"
+						key="staticText-80">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Lacre:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="3"
+						y="188"
+						width="118"
+						height="12"
+						key="staticText-85">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tipo Execução:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="3"
+						y="204"
+						width="118"
+						height="12"
+						key="staticText-86">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[(    ) CAVALETE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="3"
+						y="218"
+						width="118"
+						height="12"
+						key="staticText-87">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[(    ) CALÇADA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="106"
+						y="204"
+						width="118"
+						height="12"
+						key="staticText-88">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[(    ) NORMALIZAÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="106"
+						y="218"
+						width="136"
+						height="12"
+						key="staticText-89">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[(    ) NORMALIZAÇÃO POR SUPRESSÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="267"
+						y="204"
+						width="102"
+						height="12"
+						key="staticText-90">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[(    ) RELIG POR SUPRESSÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="2"
+						y="239"
+						width="118"
+						height="12"
+						key="staticText-97">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tipo Ramal:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="2"
+						y="258"
+						width="157"
+						height="12"
+						key="staticText-98">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Nr. Novo Hidrômetro:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="59"
+						y="239"
+						width="136"
+						height="12"
+						key="staticText-99">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[(    ) RAMAL EXPOSTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="154"
+						y="239"
+						width="136"
+						height="12"
+						key="staticText-100">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[(    ) RAMAL NÃO EXPOSTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="173"
+						y="258"
+						width="90"
+						height="12"
+						key="staticText-101">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Leitura:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="291"
+						y="258"
+						width="76"
+						height="12"
+						key="staticText-102">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Lacre:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="2"
+						y="278"
+						width="364"
+						height="12"
+						key="staticText-103">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Observação:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="2"
+						y="314"
+						width="364"
+						height="12"
+						key="staticText-104">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="2"
+						y="334"
+						width="364"
+						height="12"
+						key="staticText-105">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="2"
+						y="369"
+						width="364"
+						height="12"
+						key="staticText-106">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Assinatura do Cliente:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="2"
+						y="409"
+						width="364"
+						height="12"
+						key="staticText-107">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Assinatura do Funcionário:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="2"
+						y="431"
+						width="364"
+						height="12"
+						key="staticText-108">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Informativo: O prazo para reclamação de vazamento é de 15 dias após a execução da religação.]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="2"
+						y="344"
+						width="363"
+						height="0"
+						key="line-1">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="2"
+						y="324"
+						width="363"
+						height="0"
+						key="line-2">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="2"
+						y="305"
+						width="363"
+						height="0"
+						key="line-3">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="80"
+						y="379"
+						width="285"
+						height="0"
+						key="line-4">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="95"
+						y="419"
+						width="270"
+						height="0"
+						key="line-5">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="416"
+						y="188"
+						width="118"
+						height="12"
+						key="staticText-113">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tipo Execução:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="416"
+						y="204"
+						width="118"
+						height="12"
+						key="staticText-114">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[(    ) CAVALETE]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="416"
+						y="218"
+						width="118"
+						height="12"
+						key="staticText-115">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[(    ) CALÇADA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="518"
+						y="204"
+						width="118"
+						height="12"
+						key="staticText-116">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[(    ) NORMALIZAÇÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="518"
+						y="218"
+						width="136"
+						height="12"
+						key="staticText-117">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[(    ) NORMALIZAÇÃO POR SUPRESSÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="676"
+						y="204"
+						width="102"
+						height="12"
+						key="staticText-118">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[(    ) RELIG POR SUPRESSÃO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="415"
+						y="239"
+						width="118"
+						height="12"
+						key="staticText-119">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tipo Ramal:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="472"
+						y="239"
+						width="136"
+						height="12"
+						key="staticText-121">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[(    ) RAMAL EXPOSTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="567"
+						y="239"
+						width="136"
+						height="12"
+						key="staticText-122">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[(    ) RAMAL NÃO EXPOSTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="417"
+						y="278"
+						width="365"
+						height="12"
+						key="staticText-125">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Observação:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="417"
+						y="314"
+						width="365"
+						height="12"
+						key="staticText-126">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="417"
+						y="334"
+						width="365"
+						height="12"
+						key="staticText-127">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="417"
+						y="369"
+						width="365"
+						height="12"
+						key="staticText-128">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Assinatura do Cliente:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="417"
+						y="409"
+						width="365"
+						height="12"
+						key="staticText-129">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Assinatura do Funcionário:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="417"
+						y="431"
+						width="365"
+						height="12"
+						key="staticText-130">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Informativo: O prazo para reclamação de vazamento é de 15 dias após a execução da religação.]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="417"
+						y="344"
+						width="364"
+						height="0"
+						key="line-6">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="417"
+						y="324"
+						width="364"
+						height="0"
+						key="line-7">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="417"
+						y="305"
+						width="364"
+						height="0"
+						key="line-8">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="491"
+						y="379"
+						width="290"
+						height="0"
+						key="line-9">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="506"
+						y="419"
+						width="275"
+						height="0"
+						key="line-10">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="417"
+						y="85"
+						width="35"
+						height="12"
+						key="staticText-131">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Matrícula:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="451"
+						y="85"
+						width="67"
+						height="12"
+						key="textField-51">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{matricula2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="527"
+						y="85"
+						width="34"
+						height="12"
+						key="staticText-132">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Inscrição:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="560"
+						y="85"
+						width="65"
+						height="12"
+						key="textField-52">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{inscricao2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="294"
+						y="24"
+						width="32"
+						height="12"
+						key="staticText-134">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Nº RA:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="326"
+						y="24"
+						width="41"
+						height="12"
+						key="textField-54">
+							<printWhenExpression><![CDATA[new Boolean ($F{ra1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{ra1}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="294"
+						y="36"
+						width="32"
+						height="12"
+						key="staticText-135">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Nº OS:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="326"
+						y="36"
+						width="41"
+						height="12"
+						key="textField-55">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{numero1}]]></textFieldExpression>
+				</textField>
+				<line direction="TopDown">
+					<reportElement
+						x="66"
+						y="180"
+						width="61"
+						height="0"
+						key="line-11">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="160"
+						y="180"
+						width="36"
+						height="0"
+						key="line-12">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="231"
+						y="180"
+						width="53"
+						height="0"
+						key="line-13">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="313"
+						y="180"
+						width="53"
+						height="0"
+						key="line-14">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="70"
+						y="268"
+						width="71"
+						height="0"
+						key="line-15">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="196"
+						y="268"
+						width="71"
+						height="0"
+						key="line-16">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="311"
+						y="268"
+						width="53"
+						height="0"
+						key="line-17">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="418"
+						y="170"
+						width="124"
+						height="12"
+						key="staticText-138">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Data da Religação:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="549"
+						y="170"
+						width="64"
+						height="12"
+						key="staticText-139">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Horário: ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="621"
+						y="170"
+						width="80"
+						height="12"
+						key="staticText-140">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Leitura: ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="708"
+						y="170"
+						width="73"
+						height="12"
+						key="staticText-141">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Lacre:]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="484"
+						y="180"
+						width="58"
+						height="0"
+						key="line-18">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="575"
+						y="180"
+						width="36"
+						height="0"
+						key="line-19">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="646"
+						y="180"
+						width="53"
+						height="0"
+						key="line-20">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="728"
+						y="180"
+						width="53"
+						height="0"
+						key="line-21">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="417"
+						y="258"
+						width="157"
+						height="12"
+						key="staticText-142">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Nr. Novo Hidrômetro:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="588"
+						y="258"
+						width="90"
+						height="12"
+						key="staticText-143">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Leitura:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="706"
+						y="258"
+						width="76"
+						height="12"
+						key="staticText-144">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Lacre:]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="484"
+						y="268"
+						width="71"
+						height="0"
+						key="line-22">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="611"
+						y="268"
+						width="71"
+						height="0"
+						key="line-23">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="726"
+						y="268"
+						width="53"
+						height="0"
+						key="line-24">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<image  scaleImage="RetainShape" vAlign="Top" hAlign="Left" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="260"
+						y="531"
+						width="105"
+						height="21"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="barcode-1">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<graphicElement stretchType="NoStretch" fill="Solid" />
+					<imageExpression class="java.awt.Image"><![CDATA[it.businesslogic.ireport.barcode.BcImage.getBarcodeImage(13,$F{numero1},false,false,null,0,90)]]></imageExpression>
+				</image>
+				<image  scaleImage="RetainShape" vAlign="Top" hAlign="Left" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="675"
+						y="531"
+						width="105"
+						height="21"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="barcode-2">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<graphicElement stretchType="NoStretch" fill="Solid" />
+					<imageExpression class="java.awt.Image"><![CDATA[it.businesslogic.ireport.barcode.BcImage.getBarcodeImage(13,$F{numero2},false,false,null,0,90)]]></imageExpression>
+				</image>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="1"
+						y="546"
+						width="71"
+						height="9"
+						key="textField-58">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{numeroPagina1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="420"
+						y="546"
+						width="71"
+						height="9"
+						key="textField-59">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left">
+						<font size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{numeroPagina2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="2"
+						y="56"
+						width="363"
+						height="12"
+						key="textField-60">
+							<printWhenExpression><![CDATA[new Boolean ($F{tipoServico1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-BoldOblique" size="9" isBold="true" isUnderline="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{tipoServico1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="417"
+						y="56"
+						width="363"
+						height="12"
+						key="textField-61">
+							<printWhenExpression><![CDATA[new Boolean ($F{tipoServico2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Helvetica-BoldOblique" size="9" isBold="true" isUnderline="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{tipoServico2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="236"
+						y="100"
+						width="50"
+						height="12"
+						key="staticText-145">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tipo Relação:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="286"
+						y="100"
+						width="77"
+						height="12"
+						key="textField-62">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{tipoRelacao1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="447"
+						y="100"
+						width="199"
+						height="12"
+						key="textField-63">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{cliente2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="667"
+						y="85"
+						width="53"
+						height="12"
+						key="textField-64">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{hm2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="701"
+						y="100"
+						width="77"
+						height="12"
+						key="textField-65">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{tipoRelacao2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="678"
+						y="115"
+						width="99"
+						height="12"
+						key="textField-66">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{bairro2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="417"
+						y="100"
+						width="30"
+						height="12"
+						key="staticText-150">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Cliente:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="651"
+						y="85"
+						width="16"
+						height="12"
+						key="staticText-151">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[HM:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="651"
+						y="100"
+						width="50"
+						height="12"
+						key="staticText-152">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tipo Relação:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="651"
+						y="115"
+						width="27"
+						height="12"
+						key="staticText-153">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Bairro:]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="37"
+						y="1"
+						width="0"
+						height="52"
+						key="line-25"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="290"
+						y="1"
+						width="0"
+						height="52"
+						key="line-26"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="41"
+						y="26"
+						width="245"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-67"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["COMPANHIA DE SANEAMENTO DE  "  + $P{P_NM_ESTADO}]]></textFieldExpression>
+				</textField>
+				<rectangle>
+					<reportElement
+						x="417"
+						y="1"
+						width="363"
+						height="52"
+						key="rectangle-2">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="454"
+						y="26"
+						width="245"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-68">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["COMPANHIA DE SANEAMENTO DE  "  + $P{P_NM_ESTADO}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="456"
+						y="3"
+						width="238"
+						height="22"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-155">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[GSAN - SISTEMA INTEGRADO DE GESTÃO DE SERVIÇOS DE SANEAMENTO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="462"
+						y="41"
+						width="226"
+						height="11"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-156">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[RELIGAÇÕES]]></text>
+				</staticText>
+				<image  scaleImage="FillFrame" vAlign="Middle" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="418"
+						y="8"
+						width="33"
+						height="36"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="image-3">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<graphicElement stretchType="NoStretch" fill="Solid" />
+					<imageExpression class="java.lang.String"><![CDATA[$P{imagem}]]></imageExpression>
+				</image>
+				<line direction="TopDown">
+					<reportElement
+						x="452"
+						y="1"
+						width="0"
+						height="52"
+						key="line-27">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="735"
+						y="37"
+						width="41"
+						height="12"
+						key="textField-57">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{numero2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="703"
+						y="37"
+						width="32"
+						height="12"
+						key="staticText-137">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Nº OS:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="703"
+						y="25"
+						width="32"
+						height="12"
+						key="staticText-136">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Nº RA:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" pattern="dd/MM/yyyy HH.mm.ss" isBlankWhenNull="false" evaluationTime="Report" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="705"
+						y="15"
+						width="69"
+						height="10"
+						key="textField-69">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Right">
+						<font pdfFontName="Helvetica-Oblique" size="7" isItalic="true"/>
+					</textElement>
+				<textFieldExpression   class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+						<anchorNameExpression><![CDATA["ok"]]></anchorNameExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="735"
+						y="25"
+						width="41"
+						height="12"
+						key="textField-56">
+							<printWhenExpression><![CDATA[new Boolean ($F{ra2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{ra2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="702"
+						y="5"
+						width="77"
+						height="10"
+						key="staticText-157">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Oblique" size="7" isItalic="true"/>
+					</textElement>
+				<text><![CDATA[Data/Hora Impressão:]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="700"
+						y="1"
+						width="0"
+						height="52"
+						key="line-28">
+							<printWhenExpression><![CDATA[new Boolean ($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

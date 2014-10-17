@@ -1,0 +1,574 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="relatorioParcelamentoCobrancaBancariaDESO" printOrder="Horizontal" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.scriptlethandling" value="0"/>
+	<property name="ireport.encoding" value="UTF-8"/>
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="16"/>
+	<import value="net.sf.jasperreports.engine.*"/>
+	<import value="java.util.*"/>
+	<import value="net.sf.jasperreports.engine.data.*"/>
+	<parameter name="cnpj" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:\\Implantacao\\CVSROOT\\Gcom\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="empresa" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="imagem" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="enderecoEmpresa" class="java.lang.String" isForPrompting="false"/>
+	<parameter name="mesPortugues" class="java.lang.String" isForPrompting="false"/>
+	<queryString>
+		<![CDATA[select
+  conta3_.cnta_amreferenciaconta as col_0_0_,
+  conta3_.cnta_vlagua as col_1_0_,
+  conta3_.cnta_vlesgoto as col_2_0_,
+  conta3_.cnta_vldebitos as col_3_0_,
+  conta3_.cnta_vlcreditos as col_4_0_,
+  guiapagame5_.gpag_id as col_5_0_,
+  debitotipo13_.dbtp_dsdebitotipo as col_6_0_,
+  guiapagame5_.gpag_vldebito as col_7_0_,
+  debitotipo9_.dbtp_id as col_8_0_,
+  debitotipo9_.dbtp_dsdebitotipo as col_9_0_,
+  debitoacob8_.dbac_nnprestacaodebito as col_10_0_,
+  debitoacob8_.dbac_nnprestacaocobradas as col_11_0_,
+  debitoacob8_.dbac_vldebito as col_12_0_,
+  creditotip12_.crti_id as col_13_0_,
+  creditotip12_.crti_dscreditotipo as col_14_0_,
+  creditoare11_.crar_nnprestacaocredito as col_15_0_,
+  creditoare11_.crar_nnprestacaorealizadas as col_16_0_,
+  creditoare11_.crar_vlcredito as col_17_0_
+ from
+  cobranca.parcelamento_item parcelamen0_
+ inner join
+  cobranca.parcelamento parcelamen1_
+   on parcelamen0_.parc_id=parcelamen1_.parc_id
+ left outer join
+  faturamento.conta_geral contageral2_
+   on parcelamen0_.cnta_id=contageral2_.cnta_id
+ left outer join
+  faturamento.conta conta3_
+   on contageral2_.cnta_id=conta3_.cnta_id
+ left outer join
+  faturamento.guia_pagamento_geral guiapagame4_
+   on parcelamen0_.gpag_id=guiapagame4_.gpag_id
+ left outer join
+  faturamento.guia_pagamento guiapagame5_
+   on guiapagame4_.gpag_id=guiapagame5_.gpag_id
+ left outer join
+  faturamento.guia_pagamento_prestacao guiaspagam6_
+   on guiapagame5_.gpag_id=guiaspagam6_.gpag_id,
+  faturamento.debito_tipo debitotipo13_
+ left outer join
+  faturamento.debito_a_cobrar_geral debitoacob7_
+   on parcelamen0_.dbac_id=debitoacob7_.dbac_id
+ left outer join
+  faturamento.debito_a_cobrar debitoacob8_
+   on debitoacob7_.dbac_id=debitoacob8_.dbac_id
+ left outer join
+  faturamento.debito_tipo debitotipo9_
+   on debitoacob8_.dbtp_id=debitotipo9_.dbtp_id
+ left outer join
+  faturamento.credito_a_realizar_geral creditoare10_
+   on parcelamen0_.crar_id=creditoare10_.crar_id
+ left outer join
+  faturamento.credito_a_realizar creditoare11_
+   on creditoare10_.crar_id=creditoare11_.crar_id
+ left outer join
+  faturamento.credito_tipo creditotip12_
+   on creditoare11_.crti_id=creditotip12_.crti_id
+ where
+  guiaspagam6_.dbtp_id=debitotipo13_.dbtp_id
+  and parcelamen1_.parc_id=1
+ group by
+  conta3_.cnta_amreferenciaconta ,
+  conta3_.cnta_vlagua ,
+  conta3_.cnta_vlesgoto ,
+  conta3_.cnta_vldebitos ,
+  conta3_.cnta_vlcreditos ,
+  guiapagame5_.gpag_id ,
+  debitotipo13_.dbtp_dsdebitotipo ,
+  guiapagame5_.gpag_vldebito ,
+  debitotipo9_.dbtp_id ,
+  debitotipo9_.dbtp_dsdebitotipo ,
+  debitoacob8_.dbac_nnprestacaodebito ,
+  debitoacob8_.dbac_nnprestacaocobradas ,
+  debitoacob8_.dbac_vldebito ,
+  creditotip12_.crti_id ,
+  creditotip12_.crti_dscreditotipo ,
+  creditoare11_.crar_nnprestacaocredito ,
+  creditoare11_.crar_nnprestacaorealizadas ,
+  creditoare11_.crar_vlcredito
+ order by
+  conta3_.cnta_amreferenciaconta,
+  guiapagame5_.gpag_id,
+  debitotipo9_.dbtp_id,
+  creditotip12_.crti_id]]>
+	</queryString>
+	<field name="matriculaImovel" class="java.lang.String"/>
+	<field name="nomeCliente" class="java.lang.String"/>
+	<field name="endereco" class="java.lang.String"/>
+	<field name="cpfCnpj" class="java.lang.String"/>
+	<field name="taxaJurosMora" class="java.lang.String"/>
+	<field name="taxaMulta" class="java.lang.String"/>
+	<field name="totalDebitos" class="java.lang.String"/>
+	<field name="totalDescontos" class="java.lang.String"/>
+	<field name="valorEntrada" class="java.lang.String"/>
+	<field name="numeroParcelas" class="java.lang.String"/>
+	<field name="valorParcela" class="java.lang.String"/>
+	<field name="totalDebitosExtenso" class="java.lang.String"/>
+	<field name="numeroParcelasExtenso" class="java.lang.String"/>
+	<field name="taxaJurosMoraExtenso" class="java.lang.String"/>
+	<field name="descricaoLocalidade" class="java.lang.String"/>
+	<field name="colecaoAnoMesReferencia" class="java.lang.String"/>
+	<field name="colecaoAnoMesReferenciaSobra" class="java.lang.String"/>
+	<field name="imovelDiaVencimento" class="java.lang.String"/>
+	<field name="tipoCliente" class="java.lang.String"/>
+	<field name="taxaMultaExtenso" class="java.lang.String"/>
+	<field name="rg" class="java.lang.String"/>
+	<field name="valorJurosMora" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="56" splitType="Stretch">
+			<image vAlign="Middle">
+				<reportElement key="image-1" x="16" y="10" width="53" height="42"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<imageExpression class="java.lang.String"><![CDATA[$P{imagem}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement key="staticText-1" x="0" y="38" width="555" height="18"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[TERMO DE CONFISSÃO DE DEBITO, PARCELAMENTO E COMPROMISSO DE PAGAMENTO ]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band splitType="Stretch"/>
+	</columnHeader>
+	<detail>
+		<band height="746" splitType="Stretch">
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-1" x="0" y="11" width="555" height="42"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Pelo presente instrumento particular de confissão e assunção de dívida, de um lado "+ $P{empresa}+", inscrita no CPNJ (MF) sob o nº "+$P{cnpj} +" sediada na "+$P{enderecoEmpresa}+" , neste ato representada pelos prepostos, doravante denominada COMPANHIA, e de outro lado, o Sr.(a) "+$F{nomeCliente}+", brasileiro(a), inscrito no CPF (MF) sob o nº "+$F{cpfCnpj} +" e registrado no RG nº "+$F{rg}+", cliente usuário proprietário/inquilino do imóvel localizado à "+$F{endereco}+ " em nome de O PRÓPRIO, doravante denominado CLIENTE USUÁRIO PROPRIETÁRIO/INQUILINO, na melhor forma do direito, ajustam e acordam as seguintes cláusulas:"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="staticText-2" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="98" width="555" height="13" forecolor="#000000" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[CLÁUSULA PRIMEIRA:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-2" x="0" y="110" width="555" height="18"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["1.1 - O DEVEDOR compromete-se a pagar o valor negociado e aqui reconhecido supra mencionado em entrada mais " + $F{numeroParcelas} + " (" + $F{numeroParcelasExtenso}+ ") parcelas mensais e consecutivas, tudo em conformidade com o Sistema Comercial e do Regulamento de Serviços da DESO."]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="staticText-3" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="128" width="555" height="13" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[CLÁUSULA SEGUNDA:]]></text>
+			</staticText>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-3" x="0" y="140" width="555" height="18"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["2.1 - A Cobrança das parcelas acima, dos valores confessados definitivamente e irretratavelmente, sera feita através de boleto ou de qualquer outra forma de cobrança bancária, nacional."]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="staticText-5" x="0" y="170" width="555" height="11"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[3.1 - O Proprietário é o responsável pelos débitos negociados, nos termos do Regulamento de Serviços da DESO.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-6" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="158" width="555" height="13" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[CLÁUSULA TERCEIRA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-8" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="181" width="555" height="13" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[CLÁUSULA QUARTA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-9" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="211" width="555" height="13" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[CLÁUSULA QUINTA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-10" x="0" y="223" width="554" height="20"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[5.1 - O DEVEDOR autoriza a DESO, caso esta necessite, a ceder e transferir a instituições autorizadas adquiri-los, os seus direitos oriundos deste Termo, assim como
+cauciona-los em garantia de operações de financiamentos ou outras modalidades legais permitidas. ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-11" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="242" width="555" height="13" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[CLÁUSULA SEXTA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-12" x="0" y="254" width="555" height="11"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[6.1 - O DEVEDOR fica ciente que o não pagamento de qualquer parcela, ensejará além das condições aqui mencionadas, o pagamento de encargos financeiros.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-13" stretchType="RelativeToTallestObject" mode="Opaque" x="1" y="265" width="555" height="13" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[CLÁUSULA SÉTIMA:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-15" stretchType="RelativeToTallestObject" mode="Opaque" x="0" y="296" width="555" height="13" backcolor="#CCCCCC"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[CLÁUSULA OITAVA::]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-19" x="0" y="308" width="555" height="21"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[8.1 -  As partes assinam o presente Termo em  2 (duas) vias de igual teor e forma, na presença de duas testemunhas, para que produza os efeitos juridicos legais.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-20" x="15" y="446" width="375" height="13"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[_____________________________________             _____________________________________                            ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-21" x="63" y="457" width="94" height="28"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[PROPRIETÁRIO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-22" x="262" y="457" width="73" height="28"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[GESTOR DA DESO]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-23" x="14" y="487" width="375" height="13"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<text><![CDATA[_____________________________________             _____________________________________                            ]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-24" x="75" y="498" width="61" height="19"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Testemunha
+       R.G.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-26" x="271" y="498" width="61" height="19"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Testemunha
+       R.G.]]></text>
+			</staticText>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-8" x="0" y="193" width="555" height="18"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["4.1 - O DEVEDOR autoriza, em caso de não pagamento de qualquer parcela, o procedimento de Protesto de Títulos, perante as instituições existentes para tal fim, bem como, se necessário, da execução judicial do débito."]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd" isBlankWhenNull="false">
+				<reportElement key="textField-13" mode="Transparent" x="435" y="418" width="19" height="10" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<font fontName="SansSerif" size="7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-14" x="377" y="418" width="58" height="10"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{descricaoLocalidade}+", "]]></textFieldExpression>
+			</textField>
+			<textField pattern="yyyy" isBlankWhenNull="false">
+				<reportElement key="textField-16" mode="Transparent" x="513" y="418" width="28" height="10" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+					<font fontName="SansSerif" size="7" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfFontName="Helvetica" pdfEncoding="Cp1250" isPdfEmbedded="false"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="staticText-44" x="453" y="418" width="10" height="10"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="7" isBold="false" pdfFontName="Helvetica"/>
+				</textElement>
+				<text><![CDATA[de]]></text>
+			</staticText>
+			<staticText>
+				<reportElement key="staticText-45" x="503" y="418" width="10" height="10"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font fontName="SansSerif" size="7" isBold="false" pdfFontName="Helvetica"/>
+				</textElement>
+				<text><![CDATA[de]]></text>
+			</staticText>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField" x="463" y="418" width="40" height="10"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center">
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$P{mesPortugues}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement key="staticText-51" x="0" y="276" width="555" height="21"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<text><![CDATA[7.1 - O Foro competente será aquele em que estiver localizado o imóvel, para dirimir quaisquer dúvidas quanto a execução dos termos desse pacto, renuncioando as partes
+a qualquer outro, por mais especiais que sejam.]]></text>
+			</staticText>
+			<textField isBlankWhenNull="false">
+				<reportElement key="textField-17" x="0" y="52" width="555" height="46"/>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement>
+					<font size="7"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Valor Total do Débito Corrigido:R$ "+ $F{totalDebitos} + " \n"
++ "Primeira Parcela(Entrada):R$ " + $F{valorEntrada} +  " \n"
++ "Valor das Parcelas:R$ " + $F{valorParcela} + " \n"
++ "Quantidade das Parcelas: " + $F{numeroParcelas} + " \n"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

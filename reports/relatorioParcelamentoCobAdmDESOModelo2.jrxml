@@ -1,0 +1,969 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="relatorioParcelamentoCobAdmDESOModelo2"
+		 columnCount="1"
+		 printOrder="Horizontal"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="20"
+		 rightMargin="20"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.zoom" value="1.5" />
+	<property name="ireport.x" value="0" />
+	<property name="ireport.y" value="304" />
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="cnpj" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["C:\\Implantacao\\CVSROOT\\Gcom\\reports\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="empresa" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="enderecoEmpresa" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="mesPortugues" isForPrompting="false" class="java.lang.String"/>
+	<queryString><![CDATA[select
+  conta3_.cnta_amreferenciaconta as col_0_0_,
+  conta3_.cnta_vlagua as col_1_0_,
+  conta3_.cnta_vlesgoto as col_2_0_,
+  conta3_.cnta_vldebitos as col_3_0_,
+  conta3_.cnta_vlcreditos as col_4_0_,
+  guiapagame5_.gpag_id as col_5_0_,
+  debitotipo13_.dbtp_dsdebitotipo as col_6_0_,
+  guiapagame5_.gpag_vldebito as col_7_0_,
+  debitotipo9_.dbtp_id as col_8_0_,
+  debitotipo9_.dbtp_dsdebitotipo as col_9_0_,
+  debitoacob8_.dbac_nnprestacaodebito as col_10_0_,
+  debitoacob8_.dbac_nnprestacaocobradas as col_11_0_,
+  debitoacob8_.dbac_vldebito as col_12_0_,
+  creditotip12_.crti_id as col_13_0_,
+  creditotip12_.crti_dscreditotipo as col_14_0_,
+  creditoare11_.crar_nnprestacaocredito as col_15_0_,
+  creditoare11_.crar_nnprestacaorealizadas as col_16_0_,
+  creditoare11_.crar_vlcredito as col_17_0_
+ from
+  cobranca.parcelamento_item parcelamen0_
+ inner join
+  cobranca.parcelamento parcelamen1_
+   on parcelamen0_.parc_id=parcelamen1_.parc_id
+ left outer join
+  faturamento.conta_geral contageral2_
+   on parcelamen0_.cnta_id=contageral2_.cnta_id
+ left outer join
+  faturamento.conta conta3_
+   on contageral2_.cnta_id=conta3_.cnta_id
+ left outer join
+  faturamento.guia_pagamento_geral guiapagame4_
+   on parcelamen0_.gpag_id=guiapagame4_.gpag_id
+ left outer join
+  faturamento.guia_pagamento guiapagame5_
+   on guiapagame4_.gpag_id=guiapagame5_.gpag_id
+ left outer join
+  faturamento.guia_pagamento_prestacao guiaspagam6_
+   on guiapagame5_.gpag_id=guiaspagam6_.gpag_id,
+  faturamento.debito_tipo debitotipo13_
+ left outer join
+  faturamento.debito_a_cobrar_geral debitoacob7_
+   on parcelamen0_.dbac_id=debitoacob7_.dbac_id
+ left outer join
+  faturamento.debito_a_cobrar debitoacob8_
+   on debitoacob7_.dbac_id=debitoacob8_.dbac_id
+ left outer join
+  faturamento.debito_tipo debitotipo9_
+   on debitoacob8_.dbtp_id=debitotipo9_.dbtp_id
+ left outer join
+  faturamento.credito_a_realizar_geral creditoare10_
+   on parcelamen0_.crar_id=creditoare10_.crar_id
+ left outer join
+  faturamento.credito_a_realizar creditoare11_
+   on creditoare10_.crar_id=creditoare11_.crar_id
+ left outer join
+  faturamento.credito_tipo creditotip12_
+   on creditoare11_.crti_id=creditotip12_.crti_id
+ where
+  guiaspagam6_.dbtp_id=debitotipo13_.dbtp_id
+  and parcelamen1_.parc_id=1
+ group by
+  conta3_.cnta_amreferenciaconta ,
+  conta3_.cnta_vlagua ,
+  conta3_.cnta_vlesgoto ,
+  conta3_.cnta_vldebitos ,
+  conta3_.cnta_vlcreditos ,
+  guiapagame5_.gpag_id ,
+  debitotipo13_.dbtp_dsdebitotipo ,
+  guiapagame5_.gpag_vldebito ,
+  debitotipo9_.dbtp_id ,
+  debitotipo9_.dbtp_dsdebitotipo ,
+  debitoacob8_.dbac_nnprestacaodebito ,
+  debitoacob8_.dbac_nnprestacaocobradas ,
+  debitoacob8_.dbac_vldebito ,
+  creditotip12_.crti_id ,
+  creditotip12_.crti_dscreditotipo ,
+  creditoare11_.crar_nnprestacaocredito ,
+  creditoare11_.crar_nnprestacaorealizadas ,
+  creditoare11_.crar_vlcredito
+ order by
+  conta3_.cnta_amreferenciaconta,
+  guiapagame5_.gpag_id,
+  debitotipo9_.dbtp_id,
+  creditotip12_.crti_id]]></queryString>
+
+	<field name="matriculaImovel" class="java.lang.String"/>
+	<field name="nomeCliente" class="java.lang.String"/>
+	<field name="endereco" class="java.lang.String"/>
+	<field name="cpfCnpj" class="java.lang.String"/>
+	<field name="taxaJurosMora" class="java.lang.String"/>
+	<field name="taxaMulta" class="java.lang.String"/>
+	<field name="totalDebitos" class="java.lang.String"/>
+	<field name="totalDescontos" class="java.lang.String"/>
+	<field name="valorEntrada" class="java.lang.String"/>
+	<field name="numeroParcelas" class="java.lang.String"/>
+	<field name="valorParcela" class="java.lang.String"/>
+	<field name="totalDebitosExtenso" class="java.lang.String"/>
+	<field name="taxaJurosMoraExtenso" class="java.lang.String"/>
+	<field name="descricaoLocalidade" class="java.lang.String"/>
+	<field name="colecaoAnoMesReferencia" class="java.lang.String"/>
+	<field name="colecaoAnoMesReferenciaSobra" class="java.lang.String"/>
+	<field name="imovelDiaVencimento" class="java.lang.String"/>
+	<field name="tipoCliente" class="java.lang.String"/>
+	<field name="taxaMultaExtenso" class="java.lang.String"/>
+	<field name="detalhamentoGuiasPrestacoes" class="java.lang.String"/>
+	<field name="detalhamentoGuiasPrestacoesSobra" class="java.lang.String"/>
+	<field name="rg" class="java.lang.String"/>
+	<field name="valorMultas" class="java.lang.String"/>
+	<field name="valorJurosMora" class="java.lang.String"/>
+	<field name="valorJurosParcelamento" class="java.lang.String"/>
+
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="56"  isSplitAllowed="true" >
+				<image  vAlign="Middle" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="16"
+						y="10"
+						width="53"
+						height="42"
+						key="image-1"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<graphicElement stretchType="NoStretch"/>
+					<imageExpression class="java.lang.String"><![CDATA[$P{imagem}]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement
+						x="0"
+						y="38"
+						width="331"
+						height="18"
+						key="staticText-1"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[CONFISSÃO E ASSUNÇÃO DE DÍVIDA E PARCELAMENTO -   ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="331"
+						y="38"
+						width="224"
+						height="18"
+						key="staticText-30"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[COBRANÇA ADMINISTRATIVA ]]></text>
+				</staticText>
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="746"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="12"
+						width="555"
+						height="47"
+						key="textField-1"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Pelo presente instrumento particular de confissão e assunção de dívida, de um lado "+ $P{empresa}+", inscrita no CPNJ (MF) sob o nº "+$P{cnpj} +" sediada na "+$P{enderecoEmpresa}+" , neste ato representada pelos prepostos, doravante denominada COMPANHIA, e de outro lado, o Sr.(a) "+$F{nomeCliente}+", brasileiro(a), inscrito no CPF (MF) sob o nº "+$F{cpfCnpj} +" e registrado no RG nº "+$F{rg}+", cliente usuário proprietário/inquilino do imóvel localizado à "+$F{endereco}+ ", em nome de O PRÓPRIO, doravante denominado CLIENTE USUÁRIO PROPRIETÁRIO/INQUILINO, na melhor forma do direito, ajustam e acordam as seguintes cláusulas:"]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="57"
+						width="555"
+						height="12"
+						forecolor="#000000"
+						backcolor="#CCCCCC"
+						key="staticText-2"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[CLÁUSULA PRIMEIRA:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="70"
+						width="555"
+						height="36"
+						key="textField-22"
+						positionType="Float"
+						isPrintWhenDetailOverflows="true"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["1.1 - O CLIENTE USUÁRIO PROPRIETÁRIO/INQUILINO reconhece expressamente a existência de débito e assume de forma integral para com a COMPANHIA, a quantia líquida e certa equivalente ao valor total de R$ "+$F{totalDebitos}+
+" ("+$F{totalDebitosExtenso}+") devidamente atualizado até esta data, referente ao fornecimento de água e/ou coleta de esgoto para o imóvel do endereço supracitado, matriculado na companhia sob o nº "+$F{matriculaImovel}+
+", relativo ao não pagamento das faturas de serviços dos meses " + $F{colecaoAnoMesReferencia}+ "  " + $F{colecaoAnoMesReferenciaSobra} + ":"]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="106"
+						width="555"
+						height="68"
+						key="textField-23"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Guias/Parcelas: "  + $F{detalhamentoGuiasPrestacoes} + " " + $F{detalhamentoGuiasPrestacoesSobra}
++ " \nValor da entrada:R$ "+ $F{valorEntrada} + " \n"
++ "Número de Parcelas: " + $F{numeroParcelas} + " \n"
++ "Valor da Parcela:R$ " + $F{valorParcela} + " \n"
++ "Vencimento: " + $F{imovelDiaVencimento} + " \n"
++ "Multa:R$ " + $F{valorMultas} + " \n"
++ "Juros de Mora:R$ " + $F{valorJurosMora} + " \n"
++ "Juros de Parcelamento:R$ " + $F{valorJurosParcelamento}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="173"
+						width="555"
+						height="10"
+						key="textField-24"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["1.2 - O CLIENTE USUÁRIO PROPRIETÁRIO/INQUILINO confessa estar inadimplente e assume integral responsabilidade pelo pagamento da dívida descrita na cláusula supra."]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="182"
+						width="555"
+						height="10"
+						key="textField-25"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["1.3 - O valor do parcelamento será levado a débito nas próximas faturas mensais de consumo."]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="192"
+						width="555"
+						height="12"
+						backcolor="#CCCCCC"
+						key="staticText-3"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[CLÁUSULA SEGUNDA:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="204"
+						width="555"
+						height="10"
+						key="textField-26"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["2.1 - É de responsabilidade solidária do proprietário do imóvel, o ressarcimento de débitos de faturas/contas não quitadas pelo usuário ocupante do mesmo."]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="0"
+						y="214"
+						width="555"
+						height="18"
+						key="staticText-4"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[2.2 - Este TERMO DE CONFISSÃO não exclui a responsabilidade solidária do proprietário do imóvel supracitado em relação a dívida ora assumida bem como das  vincendas contraídas em razão do futuro fornecimento de água e coleta de esgoto.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="232"
+						width="555"
+						height="12"
+						backcolor="#CCCCCC"
+						key="staticText-5"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[CLÁUSULA TERCEIRA:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="244"
+						width="555"
+						height="19"
+						key="staticText-6"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[3.1 - O CLIENTE USUÁRIO PROPRIETÁRIO/INQUILINO  assume o compromisso de efetuar o pagamento das parcelas até o vencimento em qualquer agência, instituição financeira ou postos autorizados da Companhia de Saneamento de Sergipe - DESO.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="263"
+						width="555"
+						height="12"
+						backcolor="#CCCCCC"
+						key="staticText-7"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[CLÁUSULA QUARTA:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="0"
+						y="275"
+						width="555"
+						height="28"
+						key="textField-27"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA["4.1 - O atraso de duas parcelas consecutivas ou não, acarretará no vencimento antecipado da dívida total prevista no item 1.1, sem prejuízo da possibilidade de Protesto e inclusão do nome do CLIENTE USUÁRIO PROPRIETÁRIO/INQUILINO nos órgãos de proteção ao crédito, a incidência de juros multa e correção monetária de acordo com art. 91 do Regulamento dos Serviços Públicos de Água e Esgoto, bem como, na interrupção do fornecimento de água/esgoto por inadimplemento."]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="303"
+						width="555"
+						height="12"
+						backcolor="#CCCCCC"
+						key="staticText-8"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[CLÁUSULA QUINTA:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="315"
+						width="554"
+						height="18"
+						key="staticText-9"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[5.1 - O CLIENTE USUÁRIO PROPRIETÁRIO/INQUILINO  ao assinar este termo, reconhece que o presente instrumento possui validade de Título Executivo Extrajudicial para todos os efeitos legais, conforme preceitua a legislação processual em vigor.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="332"
+						width="554"
+						height="11"
+						key="staticText-10"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[5.2 - A confissão de dívida constante deste instrumento é definitiva e irretratável.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="342"
+						width="554"
+						height="18"
+						key="staticText-11"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[5.3 - As parcelas representativas do débito poderão, a critério da COMPANHIA, ser representadas por duplicatas ou notas promissórias de valores correspondentes, emitidas com idêntico valor e vencimento, sujeitas a protesto em caso de inadimplemento.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="360"
+						width="554"
+						height="18"
+						key="staticText-12"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[5.4 - O CLIENTE USUÁRIO PROPRIETÁRIO/INQUILINO, declara, igualmente, que tenho plena ciência do teor do presente instrumento, e que o mesmo tem validade como confissão de dívida, nos termos do disposto no artigo 585 do Código de Processo Civil.
+
+]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="378"
+						width="555"
+						height="12"
+						backcolor="#CCCCCC"
+						key="staticText-13"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[CLÁUSULA SEXTA:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="390"
+						width="555"
+						height="11"
+						key="staticText-14"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[6.1 - Qualquer recebimento efetuado pela COMPANHIA, fora dos prazos pré-fixados, será mera liberalidade, não implicando em alteração do avençado.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="401"
+						width="555"
+						height="12"
+						backcolor="#CCCCCC"
+						key="staticText-15"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[CLÁUSULA SÉTIMA:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="413"
+						width="555"
+						height="18"
+						key="staticText-16"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[7.1 - Fica estabelecido como cláusula penal por descumprimento pelo CLIENTE USUÁRIO PROPRIETÁRIO/INQUILINO 10% do valor da dívida em questão, sem prejuízo da incidência de juros, correção monetária e multa moratória.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="431"
+						width="555"
+						height="12"
+						backcolor="#CCCCCC"
+						key="staticText-17"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[CLÁUSULA OITAVA:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="443"
+						width="555"
+						height="19"
+						key="staticText-18"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[8.1 - Assinam o presente compromisso em duas vias de igual teor e único efeito, o interessado qualificado no item A, juntamente com o representante da COMPANHIA e na presença de duas testemunhas.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="0"
+						y="461"
+						width="555"
+						height="12"
+						backcolor="#CCCCCC"
+						key="staticText-19"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[CLÁUSULA NONA:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="473"
+						width="555"
+						height="21"
+						key="staticText-20"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[9.1 - Fica eleito como competente o Foro da Comarca de Aracaju, para a solução de quaisquer litígios decorrentes deste Termo, renunciando-se a qualquer outro por mais privilegiado que seja.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="0"
+						y="493"
+						width="555"
+						height="21"
+						key="staticText-21"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="7"/>
+					</textElement>
+				<text><![CDATA[E por assim estarem justas e contratadas, as partes assinam o presente instrumento em duas vias de igual teor destinadas ao mesmo fim, na presença de duas testemunhas.]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="373"
+						y="542"
+						width="58"
+						height="10"
+						key="textField-28"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Right">
+						<font fontName="SansSerif" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{descricaoLocalidade}+", "]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="dd" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Transparent"
+						x="431"
+						y="542"
+						width="19"
+						height="10"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-29"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="SansSerif" pdfFontName="Helvetica" size="7" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1250" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.util.Date"><![CDATA[new Date()]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="449"
+						y="542"
+						width="10"
+						height="10"
+						key="staticText-22"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font fontName="SansSerif" pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[de]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="459"
+						y="542"
+						width="40"
+						height="10"
+						key="textField-30"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center">
+						<font size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{mesPortugues}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="499"
+						y="542"
+						width="10"
+						height="10"
+						key="staticText-23"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font fontName="SansSerif" pdfFontName="Helvetica" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[de]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" pattern="yyyy" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Transparent"
+						x="509"
+						y="542"
+						width="28"
+						height="10"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-31"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="SansSerif" pdfFontName="Helvetica" size="7" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1250" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.util.Date"><![CDATA[new Date()]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="10"
+						y="570"
+						width="375"
+						height="13"
+						key="staticText-24"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+				<text><![CDATA[_____________________________________             _____________________________________                            ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="258"
+						y="581"
+						width="73"
+						height="28"
+						key="staticText-25"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Nome do Cliente]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="59"
+						y="581"
+						width="94"
+						height="28"
+						key="staticText-26"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Atendente Comercial/DESO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="71"
+						y="622"
+						width="61"
+						height="19"
+						key="staticText-27"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Testemunha
+       R.G.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="10"
+						y="611"
+						width="375"
+						height="13"
+						key="staticText-28"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font size="8"/>
+					</textElement>
+				<text><![CDATA[_____________________________________             _____________________________________                            ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="267"
+						y="622"
+						width="61"
+						height="19"
+						key="staticText-29"
+						positionType="Float"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement>
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Testemunha
+       R.G.]]></text>
+				</staticText>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

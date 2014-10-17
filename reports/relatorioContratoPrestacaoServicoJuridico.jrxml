@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="relatorioContratoPrestacaoServicoJuridico"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="30"
+		 rightMargin="30"
+		 topMargin="20"
+		 bottomMargin="20"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
+
+	<field name="getCnpjUsuario" class="java.lang.String"/>
+	<field name="getCpfDiretor" class="java.lang.String"/>
+	<field name="getCpfPresidente" class="java.lang.String"/>
+	<field name="getCpfRepresentante" class="java.lang.String"/>
+	<field name="getMatriculaImovel" class="java.lang.String"/>
+	<field name="getNomeDiretor" class="java.lang.String"/>
+	<field name="getNomePresidente" class="java.lang.String"/>
+	<field name="getNomeRepresentante" class="java.lang.String"/>
+	<field name="getNomeUsuario" class="java.lang.String"/>
+	<field name="getProfissaoDiretor" class="java.lang.String"/>
+	<field name="getProfissaoPresidente" class="java.lang.String"/>
+	<field name="getRgDiretor" class="java.lang.String"/>
+	<field name="getRgPresidente" class="java.lang.String"/>
+	<field name="getRgRepresentante" class="java.lang.String"/>
+	<field name="getData" class="java.lang.String"/>
+	<field name="getEnderecoImovel" class="java.lang.String"/>
+	<field name="getMunicipio" class="java.lang.String"/>
+	<field name="getNumeroPagina" class="java.lang.String"/>
+
+
+		<group  name="pagina" isStartNewPage="true" >
+			<groupExpression><![CDATA[$F{getNumeroPagina}]]></groupExpression>
+			<groupHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupHeader>
+			<groupFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+			</groupFooter>
+		</group>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="802"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						x="1"
+						y="0"
+						width="533"
+						height="802"
+						key="staticText-3">
+							<printWhenExpression><![CDATA[new Boolean(!($F{getNumeroPagina}.equals("1")))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Justified" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<text><![CDATA[d) Comunicar, previamente, ao USUÁRIO  as paralisações programadas para manutenção do sistema de água através dos órgãos de imprensa de forma que o mesmo se previna com relação à falta d’água decorrente.
+
+e) Entregar, mensalmente, no endereço da ligação de responsabilidade do USUÁRIO ou em outro da sua preferência, desde que cadastrado na CAERN, a fatura pelo fornecimento da  água/esgoto do imóvel.
+
+f) Publicar, nos Órgãos de Imprensa, as alterações ocorridas na sua Estrutura Tarifária, quer sejam de valor ou de outra natureza.
+
+g) Prestar as informações necessárias ao USUÁRIO, quando por este solicitado, acerca da estrutura tarifária vigente, bem como as modificações porventura processadas.
+
+h) Atender às solicitações do USUÁRIO acerca de valores cobrados pelos serviços prestados e a proceder as alterações se justificadas.
+
+CLÁUSULA SÉTIMA – DAS OBRIGAÇÕES DO USUÁRIO:
+
+O USUÁRIO obriga-se a:
+a)    Adquirir, para toda nova ligação de água, o material hidráulico necessário, a caixa de proteção de hidrômetro, modelo padrão da CAERN, e    a     pagar pelos serviços necessários à ligação do ramal, nele incluídos: mão de obra, hidrômetro, abraçadeira e a torneira de fecho de    acordo com a tabela de serviços da CAERN.
+
+b)    Instalar, em novas ligações de esgoto, se for o caso, a caixa de visita, modelo padrão da CAERN, necessária à ligação de esgoto.
+
+c)     Pagar, mensalmente, pela prestação dos serviços, a fatura apresentada observando o disposto no caput da Cláusula Quarta.
+
+d)    Pagar pela prestação de outro(s) serviço(s) correlacionado(s) ao fornecimento d’água e/ou coleta de esgoto, de acordo com a(s)  tabela(s) vigente(s) da Companhia.
+
+e)   Comunicar e quitar os débitos porventura existentes com a CAERN, quando da venda do imóvel a terceiro para que sejam tomadas as medidas necessárias à transferência do CONTRATO. 
+
+CLÁUSULA OITAVA – DAS SANÇÕES: O descumprimento total ou parcial das obrigações  assumidas  pelo  USUÁRIO sem justificativa aceita pela CAERN, resguardados    os   procedimentos   legais  pertinentes,   poderá  acarretar,  de acordo  com a Resolução da Diretoria nº 01-B, de 31/01/2005, as seguintes penalidades:
+a)   Multas - O USUÁRIO estará sujeito ao pagamento de multas regulamentares quando do uso indevido dos serviços de água e esgotos conforme previsto no Art. 94, do Regulamento Geral dos serviços. 	
+
+b)   Corte do Ramal – a interrupção do fornecimento dos serviços  dar-se-á nas seguintes situações:
+1)   pelo não pagamento da fatura, após ser obedecido o prazo previsto no Código de Defesa do Consumidor e desde que tenha havido a comunicação do débito ao usuário.
+2)   pelo uso indevido dos serviços de água e esgotos conforme previsto no artigo 94, do Regulamento Geral dos Serviços.
+
+c)   Supressão do Ramal – a supressão do ramal se dará 06 (seis) meses após a  interrupção da prestação dos serviços ou ainda no caso de religação do ramal por conta própria. Neste caso, fica o Consumidor sujeito ao pagamento de todos os débitos existentes com a CAERN inclusive multas, juros de mora e correções monetárias e obedecidos os prazos legais de prescrição do débito. 
+
+d)   Cobrança Legal – O não pagamento dos débitos, administrativamente, facultará à CAERN, o encaminhamento do processo de cobrança via judicial, através da Assessoria Jurídica.
+
+CLÁUSULA NONA – DA VIGÊNCIA DO CONTRATO: O presente Contrato terá vigência a partir de sua assinatura, pelo prazo inicial de 12(doze) meses, podendo ser prorrogado sucessivamente, com a inclusão de termo aditivo, desde que haja vontade das partes contratantes, para a continuidade da prestação dos serviços.
+
+CLÁUSULA DÉCIMA – DA RESCISÃO: O presente Contrato será rescindido quando da retirada definitiva do Ramal(Supressão do Ramal), unilateralmente, por inadimplência de qualquer de suas cláusulas independentemente  de notificação extrajudicial ou judicial.
+
+CLÁUSULA DÉCIMA PRIMEIRA – DISPOSIÇÕES GERAIS: Ficam as partes obrigadas a cumprirem as normas previstas no Regulamento Geral dos Serviços, o Código Nacional de Saúde, além da legislação específica que trata dos serviços objeto deste Contrato, cabendo a ambos zelar pelo patrimônio que representa a estrutura operacional dos serviços.
+
+CLÁUSULA DÉCIMA SEGUNDA – DO FORO: Fica eleito o Foro da Comarca de __________________, no Estado do Rio Grande do Norte, para dirimir quaisquer questões surgidas na execução ou interpretação deste Contrato renunciando-se a qualquer outro, por mais privilegiado que seja.
+E por estarem assim, justos e contratados, assinam o presente instrumento em 02(duas) vias de igual teor e para o mesmo fim, juntamente com as testemunhas a todos presentes.
+                                                    NATAL, ___ de _______________  de _________
+  ______________________________________________                      _________________________________
+                       DIRETOR GERAL DO __________                                     DIRETOR PRESIDENTE DA CAERN
+                                                                                             Plínio Veras Lobo
+                                                                               DIRETOR COMERCIAL E FINANCEIRO
+ TESTEMUNHAS:
+1___________________________________                                                              2 ____________________________________
+ CPF :                                           RG:                                                                           CPF:                                             RG:                                                                                         
+]]></text>
+				</staticText>
+				<image  vAlign="Middle" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						mode="Opaque"
+						x="201"
+						y="0"
+						width="140"
+						height="42"
+						key="image-1">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<graphicElement stretchType="NoStretch"/>
+					<imageExpression class="java.lang.String"><![CDATA[$P{imagem}]]></imageExpression>
+				</image>
+				<staticText>
+					<reportElement
+						x="261"
+						y="44"
+						width="258"
+						height="40"
+						key="staticText-2">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement textAlignment="Justified" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<text><![CDATA[CONTRATO DE PRESTAÇÃO DE SERVIÇOS DE FORNECIMENTO DE ÁGUA E COLETA DE ESGOTOS, QUE ENTRE SI CELEBRAM A COMPANHIA DE ÁGUAS E ESGOTOS DO RIO GRANDE DO NORTE CAERN E O]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="312"
+						y="72"
+						width="217"
+						height="10"
+						key="textField-12">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier" size="7"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getNomeUsuario}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="1"
+						y="86"
+						width="513"
+						height="716"
+						key="staticText-4">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<text><![CDATA[Pelo presente termo de CONTRATO DE PRESTAÇÃO DE SERVIÇO, estabelecido pela Resolução da Diretoria nº 021/02-D, que entre si celebram a COMPANHIA DE ÁGUAS E ESGOTOS DO RIO GRANDE DO NORTE – CAERN, sociedade de economia mista, criada por Lei Estadual nº 3.742 de 26 de junho de 1969,com sede na Avenida Senador Salgado Filho, 1555, Tirol, CEP 59056-000, em Natal/Rn, CNPJ nº 08.334.385/0001-35, Inscrição Estadual nº 20.055.426-3, neste ato denominada simplesmente de CAERN, aqui representada pelos seus Diretores: Presidente, Sr.                                                  , brasileiro,                       , inscrito no CPF/MF nº                        e RG nº                    e Diretor Comercial e Financeiro, Sr(a).                            , brasileiro,               , inscrito no CPF/MF nº                           e RG nº                    e do outro lado                                           , com Sede à                
+                                     , matrícula CAERN nº               ,  CNPJ nº                                representado pelo seu Diretor Geral, o Sr.                                               inscrito no CPF/MF nº                    e RG nº                ,  denominado simplesmente de USUÁRIO, têm justos e contratados, o que mutuamente aceitam a seguir:
+
+ CLÁUSULA PRIMEIRA – DO OBJETO:   A CAERN se obriga por força desta avença, prestar ao USUÁRIO, os serviços de fornecimento de água e/ou coleta de esgotos, conforme o que disciplina o Regulamento Geral dos Serviços, aprovado pelo Decreto Estadual nº 8.079, de 27 de janeiro de 1981 e as normas internas e leis ambientais vigentes, ao prédio localizado à                                                                                                               , que consta no Cadastro Comercial da CAERN, como de responsabilidade do USUÁRIO.
+§ 1º – No caso de novas ligações solicitadas pelo USUÁRIO, a CAERN só prestará os serviços objeto deste Contrato, quando confirmada a  existência de  redes de abastecimento e/ou coleta de esgoto no trecho do logradouro e a inexistência de débitos pendentes em nome do USUÁRIO.
+§  2º – A prestação do(s) serviço(s) de que trata o parágrafo anterior, deverá ser solicitado, previamente, pelo USUÁRIO, ficando por sua conta, as despesas de execução dos ramais prediais e das redes de água e/ou esgoto, quando da sua inexistência,  mediante orçamento de material e mão de obra elaborado pela CAERN, de acordo com o que dispõe os artigos 8, 13 e 16º do Regulamento Geral dos Serviços.
+§ 3º – Tratando-se de ligação de água sem a instalação do hidrômetro, o consumo será estimado em função do consumo médio presumido, por atributo físico do imóvel ou outro critério estabelecido pela CAERN,  conforme dispõe o artigo 78 do Regulamento Geral dos Serviços.
+
+CLÁUSULA SEGUNDA – DO PREÇO DA TARIFA: As tarifas de água e esgoto  serão cobradas de acordo com os critérios estabelecidos pelas Resoluções e normas regulamentares da CAERN, nos valores previstos para  a Categoria Pública, com Cota Básica de consumo de água equivalente a 20m3 de água por economia, cujo valor mínimo para a tarifa está definida na Tabela Tarifária vigente, devidamente aprovada pelo órgão competente e comprovadamente do conhecimento do usuário.
+§ 1º – O preço unitário do m3 do consumo excedente de água ao previsto no caput desta cláusula será  cobrado, também, de acordo com a Tabela Tarifária vigente.
+§ 2 º - O preço  da contribuição de esgoto será cobrado em função de percentual da tarifa de água (cota básica + consumo excedente), fixado na Tabela Tarifária vigente, definidos para os esgotos convencional e condominial.
+§ 3º – As alterações que ocorram na categoria de consumo do imóvel serão adequadas aos valores tarifários correspondentes, a partir da data da sua ocorrência, sem retroagir, em nenhuma hipótese, a sua aplicação.
+
+CLÁUSULA TERCEIRA – DO REAJUSTE OU ALTERAÇÃO DE TARIFAS: O USUÁRIO estará sujeito aos reajustes ou as alterações aplicadas na Estrutura Tarifária decorrente da política tarifária adotada pela CAERN, desde que justificada e devidamente aprovada pelo Órgão competente.
+
+CLÁUSULA QUARTA – DO CRONOGRAMA DE FATURAMENTO E DE VENCIMENTO: A CAERN fixará no seu “Cronograma Mensal de Faturamento” as datas da leitura do hidrômetro, da entrega da conta e do seu vencimento, cuja data será fixada com pelo menos 05(cinco) dias úteis após a entrega da conta.
+§ 1º - As contas pagas após o vencimento estarão sujeitas à aplicação de juros e acréscimos regulamentares, de acordo com as Normas vigentes na CAERN.
+§ 2º – O USUÁRIO poderá optar  por outra data de vencimento para pagamento de sua conta, de acordo com o que prevê a Lei nº 9.791, de 24 de maio de 1999.
+§ 3º – O “Cronograma Mensal de Faturamento” poderá ser modificado por necessidade de adequação a novos procedimentos ou tecnologias a serem implementadas. 
+
+CLÁUSULA QUINTA – DA EXCLUSIVIDADE DE FORNECIMENTO: Os serviços de água ou coleta de esgoto é de exclusividade da CAERN, ficando  o USUÁRIO proibido de utilizar outras alternativas sem a prévia autorização da CAERN e dos órgãos competentes, de acordo com o que estabelece os §s 1º, 2° e 3°, do artigo 3º do Regulamento Geral de Serviços da CAERN e Resolução 04/04-SERHID, de 25/10/04.
+
+CLÁUSULA SEXTA – DAS OBRIGAÇÕES DA CAERN: 
+A CAERN obriga-se a:
+a) Executar e dar manutenção a toda nova ligação de água para prédios de  responsabilidade do USUÁRIO,  com a colocação do hidrômetro e a abraçadeira no prazo de até 05(cinco) dias úteis após a comprovação, pelo interessado, da aquisição do material, da caixa de proteção do hidrômetro e da sua instalação dentro dos requisitos exigidos pela CAERN.
+
+b) Executar e dar manutenção a toda nova ligação de esgoto para prédios de sua responsabilidade no prazo de até 10 ( dez ) dias úteis após a comprovação, pelo USUÁRIO, dos serviços que lhe competem e dentro dos requisitos exigidos pela CAERN.
+
+c)  Fornecer, com regularidade, a água livre de impurezas e própria para o consumo humano, de acordo com a potabilidade medida pelos índices de controle de qualidade dos órgãos competentes e também na quantidade que garanta e mantenha o índice “per-capita” previsto no projeto de abastecimento de água da localidade e coletar o efluente de esgoto dando o destino final adequado, sob condições normais.
+]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="76"
+						y="131"
+						width="248"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getNomePresidente}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="395"
+						y="131"
+						width="108"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getProfissaoPresidente}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="111"
+						y="140"
+						width="112"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getCpfPresidente}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="264"
+						y="141"
+						width="95"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getRgPresidente}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="218"
+						y="159"
+						width="206"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getNomeUsuario}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="290"
+						y="167"
+						width="69"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getMatriculaImovel}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="412"
+						y="168"
+						width="117"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getCnpjUsuario}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="221"
+						y="242"
+						width="311"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getEnderecoImovel}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="32"
+						y="150"
+						width="203"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getNomeDiretor}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="274"
+						y="150"
+						width="111"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getProfissaoDiretor}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="38"
+						y="158"
+						width="87"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getRgDiretor}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="2"
+						y="168"
+						width="184"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getEnderecoImovel}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="211"
+						y="177"
+						width="230"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getNomeRepresentante}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="49"
+						y="186"
+						width="94"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getCpfPresidente}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="182"
+						y="186"
+						width="76"
+						height="10"
+						key="textField">
+							<printWhenExpression><![CDATA[new Boolean($F{getNumeroPagina}.equals("1"))]]></printWhenExpression>
+						</reportElement>
+					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
+					<textElement>
+						<font fontName="Courier New" pdfFontName="Courier" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getRgPresidente}]]></textFieldExpression>
+				</textField>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

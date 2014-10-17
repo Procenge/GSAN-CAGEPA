@@ -1,0 +1,11 @@
+--- encerra faturamento 09/2009
+
+select count(*) from imovel where FTST_ID is not null and (imov_id,FTST_ID) in (select imov_id,FTST_ID from FATURAMENTO_SITUACAO_HISTORICO where FTSH_AMFATURAMENTOSITUACAOFIM = 200909 and FTSH_AMFATURAMENTORETIRADA is null);
+update imovel set FTST_ID = null where FTST_ID is not null and (imov_id,FTST_ID) in (select imov_id,FTST_ID from FATURAMENTO_SITUACAO_HISTORICO where FTSH_AMFATURAMENTOSITUACAOFIM = 200909 and FTSH_AMFATURAMENTORETIRADA is null);
+
+select count(*) from FATURAMENTO_SITUACAO_HISTORICO where FTSH_AMFATURAMENTOSITUACAOFIM = 200909 and FTSH_AMFATURAMENTORETIRADA is null;
+update FATURAMENTO_SITUACAO_HISTORICO set FTSH_AMFATURAMENTORETIRADA = 200909 where FTSH_AMFATURAMENTOSITUACAOFIM = 200909 and FTSH_AMFATURAMENTORETIRADA is null;
+
+update sistema_parametros set PARM_AMREFERENCIAFATURAMENTO = 200910, PARM_AMREFERENCIAARRECADACAO = 200909;
+
+delete from relatorio_gerado where rege_tmultimaalteracao <= to_date('29/08/2009', 'dd/MM/yyyy');
