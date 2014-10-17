@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.micromedicao.consumo.ConsumoAnormalidadeLeitura" 
+    table="consumo_anormalidade_leitura"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="calt_id"
+    >
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="calt_dsleituraafaturar"
+        length="30"
+    />
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="calt_icuso"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="calt_tmultimaalteracao"
+        length="8"
+    />
+
+</class>
+</hibernate-mapping>

@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<class name="gcom.integracao.piramide.TabelaIntegracaoDeferimentoReferenciaBase" table="TI_DIFER_PERIODO">
+
+    <composite-id name="chavePrimaria" class="gcom.integracao.piramide.TabelaIntegracaoDeferimentoReferenciaBasePK">
+        <key-property 
+            name="codigoGerenciaRegional" 
+            column="COD_FILIAL_ORIGEM" 
+            type="java.lang.String"
+            length="3"
+        />
+        <key-property 
+            name="codigoSistemaOrigem" 
+            column="COD_SISTEMA_ORIGEM" 
+            type="java.lang.String"
+            length="3"
+        />
+        <key-property 
+            name="mesAnoReferencia" 
+            column="COD_MES_ANO_REFERENCIA" 
+            type="java.lang.String"
+            length="6"
+        />
+        <key-property 
+            name="cnpj" 
+            column="COD_CNPJ" 
+            type="java.lang.String"
+            length="14"
+        />
+    </composite-id>
+    
+    <property
+        name="valorVendasPeriodo"
+        type="java.math.BigDecimal"
+        column="VAL_VENDAS_PERIODO"
+        not-null="true"
+        length="22"
+        precision="13"
+        scale="2"
+    />
+    
+    <property
+        name="codigoApuracaoPIS"
+        type="char"
+        column="COD_CNT_SOCIAL_APURADA_PIS"
+        not-null="true"
+        length="2"
+    />
+    
+    <property
+        name="numeroApuracaoPIS"
+        type="java.lang.Integer"
+        column="NUM_APURACAO_PIS"
+        not-null="false"
+        length="22"
+    />
+
+    <property
+        name="valorBasePIS"
+        type="java.math.BigDecimal"
+        column="VAL_BASE_PIS"
+        not-null="true"
+        length="22"
+        precision="13"
+        scale="2"
+    />
+    
+    <property
+        name="percentualAliquotaPIS"
+        type="java.math.BigDecimal"
+        column="PCT_ALIQUOTA_PIS"
+        not-null="true"
+        length="22"
+        precision="5"
+        scale="2"
+    />
+    
+    <property
+        name="valorPIS"
+        type="java.math.BigDecimal"
+        column="VAL_PIS"
+        not-null="true"
+        length="22"
+        precision="13"
+        scale="2"
+    />
+    
+    <property
+        name="codigoApuracaoCOFINS"
+        type="char"
+        column="COD_CNT_SOCIAL_APURADA_COFINS"
+        not-null="true"
+        length="2"
+    />
+    
+     <property
+        name="valorBaseCOFINS"
+        type="java.math.BigDecimal"
+        column="VAL_BASE_COFINS"
+        not-null="true"
+        length="22"
+        precision="13"
+        scale="2"
+    />
+    
+    <property
+        name="numeroApuracaoCOFINS"
+        type="java.lang.Integer"
+        column="NUM_APURACAO_COFINS"
+        not-null="false"
+        length="22"
+    />
+    
+    <property
+        name="percentualAliquotaCOFINS"
+        type="java.math.BigDecimal"
+        column="PCT_ALIQUOTA_COFINS"
+        not-null="true"
+        length="22"
+        precision="5"
+        scale="2"
+    />
+    
+    <property
+        name="valorCOFINS"
+        type="java.math.BigDecimal"
+        column="VAL_COFINS"
+        not-null="true"
+        length="22"
+        precision="13"
+        scale="2"
+    />
+    
+    <property
+        name="valorNaoRecebido"
+        type="java.math.BigDecimal"
+        column="VAL_NAO_RECEBIDO"
+        not-null="true"
+        length="22"
+        precision="13"
+        scale="2"
+    />
+    
+    <property
+        name="codigoOperacaoRegistro"
+        type="char"
+        column="COD_OPERACAO_REGISTRO"
+        not-null="true"
+        length="1"
+    />
+    
+    <property
+        name="codigoStatusRegistro"
+        type="char"
+        column="COD_STATUS_REGISTRO"
+        not-null="true"
+        length="2"
+    />
+    
+    <property
+        name="descricaoErroRegistro"
+        type="java.lang.String"
+        column="DSC_ERRO_REGISTRO"
+        not-null="false"
+        length="2000"
+    />
+    
+    <property
+        name="codigoSituacaoTributoPIS"
+        type="java.lang.String"
+        column="COD_SITUACAO_TRIBUTARIA_PIS"
+        not-null="true"
+        length="3"
+    />
+    
+    <property
+        name="codigoSituacaoTributoCOFIN"
+        type="java.lang.String"
+        column="COD_SITUACAO_TRIBUTARIA_COFINS"
+        not-null="true"
+        length="3"
+    />
+</class>
+</hibernate-mapping>

@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class 
+    name="gcom.operacional.SistemaAbastecimento" 
+    table="sistema_abastecimento"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="sabs_id"
+    >
+        <generator class="sequence">
+        	<param name="sequence">sq_sistema_abastto</param>
+     	</generator>
+    </id>
+	
+	<property
+        name="codigo"
+        type="java.lang.Integer"
+        column="sabs_cdsistemaabastecimento"
+        not-null="false"
+        length="4"
+    />
+	 
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="sabs_dssistemaabastecimento"
+        not-null="true"
+        length="20"
+    />
+    
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="sabs_dsabreviado"
+        length="6"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="sabs_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    
+    
+    <property
+        name="indicadorUso"
+        type="short"
+        column="sabs_icuso"
+        not-null="true"
+        length="2"
+    />
+    
+    <!-- bi-directional many-to-one association to GerenciaRegional -->
+    <many-to-one
+        name="gerenciaRegional"
+        class="gcom.cadastro.localidade.GerenciaRegional"
+        not-null="false"
+    >
+        <column name="greg_id" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

@@ -1,0 +1,233 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<!-- Created by the Middlegen Hibernate plugin http://boss.bekk.no/boss/middlegen/ 
+		http://hibernate.sourceforge.net/ -->
+
+	<class
+		name="gcom.integracao.piramide.TabelaIntegracaoConslDiaNfcl"
+		table="ti_consl_dia_nfcl">
+			
+		<id
+			name="codigoSequenciaOrigem"
+			type="java.lang.Integer"
+			column="COD_SEQUENCIAL_ORIGEM">
+			<!-- generator class="sequence"> <param name="sequence">sq_imov</param> </generator> -->
+			<generator class="assigned" />
+
+		</id>
+
+		<property
+			name="codigoFilialOrigem"
+			type="java.lang.String"
+			column="COD_FILIAL_ORIGEM"
+			not-null="true"
+			length="6" />
+			
+		<property
+			name="codigoSistemaOrigem"
+			type="java.lang.String"
+			column="COD_SISTEMA_ORIGEM"
+			not-null="true"
+			length="3" />
+			
+		<property
+			name="codigoModelo"
+			type="java.lang.String"
+			column="COD_MODELO"
+			not-null="true"
+			length="2" />
+			
+		<property
+			name="codigoMunicipioOrigem"
+			type="java.lang.String"
+			column="COD_MUNICIPIO_ORIGEM"
+			not-null="true"
+			length="10" />
+			
+		<property
+			name="codigoSerieOrigem"
+			type="java.lang.String"
+			column="COD_SERIE_ORIGEM"
+			length="3"
+			not-null="false" />
+			
+		<property
+			name="codigoSubSerieOrigem"
+			type="java.lang.String"
+			column="COD_SUBSERIE_ORIGEM"
+			length="3"
+			not-null="false" />
+
+		<property
+			name="codigoClasseConsumo"
+			type="java.lang.String"
+			column="COD_CLASSE_CONSUMO"
+			length="2"
+			not-null="true" />
+
+		<property
+			name="qtdDocumentosConsolidados"
+			type="java.lang.Integer"
+			column="QTD_DOC_CONSOLIDADO"
+			length="9"
+			not-null="true" />
+
+		<property
+			name="qtdDocumentosCancelados"
+			type="java.lang.Integer"
+			column="QTD_DOC_CANCELADO"
+			length="9"
+			not-null="true" />
+
+		<property
+			name="dataDocumentosConsolidado"
+			type="java.sql.Date"
+			column="DAT_DOC_CONSOLIDADO"
+			not-null="true" />
+
+		<property
+			name="valorTotalDocumentos"
+			type="java.math.BigDecimal"
+			column="VAL_DOCUMENTO"
+			not-null="true"
+			length="22"
+			precision="13"
+			scale="2" />
+
+
+		<property
+			name="valorAcumuladoDescontos"
+			type="java.math.BigDecimal"
+			column="VAL_DESCONTO"
+			not-null="true"
+			length="22"
+			precision="13"
+			scale="2" />
+
+
+		<property
+			name="valorConsumoAcumulado"
+			type="java.math.BigDecimal"
+			column="VAL_CONSUMO_ACUMULADO"
+			not-null="true"
+			length="22"
+			precision="13"
+			scale="2" />
+
+		<property
+			name="valorAcumuladoFornecimento"
+			type="java.math.BigDecimal"
+			column="VAL_FORNECIMENTO"
+			not-null="true"
+			length="22"
+			precision="13"
+			scale="2" />
+
+		<property
+			name="valorServicoNaoTributados"
+			type="java.math.BigDecimal"
+			column="VAL_SERVICO_NAO_TRIBUTADO"
+			not-null="true"
+			length="22"
+			precision="13"
+			scale="2" />
+
+		<property
+			name="valorCobradoTerceiros"
+			type="java.math.BigDecimal"
+			column="VAL_TERCEIROS"
+			not-null="true"
+			length="22"
+			precision="13"
+			scale="2" />
+
+		<property
+			name="valorDespesasAcessoria"
+			type="java.math.BigDecimal"
+			column="VAL_DESPESA_ACESSORIA"
+			not-null="true"
+			length="22"
+			precision="13"
+			scale="2" />
+
+		<property
+			name="valorBaseIcms"
+			type="java.math.BigDecimal"
+			column="VAL_BASE_ICMS"
+			not-null="true"
+			length="22"
+			precision="13"
+			scale="2" />
+
+		<property
+			name="valorIcms"
+			type="java.math.BigDecimal"
+			column="VAL_ICMS"
+			not-null="true"
+			length="22"
+			precision="13"
+			scale="2" />
+
+		<property
+			name="valorBaseIcmsSubstituicaoTributaria"
+			type="java.math.BigDecimal"
+			column="VAL_BASE_ICMS_ST"
+			not-null="true"
+			length="22"
+			precision="13"
+			scale="2" />
+
+		<property
+			name="valorIcmsRetidoSubstituicaoTributaria"
+			type="java.math.BigDecimal"
+			column="VAL_ICMS_ST"
+			not-null="true"
+			length="22"
+			precision="13"
+			scale="2" />
+
+		<property
+			name="valorAcumuladoPisPasep"
+			type="java.math.BigDecimal"
+			column="VAL_PIS"
+			not-null="true"
+			length="22"
+			precision="13"
+			scale="2" />
+			
+		<property
+			name="valorAcumuladoCofins"
+			type="java.math.BigDecimal"
+			column="VAL_COFINS"
+			not-null="true"
+			length="22"
+			precision="13"
+			scale="2" />
+
+		<property
+			name="codigoOperacaoRegistro"
+			type="java.lang.String"
+			column="COD_OPERACAO_REGISTRO"
+			length="1"
+			not-null="false" />
+
+		<property
+			name="codigoStatusRegistro"
+			type="java.lang.String"
+			column="COD_STATUS_REGISTRO"
+			length="2"
+			not-null="false" />
+
+		<property
+			name="descricaoErroRegistro"
+			type="java.lang.String"
+			column="DSC_ERRO_REGISTRO"
+			length="2000"
+			not-null="false" />
+
+	</class>
+</hibernate-mapping>

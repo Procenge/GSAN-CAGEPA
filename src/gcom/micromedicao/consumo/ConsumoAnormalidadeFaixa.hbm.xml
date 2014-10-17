@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.micromedicao.consumo.ConsumoAnormalidadeFaixa" 
+    table="consumo_anormalidade_faixa"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="cafx_id"
+    >
+    </id>
+    
+    <property
+        name="numeroFaixaInicio"
+        type="java.lang.Integer"
+        column="cafx_nnfaixainicio"
+        length="9"
+    />
+    
+    <property
+        name="numeroFaixaFim"
+        type="java.lang.Integer"
+        column="cafx_nnfaixafim"
+        length="9"
+    />
+    
+     <property
+        name="numeroVezesMedia"
+        type="java.lang.Integer"
+        column="cafx_nnvezesmedia"
+        length="9"
+    />
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="cafx_tmultimaalteracao"
+        length="8"
+    />
+
+</class>
+</hibernate-mapping>

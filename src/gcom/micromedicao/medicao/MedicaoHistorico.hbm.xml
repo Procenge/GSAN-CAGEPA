@@ -1,0 +1,143 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<!--
+		Created by the Middlegen Hibernate plugin
+		
+		http://boss.bekk.no/boss/middlegen/
+		http://hibernate.sourceforge.net/
+	-->
+
+	<class name="gcom.micromedicao.medicao.MedicaoHistorico"
+		table="medicao_historico">
+
+		<id name="id" type="java.lang.Integer" column="mdhi_id">
+			<generator class="sequence">
+				<param name="sequence">
+					sq_medicao_hist
+				</param>
+			</generator>
+		</id>
+
+		<property name="anoMesReferencia" type="int"
+			column="mdhi_amleitura" not-null="true" length="4" />
+			
+		<property name="numeroVezesConsecutivasOcorrenciaAnormalidade"
+			type="java.lang.Short" column="mdhi_nnvezesconsecutivaanormal"
+			length="2" />
+			
+		<property name="dataLeituraAnteriorFaturamento"
+			type="java.sql.Date" column="mdhi_dtleituraanteriorfaturame"
+			not-null="false" length="4" />
+			
+		<property name="leituraAnteriorFaturamento" type="java.lang.Integer"
+			column="mdhi_nnleituraanteriorfaturame" length="4" />
+			
+		<property name="leituraAnteriorInformada"
+			type="java.lang.Integer" column="mdhi_nnleituraanteriorinformad"
+			length="4" />
+			
+		<property name="dataLeituraAtualInformada" type="java.sql.Date"
+			column="mdhi_dtleituraatualinformada" not-null="false" length="4" />
+			
+		<property name="leituraAtualInformada" type="java.lang.Integer"
+			column="mdhi_nnleituraatualinformada" length="4" />
+			
+		<property name="dataLeituraAtualFaturamento"
+			type="java.sql.Date" column="mdhi_dtleituraatualfaturamento" length="4" />
+			
+		<property name="leituraAtualFaturamento" type="java.lang.Integer"
+			column="mdhi_nnleituraatualfaturamento" length="8" />
+			
+		<property name="numeroConsumoMes" type="java.lang.Integer"
+			column="mdhi_nnconsumomedidomes" length="4" />
+						
+		<property name="numeroConsumoInformado" type="java.lang.Integer"
+			column="mdhi_nnconsumoinformado" length="4" />
+			
+		<property name="ultimaAlteracao" type="java.sql.Timestamp"
+			column="mdhi_tmultimaalteracao" length="8" />
+			
+		<property name="consumoMedioHidrometro"
+			type="java.lang.Integer" column="mdhi_nnconsumomediohidrometro"
+			length="4" />
+			
+		<property
+	        name="leituraProcessamentoMovimento"
+        	type="java.sql.Date"
+        	column="mdhi_dtleituraprocessamentomov"
+        	length="4" 	/>
+        	
+        <property name="consumoCreditoGerado" type="java.lang.Integer"
+			column="mdhi_nnconsumocreditogerado" length="4" />	
+
+		<property name="consumoCreditoAnterior" type="java.lang.Integer"
+			column="mdhi_nnconsumocreditoanterior" length="4" />
+		
+
+		<!-- associations -->
+		<!-- bi-directional many-to-one association to Imovel -->
+		<many-to-one name="imovel" class="gcom.cadastro.imovel.Imovel"
+			not-null="false">
+			<column name="imov_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to LeituraSituacao -->
+		<many-to-one name="leituraSituacaoAnterior"
+			class="gcom.micromedicao.leitura.LeituraSituacao" not-null="true">
+			<column name="ltst_idleiturasituacaoanterior" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to LeituraSituacao -->
+		<many-to-one name="leituraSituacaoAtual"
+			class="gcom.micromedicao.leitura.LeituraSituacao" not-null="true">
+			<column name="ltst_idleiturasituacaoatual" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to HidrometroInstalacaoHistorico -->
+		<many-to-one name="hidrometroInstalacaoHistorico"
+			class="gcom.micromedicao.hidrometro.HidrometroInstalacaoHistorico"
+			not-null="true">
+			<column name="hidi_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to LeituraAnormalidade -->
+		<many-to-one name="leituraAnormalidadeFaturamento"
+			class="gcom.micromedicao.leitura.LeituraAnormalidade"
+			not-null="true">
+			<column name="ltan_idleituraanormalidadefatu" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to LeituraAnormalidade -->
+		<many-to-one name="leituraAnormalidadeInformada"
+			class="gcom.micromedicao.leitura.LeituraAnormalidade"
+			not-null="true">
+			<column name="ltan_idleituraanormalidadeinfo" />
+		</many-to-one>
+		<!-- bi-directional one-to-one association to LeituraFaixaFalsa -->
+		<one-to-one name="leituraFaixaFalsa"
+			class="gcom.micromedicao.leitura.LeituraFaixaFalsa"
+			outer-join="auto" />
+		<!-- bi-directional one-to-one association to LeituraFiscalizacao -->
+		<one-to-one name="leituraFiscalizacao"
+			class="gcom.micromedicao.leitura.LeituraFiscalizacao"
+			outer-join="auto" />
+		<!-- bi-directional many-to-one association to LigacaoAgua -->
+		<many-to-one name="ligacaoAgua"
+			class="gcom.atendimentopublico.ligacaoagua.LigacaoAgua"
+			not-null="false">
+			<column name="lagu_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to Funcionario -->
+		<many-to-one name="funcionario"
+			class="gcom.cadastro.funcionario.Funcionario"
+			not-null="false">
+			<column name="func_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to MedicaoTipo -->
+		<many-to-one name="medicaoTipo"
+			class="gcom.micromedicao.medicao.MedicaoTipo" not-null="true">
+			<column name="medt_id" />
+		</many-to-one>
+
+
+	</class>
+</hibernate-mapping>

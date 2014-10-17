@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.micromedicao.consumo.ConsumoAnormalidadeConsumo" 
+    table="consumo_anormalidade_consumo"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="cacs_id"
+    >
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="cacs_dsconsumoacobrar"
+        length="30"
+    />
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="cacs_icuso"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="cacs_tmultimaalteracao"
+        length="8"
+    />
+
+</class>
+</hibernate-mapping>

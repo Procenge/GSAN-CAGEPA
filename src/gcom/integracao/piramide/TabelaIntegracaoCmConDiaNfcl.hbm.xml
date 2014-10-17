@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<!-- Created by the Middlegen Hibernate plugin http://boss.bekk.no/boss/middlegen/ 
+		http://hibernate.sourceforge.net/ -->
+
+	<class
+		name="gcom.integracao.piramide.TabelaIntegracaoCmConDiaNfcl"
+		table="ti_cm_con_dia_nfcl">
+		
+			<composite-id
+			name="comp_id"
+			class="gcom.integracao.piramide.TabelaIntegracaoCmConDiaNfclPK">
+			
+			<key-property
+				name="codigoSequencialOrigem"
+				type="java.lang.Integer"
+				column="COD_SEQUENCIAL_ORIGEM"
+				length="6" />
+			
+			<key-property
+				name="codigoSequencialItemOrigem"
+				type="java.lang.Integer"
+				column="COD_SEQUENCIAL_ITEM_ORIGEM"
+				length="3" />
+			
+		</composite-id>
+		
+		<property
+			name="codigoSituacaoTributariaPis"
+			type="java.lang.String"
+			column="COD_CST_PIS"
+			not-null="false"
+			length="2" />
+		<property
+			name="codigoSituacaoTributariaConfins"
+			type="java.lang.String"
+			column="COD_CST_COFINS"
+			not-null="false"
+			length="2" />
+		<property
+			name="codigoContribuicaoSocialApuradaPis"
+			type="java.lang.String"
+			column="COD_CNT_SOCIAL_APURADA_PIS"
+			length="2"
+			not-null="false" />
+		<property
+			name="codigoContribuicaoSocialApuradaConfins"
+			type="java.lang.String"
+			column="COD_CNT_SOCIAL_APURADA_COFINS"
+			length="2"
+			not-null="false" />
+		<property
+			name="codigoContaPisOrigem"
+			type="java.lang.String"
+			column="COD_CONTA_PIS_ORIGEM"
+			length="30"
+			not-null="false" />
+
+		<property
+			name="codigoContaConfinsOrigem"
+			type="java.lang.String"
+			column="COD_CONTA_COFINS_ORIGEM"
+			length="30"
+			not-null="false" />
+
+		<property
+			name="valorItem"
+			type="java.math.BigDecimal"
+			column="VAL_ITEM"
+			not-null="false"
+			length="22"
+			precision="13"
+			scale="2" />
+
+		<property
+			name="valorBasePis"
+			type="java.math.BigDecimal"
+			column="VAL_BASE_PIS"
+			not-null="false"
+			length="22"
+			precision="13"
+			scale="2" />
+
+		<property
+			name="percentualAlicotaPis"
+			type="java.math.BigDecimal"
+			column="PCT_ALIQUOTA_PIS"
+			not-null="false"
+			length="22"
+			precision="13"
+			scale="2" />
+
+
+		<property
+			name="valorPis"
+			type="java.math.BigDecimal"
+			column="VAL_PIS"
+			not-null="false"
+			length="22"
+			precision="13"
+			scale="2" />
+
+
+		<property
+			name="valorBaseConfins"
+			type="java.math.BigDecimal"
+			column="VAL_BASE_COFINS"
+			not-null="false"
+			length="22"
+			precision="13"
+			scale="2" />
+
+
+		<property
+			name="percentualAlicotaConfins"
+			type="java.math.BigDecimal"
+			column="PCT_ALIQUOTA_COFINS"
+			not-null="false"
+			length="22"
+			precision="13"
+			scale="2" />
+
+
+		<property
+			name="valorConfins"
+			type="java.math.BigDecimal"
+			column="VAL_COFINS"
+			not-null="false"
+			length="22"
+			precision="13"
+			scale="2" />
+
+		<property
+			name="descricaoErroRegistro"
+			type="java.lang.String"
+			column="DSC_ERRO_REGISTRO"
+			not-null="false"
+			length="2000" />
+
+		<property
+			name="codigoTabelaNaturezaReceitaPis"
+			type="java.lang.String"
+			column="COD_TAB_NATUREZA_REC_PIS"
+			not-null="false"
+			length="6" />
+
+
+		<property 
+			name="codigoNaturezaReceitaPis"
+			type="java.lang.String"
+			column="COD_NATUREZA_RECEITA_PIS"
+			not-null="false"
+			length="4" />
+
+
+		<property
+			name="codigoTabelaNaturezaReceitaConfins"
+			type="java.lang.String"
+			column="COD_TAB_NATUREZA_REC_COFINS"
+			not-null="false"
+			length="6" />
+			
+			<property
+			name="codigoNaturezaReceitaConfins"
+			type="java.lang.String"
+			column="COD_NATUREZA_RECEITA_COFINS"
+			not-null="false"
+			length="4" />
+			
+		
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<!-- Created by the Middlegen Hibernate plugin http://boss.bekk.no/boss/middlegen/ 
+		http://hibernate.sourceforge.net/ -->
+
+	<class
+		name="gcom.integracao.acquagis.TabelaIntegracaoContaAtualizada"
+		table="conta_atualizada">
+			
+		<id
+			name="id"
+			type="java.lang.Integer"
+			column="CATU_ID">
+			<generator class="sequence">
+	    	    <param name="sequence">sq_conta_atualizada</param>
+	    	</generator>
+
+		</id>
+
+		<property
+			name="contaAtualizadaValor"
+			type="java.math.BigDecimal"
+			column="CATU_VALOR"
+			not-null="true"
+			length="13" 
+		/>
+			
+		<property
+	        name="ultimaAlteracao"
+	        type="java.sql.Timestamp"
+	        column="CATU_TMULTIMAALTERACAO"
+	        length="8"
+	    />
+			
+		<!-- bi-directional many-to-one association to Imovel -->
+	    <many-to-one
+	        name="imovel"
+	        class="gcom.cadastro.imovel.Imovel"
+	        not-null="true"
+	    >
+	        <column name="IMOV_ID" />
+	    </many-to-one>
+	    
+	    <!-- bi-directional one-to-one association to ContaGeral -->
+		<many-to-one 
+			name="contaGeral"
+			class="gcom.faturamento.conta.ContaGeral" 
+			not-null="true"
+		>
+			<column name="CNTA_ID" />
+		</many-to-one>
+
+	</class>
+</hibernate-mapping>

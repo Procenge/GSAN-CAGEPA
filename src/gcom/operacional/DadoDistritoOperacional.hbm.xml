@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<!--
+		Created by the Middlegen Hibernate plugin
+
+		http://boss.bekk.no/boss/middlegen/ http://hibernate.sourceforge.net/
+	-->
+
+	<class
+		name="gcom.operacional.DadoDistritoOperacional"
+		table="distrito_operacional_dado">
+
+		<id
+			name="id"
+			type="java.lang.Integer"
+			column="diod_id">
+			<generator
+				class="sequence">
+				<param
+					name="sequence">sq_distrito_oper_dado</param>
+			</generator>
+		</id>
+
+		<property
+			name="anoMesReferencia"
+			type="java.lang.Integer"
+			column="diod_amreferencia"
+			not-null="true"
+			length="6" />
+
+		<property
+			name="unidadeCapacidade"
+			type="java.math.BigDecimal"
+			column="diod_nnunidade"
+			not-null="true"
+			length="15" />
+
+		<property
+			name="aducaoCapacidade"
+			type="java.math.BigDecimal"
+			column="diod_nnaducao"
+			not-null="true"
+			length="15" />
+
+		<property
+			name="volumeCapacidade"
+			type="java.math.BigDecimal"
+			column="diod_nnvolume"
+			not-null="true"
+			length="15" />
+
+		<property
+			name="extensaoAdutora"
+			type="java.math.BigDecimal"
+			column="diod_nnextensao"
+			not-null="true"
+			length="9" />
+
+		<property
+			name="diametroAdutora"
+			type="java.math.BigDecimal"
+			column="diod_nndiametro"
+			not-null="true"
+			length="6" />
+
+		<property
+			name="demandaEnergia"
+			type="java.math.BigDecimal"
+			column="diod_nndemandaenergia"
+			not-null="true"
+			length="15" />
+
+		<property
+			name="qtidadeSulfatoAluminio"
+			type="java.math.BigDecimal"
+			column="diod_qtsulfatoaluminio"
+			not-null="true"
+			length="15" />
+
+		<property
+			name="qtidadeCloroGasoso"
+			type="java.math.BigDecimal"
+			column="diod_qtclorogasoso"
+			not-null="true"
+			length="15" />
+
+		<property
+			name="qtidadeHipocloritoSodio"
+			type="java.math.BigDecimal"
+			column="diod_qthipocloritosodio"
+			not-null="true"
+			length="15" />
+
+		<property
+			name="qtidadeFluor"
+			type="java.math.BigDecimal"
+			column="diod_qtfluor"
+			not-null="true"
+			length="15" />
+
+		<property
+			name="qtidadeHorasParalisadas"
+			type="java.math.BigDecimal"
+			column="diod_qthorasparalisadas"
+			not-null="true"
+			length="5" />
+
+		<property
+			name="ultimaAlteracao"
+			type="java.sql.Timestamp"
+			column="diod_tmultimaalteracao" />
+
+		<many-to-one
+			name="materialAdutora"
+			class="gcom.atendimentopublico.ordemservico.MaterialRedeAgua"
+			not-null="true">
+			<column
+				name="mrda_id" />
+		</many-to-one>
+
+		<many-to-one
+			name="usuarioManutencao"
+			class="gcom.seguranca.acesso.usuario.Usuario"
+			not-null="true">
+			<column
+				name="usur_id" />
+		</many-to-one>
+		
+		<many-to-one
+			name="distritoOperacional"
+			class="gcom.operacional.DistritoOperacional"
+			not-null="true">
+			<column
+				name="diop_id" />
+		</many-to-one>
+
+	</class>
+</hibernate-mapping>

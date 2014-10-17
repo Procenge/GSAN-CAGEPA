@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.integracao.piramide.TabelaIntegracaoLancamentoContabil"
+    table="ti_lct_cont_gcs_n"
+>
+
+     <composite-id name="comp_id" class="gcom.integracao.piramide.TabelaIntegracaoLancamentoContabilPK">
+        <key-property 
+            name="numeroIdLancamento" 
+            column="NUM_ID_LANCAMENTO" 
+            type="java.lang.Integer"
+            length="9"
+        />
+        <key-property 
+            name="numeroSequencial" 
+            column="num_sequencial" 
+            type="java.lang.Integer"
+            length="4"
+        />
+    </composite-id>
+
+    <property
+        name="codigoContaOrigem"
+        type="char"
+        column="COD_CONTA_ORIGEM"
+        not-null="true"
+        length="20"
+    />
+    <property
+        name="codigoOperacao"
+        type="char"
+        column="COD_OPERACAO"
+        not-null="true"
+        length="1"
+    />
+    <property
+        name="valorLancamento"
+        type="java.math.BigDecimal"
+        column="VAL_LANCAMENTO"
+        not-null="true"
+        length="13"
+    />
+    <property
+        name="codigoUnidadeOrigem"
+        type="char"
+        column="COD_UNIDADE_ORIGEM"
+        not-null="true"
+        length="3"
+    />
+    <property
+        name="codigoCcustoOrigem"
+        type="char"
+        column="COD_CCUSTO_ORIGEM"
+        length="10"
+        not-null="true"
+    />
+    <property
+        name="codigoHistoricoOrigem"
+        type="char"
+        column="COD_HIST_ORIGEM"
+        length="4"
+        not-null="true"
+    />
+    <property
+        name="codigoContaAuxiliarOrigem"
+        type="char"
+        column="COD_CNTAUX_ORIGEM"
+        length="14"
+        not-null="true"
+    />
+    <property
+        name="codigoGrupoContaAuxiliarOrigem"
+        type="char"
+        column="COD_GRP_CNTAUX_ORI"
+        length="3"
+        not-null="true"
+    />
+    <property
+        name="descricaoComplemento"
+        type="char"
+        column="DSC_COMPLEMENTO"
+        length="254"
+        not-null="true"
+    />
+</class>
+</hibernate-mapping>

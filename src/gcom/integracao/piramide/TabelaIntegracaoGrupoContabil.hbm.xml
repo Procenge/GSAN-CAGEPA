@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.integracao.piramide.TabelaIntegracaoGrupoContabil"
+    table="ti_grp_cont_gcs_n"
+>
+
+    <id
+        name="numeroIdLancamento"
+        type="java.lang.Integer"
+        column="NUM_ID_LANCAMENTO"
+        length="9"
+    >
+      <!-- generator class="sequence">
+          <param name="sequence">sq_imov</param>
+      </generator>
+      -->
+          <generator class="assigned" />
+
+    </id>
+
+    <property
+        name="codigoEmpresaOrigem"
+        type="char"
+        column="COD_EMPRESA_ORIGEM"
+        not-null="true"
+        length="3"
+    />
+    <property
+        name="codigoFilialOrigem"
+        type="char"
+        column="COD_FILIAL_ORIGEM"
+        not-null="true"
+        length="3"
+    />
+    <property
+        name="codigoTipoLancamento"
+        type="char"
+        column="COD_TIPO_LANC"
+        length="2"
+        not-null="true"
+    />
+    <property
+        name="dataLancamento"
+        type="java.sql.Date"
+        column="DAT_LANCAMENTO"
+        not-null="true"
+    />
+    <property
+        name="codigoDocumento"
+        type="char"
+        column="COD_DOCUMENTO"
+        length="14"
+        not-null="true"
+    />
+    <property
+        name="codigoArquivo"
+        type="char"
+        column="COD_ARQUIVO"
+        length="15"
+        not-null="true"
+    />
+    <property
+        name="codigoOperacaoRegistro"
+        type="char"
+        column="COD_OPERACAO_REGIS"
+        length="1"
+        not-null="true"
+    />
+    <property
+        name="codigoStatusRegistro"
+        type="char"
+        column="COD_STATUS_REGISTR"
+        length="2"
+        not-null="true"
+    />
+</class>
+</hibernate-mapping>

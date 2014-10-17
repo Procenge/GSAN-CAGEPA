@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<class 
+    name="gcom.micromedicao.consumo.ConsumoFixoFaixa" 
+    table="consumo_fixo_faixa"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="cfix_id"
+    >
+       <generator class="sequence">
+        	<param name="sequence">sq_consumo_hist</param>
+     	</generator>
+    </id>
+
+    <property
+        name="numeroInicialFaixa"
+        type="java.lang.Integer"
+        column="cfix_nnmenorfaixa"
+        not-null="true"
+    />
+    <property
+        name="numeroFinalFaixa"
+        type="java.lang.Integer"
+        column="cfix_nnmaiorfaixa"
+        not-null="true"
+    />
+    <property
+        name="volumeConsumoFixoFaixa"
+        type="java.lang.Integer"
+        column="cfix_nnvolume"
+        not-null="true"
+    />        
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="cfix_icuso"
+        not-null="false"        
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="cfix_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+
+    <!-- Associations -->
+   <many-to-one
+        name="consumoFixoUnidade"
+        class="gcom.micromedicao.consumo.ConsumoFixoUnidade"
+        not-null="true"
+    >
+        <column name="cfxu_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

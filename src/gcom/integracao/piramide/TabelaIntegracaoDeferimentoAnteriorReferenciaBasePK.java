@@ -1,0 +1,225 @@
+/*
+ * Copyright (C) 2007-2007 the GSAN – Sistema Integrado de Gestão de Serviços de Saneamento
+ *
+ * This file is part of GSAN, an integrated service management system for Sanitation
+ *
+ * GSAN is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License.
+ *
+ * GSAN is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place – Suite 330, Boston, MA 02111-1307, USA
+ */
+
+/*
+ * GSAN – Sistema Integrado de Gestão de Serviços de Saneamento
+ * Copyright (C) <2007> 
+ *
+ * Este programa é software livre; você pode redistribuí-lo e/ou
+ * modificá-lo sob os termos de Licença Pública Geral GNU, conforme
+ * publicada pela Free Software Foundation; versão 2 da
+ * Licença.
+ * Este programa é distribuído na expectativa de ser útil, mas SEM
+ * QUALQUER GARANTIA; sem mesmo a garantia implícita de
+ * COMERCIALIZAÇÃO ou de ADEQUAÇÃO A QUALQUER PROPÓSITO EM
+ * PARTICULAR. Consulte a Licença Pública Geral GNU para obter mais
+ * detalhes.
+ * Você deve ter recebido uma cópia da Licença Pública Geral GNU
+ * junto com este programa; se não, escreva para Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ * 02111-1307, USA.
+ * 
+ * GSANPCG
+ * Eduardo Henrique
+ */
+package gcom.integracao.piramide;
+
+import gcom.interceptor.ObjetoGcom;
+
+import java.util.Date;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+
+
+/**
+ * @author mgrb
+ *         Representa a chave primaria de TI_DIFER_PERIODO
+ */
+public class TabelaIntegracaoDeferimentoAnteriorReferenciaBasePK
+				extends ObjetoGcom {
+
+	private String codigoGerenciaRegional;
+
+	private String codigoSistemaOrigem;
+	private String mesAnoReferencia;
+
+	private String cnpj;
+
+	private Date dataRecebimento;
+
+
+
+
+
+	/**
+	 * TabelaIntegracaoDeferimentoAnteriorReferenciaBasePK
+	 * <p>
+	 * Esse método Constroi uma instância de TabelaIntegracaoDeferimentoAnteriorReferenciaBasePK.
+	 * </p>
+	 * 
+	 * @author Marlos Ribeiro
+	 * @since 02/10/2012
+	 */
+	public TabelaIntegracaoDeferimentoAnteriorReferenciaBasePK() {
+
+	}
+
+
+	/**
+	 * TabelaIntegracaoDeferimentoAnteriorReferenciaBasePK
+	 * <p>
+	 * Esse método Constroi uma instância de TabelaIntegracaoDeferimentoAnteriorReferenciaBasePK.
+	 * </p>
+	 * 
+	 * @param codigoGerenciaRegional
+	 * @param codigoSistemaOrigem
+	 * @param mesAnoReferencia
+	 * @param cnpj
+	 * @param dataRecebimento
+	 * @author Marlos Ribeiro
+	 * @since 02/10/2012
+	 */
+	public TabelaIntegracaoDeferimentoAnteriorReferenciaBasePK(String codigoGerenciaRegional, String codigoSistemaOrigem,
+																String mesAnoReferencia, String cnpj, Date dataRecebimento) {
+
+		super();
+		this.codigoGerenciaRegional = codigoGerenciaRegional;
+		this.codigoSistemaOrigem = codigoSistemaOrigem;
+		this.mesAnoReferencia = mesAnoReferencia;
+		this.cnpj = cnpj;
+		this.dataRecebimento = dataRecebimento;
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(Object other){
+
+		if((this == other)) return true;
+		if(!(other instanceof TabelaIntegracaoDeferimentoAnteriorReferenciaBasePK)) return false;
+		TabelaIntegracaoDeferimentoAnteriorReferenciaBasePK castOther = (TabelaIntegracaoDeferimentoAnteriorReferenciaBasePK) other;
+		return new EqualsBuilder()//
+						.append(codigoGerenciaRegional, castOther.codigoGerenciaRegional)//
+						.append(codigoSistemaOrigem, castOther.codigoSistemaOrigem)//
+						.append(mesAnoReferencia, castOther.mesAnoReferencia)//
+						.append(cnpj, castOther.cnpj)//
+						.append(dataRecebimento, castOther.dataRecebimento)//
+						.isEquals();
+	}
+
+	public String getCnpj(){
+
+		return cnpj;
+	}
+
+	public String getCodigoGerenciaRegional(){
+
+		return codigoGerenciaRegional;
+	}
+
+	public String getCodigoSistemaOrigem(){
+
+		return codigoSistemaOrigem;
+	}
+
+	public Date getDataRecebimento(){
+
+		return dataRecebimento;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public int hashCode(){
+
+		return new HashCodeBuilder()//
+						.append(codigoGerenciaRegional)//
+						.append(codigoSistemaOrigem)//
+						.append(mesAnoReferencia)//
+						.append(cnpj)//
+						.append(dataRecebimento)//
+						.toHashCode();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String[] retornaCamposChavePrimaria(){
+
+		String[] chavePrimaria = new String[5];
+		chavePrimaria[0] = "gerenciaRegional";
+		chavePrimaria[1] = "codigoSistemaOrigem";
+		chavePrimaria[2] = "mesAnoReferencia";
+		chavePrimaria[3] = "cnpj";
+		chavePrimaria[4] = "dataRecebimento";
+		return chavePrimaria;
+	}
+
+	public void setCnpj(String cnpj){
+
+		this.cnpj = cnpj;
+	}
+
+	public void setCodigoGerenciaRegional(String codigoGerenciaRegional){
+
+		this.codigoGerenciaRegional = codigoGerenciaRegional;
+	}
+
+	public void setCodigoSistemaOrigem(String codigoSistemaOrigem){
+
+		this.codigoSistemaOrigem = codigoSistemaOrigem;
+	}
+
+	public void setDataRecebimento(Date dataRecebimento){
+
+		this.dataRecebimento = dataRecebimento;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString(){
+
+		return new ToStringBuilder(this)//
+						.append("codigoGerenciaRegional", codigoGerenciaRegional)//
+						.append("codigoSistemaOrigem", codigoSistemaOrigem)//
+						.append("mesAnoReferencia", mesAnoReferencia)//
+						.append("cnpj", cnpj)//
+						.append("dataRecebimento", dataRecebimento)//
+						.toString();
+	}
+
+	public String getMesAnoReferencia(){
+
+		return mesAnoReferencia;
+	}
+
+	public void setMesAnoReferencia(String mesAnoReferencia){
+
+		this.mesAnoReferencia = mesAnoReferencia;
+	}
+
+}

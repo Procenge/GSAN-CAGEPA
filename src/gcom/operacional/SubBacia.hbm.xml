@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.operacional.SubBacia"
+    table="subbacia"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="sbac_id"
+    >
+      <generator class="sequence">
+          <param name="sequence">sq_subbacia</param>
+      </generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="sbac_dssubbacia"
+        length="30"
+    />
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="sbac_icuso"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="sbac_tmultimaalteracao"
+        length="8"
+    />
+	<property
+        name="codigo"
+        type="java.lang.Integer"
+        column="sbac_cdsubbacia"
+        not-null="false"
+        length="2"
+    />
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="sbac_dsabrevsubbacia"
+        not-null="false"
+        length="6"
+    />
+    <property
+        name="extensao"
+        type="java.math.BigDecimal"
+        column="sbac_nnextensao"
+        length="9"
+    />
+    <property
+        name="diametro"
+        type="java.math.BigDecimal"
+        column="sbac_nndiametro"
+        length="6"
+    />
+
+    <!-- associations -->
+    <!-- bi-directional many-to-one association to Bacia -->
+    <many-to-one
+        name="bacia"
+        class="gcom.operacional.Bacia"
+        not-null="true"
+    >
+        <column name="baci_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to MaterialRedeEsgoto -->
+    <many-to-one
+        name="materialRedeEsgoto"
+        class="gcom.atendimentopublico.ordemservico.MaterialRedeEsgoto"
+        not-null="true"
+    >
+        <column name="mrde_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

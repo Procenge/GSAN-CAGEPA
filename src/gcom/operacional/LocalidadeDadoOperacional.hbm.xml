@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.operacional.LocalidadeDadoOperacional"
+    table="localidade_dado_operacional"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ldop_id">  
+
+    <generator class="sequence">
+       <param name="sequence">sq_localidade_dado_oper</param>
+    </generator>
+
+    </id>
+    
+    <property
+        name="anoMesReferencia"
+        type="java.lang.Integer"
+        column="ldop_amreferencia"
+        length="4"
+    />
+    
+        <!-- bi-directional many-to-one association to Localidade -->
+    <many-to-one
+        name="localidade"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="true"
+    >
+        <column name="loca_id" />
+    </many-to-one>
+    
+    <property
+        name="volumeProduzido"
+        type="java.math.BigDecimal"
+        column="ldop_volumeproduzido"
+        length="9"
+    />
+    
+    <property
+        name="extensaoRedeAgua"
+        type="java.math.BigDecimal"
+        column="ldop_extensaoredeagua"
+        length="9"
+    />
+    
+    <property
+        name="extensaoRedeEsgoto"
+        type="java.math.BigDecimal"
+        column="ldop_extensaoredeesgoto"
+        length="9"
+    />
+    
+    <property
+        name="qtdFuncionariosAdministracao"
+        type="java.lang.Integer"
+        column="ldop_qtfuncadm"
+        length="6"
+    />
+    
+    <property
+        name="qtdFuncionariosAdministracaoTercerizados"
+        type="java.lang.Integer"
+        column="ldop_qtfuncadmterceiro"
+        length="6"
+    />
+    
+    <property
+        name="qtdFuncionariosOperacao"
+        type="java.lang.Integer"
+        column="ldop_qtfuncopr"
+        length="6"
+    />
+    
+    <property
+        name="qtdFuncionariosOperacaoTercerizados"
+        type="java.lang.Integer"
+        column="ldop_qtfuncoprterceiro"
+        length="6"
+    />
+    
+    <property
+        name="qtdSulfatoAluminio"
+        type="java.lang.Integer"
+        column="ldop_qtsulfatoaluminio"
+        length="9"
+    />
+    
+    <property
+        name="qtdCloroGasoso"
+        type="java.lang.Integer"
+        column="ldop_qtclorogasoso"
+        length="9"
+    />
+    
+    <property
+        name="qtdHipocloritoSodio"
+        type="java.lang.Integer"
+        column="ldop_qthipoclorsodio"
+        length="9"
+    />
+    
+    <property
+        name="quantidadeFluor"
+        type="java.lang.Integer"
+        column="ldop_qtfluor"
+        length="9"
+    />
+    
+    <property
+        name="qtdConsumoEnergia"
+        type="java.math.BigDecimal"
+        column="ldop_qtconsumoeneergia"
+        length="11"
+    />
+    
+    <property
+        name="qtdHorasParalisadas"
+        type="java.math.BigDecimal"
+        column="ldop_qthorasparalizadas"
+        length="11"
+    />
+    
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="ldop_icuso"
+        length="2"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ldop_tmultimaalteracao"
+        length="8"
+    />
+
+</class>
+</hibernate-mapping>

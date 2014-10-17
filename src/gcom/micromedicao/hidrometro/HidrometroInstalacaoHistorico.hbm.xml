@@ -1,0 +1,248 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.micromedicao.hidrometro.HidrometroInstalacaoHistorico"
+    table="hidrometro_instalacao_hist"
+    dynamic-insert="true" dynamic-update="true"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="hidi_id"
+    >
+        <generator class="sequence">
+        	<param name="sequence">sq_hidro_instalacao_hist</param>
+     	</generator>
+    </id>
+
+    <property
+        name="dataInstalacao"
+        type="java.sql.Date"
+        column="hidi_dtinstalacaohidrometro"
+        not-null="true"
+        length="4"
+    />
+    <property
+        name="numeroLeituraInstalacao"
+        type="java.lang.Integer"
+        column="hidi_nnleiturainstalacaohidrom"
+        length="4"
+    />
+    <property
+        name="dataRetirada"
+        type="java.sql.Date"
+        column="hidi_dtretiradahidrometro"
+        not-null="false"
+        length="4"     
+    />
+    <property
+        name="numeroLeituraRetirada"
+        type="java.lang.Integer"
+        column="hidi_nnleituraretiradahidromet"
+        not-null="false"
+        length="4"
+    />
+    <property
+        name="dataImplantacaoSistema"
+        type="java.sql.Date"
+        column="hidi_dtinstalacaohidrometrosis"
+        not-null="true"
+        length="4"
+    />
+    
+    <property
+        name="numeroHidrometro"
+        type="java.lang.String"
+        column="hidi_nnhidrometro"
+        length="10"
+    />
+    <property
+        name="numeroLeituraCorte"
+        type="java.lang.Integer"
+        column="hidi_nnleituracorte"
+        length="4"
+    />
+    <property
+        name="numeroSelo"
+        type="java.lang.String"
+        column="hidi_nnselo"
+        length="12"    
+    />
+    <property
+        name="indicadorExistenciaCavalete"
+        type="java.lang.Short"
+        column="hidi_iccavalete"
+        length="2"
+    />
+    <property
+        name="indicadorInstalcaoSubstituicao"
+        type="java.lang.Short"
+        column="hidi_icinstalacaosubstituicao"
+        length="2"
+    />
+    <property
+        name="numeroLeituraSupressao"
+        type="java.lang.Integer"
+        column="hidi_nnleiturasupressao"
+        length="4"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="hidi_tmultimaalteracao"
+        length="8"
+    />
+
+	<property
+        name="indicadorTrocaProtecao"
+        type="java.lang.Short"
+        column="hidi_ictrocaprotecao"
+        not-null="false"
+        length="2"        
+    />
+    
+    
+    <property
+        name="indicadorTrocaRegistro"
+        type="java.lang.Short"
+        column="hidi_ictrocaregistro"
+        not-null="false"
+        length="2"        
+    />
+
+    <!-- associations -->
+    
+    <!-- bi-directional many-to-one association to Funcionario -->
+	<many-to-one name="funcionarioInstalacaoHidrometro"
+		class="gcom.cadastro.funcionario.Funcionario"
+		not-null="false">
+		<column name="hidi_idfuncinstalacaohid" />
+	</many-to-one>
+	
+	<!-- bi-directional many-to-one association to Funcionario -->
+	<many-to-one name="funcionarioRetiradaHidrometro"
+		class="gcom.cadastro.funcionario.Funcionario"
+		not-null="false">
+		<column name="hidi_idfuncretiradahid" />
+	</many-to-one>
+    
+    
+    <!-- bi-directional many-to-one association to Imovel -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="false"
+    >
+        <column name="imov_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to HidrometroProtecao -->
+    <many-to-one
+        name="hidrometroProtecao"
+        class="gcom.micromedicao.hidrometro.HidrometroProtecao"
+        not-null="true"
+    >
+        <column name="hipr_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Hidrometro -->
+    <many-to-one
+        name="hidrometro"
+        class="gcom.micromedicao.hidrometro.Hidrometro"
+        not-null="true"
+    >
+        <column name="hidr_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to RateioTipo -->
+    <many-to-one
+        name="rateioTipo"
+        class="gcom.micromedicao.RateioTipo"
+        not-null="false"
+    >
+        <column name="rttp_id" />
+    </many-to-one>
+    <!-- bi-directional one-to-many association to Imovel
+    <set
+        name="imovels"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="hidi_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.Imovel"
+        />
+    </set>
+     bi-directional one-to-many association to LigacaoAgua
+    <set
+        name="ligacaoAguas"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="hidi_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.LigacaoAgua"
+        />
+    </set>
+     bi-directional one-to-many association to MedicaoHistorico
+    <set
+        name="medicaoHistoricos"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="hidi_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.MedicaoHistorico"
+        />
+    </set>
+     bi-directional many-to-one association to HidrometroLocalInstalacao -->
+    <many-to-one
+        name="hidrometroLocalInstalacao"
+        class="gcom.micromedicao.hidrometro.HidrometroLocalInstalacao"
+        not-null="true"
+    >
+        <column name="hili_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to LigacaoAgua -->
+    <many-to-one
+        name="ligacaoAgua"
+        class="gcom.atendimentopublico.ligacaoagua.LigacaoAgua"
+        not-null="false"
+		insert="true"
+		update="true"
+    >
+        <column name="lagu_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to MedicaoTipo -->
+    <many-to-one
+        name="medicaoTipo"
+        class="gcom.micromedicao.medicao.MedicaoTipo"
+        not-null="false"
+    >
+        <column name="medt_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to CorteRegistroTipo -->
+	<many-to-one name="corteRegistroTipo"
+		class="gcom.atendimentopublico.ligacaoagua.CorteRegistroTipo"
+		not-null="false">
+		<column name="crgt_id" />
+	</many-to-one>
+
+</class>
+</hibernate-mapping>

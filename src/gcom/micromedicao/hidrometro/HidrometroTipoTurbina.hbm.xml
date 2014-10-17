@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="gcom.micromedicao.hidrometro.HidrometroTipoTurbina"
+		table="hidrometro_tipo_turbina">
+
+		<id name="id" type="java.lang.Integer" column="hdtt_id">
+			<generator class="sequence">
+				<param name="sequence">sq_hidrometro_tipo_turbina</param>
+			</generator>
+		</id>
+
+		<property name="codigo" type="char" column="hdtt_cdhidrometrotipoturbina"
+			not-null="true" length="1" />
+
+		<property name="descricao" type="java.lang.String"
+			column="hdtt_dshidrometrotipoturbina" not-null="true" length="30" />
+
+		<property name="descricaoAbreviada" type="java.lang.String"
+			column="hdtt_dsabrevhidromtipoturbina" not-null="false" length="6" />
+
+		<property name="indicadorUso" type="java.lang.Short" column="hdtt_icuso"
+			not-null="true" length="1" />
+
+		<property name="ultimaAlteracao" type="java.sql.Timestamp"
+			column="hdtt_tmultimaalteracao" not-null="true" length="6" />
+
+	</class>
+</hibernate-mapping>

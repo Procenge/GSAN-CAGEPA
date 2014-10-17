@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.operacional.SetorAbastecimento" 
+    table="SETOR_ABASTECIMENTO"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="stab_id"
+    >
+        <generator class="sequence">
+        	<param name="sequence">sq_setor_abastto</param>
+     	</generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="stab_dssetorabastecimento"
+        not-null="true"
+        length="30"
+    />
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="stab_dsabreviado"
+        length="6"
+    />
+    <property
+        name="indicadorUso"
+        type="short"
+        column="stab_icuso"
+        not-null="true"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="stab_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    
+     <property
+        name="codigoSetorAbastecimento"
+        type="java.lang.Integer"
+        column="stab_cdsetorabastecimento"
+        not-null="false"
+        length="4"
+    />
+
+    <!-- Associations -->
+    
+    <!-- bi-directional many-to-one association to SistemaAbastecimento --> 
+    <many-to-one
+        name="sistemaAbastecimento"
+        class="gcom.operacional.SistemaAbastecimento"
+        not-null="true"
+    >
+        <column name="sabs_id" />
+    </many-to-one> 
+  
+    <!-- bi-directional one-to-many association to ManutencaoProgramacao 
+    <set
+        name="manutencaoProgramacaos"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="stab_id" />
+        </key>
+        <one-to-many 
+            class="gcom.ManutencaoProgramacao"
+        />
+    </set> -->
+    <!-- bi-directional one-to-many association to DistritoOperacional 
+    <set
+        name="distritoOperacionals"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="stab_id" />
+        </key>
+        <one-to-many 
+            class="gcom.DistritoOperacional"
+        />
+    </set> -->
+    <!-- bi-directional one-to-many association to AbastecimentoProgramacao 
+    <set
+        name="abastecimentoProgramacaos"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="stab_id" />
+        </key>
+        <one-to-many 
+            class="gcom.AbastecimentoProgramacao"
+        />
+    </set> -->
+    <!-- bi-directional many-to-one association to DistritoOperacional --> 
+    <many-to-one
+        name="distritoOperacional"
+        class="gcom.operacional.DistritoOperacional"
+        not-null="false"
+    >
+        <column name="diop_id" />
+    </many-to-one> 
+    
+    <!-- bi-directional many-to-one association to ZonaAbastecimento --> 
+    <many-to-one
+        name="zonaAbastecimento"
+        class="gcom.operacional.ZonaAbastecimento"
+        not-null="false"
+    >
+        <column name="zabs_id" />
+    </many-to-one> 
+
+</class>
+</hibernate-mapping>

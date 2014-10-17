@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class 
+    name="gcom.micromedicao.consumo.ConsumoAnormalidade" 
+    table="consumo_anormalidade"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="csan_id"
+    >
+        <generator class="sequence">
+        	<param name="sequence">sq_consumo_anormalidade</param>
+     	</generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="csan_dsconsumoanormalidade"
+        length="25"
+    />
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="csan_dsabreviadaconsumoanormal"
+        length="5"
+    />
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="csan_icuso"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="csan_tmultimaalteracao"
+        length="8"
+    />
+    
+     <property
+        name="codigoConstante"
+        type="java.lang.String"
+        column="csan_cdconstante"
+        not-null="false"
+        length="60"
+    />
+
+    <!-- associations -->
+    <!-- bi-directional many-to-one association to ConsumoTipo -->
+    <many-to-one
+        name="consumoTipoLeituraAnteriorProjetada"
+        class="gcom.micromedicao.consumo.ConsumoTipo"
+        not-null="false"
+    >
+        <column name="cstp_idleituraanteriorproj" />
+    </many-to-one>
+    
+    <many-to-one
+        name="consumoTipoLeituraAnteriorReal"
+        class="gcom.micromedicao.consumo.ConsumoTipo"
+        not-null="false"
+    >
+        <column name="cstp_idleituraanteriorreal" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to ConsumoAnormalidadeConsumo -->
+    <many-to-one
+        name="consumoAnormalidadeConsumoLeituraAnteriorProjetada"
+        class="gcom.micromedicao.consumo.ConsumoAnormalidadeConsumo"
+        not-null="false"
+    >
+        <column name="cacs_idleituraanteriorproj" />
+    </many-to-one>
+    
+    <many-to-one
+        name="consumoAnormalidadeConsumoLeituraAnteriorReal"
+        class="gcom.micromedicao.consumo.ConsumoAnormalidadeConsumo"
+        not-null="false"
+    >
+        <column name="cacs_idleituraanteriorreal" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to ConsumoAnormalidadeLeitura -->
+    <many-to-one
+        name="consumoAnormalidadeLeituraAnteriorProjetada"
+        class="gcom.micromedicao.consumo.ConsumoAnormalidadeLeitura"
+        not-null="false"
+    >
+        <column name="calt_idleituraanteriorproj" />
+    </many-to-one>
+    
+    <many-to-one
+        name="consumoAnormalidadeLeituraAnteriorReal"
+        class="gcom.micromedicao.consumo.ConsumoAnormalidadeLeitura"
+        not-null="false"
+    >
+        <column name="calt_idleituraanteriorreal" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

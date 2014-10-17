@@ -1,0 +1,192 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.operacional.DistritoOperacional"
+    table="distrito_operacional"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="diop_id"
+    >
+      <generator class="sequence">
+          <param name="sequence">sq_distrito_operacional</param>
+      </generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="diop_dsdistritooperacional"
+        length="30"
+    />
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="diop_dsabreviado"
+        length="4"
+    />
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="diop_icuso"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="diop_tmultimaalteracao"
+        length="8"
+    />
+    <property
+        name="numeroImovel"
+        type="java.lang.String"
+        column="diop_nnimovel"
+        length="5"
+    />
+    <property
+        name="complementoEndereco"
+        type="java.lang.String"
+        column="diop_dscomplementoendereco"
+        length="30"
+    />
+    <property
+        name="telefone"
+        type="java.lang.Integer"
+        column="diop_nnfone"
+        length="9"
+    />
+    <property
+        name="ramal"
+        type="java.lang.Integer"
+        column="diop_nnfoneramal"
+        length="4"
+    />
+    <property
+        name="fax"
+        type="java.lang.Integer"
+        column="diop_nnfax"
+        length="9"
+    />
+    <property
+        name="email"
+        type="java.lang.String"
+        column="diop_dsemail"
+        length="40"
+    />
+    <property
+        name="numeroCota"
+        type="java.lang.Integer"
+        column="diop_nncota"
+        length="9"
+    />
+	<property
+        name="latitude"
+        type="java.lang.Integer"
+        column="diop_nnlatitude"
+        length="9"
+    />
+    <property
+        name="longitude"
+        type="java.lang.Integer"
+        column="diop_nnlongitude"
+        length="9"
+    />
+    
+    <!-- bi-directional many-to-one association to Localidade -->
+    <many-to-one
+        name="localidade"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="true"
+    >
+        <column name="loca_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Bairro -->
+    <many-to-one
+        name="bairro"
+        class="gcom.cadastro.endereco.LogradouroBairro"
+        not-null="false"
+    >
+        <column name="lgbr_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to EnderecoReferencia -->
+    <many-to-one
+        name="enderecoReferencia"
+        class="gcom.cadastro.endereco.EnderecoReferencia"
+        not-null="false"
+    >
+        <column name="edrf_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Cep -->
+    <many-to-one
+        name="cep"
+        class="gcom.cadastro.endereco.LogradouroCep"
+        not-null="false"
+    >
+        <column name="lgcp_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to TipoUnidadeOperacional -->
+    <many-to-one
+        name="tipoUnidadeOperacional"
+        class="gcom.operacional.TipoUnidadeOperacional"
+        not-null="false"
+    >
+        <column name="dout_id" />
+    </many-to-one>
+
+    <!-- associations -->
+    <!-- bi-directional many-to-one association to SistemaAbastecimento -->
+    <many-to-one
+        name="sistemaAbastecimento"
+        class="gcom.operacional.SistemaAbastecimento"
+        not-null="true"
+    >
+        <column name="sabs_id" />
+    </many-to-one>
+    
+    <set
+        name="dadosDistritoOperacional"
+        lazy="true"
+        inverse="true">
+        <key>
+            <column name="diop_id" />
+        </key>
+        <one-to-many 
+            class="gcom.operacional.DadoDistritoOperacional"
+        />
+    </set>
+    
+    <!-- bi-directional one-to-many association to Quadra
+    <set
+        name="quadras"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="diop_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.Quadra"
+        />
+    </set>
+
+  -->
+
+</class>
+</hibernate-mapping>

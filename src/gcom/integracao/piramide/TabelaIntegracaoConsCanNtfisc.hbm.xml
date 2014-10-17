@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<!-- Created by the Middlegen Hibernate plugin http://boss.bekk.no/boss/middlegen/ 
+		http://hibernate.sourceforge.net/ -->
+
+	<class
+		name="gcom.integracao.piramide.TabelaIntegracaoConsCanNtfisc"
+		table="ti_cons_can_ntfisc">
+				
+
+		<composite-id
+			name="comp_id"
+			class="gcom.integracao.piramide.TabelaIntegracaoConsCanNtfiscPk">
+			
+			<key-property
+			
+				name="codigoFilialOrigem"
+				column="COD_FILIAL_ORIGEM"
+				type="java.lang.String"
+				length="6" />
+			
+			<key-property
+				name="codigoSistemaOrigem"
+				column="COD_SISTEMA_ORIGEM"
+				type="java.lang.String"
+				length="3" />
+				
+				
+			<key-property
+				name="dataCancelamento"
+				type="java.sql.Date"
+				column="DAT_CANCELAMENTO" />
+			
+		</composite-id>
+			
+		<property
+			name="valorCancelamento"
+			type="java.math.BigDecimal"
+			column="VAL_CANCELAMENTO"
+			not-null="true"
+			length="22"
+			precision="13"
+			scale="2" />
+		<property
+			name="codigoOperacaoRegistro"
+			type="java.lang.String"
+			column="COD_OPERACAO_REGISTRO"
+			length="1"
+			not-null="true" />
+		<property
+			name="codigoStatusRegistro"
+			type="java.lang.String"
+			column="COD_STATUS_REGISTRO"
+			length="2"
+			not-null="true" />
+		<property
+			name="descricaoErroRegistro"
+			type="java.lang.String"
+			column="DSC_ERRO_REGISTRO"
+			length="2000"
+			not-null="false" />
+	</class>
+</hibernate-mapping>

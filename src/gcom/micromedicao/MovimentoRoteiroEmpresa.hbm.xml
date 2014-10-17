@@ -1,0 +1,1915 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.micromedicao.MovimentoRoteiroEmpresa" 
+    table="movimento_roteiro_empresa"
+    dynamic-insert="true"
+    dynamic-update="true"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="mrem_id"
+    >
+    <generator class="sequence">
+       <param name="sequence">sq_movt_roteiro_empresa</param>
+    </generator>
+
+    </id>
+
+    <property
+        name="anoMesMovimento"
+        type="java.lang.Integer"
+        column="mrem_ammovimento"
+        not-null="true"
+        length="6"
+    />
+    
+    <property
+        name="codigoSetorComercial"
+        type="java.lang.Integer"
+        column="mrem_cdsetorcomercial"
+        not-null="true"
+        length="4"
+    />
+    
+    <property
+        name="numeroQuadra"
+        type="java.lang.Integer"
+        column="mrem_nnquadra"
+        not-null="true"
+        length="4"
+    />
+    
+    <property
+        name="numeroLoteImovel"
+        type="java.lang.Short"
+        column="mrem_nnloteimovel"
+        not-null="true"
+        length="4"
+    />
+    
+    <property
+        name="numeroSubLoteImovel"
+        type="java.lang.Short"
+        column="mrem_nnsubloteimovel"
+        not-null="true"
+        length="3"
+    />
+    
+    <property
+        name="numeroInscricao"
+        type="java.lang.String"
+        column="mrem_inscricao"
+        not-null="true"
+        length="30"
+    />
+    
+    <property
+        name="nomeCliente"
+        type="java.lang.String"
+        column="mrem_nmcliente"
+        length="30"
+    />
+    
+     <property
+        name="enderecoImovel"
+        type="java.lang.String"
+        column="mrem_enderecoimovel"
+        length="60"
+    />
+    
+    <property
+        name="complementoEnderecoImovel"
+        type="java.lang.String"
+        column="mrem_dscomplementoendereco"
+        length="25"
+    />
+    
+    <property
+        name="cepEnderecoImovel"
+        type="java.lang.String"
+        column="mrem_cep"
+        length="10"
+    />
+    
+    <property
+        name="bairroEnderecoImovel"
+        type="java.lang.String"
+        column="mrem_nmbairro"
+        length="30"
+    />
+    
+    <property
+        name="municipioEnderecoImovel"
+        type="java.lang.String"
+        column="mrem_nmmunicipio"
+        length="30"
+    />
+    
+    <property
+        name="zonaTerritorial"
+        type="java.lang.String"
+        column="mrem_dszonaterritorial"
+        length="15"
+    />
+    
+    <property
+        name="quantidadeEconomiasResidencial"
+        type="java.lang.Short"
+        column="mrem_qteconomiaresidencial"
+        length="2"
+    />
+    
+    <property
+        name="quantidadeEconomiasComercial"
+        type="java.lang.Short"
+        column="mrem_qteconomiacomercial"
+        length="2"
+    />
+    
+    <property
+        name="quantidadeEconomiasIndustrial"
+        type="java.lang.Short"
+        column="mrem_qteconomiaindustrial"
+        length="2"
+    />
+    
+    <property
+        name="quantidadeEconomiasPublica"
+        type="java.lang.Short"
+        column="mrem_qteconomiapublica"
+        length="2"
+    />
+    
+    <property
+        name="indicadorAtualizarLeitura" 
+        type="java.lang.Short"
+        column="mrem_icatualizarleitura"
+        length="2"
+    />
+    
+    <property
+        name="indicadorImpostoFederal" 
+        type="java.lang.Short"
+        column="mrem_icipf"
+        length="2"
+    />
+    
+    <property
+        name="indicadorPoco"
+        type="java.lang.Short"
+        column="mrem_icpoco"
+        length="2"
+    />
+    
+     <property
+        name="indicadorBaixaRenda"
+        type="java.lang.Short"
+        column="mrem_icbaixarenda"
+        length="2"
+    />
+    
+     <property
+        name="indicadorGrandeCliente"
+        type="java.lang.Short"
+        column="mrem_icgrandecliente"
+        length="2"
+    />
+    
+     <property
+        name="indicadorDebitoAutomatico"
+        type="java.lang.Short"
+        column="mrem_icdebitoautomatico"
+        length="2"
+    />
+    
+     <property
+        name="indicadorIsencaoAgua"
+        type="java.lang.Short"
+        column="mrem_icisencaoagua"
+        length="2"
+    />
+    
+     <property
+        name="indicadorIsencaoEsgoto"
+        type="java.lang.Short"
+        column="mrem_icisencaoesgoto"
+        length="2"
+    /> 
+    
+    <property
+        name="indicadorLeituraParalisacao"
+        type="java.lang.Short"
+        column="mrem_icleituraparalisacao"
+        length="2"
+    /> 
+    
+    <property
+        name="indicadorDescontoAltoConsumo"
+        type="java.lang.Short"
+        column="mrem_icdescontoac"
+        length="2"
+    /> 
+    
+    <property
+        name="numeroHidrometro"
+        type="java.lang.String"
+        column="mrem_nnhidrometro"
+        length="10"
+    /> 
+    
+    <property
+        name="numeroDigitosLeitura"
+        type="java.lang.Short"
+        column="mrem_nndigitosleitura"
+        length="2"
+    /> 
+    
+    <property
+        name="dataInstalacaoHidrometro"
+        type="java.sql.Date"
+        column="mrem_dtinstalacaohidrometro"
+        length="4"
+    />
+    
+    <property
+        name="localInstalacaoHidrometro"
+        type="java.lang.String"
+        column="mrem_dslocalinstalacaohid"
+        length="20"
+    /> 
+    
+    <property
+        name="numeroLeituraAnterior"
+        type="java.lang.Integer"
+        column="mrem_nnleituraanterior"        
+    />
+    
+     <property
+        name="dataLeituraAnterior"
+        type="java.sql.Date"
+        column="mrem_dtleituraanterior"
+        length="4"
+    />
+    
+    <property
+        name="numeroConsumoMedio"
+        type="java.lang.Integer"
+        column="mrem_nnconsumomedio"
+    />
+    
+    <property
+        name="numeroConsumoMinimo"
+        type="java.lang.Integer"
+        column="mrem_nnconsumominimo"
+    />
+    
+    <property
+        name="numeroConsumoAnterior"
+        type="java.lang.Integer"
+        column="mrem_nnconsumoanterior"
+    />
+    
+    <property
+        name="numeroConsumoCredito"
+        type="java.lang.Integer"
+        column="mrem_nnconsumocredito"
+    />
+    
+     <property
+        name="numeroConsumoFixoAgua"
+        type="java.lang.Integer"
+        column="mrem_nnconsumofixoagua"
+    />
+    
+     <property
+        name="numeroConsumoFixoEsgoto"
+        type="java.lang.Integer"
+        column="mrem_nnconsumofixoesgoto"
+    />
+    
+     <property
+        name="percentualEsgoto"
+        type="java.math.BigDecimal"
+        column="mrem_pcesgoto"
+        length="5"
+    />
+    
+    <property
+        name="dataVencimento"
+        type="java.sql.Date"
+        column="mrem_dtvencimento"
+        length="4"
+    />
+    
+    <property 
+      name="indicadorEmissao"
+      type="java.lang.Short"
+      column="mrem_icemissao"
+      length="4"     
+    />
+    
+    <property 
+      name="indicadorEmissaoCampo"
+      type="java.lang.String"
+      column="mrem_icemissaocampo"
+      length="1"     
+    />
+    
+    <property
+        name="numeroDocumentoCobranca"
+        type="java.lang.Integer"
+        column="mrem_nndocumentocobranca"
+    /> 
+    
+    <property
+        name="descricaoRubrica1"
+        type="java.lang.String"
+        column="mrem_dsrubrica1"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaRubrica1"
+        type="java.lang.Integer"
+        column="mrem_rfrubrica1"
+        length="20"
+    /> 
+    
+     <property
+        name="valorRubrica1"
+        type="java.math.BigDecimal"
+        column="mrem_vlrubrica1"
+        length="13"
+    />
+    
+    <property
+        name="descricaoRubrica2"
+        type="java.lang.String"
+        column="mrem_dsrubrica2"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaRubrica2"
+        type="java.lang.Integer"
+        column="mrem_rfrubrica2"
+        length="20"
+    /> 
+    
+     <property
+        name="valorRubrica2"
+        type="java.math.BigDecimal"
+        column="mrem_vlrubrica2"
+        length="13"
+    />
+    
+    <property
+        name="descricaoRubrica3"
+        type="java.lang.String"
+        column="mrem_dsrubrica3"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaRubrica3"
+        type="java.lang.Integer"
+        column="mrem_rfrubrica3"
+        length="20"
+    /> 
+    
+     <property
+        name="valorRubrica3"
+        type="java.math.BigDecimal"
+        column="mrem_vlrubrica3"
+        length="13"
+    />
+    
+    <property
+        name="descricaoRubrica4"
+        type="java.lang.String"
+        column="mrem_dsrubrica4"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaRubrica4"
+        type="java.lang.Integer"
+        column="mrem_rfrubrica4"
+        length="20"
+    /> 
+    
+     <property
+        name="valorRubrica4"
+        type="java.math.BigDecimal"
+        column="mrem_vlrubrica4"
+        length="13"
+    />
+    
+    <property
+        name="descricaoRubrica5"
+        type="java.lang.String"
+        column="mrem_dsrubrica5"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaRubrica5"
+        type="java.lang.Integer"
+        column="mrem_rfrubrica5"
+        length="20"
+    /> 
+    
+     <property
+        name="valorRubrica5"
+        type="java.math.BigDecimal"
+        column="mrem_vlrubrica5"
+        length="13"
+    />
+    
+    <property
+        name="descricaoRubrica6"
+        type="java.lang.String"
+        column="mrem_dsrubrica6"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaRubrica6"
+        type="java.lang.Integer"
+        column="mrem_rfrubrica6"
+        length="20"
+    /> 
+    
+     <property
+        name="valorRubrica6"
+        type="java.math.BigDecimal"
+        column="mrem_vlrubrica6"
+        length="13"
+    />
+    
+    <property
+        name="descricaoRubrica7"
+        type="java.lang.String"
+        column="mrem_dsrubrica7"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaRubrica7"
+        type="java.lang.Integer"
+        column="mrem_rfrubrica7"
+        length="20"
+    /> 
+    
+     <property
+        name="valorRubrica7"
+        type="java.math.BigDecimal"
+        column="mrem_vlrubrica7"
+        length="13"
+    />
+    
+     <property
+        name="descricaoRubrica8"
+        type="java.lang.String"
+        column="mrem_dsrubrica8"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaRubrica8"
+        type="java.lang.Integer"
+        column="mrem_rfrubrica8"
+        length="20"
+    /> 
+    
+     <property
+        name="valorRubrica8"
+        type="java.math.BigDecimal"
+        column="mrem_vlrubrica8"
+        length="13"
+    />
+    
+     <property
+        name="descricaoRubrica9"
+        type="java.lang.String"
+        column="mrem_dsrubrica9"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaRubrica9"
+        type="java.lang.Integer"
+        column="mrem_rfrubrica9"
+        length="20"
+    /> 
+    
+     <property
+        name="valorRubrica9"
+        type="java.math.BigDecimal"
+        column="mrem_vlrubrica9"
+        length="13"
+    />
+    
+     <property
+        name="descricaoRubrica10"
+        type="java.lang.String"
+        column="mrem_dsrubrica10"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaRubrica10"
+        type="java.lang.Integer"
+        column="mrem_rfrubrica10"
+        length="20"
+    /> 
+    
+     <property
+        name="valorRubrica10"
+        type="java.math.BigDecimal"
+        column="mrem_vlrubrica10"
+        length="13"
+    />
+    
+     <property
+        name="descricaoRubrica11"
+        type="java.lang.String"
+        column="mrem_dsrubrica11"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaRubrica11"
+        type="java.lang.Integer"
+        column="mrem_rfrubrica11"
+        length="20"
+    /> 
+    
+     <property
+        name="valorRubrica11"
+        type="java.math.BigDecimal"
+        column="mrem_vlrubrica11"
+        length="13"
+    />
+    
+     <property
+        name="descricaoRubrica12"
+        type="java.lang.String"
+        column="mrem_dsrubrica12"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaRubrica12"
+        type="java.lang.Integer"
+        column="mrem_rfrubrica12"
+        length="20"
+    /> 
+    
+     <property
+        name="valorRubrica12"
+        type="java.math.BigDecimal"
+        column="mrem_vlrubrica12"
+        length="13"
+    />
+    
+    <property
+        name="descricaoRubrica13"
+        type="java.lang.String"
+        column="mrem_dsrubrica13"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaRubrica13"
+        type="java.lang.Integer"
+        column="mrem_rfrubrica13"
+        length="20"
+    /> 
+    
+     <property
+        name="valorRubrica13"
+        type="java.math.BigDecimal"
+        column="mrem_vlrubrica13"
+        length="13"
+    />
+    
+    <property
+        name="descricaoRubrica14"
+        type="java.lang.String"
+        column="mrem_dsrubrica14"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaRubrica14"
+        type="java.lang.Integer"
+        column="mrem_rfrubrica14"
+        length="20"
+    /> 
+    
+     <property
+        name="valorRubrica14"
+        type="java.math.BigDecimal"
+        column="mrem_vlrubrica14"
+        length="13"
+    />
+    
+    <property
+        name="descricaoRubrica15"
+        type="java.lang.String"
+        column="mrem_dsrubrica15"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaRubrica15"
+        type="java.lang.Integer"
+        column="mrem_rfrubrica15"
+        length="20"
+    /> 
+    
+     <property
+        name="valorRubrica15"
+        type="java.math.BigDecimal"
+        column="mrem_vlrubrica15"
+        length="13"
+    />
+    
+    <property
+        name="referenciaConsumo1"
+        type="java.lang.Integer"
+        column="mrem_rfconsumo1"
+        length="7"
+    />
+    
+    <property
+        name="numeroConsumo1"
+        type="java.lang.Integer"
+        column="mrem_nnconsumo1"
+    /> 
+    
+    <property
+        name="idAnormalidadeLeitura1"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeleitura1"
+    /> 
+    
+    <property
+        name="referenciaConsumo2"
+        type="java.lang.Integer"
+        column="mrem_rfconsumo2"
+        length="7"
+    />
+    
+    <property
+        name="numeroConsumo2"
+        type="java.lang.Integer"
+        column="mrem_nnconsumo2"
+    /> 
+    
+    <property
+        name="idAnormalidadeLeitura2"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeleitura2"
+    /> 
+    
+    <property
+        name="referenciaConsumo3"
+        type="java.lang.Integer"
+        column="mrem_rfconsumo3"
+        length="7"
+    />
+    
+    <property
+        name="numeroConsumo3"
+        type="java.lang.Integer"
+        column="mrem_nnconsumo3"
+    /> 
+    
+    <property
+        name="idAnormalidadeLeitura3"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeleitura3"        
+    /> 
+    
+    <property
+        name="referenciaConsumo4"
+        type="java.lang.Integer"
+        column="mrem_rfconsumo4"
+        length="7"
+    />
+    
+    <property
+        name="numeroConsumo4"
+        type="java.lang.Integer"
+        column="mrem_nnconsumo4"
+    /> 
+    
+    <property
+        name="idAnormalidadeLeitura4"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeleitura4"
+    />    
+        
+      <property
+        name="referenciaConsumo5"
+        type="java.lang.Integer"
+        column="mrem_rfconsumo5"
+        length="7"
+    />
+    
+    <property
+        name="numeroConsumo5"
+        type="java.lang.Integer"
+        column="mrem_nnconsumo5"
+    /> 
+    
+    <property
+        name="idAnormalidadeLeitura5"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeleitura5"
+    />    
+        
+      <property
+        name="referenciaConsumo6"
+        type="java.lang.Integer"
+        column="mrem_rfconsumo6"
+        length="7"
+    />
+    
+    <property
+        name="numeroConsumo6"
+        type="java.lang.Integer"
+        column="mrem_nnconsumo6"
+    /> 
+    
+    <property
+        name="idAnormalidadeLeitura6"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeleitura6"
+    />
+    
+    <property
+        name="referenciaConsumo7"
+        type="java.lang.Integer"
+        column="mrem_rfconsumo7"
+        length="7"
+    />
+    
+    <property
+        name="numeroConsumo7"
+        type="java.lang.Integer"
+        column="mrem_nnconsumo7"
+    /> 
+    
+    <property
+        name="idAnormalidadeLeitura7"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeleitura7"
+    />
+    
+    <property
+        name="referenciaConsumo8"
+        type="java.lang.Integer"
+        column="mrem_rfconsumo8"
+        length="7"
+    />
+    
+    <property
+        name="numeroConsumo8"
+        type="java.lang.Integer"
+        column="mrem_nnconsumo8"
+    /> 
+    
+    <property
+        name="idAnormalidadeLeitura8"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeleitura8"
+    />
+    
+    <property
+        name="referenciaConsumo9"
+        type="java.lang.Integer"
+        column="mrem_rfconsumo9"
+        length="7"
+    />
+    
+    <property
+        name="numeroConsumo9"
+        type="java.lang.Integer"
+        column="mrem_nnconsumo9"
+    /> 
+    
+    <property
+        name="idAnormalidadeLeitura9"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeleitura9"
+    />
+    
+    <property
+        name="referenciaConsumo10"
+        type="java.lang.Integer"
+        column="mrem_rfconsumo10"
+        length="7"
+    />
+    
+    <property
+        name="numeroConsumo10"
+        type="java.lang.Integer"
+        column="mrem_nnconsumo10"
+    /> 
+    
+    <property
+        name="idAnormalidadeLeitura10"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeleitura10"
+    />
+    
+    <property
+        name="referenciaConsumo11"
+        type="java.lang.Integer"
+        column="mrem_rfconsumo11"
+        length="7"
+    />
+    
+    <property
+        name="numeroConsumo11"
+        type="java.lang.Integer"
+        column="mrem_nnconsumo11"
+    /> 
+    
+    <property
+        name="idAnormalidadeLeitura11"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeleitura11"
+    />
+    
+    <property
+        name="referenciaConsumo12"
+        type="java.lang.Integer"
+        column="mrem_rfconsumo12"
+        length="7"
+    />
+    
+    <property
+        name="numeroConsumo12"
+        type="java.lang.Integer"
+        column="mrem_nnconsumo12"
+    /> 
+    
+    <property
+        name="idAnormalidadeLeitura12"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeleitura12"
+    />    
+    
+    <property
+        name="dataLeitura"
+        type="java.sql.Timestamp"
+        column="mrem_tmleitura"
+        length="8"
+    />
+    
+    <property
+        name="numeroLeitura"
+        type="java.lang.Integer"
+        column="mrem_nnleitura"
+    />  
+    
+    <property
+        name="numeroLeituraFaturada"
+        type="java.lang.Integer"
+        column="mrem_nnleiturafaturada"
+    />
+      
+    <property
+        name="numeroConsumoMedido"
+        type="java.lang.Integer"
+        column="mrem_nnconsumomedido"
+    />  
+    
+    <property
+        name="numeroConsumoCreditoFaturado"
+        type="java.lang.Integer"
+        column="mrem_nnconsumocreditofaturado"
+    />  
+    
+    <property
+        name="numeroConsumoFaturadoAgua"
+        type="java.lang.Integer"
+        column="mrem_nnconsumofaturadoagua"
+    />  
+    
+    <property
+        name="numeroConsumoFaturadoEsgoto"
+        type="java.lang.Integer"
+        column="mrem_nnconsumofaturadoesgoto"
+    /> 
+    
+    <property
+        name="numeroDiasConsumo"
+        type="java.lang.Short"
+        column="mrem_nndiasconsumo"
+        length="2"
+    /> 
+    
+    <property
+        name="valorAgua"
+        type="java.math.BigDecimal"
+        column="mrem_vlagua"
+        length="13"
+    /> 
+    
+    <property
+        name="valorEsgoto"
+        type="java.math.BigDecimal"
+        column="mrem_vlesgoto"
+        length="13"
+    />
+    
+    <property
+        name="valorDebitos"
+        type="java.math.BigDecimal"
+        column="mrem_vldebitos"
+        length="13"
+    />
+    
+    <property
+        name="valorCreditos"
+        type="java.math.BigDecimal"
+        column="mrem_vlcreditos"
+        length="13"
+    />
+        
+     <property
+        name="valorImpostoFederal" 
+        type="java.math.BigDecimal"
+        column="mrem_vlipf"
+        length="13"
+    />
+    
+     <property
+        name="valorTotal"
+        type="java.math.BigDecimal"
+        column="mrem_vltotal"
+        length="13"
+    />
+    
+     <property
+        name="dataEmissao"
+        type="java.sql.Date"
+        column="mrem_dtemissao"
+        length="4"
+    />
+    
+     
+    <property
+        name="dataProcessamento"
+        type="java.sql.Timestamp"
+        column="mrem_tmprocessamento"
+        length="6"
+    />
+    
+    <property
+        name="indicadorFotoRegistrada"
+        type="java.lang.Short"
+        column="mrem_icfotoregistrada"
+        length="2"
+    /> 
+    
+    <property
+        name="indicadorConfirmacaoLeitura"
+        type="java.lang.Short"
+        column="mrem_icconfirmacaoleitura"
+        length="2"
+    /> 
+    
+    <property
+        name="indicadorFase"
+        type="java.lang.Short"
+        column="mrem_icfase"
+        length="2"
+    /> 
+    
+     <property
+        name="dataProgramacaoLeitura"
+        type="java.sql.Date"
+        column="mrem_dtprogramacaoleitura"
+        length="4"
+    />
+    
+    <property
+        name="idUsuarioGeracao"
+        type="java.lang.Integer"
+        column="usur_idusuariogeracao"
+    /> 
+    
+    <property
+        name="tempoGeracao"
+        type="java.sql.Timestamp"
+        column="mrem_tmgeracao"
+        length="8"
+    />
+    
+    <property
+        name="tempoDownload"
+        type="java.sql.Timestamp"
+        column="mrem_tmdownload"
+        length="8"
+    />
+    
+     <property
+        name="idUsuarioRemanejamento"
+        type="java.lang.Integer"
+        column="mrem_idusuarioremanejamento"
+    /> 
+    
+    <property
+        name="tempoRemanejamento"
+        type="java.sql.Timestamp"
+        column="mrem_tmremanejamento"
+        length="8"
+    />
+    
+    <property
+        name="indicadorGeracaoArquivoTexto"
+        type="java.lang.Short"
+        column="mrem_icgeracaotxt"
+        length="2"
+    /> 
+    
+    <property
+        name="idUsuarioGeracaoArquivoTexto"
+        type="java.lang.Integer"
+        column="mrem_idusuariogeracaotxt"
+    />
+    
+    <property
+        name="tempoGeracaoArquivoTexto"
+        type="java.sql.Timestamp"
+        column="mrem_tmgeracaotxt"
+        length="8"
+    />
+    
+     <property
+        name="indicadorEnvioArquivoTexto"
+        type="java.lang.Short"
+        column="mrem_icenviotxt"
+        length="2"
+    /> 
+    
+    <property
+        name="idUsuarioEnvioArquivoTexto"
+        type="java.lang.Integer"
+        column="mrem_idusuarioenviotxt"
+    />
+    
+    <property
+        name="tempoEnvioArquivoTexto"
+        type="java.sql.Timestamp"
+        column="mrem_tmenviotxt"
+        length="8"
+    />
+    
+    <property
+        name="codigoRota"
+        type="java.lang.Short"
+        column="mrem_cdrota"
+    />
+    
+      <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="mrem_tmultimaalteracao"
+        length="8"
+    />
+   
+    <property
+        name="indicadorSituacaoCorte"
+        type="java.lang.Short"
+        column="mrem_icsituacaocorte"
+    />
+    
+    <property
+        name="numeroPrestacaoCredito1"
+        type="java.lang.Short"
+        column="mrem_nnprestacaocredito1"
+	/>
+	
+	<property
+        name="numeroPrestacaoCobradaCredito1"
+        type="java.lang.Short"
+        column="mrem_nnprestcobradacredito1"
+	/>
+  
+   <property
+        name="descricaoCredito1"
+        type="java.lang.String"
+        column="mrem_dscredito1"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaCredito1"
+        type="java.lang.Integer"
+        column="mrem_rfcredito1"
+        length="6"
+    /> 
+    
+    <property
+        name="valorCredito1"
+        type="java.math.BigDecimal"
+        column="mrem_vlcredito1"
+        length="13"
+    />
+    
+    <property
+        name="numeroPrestacaoCredito2"
+        type="java.lang.Short"
+        column="mrem_nnprestacaocredito2"
+	/>
+	
+	<property
+        name="numeroPrestacaoCobradaCredito2"
+        type="java.lang.Short"
+        column="mrem_nnprestcobradacredito2"
+	/>
+  
+   <property
+        name="descricaoCredito2"
+        type="java.lang.String"
+        column="mrem_dscredito2"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaCredito2"
+        type="java.lang.Integer"
+        column="mrem_rfcredito2"
+        length="6"
+    /> 
+    
+     <property
+        name="valorCredito2"
+        type="java.math.BigDecimal"
+        column="mrem_vlcredito2"
+        length="13"
+    />
+    
+    <property
+        name="numeroPrestacaoCredito3"
+        type="java.lang.Short"
+        column="mrem_nnprestacaocredito3"
+	/>
+	
+	<property
+        name="numeroPrestacaoCobradaCredito3"
+        type="java.lang.Short"
+        column="mrem_nnprestcobradacredito3"
+	/>
+  
+   <property
+        name="descricaoCredito3"
+        type="java.lang.String"
+        column="mrem_dscredito3"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaCredito3"
+        type="java.lang.Integer"
+        column="mrem_rfcredito3"
+        length="6"
+    /> 
+    
+     <property
+        name="valorCredito3"
+        type="java.math.BigDecimal"
+        column="mrem_vlcredito3"
+        length="13"
+    />
+    
+    <property
+        name="numeroPrestacaoCredito4"
+        type="java.lang.Short"
+        column="mrem_nnprestacaocredito4"
+	/>
+	
+	<property
+        name="numeroPrestacaoCobradaCredito4"
+        type="java.lang.Short"
+        column="mrem_nnprestcobradacredito4"
+	/>
+  
+   <property
+        name="descricaoCredito4"
+        type="java.lang.String"
+        column="mrem_dscredito4"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaCredito4"
+        type="java.lang.Integer"
+        column="mrem_rfcredito4"
+        length="6"
+    /> 
+    
+     <property
+        name="valorCredito4"
+        type="java.math.BigDecimal"
+        column="mrem_vlcredito4"
+        length="13"
+    />
+    
+    <property
+        name="numeroPrestacaoCredito5"
+        type="java.lang.Short"
+        column="mrem_nnprestacaocredito5"
+	/>
+	
+	<property
+        name="numeroPrestacaoCobradaCredito5"
+        type="java.lang.Short"
+        column="mrem_nnprestcobradacredito5"
+	/>
+  
+   <property
+        name="descricaoCredito5"
+        type="java.lang.String"
+        column="mrem_dscredito5"
+        length="20"
+    /> 
+    
+    <property
+        name="referenciaCredito5"
+        type="java.lang.Integer"
+        column="mrem_rfcredito5"
+        length="6"
+    /> 
+    
+     <property
+        name="valorCredito5"
+        type="java.math.BigDecimal"
+        column="mrem_vlcredito5"
+        length="13"
+    />
+    
+    <property
+        name="valorCreditado1"
+        type="java.math.BigDecimal"
+        column="mrem_vlcreditado1"
+        length="13"
+    />
+    
+    <property
+        name="valorCreditado2"
+        type="java.math.BigDecimal"
+        column="mrem_vlcreditado2"
+        length="13"
+    />
+    
+    <property
+        name="valorCreditado3"
+        type="java.math.BigDecimal"
+        column="mrem_vlcreditado3"
+        length="13"
+    />
+    
+    <property
+        name="valorCreditado4"
+        type="java.math.BigDecimal"
+        column="mrem_vlcreditado4"
+        length="13"
+    />
+    
+    <property
+        name="valorCreditado5"
+        type="java.math.BigDecimal"
+        column="mrem_vlcreditado5"
+        length="13"
+    /> 
+       
+    <!-- Associations  -->
+    <!-- bi-directional many-to-one association to Rota -->
+      <many-to-one
+        name="rota"
+        class="gcom.micromedicao.Rota"
+        not-null="false"
+    >
+        <column name="rota_id" />
+    </many-to-one>
+     <!-- bi-directional many-to-one association to Leiturista -->
+    <many-to-one
+        name="leiturista"
+        class="gcom.micromedicao.Leiturista"
+        not-null="true"
+    >
+        <column name="leit_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to FaturamentoGrupo -->
+    <many-to-one
+        name="faturamentoGrupo"
+        class="gcom.faturamento.FaturamentoGrupo"
+        not-null="true"
+    >
+        <column name="ftgr_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Empresa -->
+    <many-to-one
+        name="empresa"
+        class="gcom.cadastro.empresa.Empresa"
+        not-null="true"
+    >
+        <column name="empr_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Localidade -->
+    <many-to-one
+        name="localidade"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="true"
+    >
+        <column name="loca_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Imovel -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="true"
+    >
+        <column name="imov_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to LigacaoAguaSituacao -->
+    <many-to-one
+        name="ligacaoAguaSituacao"
+        class="gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao"
+        not-null="true"
+    >
+        <column name="last_id" />
+    </many-to-one>
+    
+     <!-- bi-directional many-to-one association to LigacaoEsgotoSituacao -->
+    <many-to-one
+        name="ligacaoEsgotoSituacao"
+        class="gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao"
+        not-null="true"
+    >
+        <column name="lest_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to ConsumoTarifa -->
+    <many-to-one
+        name="consumoTarifa"
+        class="gcom.faturamento.consumotarifa.ConsumoTarifa"
+        not-null="true"
+    >
+        <column name="cstf_id" />
+    </many-to-one>
+    
+     <!-- bi-directional many-to-one association to ConsumoTarifa -->
+    <many-to-one
+        name="leituraAnormalidadeConsumo"
+        class="gcom.micromedicao.leitura.LeituraAnormalidadeConsumo"
+        not-null="false"
+    >
+        <column name="lacs_id" />
+    </many-to-one>
+    
+     <!-- bi-directional many-to-one association to MedicaoTipo -->
+    <many-to-one
+        name="medicaoTipo"
+        class="gcom.micromedicao.medicao.MedicaoTipo"
+        not-null="false"
+    >
+        <column name="medt_id" />
+    </many-to-one>
+    
+     <!-- bi-directional many-to-one association to LeituraAnormalidade -->
+    <many-to-one
+        name="leituraAnormalidade"
+        class="gcom.micromedicao.leitura.LeituraAnormalidade"
+        not-null="false"
+    >
+        <column name="ltan_id" />
+    </many-to-one>
+    
+     <!-- bi-directional many-to-one association to ConsumoAnormalidade -->
+    <many-to-one
+        name="consumoAnormalidade"
+        class="gcom.micromedicao.consumo.ConsumoAnormalidade"
+        not-null="false"
+    >
+        <column name="csan_id" />
+    </many-to-one>
+    
+     <!-- bi-directional many-to-one association to ConsumoTipo -->
+    <many-to-one
+        name="consumoTipo"
+        class="gcom.micromedicao.consumo.ConsumoTipo"
+        not-null="false"
+    >
+        <column name="cstp_id" />
+    </many-to-one>
+    
+     <!-- bi-directional many-to-one association to LocalEntregaDocumento -->
+    <many-to-one
+        name="localEntregaDocumento"
+        class="gcom.faturamento.LocalEntregaDocumento"
+        not-null="false"
+    >
+        <column name="ledc_id" />
+    </many-to-one>
+    <!-- Adicionados para a v0.04 -->
+    
+
+    
+     <property
+        name="idLeituraSituacaoAnterior"
+        type="java.lang.Integer"
+        column="ltst_idleituraanterior"
+     />   
+       
+    <property
+        name="idAnormalidadeConsumo1"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeconsumo1"
+     />   
+    
+    <property
+        name="idAnormalidadeConsumo2"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeconsumo2"
+     />   
+    
+    <property
+        name="idAnormalidadeConsumo3"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeconsumo3"
+     />   
+    
+    <property
+        name="idAnormalidadeConsumo4"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeconsumo4"
+     />   
+      
+      <property
+        name="idAnormalidadeConsumo5"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeconsumo5"
+     />   
+    
+    <property
+        name="idAnormalidadeConsumo6"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeconsumo6"
+     />
+     
+      <property
+        name="idAnormalidadeConsumo7"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeconsumo7"
+     />
+     
+      <property
+        name="idAnormalidadeConsumo8"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeconsumo8"
+     />
+     
+      <property
+        name="idAnormalidadeConsumo9"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeconsumo9"
+     />
+     
+      <property
+        name="idAnormalidadeConsumo10"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeconsumo10"
+     />
+     
+      <property
+        name="idAnormalidadeConsumo11"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeconsumo11"
+     />
+     
+      <property
+        name="idAnormalidadeConsumo12"
+        type="java.lang.Integer"
+        column="mrem_idanormalidadeconsumo12"
+     />   
+    
+   
+<property
+        name="numeroPrestacaoRubrica1"
+         type="java.lang.Short"
+        column="mrem_nnprestacaorubrica1"
+/>
+<property
+        name="numeroPrestacaoCobradaRubrica1"
+         type="java.lang.Short"
+        column="mrem_nnprestcobradarubrica1"
+/>
+
+    
+<property
+        name="numeroPrestacaoRubrica2"
+         type="java.lang.Short"
+        column="mrem_nnprestacaorubrica2"
+/>
+<property
+        name="numeroPrestacaoCobradaRubrica2"
+         type="java.lang.Short"
+        column="mrem_nnprestcobradarubrica2"
+/>
+
+<property
+        name="numeroPrestacaoRubrica3"
+        type="java.lang.Short"
+        column="mrem_nnprestacaorubrica3"
+/>
+<property
+        name="numeroPrestacaoCobradaRubrica3"
+         type="java.lang.Short"
+        column="mrem_nnprestcobradarubrica3"
+/>    
+    
+<property
+        name="numeroPrestacaoRubrica4"
+        type="java.lang.Short"
+        column="mrem_nnprestacaorubrica4"
+/>
+<property
+        name="numeroPrestacaoCobradaRubrica4"
+         type="java.lang.Short"
+        column="mrem_nnprestcobradarubrica4"
+/>        
+    
+ <property
+        name="numeroPrestacaoRubrica5"
+         type="java.lang.Short"
+        column="mrem_nnprestacaorubrica5"
+/>
+<property
+        name="numeroPrestacaoCobradaRubrica5"
+         type="java.lang.Short"
+        column="mrem_nnprestcobradarubrica5"
+/>        
+       
+    
+ <property
+        name="numeroPrestacaoRubrica6"
+         type="java.lang.Short"
+        column="mrem_nnprestacaorubrica6"
+/>
+<property
+        name="numeroPrestacaoCobradaRubrica6"
+        type="java.lang.Short"
+        column="mrem_nnprestcobradarubrica6"
+/>        
+        
+<property
+        name="numeroPrestacaoRubrica7"
+         type="java.lang.Short"
+        column="mrem_nnprestacaorubrica7"
+/>
+<property
+        name="numeroPrestacaoCobradaRubrica7"
+         type="java.lang.Short"
+        column="mrem_nnprestcobradarubrica7"
+/>         
+        
+ <property
+        name="numeroPrestacaoRubrica8"
+        type="java.lang.Short"
+        column="mrem_nnprestacaorubrica8"
+/>
+<property
+        name="numeroPrestacaoCobradaRubrica8"
+type="short"
+        column="mrem_nnprestcobradarubrica8"
+/>           
+       
+       
+  <property
+        name="numeroPrestacaoRubrica9"
+    type="java.lang.Short"
+        column="mrem_nnprestacaorubrica9"
+/>
+<property
+        name="numeroPrestacaoCobradaRubrica9"
+type="short"
+        column="mrem_nnprestcobradarubrica9"
+/>           
+           
+       
+        
+   <property
+        name="numeroPrestacaoRubrica10"
+type="short"
+        column="mrem_nnprestacaorubrica10"
+/>
+<property
+        name="numeroPrestacaoCobradaRubrica10"
+type="short"
+        column="mrem_nnprestcobradarubrica10"
+/>           
+           
+         
+   <property
+        name="numeroPrestacaoRubrica11"
+type="short"
+        column="mrem_nnprestacaorubrica11"
+/>
+<property
+        name="numeroPrestacaoCobradaRubrica11"
+type="short"
+        column="mrem_nnprestcobradarubrica11"
+/>                   
+    
+    <property
+        name="numeroPrestacaoRubrica12"
+type="short"
+        column="mrem_nnprestacaorubrica12"
+/>
+<property
+        name="numeroPrestacaoCobradaRubrica12"
+type="short"
+        column="mrem_nnprestcobradarubrica12"
+/>   
+ 
+ 
+    <property
+        name="numeroPrestacaoRubrica13"
+type="short"
+        column="mrem_nnprestacaorubrica13"
+/>
+<property
+        name="numeroPrestacaoCobradaRubrica13"
+type="short"
+        column="mrem_nnprestcobradarubrica13"
+/>   
+ 
+ 
+   <property
+        name="numeroPrestacaoRubrica14"
+type="short"
+        column="mrem_nnprestacaorubrica14"
+/>
+<property
+        name="numeroPrestacaoCobradaRubrica14"
+type="short"
+        column="mrem_nnprestcobradarubrica14"
+/>     
+    
+   
+   <property
+        name="numeroPrestacaoRubrica15"
+     type="java.lang.Short"
+        column="mrem_nnprestacaorubrica15"
+/>
+<property
+        name="numeroPrestacaoCobradaRubrica15"
+       type="java.lang.Short"
+        column="mrem_nnprestcobradarubrica15"
+/>     
+      
+<property
+        name="leituraFaturada1"
+        type="java.lang.Integer"
+        column="mrem_nnleitura1"
+/>    
+
+<property
+        name="leituraFaturada2"
+        type="java.lang.Integer"
+        column="mrem_nnleitura2"
+/>    
+
+  <property
+        name="leituraFaturada3"
+        type="java.lang.Integer"
+        column="mrem_nnleitura3"
+/>    
+
+<property
+        name="leituraFaturada4"
+        type="java.lang.Integer"
+        column="mrem_nnleitura4"
+/> 
+ 
+ <property
+        name="leituraFaturada5"
+        type="java.lang.Integer"
+        column="mrem_nnleitura5"
+/>    
+
+<property
+        name="leituraFaturada6"
+        type="java.lang.Integer"
+        column="mrem_nnleitura6"
+/>
+
+ <property
+        name="leituraFaturada7"
+        type="java.lang.Integer"
+        column="mrem_nnleitura7"
+/>
+
+ <property
+        name="leituraFaturada8"
+        type="java.lang.Integer"
+        column="mrem_nnleitura8"
+/>
+
+ <property
+        name="leituraFaturada9"
+        type="java.lang.Integer"
+        column="mrem_nnleitura9"
+/>
+
+ <property
+        name="leituraFaturada10"
+        type="java.lang.Integer"
+        column="mrem_nnleitura10"
+/>
+
+ <property
+        name="leituraFaturada11"
+        type="java.lang.Integer"
+        column="mrem_nnleitura11"
+/>
+
+ <property
+        name="leituraFaturada12"
+        type="java.lang.Integer"
+        column="mrem_nnleitura12"
+ /> 
+ 
+ 
+  <property
+        name="dataVencimentoRetorno"
+         type="java.sql.Date"
+        column="MREM_DTVENCIMENTORETORNO"
+ /> 
+ 
+ 
+ 
+   <property
+        name="dataLeituraFaturada"
+         type="java.sql.Date"
+        column="MREM_DTLEITURAFATURADA"
+ /> 
+ 
+ 
+    <property
+        name="valorRateio"
+        type="java.math.BigDecimal"
+        column="MREM_VLRATEIO"
+         length="13"
+ /> 
+ 
+ 
+  <property
+        name="indicadorModoFaturarRateio"
+        type="java.lang.Short"
+        column="MREM_ICMODOFATURRATEIO"
+        length="2"
+    /> 
+    
+    <property
+        name="numeroConsumoRateio"
+        type="java.lang.Integer"
+        column="mrem_nnconsumorateio"
+    /> 
+    
+     <property
+        name="valorReligacao"
+        type="java.math.BigDecimal"
+        column="MREM_VLRELIGACAO"
+         length="13"
+ /> 
+ 
+  <property
+        name="valorSancao"
+        type="java.math.BigDecimal"
+        column="MREM_VLSANCAO"
+         length="13"
+ /> 
+
+  <property
+        name="idServicoReligacao"
+        type="java.lang.Integer"
+        column="MREM_IDSERVICORELIGACAO"
+    />
+    
+    
+     <property
+        name="idServicoSancao"
+        type="java.lang.Integer"
+        column="MREM_IDSERVICOSANCAO"
+    />
+    
+    
+  <property
+        name="indicadorReligacaoAgua"
+        type="java.lang.Short"
+        column="MREM_ICRELIGACAOAGUA"
+        length="2"
+    /> 
+
+
+
+ <property
+        name="numeroImovelAlteracao"
+        type="java.lang.String"
+        column="MREM_NNIMOVELALTERACAO"
+    />
+    
+    
+      <property
+        name="indicadorStatusRegistSistLegado"
+        type="java.lang.Short"
+        column="MREM_ICSTATUSREGISTSISTLEGADO"
+        length="2"
+    /> 
+    
+
+    
+      <property
+        name="indicadorFaturaRetida"
+        type="java.lang.Short"
+        column="MREM_ICFATURARETIDA"
+        length="2"
+    /> 
+    
+    <property
+        name="numeroImovel"
+        type="java.lang.String"
+        column="MREM_NNIMOVEL"
+    />
+    
+    <property
+        name="numeroHidrometroAlteracao"
+        type="java.lang.String"
+        column="MREM_NNHIDROMETROALTERACAO"
+    /> 
+    
+    <property
+        name="descricaoComplementoEnderecoAlteracao"
+        type="java.lang.String"
+        column="MREM_DSCOMPLEMENTOENDERECOALT"
+    /> 
+    
+    <property
+        name="quantidadeEconomiaResidencialAlteracao"
+        type="java.lang.Short"
+        column="MREM_QTECONOMIARESIDENCIALALT"
+        length="2"
+    />
+    
+    <property
+        name="quantidadeEconomiaComercialAlteracao"
+        type="java.lang.Short"
+        column="MREM_QTECONOMIACOMERCIALALT"
+        length="2"
+    />
+    
+    <property
+        name="quantidadeEconomiaIndustrialAlteracao"
+        type="java.lang.Short"
+        column="MREM_QTECONOMIAINDUSTRIALALT"
+        length="2"
+    />
+    
+    <property
+        name="quantidadeEconomiaPublicaAlteracao"
+        type="java.lang.Short"
+        column="MREM_QTECONOMIAPUBLICAALT"
+        length="2"
+    />
+    
+</class>
+</hibernate-mapping>

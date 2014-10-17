@@ -1,0 +1,186 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.operacional.Bacia"
+    table="bacia"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="baci_id"
+    >
+      <generator class="sequence">
+          <param name="sequence">sq_bacia</param>
+      </generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="baci_dsbacia"
+        length="30"
+    />
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="baci_icuso"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="baci_tmultimaalteracao"
+        length="8"
+    />
+	<property
+        name="codigo"
+        type="java.lang.Integer"
+        column="baci_cdbacia"
+        not-null="false"
+        length="4"
+    />
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="baci_dsabrevbacia"
+        not-null="false"
+        length="6"
+    />
+
+    <property
+        name="numeroUnidade"
+        type="java.math.BigDecimal"
+        column="baci_nnunidade"
+        not-null="true"
+        length="15"
+    />
+
+    <property
+        name="numeroAducao"
+        type="java.math.BigDecimal"
+        column="baci_nnaducao"
+        not-null="true"
+        length="15"
+    />
+
+    <property
+        name="numeroDemandaEnergia"
+        type="java.math.BigDecimal"
+        column="baci_nndemandaenergia"
+        not-null="true"
+        length="15"
+    />
+
+    <property
+        name="numeroImovel"
+        type="java.lang.String"
+        column="baci_nnimovel"
+        not-null="false"
+        length="5"
+    />
+
+    <property
+        name="complementoEndereco"
+        type="java.lang.String"
+        column="baci_dscomplementoendereco"
+        not-null="false"
+        length="25"
+    />
+
+	<property
+        name="numeroCota"
+        type="java.lang.Integer"
+        column="baci_nncota"
+        not-null="false"
+        length="9"
+    />
+
+	<property
+        name="numeroLatitude"
+        type="java.lang.Integer"
+        column="baci_nnlatitude"
+        not-null="false"
+        length="9"
+    />
+
+	<property
+        name="numeroLongitude"
+        type="java.lang.Integer"
+        column="baci_nnlongitude"
+        not-null="false"
+        length="9"
+    />
+
+    <!-- associations -->
+    <!-- bi-directional many-to-one association to EnderecoReferencia -->
+    <many-to-one
+        name="enderecoReferencia"
+        class="gcom.cadastro.endereco.EnderecoReferencia"
+        not-null="false"
+    >
+        <column name="edrf_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to LogradouroBairro -->
+    <many-to-one
+        name="logradouroBairro"
+        class="gcom.cadastro.endereco.LogradouroBairro"
+        not-null="false"
+    >
+        <column name="lgbr_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to LogradouroCep -->
+    <many-to-one
+        name="logradouroCep"
+        class="gcom.cadastro.endereco.LogradouroCep"
+        not-null="false"
+    >
+        <column name="lgcp_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to SistemaEsgoto -->
+    <many-to-one
+        name="sistemaEsgoto"
+        class="gcom.operacional.SistemaEsgoto"
+        not-null="true"
+    >
+        <column name="sesg_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to SubsistemaEsgoto -->
+    <many-to-one
+        name="subsistemaEsgoto"
+        class="gcom.operacional.SubsistemaEsgoto"
+        not-null="false"
+    >
+        <column name="sses_id" />
+    </many-to-one>
+    <!-- bi-directional one-to-many association to Quadra
+    <set
+        name="quadras"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="baci_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.Quadra"
+        />
+    </set>
+  -->
+
+</class>
+</hibernate-mapping>

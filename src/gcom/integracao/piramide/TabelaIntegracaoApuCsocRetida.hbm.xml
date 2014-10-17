@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.integracao.piramide.TabelaIntegracaoApuCsocRetida"
+    table="ti_apu_csoc_retida"
+>
+
+     <composite-id name="comp_id" class="gcom.integracao.piramide.TabelaIntegracaoApuCsocRetidaPK">
+        <key-property 
+            name="codigoFilialOrigem" 
+            column="COD_FILIAL_ORIGEM" 
+            type="java.lang.String"
+            length="6"
+        />
+        <key-property 
+            name="codigoSistemaOrigem" 
+            column="COD_SISTEMA_ORIGEM" 
+            type="java.lang.String"
+            length="3"
+        />
+        <key-property 
+            name="codigoImposto" 
+            column="COD_IMPOSTO" 
+            type="java.lang.String"
+            length="6"
+        />
+        <key-property 
+            name="codigoCsocialApurado" 
+            column="COD_CSOCIAL_APURAD" 
+            type="java.lang.String"
+            length="3"
+        />
+        <key-property 
+            name="codigoCnpj" 
+            column="COD_CNPJ" 
+            type="java.lang.String"
+            length="14"
+        />
+        <key-property 
+             name="dataRetencao"
+       	     type="java.sql.Date"
+        	 column="DAT_RETENCAO"
+        />
+    </composite-id>
+
+    <property
+        name="codigoReceita"
+        type="java.lang.String"
+        column="COD_RECEITA"
+        not-null="true"
+        length="4"
+    />
+    <property
+        name="codigoNaturezaRetencaoFonte"
+        type="java.lang.String"
+        column="COD_NAT_RETEN_FONT"
+        not-null="true"
+        length="2"
+    />
+    <property
+        name="valorBaseRetencao"
+        type="java.math.BigDecimal"
+        column="VAL_BASE_RETENCAO"
+        not-null="true"
+        length="13"
+    />
+    <property
+        name="valorRetido"
+        type="java.math.BigDecimal"
+        column="VAL_RETIDO"
+        not-null="true"
+        length="13"
+    />
+    <property
+        name="codigoOperacaoRegistrada"
+        type="java.lang.String"
+        column="COD_OPERACAO_REGIS"
+        length="1"
+        not-null="true"
+    />
+    <property
+        name="codigoStatusResgistrado"
+        type="java.lang.String"
+        column="COD_STATUS_REGISTR"
+        length="2"
+        not-null="true"
+    />
+    <property
+        name="descricaoErroRegistro"
+        type="java.lang.String"
+        column="DSC_ERRO_REGISTRO"
+        length="2000"
+        not-null="true"
+    />
+</class>
+</hibernate-mapping>
