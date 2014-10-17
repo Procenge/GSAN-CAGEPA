@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.ContraAcao" 
+    table="contra_acao"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="coac_id"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				sq_contra_acao
+			</param>
+		</generator>
+    </id>
+
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="coac_icuso"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="coac_tmultimaalteracao"
+        length="8"
+    />
+ 
+    <!-- Associations -->
+     
+
+    <!-- bi-directional many-to-one association to LigacaoAguaSituacao -->
+    <many-to-one
+        name="ligacaoAguaSituacao"
+        class="gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao"
+        not-null="true"
+    >
+        <column name="last_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to LigacaoAguaDiametro -->
+	<many-to-one 
+		name="ligacaoAguaDiametro"
+		class="gcom.atendimentopublico.ligacaoagua.LigacaoAguaDiametro"
+		not-null="true"
+	>
+		<column name="lagd_id" />
+	</many-to-one>
+    
+    <!-- bi-directional many-to-one association to LigacaoAguaMaterial -->
+	<many-to-one 
+		name="ligacaoAguaMaterial"
+		class="gcom.atendimentopublico.ligacaoagua.LigacaoAguaMaterial"
+		not-null="true"
+	>
+		<column name="lagm_id" />
+	</many-to-one>
+    
+    <!-- bi-directional many-to-one association to CorteTipo -->
+	<many-to-one name="corteTipo"
+		class="gcom.atendimentopublico.ligacaoagua.CorteTipo"
+		not-null="true"
+	>
+		<column name="cotp_id" />
+	</many-to-one>
+    
+    <!-- bi-directional many-to-one association to ServicoTipo -->
+    <many-to-one
+        name="servicoTipoAcao"
+        class="gcom.atendimentopublico.ordemservico.ServicoTipo"
+        not-null="true"
+    >
+        <column name="svtp_idacao" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to ServicoTipo -->
+    <many-to-one
+        name="servicoTipoContraAcao"
+        class="gcom.atendimentopublico.ordemservico.ServicoTipo"
+        not-null="true"
+    >
+        <column name="svtp_idcontraacao" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to SupressaoMotivo -->
+	<many-to-one 
+		name="supressaoMotivo"
+		class="gcom.atendimentopublico.ordemservico.SupressaoMotivo"
+		not-null="false"
+	>	
+		<column name="spmt_id" />
+	</many-to-one>
+    
+    <!-- bi-directional many-to-one association to UnidadeOrganizacional -->
+    <many-to-one
+        name="unidadeOrganizacional"
+        class="gcom.cadastro.unidade.UnidadeOrganizacional"
+        not-null="true"
+    >
+        <column name="unid_id" />
+    </many-to-one>
+
+	<!-- bi-directional many-to-one association to SupressaoTipo -->
+	<many-to-one name="supressaoTipo"
+		class="gcom.atendimentopublico.ligacaoagua.SupressaoTipo"
+		not-null="true">
+		<column name="stip_id" />
+	</many-to-one>
+
+	<many-to-one 
+	name="motivoCorte"
+		class="gcom.atendimentopublico.ligacaoagua.MotivoCorte"
+		not-null="false"
+	>
+		<column name="mtco_id" />
+	</many-to-one>
+    
+    <many-to-one
+        name="acaoCobrancaEfeito" 
+        class="gcom.cobranca.AcaoCobrancaEfeito"
+        not-null="true"
+    >
+        <column name="acef_id" />
+    </many-to-one>
+</class>
+</hibernate-mapping>

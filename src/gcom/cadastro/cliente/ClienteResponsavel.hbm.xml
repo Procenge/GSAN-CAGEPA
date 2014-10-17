@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.cadastro.cliente.ClienteResponsavel"
+    table="cliente_responsavel"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="clrs_id"
+    >
+    
+    <generator class="sequence">
+        <param name="sequence">sq_cliente_responsavel</param>
+    </generator>
+    
+    </id>
+    
+    <!-- bi-directional many-to-one association to Cliente-->
+    <many-to-one
+        name="cliente"
+        class="gcom.cadastro.cliente.Cliente"
+        not-null="true"
+    >
+        <column name="clie_id" />
+    </many-to-one>
+
+    <property
+        name="indMulta"
+        type="java.lang.Short"
+        column="clrs_icmulta"
+        length="1"
+    />
+    
+    <property
+        name="indJuros"
+        type="java.lang.Short"
+        column="clrs_icjuros"
+        length="1"
+    />
+    
+    <property
+        name="indCorrecao"
+        type="java.lang.Short"
+        column="clrs_iccorrecao"
+        length="1"
+    />
+
+	<property
+        name="indImpostoFederal"
+        type="java.lang.Short"
+        column="clrs_icimpostofederal"
+        length="1"
+    />
+      
+    <property
+        name="indUso"
+        type="java.lang.Short"
+        column="clrs_icuso"
+        length="1"
+    />
+    
+    <!-- bi-directional many-to-one association to Agencia -->
+    <many-to-one
+        name="agencia"
+        class="gcom.arrecadacao.banco.Agencia"
+        not-null="true"
+    >
+        <column name="agen_id" />
+    </many-to-one>
+    
+    <property
+        name="contaBancaria"
+        type="java.lang.String"
+        column="clrs_nncontabancaria"
+        length="12"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="clrs_dtultimaalteracao"
+        length="8"
+    />
+
+</class>
+</hibernate-mapping>

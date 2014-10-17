@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.campanhapremiacao.CampanhaCadastroOcorrencia" 
+    table="CAMPANHA_CADASTRO_OCORRENCIA"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="CMCO_ID"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				SQ_CAMPANHA_CADASTRO_OCORREN
+			</param>
+		</generator>
+    </id>
+
+	<property
+        name="conteudoDadoCadastroCampanha"
+        type="java.lang.String"
+        column="CMCO_CNDADOCADASTROCAMPANHA"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="conteudoDadoCadastroSistema"
+        type="java.lang.String"
+        column="CMCO_CNDADOCADASTROSISTEMA"
+        not-null="false"
+        length="8"
+    />
+
+	<property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="CMCO_TMULTIMAALTERACAO"
+        not-null="true"
+        length="8"
+    />
+    
+    <many-to-one
+        name="campanhaCadastro"
+        class="gcom.cobranca.campanhapremiacao.CampanhaCadastro"
+        not-null="true"
+    >
+        <column name="CMCD_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="campanhaMotivoOcorrencia"
+        class="gcom.cobranca.campanhapremiacao.CampanhaMotivoOcorrencia"
+        not-null="true"
+    >
+        <column name="CMMO_ID" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

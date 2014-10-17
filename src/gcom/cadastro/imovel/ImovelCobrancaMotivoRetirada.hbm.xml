@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.cadastro.imovel.ImovelCobrancaMotivoRetirada" 
+    table="imovel_cobranca_motivo_retirad"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="icmr_id">
+        
+		<generator class="sequence">
+	       <param name="sequence">sq_imovel_cobranca_motivo_reti</param>
+	    </generator>
+      
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="icmr_dsmotivoretirada"
+        length="30"
+        not-null="true"
+    />
+    
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="icmr_dcabreviada"
+        length="5"
+        not-null="true"
+    />
+    
+    <property
+        name="indicadorSistema"
+        type="java.lang.Short"
+        column="icmr_icusosistema"
+        length="2"
+        not-null="true"
+    />
+    
+    <property
+        name="codigoConstante"
+        type="java.lang.String"
+        column="icmr_cdconstante"
+        length="60"
+    />
+    
+   <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="icmr_icuso"
+        length="2"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="icmr_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+
+    <!-- associations -->
+    
+    <!-- bi-directional many-to-one association to CobrancaDebitoSituacao -->    
+    <many-to-one
+        name="cobrancaDebitoSituacao"
+        class="gcom.cobranca.CobrancaDebitoSituacao"
+    >
+        <column name="cdst_id" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

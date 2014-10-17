@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 02/03/2011 15:05:19 by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+ <class name="gcom.cobranca.opcaoparcelamento.PreParcelamento" table="pre_parcelamento">
+  <id column="prep_id" name="id" type="java.lang.Integer">
+   <generator class="sequence">
+    <param name="sequence">sq_pre_parcelamento</param>
+   </generator>
+  </id>
+  <many-to-one class="gcom.cobranca.CobrancaDocumento" name="documentoCobranca">
+   <column name="cbdo_id"/>
+  </many-to-one>
+  <property generated="never" lazy="false" name="preParcelamento" type="java.util.Date">
+   <column name="prep_tmpreparcelamento"/>
+  </property>
+  <many-to-one class="gcom.cobranca.parcelamento.ParcelamentoSituacao" name="situacaoParcelamento">
+   <column name="pcst_id"/>
+  </many-to-one>
+  <property generated="never" lazy="false"
+   name="anoMesReferenciaFaturamento" type="java.lang.Integer">
+   <column name="prep_amreferenciafaturamento"/>
+  </property>
+  <property generated="never" lazy="false" name="valorConta" type="java.math.BigDecimal">
+   <column name="prep_vlconta"/>
+  </property>
+  <property generated="never" lazy="false" name="valorGuiaPapagamento" type="java.math.BigDecimal">
+   <column name="prep_vlguiapagagamento"/>
+  </property>
+  <property generated="never" lazy="false" name="valorServicosACobrar" type="java.math.BigDecimal">
+   <column name="prep_vlservicosacobrar"/>
+  </property>
+  <property generated="never" lazy="false"
+   name="valorParcelamentosACobrar" type="java.math.BigDecimal">
+   <column name="prep_vlpreparcelamentosacobrar"/>
+  </property>
+  <property generated="never" lazy="false" name="valorCreditoARealizar" type="java.math.BigDecimal">
+   <column name="prep_vlcreditoarealizar"/>
+  </property>
+  <property generated="never" lazy="false"
+   name="valorAtualizacaoMonetaria" type="java.math.BigDecimal">
+   <column name="prep_vlatualizacaomonetaria"/>
+  </property>
+  <property generated="never" lazy="false" name="valorJurosMora" type="java.math.BigDecimal">
+   <column name="prep_vljurosmora"/>
+  </property>
+  <property generated="never" lazy="false" name="valorMulta" type="java.math.BigDecimal">
+   <column name="prep_vlmulta"/>
+  </property>
+  <property generated="never" lazy="false" name="valorDebitoAtualizado" type="java.math.BigDecimal">
+   <column name="prep_vldebitoatualizado"/>
+  </property>
+  <property generated="never" lazy="false"
+   name="valorDescontoAcrescimos" type="java.math.BigDecimal">
+   <column name="prep_vldescontoacrescimos"/>
+  </property>
+  <property generated="never" lazy="false"
+   name="valorDescontoAntiguidade" type="java.math.BigDecimal">
+   <column name="prep_vldescontoantiguidade"/>
+  </property>
+  <property generated="never" lazy="false"
+   name="valorDescontoInatividade" type="java.math.BigDecimal">
+   <column name="prep_vldescontoinatividade"/>
+  </property>
+  <property generated="never" lazy="false"
+   name="indicadorRestabelecimento" type="java.lang.Short">
+   <column name="prep_icrestabelecimento"/>
+  </property>
+  <property generated="never" lazy="false" name="indicadorContasRevisao" type="java.lang.Short">
+   <column name="prep_iccontasrevisao"/>
+  </property>
+  <property generated="never" lazy="false"
+   name="indicadorGuiasPagamento" type="java.lang.Short">
+   <column name="prep_icguiaspagamento"/>
+  </property>
+  <property generated="never" lazy="false"
+   name="indicadorAcrescimosImpontualdade" type="java.lang.Short">
+   <column name="prep_icacrescimosimpontualdade"/>
+  </property>
+  <property generated="never" lazy="false" name="indicadorDebitoACobrar" type="java.lang.Short">
+   <column name="prep_icdebitoacobrar"/>
+  </property>
+  <property generated="never" lazy="false"
+   name="indicadorCreditoARealizar" type="java.lang.Short">
+   <column name="prep_iccreditoarealizar"/>
+  </property>
+  <property generated="never" lazy="false" name="ultimaAlteracao" type="java.util.Date">
+   <column name="prep_tmultimaalteracao"/>
+  </property>
+  <many-to-one class="gcom.cadastro.imovel.Imovel" name="imovel">
+   <column name="imov_id"/>
+  </many-to-one>
+  <many-to-one class="gcom.cadastro.imovel.ImovelPerfil" name="imovelPerfil">
+   <column name="iper_id"/>
+  </many-to-one>
+  <many-to-one
+   class="gcom.atendimentopublico.registroatendimento.RegistroAtendimento" name="registroAtendimento">
+   <column name="rgat_id"/>
+  </many-to-one>
+  <many-to-one class="gcom.cadastro.funcionario.Funcionario" name="funcionario">
+   <column name="func_id"/>
+  </many-to-one>
+  <many-to-one
+   class="gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao" name="ligacaoAguaSituacao">
+   <column name="last_id"/>
+  </many-to-one>
+  <many-to-one
+   class="gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao" name="ligacaoEsgotoSituacao">
+   <column name="lest_id"/>
+  </many-to-one>
+  <many-to-one class="gcom.cadastro.localidade.Localidade" name="localidade">
+   <column name="loca_id"/>
+  </many-to-one>
+  <many-to-one class="gcom.cadastro.localidade.Quadra" name="quadra">
+   <column name="qdra_id"/>
+  </many-to-one>
+  <property generated="never" lazy="false" name="codigoSetorComercial" type="java.lang.Integer">
+   <column name="prep_cdsetorcomercial"/>
+  </property>
+  <property generated="never" lazy="false" name="numeroQuadra" type="java.lang.Integer">
+   <column name="prep_nnquadra"/>
+  </property>
+  <many-to-one class="gcom.cobranca.CobrancaForma" name="cobrancaForma">
+   <column name="cbfm_id"/>
+  </many-to-one>
+  <property generated="never" lazy="false"
+   name="indicadorConfirmacaoParcelamento" type="java.lang.Short">
+   <column name="prep_icconfirmacao"/>
+  </property>
+  <many-to-one class="gcom.cadastro.cliente.Cliente" name="cliente">
+   <column name="clie_id"/>
+  </many-to-one>
+ </class>
+</hibernate-mapping>

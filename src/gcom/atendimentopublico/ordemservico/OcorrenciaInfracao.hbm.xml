@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.OcorrenciaInfracao" 
+    table="ocorrencia_infracao"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ocin_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_ocorrencia_infracao</param>
+    	</generator>
+    </id>
+
+    <property
+        name="nnDoctoInfracao"
+        type="java.lang.Integer"
+        column="ocin_nndoctoinfracao"
+        not-null="true"
+        length="9"
+    />
+    
+    <property
+        name="nnAnoDoctoInfracao"
+        type="java.lang.Integer"
+        column="ocin_nnanodoctoinfracao"
+        not-null="true"
+        length="4"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ocin_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    
+    <!-- Associations -->
+    
+    <!-- bi-directional many-to-one association to OrdemServico -->
+    <many-to-one
+        name="ordemServico"
+        class="gcom.atendimentopublico.ordemservico.OrdemServico"
+        not-null="true"
+    >
+        <column name="orse_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Atividade -->
+    <many-to-one
+        name="infracaoImovelSituacao"
+        class="gcom.cobranca.InfracaoImovelSituacao"
+        not-null="true"
+    >
+        <column name="inis_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Atividade -->
+    <many-to-one
+        name="infracaoLigacaoSituacao"
+        class="gcom.cobranca.InfracaoLigacaoSituacao"
+        not-null="true"
+    >
+        <column name="inls_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Atividade -->
+    <many-to-one
+        name="funcionario"
+        class="gcom.cadastro.funcionario.Funcionario"
+        not-null="true"
+    >
+        <column name="func_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

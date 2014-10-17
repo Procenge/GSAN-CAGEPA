@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 24/02/2011 14:37:40 by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+<class 
+    name="gcom.atendimentopublico.registroatendimento.MotivoTramite" 
+    table="tramite_motivo"
+>
+  <id
+        name="id"
+        type="java.lang.Integer"
+        column="trmt_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_tramite_motivo</param>
+    	</generator>
+    </id>
+    
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="trmt_dstramitemotivo"
+        length="30"
+    />
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="trmt_icuso"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="trmt_tmultimaalteracao"
+        length="8"
+    />
+    
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="trmt_dsabreviado"
+        not-null="false"
+        length="8"
+    />
+</class>
+</hibernate-mapping>

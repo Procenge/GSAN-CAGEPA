@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created por Victon Santos
+-->
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.OsSeletivaComandoCategoriaSubcategoria" 
+    table="OS_SELET_COMANDO_CAT_SUBCAT"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="OSCC_ID"
+    >
+        <generator class="sequence">
+		       <param name="sequence">SQ_OS_SELET_COMANDO_CAT_SUBCAT</param>
+		    </generator>
+    </id>
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="OSCC_TMULTIMAALTERACAO"
+        length="6"
+        not-null="true"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to OsSeletivaComando -->
+    <many-to-one
+        name="osSeletivaComando"
+        class="gcom.atendimentopublico.ordemservico.OsSeletivaComando"
+        not-null="true"
+    >
+        <column name="OSSC_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Categoria -->
+    <many-to-one
+        name="categoria"
+        class="gcom.cadastro.imovel.Categoria"
+        not-null="true"
+    >
+        <column name="CATG_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Subcategoria -->
+    <many-to-one
+        name="subCategoria"
+        class="gcom.cadastro.imovel.Subcategoria"
+    >
+        <column name="SCAT_ID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.MaterialRamalEsgoto" 
+    table="material_ramal_esgoto"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="mrme_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_material_ramal_esgoto</param>
+    	</generator>
+    </id>
+    
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="mrme_dsmaterialramalesgoto"
+        not-null="true"
+        length="20"
+    />
+    
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="mrme_dsabrevmaterramalesgoto"
+        not-null="true"
+        length="5"
+    />
+    
+   <property
+        name="indicadorUso"
+        column="mrme_icuso"
+        not-null="true"
+        length="2"
+    />
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="mrme_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+   
+</class>
+</hibernate-mapping>

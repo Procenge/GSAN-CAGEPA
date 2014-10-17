@@ -1,0 +1,297 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.atendimentopublico.ligacaoagua.HistoricoManutencaoLigacao" 
+    table="historico_manutencao_ligacao"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="hmli_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_historico_manut_ligacao</param>
+    	</generator>
+    </id>
+    
+    
+    <property
+        name="idAssociado"
+        type="java.lang.Integer"
+        column="hmli_idassociado"
+        not-null="false"
+    />
+    
+    <property
+        name="descricaoParecer"
+        type="java.lang.String"
+        column="hmli_dsparecer"
+        length="200"
+    /> 
+   
+     <property
+        name="codigoSituacaoOS"
+        type="java.lang.Short"
+        column="hmli_cdsituacaoos"
+        not-null="false"
+        length="2"
+    />
+    
+     <property
+        name="numeroLeituraExecucao"
+        type="java.lang.Integer"
+        column="HMLI_NNLEITURAEXECUCAO"
+        not-null="false"
+        length="2"
+    />
+    
+    <property
+        name="valorDebito"
+        type="java.math.BigDecimal"
+        column="hmli_vldebito"
+        not-null="false"
+        length="13"
+    />
+    
+    <property
+        name="dataSituacaoDebito"
+        type="java.sql.Timestamp"
+        column="hmli_dtsituacaodebito"
+        not-null="false"
+        length="8"
+    />
+    
+    <property
+        name="dataSituacaoDocumento"
+        type="java.sql.Timestamp"
+        column="hmli_dtsituacaodocumento"
+        not-null="false"
+        length="8"
+    />
+    
+    <property
+        name="dataEmissao"
+        type="java.sql.Timestamp"
+        column="hmli_dtemissao"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="dataInclusao"
+        type="java.sql.Timestamp"
+        column="hmli_dtinclusao"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="codigoSetorComercial"
+        type="java.lang.Integer"
+        column="hmli_cdsetorcomercial"
+        not-null="true"
+        length="4"
+    />
+    
+    <!-- bi-directional many-to-one association to Imovel -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="true"
+    >
+        <column name="imov_id" />
+    </many-to-one>    
+    
+    <!-- bi-directional many-to-one association to Localidade -->
+    <many-to-one
+        name="localidade"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="true"
+    >
+        <column name="loca_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to SetorComercial -->
+    <many-to-one
+        name="setorComercial"
+        class="gcom.cadastro.localidade.SetorComercial"
+        not-null="true"
+    >
+        <column name="stcm_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to ImovelPerfil -->
+    <many-to-one
+        name="imovelPerfil"
+        class="gcom.cadastro.imovel.ImovelPerfil"
+        not-null="true"
+    >
+        <column name="iper_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to OrdemServico -->
+    <many-to-one
+        name="ordemServico"
+        class="gcom.atendimentopublico.ordemservico.OrdemServico"
+        not-null="false"
+    >
+        <column name="orse_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to CobrancaDocumento -->
+    <many-to-one
+        name="cobrancaDocumentoOrigemServico"
+        class="gcom.cobranca.CobrancaDocumento"
+        not-null="false"
+    >
+        <column name="cbdo_idorigemservico" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to RegistroAtendimento -->
+    <many-to-one
+        name="registroAtendimentoOrigemServico"
+        class="gcom.atendimentopublico.registroatendimento.RegistroAtendimento"
+        not-null="false"
+    >
+        <column name="rgat_idorigemservico" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to ServicoTipo -->
+    <many-to-one
+        name="servicoTipo"
+        class="gcom.atendimentopublico.ordemservico.ServicoTipo"
+        not-null="false"
+    >
+        <column name="svtp_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to AtendimentoMotivoEncerramento -->
+    <many-to-one
+        name="atendimentoMotivoEncerramento"
+        class="gcom.atendimentopublico.registroatendimento.AtendimentoMotivoEncerramento"
+        not-null="false"
+    >
+        <column name="amen_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Usuario -->
+    <many-to-one
+        name="usuarioGeracao"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="false"
+    >
+        <column name="usur_idgeracao" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Usuario -->
+    <many-to-one
+        name="usuarioEncerramento"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="false"
+    >
+        <column name="usur_idencerramento" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Usuario -->
+    <many-to-one
+        name="usuarioExecucao"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="false"
+    >
+        <column name="usur_idexecucao" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to CorteTipo -->
+    <many-to-one
+        name="corteTipo"
+        class="gcom.atendimentopublico.ligacaoagua.CorteTipo"
+        not-null="false"
+    >
+        <column name="cotp_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to CobrancaDocumento -->
+    <many-to-one
+        name="cobrancaDocumento"
+        class="gcom.cobranca.CobrancaDocumento"
+        not-null="false"
+    >
+        <column name="cbdo_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to DocumentoEmissaoForma -->
+    <many-to-one
+        name="documentoEmissaoForma"
+        class="gcom.cobranca.DocumentoEmissaoForma"
+        not-null="false"
+    >
+        <column name="demf_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to DocumentoTipo -->
+    <many-to-one
+        name="documentoTipo"
+        class="gcom.cobranca.DocumentoTipo"
+        not-null="false"
+    >
+        <column name="dotp_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to CobrancaDebitoSituacao -->
+    <many-to-one
+        name="cobrancaDebitoSituacao"
+        class="gcom.cobranca.CobrancaDebitoSituacao"
+        not-null="false"
+    >
+        <column name="cdst_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to CobrancaAcaoSituacao -->
+    <many-to-one
+        name="cobrancaAcaoSituacao"
+        class="gcom.cobranca.CobrancaAcaoSituacao"
+        not-null="false"
+    >
+        <column name="cast_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to MotivoNaoEntregaDocumento -->
+    <many-to-one
+        name="motivoNaoEntregaDocumento"
+        class="gcom.faturamento.conta.MotivoNaoEntregaDocumento"
+        not-null="false"
+    >
+        <column name="mned_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to FiscalizacaoSituacao -->
+    <many-to-one
+        name="fiscalizacaoSituacao"
+        class="gcom.atendimentopublico.ordemservico.FiscalizacaoSituacao"
+        not-null="false"
+    >
+        <column name="fzst_id" />
+    </many-to-one>
+	
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="HMLI_TMULTIMAALTERACAO"
+        not-null="true"
+        length="8"
+    />
+    
+</class>
+</hibernate-mapping>

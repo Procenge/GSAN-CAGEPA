@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.OsSeletivaComandoHidrometroDiametro" 
+    table="OS_SELET_COMANDO_HIDR_DIAM"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="OSHD_ID"
+    >
+        <generator class="sequence">
+       		<param name="sequence">SQ_OS_SELET_COMANDO_HIDRDIAM</param>
+    	</generator>
+    </id>
+
+    <property
+        name="referenciaInicialInstalacaoHidrometro"
+        type="java.lang.Integer"
+        column="OSHD_AMINSTALACAOHIDRINICIAL"
+        not-null="true"
+        length="6"
+    />
+    
+    <property
+        name="referenciaFinalInstalacaoHidrometro"
+	    type="java.lang.Integer"
+        column="OSHD_AMINSTALACAOHIDRFINAL"
+        not-null="true"
+        length="6"
+    />
+    
+    <property
+        name="leituraAcumuladaHidrometro"
+        type="java.lang.Integer"
+        column="OSHD_NNLEITURAACUMULADA"
+        not-null="false"
+        length="4"
+    />
+    
+    <many-to-one
+        name="osSeletivaComando"
+        class="gcom.atendimentopublico.ordemservico.OsSeletivaComando"
+        not-null="true">
+        <column name="OSSC_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="hidrometroDiametro"
+        class="gcom.micromedicao.hidrometro.HidrometroDiametro"
+        not-null="false">
+        <column name="HIDM_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="hidrometroCapacidade"
+        class="gcom.micromedicao.hidrometro.HidrometroCapacidade"
+        not-null="false">
+        <column name="HICP_ID" />
+    </many-to-one>
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="OSHD_TMULTIMAALTERACAO"
+        not-null="true"
+        length="8"
+    />
+    
+    
+</class>
+</hibernate-mapping>

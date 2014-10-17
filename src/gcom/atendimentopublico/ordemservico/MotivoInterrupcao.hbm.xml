@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.MotivoInterrupcao" 
+    table="motivo_interrupcao"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="moin_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_motivo_interrupcao</param>
+    	</generator>
+    </id>
+    
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="moin_dsmotivointerrupcao"
+        not-null="true"
+        length="20"
+    />
+    
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="moin_dsabrevmotinterrupcao"
+        not-null="true"
+        length="5"
+    />
+    
+   <property
+        name="indicadorUso"
+        column="moin_icuso"
+        not-null="true"
+        length="2"
+    />
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="moin_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+   
+</class>
+</hibernate-mapping>

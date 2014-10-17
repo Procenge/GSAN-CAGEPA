@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.MaterialRedeAgua" 
+    table="material_rede_agua"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="mrda_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_material_rede_agua</param>
+    	</generator>
+    </id>
+    
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="mrda_dsmaterialredeagua"
+        not-null="true"
+        length="20"
+    />
+    
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="mrda_dsabrevmaterredeagua"
+        not-null="true"
+        length="5"
+    />
+    
+   <property
+        name="indicadorUso"
+        column="mrda_icuso"
+        not-null="true"
+        length="2"
+    />
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="mrda_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+   
+</class>
+</hibernate-mapping>

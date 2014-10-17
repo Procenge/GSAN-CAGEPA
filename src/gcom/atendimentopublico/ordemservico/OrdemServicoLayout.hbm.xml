@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.OrdemServicoLayout" 
+    table="ordem_servico_layout"
+>
+
+  <id
+        name="id"
+        type="java.lang.Integer"
+        column="osla_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_ordem_servico_layout</param>
+    	</generator>
+    </id>
+    
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="osla_dslayout"
+        not-null="true"
+        length="30"
+    />
+    
+    <property
+        name="nomeRelatorio"
+        type="java.lang.String"
+        column="osla_nmrelatorio"
+        not-null="true"
+        length="50"
+    />
+    
+    <property
+        name="nomeClasse"
+        type="java.lang.String"
+        column="osla_nmclasse"
+        not-null="true"
+        length="100"
+    />
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="osla_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    
+   <property
+        name="indicadorPadrao"
+        type="java.lang.Integer"
+        column="osla_icpadrao"
+        not-null="true"
+        length="2"
+    />
+    
+    <property
+        name="indicadorDoisPorPagina"
+        type="java.lang.Integer"
+        column="osla_icdoisporpagina"
+        not-null="true"
+        length="2"
+    />
+
+	<property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="osla_icuso"
+        not-null="true"
+        length="2"
+    />
+
+    <property
+        name="nomeMetodoGeracaoArquivoTxt"
+        type="java.lang.String"
+        column="osla_nmmetodogeracaoarquivotxt"
+        not-null="false"
+        length="255"
+    />
+ 
+    <property
+        name="nomeRelatorioCarta"
+        type="java.lang.String"
+        column="osla_nmrelatoriocarta"
+        not-null="false"
+        length="50"
+    />
+    
+    <property
+        name="nomeClasseCarta"
+        type="java.lang.String"
+        column="osla_nmclassecarta"
+        not-null="false"
+        length="100"
+    />
+  
+</class>
+</hibernate-mapping>

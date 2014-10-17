@@ -1,0 +1,245 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.cobranca.prescricao.PrescricaoComando" 
+    table="prescricao_comando"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="prcm_id"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				sq_prescricao_comando
+			</param>
+		</generator>
+    </id>
+
+    <property
+        name="titulo"
+        type="java.lang.String"
+        column="prcm_dstitulo"
+        length="100"
+    />
+    
+    <property
+        name="descricaoSolicitacao"
+        type="java.lang.String"
+        column="prcm_dssolicitacao"
+        length="4000"
+    />
+    
+    <property
+        name="indicadorSimulacao"
+        type="java.lang.Short"
+        column="prcm_icsimulacao"
+        length="2"
+    />
+    
+    <property
+        name="codigoSetorComercialInicial"
+        type="java.lang.Integer"
+        column="prcm_cdsetorcomercialinicial"
+        length="4"
+    />
+    
+    <property
+        name="codigoSetorComercialFinal"
+        type="java.lang.Integer"
+        column="prcm_cdsetorcomercialfinal"
+        length="4"
+    />
+    
+    <property
+        name="numeroQuadraInicial"
+        type="java.lang.Integer"
+        column="prcm_nnquadrainicial"
+        length="5"
+    />
+    
+    <property
+        name="numeroQuadraFinal"
+        type="java.lang.Integer"
+        column="prcm_nnquadrafinal"
+        length="5"
+    />
+    
+    <property
+        name="dataRelacaoClienteInicial"
+        type="java.sql.Date"
+        column="prcm_dtrelacaoinicial"
+        length="6"
+    />
+    
+    <property
+        name="dataRelacaoClienteFinal"
+        type="java.sql.Date"
+        column="prcm_dtrelacaofinal"
+        length="6"
+    />
+    
+    <property
+        name="arquivoImoveis"
+        type="org.hibernate.type.BinaryType"
+        column="prcm_arimovel"
+    />
+    
+    <property
+        name="anoMesReferenciaDebitoInicial"
+        type="int"
+        column="prcm_amreferenciainicial"
+        length="4"
+    />
+    
+    <property
+        name="anoMesReferenciaDebitoFinal"
+        type="int"
+        column="prcm_amreferenciafinal"
+        length="4"
+    />
+    
+   <property
+        name="dataVencimentoDebitoInicial"
+        type="java.sql.Date"
+        column="prcm_dtvencimentoinicial"
+        length="6"
+    />
+    
+    <property
+        name="dataVencimentoDebitoFinal"
+        type="java.sql.Date"
+        column="prcm_dtvencimentofinal"
+        length="6"
+    />
+    
+    <property
+        name="quantidadeImoveis"
+        type="java.lang.Integer"
+        column="prcm_qtimoveis"
+        length="9"
+    />
+   
+    <property
+        name="quantidadeContasPrescritas"
+        type="java.lang.Integer"
+        column="prcm_qtcontasprescritas"
+        length="9"
+    />
+    
+    <property
+        name="quantidadeGuiasPrescritas"
+        type="java.lang.Integer"
+        column="prcm_qtguiasprescritas"
+        length="9"
+    />
+    
+   <property
+        name="valorContasPrescritas"
+        type="java.math.BigDecimal"
+        column="prcm_vlcontasprescritas"
+        length="13"
+    />
+    
+    <property
+        name="valorGuiasPrescritas"
+        type="java.math.BigDecimal"
+        column="prcm_vlguiasprescritas"
+        length="13"
+    />
+    
+    <property
+        name="dataComando"
+        type="java.sql.Timestamp"
+        column="prcm_tmcomando"
+        length="8"
+    />
+    
+    <property
+        name="dataRealizacao"
+        type="java.sql.Timestamp"
+        column="prcm_tmrealizacao"
+        length="8"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="prcm_tmultimaalteracao"
+        length="8"
+    />
+    
+    <!-- Associations -->
+  
+     <many-to-one
+        name="gerenciaRegional"
+        class="gcom.cadastro.localidade.GerenciaRegional"
+        not-null="false"
+    >
+        <column name="greg_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="unidadeNegocio"
+        class="gcom.cadastro.localidade.UnidadeNegocio"
+        not-null="false"
+    >
+        <column name="uneg_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="elo"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="true"
+    >
+        <column name="loca_cdelo" />
+    </many-to-one>
+    
+    <many-to-one
+        name="localidadeInicial"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="false"
+    >
+        <column name="loca_idinicial"/>
+    </many-to-one>
+    
+    <many-to-one
+        name="localidadeFinal"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="false"
+    >
+        <column name="loca_idfinal"/>
+    </many-to-one>
+    
+    <many-to-one
+        name="cliente"
+        class="gcom.cadastro.cliente.Cliente"
+        not-null="false"
+    >
+        <column name="clie_id" />
+    </many-to-one>
+
+    <many-to-one
+        name="clienteRelacaoTipo"
+        class="gcom.cadastro.cliente.ClienteRelacaoTipo"
+        not-null="false"
+    >
+        <column name="crtp_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="usuario"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="true"
+    >
+        <column name="usur_id" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

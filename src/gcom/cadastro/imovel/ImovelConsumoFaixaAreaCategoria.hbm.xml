@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class
+		name="gcom.cadastro.imovel.ImovelConsumoFaixaAreaCategoria"
+		table="imovel_consumo_faixa_area_cat">
+
+		<composite-id
+			name="comp_id"
+			class="gcom.cadastro.imovel.ImovelConsumoFaixaAreaCategoriaPK">
+
+			<!-- bi-directional many-to-one association to ConsumoFaixaAreaCategoria -->
+			<key-many-to-one
+				name="consumoFaixaAreaCategoria"
+				class="gcom.faturamento.consumofaixaareacategoria.ConsumoFaixaAreaCategoria">
+				<column
+					name="cfac_id" />
+			</key-many-to-one>
+
+			<!-- bi-directional many-to-one association to Imovel -->
+			<key-many-to-one
+				name="imovel"
+				class="gcom.cadastro.imovel.Imovel">
+				<column
+					name="imov_id" />
+			</key-many-to-one>
+		</composite-id>
+
+		<property
+			name="comprimentoFrente"
+			type="int"
+			column="icfc_cfrente"
+			not-null="true"
+			length="4" />
+
+		<property
+			name="comprimentoLado"
+			type="int"
+			column="icfc_clado"
+			not-null="true"
+			length="4" />
+
+		<property
+			name="comprimentoTestada"
+			type="java.lang.Integer"
+			column="icfc_ctestada"
+			not-null="false"
+			length="4" />
+
+		<property
+			name="numeroAndares"
+			type="java.lang.Integer"
+			column="icfc_nandar"
+			not-null="false"
+			length="4" />
+
+		<property
+			name="comprimentoAndar"
+			type="java.lang.Integer"
+			column="icfc_candar"
+			not-null="false"
+			length="4" />
+
+		<property
+			name="areaConstruida"
+			type="int"
+			column="icfc_area"
+			not-null="true"
+			length="6" />
+
+		<property
+			name="indicadorUso"
+			type="short"
+			column="icfc_icuso"
+			not-null="true"
+			length="1" />
+
+		<property
+			name="ultimaAlteracao"
+			type="java.sql.Timestamp"
+			column="icfc_tmultimaalteracao"
+			length="8" />
+
+		<!-- bi-directional many-to-one association to Categoria -->
+		<many-to-one
+			name="categoria"
+			class="gcom.cadastro.imovel.Categoria"
+			not-null="true">
+			<column
+				name="catg_id" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

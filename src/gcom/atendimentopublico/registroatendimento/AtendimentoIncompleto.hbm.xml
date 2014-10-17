@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.atendimentopublico.registroatendimento.AtendimentoIncompleto" 
+    table="atendimento_incompleto"
+>
+
+   	<id
+        name="id"
+        type="java.lang.Integer"
+        column="atin_id"
+    >
+     <generator class="assigned" />
+    </id>
+
+    <property
+        name="nomeContato"
+        type="java.lang.String"
+        column="atin_nmcontato"
+        length="200"
+        lazy="false"
+    />
+    <property
+        name="ddd"
+        type="short"
+        column="atin_cddddchamada"
+        length="2"
+        lazy="false"
+    />
+    <property
+        name="numeroTelefone"
+        type="java.lang.Integer"
+        column="atin_nnfonechamada"
+        lazy="false"
+    />
+    <property
+        name="descricaoObservacao"
+        type="java.lang.String"
+        column="atin_dsobservacao"
+        length="200"
+        lazy="false"
+    />
+    <property
+        name="indicadorRetornoChamada"
+        type="short"
+        column="atin_icretornochamada"
+        length="2"
+        lazy="false"
+    />
+    <property
+        name="duracaoChamada"
+        type="java.sql.Timestamp"
+        column="atin_tmchamada"
+        not-null="true"
+        length="8"
+        lazy="false"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="atin_tmultimaalteracao"
+        not-null="true"
+        length="8"
+        lazy="false"
+    />
+    <many-to-one
+        name="atendimentoIncompletoMotivo"
+        class="gcom.atendimentopublico.registroatendimento.AtendimentoIncompletoMotivo"
+        not-null="true"
+        lazy="false"
+    >
+        <column name="aimo_id" />
+    </many-to-one>
+     <many-to-one
+        name="solicitacaoTipoEspecificacao"
+        class="gcom.atendimentopublico.registroatendimento.SolicitacaoTipoEspecificacao"
+        not-null="true"
+        lazy="false"
+    >
+        <column name="step_id" />
+    </many-to-one>
+    <many-to-one
+        name="cliente"
+        class="gcom.cadastro.cliente.Cliente"
+        lazy="false"
+    >
+        <column name="clie_id" />
+    </many-to-one>
+	<many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        lazy="false"
+    >
+        <column name="imov_id" />
+    </many-to-one>
+    <many-to-one
+        name="registroAtendimento"
+        class="gcom.atendimentopublico.registroatendimento.RegistroAtendimento"
+        lazy="false"
+    >
+        <column name="rgat_id" />
+    </many-to-one>
+    <many-to-one
+        name="atendimentoUnidadeOrganizacional"
+        class="gcom.cadastro.unidade.UnidadeOrganizacional"
+        lazy="false"
+    >
+        <column name="unid_idatendimento" />
+    </many-to-one>
+    <many-to-one
+        name="retornoChamadaUnidadeOrganizacional"
+        class="gcom.cadastro.unidade.UnidadeOrganizacional"
+        lazy="false"
+    >
+        <column name="unid_idretornochamada" />
+    </many-to-one>
+    <many-to-one
+        name="atendimentoUsuario"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        lazy="false"
+    >
+        <column name="usur_idatendimento" />
+    </many-to-one>
+    <many-to-one
+        name="retornoChamadaUsuario"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        lazy="false"
+    >
+        <column name="usur_idretornochamada" />
+    </many-to-one>
+</class>
+</hibernate-mapping>

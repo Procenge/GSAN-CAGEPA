@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.BoletoBancarioMovimentacao" 
+    table="boleto_bancario_movimentacao"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="bbmv_id"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				sq_boleto_bancario_moviment
+			</param>
+		</generator>
+    </id>
+    
+    <property
+        name="dataMovimentacao"
+        type="java.sql.Date"
+        column="bbmv_dtmovimentacao"
+        length="4"
+        not-null="true"
+    />
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="bbmv_tmultimaalteracao"
+        length="8"
+        not-null="true"
+    />
+
+    <!-- Associations -->
+    
+    <!-- bi-directional many-to-one association to BoletoBancario -->
+	<many-to-one name="boletoBancario"
+		class="gcom.cobranca.BoletoBancario" not-null="true">
+		<column name="bbco_id" />
+	</many-to-one>
+    
+    <!-- bi-directional many-to-one association to BoletoBancarioLancamentoEnvio -->
+	<many-to-one name="boletoBancarioLancamentoEnvio"
+		class="gcom.cobranca.BoletoBancarioLancamentoEnvio" not-null="false">
+		<column name="blen_id" />
+	</many-to-one>
+	
+	<!-- bi-directional many-to-one association to BoletoBancarioLancamentoRetorno -->
+	<many-to-one name="boletoBancarioLancamentoRetorno"
+		class="gcom.cobranca.BoletoBancarioLancamentoRetorno" not-null="false">
+		<column name="blrt_id" />
+	</many-to-one>
+	
+	<!-- bi-directional one-to-one association to BoletoBancarioMovimentacao -->
+	<many-to-one name="boletoBancarioMovimentacaoRetorno"
+		class="gcom.cobranca.BoletoBancarioMovimentacao" not-null="false">
+		<column name="bbmv_idretorno" />
+	</many-to-one>
+	
+	<!-- bi-directional many-to-one association to Usuario -->
+	<many-to-one name="usuario"
+		class="gcom.seguranca.acesso.usuario.Usuario" not-null="false">
+		<column name="usur_id" />
+	</many-to-one>
+	
+	<!-- bi-directional many-to-one association to ArrecadadorMovimentoItem -->
+	<many-to-one name="arrecadadorMovimentoItem"
+		class="gcom.arrecadacao.ArrecadadorMovimentoItem" not-null="false">
+		<column name="amit_id" />
+	</many-to-one>
+	
+</class>
+</hibernate-mapping>

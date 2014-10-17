@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.contrato.CobrancaContrato" 
+    table="cobranca_contrato"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="cbco_id"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				sq_cobranca_contrato
+			</param>
+		</generator>
+    </id>
+
+    <property
+        name="numeroContrato"
+        type="java.lang.String"
+        column="cbco_nncontrato"
+        length="10"
+    />
+    <property
+        name="dataInicial"
+        type="java.sql.Date"
+        column="cbco_dtcontratoinicio"
+        length="8"
+    />
+    <property
+        name="dataFinal"
+        type="java.sql.Date"
+        column="cbco_dtcontratofim"
+        length="8"
+    />
+    <property
+        name="dataEncerramento"
+        type="java.sql.Date"
+        column="cbco_dtcontratoencerramento"
+        length="8"
+    />
+   
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="cbco_tmultimaalteracao"
+        length="8"
+    />
+    
+        <property
+        name="quantidadeMinimaDiasVencidos"
+        type="java.lang.Integer"
+        column="cbco_qtmindiasvencidos"
+        length="38"
+    />
+
+	<property
+		name="quantidadeDiasReincidencia"
+		type="java.lang.Integer"
+		column="cbco_qtdiasreincidencia"           
+		length="3"
+    /> 
+
+	<property
+        name="percentualRemuneracaoReincidencia"
+        type="java.math.BigDecimal"
+        column="cbco_pcremunreincidencia"
+        length="5"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to CobrancaAcaoCronograma -->
+
+    <!-- bi-directional many-to-one association to CobrancaAcao -->
+    
+    
+    <many-to-one
+        name="empresa"
+        class="gcom.cadastro.empresa.Empresa"
+        not-null="false"
+    >
+        <column name="empr_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="contratoMotivoCancelamento"
+        class="gcom.arrecadacao.ContratoMotivoCancelamento"
+        not-null="false"
+    >
+        <column name="ctcn_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="contratoTipoRemuneracao"
+        class="gcom.cobranca.contrato.ContratoTipoRemuneracao"
+        not-null="true"
+    >
+        <column name="cbrt_id" />
+    </many-to-one>
+    
+    
+</class>
+</hibernate-mapping>

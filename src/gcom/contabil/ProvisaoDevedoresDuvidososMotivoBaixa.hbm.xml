@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="gcom.contabil.ProvisaoDevedoresDuvidososMotivoBaixa" table="PROVISAO_DEV_DUV_MOTIVO_BAIXA">
+		<id name="id" column="PDDB_ID">
+			<generator class="sequence">
+		       <param name="sequence">SQ_PDDV_ID</param>
+		    </generator>
+		</id>				      	   
+      	        
+      	
+      	<property name="descricaoMotivoBaixa" column="PDDB_DSMOTIVOBAIXA" not-null="true"/>
+      	<property name="codigoConstante" column="PDDB_CDCONSTANTE" not-null="true"/>
+      	<property name="indicadorUso" column="PDDB_ICUSO" not-null="true"/>
+      	<property name="ultimaAlteracao" column="PDDB_TMULTIMAALTERACAO" not-null="true"/>
+
+      	
+	</class>
+
+</hibernate-mapping>

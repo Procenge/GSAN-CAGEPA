@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.contrato.CobrancaContratoRemuneracaoPorSucesso" 
+    table="cobranca_contrato_remun_sucess"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ccrs_id"
+    >
+        
+        <generator class="sequence">
+	       <param name="sequence">sq_cobranca_contrato_remun_suc</param>
+	    </generator>
+        
+    </id>
+
+    <property
+        name="diasVencidos"
+        type="java.lang.Integer"
+        column="ccrs_qtdiasvencidos"
+        not-null="false"
+        length="4"
+    />
+    <property
+        name="percentualRemuneracao"
+        type="java.math.BigDecimal"
+        column="ccrs_pcremuneracao"
+        length="5"
+    />
+    <property
+        name="valorFixo"
+        type="java.math.BigDecimal"
+        column="ccrs_vlremuneracao"
+        length="13"
+    />
+    <property
+        name="percentualParcelaPaga"
+        type="java.math.BigDecimal"
+        column="ccrs_pcremunparcela"
+        not-null="false"
+        length="5"
+    />
+   
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ccrs_tmultimaalteracao"
+        length="8"
+    />
+
+    <property
+        name="percentualDesempenho"
+        type="java.math.BigDecimal"
+        column="ccrs_pcdesempenho"
+        not-null="false"
+        length="5"
+    />
+
+    <!-- Associations -->  
+    <!-- bi-directional many-to-one association to CobrancaContrato -->    
+    
+    <many-to-one
+        name="cobrancaContrato"
+        class="gcom.cobranca.contrato.CobrancaContrato"
+        not-null="true"
+    >
+        <column name="cbco_id" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

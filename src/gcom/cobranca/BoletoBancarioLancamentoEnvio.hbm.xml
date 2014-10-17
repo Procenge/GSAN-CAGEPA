@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.BoletoBancarioLancamentoEnvio" 
+    table="boleto_bancario_lancmt_envio"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="blen_id"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				sq_boleto_bancario_lanc_env
+			</param>
+		</generator>
+    </id>
+
+	<property
+        name="descricaoLancamentoEnvio"
+        type="java.lang.String"
+        column="blen_dslancamentoenvio"
+        length="50"
+        not-null="true"
+    />
+	<property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="blen_icuso"
+        length="2"
+        not-null="true"
+    />
+    <property
+        name="indicadorComando"
+        type="java.lang.Short"
+        column="blen_iccomando"
+        length="2"
+        not-null="true"
+    />
+    <property
+        name="indicadorAlterarDados"
+        type="java.lang.Short"
+        column="blen_icalteracaodados"
+        length="2"
+        not-null="true"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="blen_tmultimaalteracao"
+        length="8"
+        not-null="true"
+    />
+
+    <!-- Associations -->
+	
+	<!-- bi-directional many-to-one association to BoletoBancarioSituacao -->
+	<many-to-one name="situacaoAtualObrigatoria"
+		class="gcom.cobranca.BoletoBancarioSituacao" not-null="false">
+		<column name="bbst_idatualobrigatoria" />
+	</many-to-one>
+	
+</class>
+</hibernate-mapping>

@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="gcom.contabil.LancamentoContabilSintetico" table="LANCAMENTO_CONTABIL_SINTETICO">
+		<id name="id" column="LACS_ID">
+			<generator class="sequence">
+		       <param name="sequence">SQ_LACS_ID</param>
+		    </generator>
+		</id>
+				
+      	<property name="ultimaAlteracao" column="LACS_TMULTIMAALTERACAO" />
+      	<property name="indicadorUso" column="LACS_ICUSO" />    
+
+
+      	<property name="dataGeracao" column="LACS_DTGERACAO" not-null="true"/> 
+      	<property name="dataContabil" column="LACS_DTCONTABIL" not-null="true"/> 
+      	<property name="valor" column="LACS_VL" not-null="true"/> 
+      	<property name="numeroCNPJ" column="LACS_NNCNPJ"/> 
+		<property name="idUnidadeContabilAgrupamento" column="UNCO_ID"/>
+		
+      	<many-to-one name="eventoComercial" class="gcom.contabil.EventoComercial" not-null="true">
+      		<column name="EVCO_ID"/>
+      	</many-to-one>
+      	
+		<many-to-one name="categoria" class="gcom.cadastro.imovel.Categoria">
+      		<column name="CATG_ID"/>
+      	</many-to-one>
+      	
+      	<many-to-one name="lancamentoItemContabil" class="gcom.financeiro.lancamento.LancamentoItemContabil">
+      		<column name="LICT_ID"/>
+      	</many-to-one>      	      	      
+      	 
+      	<many-to-one name="impostoTipo" class="gcom.faturamento.ImpostoTipo">
+      		<column name="IMTP_ID"/>
+      	</many-to-one>
+      	     	
+      	<many-to-one name="contaBancaria" class="gcom.arrecadacao.banco.ContaBancaria">
+      		<column name="CTBC_ID"/>
+      	</many-to-one>
+      	      	      	      	
+	</class>
+
+</hibernate-mapping>

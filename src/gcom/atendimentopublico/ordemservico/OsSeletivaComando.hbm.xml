@@ -1,0 +1,579 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.OsSeletivaComando" 
+    table="os_seletiva_comando"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ossc_id"
+    >
+        <generator class="sequence">
+		       <param name="sequence">SQ_OS_SELETIVA_COMANDO</param>
+		    </generator>
+    </id>
+
+    <property
+        name="tempoComando"
+        type="java.sql.Timestamp"
+        column="ossc_tmcomando"
+        not-null="true"
+        length="8"
+    />
+    <property
+        name="descricaoTitulo"
+        type="java.lang.String"
+        column="OSSC_DSTITULO"
+        length="100"
+        not-null="true"
+    />
+    <property
+        name="arquivoImovel"
+        type="org.hibernate.type.BinaryType"
+        column="OSSC_ARIMOVEL"
+    />
+    <property
+        name="numeroPontosUtilizacaoInicial"
+        type="java.lang.Integer"
+        column="OSSC_NNPTOSUTILIZACAOINICIAL"
+    />
+    <property
+        name="numeroPontosUtilizacaoFinal"
+        type="java.lang.Integer"
+        column="OSSC_NNPTOSUTILIZACAOFINAL"
+    />
+    <property
+        name="numeroFaixaConsumoInicial"
+        type="java.lang.Integer"
+        column="OSSC_NNFAIXACONSUMOINICIAL"
+    />
+    <property
+        name="numeroFaixaConsumoFinal"
+        type="java.lang.Integer"
+        column="OSSC_NNFAIXACONSUMOFINAL"
+    />
+    <property
+        name="quantidadeDebitoInicial"
+        type="java.lang.Integer"
+        column="OSSC_QTDEBITOINICIAL"
+    />
+    <property
+        name="quantidadeDebitoFinal"
+        type="java.lang.Integer"
+        column="OSSC_QTDEBITOFINAL"
+    />
+    <property
+        name="valorDebito"
+        type="java.math.BigDecimal"
+        column="OSSC_VLDEBITO"
+        length="15"
+    />
+    <property
+        name="numeroOcorrenciasConsecutivas"
+        type="java.lang.Integer"
+        column="OSSC_NNOCORRENCIASCONSECUTIVAS"
+    />
+    <property
+        name="quantidadeOrdensServicoGeradas"
+        type="java.lang.Integer"
+        column="OSSC_QTORDENSSERVICOGERADAS"
+    />    
+    <property
+        name="tempoRealizacao"
+        type="java.sql.Timestamp"
+        column="ossc_tmrealizacao"
+        length="6"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ossc_tmultimaalteracao"
+        not-null="true"
+        length="6"
+    />
+    <property
+        name="quantidadeMaximaOrdens"
+        type="java.lang.Integer"
+        column="ossc_qtmaximaordens"
+    />
+    <property
+        name="codigoElo"
+        type="java.lang.Integer"
+        column="loca_cdelo"
+    />
+    <property
+        name="indicadorImovelCondominio"
+        type="java.lang.Integer"
+        column="ossc_icimovelcondominio"
+    />
+    
+    <property
+        name="numeroConsumoEconomia"
+        type="java.lang.Integer"
+        column="ossc_nnconsumoeconomia"
+    />
+    <property
+        name="quantidadeEconomiasInicial"
+        type="java.lang.Integer"
+        column="ossc_qteconomiasinicial"
+    />
+    <property
+        name="quantidadeEconomiasFinal"
+        type="java.lang.Integer"
+        column="ossc_qteconomiasfinal"
+    />
+    <property
+        name="quantidadeDocumentosInicial"
+        type="java.lang.Integer"
+        column="ossc_qtdoctosinicial"
+    />
+    <property
+        name="quantidadeDocumentosFinal"
+        type="java.lang.Integer"
+        column="ossc_qtdoctosfinal"
+    />
+    <property
+        name="numeroMoradoresInicial"
+        type="java.lang.Integer"
+        column="ossc_nnmoradoresinicial"
+    />
+    <property
+        name="numeroMoradoresFinal"
+        type="java.lang.Integer"
+        column="ossc_nnmoradoresfinal"
+    />
+    <property
+        name="numeroAreaConstruidaInicial"
+        type="java.math.BigDecimal"
+        column="ossc_nnareaconstruidainicial"
+        length="8"
+    />
+    <property
+        name="numeroAreaConstruidaFinal"
+        type="java.math.BigDecimal"
+        column="ossc_nnareaconstruidafinal"
+        length="8"
+    />
+    <!-- 
+    <property
+        name="codigoSetorComercialInicial"
+        type="java.lang.Integer"
+        column="ossc_cdsetorcomercialinicial"
+        length="4"
+    />
+    <property
+        name="codigoSetorComercialFinal"
+        type="java.lang.Integer"
+        column="ossc_cdsetorcomercialfinal"
+        length="4"
+    />
+    <property
+        name="numeroQuadraInicial"
+        type="java.lang.Integer"
+        column="ossc_nnquadrainicial"
+        length="4"
+    />
+    <property
+        name="numeroQuadraFinal"
+        type="java.lang.Integer"
+        column="ossc_nnquadrafinal"
+        length="4"
+    />
+    -->
+    <!--
+    <property
+        name="anoMesInstalacaoHidrometro"
+        type="java.lang.Integer"
+        column="ossc_aminstalacaohidrometro"
+        length="4"
+    />
+    <property
+        name="quantidadeGerada"
+        type="java.lang.Short"
+        column="ossc_qtgerada"
+        length="2"
+    />
+    <property
+        name="numeroConsumoMedio"
+        type="java.lang.Integer"
+        column="ossc_nnconsumomedio"
+        length="4"
+    />
+    -->
+    <!--
+    
+    <property
+        name="quantidadeOcorrenciasConsecutivas"
+        type="java.lang.Short"
+        column="ossc_qtocorrenciasconsecutivas"
+        length="2"
+    />
+    
+    <property
+        name="numeroMoradoresInicial"
+        type="java.lang.Short"
+        column="ossc_nnmoradoresinicial"
+        length="2"
+    />
+    <property
+        name="numeroMoradoresFinal"
+        type="java.lang.Short"
+        column="ossc_nnmoradoresfinal"
+        length="2"
+    />
+	-->
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to Usuario -->
+    <many-to-one
+        name="usuario"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="true"
+    >
+        <column name="usur_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Empresa -->
+    <many-to-one
+        name="empresa"
+        class="gcom.cadastro.empresa.Empresa"
+        not-null="true"
+    >
+        <column name="empr_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to ServicoTipo -->
+    <many-to-one
+        name="servicoTipo"
+        class="gcom.atendimentopublico.ordemservico.ServicoTipo"
+        not-null="true"
+    >
+        <column name="svtp_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to MedicaoTipo -->
+    <many-to-one
+        name="medicaoTipo"
+        class="gcom.micromedicao.medicao.MedicaoTipo"
+    >
+        <column name="medt_id" />
+    </many-to-one>
+    <many-to-one
+        name="faturamentoGrupo"
+        class="gcom.faturamento.FaturamentoGrupo"
+    >
+        <column name="FTGR_ID" />
+    </many-to-one>
+    <many-to-one
+        name="areaConstruidaFaixa"
+        class="gcom.cadastro.imovel.AreaConstruidaFaixa"
+    >
+        <column name="ACON_ID" />
+    </many-to-one>
+	<!-- 
+	<many-to-one
+        name="leituraAnormalidade"
+        class="gcom.micromedicao.leitura.LeituraAnormalidade"
+        not-null="true"
+    >
+        <column name="ltan_id" />
+    </many-to-one>
+    
+	<many-to-one
+        name="localidadeFinal"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="true"
+    >
+        <column name="loca_idfinal" />
+    </many-to-one>
+    
+	<many-to-one
+        name="localidadeInicial"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="true"
+    >
+        <column name="loca_idinicial" />
+    </many-to-one>
+    
+	<many-to-one
+        name="quadraInicial"
+        class="gcom.cadastro.localidade.Quadra"
+        not-null="true"
+    >
+        <column name="qdra_idinicial" />
+    </many-to-one>
+    
+	<many-to-one
+        name="quadraFinal"
+        class="gcom.cadastro.localidade.Quadra"
+        not-null="true"
+    >
+        <column name="qdra_idfinal" />
+    </many-to-one>
+    
+	<many-to-one
+        name="imovelPerfil"
+        class="gcom.cadastro.imovel.ImovelPerfil"
+        not-null="true"
+    >
+        <column name="iper_id" />
+    </many-to-one>
+    
+	<many-to-one
+        name="hidrometroMarca"
+        class="gcom.micromedicao.hidrometro.HidrometroMarca"
+        not-null="true"
+    >
+        <column name="himc_id" />
+    </many-to-one>
+    
+	<many-to-one
+        name="rotaFinal"
+        class="gcom.micromedicao.Rota"
+        not-null="true"
+    >
+        <column name="rota_idfinal" />
+    </many-to-one>
+    
+	<many-to-one
+        name="rotaInicial"
+        class="gcom.micromedicao.Rota"
+        not-null="true"
+    >
+        <column name="rota_idinicial" />
+    </many-to-one>
+    
+	<many-to-one
+        name="setorComercialFinal"
+        class="gcom.cadastro.localidade.SetorComercial"
+        not-null="true"
+    >
+        <column name="stcm_idfinal" />
+    </many-to-one>
+    
+	<many-to-one
+        name="setorComercialInicial"
+        class="gcom.cadastro.localidade.SetorComercial"
+        not-null="true"
+    >
+        <column name="stcm_idinicial" />
+    </many-to-one>
+	<many-to-one
+        name="categoria"
+        class="gcom.cadastro.imovel.Categoria"
+        not-null="true"
+    >
+        <column name="catg_id" />
+    </many-to-one>
+	<many-to-one
+        name="hidrometroCapacidade"
+        class="gcom.micromedicao.hidrometro.HidrometroCapacidade"
+        not-null="true"
+    >
+        <column name="hicp_id" />
+    </many-to-one> 
+	<many-to-one
+        name="subcategoria"
+        class="gcom.cadastro.imovel.Subcategoria"
+        not-null="true"
+    >
+        <column name="scat_id" />
+    </many-to-one>
+     --> 
+     
+      <set
+        name="osSeletivaComandoLocalGeo"
+        lazy="true"
+        inverse="true"
+        cascade="delete"
+    >
+        <key>
+            <column name="OSSC_ID" />
+        </key>
+        <one-to-many
+            class="gcom.atendimentopublico.ordemservico.OsSeletivaComandoLocalGeo"
+        />
+    </set>
+    
+     <set
+        name="osSeletivaComandoImovelPerfil"
+        lazy="true"
+        inverse="true"
+        cascade="delete"
+    >
+        <key>
+            <column name="OSSC_ID" />
+        </key>
+        <one-to-many
+            class="gcom.atendimentopublico.ordemservico.OsSeletivaComandoImovelPerfil"
+        />
+    </set>
+    
+     <set
+        name="osSeletivaComandoCategoriaSubcategoria"
+        lazy="true"
+        inverse="true"
+        cascade="delete"
+    >
+        <key>
+            <column name="OSSC_ID" />
+        </key>
+        <one-to-many
+            class="gcom.atendimentopublico.ordemservico.OsSeletivaComandoCategoriaSubcategoria"
+        />
+    </set>
+    
+    <set
+        name="osSeletivaComandoLigacaoAgua"
+        lazy="true"
+        inverse="true"
+        cascade="delete"
+    >
+        <key>
+            <column name="OSSC_ID" />
+        </key>
+        <one-to-many
+            class="gcom.atendimentopublico.ordemservico.OsSeletivaComandoLigacaoAgua"
+        />
+    </set>
+    
+     <set
+        name="osSeletivaComandoLigacaoEsgoto"
+        lazy="true"
+        inverse="true"
+        cascade="delete"
+    >
+        <key>
+            <column name="OSSC_ID" />
+        </key>
+        <one-to-many
+            class="gcom.atendimentopublico.ordemservico.OsSeletivaComandoLigacaoEsgoto"
+        />
+    </set>
+    
+       <set
+        name="osSeletivaComandoConsumoMedio"
+        lazy="true"
+        inverse="true"
+        cascade="delete"
+    >
+        <key>
+            <column name="OSSC_ID" />
+        </key>
+        <one-to-many
+            class="gcom.atendimentopublico.ordemservico.OsSeletivaComandoConsumoMedio"
+        />
+    </set>
+    
+     <set
+        name="osSeletivaComandoHidrometroMarca"
+        lazy="true"
+        inverse="true"
+        cascade="delete"
+    >
+        <key>
+            <column name="OSSC_ID" />
+        </key>
+        <one-to-many
+            class="gcom.atendimentopublico.ordemservico.OsSeletivaComandoHidrometroMarca"
+        />
+    </set>
+    
+    
+     <set
+        name="osSeletivaComandoHidrometroClasse"
+        lazy="true"
+        inverse="true"
+        cascade="delete"
+    >
+        <key>
+            <column name="OSSC_ID" />
+        </key>
+        <one-to-many
+            class="gcom.atendimentopublico.ordemservico.OsSeletivaComandoHidrometroClasse"
+        />
+    </set>
+  
+     <set
+        name="osSeletivaComandoHidrometroProtecao"
+        lazy="true"
+        inverse="true"
+        cascade="delete"
+    >
+        <key>
+            <column name="OSSC_ID" />
+        </key>
+        <one-to-many
+            class="gcom.atendimentopublico.ordemservico.OsSeletivaComandoHidrometroProtecao"
+        />
+    </set>
+
+     <set
+        name="osSeletivaComandoHidrometroLocalInstacao"
+        lazy="true"
+        inverse="true"
+        cascade="delete"
+    >
+        <key>
+            <column name="OSSC_ID" />
+        </key>
+        <one-to-many
+            class="gcom.atendimentopublico.ordemservico.OsSeletivaComandoHidrometroLocalInstacao"
+        />
+    </set>
+    
+    <set
+        name="osSeletivaComandoLeituraAnormalidade"
+        lazy="true"
+        inverse="true"
+        cascade="delete"
+    >
+        <key>
+            <column name="OSSC_ID" />
+        </key>
+        <one-to-many
+            class="gcom.atendimentopublico.ordemservico.OsSeletivaComandoLeituraAnormalidade"
+        />
+    </set>
+    
+     <set
+        name="osSeletivaComandoHidrometroDiametro"
+        lazy="true"
+        inverse="true"
+        cascade="delete"
+    >
+        <key>
+            <column name="OSSC_ID" />
+        </key>
+        <one-to-many
+            class="gcom.atendimentopublico.ordemservico.OsSeletivaComandoHidrometroDiametro"
+        />
+    </set>
+    
+     <set
+        name="ordemServico"
+        lazy="true"
+        inverse="true"
+        cascade="delete"
+    >
+        <key>
+            <column name="OSSC_ID" />
+        </key>
+        <one-to-many
+            class="gcom.atendimentopublico.ordemservico.OrdemServico"
+        />
+    </set>
+   
+    
+</class>
+</hibernate-mapping>

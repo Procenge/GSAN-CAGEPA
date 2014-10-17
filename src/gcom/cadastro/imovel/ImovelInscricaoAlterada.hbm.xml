@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.cadastro.imovel.ImovelInscricaoAlterada"
+    table="imovel_inscr_alterada"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="imia_id"
+    >
+      <generator class="sequence">
+          <param name="sequence">sq_imovel_inscr_alterada</param>
+      </generator>
+    </id>
+    
+    <!-- bi-directional many-to-one association to Imovel -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="true"
+    >
+        <column name="imov_id" />
+    </many-to-one>   
+
+    <!-- bi-directional many-to-one association to FaturamentoGrupo -->
+    <many-to-one
+        name="faturamentoGrupo"
+        class="gcom.faturamento.FaturamentoGrupo"
+        not-null="true"
+    >
+        <column name="ftgr_id" />
+    </many-to-one>   
+
+    <!-- bi-directional many-to-one association to Localidade -->
+    <many-to-one
+        name="localidadeAnterior"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="true"
+    >
+        <column name="loca_idanterior" />
+    </many-to-one>   
+
+    <!-- bi-directional many-to-one association to SetorComercial -->
+    <many-to-one
+        name="setorComercialAnterior"
+        class="gcom.cadastro.localidade.SetorComercial"
+        not-null="true"
+    >
+        <column name="stcm_idanterior" />
+    </many-to-one>   
+
+    <!-- bi-directional many-to-one association to Quadra -->
+    <many-to-one
+        name="quadraAnterior"
+        class="gcom.cadastro.localidade.Quadra"
+        not-null="true"
+    >
+        <column name="qdra_idanterior" />
+    </many-to-one>   
+    
+    <property
+        name="loteAnterior"
+        type="short"
+        column="imia_nnloteanterior"
+        not-null="true"
+        length="2"
+    />
+    <property
+        name="subLoteAnterior"
+        type="short"
+        column="imia_nnsubloteanterior"
+        not-null="true"
+        length="2"
+    />
+    <property
+        name="testadaLoteAnterior"
+        type="short"
+        column="imia_nntestadaloteanterior"
+        length="2"
+    />
+
+    <!-- bi-directional many-to-one association to Rota -->
+    <many-to-one
+        name="rotaAnterior"
+        class="gcom.micromedicao.Rota"
+        not-null="true"
+    >
+        <column name="rota_idanterior" />
+    </many-to-one>   
+
+
+
+
+    <!-- bi-directional many-to-one association to Localidade -->
+    <many-to-one
+        name="localidadeAtual"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="true"
+    >
+        <column name="loca_idatual" />
+    </many-to-one>   
+
+    <!-- bi-directional many-to-one association to SetorComercial -->
+    <many-to-one
+        name="setorComercialAtual"
+        class="gcom.cadastro.localidade.SetorComercial"
+        not-null="true"
+    >
+        <column name="stcm_idatual" />
+    </many-to-one>   
+
+    <!-- bi-directional many-to-one association to Quadra -->
+    <many-to-one
+        name="quadraAtual"
+        class="gcom.cadastro.localidade.Quadra"
+        not-null="true"
+    >
+        <column name="qdra_idatual" />
+    </many-to-one>   
+    
+    <property
+        name="loteAtual"
+        type="short"
+        column="imia_nnloteatual"
+        not-null="true"
+        length="2"
+    />
+    <property
+        name="subLoteAtual"
+        type="short"
+        column="imia_nnsubloteatual"
+        not-null="true"
+        length="2"
+    />
+    <property
+        name="testadaLoteAtual"
+        type="short"
+        column="imia_nntestadaloteatual"
+        length="2"
+    />
+
+    <!-- bi-directional many-to-one association to Rota -->
+    <many-to-one
+        name="rotaAtual"
+        class="gcom.micromedicao.Rota"
+        not-null="true"
+    >
+        <column name="rota_idatual" />
+    </many-to-one>   
+
+    <property
+        name="indicadorAtualizado"
+        type="java.lang.Short"
+        column="imia_icatualizado"
+        length="2"
+        not-null="true"
+    />
+
+    <property
+        name="indicadorAlteracaoExcluida"
+        type="java.lang.Short"
+        column="imia_icalteracaoexcluida"
+        length="2"
+        not-null="true"
+    />
+
+    <property
+        name="indicadorImovelExcluido"
+        type="java.lang.Short"
+        column="imia_icimovelexcluido"
+        length="2"
+        not-null="true"
+    />
+
+    <property
+        name="indicadorErroAlteracao"
+        type="java.lang.Short"
+        column="imia_icerroalteracao"
+        length="2"
+        not-null="false"
+    />
+    
+    <property
+        name="dataAlteracaoOnline"
+        type="java.sql.Timestamp"
+        column="imia_tmalteracaoonline"
+        not-null="true"
+        length="8"
+    />
+
+    <property
+        name="dataAlteracaoBatch"
+        type="java.sql.Timestamp"
+        column="imia_tmalteracaobatch"
+        not-null="false"
+        length="8"
+    />
+
+	<property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="imia_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+</class>
+</hibernate-mapping>

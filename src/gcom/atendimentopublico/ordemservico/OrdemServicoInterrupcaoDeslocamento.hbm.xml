@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.OrdemServicoInterrupcaoDeslocamento" 
+    table="os_interrupcao_desloc"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="osid_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_os_interrupcao_desloc</param>
+    	</generator>
+    </id>
+    
+    <property
+        name="numeroKm"
+        type="java.math.BigDecimal"
+        column="osid_nnkilometragem "
+        length="7"
+    />
+    
+    <property
+        name="interrupcaoInicio"
+        type="java.sql.Timestamp"
+        column="osid_tminterrupcaoinicio"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="interrupcaoFim"
+        type="java.sql.Timestamp"
+        column="osid_tminterrupcaofim"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="osid_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    
+    <many-to-one
+        name="ordemServicoProgramacao"
+        class="gcom.atendimentopublico.ordemservico.OrdemServicoProgramacao"
+        not-null="true"
+    >
+        <column name="ospg_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="motivoInterrupcao"
+        class="gcom.atendimentopublico.ordemservico.MotivoInterrupcao"
+        not-null="true"
+    >
+        <column name="moin_id" />
+    </many-to-one>
+   
+</class>
+</hibernate-mapping>

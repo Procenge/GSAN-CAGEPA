@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+
+<hibernate-mapping>
+	
+	<class name="gcom.arrecadacao.ArrecadadorAgenteCaixa" table="ARRECADADOR_AGENTE_CAIXA">
+	
+		<id name="id" type="java.lang.Integer" column="AACX_ID">
+		
+			<generator class="sequence">
+			
+				 <param name="sequence">SQ_ARRECADADOR_AGENTE_CAIXA</param>
+			
+			</generator>
+		
+		</id>
+		
+		<property name="ultimaAlteracao" type="java.sql.Timestamp" column="AACX_TMULTIMAALTERACAO" length="8"/>
+	
+		<many-to-one name="arrecadador" class="gcom.arrecadacao.Arrecadador" not-null="true">
+        	
+        	<column name="ARRC_ID" />
+    
+    	</many-to-one>
+    	
+    	<many-to-one name="usuario" class="gcom.seguranca.acesso.usuario.Usuario" not-null="true">
+        	
+        	<column name="USUR_ID" />
+    
+    	</many-to-one>
+			
+	</class>
+
+</hibernate-mapping>    

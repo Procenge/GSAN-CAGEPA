@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+	<class name="gcom.arrecadacao.AjusteCodigoBarras" table="ajuste_codigo_barras">
+
+		<id name="idArrecadadorMovimentoItem" type="java.lang.Integer"
+			column="amit_id">
+			<generator class="assigned" />
+		</id>
+
+		<property name="codigoBarrasAntigo" type="java.lang.String"
+			column="acba_codigobarrasantigo" not-null="false" length="50" />
+
+		<property name="codigoBarrasNovo" type="java.lang.String"
+			column="acba_codigobarrasnovo" not-null="false" length="50" />
+
+		<property name="descricaoOcorrenciaMovimento" type="java.lang.String"
+			column="acba_dsocorrencia" not-null="false" length="50" />
+
+		<property name="indicadorAceitacaoRegistro" type="java.lang.Integer"
+			column="acba_icaceitacao" not-null="false" />
+
+		<property name="idImovel" type="java.lang.Integer" column="acba_imovel"
+			not-null="false" />
+
+		<property name="referencia" type="java.lang.Integer" column="acba_amreferencia"
+			not-null="false" />
+
+		<property name="idPagamento" type="java.lang.Integer" column="pgmt_id"
+			not-null="false" />
+
+		<property name="ultimaAlteracao" type="java.sql.Timestamp"
+			column="acba_tmultimaalteracao" not-null="false" length="8" />
+
+		<property name="idCobrancaDocumento" type="java.lang.Integer"
+			column="cbdo_id" not-null="false" />
+
+	</class>
+
+</hibernate-mapping>

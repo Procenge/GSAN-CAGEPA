@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.cobranca.prescricao.PrescricaoComandoCategoriaSubcategoria" 
+    table="prescricao_comando_cat_subcat"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="prcc_id"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				sq_prescricao_cmd_cat_subcat
+			</param>
+		</generator>
+    </id>
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="prcc_tmultimaalteracao"
+        length="8"
+        not-null="true"
+    />
+    
+    <!-- Associations -->
+  
+    <many-to-one
+        name="prescricaoComando"
+        class="gcom.cobranca.prescricao.PrescricaoComando"
+        not-null="true"
+    >
+        <column name="prcm_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="categoria"
+        class="gcom.cadastro.imovel.Categoria"
+        not-null="true"
+    >
+        <column name="catg_id" />
+    </many-to-one>
+	 
+	 <many-to-one
+        name="subcategoria"
+        class="gcom.cadastro.imovel.Subcategoria"
+        not-null="false"
+    >
+        <column name="scat_id" />
+    </many-to-one>   
+</class>
+</hibernate-mapping>

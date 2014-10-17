@@ -1,0 +1,286 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.cadastro.geografico.Municipio"
+    table="municipio"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="muni_id"
+    />
+
+    <property
+        name="nome"
+        type="java.lang.String"
+        column="muni_nmmunicipio"
+        length="30"
+    />
+
+
+    <property
+        name="cepInicio"
+        type="java.lang.Integer"
+        column="muni_cdcepinicio"
+        length="4"
+    />
+
+    <property
+        name="cepFim"
+        type="java.lang.Integer"
+        column="muni_cdcepfim"
+        length="4"
+    />
+
+
+    <property
+        name="ddd"
+        type="java.lang.Short"
+        column="muni_cdddd"
+        length="2"
+    />
+
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="muni_icuso"
+        length="2"
+    />
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="muni_tmultimaalteracao"
+        length="8"
+    />
+
+	<property
+        name="dataConcessaoInicio"
+        type="java.sql.Date"
+        column="muni_dtconcessaoinicio"
+        not-null="false"
+        length="4"
+    />
+
+	<property
+        name="dataConcessaoFim"
+        type="java.sql.Date"
+        column="muni_dtconcessaofim"
+        not-null="false"
+        length="4"
+    />
+    
+    <property
+        name="nomePrefeitura"
+        type="java.lang.String"
+        column="muni_nmprefeitura"
+        not-null="false"
+        length="50"
+    />
+    
+    <property
+        name="enderecoPrefeitura"
+        type="java.lang.String"
+        column="muni_edpprefeitura"
+        not-null="false"
+        length="50"
+    />
+    
+    <property
+        name="numeroCnpjPrefeitura"
+        type="java.lang.String"
+        column="muni_nncnpjprefeitura"
+        not-null="false"
+        length="14"
+    />
+    
+    <property
+        name="numeroContaBancaria"
+        type="java.lang.Integer"
+        column="muni_nncontabancaria"
+        not-null="false"
+        length="9"
+    />
+    
+    <property
+        name="nomePrefeito"
+        type="java.lang.String"
+        column="muni_nmprefeito"
+        not-null="false"
+        length="30"
+    />
+    
+    <property
+        name="numeroCpfPrefeito"
+        type="java.lang.String"
+        column="muni_nncpfprefeito"
+        not-null="false"
+        length="11"
+    />
+    
+    <property
+        name="nomePartidoPrefeito"
+        type="java.lang.String"
+        column="muni_nmpartidoprefeito"
+        not-null="false"
+        length="5"
+    />
+    
+    <property
+        name="nacionalidadePrefeito"
+        type="java.lang.String"
+        column="muni_nacionalidadeprefeito"
+        not-null="false"
+        length="10"
+    />
+    
+    <property
+        name="estadoCivilPrefeito"
+        type="java.lang.String"
+        column="muni_estadocivilprefeito"
+        not-null="false"
+        length="10"
+    />
+    
+    <property
+        name="cepPadrao"
+        type="java.lang.Integer"
+        column="muni_cdceppadrao"
+        not-null="false"
+        length="8"
+    />
+    
+    <!-- associations -->
+    <!-- bi-directional many-to-one association to Microrregiao -->
+    <many-to-one
+        name="microrregiao"
+        class="gcom.cadastro.geografico.Microrregiao"
+        not-null="true"
+    >
+        <column name="mreg_id" />
+    </many-to-one>
+    <!-- bi-directional one-to-many association to MunicipioDadosCensitario -->
+
+<!--
+    <set
+        name="municipioDadosCensitarios"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="muni_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.MunicipioDadosCensitario"
+        />
+    </set>
+-->
+
+    <!-- bi-directional one-to-many association to Bairro -->
+
+<!--
+    <set
+        name="bairros"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="muni_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.Bairro"
+        />
+    </set>
+-->
+
+    <!-- bi-directional one-to-many association to MunicipioFeriado -->
+
+<!--
+    <set
+        name="municipioFeriados"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="muni_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.MunicipioFeriado"
+        />
+    </set>
+-->
+
+    <!-- bi-directional one-to-many association to Logradouro -->
+
+<!--
+    <set
+        name="logradouros"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="muni_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.Logradouro"
+        />
+    </set>
+-->
+
+    <!-- bi-directional one-to-many association to SetorComercial -->
+
+<!--
+    <set
+        name="setorComercials"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="muni_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.SetorComercial"
+        />
+    </set>
+-->
+
+    <!-- bi-directional many-to-one association to RegiaoDesenvolvimento -->
+    <many-to-one
+        name="regiaoDesenvolvimento"
+        class="gcom.cadastro.geografico.RegiaoDesenvolvimento"
+        not-null="true"
+    >
+        <column name="rdes_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to UnidadeFederacao -->
+    <many-to-one
+        name="unidadeFederacao"
+        class="gcom.cadastro.geografico.UnidadeFederacao"
+        not-null="true"
+    >
+        <column name="unfe_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Agencia -->
+    <many-to-one
+        name="agencia"
+        class="gcom.arrecadacao.banco.Agencia"
+        not-null="false"
+    >
+        <column name="agen_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

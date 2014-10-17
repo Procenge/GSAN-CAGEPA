@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="gcom.cobranca.ResolucaoDiretoriaParametrosPagamentoAVista"
+		table="rd_parametros_pagmto_a_vista" dynamic-insert="true"
+		dynamic-update="true">
+
+		<id name="id" type="java.lang.Integer" column="rdpv_id">
+			<generator class="sequence">
+				<param name="sequence">sq_rd_parametros_pagmto_a_vi</param>
+			</generator>
+		</id>
+
+		<property name="dataPagamentoInicio" type="java.sql.Date"
+			column="rdpv_dtpagamentoinicio" length="4" not-null="true" />
+
+		<property name="dataPagamentoFinal" type="java.sql.Date"
+			column="rdpv_dtpagamentofinal" length="4" not-null="true" />
+
+		<property name="percentualDescontoMulta" type="java.math.BigDecimal"
+			column="rdpv_pcdescontomulta" length="5" not-null="true" />
+
+		<property name="percentualDescontoJurosMora" type="java.math.BigDecimal"
+			column="rdpv_pcdescontojurosmora" length="5" not-null="true" />
+
+		<property name="percentualDescontoCorrecaoMonetaria" type="java.math.BigDecimal"
+			column="rdpv_pcdescontocorrmonetaria" length="5" not-null="true" />
+
+		<property name="descricaoMensagemExtrato" type="java.lang.String"
+			column="rdpv_dsmensagemextrato" length="250" not-null="false" />
+
+		<property name="ultimaAlteracao" type="java.sql.Timestamp"
+			column="rdpv_tmultimaalteracao" length="8" not-null="true" />
+			
+			
+		<property name="anoMesReferenciaInicial" type="java.lang.Integer"
+        column="RDPV_AMREFERENCIAINICIAL"/>
+    
+
+    	<property name="anoMesReferenciaFinal" type="java.lang.Integer"
+        column="RDPV_AMREFERENCIAFINAL"/>
+    
+		<property name="dataVencimentoInicial" type="java.sql.Date"
+			column="RDPV_DTVENCIMENTOINICIAL" length="4" not-null="false" />
+			
+		<property name="dataVencimentoFinal" type="java.sql.Date"
+			column="RDPV_DTVENCIMENTOFINAL" length="4" not-null="false" />	 
+ 
+		<!--
+			bi-directional many-to-one association to ResolucaoDiretoria
+		-->
+		<many-to-one name="resolucaoDiretoria" class="gcom.cobranca.ResolucaoDiretoria"
+			not-null="true">
+			<column name="rdir_id" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

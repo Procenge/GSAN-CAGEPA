@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="gcom.contabil.ProvisaoDevedoresDuvidosos" table="PROVISAO_DEVEDORES_DUVIDOSOS">
+		<id name="id" column="PDDV_ID">
+			<generator class="sequence">
+		       <param name="sequence">SQ_PDDV_ID</param>
+		    </generator>
+		</id>				      	   
+      	        
+      	<property name="referenciaContabil" column="PDDV_AMREFERENCIACONTABIL" not-null="true"/>
+      	
+      	<property name="valorAgua" column="PDDV_VLAGUA" not-null="true"/>
+      	<property name="valorEsgoto" column="PDDV_VLESGOTO" not-null="true"/>
+      	<property name="valorDebitos" column="PDDV_VLDEBITOS" not-null="true"/>
+      	<property name="valorCreditos" column="PDDV_VLCREDITOS" not-null="true"/>
+      	<property name="valorMulta" column="PDDV_VLMULTA" not-null="true"/>
+      	<property name="valorjuros" column="PDDV_VLJUROS" not-null="true"/>
+      	<property name="valorCorrecao" column="PDDV_VLCORRECAO" not-null="true"/>      	
+      	<property name="dataBaixa" column="PDDV_DTBAIXA" />
+        <property name="referenciaBaixa" column="PDDV_AMREFERENCIABAIXA" />        
+        <property name="ultimaAlteracao" column="PDDV_TMULTIMAALTERACAO" not-null="true"/>
+      	<property name="indicadorUso" column="PDDV_ICUSO" not-null="true" />	           	      				  	      	     	      
+      	
+      	<many-to-one name="contaGeral" class="gcom.faturamento.conta.ContaGeral" not-null="true">
+       		<column name="CNTA_ID" />
+    	</many-to-one>
+    	
+    	<many-to-one name="eventoComercial" class="gcom.contabil.EventoComercial" not-null="true">
+       		<column name="EVCO_ID" />
+    	</many-to-one>
+    	
+    	<many-to-one name="eventoComercialBaixaContaPDD" 
+    		class="gcom.contabil.EventoComercial" 
+    		not-null="false"
+    	>
+       		<column name="evco_idbaixa" />
+    	</many-to-one>
+    	
+    	<many-to-one name="categoria" class="gcom.cadastro.imovel.Categoria" >
+       		<column name="CATG_ID" />
+    	</many-to-one>  
+    	
+    	<many-to-one name="provisaoDevedoresDuvidososMotivoBaixa" 
+    		class="gcom.contabil.ProvisaoDevedoresDuvidososMotivoBaixa" 
+    		not-null="false"
+    	>
+       		<column name="pddb_id" />
+    	</many-to-one>  	     
+      	
+	</class>
+
+</hibernate-mapping>

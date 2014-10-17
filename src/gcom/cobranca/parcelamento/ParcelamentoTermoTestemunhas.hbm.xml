@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.parcelamento.ParcelamentoTermoTestemunhas" 
+    table="parcelamento_termo_testemunhas"
+    dynamic-insert="true" dynamic-update="true"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="PTTS_ID"
+    >
+	    <generator class="sequence">
+	       <param name="sequence">SQ_PARCEL_TERMO_TESTEMUNHAS</param>
+	    </generator>
+    </id>
+
+	<!-- bi-directional many-to-one association to Parcelamento -->
+	<many-to-one class="gcom.cobranca.parcelamento.Parcelamento"
+		name="parcelamento" not-null="true">
+		<column name="PARC_ID" />
+	</many-to-one>
+
+    <property
+        name="nomeTestemunha1"
+        type="java.lang.String"
+        column="PTTS_NMTESTEMUNHA1"
+        length="60"
+        not-null="true"  
+    />
+
+    <property
+        name="cpfTestemunha1"
+        type="java.lang.String"
+        column="PTTS_NNCPF1"
+        length="11"
+        not-null="true"  
+    />
+    
+    <property
+        name="nomeTestemunha2"
+        type="java.lang.String"
+        column="PTTS_NMTESTEMUNHA2"
+        length="60"
+        not-null="true"  
+    />
+
+    <property
+        name="cpfTestemunha2"
+        type="java.lang.String"
+        column="PTTS_NNCPF2"
+        length="11"
+        not-null="true"  
+    />  
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="PTTS_TMULTIMAALTERACAO"
+        length="8"
+        not-null="true"
+    />
+
+</class>
+</hibernate-mapping>

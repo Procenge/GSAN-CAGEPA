@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.arrecadacao.ContratoDemandaConsumo" 
+    table="contrato_demanda_consumo"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ctdc_id"
+    >
+	    <generator class="sequence">
+	       <param name="sequence">SQ_contrato_demanda_consumo</param>
+	    </generator>
+    </id>
+    
+    <property
+        name="numeroContrato"
+        type="java.lang.Integer"
+        column="ctdc_nncontrato"
+        not-null="true"
+        length="38"
+    />
+    
+     <property
+        name="anoMesFaturamentoInicio"
+        type="java.lang.Integer"
+        column="ctdc_amfaturamentoinicio"
+        not-null="true"
+        length="38"
+    />
+    
+     <property
+        name="anoMesFaturamentoFim"
+        type="java.lang.Integer"
+        column="ctdc_amfaturamentofim"
+        not-null="true"
+        length="38"
+    />
+    
+     <property
+        name="indicacorEncerramento"
+        type="java.lang.Integer"
+        column="ctdc_icencerramento"
+        not-null="true"
+        length="2"
+    />
+    
+    <property
+        name="numeroConsumoFixo"
+        type="java.lang.Integer"
+        column="ctdc_nnconsumofixo"
+        length="2"
+   	 />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ctdc_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+
+	 <property
+        name="email"
+        type="java.lang.String"
+        column="ctdc_dsemail"
+        not-null="true"
+        length="40"
+   	 />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to Imovel -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="true"
+    >
+        <column name="imov_id" />
+    </many-to-one>
+    
+     <many-to-one
+        name="consumoTarifa"
+        class="gcom.faturamento.consumotarifa.ConsumoTarifa"
+        not-null="true"
+    >
+        <column name="cstf_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

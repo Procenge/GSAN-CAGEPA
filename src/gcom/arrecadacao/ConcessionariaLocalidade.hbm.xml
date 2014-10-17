@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+	<class name="gcom.arrecadacao.ConcessionariaLocalidade" table="concessionaria_localidade">
+
+		<id name="id" type="java.lang.Integer" column="cnlc_id">
+			<generator class="sequence">
+				<param name="sequence">
+					sq_concessionaria_localidade
+				</param>
+			</generator>
+		</id>
+
+		<property 
+			name="dataVigenciaInicio" 
+			type="java.sql.Date"
+			column="cnlc_dtvigenciainicio" 
+			not-null="true" 
+			length="4"
+		/>
+		
+		<property 
+			name="dataVigenciaFim" 
+			type="java.sql.Date"
+			column="cnlc_dtvigenciafim" 
+			not-null="false" 
+			length="4"
+		/>
+		
+		<property
+        	name="ultimaAlteracao"
+        	type="java.sql.Timestamp"
+        	column="cnlc_tmultimaalteracao"
+        	not-null="true"
+        	length="8"
+    	/>
+    	
+    	<!-- bi-directional many-to-one association to Concessionaria -->
+	    <many-to-one
+	        name="concessionaria"
+	        class="gcom.arrecadacao.Concessionaria"
+	        not-null="true"
+	    >
+	        <column name="conc_id" />
+	    </many-to-one>
+    	
+    	<!-- bi-directional many-to-one association to Localidade -->
+	    <many-to-one
+	        name="localidade"
+	        class="gcom.cadastro.localidade.Localidade"
+	        not-null="true"
+	    >
+	        <column name="loca_id" />
+	    </many-to-one>
+
+	</class>
+
+</hibernate-mapping>

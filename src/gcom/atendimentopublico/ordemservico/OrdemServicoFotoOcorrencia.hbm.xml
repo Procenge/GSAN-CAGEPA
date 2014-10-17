@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="gcom.atendimentopublico.ordemservico">
+  <class name="OrdemServicoFotoOcorrencia" table="ORDEM_SERVICO_FOTO_OCORR">
+
+	<id
+        name="id"
+        type="java.lang.Integer"
+        column="OSFO_ID"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_ordem_servico_foto_ocorr</param>
+    	</generator>
+    </id>
+  
+	<property 
+   		name="numeroSequenciaFoto"
+   		type="java.lang.Integer"
+   		column="OSFO_NNSEQFOTO"
+	/>
+   
+	<property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="OSFO_TMULTIMAALTERACAO"
+        not-null="true"
+        length="8"
+	/>
+    
+    <property 
+    	name="foto"
+    	type="org.hibernate.type.BinaryType"
+    	column="OSFO_FOTOOCORRENCIA"
+    	not-null="true"
+    	length="-1" 
+    />
+    
+   <property 
+   		name="idOrdemServico"
+   		type="java.lang.Integer"
+   		column="ORSE_ID"
+   />
+   
+   <property 
+   		name="idOrdemServicoProgramacao"
+   		type="java.lang.Integer"
+   		column="OSPG_ID"
+   />
+    	
+</class>
+</hibernate-mapping>

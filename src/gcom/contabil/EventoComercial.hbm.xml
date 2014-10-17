@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="gcom.contabil.EventoComercial" table="EVENTO_COMERCIAL">
+		<id name="id" column="EVCO_ID">
+			<generator class="sequence">
+		       <param name="sequence">SQ_EVCO_ID</param>
+		    </generator>
+		</id>
+				
+      	<property name="ultimaAlteracao" column="EVCO_TMULTIMAALTERACAO" not-null="true"/>
+      	<property name="indicadorUso" column="EVCO_ICUSO" not-null="true" />    
+      	        
+      	<property name="descricao" column="EVCO_DS" not-null="true"/>      	
+      	<property name="indicadorComplemento" column="EVCO_ICCOMPLEMENTO" not-null="false"/>   
+      	<property
+	        name="codigoConstante"
+	        type="java.lang.String"
+	        column="evco_cdconstante"
+	        not-null="false"
+	        length="80"
+	    />
+      	
+      	<many-to-one name="modulo" class="gcom.seguranca.acesso.Modulo" not-null="true">
+       		<column name="MODC_ID" />
+    	</many-to-one> 
+    	
+      	<many-to-one name="tabelaReferencia" class="gcom.seguranca.transacao.Tabela" not-null="true">
+	        <column name="TABE_ID"/>
+	    </many-to-one>
+      	
+	</class>
+
+</hibernate-mapping>

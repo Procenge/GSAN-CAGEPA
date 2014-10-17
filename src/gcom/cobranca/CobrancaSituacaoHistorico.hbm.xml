@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.cobranca.CobrancaSituacaoHistorico"
+    table="cobranca_situacao_historico"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="cbsh_id"
+    >
+        <generator class="sequence">
+        	<param name="sequence">sq_cobrc_sit_hist</param>
+     	</generator>
+    </id>
+
+    <property
+        name="anoMesCobrancaSituacaoInicio"
+        type="java.lang.Integer"
+        column="cbsh_amcobrancasituacaoinicio"
+        not-null="true"
+        length="6"
+    />
+    <property
+        name="anoMesCobrancaSituacaoFim"
+        type="java.lang.Integer"
+        column="cbsh_amcobrancasituacaofim"
+        not-null="true"
+        length="6"
+    />
+    
+    <property
+        name="anoMesCobrancaRetirada"
+        type="java.lang.Integer"
+        column="cbsh_amcobrancaretirada"
+        length="6"
+    />
+    
+    <property
+        name="numeroProcesso"
+        type="java.lang.String"
+        column="cbsh_nnprocesso"
+        length="6"
+    />
+
+	<property
+        name="dataHoraInclusao"
+        type="java.sql.Timestamp"
+        column="cbsh_tminclusao"
+        length="8"
+        not-null="true"
+    />
+    
+    <property
+        name="dataHoraExclusao"
+        type="java.sql.Timestamp"
+        column="cbsh_tmexclusao"
+        length="8"
+        not-null="false"
+    />
+
+    <!-- associations -->
+    <!-- bi-directional many-to-one association to Imovel -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="true"
+    >
+        <column name="imov_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to CobrancaSituacaoTipo -->
+    <many-to-one
+        name="cobrancaSituacaoTipo"
+        class="gcom.cobranca.CobrancaSituacaoTipo"
+        not-null="true"
+    >
+        <column name="cbsp_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to CobrancaSituacaoMotivo -->
+    <many-to-one
+        name="cobrancaSituacaoMotivo"
+        class="gcom.cobranca.CobrancaSituacaoMotivo"
+        not-null="true"
+    >
+        <column name="cbsm_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="orgaoExterno"
+        class="gcom.cobranca.OrgaoExterno"
+        not-null="true"
+    >
+        <column name="orga_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Usuario -->
+    <many-to-one
+        name="usuarioLogadoInclusao"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="true"
+    >
+        <column name="usur_inclusao" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Usuario -->
+    <many-to-one
+        name="usuarioLogadoExclusao"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="false"
+    >
+        <column name="usur_exclusao" />
+    </many-to-one>
+</class>
+</hibernate-mapping>

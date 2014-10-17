@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.campanhapremiacao.CampanhaPremio" 
+    table="CAMPANHA_PREMIO"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="CMPR_ID"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				SQ_CAMPANHA_PREMIO
+			</param>
+		</generator>
+    </id>
+
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="CMPR_DSPREMIO"
+        not-null="true"
+        length="15"
+    />
+
+	<property
+        name="quantidadePremio"
+        type="java.lang.Integer"
+        column="CMPR_QTPREMIO"
+        not-null="true"
+        length="15"
+    />
+    
+    <property
+        name="numeroOrdemPremiacao"
+        type="java.lang.Integer"
+        column="CMPR_NNORDEMPREMIACAO"
+        not-null="true"
+        length="15"
+    />
+    
+    <property
+        name="quantidadePremioSorteada"
+        type="java.lang.Integer"
+        column="CMPR_QTPREMIOSORTEADA"
+        not-null="true"
+        length="15"
+    />
+    
+   <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="CMPR_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+
+    
+    <many-to-one
+        name="campanha"
+        class="gcom.cobranca.campanhapremiacao.Campanha"
+        not-null="true"
+    >
+        <column name="cmpn_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="gerenciaRegional"
+        class="gcom.cadastro.localidade.GerenciaRegional"
+        not-null="false"
+    >
+        <column name="GREG_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="unidadeNegocio"
+        class="gcom.cadastro.localidade.UnidadeNegocio"
+        not-null="false"
+    >
+        <column name="UNEG_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="localidade"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="false"
+    >
+        <column name="LOCA_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="eloPremio"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="false"
+    >
+        <column name="LOCA_CDELO" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.campanhapremiacao.Campanha" 
+    table="campanha"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="cmpn_id"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				sq_campanha
+			</param>
+		</generator>
+    </id>
+
+    <property
+        name="dsTituloCampanha"
+        type="java.lang.String"
+        column="cmpn_dstitulocampanha"
+        not-null="true"
+        length="60"
+    />
+    <property
+        name="tmInscricaoInicio"
+        type="java.sql.Timestamp"
+        column="cmpn_tminscricaoinicio"
+        not-null="true"
+        length="8"
+    />
+    <property
+        name="tmInscricaoFim"
+        type="java.sql.Timestamp"
+        column="cmpn_tminscricaofim"
+        not-null="true"
+        length="8"
+    />
+    <property
+        name="dataLiberacaoSorteio"
+        type="java.sql.Date"
+        column="cmpn_dtliberacaosorteio"
+        not-null="true"
+        length="8"
+    />
+   
+    <property
+        name="quantidadePremios"
+        type="java.lang.Integer"
+        column="cmpn_qtpremios"
+        not-null="true"
+        length="38"
+    />
+    
+    <property
+        name="indicadorUnidadePremiacao"
+        type="java.lang.Short"
+        column="cmpn_icunidadepremiacao"
+        not-null="true"
+        length="2"
+    />
+
+	<property
+		name="tipoUnidadePremiacao"
+		type="java.lang.Integer"
+		column="cmpn_tpunidadepremiacao"           
+		length="38"
+    /> 
+
+	<property
+        name="indicadorInscricaoBloqueio"
+        type="java.lang.Short"
+        column="cmpn_icinscricaobloqueio"
+        not-null="true"
+        length="2"
+    />
+    
+    <property
+        name="indicadorAdimplencia"
+        type="java.lang.Short"
+        column="cmpn_icadimplencia"
+        not-null="true"
+        length="2"
+    />
+    
+    <property
+        name="indicadorParcelamentoEntradaPend"
+        type="java.lang.Short"
+        column="cmpn_icparcelamentoentradapend"
+        length="2"
+    />
+    
+    <property
+        name="amReferenciaInicio"
+        type="java.lang.Integer"
+        column="cmpn_amreferenciainicio"
+        length="6"
+    />
+    
+    <property
+        name="amReferenciaFim"
+        type="java.lang.Integer"
+        column="cmpn_amreferenciafim"
+        length="6"
+    />
+    
+    <property
+        name="dataVencimentoInicio"
+        type="java.sql.Date"
+        column="cmpn_dtvencimentoinicio"
+        length="8"
+    />
+    
+    <property
+        name="dataVencimentoFim"
+        type="java.sql.Date"
+        column="cmpn_dtvencimentofim"
+        length="8"
+    />
+    
+    <property
+        name="indicadorPagamento"
+        type="java.lang.Short"
+        column="cmpn_icpagamento"
+        length="2"
+    />
+    
+    <property
+        name="indicadorContaRevisao"
+        type="java.lang.Short"
+        column="cmpn_iccontarevisao"
+        length="2"
+    />
+
+	<property
+        name="indicadorDebitoACobrar"
+        type="java.lang.Short"
+        column="cmpn_icdebitoacobrar"
+        length="2"
+    />
+    
+    <property
+        name="regulamentoCampanha"
+        type="org.hibernate.type.BinaryType"
+        column="CMPN_CNREGULAMENTO"
+        not-null="true"
+        length="-1"  
+    />
+    
+    <property
+        name="nomeClasseGeraInscricao"
+        type="java.lang.String"
+        column="cmpn_nmclassegerainscricao"
+        not-null="true"
+        length="100"
+    />
+    
+    <property
+        name="nomeRelatorioComprovante"
+        type="java.lang.String"
+        column="cmpn_nmrelatoriocomprovante"
+        not-null="true"
+        length="60"
+    />
+    
+    <property
+        name="nomeClasseEmiteComprovante"
+        type="java.lang.String"
+        column="cmpn_nmclasseemitecomprovante"
+        not-null="true"
+        length="100"
+    />
+    
+    <property
+        name="dsEmailEnvioComprovante"
+        type="java.lang.String"
+        column="cmpn_dsemailenviocomprovante"
+        not-null="true"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="cmpn_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    
+</class>
+</hibernate-mapping>

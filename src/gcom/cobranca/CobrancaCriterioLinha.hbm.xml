@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.CobrancaCriterioLinha" 
+    table="cobranca_criterio_linha"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="cbcl_id"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				sq_cobrc_crit_linha
+			</param>
+		</generator>
+    </id>
+
+    <property
+        name="valorMinimoDebito"
+        type="java.math.BigDecimal"
+        column="cbcl_vlminimodebito"
+        length="13"
+    />
+    <property
+        name="quantidadeMinimaContas"
+        type="java.lang.Short"
+        column="cbcl_qtminimacontas"
+        length="2"
+    />
+    <property
+        name="valorMaximoDebito"
+        type="java.math.BigDecimal"
+        column="cbcl_vlmaximodebito"
+        length="13"
+    />
+    <property
+        name="valorMinimoDebitoDebitoAutomatico"
+        type="java.math.BigDecimal"
+        column="cbcl_vlminimodebitodebitoautom"
+        length="13"
+    />
+    <property
+        name="quantidadeMaximaContas"
+        type="java.lang.Integer"
+        column="cbcl_qtmaximacontas"
+        length="2"
+    />
+    <property
+        name="quantidadeMinimaContasDebitoAutomatico"
+        type="java.lang.Short"
+        column="cbcl_qtminimacontasdebitoautom"
+        length="2"
+    />
+    <property
+        name="valorMinimoContaMes"
+        type="java.math.BigDecimal"
+        column="cbcl_vlminimocontames"
+        length="13"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="cbcl_tmultimaalteracao"
+        length="8"
+    />
+    
+     <property
+        name="quantidadeMinimaContasParcelamento"
+        type="java.lang.Short"
+        column="cbcl_qtminimacontasparcelament"
+        not-null="true"
+        length="2"
+    />
+    
+    <property
+        name="situacaoMedicao"
+        type="java.lang.Short"
+        column="cbcl_icmedicao"
+        not-null="false"
+        length="2"
+    />
+    
+    <property
+        name="diasParaVencimento"
+        type="java.lang.Integer"
+        column="cbcl_nndiasvencimento"
+    />
+    
+    <property
+        name="dataLimite"
+        type="java.sql.Date"
+        column="cbcl_dtligacaolimite"
+        length="8"
+    />
+    
+    <property
+        name="referenciaDebitoInicial"
+        type="java.lang.Integer"
+        column="cbcl_amrefdebitoinicial"
+        not-null="false"
+    />
+    
+   <property
+        name="referenciaDebitoFinal"
+        type="java.lang.Integer"
+        column="cbcl_amrefdebitofinal"
+        not-null="false"
+    />
+    
+    <property
+    	name="quantidadeDiasVencimentoInicial"
+    	type="java.lang.Integer"
+    	column="cbcl_nndiasvencimentoinicial"
+    	not-null="false"
+    />
+    
+    <property
+    	name="quantidadeDiasVencimentoFinal"
+    	type="java.lang.Integer"
+    	column="cbcl_nndiasvencimentofinal"
+    	not-null="false"
+    />
+    
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to CobrancaCriterio -->
+    <many-to-one
+        name="cobrancaCriterio"
+        class="gcom.cobranca.CobrancaCriterio"
+        not-null="true"
+    >
+        <column name="cbct_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to ImovelPerfil -->
+    <many-to-one
+        name="imovelPerfil"
+        class="gcom.cadastro.imovel.ImovelPerfil"
+        not-null="true"
+    >
+        <column name="iper_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Categoria -->
+    <many-to-one
+        name="categoria"
+        class="gcom.cadastro.imovel.Categoria"
+        not-null="true"
+    >
+        <column name="catg_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to ligacaoAguaSituacao -->
+    <many-to-one
+        name="ligacaoAguaSituacao"
+        class="gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao"
+        not-null="false"
+    >
+        <column name="last_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to ligacaoEsgotoSituacao -->
+    <many-to-one
+        name="ligacaoEsgotoSituacao"
+        class="gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao"
+        not-null="false"
+    >
+        <column name="lest_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

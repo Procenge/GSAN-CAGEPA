@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.campanhapremiacao.CampanhaPremiacao" 
+    table="CAMPANHA_PREMIACAO"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="CPRM_ID"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				SQ_CAMPANHA_PREMIACAO
+			</param>
+		</generator>
+    </id>
+    
+    <property
+        name="dataRetiradaPremio"
+        type="java.sql.Date"
+        column="CPRM_DTRETIRADAPREMIO"
+        not-null="false"
+        length="8"
+    />
+    
+    <property
+        name="dataCancelamentoPremiacao"
+        type="java.sql.Date"
+        column="CPRM_DTCANCELAMENTOPREMIACAO"
+        not-null="false"
+        length="8"
+    />
+
+	<property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="CPRM_TMULTIMAALTERACAO"
+        not-null="true"
+        length="8"
+    />
+   
+    <!-- bi-directional many-to-one association to CobrancaAcao -->
+    
+    
+    <many-to-one
+        name="campanhaCadastro"
+        class="gcom.cobranca.campanhapremiacao.CampanhaCadastro"
+        not-null="true"
+    >
+        <column name="CMCD_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="campanhaPremio"
+        class="gcom.cobranca.campanhapremiacao.CampanhaPremio"
+        not-null="true"
+    >
+        <column name="CMPR_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="campanhaSorteio"
+        class="gcom.cobranca.campanhapremiacao.CampanhaSorteio"
+        not-null="true"
+    >
+        <column name="CMST_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="campanhaPremiacaoMotCancel"
+        class="gcom.cobranca.campanhapremiacao.CampanhaPremiacaoMotCancel"
+        not-null="true"
+    >
+        <column name="CPMC_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="usuarioEntregaPremio"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="true"
+    >
+        <column name="USUR_IDENTREGAPREMIO" />
+    </many-to-one>
+    
+    <many-to-one
+        name="usuarioCancelamentoPremiacao"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="false"
+    >
+        <column name="USUR_IDCANCELAMENTOPREMIACAO" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

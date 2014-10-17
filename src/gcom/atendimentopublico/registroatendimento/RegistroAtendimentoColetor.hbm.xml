@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.atendimentopublico.registroatendimento.RegistroAtendimentoColetor" 
+    table="registro_atendimento_coletor"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="rgac_id"
+    >
+        <generator class="assigned" />
+    </id>
+    
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to LogradouroBairro -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="true"
+    >
+        <column name="imov_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to SolicitacaoTipoEspecificacao -->
+    <many-to-one
+        name="solicitacaoTipoEspecificacao"
+        class="gcom.atendimentopublico.registroatendimento.SolicitacaoTipoEspecificacao"
+        not-null="true"
+    >
+        <column name="step_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to SolicitacaoTipoEspecificacao -->
+    <many-to-one
+        name="leiturista"
+        class="gcom.micromedicao.Leiturista"
+        not-null="true"
+    >
+        <column name="leit_id" />
+    </many-to-one>
+
+    <property
+        name="dataRegistroAtendimento"
+        type="java.sql.Timestamp"
+        column="rgac_tmregistroatendimento"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="dataGeracaoRegistroAtendimento"
+        type="java.sql.Timestamp"
+        column="rgac_tmgeracaora"
+        length="4"
+    />
+    
+    <property
+        name="coordenadaLeste"
+        type="java.math.BigDecimal"
+        column="rgac_nncoordenadaleste"
+        length="16"
+    />
+    
+    <property
+        name="coordenadaNorte"
+        type="java.math.BigDecimal"
+        column="rgac_nncoordenadanorte"
+        length="16"
+    />
+    
+    <property
+        name="observacao"
+        type="java.lang.String"
+        column="rgac_dsobservacao"
+        length="400"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="rgac_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+
+</class>
+</hibernate-mapping>

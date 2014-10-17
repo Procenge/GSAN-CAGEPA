@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.campanhapremiacao.CampanhaPremiacaoMotCancel" 
+    table="CAMPANHA_PREMIACAO_MOT_CANCEL"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="CPMC_ID"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				SQ_CAMPANHA_PREMIACAO_MOT_CANC
+			</param>
+		</generator>
+    </id>
+    
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="CPMC_DSMOTIVOCANCELPREMIACAO"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="CPMC_DSABREVIADO"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="CPMC_ICUSO"
+        not-null="true"
+        length="8"
+    />
+
+	<property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="CPMC_TMULTIMAALTERACAO"
+        not-null="true"
+        length="8"
+    />
+    
+</class>
+</hibernate-mapping>

@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.CobrancaEstagio" 
+    table="cobranca_estagio"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="cbes_id"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				sq_cobrc_estagio
+			</param>
+		</generator>
+    </id>
+			
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="cbes_dscobrancaestagio"
+        length="50"
+    />
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="cbes_icuso"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="cbes_tmultimaalteracao"
+        length="8"
+    />
+
+
+    <!-- Associations -->
+    
+    <!-- bi-directional one-to-many association to CobrancaAcao -->    
+    <set
+        name="cobrancaAcoes"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="cbes_id" />
+        </key>
+        <one-to-many 
+            class="gcom.cobranca.CobrancaAcao"
+        />
+    </set>
+       
+</class>
+</hibernate-mapping>

@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.campanhapremiacao.CampanhaSorteio" 
+    table="CAMPANHA_SORTEIO"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="CMST_ID"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				SQ_CAMPANHA_SORTEIO
+			</param>
+		</generator>
+    </id>
+    
+    <property
+        name="dataSorteio"
+        type="java.sql.Date"
+        column="CMST_DTSORTEIO"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="sorteioInicio"
+        type="java.sql.Timestamp"
+        column="CMST_TMSORTEIOINICIO"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="sorteioFim"
+        type="java.sql.Timestamp"
+        column="CMST_TMSORTEIOFIM"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="quantidadePremiacoes"
+        type="java.lang.Integer"
+        column="CMST_QTPREMIACAO"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="quantidadePremiacoesCanceladas"
+        type="java.lang.Integer"
+        column="CMST_QTPREMIACAOCANCEL"
+        not-null="true"
+        length="8"
+    />
+
+	<property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="CMST_TMULTIMAALTERACAO"
+        not-null="true"
+        length="8"
+    />
+   
+    <!-- bi-directional many-to-one association to CobrancaAcao -->
+    
+    
+    <many-to-one
+        name="campanha"
+        class="gcom.cobranca.campanhapremiacao.Campanha"
+        not-null="true"
+    >
+        <column name="cmpn_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="usuario"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="true"
+    >
+        <column name="USUR_ID" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

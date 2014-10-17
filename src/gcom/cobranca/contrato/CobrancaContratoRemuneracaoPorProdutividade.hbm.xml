@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<class
+		name="gcom.cobranca.contrato.CobrancaContratoRemuneracaoPorProdutividade"
+		table="cobranca_contrato_remun_produt">
+
+		<id
+			column="ccrp_id"
+			name="id"
+			type="java.lang.Integer"
+			unsaved-value="0">
+			
+			<generator class="sequence">
+		       <param name="sequence">sq_cobranca_contrato_remun_pro</param>
+		    </generator>
+			
+		</id>
+		
+		<property
+			column="ccrp_valor"
+			name="valor"
+			not-null="true"
+			type="java.math.BigDecimal" 
+		/>
+
+		<property
+			column="ccrp_tmultimaalteracao"
+			name="ultimaAlteracao"
+			not-null="true"
+			type="java.sql.Timestamp" 
+		/>
+		
+ 	<!-- Associations -->  
+    <!-- bi-directional many-to-one association to CobrancaContrato -->    
+		<many-to-one
+			column="cbco_id"
+			name="cobrancaContrato"
+			not-null="true"
+			class="gcom.cobranca.contrato.CobrancaContrato" />
+
+		<many-to-one
+			column="svtp_id"
+			name="servicoTipo"
+			not-null="true"
+			class="gcom.atendimentopublico.ordemservico.ServicoTipo" />
+
+		
+
+	</class>
+</hibernate-mapping>  		
+

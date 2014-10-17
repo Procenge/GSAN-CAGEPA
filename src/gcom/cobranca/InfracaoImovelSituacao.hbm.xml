@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.InfracaoImovelSituacao" 
+    table="infracao_imovel_situacao"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="inis_id"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				sq_infracao_imovel_situacao
+			</param>
+		</generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="inis_dsimovelsituacao"
+        length="30"
+    />
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="inis_dsabvimovelsituacao"
+        length="10"
+    />
+    <property
+        name="indicadorUso"
+        type="short"
+        column="inis_icuso"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="inis_tmultimaalteracao"
+        length="8"
+    />
+   
+    <!-- Associations -->
+  
+ </class>
+</hibernate-mapping>

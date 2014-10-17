@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.InfracaoPerfilDebitoTipo" 
+    table="infracao_perfil_debito_tipo"
+>
+
+
+
+
+
+
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="IPDT_ID"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				SQ_INFR_PER_DEBITO_TIPO
+			</param>
+		</generator>
+    </id>
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="IPDT_TMULTIMAALTERACAO"
+        length="8"
+    />
+    <property
+        name="indicadorLancamentoAtivo"
+        type="java.lang.Integer"
+        column="IPDT_ICLANCAMENTOATIVO"
+
+    />
+    <property
+        name="numeroFatorMultiplicador"
+        type="java.math.BigDecimal"
+        column="IPDT_NNFATORMULTIPLICADOR"
+
+    />
+    <property
+        name="porcentagemDesconto"
+        type="java.math.BigDecimal"
+        column="IPDT_PCDESCONTO"
+
+    />
+   
+    <!-- Associations -->
+    
+    <many-to-one
+        name="infracaoPerfil"
+        class="gcom.cobranca.InfracaoPerfil"
+        not-null="false">
+       <column name="INPE_ID"/>
+    </many-to-one>
+    
+    <many-to-one
+        name="debitoTipo"
+        class="gcom.faturamento.debito.DebitoTipo"
+        not-null="false">
+         <column name="DBTP_ID"/>
+    </many-to-one>
+    
+   
+  
+ </class>
+</hibernate-mapping>

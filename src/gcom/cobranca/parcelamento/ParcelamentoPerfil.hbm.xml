@@ -1,0 +1,335 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.parcelamento.ParcelamentoPerfil" 
+    table="parcelamento_perfil"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="pcpf_id"
+    >
+		<generator class="sequence">
+	       <param name="sequence">sq_parcelamento_perfil</param>
+	    </generator>
+	</id>
+
+    <property
+        name="percentualDescontoAcrescimo"
+        type="java.math.BigDecimal"
+        column="pcpf_pcdescontoacrescimo"
+        length="5"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="pcpf_tmultimaalteracao"
+        length="8"
+    />
+
+	<property
+        name="percentualTarifaMinimaPrestacao"
+        type="java.math.BigDecimal"
+        column="pcpf_pctarifaminimaprestacao"
+        length="5"
+    />
+    
+    <property
+        name="numeroConsumoMinimo"
+        type="java.lang.Integer"
+        not-null="false"
+        column="pcpf_nnconsumominimo"
+    />
+    
+    <property
+        name="percentualVariacaoConsumoMedio"
+        type="java.math.BigDecimal"
+        column="pcpf_pcvariacaoconsmedio"
+        not-null="false"
+        length="5"
+    />
+    
+    <property
+        name="indicadorChequeDevolvido"
+        type="java.lang.Short"
+        column="pcpf_icchequedevolvido"
+        not-null="true"
+        length="2"
+    />
+    
+    <property
+        name="indicadorSancoesUnicaConta"
+        type="java.lang.Short"
+        column="pcpf_icsancoesparcunica"
+        not-null="true"
+        length="2"
+    />
+    
+    <property
+        name="numeroConsumoEconomia"
+        type="java.lang.Integer"
+        column="pcpf_nnconsumoeconomia"
+    />
+     
+    <property
+        name="numeroAreaConstruida"
+        type="java.math.BigDecimal"
+        column="pcpf_nnareaconstruida"
+        length="8"
+    />
+    
+    <property
+        name="indicadorRetroativoTarifaSocial"
+        type="java.lang.Short"
+        column="pcpf_icretroativotarsoc"
+        not-null="true"
+        length="2"
+    />
+    <property
+        name="anoMesReferenciaLimiteInferior"
+        type="java.lang.Integer"
+        column="pcpf_amreferencialimiteinferio"
+    />
+     <property
+        name="anoMesReferenciaLimiteSuperior"
+        type="java.lang.Integer"
+        column="pcpf_amreferencialimiteSuperio"
+    />
+     <property
+        name="percentualDescontoAVista"
+        type="java.math.BigDecimal"
+        column="pcpf_pcdescontotarsoc"
+        length="5"
+    />
+    <property
+        name="parcelaQuantidadeMinimaFatura"
+        type="java.lang.Integer"
+        column="pcpf_pcquantidademinimafatura"
+    />
+    <property
+        name="indicadorAlertaParcelaMinima"
+        type="java.lang.Short"
+        column="pcpf_icalertaparcelaminima"
+        not-null="true"
+        length="2"
+    />
+      <property
+        name="percentualDescontoSancao"
+        type="java.math.BigDecimal"
+        column="pcpf_pcdescontosancao"
+        length="5"
+    />
+    
+    <property
+        name="quantidadeEconomias"
+        type="java.lang.Integer"
+        column="pcpf_pcquantidadeeconomias"
+    />
+    
+    <property
+        name="capacidadeHidrometro"
+        type="java.lang.Integer"
+        column="pcpf_pccapacidadehidrometro"
+    />
+    
+    <property
+        name="indicadorCobrarAcrescimosPorImpontualidades"
+        type="java.lang.Short"
+        column="pcpf_iccobrancaacrescimos"
+        not-null="false"
+        length="2"
+    />
+    
+    <property
+        name="indicadorPermiteParcelamentoPorGuiaPagamento"
+        type="java.lang.Short"
+        column="pcpf_icpermiteparcelamentoguia"
+        not-null="false"
+        length="2"
+    />
+    
+    <property
+        name="numeroPretacoesDescumpridasParaCobrancaMulta"
+        type="java.lang.Integer"
+        not-null="false"
+        column="pcpf_nnprestdescumprcobrmulta"
+    />
+    
+    <property
+        name="percentualMultaPrestacaoDescumprida"
+        type="java.math.BigDecimal"
+        not-null="false"
+        column="pcpf_pcmultaprestacaodescumpr"
+        length="2"
+    />
+    
+    <property
+        name="indicadorPermiteInformarNumeroValorParcela"
+        type="java.lang.Short"
+        column="pcpf_icpermitenumerovalorparc"
+        not-null="true"
+        length="2"
+    />
+   
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to Subcategoria -->
+    <many-to-one
+        name="subcategoria"
+        class="gcom.cadastro.imovel.Subcategoria"
+        not-null="true"
+    >
+        <column name="scat_id" />
+    </many-to-one>
+    <!-- bi-directional one-to-many association to ParcelamentoDescontoInativid -->
+    <!--
+    <set
+        name="parcelamentoDescontoInativids"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="pcpf_id" />
+        </key>
+        <one-to-many 
+            class="gcom.ParcelamentoDescontoInativid"
+        />
+    </set>
+    -->
+    <!-- bi-directional one-to-many association to ParcelamentoDescontoAntiguid -->
+    <!--
+    <set
+        name="parcelamentoDescontoAntiguids"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="pcpf_id" />
+        </key>
+        <one-to-many 
+            class="gcom.ParcelamentoDescontoAntiguid"
+        />
+    </set>
+    -->
+    <!-- bi-directional one-to-many association to ParcelamentoQtdeReparcel -->
+    <!--
+    <set
+        name="parcelamentoQtdeReparcels"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="pcpf_id" />
+        </key>
+        <one-to-many 
+            class="gcom.ParcelamentoQtdeReparcel"
+        />
+    </set>
+    -->
+    <!-- bi-directional one-to-many association to Parcelamento -->
+    <!--
+    <set
+        name="parcelamentos"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="pcpf_id" />
+        </key>
+        <one-to-many 
+            class="gcom.Parcelamento"
+        />
+    </set>
+    -->
+    <!-- bi-directional many-to-one association to ImovelSituacaoTipo -->
+    <many-to-one
+        name="imovelSituacaoTipo"
+        class="gcom.cadastro.imovel.ImovelSituacaoTipo"
+        not-null="true"
+    >
+        <column name="istp_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to ImovelPerfil -->
+    <many-to-one
+        name="imovelPerfil"
+        class="gcom.cadastro.imovel.ImovelPerfil"
+        not-null="true"
+    >
+        <column name="iper_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to ResolucaoDiretoria -->
+    <many-to-one
+        name="resolucaoDiretoria"
+        class="gcom.cobranca.ResolucaoDiretoria"
+        not-null="true"
+    >
+        <column name="rdir_id" />
+    </many-to-one>
+
+    <many-to-one
+        name="categoria"
+        class="gcom.cadastro.imovel.Categoria"
+    >
+        <column name="catg_id" />
+    </many-to-one>
+    
+    <property
+        name="valorMinimoDebitoAParcelarFaixaDebito"
+        type="java.math.BigDecimal"
+        column="pcpf_vlminimofaixadebito"
+        length="13"
+    />
+    
+    <property
+        name="valorMaximoDebitoAParcelarFaixaDebito"
+        type="java.math.BigDecimal"
+        column="pcpf_vlmaximofaixadebito"
+        length="13"
+    />
+    
+    <property
+        name="indicadorDebitoOriginalOuAtualizadoFaixaDebito"
+        type="java.lang.Short"
+        column="pcpf_icfaixadebitoatualizado"
+        length="2"
+    />
+    
+    <property
+        name="indicadorOpcoesDebitoOriginalOuAtualizadoPrestacaoMinima"
+        type="java.lang.Short"
+        column="pcpf_icpcdebitoatualizprest"
+        length="2"
+    />
+    
+    <property
+        name="percentualValorDebitoCalculoValorMinimoPrestacao"
+        type="java.math.BigDecimal"
+        column="pcpf_pcvalordebitoprestacao"
+        length="5"
+    />
+    
+    <property
+       name="valorDebitoPrestacao"
+       type="java.math.BigDecimal"
+       column="pcpf_vlminimoprestacao"
+       length="13"
+    />
+    
+</class>
+</hibernate-mapping>

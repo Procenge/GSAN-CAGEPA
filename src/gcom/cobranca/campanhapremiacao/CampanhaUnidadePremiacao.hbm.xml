@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.campanhapremiacao.CampanhaUnidadePremiacao" 
+    table="campanha_unidade_premiacao"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="CMUP_ID"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				SQ_CAMPANHA_UNIDADE_PREMIACAO
+			</param>
+		</generator>
+    </id>
+    
+    <property
+        name="codigoElo"
+        type="java.lang.Integer"
+        column="LOCA_CDELO"
+    />
+
+	<property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="CMUP_TMULTIMAALTERACAO"
+        not-null="true"
+        length="8"
+    />
+   
+    <!-- bi-directional many-to-one association to CobrancaAcao -->
+    
+    
+    <many-to-one
+        name="campanha"
+        class="gcom.cobranca.campanhapremiacao.Campanha"
+        not-null="true"
+    >
+        <column name="cmpn_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="gerenciaRegional"
+        class="gcom.cadastro.localidade.GerenciaRegional"
+        not-null="false"
+    >
+        <column name="GREG_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="unidadeNegocio"
+        class="gcom.cadastro.localidade.UnidadeNegocio"
+        not-null="false"
+    >
+        <column name="UNEG_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="localidade"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="false"
+    >
+        <column name="LOCA_ID" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

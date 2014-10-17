@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created por Victon Santos
+-->
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.OsSeletivaComandoLocalGeo" 
+    table="OS_SELET_COMANDO_LOCAL_GEO"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="OSCL_ID"
+    >
+        <generator class="sequence">
+		       <param name="sequence">SQ_OS_SELET_COMANDO_LOCAL_GEO</param>
+		    </generator>
+    </id>
+
+    <property
+        name="codigoSetorComercial"
+        type="java.lang.Integer"
+        column="OSCL_CDSETORCOMERCIAL"
+    />
+    <property
+        name="numeroQuadra"
+        type="java.lang.Integer"
+        column="OSCL_NNQUADRA"
+    />
+    <property
+        name="numeroLote"
+        type="java.lang.Integer"
+        column="OSCL_NNLOTE"
+    />
+    <property
+        name="codigoRota"
+        type="java.lang.Integer"
+        column="OSCL_CDROTA"
+    />
+    <property
+        name="codigoBairro"
+        type="java.lang.Integer"
+        column="OSCL_CDBAIRRO"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="OSCL_TMULTIMAALTERACAO"
+        length="6"
+        not-null="true"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to OsSeletivaComando -->
+    <many-to-one
+        name="osSeletivaComando"
+        class="gcom.atendimentopublico.ordemservico.OsSeletivaComando"
+        not-null="true"
+    >
+        <column name="OSSC_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to GerenciaRegional -->
+    <many-to-one
+        name="gerenciaRegional"
+        class="gcom.cadastro.localidade.GerenciaRegional"
+    >
+        <column name="GREG_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Localidade -->
+    <many-to-one
+        name="localidade"
+        class="gcom.cadastro.localidade.Localidade"
+    >
+        <column name="LOCA_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to SetorComercial -->
+    <many-to-one
+        name="setorComercial"
+        class="gcom.cadastro.localidade.SetorComercial"
+    >
+        <column name="STCM_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Quadra -->
+    <many-to-one
+        name="quadra"
+        class="gcom.cadastro.localidade.Quadra"
+    >
+        <column name="QDRA_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Rota -->
+    <many-to-one
+        name="rota"
+        class="gcom.micromedicao.Rota"
+    >
+        <column name="ROTA_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Bairro -->
+    <many-to-one
+        name="bairro"
+        class="gcom.cadastro.geografico.Bairro"
+    >
+        <column name="BAIR_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Logradouro -->
+    <many-to-one
+        name="logradouro"
+        class="gcom.cadastro.endereco.Logradouro"
+    >
+        <column name="LOGR_ID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

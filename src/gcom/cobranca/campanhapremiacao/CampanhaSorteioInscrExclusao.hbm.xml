@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.campanhapremiacao.CampanhaSorteioInscrExclusao" 
+    table="CAMPANHA_SORTEIO_INSC_EXCLUSAO"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="CSIE_ID"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				SQ_CAMPANHA_SORTEIO_INSC_EXCL
+			</param>
+		</generator>
+    </id>
+
+	<property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="CSIE_TMULTIMAALTERACAO"
+        not-null="true"
+        length="8"
+    />
+   
+
+    <many-to-one
+        name="campanhaSorteio"
+        class="gcom.cobranca.campanhapremiacao.CampanhaSorteio"
+        not-null="true"
+    >
+        <column name="CMST_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="campanhaCadastro"
+        class="gcom.cobranca.campanhapremiacao.CampanhaCadastro"
+        not-null="true"
+    >
+        <column name="CMCD_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="campanhaSorteioMotExclusao"
+        class="gcom.cobranca.campanhapremiacao.CampanhaSorteioMotExclusao"
+        not-null="true"
+    >
+        <column name="CSME_ID" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

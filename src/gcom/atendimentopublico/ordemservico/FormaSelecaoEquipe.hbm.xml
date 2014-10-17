@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.FormaSelecaoEquipe" 
+    table="forma_selecao_equipe"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="fmeq_id"
+    >
+        <generator class="sequence">
+        	<param name="sequence">sq_forma_selecao_equipe</param>
+     	</generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="fmeq_dsformaselecaoequipe"
+        not-null="true"
+        length="30"
+    />
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="fmeq_dsabreviado"
+        length="10"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="fmeq_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="indicadorUso"
+        column="fmeq_icuso"
+        not-null="true"
+        length="2"
+    />
+
+</class>
+</hibernate-mapping>

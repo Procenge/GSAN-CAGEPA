@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.atendimentopublico.registroatendimento.SolicitacaoTipoEspecificacaoMensagem" 
+    table="solicitacao_tipo_especif_mens"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="stem_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_solicitacao_tipo_espec_mens</param>
+    	</generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="stem_dsmensagem"
+        not-null="true"
+        length="300"
+    />
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="stem_dsabrev"
+        not-null="false"
+        length="50"
+    />
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="stem_icuso"
+        length="1"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="stem_tmultimaalteracao"
+        length="8"
+    />      
+
+</class>
+</hibernate-mapping>

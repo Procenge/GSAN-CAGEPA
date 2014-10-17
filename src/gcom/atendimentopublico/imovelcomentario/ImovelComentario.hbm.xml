@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+<class
+    name="gcom.atendimentopublico.imovelcomentario.ImovelComentario"
+    table="imovel_comentario"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="icom_id"
+    >
+
+ 		<generator class="sequence">
+       		<param name="sequence">sq_imov_comentario</param>
+    	</generator>
+    
+    </id>
+
+    <property
+        name="sequencial"
+        type="java.lang.Integer"
+        column="icom_sqcomentario"
+    />
+    
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="icom_dscomentario"
+        length="100"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="icom_tmultimaalteracao"
+        length="8"
+    />
+    
+
+    <!-- associations -->
+    <!-- bi-directional many-to-one association to Municipio -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="true"
+        
+    >
+        <column name="imov_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="usuario"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="true"
+        
+    >
+        <column name="usur_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

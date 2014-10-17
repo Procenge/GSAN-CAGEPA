@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+	<class name="gcom.arrecadacao.Concessionaria" table="concessionaria">
+
+		<id name="id" type="java.lang.Integer" column="conc_id">
+			<generator class="sequence">
+				<param name="sequence">
+					sq_concessionaria
+			</param>
+			</generator>
+		</id>
+
+		<property name="nome" type="java.lang.String" column="conc_nmconcessionaria"
+			not-null="true" length="50" />
+			
+		<property name="nomeAbreviado" type="java.lang.String" column="conc_nmabreviadoconcessionaria"
+			not-null="true" length="10" />
+
+		<property name="indicadorEmpresaConcedente" type="java.lang.Short"
+			column="conc_icempresaconcedente" not-null="true" length="2" />
+
+		<property name="codigoEmpresaFebraban" type="java.lang.Integer"
+			column="conc_cdempresafebraban" not-null="true" length="4" />
+
+	    <property name="indicadorUso" type="java.lang.Short" 
+	    	column="conc_icuso" not-null="true" length="2" />
+
+	</class>
+
+</hibernate-mapping>

@@ -1,0 +1,295 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.atendimentopublico.registroatendimento.SolicitacaoTipoEspecificacao" 
+    table="solicitacao_tipo_especificacao"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="step_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_solicitacao_tipo_espec</param>
+    	</generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="step_dssolicitacaotipoespecifi"
+        not-null="true"
+        length="50"
+    />
+<!-- 
+    // Atributo eliminado para se trabalhar com prazo em Horas
+    <property
+        name="diasPrazo"
+        type="java.lang.Integer"
+        column="step_nndiaprazo"
+        length="4"
+    />
+-->
+    <property
+        name="horasPrazo"
+        type="java.lang.Integer"
+        column="step_nnhorasprazo"
+        length="4"
+    />
+    <property
+        name="indicadorPavimentoCalcada"
+        type="short"
+        column="step_icpavimentocalcada"
+        not-null="true"
+        length="2"
+    />
+    <property
+        name="indicadorColetor"
+        type="short"
+        column="step_icusocoletor"
+        not-null="true"
+        length="2"
+    />
+    
+    <property
+        name="indicadorTipoVerificarDebito"
+        type="short"
+        column="step_ictipoverificardebito"
+        not-null="false"
+        length="2"
+    />
+    
+    <property
+        name="indicadorCalculoDataPrevistaAtendimento"
+        type="short"
+        column="step_iccalcdataprevistaatend"
+        not-null="false"
+        length="2"
+    />
+    
+    <property
+        name="indicadorPavimentoRua"
+        type="short"
+        column="step_icpavimentorua"
+        not-null="true"
+        length="2"
+    />
+    <property
+        name="indicadorCobrancaMaterial"
+        type="java.lang.Integer"
+        column="step_iccobrancamaterial"
+        length="4"
+    />
+    <property
+        name="indicadorMatricula"
+        type="java.lang.Integer"
+        column="step_icmatricula"
+        length="4"
+    />
+    <property
+        name="indicadorParecerEncerramento"
+        type="java.lang.Integer"
+        column="step_icparecerencerramento"
+        length="4"
+    />
+    <property
+        name="indicadorGeracaoDebito"
+        type="java.lang.Integer"
+        column="step_icgeracaodebito"
+        length="4"
+    />
+    <property
+        name="indicadorGeracaoCredito"
+        type="java.lang.Integer"
+        column="step_icgeracaocredito"
+        length="4"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="step_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    <property
+        name="indicadorUso"
+        type="short"
+        column="step_icuso"
+        not-null="true"
+        length="2"
+    />
+    <property
+        name="indicadorGeracaoOrdemServico"
+        type="short"
+        column="step_icgeracaoordemservico"
+        not-null="true"
+        length="2"
+    />
+    <property
+        name="indicadorCliente"
+        type="java.lang.Short"
+        column="step_iccliente"
+        length="2"
+    />
+    
+    <property
+        name="indicadorLigacaoAgua"
+        type="java.lang.Short"
+        column="step_icligacaoagua"
+        length="2"
+    />
+    
+    <property
+        name="indicadorSolicitante"
+        type="java.lang.Short"
+        column="step_icsolicitante"
+        length="2"
+    />
+    
+    <property
+        name="indicadorVerificarDebito"
+        type="java.lang.Short"
+        column="step_icverificardebito"
+        not-null="true"
+        length="2"
+    />
+    
+    <property
+        name="indicadorContaEmRevisao"
+        type="java.lang.Short"
+        column="step_iccolocacontasemrevisao"
+        not-null="false"
+        length="2"
+    />
+    
+    <property
+        name="indicadorMensagemAlertaRevisao"
+        type="java.lang.Short"
+        column="step_icmensagemalertarevisao"
+        not-null="false"
+        length="2"
+    />
+    
+    <property
+        name="indicadorObrigatoriedadeRgRA"
+        type="java.lang.Short"
+        column="step_icrg"
+        not-null="false"
+        length="2"
+    />
+    
+    <property
+        name="indicadorObrigatoriedadeCpfCnpjRA"
+        type="java.lang.Short"
+        column="step_iccpfcnpj"
+        not-null="false"
+        length="2"
+    />
+    
+    <property
+        name="indicadorConsiderarApenasDebitoTitularAtual"
+        type="java.lang.Short"
+        column="step_icdebitotitularatual"
+        not-null="true"
+        length="2"
+    />
+
+    <!-- Associations -->
+    
+     <!-- bi-directional many-to-one association to clienteRelacaoTipo -->
+  	<many-to-one
+        name="clienteRelacaoTipo"
+        class="gcom.cadastro.cliente.ClienteRelacaoTipo"
+        not-null="false"
+    >
+        <column name="crtp_idtitularatual" />
+    </many-to-one>
+  
+    <!-- bi-directional many-to-one association to SolicitacaoTipo -->
+    <many-to-one
+        name="solicitacaoTipo"
+        class="gcom.atendimentopublico.registroatendimento.SolicitacaoTipo"
+        not-null="true"
+    >
+        <column name="sotp_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to UnidadeOrganizacional -->
+    <many-to-one
+        name="unidadeOrganizacional"
+        class="gcom.cadastro.unidade.UnidadeOrganizacional"
+        not-null="true"
+    >
+        <column name="unid_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to ServicoTipo -->
+    <many-to-one
+        name="servicoTipo"
+        class="gcom.atendimentopublico.ordemservico.ServicoTipo"
+        not-null="true"
+    >
+        <column name="svtp_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to EspecificacaoImovelSituacao -->
+    <many-to-one
+        name="especificacaoImovelSituacao"
+        class="gcom.atendimentopublico.registroatendimento.EspecificacaoImovelSituacao"
+        not-null="false"
+    >
+        <column name="esim_id" />
+    </many-to-one>
+    
+    <!-- bi-directional one-to-many association to EspecificacaoServicoTipo  -->
+    <set
+        name="especificacaoServicoTipos"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="step_id" />
+        </key>
+        <one-to-many 
+            class="gcom.atendimentopublico.ordemservico.EspecificacaoServicoTipo"
+        />
+    </set>
+    <!-- bi-directional one-to-many association to RegistroAtendimento 
+    <set
+        name="registroAtendimentos"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="step_id" />
+        </key>
+        <one-to-many 
+            class="gcom.RegistroAtendimento"
+        />
+    </set> -->
+    
+    <!-- bi-directional many-to-one association to SolicitacaoTipoEspecificacaoMensagem -->
+    <many-to-one
+        name="solicitacaoTipoEspecificacaoMensagem"
+        class="gcom.atendimentopublico.registroatendimento.SolicitacaoTipoEspecificacaoMensagem"
+    >
+        <column name="stem_id" />
+    </many-to-one>
+    
+
+</class>
+</hibernate-mapping>

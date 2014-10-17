@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.FormaTramite" 
+    table="forma_tramite"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="fmtr_id"
+    >
+        <generator class="sequence">
+        	<param name="sequence">sq_forma_tramite</param>
+     	</generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="fmtr_dsformatramite"
+        not-null="true"
+        length="30"
+    />
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="fmtr_dsabreviado"
+        length="10"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="fmtr_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="indicadorUso"
+        column="fmtr_icuso"
+        not-null="true"
+        length="2"
+    />
+
+</class>
+</hibernate-mapping>

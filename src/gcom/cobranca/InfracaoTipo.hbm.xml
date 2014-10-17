@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.InfracaoTipo" 
+    table="infracao_tipo"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="intp_id"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				sq_infracao_tipo
+			</param>
+		</generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="intp_dsinfracaotipo"
+        length="30"
+    />
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="intp_dsabvinfracaotipo"
+        length="10"
+    />
+    <property
+        name="indicadorUso"
+        type="short"
+        column="intp_icuso"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="intp_tmultimaalteracao"
+        length="8"
+    />
+   
+    <!-- Associations -->
+  
+ </class>
+</hibernate-mapping>

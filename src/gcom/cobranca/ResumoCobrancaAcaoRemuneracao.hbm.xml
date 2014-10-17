@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.ResumoCobrancaAcaoRemuneracao" 
+    table="resumo_cobranca_acao_remunerac"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="rcar_id"
+    >
+     <generator class="sequence">
+          <param name="sequence">sq_resumo_cobranca_acao_remune</param>
+    </generator>
+    </id>
+
+    <property
+        name="percentualRemuneracao"
+        type="java.math.BigDecimal"
+        column="rcar_pcremuneracao"
+        not-null="true"
+        length="5"
+    />
+
+    <property
+        name="valorRemuneracao"
+        type="java.math.BigDecimal"
+        column="rcar_vlremuneracao"
+        not-null="true"
+        length="13"
+    />
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="rcar_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to ResumoCobrancaAcaoEventual -->
+    <many-to-one
+        name="resumoCobrancaAcaoEventual"
+        class="gcom.cobranca.ResumoCobrancaAcaoEventual"
+        not-null="true"
+    >
+        <column name="rcbe_id" />
+    </many-to-one>
+   
+    <!-- bi-directional many-to-one association to DocumentoTipo -->
+    <many-to-one
+        name="documentoTipo"
+        class="gcom.cobranca.DocumentoTipo"
+        not-null="true"
+    >
+        <column name="dotp_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.cobranca.CobrancaSucesso"
+    table="cobranca_sucesso"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="CSUC_ID">
+        <generator class="sequence">
+        	<param name="sequence">SQ_COBRANCA_SUCESSO</param>
+     	</generator>
+    </id>
+    
+    <property
+        name="anoMesReferencia"
+        type="java.lang.Integer"
+        column="CSUC_AMREFERENCIA"
+        length="4"
+    />
+
+    <property
+        name="dataVencimentoConta"
+        type="java.sql.Date"
+        column="CSUC_DATA"
+        not-null="true"
+        length="4"
+    />
+    
+    <property
+        name="diasVencidos"
+        type="java.lang.Integer"
+        column="CSUC_DIASVENCTOATE"
+        not-null="true"
+    />
+
+    <property
+        name="quantidadeContas"
+        type="java.lang.Integer"
+        column="CSUC_QTCONTAS"
+    />
+    
+    <property
+        name="valorContas"
+        type="java.math.BigDecimal"
+        column="CSUC_VLCONTAS"
+        length="13"
+    />
+    
+    <property
+        name="quantidadeParcelas"
+        type="java.lang.Integer"
+        column="CSUC_QTPARCELAS"
+    />
+    
+    <property
+        name="valorParcelas"
+        type="java.math.BigDecimal"
+        column="CSUC_VLPARCELAS"
+        length="13"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="CSUC_TMULTIMAALTERACAO"
+        length="8"
+    />
+    
+     <many-to-one
+        name="comandoAcaoEventual"
+        class="gcom.cobranca.CobrancaAcaoAtividadeComando"
+        not-null="false"
+    >
+        <column name="CACM_ID" />
+    </many-to-one>
+    
+     <many-to-one
+        name="comandoAcaoCronograma"
+        class="gcom.cobranca.CobrancaAcaoAtividadeCronograma"
+        not-null="false"
+    >
+        <column name="CAAC_ID" />
+    </many-to-one>
+    
+     <many-to-one
+        name="cobrancaAcao"
+        class="gcom.cobranca.CobrancaAcao"
+        not-null="true"
+    >
+        <column name="CBAC_ID" />
+    </many-to-one>
+    
+     <many-to-one
+        name="empresa"
+        class="gcom.cadastro.empresa.Empresa"
+        not-null="true"
+    >
+        <column name="EMPR_ID" />
+    </many-to-one>
+    
+     <many-to-one
+        name="documentoTipo"
+        class="gcom.cobranca.DocumentoTipo"
+        not-null="false"
+    >
+        <column name="DOTP_ID" />
+    </many-to-one>
+    
+     <many-to-one
+        name="servicoTipo"
+        class="gcom.atendimentopublico.ordemservico.ServicoTipo"
+        not-null="false"
+    >
+        <column name="SVTP_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="supressaoTipo"
+        class="gcom.atendimentopublico.ligacaoagua.SupressaoTipo"
+        not-null="false"
+    >
+        <column name="STIP_ID" />
+    </many-to-one>
+    
+     <many-to-one
+        name="corteTipo"
+        class="gcom.atendimentopublico.ligacaoagua.CorteTipo"
+        not-null="false"
+    >
+        <column name="COTP_ID" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

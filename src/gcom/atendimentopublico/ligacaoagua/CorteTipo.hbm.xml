@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.atendimentopublico.ligacaoagua.CorteTipo"
+    table="corte_tipo"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="cotp_id"
+    >
+        <generator class="sequence">
+        	<param name="sequence">sq_corte_tipo</param>
+     	</generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="cotp_dscortetipo"
+        length="30"
+    />
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="cotp_icuso"
+        length="2"
+    />
+    <property
+        name="indicadorCorteAdministrativo"
+        type="short"
+        column="cotp_iccorteadministrativo"
+        not-null="true"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="cotp_tmultimaalteracao"
+        length="8"
+    />
+
+    <!-- associations -->
+    <!-- bi-directional one-to-many association to OrdemServico-->
+    <set
+        name="ordensServico"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="cotp_id" />
+        </key>
+        <one-to-many
+            class="gcom.atendimentopublico.ordemservico.OrdemServico"
+        />
+    </set> 
+
+</class>
+</hibernate-mapping>

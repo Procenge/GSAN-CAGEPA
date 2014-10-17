@@ -1,0 +1,306 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.cadastro.localidade.Localidade"
+    table="localidade"
+>
+
+	<id
+        name="id"
+        type="java.lang.Integer"
+        column="loca_id"
+    >
+       <generator class="assigned" />
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="loca_nmlocalidade"
+        not-null="true"
+        length="30"
+    />
+    <property
+        name="numeroImovel"
+        type="java.lang.String"
+        column="loca_nnimovel"
+        length="5"
+    />
+    <property
+        name="complementoEndereco"
+        type="java.lang.String"
+        column="loca_dscomplementoendereco"
+        length="25"
+    />
+    <property
+        name="fone"
+        type="java.lang.String"
+        column="loca_nnfone"
+        length="9"
+    />
+    <property
+        name="ramalfone"
+        type="java.lang.String"
+        column="loca_nnfoneramal"
+        length="4"
+    />
+    <property
+        name="fax"
+        type="java.lang.String"
+        column="loca_nnfax"
+        length="9"
+    />    
+    <property
+        name="email"
+        type="java.lang.String"
+        column="loca_dsemail"
+        length="40"
+    />
+    <property
+        name="consumoGrandeUsuario"
+        type="java.lang.Integer"
+        column="loca_nnconsumograndeusuario"
+        length="4"
+    />
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="loca_icuso"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="loca_tmultimaalteracao"
+        length="8"
+    />
+
+    <property
+        name="codigoICMS"
+        type="java.lang.Integer"
+        column="loca_cdicms"
+        length="10"
+    />
+    
+    <property
+        name="codigoCentroCusto"
+        type="java.lang.String"
+        column="loca_cdcentrocusto"
+        length="10"
+    />
+    <property
+        name="indicadorLocalidadeInformatizada"
+        type="java.lang.Short"
+        column="loca_icinformatizada"
+        length="2"
+    />
+
+    <property
+        name="codigoLocalidadeCEF"
+        type="java.lang.Integer"
+        column="loca_cdlocalcef"
+        length="4"
+        not-null="false"
+    />
+
+    <property
+        name="indicardoAbastecimentoSuspenso"
+        type="java.lang.Integer"
+        column="loca_icabastecimentosuspenso"
+        length="4"
+        not-null="false"
+    />
+
+    <property
+        name="indicadorAbastecimentoMinimo"
+        type="java.lang.Integer"
+        column="loca_icabastecimentominimo"
+        length="4"
+        not-null="false"
+    />
+
+    <property
+        name="codigoLocalidadeContabil"
+        type="java.lang.Integer"
+        column="loca_cdlocalcontabil"
+        length="4"
+        not-null="false"
+    />
+
+    <property
+        name="numeroUltimaQuadraCadastrada"
+        type="java.lang.Integer"
+        column="loca_nnultimaquadra"
+        length="4"
+        not-null="false"
+    />
+
+    <!-- associations -->
+
+    <!-- bi-directional many-to-one association to LocalidadePorte -->
+    <many-to-one
+        name="localidadePorte"
+        class="gcom.cadastro.localidade.LocalidadePorte"
+        not-null="true"
+    >
+        <column name="lpor_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="municipio"
+        class="gcom.cadastro.geografico.Municipio">
+        <column name="muni_id" />
+    </many-to-one>
+    
+    
+    <!-- bi-directional one-to-many association to Localidade
+    <set
+        name="localidades"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="loca_cdelo" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.localidade.Localidade"
+        />
+    </set>
+    -->
+    <!-- bi-directional many-to-one association to Localidade -->
+    <many-to-one
+        name="localidade"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="true"
+    >
+        <column name="loca_cdelo" />
+    </many-to-one>
+    <!-- bi-directional one-to-many association to Imovel
+    <set
+        name="imovels"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="loca_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.imovel.Imovel"
+        />
+    </set>
+    -->
+    <!-- bi-directional one-to-many association to SetorComercial
+    <set
+        name="setorComercials"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="loca_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.SetorComercial"
+        />
+    </set>
+    -->
+    <!-- bi-directional one-to-many association to LocalidadeDadosCensitario
+    <set
+        name="localidadeDadosCensitarios"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="loca_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.LocalidadeDadosCensitario"
+        />
+    </set>
+    -->
+    <!-- bi-directional many-to-one association to GerenciaRegional -->
+    <many-to-one
+        name="gerenciaRegional"
+        class="gcom.cadastro.localidade.GerenciaRegional"
+        not-null="true"
+    >
+        <column name="greg_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Bairro -->
+    <!-- bi-directional many-to-one association to EnderecoReferencia -->
+    <many-to-one
+        name="enderecoReferencia"
+        class="gcom.cadastro.endereco.EnderecoReferencia"
+        not-null="true"
+    >
+        <column name="edrf_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Cep -->
+    <!-- bi-directional many-to-one association to LocalidadeClasse -->
+    <many-to-one
+        name="localidadeClasse"
+        class="gcom.cadastro.localidade.LocalidadeClasse"
+        not-null="true"
+    >
+        <column name="lcla_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to LogradouroBairro -->
+    <many-to-one
+        name="logradouroBairro"
+        class="gcom.cadastro.endereco.LogradouroBairro"
+        not-null="false"
+    >
+        <column name="lgbr_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to LogradouroCep -->
+    <many-to-one
+        name="logradouroCep"
+        class="gcom.cadastro.endereco.LogradouroCep"
+        not-null="false"
+    >
+        <column name="lgcp_id" />
+    </many-to-one>
+    <many-to-one
+        name="unidadeNegocio"
+        class="gcom.cadastro.localidade.UnidadeNegocio"
+        not-null="false"
+    >
+        <column name="uneg_id" />
+    </many-to-one>
+    <many-to-one
+        name="funcionario"
+        class="gcom.cadastro.funcionario.Funcionario"
+        not-null="true"
+    >
+        <column name="func_id" />
+    </many-to-one>
+    <many-to-one 
+        name="hidrometroLocalArmazenagem"
+        class="gcom.micromedicao.hidrometro.HidrometroLocalArmazenagem"
+        not-null="true"
+    >
+        <column name="hila_id" />
+    </many-to-one>
+
+
+    <!-- bi-directional many-to-many association to Concessionária -->
+
+    <set name="concessionarias" table="concessionaria_localidade" cascade="none" lazy="false" >
+	    <key column="LOCA_ID" />
+    	<many-to-many column="CONC_ID" class="gcom.arrecadacao.Concessionaria"  />
+    </set>
+    
+    <!-- bi-directional one-to-many association to Concessionária -->
+
+</class>
+</hibernate-mapping>

@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created por Victon Santos
+-->
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.OsSeletivaComandoHidrometroMarca" 
+    table="OS_SELET_COMANDO_HIDR_MARCA"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="OSHM_ID"
+    >
+        <generator class="sequence">
+		       <param name="sequence">SQ_OS_SELET_COMANDO_HIDMARCA</param>
+		    </generator>
+    </id>
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="OSHM_TMULTIMAALTERACAO"
+        length="6"
+        not-null="true"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to OsSeletivaComando -->
+    <many-to-one
+        name="osSeletivaComando"
+        class="gcom.atendimentopublico.ordemservico.OsSeletivaComando"
+        not-null="true"
+    >
+        <column name="OSSC_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to HidrometroMarca -->
+    <many-to-one
+        name="hidrometroMarca"
+        class="gcom.micromedicao.hidrometro.HidrometroMarca"
+        not-null="true"
+    >
+        <column name="HIMC_ID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

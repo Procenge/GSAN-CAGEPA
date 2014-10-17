@@ -1,0 +1,199 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.ResolucaoDiretoria" 
+    table="resolucao_diretoria"
+    dynamic-insert="true" dynamic-update="true"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="rdir_id"
+    >
+	    <generator class="sequence">
+	       <param name="sequence">sq_resolucao_diretoria</param>
+	    </generator>
+    </id>
+
+    <property
+        name="numeroResolucaoDiretoria"
+        type="java.lang.String"
+        column="rdir_nnresolucaodiretoria"
+        length="15"
+    />
+    <property
+        name="descricaoAssunto"
+        type="java.lang.String"
+        column="rdir_dsassunto"
+        length="50"
+    />
+    <property
+        name="dataVigenciaInicio"
+        type="java.sql.Date"
+        column="rdir_dtvigenciainicio"
+        length="4"
+    />
+    <property
+        name="dataVigenciaFim"
+        type="java.sql.Date"
+        column="rdir_dtvigenciafim"
+        length="4"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="rdir_tmultimaalteracao"
+        length="8"
+    />
+
+	<property
+        name="indicadorParcelamentoUnico"
+        column="rdir_icparcelamentounico"
+        type="java.lang.Short"
+        length="2"
+        not-null="false"  
+    />
+
+	<property
+        name="indicadorUtilizacaoLivre"
+        column="rdir_icutilizacaolivre"
+        type="java.lang.Short"
+        length="2"
+ 	/>
+
+	<property
+        name="indicadorDescontoSancoes"
+        column="rdir_icdescontosancoes"
+        type="java.lang.Short"
+        length="2"
+ 	/>
+
+	<property
+        name="indicadorEmissaoAssuntoConta"
+        column="rdir_icemissaoassuntoconta"
+        type="java.lang.Short"
+        length="1"
+        not-null="true"
+ 	/>
+
+	<property
+        name="indicadorTrataMediaAtualizacaoMonetaria"
+        column="rdir_ictratamedatumonetaria"
+        type="java.lang.Short"
+        length="1"
+        not-null="true"
+ 	/>
+ 	
+ 	<property
+        name="indicadorCobrarDescontosArrasto"
+        column="rdir_iccobrardescontosarrasto"
+        type="java.lang.Short"
+        length="1"
+        not-null="true"
+ 	/>
+
+ 	<property
+        name="indicadorArrasto"
+        column="rdir_icarrasto"
+        type="java.lang.Short"
+        length="1"
+        not-null="true"
+ 	/>
+
+ 	<!-- bi-directional many-to-one association to ResolucaoDiretoriaLayout -->
+		<many-to-one name="resolucaoDiretoriaLayout"
+			class="gcom.cobranca.ResolucaoDiretoriaLayout">
+			<column name="rdly_id" />
+		</many-to-one>
+
+	<!-- bi-directional one-to-many association to Grupo -->
+    <set
+        name="resolucaoDiretoriaGrupos"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+        <key>
+            <column name="rdir_id" />
+        </key>
+        <one-to-many
+            class="gcom.cobranca.ResolucaoDiretoriaGrupo"
+        />
+    </set>
+    
+    <!-- bi-directional one-to-many association to ClienteGuiaPagamento -->
+    <set
+        name="parcelamentosSituacaoEspecial"
+        lazy="true"
+        inverse="true"
+        order-by="loca_id"  >
+        <key>
+            <column name="rdir_id" />
+        </key>
+        <one-to-many
+            class="gcom.cobranca.parcelamento.ParcelamentoSituacaoEspecial"
+        />
+    </set>
+    
+    <!-- bi-directional one-to-many association to ResolucaoDiretoriaParametrosPagamentoAVista -->
+    <set
+        name="resolucaoDiretoriaCondicoesPagtoAVista"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+        <key>
+            <column name="rdir_id" />
+        </key>
+        <one-to-many
+            class="gcom.cobranca.ResolucaoDiretoriaParametrosPagamentoAVista"
+        />
+    </set>
+    
+    <!-- bi-directional one-to-many association to ResolucaoDiretoriaParametrosValorEntrada -->
+    <set
+        name="resolucaoDiretoriaCondicoesValorEntrada"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+        <key>
+            <column name="rdir_id" />
+        </key>
+        <one-to-many
+            class="gcom.cobranca.ResolucaoDiretoriaParametrosValorEntrada"
+        />
+    </set>
+
+    <!-- Associations -->
+  
+    <!-- bi-directional one-to-many association to ParcelamentoPerfil -->
+    <!--
+    <set
+        name="parcelamentoPerfils"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="rd_id" />
+        </key>
+        <one-to-many 
+            class="gcom.ParcelamentoPerfil"
+        />
+    </set>
+	-->
+</class>
+</hibernate-mapping>

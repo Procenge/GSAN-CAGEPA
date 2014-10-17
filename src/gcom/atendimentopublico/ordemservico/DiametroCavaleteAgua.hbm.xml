@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.DiametroCavaleteAgua" 
+    table="DIAMETRO_CAVA_AGUA"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="dcva_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_diametro_cava_agua</param>
+    	</generator>
+    </id>
+    
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="dcva_dsdiametrocavaagua"
+        not-null="true"
+        length="20"
+    />
+    
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="dcva_dsabrevdiamcavaagua"
+        not-null="true"
+        length="5"
+    />
+    
+   <property
+        name="indicadorUso"
+        column="dcva_icuso"
+        not-null="true"
+        length="2"
+    />
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="dcva_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+   
+</class>
+</hibernate-mapping>

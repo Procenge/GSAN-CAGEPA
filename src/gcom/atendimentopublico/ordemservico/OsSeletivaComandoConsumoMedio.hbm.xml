@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created por Victon Santos
+-->
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.OsSeletivaComandoConsumoMedio" 
+    table="OS_SELET_COMANDO_CONSUMO_MEDIO"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="OSCM_ID"
+    >
+        <generator class="sequence">
+		       <param name="sequence">SQ_OS_SELET_COMANDO_CONS_MED</param>
+		    </generator>
+    </id>
+    <property
+        name="numeroConsumoMedioInicial"
+        type="java.lang.Integer"
+        column="OSCM_NNCONSUMOMEDIOINICIAL"
+        not-null="true"
+    />
+    <property
+        name="numeroConsumoMedioFinal"
+        type="java.lang.Integer"
+        column="OSCM_NNCONSUMOMEDIOFINAL"
+        not-null="true"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="OSCM_TMULTIMAALTERACAO"
+        length="6"
+        not-null="true"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to OsSeletivaComando -->
+    <many-to-one
+        name="osSeletivaComando"
+        class="gcom.atendimentopublico.ordemservico.OsSeletivaComando"
+        not-null="true"
+    >
+        <column name="OSSC_ID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.ServicoAssociado" 
+    table="servico_associado"
+>
+
+    <composite-id name="comp_id" class="gcom.atendimentopublico.ordemservico.ServicoAssociadoPK">
+        <key-property 
+            name="idServicoTipo" 
+            column="svtp_id" 
+            type="java.lang.Integer"
+            length="4"
+        />
+        <key-property 
+            name="idServicoTipoAssociado" 
+            column="svas_idassociado" 
+            type="java.lang.Integer"
+            length="4"
+        />
+    </composite-id>    
+
+    <property
+        name="sequencial"
+        type="java.lang.Integer"
+        column="svas_sequenciageracao"
+        length="4"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="svas_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+
+ 	<property
+        name="indicadorUso"
+        column="svas_icuso"
+        not-null="true"
+        length="2"
+    />
+    
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to ServicoTipo -->
+    <many-to-one
+        name="servicoTipo"
+        class="gcom.atendimentopublico.ordemservico.ServicoTipo"
+        update="false"
+	    insert="false"
+    >
+        <column name="svtp_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to ServicoTipo -->
+    <many-to-one
+        name="servicoTipoAssociado"
+        class="gcom.atendimentopublico.ordemservico.ServicoTipo"
+        update="false"
+	    insert="false"
+    >
+        <column name="svas_idassociado" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to EventoGeracao -->
+    <many-to-one
+        name="eventoGeracao"
+        class="gcom.atendimentopublico.ordemservico.EventoGeracao"
+        not-null="true"
+    >
+        <column name="evge_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to FormaGeracao -->
+    <many-to-one
+        name="formaGeracao"
+        class="gcom.atendimentopublico.ordemservico.FormaGeracao"
+        not-null="true"
+    >
+        <column name="fmge_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to FormaTramite -->
+    <many-to-one
+        name="formaTramite"
+        class="gcom.atendimentopublico.ordemservico.FormaTramite"
+        not-null="true"
+    >
+        <column name="fmtr_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to unidadeOrganizacional -->
+    <many-to-one
+        name="unidadeOrganizacional"
+        class="gcom.cadastro.unidade.UnidadeOrganizacional"
+        not-null="true"
+    >
+        <column name="unid_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to formaEncerramento -->
+    <many-to-one
+        name="formaEncerramento"
+        class="gcom.atendimentopublico.ordemservico.FormaEncerramento"
+        not-null="true"
+    >
+        <column name="fmen_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to formaProgramacao -->
+    <many-to-one
+        name="formaProgramacao"
+        class="gcom.atendimentopublico.ordemservico.FormaProgramacao"
+        not-null="true"
+    >
+        <column name="fmpr_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to formaSelecaoEquipe -->
+    <many-to-one
+        name="formaSelecaoEquipe"
+        class="gcom.atendimentopublico.ordemservico.FormaSelecaoEquipe"
+        not-null="true"
+    >
+        <column name="fmeq_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

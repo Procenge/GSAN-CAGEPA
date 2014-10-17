@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="gcom.cobranca.opcaoparcelamento.PreParcelamentoOpcao" table="PRE_PARCELAMENTO_OPCAO">
+        <id name="id" type="java.lang.Integer">
+            <column name="PPOP_ID" />
+                    <generator class="sequence">
+						<param name="sequence">SQ_PRE_PARCELAMENTO_OPCAO</param>
+					</generator>
+        </id>
+    
+    <many-to-one
+        name="preParcelamento"
+        class="gcom.cobranca.opcaoparcelamento.PreParcelamento"
+        not-null="true" 
+    >
+        <column name="PREP_ID" />
+    </many-to-one>
+    
+    <many-to-one class="gcom.cobranca.parcelamento.ParcelamentoPerfil" name="parcelamentoPerfil">
+  	<column name="pcpf_id"/>
+  	</many-to-one>
+    
+        <property name="posicaoOpcao" type="java.lang.Short">
+            <column name="PPOP_NNPOSICAO" />
+        </property>
+        <property name="valorEntrada" type="java.math.BigDecimal">
+            <column name="PPOP_VLENTRADA" />
+        </property>
+        <property name="valorJurosParcelamento" type="java.math.BigDecimal">
+            <column name="PPOP_VLJUROSPARCELAMENTO" />
+        </property>
+        <property name="valorDescontoSancoesRDEspecial" type="java.math.BigDecimal">
+            <column name="PPOP_VLDESCONTOSANCAO" />
+        </property>
+        <property name="valorDescontoTarifaSocialRDEspecial" type="java.math.BigDecimal">
+            <column name="PPOP_VLDESCONTOTARSOC" />
+        </property>
+        <property name="numeroPrestacoes" type="java.lang.Integer">
+            <column name="PPOP_NNPRESTACOES" />
+        </property>
+        <property name="valorPrestacao" type="java.math.BigDecimal">
+            <column name="PPOP_VLPRESTACAO" />
+        </property>
+        <property name="percentualDescontoAcrescimoImpontualidade" type="java.math.BigDecimal">
+            <column name="PPOP_PCDESCONTOACRESCIMOS" />
+        </property>
+        <property name="percentualDescontoAntiguidade" type="java.math.BigDecimal">
+            <column name="PPOP_PCDESCONTOANTIGUIDADE" />
+        </property>
+        <property name="percentualDescontoInatividade" type="java.math.BigDecimal">
+            <column name="PPOP_PCDESCONTOINATIVIDADE" />
+        </property>
+        <property name="valorAtualizacaoMonetaria" type="java.math.BigDecimal">
+            <column name="PPOP_VLATUALIZACAOMONETARIA" />
+        </property>
+        <property name="valorJurosMora" type="java.math.BigDecimal">
+            <column name="PPOP_VLJUROSMORA" />
+        </property>
+        <property name="valorMulta" type="java.math.BigDecimal">
+            <column name="PPOP_VLMULTA" />
+        </property>
+        <property name="valorDebitoAtualizado" type="java.math.BigDecimal">
+            <column name="PPOP_VLDEBITOATUALIZADO" />
+        </property>
+        <property name="valorDescontosAcrescimosImpontualidade" type="java.math.BigDecimal">
+            <column name="PPOP_VLDESCONTOACRESCIMOS" />
+        </property>
+        <property name="valorDescontosAcrescimosAntiguidade" type="java.math.BigDecimal">
+            <column name="PPOP_VLDESCONTOANTIGUIDADE" />
+        </property>
+        <property name="valorDescontosAcrescimosInatividade" type="java.math.BigDecimal">
+            <column name="PPOP_VLDESCONTOINATIVIDADE" />
+        </property>
+        <property name="ultimaAlteracao" type="java.util.Date">
+            <column name="PPOP_TMULTIMAALTERACAO" />
+        </property>
+        
+	    <property
+	        name="numeroMesesEntreParcelas"
+	        type="java.lang.Integer"
+	        column="ppop_nnmesesentreparcelas"
+	        length="4"
+	    />
+	
+		<property
+	        name="numeroParcelasALancar"
+	        type="java.lang.Integer"
+	        column="ppop_nnparcelasalancar"
+	        length="4"
+	    />
+	
+		<property
+	        name="numeroMesesInicioCobranca"
+	        type="java.lang.Integer"
+	        column="ppop_nnmesesiniciocobranca"
+	        length="6"
+	    />
+
+		<property
+	        name="numeroDiasVencimentoDaEntrada"
+	        type="java.lang.Integer"
+	        column="ppop_nndiasvencentrada"
+	        length="4"
+	    />
+
+    </class>
+</hibernate-mapping>

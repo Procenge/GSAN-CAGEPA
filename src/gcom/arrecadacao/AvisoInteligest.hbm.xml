@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+  <class name="gcom.arrecadacao.AvisoInteligest"
+  		 table="aviso_inteligest">
+  
+	<composite-id name="comp_id" class="gcom.arrecadacao.AvisoInteligestPK">
+        <key-property 
+	        name="ano"
+	        type="java.lang.Integer"
+	        column="aint_nnano"
+	        length="4"
+        />
+        <key-property 
+	        name="numeroAviso"
+	        type="java.lang.Integer"
+	        column="aint_nnaviso"
+	        length="9"
+        />
+         <key-property 
+            name="codigoTributo"
+        	type="java.lang.Integer"
+        	column="aint_cdtributo"
+        	length="4"
+        />
+    </composite-id> 
+
+    <property
+        name="numeroLigacao"
+        type="java.lang.Integer"
+        column="aint_nnligacao"
+        length="8"
+    />
+    
+    <property
+        name="numeroSequencial"
+        type="java.lang.Integer"
+        column="aint_nnsequencial"
+        length="8"
+    />
+  		 
+  </class>
+  
+</hibernate-mapping>

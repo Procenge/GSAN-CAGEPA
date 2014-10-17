@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.OcorrenciaInfracaoItem" 
+    table="ocorrencia_infracao_item"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ocii_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_ocorrencia_infracao_item</param>
+    	</generator>
+    </id>
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ocii_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    
+    <!-- Associations -->
+    
+    <!-- bi-directional many-to-one association to OrdemServico -->
+    <many-to-one
+        name="ocorrenciaInfracao"
+        class="gcom.atendimentopublico.ordemservico.OcorrenciaInfracao"
+        not-null="true"
+    >
+        <column name="ocin_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Atividade -->
+    <many-to-one
+        name="infracaoTipo"
+        class="gcom.cobranca.InfracaoTipo"
+        not-null="true"
+    >
+        <column name="intp_id" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.cadastro.aguaparatodos.FaturamentoHistoricoAguaParaTodos"
+    table="faturamento_hist_apt"
+>
+	 <id
+        name="id"
+        type="java.lang.Integer"
+        column="fhat_id"
+        >
+        <generator class="sequence">
+          <param name="sequence">sq_faturamento_hist_apt</param>
+      	</generator>
+    </id>
+    
+    <!-- associations -->
+    <!-- bi-directional many-to-one association to Imovel -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="true"
+    >
+        <column name="imov_id" />
+    </many-to-one>
+
+	<property
+        name="dataHabilitacao"
+        type="java.sql.Timestamp"
+        column="fhat_tmhabilitacaoprograma"
+        length="50"
+    />
+
+    <property
+        name="anoMesReferencia"
+        type="java.lang.Integer"
+        column="fhat_ano_mes_referencia"
+    />
+    
+    <property
+        name="tarifa"
+        type="java.lang.Integer"
+        column="fhat_cdtarifa"
+    />
+    
+     <property
+        name="consumoMes"
+        type="java.math.BigDecimal"
+        column="fhat_nnconsumomes"
+    />
+    
+   <property
+        name="valorConsumo"
+        type="java.math.BigDecimal"
+        column="fhat_vlconsumo"
+    />
+
+</class>
+</hibernate-mapping>

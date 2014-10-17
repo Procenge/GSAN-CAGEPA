@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.CobrancaDocumentoNaoGerado" 
+    table="COBRANCA_DOCUMENTO_NAO_GERADO"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="CDNG_ID"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				SQ_COBRANCA_DOC_NAO_GERADO
+			</param>
+		</generator>
+    </id>
+
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="CDNG_DTULTIMAALTERACAO"
+        length="8"
+    />
+   
+    <!-- Associations -->
+    
+     <!-- bi-directional many-to-one association to Imovel -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="false"
+    >
+        <column name="imov_id" />
+    </many-to-one>   
+    
+    
+      <!-- bi-directional many-to-one association to CobrancaAcaoAtividadeComand -->
+    <many-to-one
+        name="cobrancaAcaoAtividadeComando"
+        class="gcom.cobranca.CobrancaAcaoAtividadeComando"
+        not-null="true"
+    >
+        <column name="cacm_id" />
+    </many-to-one>
+   
+      <!-- bi-directional many-to-one association to CobrancaAcaoAtividadeCronog -->
+    <many-to-one
+        name="cobrancaAcaoAtividadeCronograma"
+        class="gcom.cobranca.CobrancaAcaoAtividadeCronograma"
+        not-null="true"
+    >
+        <column name="caac_id" />
+    </many-to-one>
+    
+    
+     <many-to-one
+        name="motivoNaoGeracaoDocumento"
+        class="gcom.cobranca.MotivoNaoGeracaoDocumento"
+        not-null="true"
+    >
+        <column name="MNGD_ID" />
+    </many-to-one>
+    
+    
+ </class>
+</hibernate-mapping>

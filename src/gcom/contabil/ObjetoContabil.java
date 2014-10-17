@@ -1,0 +1,6 @@
+
+package gcom.contabil;
+
+public enum ObjetoContabil {
+	AGUA, ESGOTO, DEBITO, CREDITO, PARCELAMENTO, IMPOSTO, JUROS_CORRECAO, FINANCIAMENTO, GUIA_PAGAMENTO;
+}

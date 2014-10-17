@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.CobrancaAcaoAtividadeImovel" 
+    table="COBRANCA_ACAO_ATIV_IMOVEL"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="CAAI_ID"
+    >
+        <generator class="sequence">
+			<param name="sequence">SQ_COBRANCA_ACAO_ATIV_IMOVEL</param>
+		</generator>
+    </id>
+
+    <many-to-one
+        name="cobrancaAcaoAtividadeComando"
+        class="gcom.cobranca.CobrancaAcaoAtividadeComando"
+        not-null="false"
+    >
+        <column name="CACM_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Imovel -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="true"
+    >
+        <column name="IMOV_ID" />
+    </many-to-one>
+
+    <many-to-one
+        name="cobrancaAcaoAtividadeCronograma"
+        class="gcom.cobranca.CobrancaAcaoAtividadeCronograma"
+        not-null="false"
+    >
+        <column name="CAAC_ID" />
+    </many-to-one>
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="CAAI_TMULTIMAALTERACAO"
+        length="8"
+    />
+    
+    <property
+        name="quantidadeDocumentoItem"
+        type="java.lang.Integer"
+        column="CAAI_QTDDOCUMENTOITEM"
+        length="4"
+    />
+    <property
+        name="valorDocumento"
+        type="java.math.BigDecimal"
+        column="CAAI_VLDOCUMENTOS"
+        length="13"
+    />
+    
+    
+      
+    
+</class>
+</hibernate-mapping>

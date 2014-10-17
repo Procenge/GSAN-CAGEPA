@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.FormaEncerramento" 
+    table="forma_encerramento"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="fmen_id"
+    >
+        <generator class="sequence">
+        	<param name="sequence">sq_forma_encerramento</param>
+     	</generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="fmen_dsformaencerramento"
+        not-null="true"
+        length="30"
+    />
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="fmen_dsabreviado"
+        length="10"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="fmen_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="indicadorUso"
+        column="fmen_icuso"
+        not-null="true"
+        length="2"
+    />
+
+</class>
+</hibernate-mapping>

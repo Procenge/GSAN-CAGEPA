@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+	<class name="gcom.atendimentopublico.ordemservico.ServicoTipoTramite"
+		table="servico_tipo_tramite">
+
+		<id name="id" type="java.lang.Integer" column="sttr_id">
+			<generator class="sequence">
+				<param name="sequence">sq_servico_tipo_tramite</param>
+			</generator>
+		</id>
+
+		<property name="indicadorUso" type="short" column="sttr_icuso"
+			not-null="true" length="2" />
+
+		<property name="ultimaAlteracao" type="java.sql.Timestamp"
+			column="sttr_tmultimaalteracao" not-null="true" length="8" />
+
+		<!-- Associations -->
+
+		<many-to-one name="servicoTipo"
+			class="gcom.atendimentopublico.ordemservico.ServicoTipo" not-null="true">
+			<column name="svtp_id" />
+		</many-to-one>
+
+		<many-to-one name="localidade" class="gcom.cadastro.localidade.Localidade"
+			not-null="false">
+			<column name="loca_id" />
+		</many-to-one>
+
+		<many-to-one name="setorComercial"
+			class="gcom.cadastro.localidade.SetorComercial" not-null="false">
+			<column name="stcm_id" />
+		</many-to-one>
+
+		<many-to-one name="bairro" class="gcom.cadastro.geografico.Bairro"
+			not-null="false">
+			<column name="bair_id" />
+		</many-to-one>
+
+		<many-to-one name="sistemaAbastecimento" class="gcom.operacional.SistemaAbastecimento"
+			not-null="false">
+			<column name="sabs_id" />
+		</many-to-one>
+
+		<many-to-one name="distritoOperacional" class="gcom.operacional.DistritoOperacional"
+			not-null="false">
+			<column name="diop_id" />
+		</many-to-one>
+
+		<many-to-one name="zonaAbastecimento" class="gcom.operacional.ZonaAbastecimento"
+			not-null="false">
+			<column name="zabs_id" />
+		</many-to-one>
+
+		<many-to-one name="setorAbastecimento" class="gcom.operacional.SetorAbastecimento"
+			not-null="false">
+			<column name="stab_id" />
+		</many-to-one>
+
+		<many-to-one name="sistemaEsgoto" class="gcom.operacional.SistemaEsgoto"
+			not-null="false">
+			<column name="sesg_id" />
+		</many-to-one>
+
+		<many-to-one name="subsistemaEsgoto" class="gcom.operacional.SubsistemaEsgoto"
+			not-null="false">
+			<column name="sses_id" />
+		</many-to-one>
+
+		<many-to-one name="bacia" class="gcom.operacional.Bacia"
+			not-null="false">
+			<column name="baci_id" />
+		</many-to-one>
+
+		<many-to-one name="subBacia" class="gcom.operacional.SubBacia"
+			not-null="false">
+			<column name="sbac_id" />
+		</many-to-one>
+
+		<many-to-one name="unidadeOrganizacionalOrigem"
+			class="gcom.cadastro.unidade.UnidadeOrganizacional" not-null="false">
+			<column name="unid_idorigem" />
+		</many-to-one>
+
+		<many-to-one name="unidadeOrganizacionalDestino"
+			class="gcom.cadastro.unidade.UnidadeOrganizacional" not-null="true">
+			<column name="unid_iddestino" />
+		</many-to-one>
+
+	</class>
+</hibernate-mapping>

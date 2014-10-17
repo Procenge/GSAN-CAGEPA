@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.QuitacaoDebitoAnualItem" 
+    table="quitacao_debito_anual_item"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="qadi_id"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				sq_quitacao_debito_anual_item
+			</param>
+		</generator>
+    </id>
+   
+    <property
+        name="anoReferenciaItem"
+        type="java.lang.Integer"
+        column="qadi_amreferenciaitem"
+        length="4"
+        not-null="true"
+    />
+    
+    <property
+        name="valorItem"
+        type="java.math.BigDecimal"
+        column="qadi_vlitem"
+        length="13"
+        not-null="true"
+    />
+    
+    <property
+        name="dataPagamento"
+        type="java.sql.Date"
+        column="qadi_dtpagamento"
+        length="4"
+        not-null="false"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="qadi_tmultimaalteracao"
+        length="8"
+        not-null="true"
+    />
+  
+    <!-- Associations -->
+    
+    <!-- bi-directional many-to-one association to QuitacaoDebitoAnual -->
+    <many-to-one
+        name="quitacaoDebitoAnual"
+        class="gcom.cobranca.QuitacaoDebitoAnual"
+        not-null="true"
+    >
+    	<column name="qadb_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to DocumentoTipo -->
+    <many-to-one
+        name="documentoTipo"
+        class="gcom.cobranca.DocumentoTipo"
+        not-null="true"
+    >
+        <column name="dotp_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to DebitoCreditoSituacao -->
+    <many-to-one
+        name="debitoCreditoSituacao"
+        class="gcom.faturamento.debito.DebitoCreditoSituacao"
+        not-null="true"
+    >
+        <column name="dcst_id" />
+    </many-to-one>
+    
+     <!-- bi-directional many-to-one association to ContaGeral -->
+    <many-to-one
+        name="contaGeral"
+        class="gcom.faturamento.conta.ContaGeral"
+        not-null="true"
+    >
+        <column name="cnta_id" />
+    </many-to-one>
+  
+ </class>
+</hibernate-mapping>

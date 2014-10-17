@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.cobranca.CobrancaProdutividade"
+    table="cobranca_produtividade"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="CPRO_ID">
+        <generator class="sequence">
+        	<param name="sequence">SQ_COBRANCA_PRODUTIVIDADE</param>
+     	</generator>
+    </id>
+    
+    <property
+        name="anoMesReferencia"
+        type="java.lang.Integer"
+        column="CPRO_AMREFERENCIA"
+        length="4"
+    />
+
+    <property
+        name="data"
+        type="java.sql.Date"
+        column="CPRO_DATA"
+        not-null="true"
+        length="4"
+    />
+
+    <property
+        name="quantidadeContas"
+        type="java.lang.Integer"
+        column="CPRO_QTCONTAS"
+    />
+    
+    <property
+        name="quantidadeDocumentos"
+        type="java.lang.Integer"
+        column="CPRO_QTDOCTOS"
+    />
+    
+    <property
+        name="quantidadeClientes"
+        type="java.lang.Integer"
+        column="CPRO_QTCLIENTES"
+    />
+    
+    <property
+        name="identificadorHidrometro"
+        type="java.lang.Integer"
+        column="CPRO_ICHIDR"
+        length="4"
+    />
+    
+    <property
+        name="identificadorPrazo"
+        type="java.lang.Integer"
+        column="CPRO_ICPRAZO"
+        length="4"
+    />
+    
+    <property
+        name="valorContas"
+        type="java.math.BigDecimal"
+        column="CPRO_VLCONTAS"
+        length="13"
+    />
+    
+    <property
+        name="valorDocumentos"
+        type="java.math.BigDecimal"
+        column="CPRO_VLDOCTOS"
+        length="13"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="CPRO_TMULTIMAALTERACAO"
+        length="8"
+    />
+    
+     <many-to-one
+        name="comandoAcaoCronograma"
+        class="gcom.cobranca.CobrancaAcaoAtividadeCronograma"
+        not-null="false"
+    >
+        <column name="CAAC_ID" />
+    </many-to-one>
+    
+     <many-to-one
+        name="comandoAcaoEventual"
+        class="gcom.cobranca.CobrancaAcaoAtividadeComando"
+        not-null="false"
+    >
+        <column name="CACM_ID" />
+    </many-to-one>
+    
+     <many-to-one
+        name="cobrancaAcao"
+        class="gcom.cobranca.CobrancaAcao"
+        not-null="true"
+    >
+        <column name="CBAC_ID" />
+    </many-to-one>
+    
+     <many-to-one
+        name="empresa"
+        class="gcom.cadastro.empresa.Empresa"
+        not-null="true"
+    >
+        <column name="EMPR_ID" />
+    </many-to-one>
+    
+     <many-to-one
+        name="documentoTipo"
+        class="gcom.cobranca.DocumentoTipo"
+        not-null="false"
+    >
+        <column name="DOTP_ID" />
+    </many-to-one>
+    
+     <many-to-one
+        name="servicoTipo"
+        class="gcom.atendimentopublico.ordemservico.ServicoTipo"
+        not-null="false"
+    >
+        <column name="SVTP_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="supressaoTipo"
+        class="gcom.atendimentopublico.ligacaoagua.SupressaoTipo"
+        not-null="false"
+    >
+        <column name="STIP_ID" />
+    </many-to-one>
+    
+     <many-to-one
+        name="corteTipo"
+        class="gcom.atendimentopublico.ligacaoagua.CorteTipo"
+        not-null="false"
+    >
+        <column name="COTP_ID" />
+    </many-to-one>
+
+     <many-to-one
+        name="atendimentoMotivoEncerramento"
+        class="gcom.atendimentopublico.registroatendimento.AtendimentoMotivoEncerramento"
+        not-null="false"
+    >
+        <column name="AMEN_ID" />
+    </many-to-one>
+    
+     <many-to-one
+        name="cobrancaDebitoSituacao"
+        class="gcom.cobranca.CobrancaDebitoSituacao"
+        not-null="false"
+    >
+        <column name="CDST_ID" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

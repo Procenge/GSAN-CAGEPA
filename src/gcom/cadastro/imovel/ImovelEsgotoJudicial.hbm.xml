@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.cadastro.imovel.ImovelEsgotoJudicial"
+    table="imovel_esgoto_judicial"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="imej_id">  
+
+    <generator class="sequence">
+       <param name="sequence">sq_imov_esgot_judic</param>
+    </generator>
+
+    </id>
+    
+    <!-- bi-directional many-to-one association to Imovel--> 
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="true"
+    >
+        <column name="imov_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to LigacaoEsgotoSituacao -->
+    <many-to-one
+        name="ligacaoEsgotoSituacaoInclusao"
+        class="gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao"
+        not-null="true"
+    >
+        <column name="imej_cdsitesginc" />
+    </many-to-one>
+    
+    <property
+        name="anoMesProximoFaturamentoInclusao"
+        type="java.lang.Integer"
+        column="imej_amrefproxfatinc"
+        length="4"
+    />
+    
+    <property
+        name="dataInclusao"
+        type="java.sql.Timestamp"
+        column="imej_tminc"
+        length="8"
+    />
+    
+    <!-- bi-directional many-to-one association to LigacaoEsgotoSituacao -->
+    <many-to-one
+        name="ligacaoEsgotoSituacaoExclusao"
+        class="gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao"
+        not-null="true"
+    >
+        <column name="imej_cdsitesgexc" />
+    </many-to-one>
+    
+    <property
+        name="anoMesProximoFaturamentoExclusao"
+        type="java.lang.Integer"
+        column="imej_amrefproxfatexc"
+        length="4"
+    />
+    
+    <property
+        name="dataExclusao"
+        type="java.sql.Timestamp"
+        column="imej_tmexc"
+        length="8"
+    />
+    
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="imej_icuso"
+        length="2"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="imej_tmultimaalteracao"
+        length="8"
+    />
+
+</class>
+</hibernate-mapping>

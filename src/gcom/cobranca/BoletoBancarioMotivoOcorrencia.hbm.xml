@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.BoletoBancarioMotivoOcorrencia" 
+    table="boleto_bancario_motivo_ocorr"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="bmto_id"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				sq_boleto_bancario_mot_ocorr
+			</param>
+		</generator>
+    </id>
+
+	<property
+        name="codigoMotivoOcorrencia"
+        type="java.lang.String"
+        column="bmto_cdmotivoocorrencia"
+        length="2"
+        not-null="true"
+    />
+	<property
+        name="descricaoMotivoOcorrencia"
+        type="java.lang.String"
+        column="bmto_dsmotivoocorrencia"
+        length="60"
+        not-null="true"
+    />
+	<property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="bmto_icuso"
+        length="2"
+        not-null="true"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="bmto_tmultimaalteracao"
+        length="8"
+        not-null="true"
+    />
+
+    <!-- Associations -->
+	
+	<!-- bi-directional many-to-one association to BoletoBancarioTipoOcorrencia -->
+	<many-to-one name="boletoBancarioTipoOcorrencia"
+		class="gcom.cobranca.BoletoBancarioTipoOcorrencia" not-null="true">
+		<column name="btpo_id" />
+	</many-to-one>
+	
+</class>
+</hibernate-mapping>

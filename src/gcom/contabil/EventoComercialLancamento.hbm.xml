@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="gcom.contabil.EventoComercialLancamento" table="EVENTO_COMERCIAL_LANCAMENTO">
+		<id name="id" column="EVCL_ID">
+			<generator class="sequence">
+		       <param name="sequence">SQ_EVCL_ID</param>
+		    </generator>
+		</id>
+				
+      	<property name="ultimaAlteracao" column="EVCL_TMULTIMAALTERACAO" not-null="true"/>
+      	<property name="indicadorUso" column="EVCL_ICUSO" not-null="true" />    
+      	
+      	<property name="descricaoDocumento"
+      			  type="java.lang.String"
+      			  column="EVCL_DSDOCTO"
+      			  length="50">
+      	</property>
+      	<property name="descricaoComplemento"
+      			  type="java.lang.String"
+      			  column="EVCL_DSCOMPL"
+      			  length="100">
+      	</property>
+      	        
+      	<many-to-one name="eventoComercial" class="gcom.contabil.EventoComercial" not-null="true">
+       		<column name="EVCO_ID" />
+    	</many-to-one>
+    	
+    	<many-to-one name="categoria" class="gcom.cadastro.imovel.Categoria" not-null="false">
+       		<column name="CATG_ID" />
+    	</many-to-one>
+    	
+    	<many-to-one name="lancamentoItemContabil" class="gcom.financeiro.lancamento.LancamentoItemContabil" not-null="false">
+       		<column name="LICT_ID" />
+    	</many-to-one>
+    	
+    	<many-to-one name="impostoTipo" class="gcom.faturamento.ImpostoTipo" not-null="true">
+       		<column name="IMTP_ID" />
+    	</many-to-one>              	      	       
+      	
+      	<many-to-one name="contaBancaria" class="gcom.arrecadacao.banco.ContaBancaria" not-null="false">
+       		<column name="CTBC_ID" />
+    	</many-to-one>        
+      	
+      	<many-to-one name="contaContabilDebito" class="gcom.financeiro.ContaContabil" not-null="true">
+       		<column name="CNCT_ID_DEBITO" />
+    	</many-to-one>        
+      	        
+		<many-to-one name="contaContabilCredito" class="gcom.financeiro.ContaContabil" not-null="true">
+       		<column name="CNCT_ID_CREDITO" />
+    	</many-to-one>    	      	              	
+      	
+	</class>
+
+</hibernate-mapping>

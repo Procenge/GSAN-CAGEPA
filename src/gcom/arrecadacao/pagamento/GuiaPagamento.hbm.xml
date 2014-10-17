@@ -1,0 +1,336 @@
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.arrecadacao.pagamento.GuiaPagamento"
+    table="guia_pagamento"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="gpag_id"
+    >
+      <generator class="assigned" /> 
+      
+    </id>
+	    
+	<property
+        name="valorDebito"
+        type="java.math.BigDecimal"
+        column="gpag_vldebito"
+        not-null="true"
+        length="13"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="gpag_tmultimaalteracao"
+        length="8"
+    />
+    
+
+    <property
+        name="numeroPrestacaoTotal"
+        type="java.lang.Short"
+        column="gpag_nnprestacaototal"
+        length="2"
+    />
+    
+    
+        <property
+        name="dataInclusao"
+        type="java.sql.Timestamp"
+        column="gpag_dtinclusao"
+        length="4"
+    /> 
+    
+    <property
+        name="indicadorEmissaoObservacaoRA"
+        type="java.lang.Short"
+        column="gpag_icemissaoobservacaora"
+        length="2"
+    />
+    
+    <property
+        name="numeroContratoParcelOrgaoPublico"
+        type="java.lang.Integer"
+        column="gpag_nncontratoparcorgaopublic"
+    />
+    
+    <!-- Alteracao 0.03
+    
+    	<property
+	        name="dataEmissao"
+    	    type="java.sql.Date"
+        	column="gpag_dtemissao"
+        	not-null="true"
+        	length="8"
+    	/>
+
+      	<property
+        	name="numeroPrestacaoDebito"
+        	type="java.lang.Short"
+        	column="gpag_nnprestacaodebito"
+        	length="2"
+    	/>
+
+
+		<property
+	        name="indicadoCobrancaMulta"
+    	    type="java.lang.Short"
+	        column="gpag_iccobrancamulta"
+    	    not-null="true"
+	        length="2"
+	    />
+
+
+		<property
+	        name="dataVencimento"
+    	    type="java.sql.Date"
+        	column="gpag_dtvencimento"
+	        not-null="true"
+    	    length="8"
+    	/>	
+    
+    
+    	<property
+	        name="anoMesReferenciaContabil"
+    	    type="java.lang.Integer"
+        	column="gpag_amreferenciaContabil"
+	        not-null="true"
+    	/>	
+    
+    	// Entidades Retiradas        	
+    	
+    	<many-to-one
+        	name="lancamentoItemContabil"
+        	class="gcom.financeiro.lancamento.LancamentoItemContabil"
+        	not-null="true"
+    	>
+	        <column name="lict_id" />
+    	</many-to-one>
+
+
+		<many-to-one
+        	name="debitoTipo"
+        	class="gcom.faturamento.debito.DebitoTipo"
+        	not-null="true"
+    	>
+	        <column name="dbtp_id" />
+	    </many-to-one>
+	
+		<many-to-one
+        	name="financiamentoTipo"
+        	class="gcom.financeiro.FinanciamentoTipo"
+        	not-null="true"
+    	>
+        	<column name="fntp_id" />
+    	</many-to-one>
+
+		<many-to-one
+        	name="debitoCreditoSituacaoAnterior"
+        	class="gcom.faturamento.debito.DebitoCreditoSituacao"
+        	not-null="false"
+    	>
+    	    <column name="dcst_idanterior" />
+	    </many-to-one>
+    
+    -->
+        
+
+
+    <!-- associations -->
+    <!-- bi-directional many-to-one association to Cliente -->
+    <many-to-one
+        name="cliente"
+        class="gcom.cadastro.cliente.Cliente"
+        not-null="false"
+    >
+        <column name="clie_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Parcelamento -->
+    <many-to-one
+        name="parcelamento"
+        class="gcom.cobranca.parcelamento.Parcelamento"
+        not-null="false"
+    >
+        <column name="parc_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to DocumentoTipo -->
+    <many-to-one
+        name="documentoTipo"
+        class="gcom.cobranca.DocumentoTipo"
+        not-null="false"
+    >
+        <column name="dotp_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to RegistroAtendimento -->
+    <many-to-one
+        name="registroAtendimento"
+        class="gcom.atendimentopublico.registroatendimento.RegistroAtendimento"
+        not-null="false"
+    >
+        <column name="rgat_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Imovel -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="false"
+    >
+        <column name="imov_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Localidade -->
+    <many-to-one
+        name="localidade"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="true"
+    >
+        <column name="loca_id" />
+    </many-to-one>
+     <!-- bi-directional many-to-one association to SetorComercial -->
+    <many-to-one
+        name="setorComercial"
+        class="gcom.cadastro.localidade.SetorComercial"
+        not-null="false"
+    >
+        <column name="stcm_id" />
+    </many-to-one>
+		
+	<!-- bi-directional many-to-one association to Localidade -->
+    <many-to-one
+        name="ordemServico"
+        class="gcom.atendimentopublico.ordemservico.OrdemServico"
+        not-null="false"
+    >
+        <column name="orse_id" />
+    </many-to-one>
+	
+	<!-- bi-directional many-to-one association to Localidade -->
+    <many-to-one
+        name="debitoCreditoSituacaoAtual"
+        class="gcom.faturamento.debito.DebitoCreditoSituacao"
+        not-null="true"
+    >
+        <column name="dcst_id" />
+    </many-to-one>
+    	    
+    <!-- bi-directional one-to-many association to ClienteGuiaPagamento -->
+    <set
+        name="clientesGuiaPagamento"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="gpag_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.cliente.ClienteGuiaPagamento"
+        />
+    </set>
+    
+    <set
+        name="pagamentos"
+        lazy="true"
+        inverse="true" >
+        <key>
+            <column name="gpag_id" />
+        </key>
+        <one-to-many
+            class="gcom.arrecadacao.pagamento.Pagamento"
+        />
+    </set>
+    
+    <set
+        name="guiasPagamentoCategoria"
+        lazy="true"
+        inverse="true">
+        <key>
+            <column name="gpag_id" />
+        </key>
+        <one-to-many
+            class="gcom.arrecadacao.pagamento.GuiaPagamentoCategoria"
+        />
+    </set>
+    
+    <set
+        name="guiasPagamentoCategoriaHistorico"
+        lazy="true"
+        inverse="true">
+        <key>
+            <column name="gpag_id" />
+        </key>
+        <one-to-many
+            class="gcom.arrecadacao.pagamento.GuiaPagamentoCategoriaHistorico"
+        />
+    </set>    
+    
+    <set
+        name="guiasPagamentoPrestacao"
+        lazy="true"
+        inverse="true"
+        order-by="dbtp_id, gppr_dtvencimento"  >
+        <key>
+            <column name="gpag_id" />
+        </key>
+        <one-to-many
+            class="gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao"
+        />
+    </set>
+        
+    <set
+        name="guiasPagamentoPrestacaoHistorico"
+        lazy="true"
+        inverse="true">
+        <key>
+            <column name="gpag_id" />
+        </key>
+        <one-to-many
+            class="gcom.arrecadacao.pagamento.GuiaPagamentoPrestacaoHistorico"
+        />
+    </set>
+    
+    
+   <one-to-one
+        name="guiaPagamentoGeral"
+        class="gcom.faturamento.GuiaPagamentoGeral"
+        outer-join="auto"
+        constrained="true"
+    />
+        <many-to-one
+        name="origem"
+        class="gcom.faturamento.GuiaPagamentoGeral"
+        not-null="false"
+    >
+        <column name="gpag_idorigem" />
+    </many-to-one>
+    
+    <many-to-one
+        name="prescricaoComando"
+        class="gcom.cobranca.prescricao.PrescricaoComando"
+        not-null="false"
+    >
+        <column name="prcm_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="debitoCreditoSituacaoAnterior"
+        class="gcom.faturamento.debito.DebitoCreditoSituacao"
+        not-null="false"
+    >
+        <column name="dcst_idanterior" />
+    </many-to-one>
+    
+
+</class>
+</hibernate-mapping>

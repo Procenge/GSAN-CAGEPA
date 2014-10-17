@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="gcom.arrecadacao.PagamentoTipo" table="pagamento_tipo">
+
+		<id name="id" type="java.lang.Integer" column="pgtp_id">
+			<generator class="sequence">
+				<param name="sequence">sq_pagamento_tipo</param>
+			</generator>
+		</id>
+
+		<property name="descricao" type="java.lang.String" column="pgtp_dspagamentotipo"
+			length="50" not-null="true" />
+
+		<property name="descricaoAbreviada" type="java.lang.String" column="pgtp_dsabreviado"
+			length="5" not-null="false" />
+
+		<property name="ultimaAlteracao" type="java.sql.Timestamp"
+			column="pgtp_tmultimaalteracao" length="8" not-null="true" />
+
+	</class>
+</hibernate-mapping>

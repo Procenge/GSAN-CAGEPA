@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<!-- 
+		Created by the Middlegen Hibernate plugin 2.1
+		
+		http://boss.bekk.no/boss/middlegen/
+		http://www.hibernate.org/
+	-->
+
+	<class name="gcom.cobranca.BoletoBancarioSituacaoHistorico" table="boleto_bancario_sit_historico">
+
+		<id name="id" type="java.lang.Integer" column="bbsh_id">
+			<generator class="sequence">
+				<param name="sequence">
+					sq_boleto_bancario_sit_hist
+				</param>
+			</generator>
+		</id>
+
+		<property 
+			name="dataEntrada" 
+			type="java.sql.Date"
+			column="bbsh_dtentrada" 
+			not-null="true"
+		/>
+		<property 
+			name="ultimaAlteracao" 
+			type="java.sql.Timestamp"
+			column="bbsh_tmultimaalteracao" 
+			length="8" not-null="true"
+		/>
+		
+		<!-- bi-directional many-to-one association to BoletoBancario -->
+		<many-to-one name="boletoBancario"
+			class="gcom.cobranca.BoletoBancario" not-null="true">
+			<column name="bbco_id" />
+		</many-to-one>
+		
+		<!-- bi-directional many-to-one association to BoletoBancarioSituacao -->
+		<many-to-one name="boletoBancarioSituacao"
+			class="gcom.cobranca.BoletoBancarioSituacao" not-null="true">
+			<column name="bbst_id" />
+		</many-to-one>
+
+	</class>
+</hibernate-mapping>
+

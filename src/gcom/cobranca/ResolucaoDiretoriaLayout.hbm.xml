@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.ResolucaoDiretoriaLayout" 
+    table="resolucao_diretoria_layout"
+    dynamic-insert="true" dynamic-update="true"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="rdly_id"
+    >
+	    <generator class="sequence">
+	       <param name="sequence">sq_resolucao_diretoria_layout</param>
+	    </generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="rdly_dslayout"
+        length="50"
+        not-null="true"  
+    />
+    <property
+        name="nomeRelatorio"
+        type="java.lang.String"
+        column="rdly_nmrelatorio"
+        length="50"
+        not-null="true"  
+    />
+    <property
+        name="nomeClasse"
+        type="java.lang.String"
+        column="rdly_nmclasse"
+        length="100"
+        not-null="true"  
+    />
+    <property
+        name="quantidadeVias"
+        type="java.lang.Integer"
+        column="rdly_qtvias"
+        not-null="true"  
+    />
+    <property
+        name="indicadorPadrao"
+        type="java.lang.Integer"
+        column="rdly_icpadrao"
+        not-null="true"   
+    />
+    <property
+        name="indicadorImpressaoDoisPorPagina"
+        type="java.lang.Integer"
+        column="rdly_icdoisporpagina"
+        not-null="true"    
+    />
+     <property
+        name="indicadorUso"
+        type="java.lang.Integer"
+        column="rdly_icuso"
+        not-null="true"  
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="rdly_tmultimaalteracao"
+        length="6"
+        not-null="true"
+    />
+    <property
+        name="indicadorSolicitaTestemunhas"
+        type="java.lang.Integer"
+        column="rdly_icsolicitatestemunhas"
+        not-null="true"   
+    />
+
+</class>
+</hibernate-mapping>

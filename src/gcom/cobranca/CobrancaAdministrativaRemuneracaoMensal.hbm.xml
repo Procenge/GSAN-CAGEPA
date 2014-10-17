@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="gcom.cobranca.CobrancaAdministrativaRemuneracaoMensal"
+		table="cobranca_admin_remun_mensal">
+
+		<id name="id" type="java.lang.Integer" column="carm_id">
+			<generator class="sequence">
+				<param name="sequence">
+					sq_cobr_admin_remun_mensal
+				</param>
+			</generator>
+		</id>
+
+		<property name="referenciaArrecadacao" type="java.lang.Integer"
+			column="carm_amreferenciaarrecadacao" not-null="true" length="6" />
+
+		<property name="percentualDesempenho" type="java.math.BigDecimal"
+			column="carm_pcdesempenho" not-null="true" length="5" />
+
+		<property name="percentualRemuneracao" type="java.math.BigDecimal"
+			column="carm_pcremuneracao" not-null="true" length="5" />
+
+		<property name="valorArrecadadoLote" type="java.math.BigDecimal"
+			column="carm_vlarrecadadolote" not-null="true" length="13" />
+
+		<property name="valorArrecadadoLoteAcumulado" type="java.math.BigDecimal"
+			column="carm_vlarrecadadoloteacumulado" not-null="true" length="13" />
+
+		<property name="valorArrecadado" type="java.math.BigDecimal"
+			column="carm_vlarrecadado" not-null="true" length="13" />
+
+		<property name="valorRemuneracao" type="java.math.BigDecimal"
+			column="carm_vlremuneracao" not-null="true" length="13" />
+
+		<property name="ultimaAlteracao" type="java.sql.Timestamp"
+			column="carm_tmultimaalteracao" not-null="true" length="8" />
+			
+		<property name="dataPagamentoRemuneracao" type="java.sql.Date"
+			column="CARM_DTPAGAMENTOREMUNERACAO" not-null="false" length="8" />
+		
+		<property
+        name="indicadorRemuneracaoPaga"
+        type="java.lang.Short"
+        column="CARM_ICREMUNERACAOPAGA"
+        length="2"
+    />    
+
+		<many-to-one name="empresa" class="gcom.cadastro.empresa.Empresa"
+			not-null="true">
+			<column name="empr_id" />
+		</many-to-one>
+
+		<many-to-one name="cobrancaAcaoAtividadeComando"
+			class="gcom.cobranca.CobrancaAcaoAtividadeComando" not-null="true">
+			<column name="cacm_id" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

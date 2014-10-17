@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.cadastro.aguaparatodos.ImovelAguaParaTodos"
+    table="imovel_agua_para_todos"
+>
+
+   <id
+        name="id"
+        type="java.lang.Integer"
+        column="iapt_id"
+    >
+     <generator class="sequence">
+        	<param name="sequence">sq_imovel_agua_para_todos</param>
+     </generator>
+
+    </id>
+    
+    <many-to-one
+        name="idImovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="true"
+    >
+        <column name="imov_id" />
+    </many-to-one>     
+
+	<property
+		name="idContribuinte"
+		type="java.lang.Long"
+		column="iapt_nnidentifcontribuinte"
+		 />
+		 
+     <property
+        name="nomeParticipante"
+        type="java.lang.String"
+        column="iapt_nmparticipante"
+        length="50"
+    	/>
+    	
+    <many-to-one
+        name="idUsuarioInclusao"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="false"
+        
+    >
+        <column name="usur_idinclusao" />
+    </many-to-one>    
+      
+    <many-to-one
+        name="idUsuarioExclusao"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="false"
+        
+    >
+        <column name="usur_idexclusao" />
+    </many-to-one>    
+    
+    <many-to-one
+        name="idUsuarioRenovacao"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="false"
+        
+    >
+        <column name="usur_idrenovacao" />
+    </many-to-one>    
+
+    <property
+        name="dataCadastramento"
+        type="java.sql.Timestamp"
+        column="iapt_tmcadastramentoprog"
+        length="8"
+    />
+    
+    <property
+        name="dataHabilitacao"
+        type="java.sql.Timestamp"
+        column="iapt_tmhabilitacaoprograma"
+        length="8"
+    />
+    
+    <property
+        name="dataExclusao"
+        type="java.sql.Timestamp"
+        column="iapt_tmexclusaoprograma"
+        length="8"
+    />
+    
+    <property
+        name="dataRenovacao"
+        type="java.sql.Timestamp"
+        column="iapt_tmrenovacaoprograma"
+        length="8"
+    />
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="iapt_tmultimaalteracao"
+        length="8"
+    />
+   
+    <property
+        name="anoMesReferenciaInicial"
+        type="java.lang.Integer"
+        column="iapt_amreferenciaini"
+    />
+    
+    
+    <property
+        name="anoMesReferenciaFinal"
+        type="java.lang.Integer"
+        column="iapt_amreferenciafim"
+    />
+    
+    <property
+        name="codigoSituacao"
+        type="java.lang.Integer"
+        column="iapt_cdsituacao"
+    />
+    
+    <property
+        name="motivoExclusao"
+        type="java.lang.Integer"
+        column="apme_id"
+    />
+
+
+</class>
+</hibernate-mapping>

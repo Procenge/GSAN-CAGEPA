@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.OrdemServicoDeslocamento" 
+    table="ordem_servico_desloc"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="osde_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_ordem_servico_desloc</param>
+    	</generator>
+    </id>
+    
+    <property
+        name="placaVeiculo"
+        type="java.lang.String"
+        column="osde_nnplacaveiculo"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="deslocamentoInicio"
+        type="java.sql.Timestamp"
+        column="osde_tminiciodesloc"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="deslocamentoFim"
+        type="java.sql.Timestamp"
+        column="osde_tmfimdesloc"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="numeroKmInicio"
+        type="java.math.BigDecimal"
+        column="osde_nnkminicio"
+        length="7"
+    />
+    
+    <property
+        name="numeroKmFim"
+        type="java.math.BigDecimal"
+        column="osde_nnkmfim"
+        length="7"
+    />
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="osde_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    
+    <many-to-one
+        name="ordemServicoProgramacao"
+        class="gcom.atendimentopublico.ordemservico.OrdemServicoProgramacao"
+        not-null="true"
+    >
+        <column name="ospg_id" />
+    </many-to-one>
+   
+</class>
+</hibernate-mapping>

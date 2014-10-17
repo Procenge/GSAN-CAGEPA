@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.arrecadacao.AcrescimoImpontualidadeDesconto" 
+    table="ACRESC_IMPONTUALIDADE_DESCONTO"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ACID_ID"
+    >
+	    <generator class="sequence">
+	       <param name="sequence">SQ_ACRESC_IMPONT_DESC</param>
+	    </generator>
+	</id>
+
+    <property
+        name="dtPagamentoInicial"
+        type="java.sql.Date"
+        column="ACID_DTPAGAMENTOINICIAL"
+        length="4"
+    />
+    <property
+        name="dtPagamentoFinal"
+        type="java.sql.Date"
+        column="ACID_DTPAGAMENTOFINAL"
+        length="4"
+    />
+    
+    <property
+        name="anoMesReferenciaInicial"
+        type="java.lang.Integer"
+        column="ACID_AMREFERENCIAINICIAL"
+        length="4"
+    />
+    <property
+        name="anoMesReferenciaFinal"
+        type="java.lang.Integer"
+        column="ACID_AMREFERENCIAFINAL"
+        length="6"
+    />
+    
+    <property
+        name="dtVencimentoInicial"
+        type="java.sql.Date"
+        column="ACID_DTVENCIMENTOINICIAL"
+        length="4"
+    />
+    <property
+        name="dtVencimentoFinal"
+        type="java.sql.Date"
+        column="ACID_DTVENCIMENTOFINAL"
+        length="4"
+    />
+    
+    <property
+        name="percentualDescontoJuros"
+        type="java.math.BigDecimal"
+        column="ACID_PCDESCONTOJUROS"
+        length="5"
+    />
+
+    <property
+        name="percentualDescontoCorrecao"
+        type="java.math.BigDecimal"
+        column="ACID_PCDESCONTOCORRECAO"
+        length="5"
+    />
+
+    <property
+        name="percentualDescontoMulta"
+        type="java.math.BigDecimal"
+        column="ACID_PCDESCONTOMULTA"
+        length="5"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="gdev_tmultimaalteracao"
+        length="8"
+    />
+
+</class>
+
+</hibernate-mapping>

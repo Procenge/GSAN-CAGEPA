@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.batch.ProcessoRestricaoExecucao" 
+    table="processo_restricao_execucao"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="prex_id"
+    >
+	</id>
+
+    <property
+        name="indicadorUso"
+        type="short"
+        column="prex_icuso"
+        not-null="true"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="prex_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to Processo -->
+    <many-to-one
+        name="processoIniciar"
+        class="gcom.batch.Processo"
+        not-null="true"
+    >
+        <column name="proc_idiniciar" />
+    </many-to-one>
+    
+    <many-to-one
+        name="processoExecucao"
+        class="gcom.batch.Processo"
+        not-null="true"
+    >
+        <column name="proc_idexecucao" />
+    </many-to-one>
+   
+
+</class>
+</hibernate-mapping>

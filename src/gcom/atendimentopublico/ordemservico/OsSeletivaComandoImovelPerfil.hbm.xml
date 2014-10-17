@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created por Victon Santos
+-->
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.OsSeletivaComandoImovelPerfil" 
+    table="OS_SELET_COMANDO_IMOVEL_PERFIL"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="OSCI_ID"
+    >
+        <generator class="sequence">
+		       <param name="sequence">SQ_OS_SELET_COMANDO_IMOV_PER</param>
+		    </generator>
+    </id>
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="OSCI_TMULTIMAALTERACAO"
+        length="6"
+        not-null="true"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to OsSeletivaComando -->
+    <many-to-one
+        name="osSeletivaComando"
+        class="gcom.atendimentopublico.ordemservico.OsSeletivaComando"
+        not-null="true"
+    >
+        <column name="OSSC_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to ImovelPerfil -->
+    <many-to-one
+        name="imovelPerfil"
+        class="gcom.cadastro.imovel.ImovelPerfil"
+        not-null="true"
+    >
+        <column name="IPER_ID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

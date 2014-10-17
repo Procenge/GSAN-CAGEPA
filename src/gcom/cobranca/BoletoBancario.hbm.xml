@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<!--
+		Created by the Middlegen Hibernate plugin 2.1
+
+		http://boss.bekk.no/boss/middlegen/ http://www.hibernate.org/
+	-->
+
+	<class name="gcom.cobranca.BoletoBancario" table="boleto_bancario">
+
+		<id name="id" type="java.lang.Integer" column="bbco_id">
+			<generator class="sequence">
+				<param name="sequence">
+					sq_boleto_bancario
+				</param>
+			</generator>
+		</id>
+
+		<property name="convenio" type="java.lang.String" column="bbco_cdconvenio"
+			length="20" not-null="true" />
+			
+		<property name="numeroSequencial" type="java.lang.Integer"
+			column="bbco_nnsequencial" not-null="true" />
+			
+		<property name="anoMesReferencia" type="java.lang.Integer"
+			column="bbco_amreferenciafaturamento" not-null="true" />
+			
+		<property name="dataVencimento" type="java.sql.Date" column="bbco_dtvencimento"
+			not-null="true" />
+			
+		<property name="valorDebito" type="java.math.BigDecimal"
+			column="bbco_vldebito" not-null="true" />
+			
+		<property name="dataEmissao" type="java.sql.Date" column="bbco_dtemissao" />
+		
+		<property name="numeroPrestacoes" type="java.lang.Integer"
+			column="bbco_nnprestacao" />
+			
+		<property name="idOriginal" type="java.lang.Integer"
+			column="bbco_idoriginal" />
+			
+		<property name="dataPagamento" type="java.sql.Date" column="bbco_dtpagamento" />
+		
+		<property name="dataCredito" type="java.sql.Date" column="bbco_dtcredito" />
+		
+		<property name="dataGeracaoCarta" type="java.sql.Date"
+			column="bbco_dtgeracaocarta" />
+			
+		<property name="valorPago" type="java.math.BigDecimal"
+			column="bbco_vlpago" not-null="false" />
+			
+		<property name="valorTarifa" type="java.math.BigDecimal"
+			column="bbco_vltarifa" not-null="false" />
+			
+		<property name="dataCancelamento" type="java.sql.Date"
+			column="bbco_dtcancelamento" />
+			
+		<property name="numeroSequencialArquivoMigracao" type="java.lang.Integer"
+			column="bbco_nnseqremessamigracao" />
+
+		<property name="ultimaAlteracao" type="java.sql.Timestamp"
+			column="bbco_tmultimaalteracao" length="8" not-null="true" />
+		
+		<property name="ocorrenciaMigracao" type="java.lang.String"
+			column="bbco_cdrejliqbax" length="10" not-null="false" />
+
+		<!-- bi-directional many-to-one association to Parcelamento -->
+		<many-to-one name="parcelamento"
+			class="gcom.cobranca.parcelamento.Parcelamento" not-null="false">
+			<column name="parc_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to BoletoBancarioSituacao -->
+		<many-to-one name="boletoBancarioSituacao"
+			class="gcom.cobranca.BoletoBancarioSituacao" not-null="true">
+			<column name="bbst_idatual" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to Arrecadador -->
+		<many-to-one name="arrecadador" class="gcom.arrecadacao.Arrecadador"
+			not-null="true">
+			<column name="arrc_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to Imovel -->
+		<many-to-one name="imovel" class="gcom.cadastro.imovel.Imovel"
+			not-null="true">
+			<column name="imov_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to Cliente -->
+		<many-to-one name="cliente" class="gcom.cadastro.cliente.Cliente">
+			<column name="clie_idresponsavel" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to DocumentoTipo -->
+		<many-to-one name="documentoTipo" class="gcom.cobranca.DocumentoTipo"
+			not-null="true">
+			<column name="dotp_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to CobrancaDocumento -->
+		<many-to-one name="documentoCobranca" class="gcom.cobranca.CobrancaDocumento">
+			<column name="cbdo_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to Conta -->
+		<many-to-one name="conta" class="gcom.faturamento.conta.Conta">
+			<column name="cnta_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to DebitoACobrar -->
+		<many-to-one name="debitoACobrar" class="gcom.faturamento.debito.DebitoACobrar">
+			<column name="dbac_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to GuiaPagamento -->
+		<many-to-one name="guiaPagamento"
+			class="gcom.arrecadacao.pagamento.GuiaPagamento">
+			<column name="gpag_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to BoletoBancarioMotivoCancelamento -->
+		<many-to-one name="boletoBancarioMotivoCancelamento"
+			class="gcom.cobranca.BoletoBancarioMotivoCancelamento">
+			<column name="bbmc_id" />
+		</many-to-one>
+
+	</class>
+</hibernate-mapping>
+

@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.AgenteExterno" 
+    table="agente_externo"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="agex_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_agente_externo</param>
+    	</generator>
+    </id>
+    
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="agex_dsagenteexterno"
+        not-null="true"
+        length="20"
+    />
+    
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="agex_dsabrevagenteexterno"
+        not-null="true"
+        length="5"
+    />
+    
+   <property
+        name="indicadorUso"
+        column="agex_icuso"
+        not-null="true"
+        length="2"
+    />
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="agex_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+   
+</class>
+</hibernate-mapping>

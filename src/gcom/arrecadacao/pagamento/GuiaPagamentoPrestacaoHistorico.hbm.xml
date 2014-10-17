@@ -1,0 +1,179 @@
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+  <class  name="gcom.arrecadacao.pagamento.GuiaPagamentoPrestacaoHistorico"
+    		table="guia_pagamento_prestacao_hist">
+    		
+    <composite-id name="comp_id" class="gcom.arrecadacao.pagamento.GuiaPagamentoPrestacaoHistoricoPK">
+        <key-property 
+            name="guiaPagamentoId" 
+            column="gpag_id" 
+            type="java.lang.Integer"
+            length="6"
+        />
+        <key-property 
+            name="numeroPrestacao" 
+            column="gpph_nnprestacao" 
+            type="java.lang.Short"
+            length="3"
+        />
+         <key-property 
+            name="debitoTipoId" 
+            column="dbtp_id" 
+            type="java.lang.Integer"
+            length="4"
+        />
+         <key-property 
+            name="itemLancamentoContabilId" 
+            column="lict_id" 
+            type="java.lang.Integer"
+            length="4"
+        />
+    </composite-id>
+
+	<property
+        name="valorPrestacao"
+        type="java.math.BigDecimal"
+        column="gpph_vlprestacao"
+        not-null="true"
+        length="13"
+    />
+    
+    <property
+	    name="dataVencimento"
+    	type="java.sql.Date"
+        column="gpph_dtvencimento"
+	    not-null="true"
+    	length="8"
+    />	
+    
+    <property
+	        name="indicadorPagamentoPendente"
+    	    type="java.lang.Short"
+	        column="gpph_icpagamento"
+    	    not-null="true"
+	        length="2"
+	 />
+	 
+	 <property
+	        name="indicadorCobrancaMulta"
+    	    type="java.lang.Short"
+	        column="gpph_iccobrancamulta"
+    	    not-null="true"
+	        length="2"
+	 />
+	 
+	 <property
+	        name="anoMesReferenciaFaturamento"
+    	    type="java.lang.Integer"
+        	column="gpph_amreferenciafaturamento"
+	        not-null="true"
+     />
+     
+     <property
+	        name="anoMesReferenciaArrecadacao"
+    	    type="java.lang.Integer"
+        	column="gpph_amreferenciaarrecadacao"
+	        not-null="true"
+     />
+     
+     <property
+	        name="dataEmissao"
+    	    type="java.sql.Date"
+        	column="gpph_dtemissao"
+        	not-null="true"
+        	length="8"
+    />	
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="gpph_tmultimaalteracao"
+        length="8"
+    />
+    
+    <property
+        name="indicadorCobrancaAdministrativa"
+        type="java.lang.Short"
+        column="gpph_iccobrancaadministrativa"
+        length="2"
+        not-null="true"
+    /> 
+
+    <property
+        name="indicadorRemuneraCobrancaAdministrativa"
+        type="java.lang.Short"
+        column="gpph_icremuneracobrancaadm"
+        length="1"
+        not-null="true"
+    />
+
+    <!-- Associations -->
+    
+    <!-- derived association(s) for compound key -->
+    <!-- bi-directional many-to-one association to guiaPagamento -->
+    <many-to-one
+        name="guiaPagamento"
+	    class="gcom.arrecadacao.pagamento.GuiaPagamento"
+	    not-null="true"
+	    update="false"
+	    insert="false">
+    		<column name="gpag_id" />
+	</many-to-one>
+	
+    <!-- bi-directional many-to-one association to DebitoTipo -->
+    <many-to-one
+        name="debitoTipo"
+	    class="gcom.faturamento.debito.DebitoTipo"
+	    not-null="true"
+	    update="false"
+	    insert="false">
+			<column name="dbtp_id" />
+	</many-to-one>
+	
+    <!-- bi-directional many-to-one association to LancamentoItemContabil -->
+    <many-to-one
+       	name="lancamentoItemContabil"
+       	class="gcom.financeiro.lancamento.LancamentoItemContabil"
+       	not-null="true"
+       	update="false"
+	   	insert="false">
+	        <column name="lict_id" />
+    </many-to-one>
+     
+    <!-- end of derived association(s) for compound key --> 
+	
+	<many-to-one
+        	name="financiamentoTipo"
+        	class="gcom.financeiro.FinanciamentoTipo"
+        	not-null="true">
+        	<column name="fntp_id" />
+   	</many-to-one>
+   	
+   	<many-to-one
+        name="debitoCreditoSituacao"
+        class="gcom.faturamento.debito.DebitoCreditoSituacao"
+        not-null="true">
+        <column name="dcst_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="prescricaoComando"
+        class="gcom.cobranca.prescricao.PrescricaoComando"
+        not-null="false"
+    >
+        <column name="prcm_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="debitoCreditoSituacaoAnterior"
+        class="gcom.faturamento.debito.DebitoCreditoSituacao"
+        not-null="false"
+    >
+        <column name="dcst_idanterior" />
+    </many-to-one>
+     		
+	</class>
+</hibernate-mapping>

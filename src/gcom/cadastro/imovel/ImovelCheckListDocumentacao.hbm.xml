@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.cadastro.imovel.ImovelCheckListDocumentacao"
+    table="imovel_checklist_documentacao"
+>
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="icld_id">
+ 	  
+ 	  <generator class="sequence">
+          <param name="sequence">sq_imovel_clist_documentacao</param>
+      </generator>
+    </id>
+    
+    <property
+        name="indicadorEntregaCopiaContrato"
+        type="java.lang.Short"
+        column="icld_iccontrato"
+        length="2"
+        not-null="true"
+    />
+    
+    <property
+        name="indicadorEntregaCopiaCpf"
+        type="java.lang.Short"
+        column="icld_iccpf"
+        length="2"
+        not-null="true"
+    />
+    
+  	<property
+        name="indicadorEntregaCopiaRg"
+        type="java.lang.Short"
+        column="icld_icrg"
+        length="2"
+        not-null="true"
+    />
+    
+    <property
+        name="indicadorEntregaCopiaDocImovel"
+        type="java.lang.Short"
+        column="icld_icdocumentoimovel"
+        length="2"
+        not-null="true"
+    />
+    
+     <property
+        name="indicadorEntregaCopiaTermoConfDivida"
+        type="java.lang.Short"
+        column="icld_ictermoconfissaodivida"
+        length="2"
+        not-null="true"
+    />
+    
+       <property
+        name="indicadorEntregaCopiaCorrespondencia"
+        type="java.lang.Short"
+        column="icld_iccorrespondencia"
+        length="2"
+        not-null="true"
+    />
+    
+     <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="icld_tmultimaalteracao"
+        length="8"
+    />
+    
+     <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="true"
+    >
+        <column name="imov_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

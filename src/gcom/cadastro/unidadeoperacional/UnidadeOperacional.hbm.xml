@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cadastro.unidadeoperacional.UnidadeOperacional" 
+    table="UNIDADE_OPERACIONAL"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="unop_id"
+    >
+        <generator class="sequence">
+        	<param name="sequence">sq_unidade_operacional</param>
+     	</generator>
+    </id>
+
+    <property
+        name="codigoUnidadeOperacional"
+        type="short"
+        column="unop_cdunidadeopracional"
+        not-null="true"
+        length="3"
+    />
+    
+     <property
+        name="indicadorAtivo"
+        type="short"
+        column="unop_icuso"
+        length="1"
+    />
+    
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="unop_dsunidadeoperacional"
+        not-null="true"
+        length="30"
+    />
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="unop_dsabrevunidadeoperacional"
+        length="6"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="unop_tmultimaateracao"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="numeroImovel"
+        type="java.lang.String"
+        column="unop_nnimovel"
+        length="5"
+    />
+
+    <property
+        name="complementoEndereco"
+        type="java.lang.String"
+        column="unop_dscomplementoendereco"
+        length="30"
+    />
+
+    <property
+        name="telefone"
+        type="java.lang.Integer"
+        column="unop_nnfone"
+        length="9"
+    />
+    
+    <property
+        name="ramal"
+        type="java.lang.Integer"
+        column="unop_nnfoneramal"
+        length="4"
+    />
+    
+    <property
+        name="fax"
+        type="java.lang.Integer"
+        column="unop_nnfax"
+        length="9"
+    />
+    
+    <property
+        name="email"
+        type="java.lang.String"
+        column="unop_dsemail"
+        length="40"
+    />
+    
+    <property
+        name="descricaoTipoInstalacao"
+        type="java.lang.String"
+        column="unop_dstipoinstalacao"
+        length="30"
+    />
+    
+    <property
+        name="numeroCota"
+        type="java.lang.Integer"
+        column="unop_nncota"
+        length="9"
+    />
+
+	<property
+        name="latitude"
+        type="java.lang.Integer"
+        column="unop_nnlatitude"
+        length="9"
+    />
+    
+    <property
+        name="longitude"
+        type="java.lang.Integer"
+        column="unop_nnlongitude"
+        length="9"
+    />
+    <!-- Associations -->
+  
+  	<!-- bi-directional many-to-one association to Logradouro -->
+    <many-to-one
+        name="logradouro"
+        class="gcom.cadastro.endereco.Logradouro"
+        not-null="false"
+    >
+        <column name="logr_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Bairro -->
+    <many-to-one
+        name="bairro"
+        class="gcom.cadastro.geografico.Bairro"
+        not-null="false"
+    >
+        <column name="bair_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to EnderecoReferencia -->
+    <many-to-one
+        name="enderecoReferencia"
+        class="gcom.cadastro.endereco.EnderecoReferencia"
+        not-null="false"
+    >
+        <column name="edrf_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Cep -->
+    <many-to-one
+        name="cep"
+        class="gcom.cadastro.endereco.Cep"
+        not-null="false"
+    >
+        <column name="cep_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Localidade -->
+    <many-to-one
+        name="localidade"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="true"
+    >
+        <column name="loca_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to SistemaAbastecimento -->
+    <many-to-one
+        name="sistemaAbastecimento"
+        class="gcom.operacional.SistemaAbastecimento"
+        not-null="true"
+    >
+        <column name="sabs_id" />
+    </many-to-one>
+    
+
+</class>
+</hibernate-mapping>

@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.ServicoCobrancaValor" 
+    table="servico_cobranca_valor">
+
+    <id name="id"
+        type="java.lang.Integer"
+        column="scbv_id">
+        <generator class="sequence">
+       		<param name="sequence">sq_servico_cobrc_valor</param>
+    	</generator>
+    </id>
+
+    <property
+        name="valor"
+        type="java.math.BigDecimal"
+        column="scbv_vlservico"
+        not-null="true"
+        length="11"
+    />
+    <property
+        name="indicadorMedido"
+        type="short"
+        column="scbv_icmedido"
+        not-null="true"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="scbv_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to HidrometroCapacidade -->
+    <many-to-one
+        name="hidrometroCapacidade"
+        class="gcom.micromedicao.hidrometro.HidrometroCapacidade"
+        not-null="true"
+    >
+        <column name="hicp_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to ImovelPerfil -->
+    <many-to-one
+        name="imovelPerfil"
+        class="gcom.cadastro.imovel.ImovelPerfil"
+        not-null="true"
+    >
+        <column name="iper_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to ServicoTipo -->
+    <many-to-one
+        name="servicoTipo"
+        class="gcom.atendimentopublico.ordemservico.ServicoTipo"
+        not-null="true"
+    >
+        <column name="svtp_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

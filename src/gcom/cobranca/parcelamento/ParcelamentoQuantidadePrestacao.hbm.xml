@@ -1,0 +1,158 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.parcelamento.ParcelamentoQuantidadePrestacao" 
+    table="parcelamento_qtde_prestacao"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="pqtp_id"
+    >
+ 		<generator class="sequence">
+	       <param name="sequence">sq_parcto_qtde_prestacao</param>
+	    </generator>
+    </id>
+
+    <property
+        name="quantidadeMaximaPrestacao"
+        type="java.lang.Short"
+        column="pqtp_qtmaximaprestacao"
+        length="2"
+    />
+    <property
+        name="taxaJuros"
+        type="java.math.BigDecimal"
+        column="pqtp_txjuros"
+        length="5"
+    />
+    <property
+        name="percentualMinimoEntrada"
+        type="java.math.BigDecimal"
+        column="pqtp_pcminimoentrada"
+        length="5"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="pqtp_tmultimaalteracao"
+        length="8"
+    />
+    <property
+        name="percentualTarifaMinimaImovel"
+        type="java.math.BigDecimal"
+        column="pqtp_pctarifaminimaimovel"
+        length="5"
+    />
+    
+        <property
+        name="percentualValorReparcelado"
+        type="java.math.BigDecimal"
+        column="pqtp_pcvlrreparcelado"
+        length="2"
+    />
+    
+     <property
+        name="quantidadeMaxPrestacaoEspecial"
+        type="java.lang.Short"
+        column="pqtp_qtmaxprestacaoespecial"
+        length="2"
+    />
+    <property
+        name="percentualEntradaSugerida"
+        type="java.math.BigDecimal"
+        column="pqtp_pcentradasugerida"
+        length="8"
+    />
+	
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to ParcelamentoQtdeReparcel -->
+    <many-to-one
+        name="parcelamentoQuantidadeReparcelamento"
+        class="gcom.cobranca.parcelamento.ParcelamentoQuantidadeReparcelamento"
+        not-null="true"
+    >
+        <column name="pqtr_id" />
+    </many-to-one>
+    
+    <property
+        name="valorMinimoEntrada"
+        type="java.math.BigDecimal"
+        column="pqtp_vlminimoentrada"
+        length="13"
+    />
+    
+    <property
+        name="indicadorEntradaParcelamento"
+        type="java.lang.Short"
+        column="pqtp_icpcdebitoatualizentr"
+        length="2"
+    />
+    
+    <property
+        name="numeroMesesEntreParcelas"
+        type="java.lang.Integer"
+        column="pqtp_nnmesesentreparcelas"
+        length="4"
+    />
+
+	<property
+        name="numeroParcelasALancar"
+        type="java.lang.Integer"
+        column="pqtp_nnparcelasalancar"
+        length="4"
+    />
+
+	<property
+        name="numeroMesesInicioCobranca"
+        type="java.lang.Integer"
+        column="pqtp_nnmesesiniciocobranca"
+        length="6"
+    />
+
+	<property
+        name="numeroDiasVencimentoDaEntrada"
+        type="java.lang.Integer"
+        column="pqtp_nndiasvencentrada"
+        length="4"
+    />
+
+    <property
+        name="percentualDescontoJurosMora"
+        type="java.math.BigDecimal"
+        column="pqtp_pcdescontojurosmora"
+        length="5"
+        not-null="false"
+    />
+
+    <property
+        name="percentualDescontoMulta"
+        type="java.math.BigDecimal"
+        column="pqtp_pcdescontomulta"
+        length="5"
+        not-null="false"
+    />
+
+    <property
+        name="percentualDescontoCorrecaoMonetaria"
+        type="java.math.BigDecimal"
+        column="pqtp_pcdescontocorrmonetaria"
+        length="5"
+        not-null="false"
+    />
+
+</class>
+</hibernate-mapping>

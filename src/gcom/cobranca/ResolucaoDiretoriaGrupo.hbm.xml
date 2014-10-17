@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.cobranca.ResolucaoDiretoriaGrupo"
+    table="resolucao_diretoria_grupo"
+     dynamic-insert="true" dynamic-update="true"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="rdgr_id"
+    >
+
+    <generator class="sequence">
+       <param name="sequence">sq_resolucao_diretoria_grupo</param>
+    </generator>
+
+    </id>
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="rdgr_tmultimaalteracao"
+        length="8"
+         not-null="true"
+    />
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="rdgr_icuso"
+        length="2"
+        not-null="true"
+    />
+    
+
+    <!-- associations -->
+    
+    <!-- bi-directional many-to-one association to ResolucaoDiretoria -->
+    <many-to-one
+        name="resolucaoDiretoria"
+        class="gcom.cobranca.ResolucaoDiretoria"
+        not-null="true"
+    >
+        <column name="rdir_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Grupo -->
+    <many-to-one 
+    	lazy="false"
+        name="grupo"
+        class="gcom.seguranca.acesso.Grupo"
+        not-null="true"
+    >
+        <column name="grup_id" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

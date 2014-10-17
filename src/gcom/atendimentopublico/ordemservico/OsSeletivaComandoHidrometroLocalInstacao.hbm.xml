@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.OsSeletivaComandoHidrometroLocalInstacao" 
+    table="OS_SELET_COMANDO_HIDR_LOCINS"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="OSHL_ID"
+    >
+        <generator class="sequence">
+       		<param name="sequence">SQ_OS_SELET_COMANDO_HIDLOCINS</param>
+    	</generator>
+    </id>
+
+   <many-to-one
+        name="osSeletivaComando"
+        class="gcom.atendimentopublico.ordemservico.OsSeletivaComando"
+        not-null="true">
+        <column name="OSSC_ID" />
+    </many-to-one>
+    
+    <many-to-one
+        name="hidrometroLocalInstalacao"
+        class="gcom.micromedicao.hidrometro.HidrometroLocalInstalacao"
+        not-null="true">
+        <column name="HILI_ID" />
+    </many-to-one>
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="OSHL_TMULTIMAALTERACAO"
+        not-null="true"
+        length="8"
+    />
+    
+    
+</class>
+</hibernate-mapping>

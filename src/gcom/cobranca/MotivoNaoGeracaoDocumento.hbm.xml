@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+
+
+<hibernate-mapping>
+
+	<!-- 
+		Created by the Middlegen Hibernate plugin 2.1
+		
+		http://boss.bekk.no/boss/middlegen/
+		http://www.hibernate.org/
+	-->
+
+
+
+	<class
+		name="gcom.cobranca.MotivoNaoGeracaoDocumento"
+		table="MOTIVO_NAO_GERACAO_DOCUMENTO">
+
+
+
+		<id
+			name="id"
+			type="java.lang.Integer"
+			column="MNGD_ID">
+
+			<generator class="sequence">
+				<param name="sequence">
+					SQ_MOTIVO_NAO_GERACAO_DOCUM
+				</param>
+			</generator>
+
+		</id>
+
+<property
+        name="descricao"
+        type="java.lang.String"
+        column="MNGD_DSMOTIVONAOGERADOCUME"
+        length="60"
+        not-null="true"
+    />
+    
+
+        <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="MNGD_DSABREVIADO"
+        length="6"
+    />
+    
+    
+	<property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="MNGD_ICUSO"
+        length="2"
+        not-null="true"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="MNGD_TMULTIMAALTERACAO"
+        length="8"
+        not-null="true"
+    />
+
+
+		
+	</class>
+
+</hibernate-mapping>
+

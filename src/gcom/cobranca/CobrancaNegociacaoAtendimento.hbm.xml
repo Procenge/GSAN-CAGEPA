@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="gcom.cobranca.CobrancaNegociacaoAtendimento" table="cobranca_negociacao_atend">
+
+		<id name="id" type="java.lang.Integer" column="cbna_id">
+			<generator class="sequence">
+				<param name="sequence">
+					sq_cobranca_negociacao_atend
+				</param>
+			</generator>
+		</id>
+
+		<property name="numeroCpf" type="java.lang.String" column="cbna_nncpf"
+			length="11" not-null="false" />
+
+		<property name="numeroCnpj" type="java.lang.String" column="cbna_nncnpj"
+			length="14" not-null="false" />
+
+		<property name="email" type="java.lang.String" column="cbna_dsemail"
+			length="40" not-null="false" />
+
+		<property name="dataVencimento" type="java.sql.Date" column="cbna_dtvencimento"
+			length="4" not-null="true" />
+
+		<property name="ultimaAlteracao" type="java.sql.Timestamp"
+			column="cbna_tmultimaalteracao" length="6" not-null="true" />
+
+		<!-- bi-directional many-to-one association to CobrancaDocumento -->
+		<many-to-one name="cobrancaDocumento" class="gcom.cobranca.CobrancaDocumento"
+			not-null="false">
+			<column name="cbdo_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to PreParcelamento -->
+		<many-to-one name="preParcelamento"
+			class="gcom.cobranca.opcaoparcelamento.PreParcelamento" not-null="false">
+			<column name="prep_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to Imovel -->
+		<many-to-one name="imovel" class="gcom.cadastro.imovel.Imovel"
+			not-null="true">
+			<column name="imov_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to RegistroAtendimento -->
+		<many-to-one name="registroAtendimento"
+			class="gcom.atendimentopublico.registroatendimento.RegistroAtendimento"
+			not-null="true">
+			<column name="rgat_id" />
+		</many-to-one>
+
+	</class>
+</hibernate-mapping>

@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.BoletoBancarioOcorrencias" 
+    table="boleto_bancario_ocorrencias"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="bboc_id"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				sq_boleto_bancario_ocorrencias
+			</param>
+		</generator>
+    </id>
+    
+     <!-- Associations -->
+    
+     <!-- bi-directional many-to-one association to BoletoBancarioMovimentacao -->
+	<many-to-one name="boletoBancarioMovimentacao"
+		class="gcom.cobranca.BoletoBancarioMovimentacao" not-null="true">
+		<column name="bbmv_id" />
+	</many-to-one>
+    
+     <!-- bi-directional many-to-one association to BoletoBancarioMotivoOcorrencia -->
+	<many-to-one name="boletoBancarioMotivoOcorrencia"
+		class="gcom.cobranca.BoletoBancarioMotivoOcorrencia" not-null="true">
+		<column name="bmto_id" />
+	</many-to-one>
+	
+</class>
+</hibernate-mapping>

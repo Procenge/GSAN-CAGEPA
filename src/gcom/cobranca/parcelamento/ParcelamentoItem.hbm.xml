@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<!-- 
+		Created by the Middlegen Hibernate plugin 2.1
+		
+		http://boss.bekk.no/boss/middlegen/
+		http://www.hibernate.org/
+	-->
+	<class name="gcom.cobranca.parcelamento.ParcelamentoItem"
+		table="parcelamento_item">
+		
+		<id column="pcit_id" name="id" type="java.lang.Integer">
+			<generator class="sequence">
+				<param name="sequence">
+					sq_parcelamento_item
+				</param>
+			</generator>
+		</id>
+		
+		<property column="pcit_tmultimaalteracao" generated="never"
+			lazy="false" length="8" name="ultimaAlteracao" not-null="true"
+			type="java.sql.Timestamp" />
+
+		<property
+			name="numeroPrestacao"
+			type="java.lang.Short"
+			column="pcit_nnprestacao"
+			length="3"
+		/>
+			
+
+		<!-- Associations 
+			bi-directional many-to-one association to CreditoARealizarHistorico -->
+		<!-- <many-to-one
+			class="gcom.faturamento.credito.CreditoARealizarHistorico"
+			name="creditoARealizarHistorico" not-null="true">
+			<column name="crar_id" />
+		</many-to-one> -->
+		<!-- bi-directional many-to-one association to DebitoACobrarHistorico -->
+		<!-- <many-to-one
+			class="gcom.faturamento.debito.DebitoACobrarHistorico"
+			name="debitoACobrarHistorico" not-null="true">
+			<column name="dbac_id" />
+		</many-to-one> -->
+		<!-- bi-directional many-to-one association to Parcelamento -->
+		<many-to-one class="gcom.cobranca.parcelamento.Parcelamento"
+			name="parcelamento" not-null="true">
+			<column name="parc_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to DocumentoTipo -->
+		<many-to-one class="gcom.cobranca.DocumentoTipo"
+			name="documentoTipo" not-null="true">
+			<column name="dotp_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to DebitoACobrar -->
+		<many-to-one class="gcom.faturamento.debito.DebitoACobrarGeral"
+			name="debitoACobrarGeral" not-null="true">
+			<column name="dbac_id" />
+		</many-to-one>
+		<!-- bi-directional many-to-one association to Conta -->
+	    <many-to-one class="gcom.faturamento.conta.ContaGeral"
+			name="contaGeral" not-null="true">
+			<column name="cnta_id" />
+		</many-to-one> 
+		<!-- bi-directional many-to-one association to ContaHistorico -->
+		<!-- <many-to-one class="gcom.faturamento.conta.ContaHistorico"
+			name="contaHistorico" not-null="true">
+			<column name="cnhi_id" />
+		</many-to-one>  -->
+		<!-- bi-directional many-to-one association to GuiaPagamento -->
+		<many-to-one class="gcom.faturamento.GuiaPagamentoGeral"
+			name="guiaPagamentoGeral" not-null="true">
+			<column name="gpag_id" />
+		</many-to-one>
+		
+		<!-- bi-directional many-to-one association to GuiaPagamento -->
+		<!-- <many-to-one class="gcom.arrecadacao.pagamento.GuiaPagamentoHistorico"
+			name="guiaPagamentoHistorico" not-null="true">
+			<column name="gpag_id" />
+		</many-to-one> -->
+		
+		<!-- bi-directional many-to-one association to CreditoARealizar -->
+		<many-to-one
+			class="gcom.faturamento.credito.CreditoARealizarGeral"
+			name="creditoARealizarGeral" not-null="true">
+			<column name="crar_id" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

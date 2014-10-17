@@ -1,0 +1,217 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.cadastro.imovel.ImovelCobrancaAdministrivaItem" 
+    table="imovel_cobranca_administr_item"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="icai_id">
+        
+		<generator class="sequence">
+	       <param name="sequence">sq_imovel_cobranca_administr_i</param>
+	    </generator>
+      
+    </id>
+
+    <property
+        name="numeroPrestacao"
+        type="java.lang.Integer"
+        column="icai_nnprestacao"
+    />
+    
+    <property
+        name="percentualRemuneracao"
+        type="java.math.BigDecimal"
+        column="icai_pcremuneracao"
+        length="5"
+    />
+    
+    <property
+        name="valorRemuneracao"
+        type="java.math.BigDecimal"
+        column="icai_vlremuneracao"
+        length="13"
+    />
+    
+    <property
+        name="percentualRemuneracaoReincidente"
+        type="java.math.BigDecimal"
+        column="icai_pcremuneracaoreincid"
+        length="5"
+    />
+    
+    <property
+        name="valorRemuneracaoReincidente"
+        type="java.math.BigDecimal"
+        column="icai_vlremuneracaoreincid"
+        length="13"
+    />
+    
+    <property
+        name="percentualRemuneracaoEspecial"
+        type="java.math.BigDecimal"
+        column="icai_pcremuneracaoespec"
+        length="5"
+    />
+    
+    <property
+        name="valorRemuneracaoEspecial"
+        type="java.math.BigDecimal"
+        column="icai_vlremuneracaoespec"
+        length="13"
+    />
+    
+    <property
+        name="percentualRemuneracaoParcelado"
+        type="java.math.BigDecimal"
+        column="icai_pcremuneracaoparcel"
+        length="5"
+    />
+    
+    <property
+        name="valorRemuneracaoParcelado"
+        type="java.math.BigDecimal"
+        column="icai_vlremuneracaoparcel"
+        length="13"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="icai_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+
+    <property
+        name="dataPagamentoDocumento"
+        type="java.sql.Date"
+        column="icai_dtpagamentodocumento"
+        not-null="true"
+        length="8"
+    />
+
+    <property
+        name="indicadorRemuneracaoPaga"
+        type="java.lang.Short"
+        column="icai_icremuneracaopaga"
+        length="1"
+        not-null="true"
+    />
+
+    <property
+        name="dataPagamentoRemuneracao"
+        type="java.sql.Date"
+        column="icai_dtpagamentoremuneracao"
+        not-null="false"
+        length="8"
+    />
+
+    <property
+        name="valorBaseRemuneracao"
+        type="java.math.BigDecimal"
+        column="icai_vlbaseremuneracao"
+        length="13"
+    />
+
+    <property
+        name="valorBaseRemuneracaoParcelado"
+        type="java.math.BigDecimal"
+        column="icai_vlbaseremuneracaoparcel"
+        length="13"
+    />
+
+    <property
+        name="valorBaseRemuneracaoReincidente"
+        type="java.math.BigDecimal"
+        column="icai_vlbaseremuneracaoreincid"
+        length="13"
+    />
+
+    <property
+        name="valorBaseRemuneracaoEspecial"
+        type="java.math.BigDecimal"
+        column="icai_vlbaseremuneracaoespec"
+        length="13"
+    />
+
+	<property
+        name="anoMesReferenciaArrecadacao"
+        type="java.lang.Integer"
+        column="icai_amreferenciaarrecadacao"
+        length="6"
+    />
+
+    <property
+        name="valorArrecadadoLote"
+        type="java.math.BigDecimal"
+        column="icai_vlarrecadadolote"
+        length="13"
+    />
+
+    <!-- associations -->
+
+    <!-- bi-directional many-to-one association to ContaGeral -->
+    <many-to-one
+        name="debitoACobrarGeral"
+        class="gcom.faturamento.debito.DebitoACobrarGeral"
+         not-null="false"
+    >
+        <column name="dbac_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to ContaGeral -->
+    <many-to-one
+        name="contaGeral"
+        class="gcom.faturamento.conta.ContaGeral"
+         not-null="false"
+    >
+        <column name="cnta_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to DocumentoTipo -->
+    <many-to-one
+        name="documentoTipo"
+        class="gcom.cobranca.DocumentoTipo"
+        not-null="true"
+    >
+        <column name="dotp_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to GuiaPagamentoGeral -->
+    <many-to-one
+        name="guiaPagamentoGeral"
+        class="gcom.faturamento.GuiaPagamentoGeral"
+		not-null="false"
+    >
+        <column name="gpag_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to ImovelCobrancaSituacao -->
+    <many-to-one
+        name="imovelCobrancaSituacao"
+        class="gcom.cadastro.imovel.ImovelCobrancaSituacao"
+		not-null="true"
+    >
+        <column name="iscb_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to ImovelCobrancaSituacao -->
+    <many-to-one
+        name="cobrancaAdministrativaRemuneracaoMensal"
+        class="gcom.cobranca.CobrancaAdministrativaRemuneracaoMensal"
+		not-null="false"
+    >
+        <column name="carm_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

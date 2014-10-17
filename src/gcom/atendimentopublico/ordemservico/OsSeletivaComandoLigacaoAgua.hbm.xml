@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created por Victon Santos
+-->
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.OsSeletivaComandoLigacaoAgua" 
+    table="OS_SELET_COMANDO_LIG_AGUA"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="OSCA_ID"
+    >
+        <generator class="sequence">
+		       <param name="sequence">SQ_OS_SELET_COMANDO_LIG_AGUA</param>
+		    </generator>
+    </id>
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="OSCA_TMULTIMAALTERACAO"
+        length="6"
+        not-null="true"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to OsSeletivaComando -->
+    <many-to-one
+        name="osSeletivaComando"
+        class="gcom.atendimentopublico.ordemservico.OsSeletivaComando"
+        not-null="true"
+    >
+        <column name="OSSC_ID" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to LigacaoAguaSituacao -->
+    <many-to-one
+        name="ligacaoAguaSituacao"
+        class="gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao"
+        not-null="true"
+    >
+        <column name="LAST_ID" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

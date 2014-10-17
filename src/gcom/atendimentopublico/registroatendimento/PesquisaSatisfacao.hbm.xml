@@ -1,0 +1,91 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+<class
+    name="gcom.atendimentopublico.registroatendimento.PesquisaSatisfacao"
+    table="PESQUISA_SATISFACAO"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="PQSA_ID"
+    >
+      <generator class="sequence">
+          <param name="sequence">SQ_PESQUISA_SATISFACAO</param>
+      </generator>
+    </id>
+    
+    <property
+        name="indicadorBemAtendido"
+        type="java.lang.Short"
+        column="PQSA_ICBEMATENDRELPROB"
+        length="2"
+    /> 
+    
+    <property
+        name="comentarioAtendimento"
+        type="java.lang.String"
+        column="PQSA_DSBEMATENDRELPROB"
+    />
+    
+    <property
+        name="indicadorSolicitacaoResolvida"
+        type="java.lang.Short"
+        column="PQSA_ICSOLICITRESOLVIDA"
+        length="2"
+    /> 
+    
+    <property
+        name="comentarioSolicitacaoResolvida"
+        type="java.lang.String"
+        column="PQSA_DSOLICITRESOLVIDA"
+    />
+    
+    <property
+        name="indicadorBemAtendidoEquipeCampo"
+        type="java.lang.Short"
+        column="PQSA_ICBEMATENDEQPCAMPO"
+        length="2"
+    /> 
+    
+    <property
+        name="comentarioAtendimentoEquipeCampo"
+        type="java.lang.String"
+        column="PQSA_DSBEMATENDEQPCAMPO"
+    />
+
+    <property
+	     name="notaAtendimento"
+    	 type="java.lang.Integer"
+         column="PQSA_NNNOTAATENDIMENTO"
+         length="2"
+    />
+    
+    <property
+        name="comentarioGeral"
+        type="java.lang.String"
+        column="PQSA_DSCOMENTARIO"
+    />
+    
+	<property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="PQSA_TMULTIMAALTERACAO"
+        length="8"
+    />
+    
+    <many-to-one
+        name="registroAtendimento"
+        class="gcom.atendimentopublico.registroatendimento.RegistroAtendimento"
+        not-null="true"
+    >
+        <column name="rgat_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

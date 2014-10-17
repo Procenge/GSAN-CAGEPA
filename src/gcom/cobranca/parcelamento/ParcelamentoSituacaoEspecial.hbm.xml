@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.parcelamento.ParcelamentoSituacaoEspecial" 
+    table="parcelamento_situacao_especial"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="pcse_id"
+    >
+		<generator class="sequence">
+	       <param name="sequence">sq_parcelamento_sit_especial</param>
+	    </generator>
+	</id>
+
+    <property
+        name="anoMesReferenciaDebitoInicio"
+        type="java.lang.Integer"
+        column="pcse_amreferenciadebitoinicio"
+        not-null="true"
+    />
+    
+    <property
+        name="anoMesReferenciaDebitoFim"
+        type="java.lang.Integer"
+        column="pcse_amreferenciadebitofim"
+        not-null="true"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="pcse_tmultimaalteracao"
+        length="8"
+    />
+
+    <!-- Associations -->
+  
+    <many-to-one
+        name="resolucaoDiretoria"
+	    class="gcom.cobranca.ResolucaoDiretoria"
+	    not-null="true"
+	>
+    		<column name="rdir_id" />
+	</many-to-one>
+	
+	<many-to-one
+        name="localidade"
+	    class="gcom.cadastro.localidade.Localidade"
+	    not-null="true"
+	>
+    		<column name="loca_id" />
+	</many-to-one>
+	
+</class>
+</hibernate-mapping>

@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="gcom.arrecadacao.ParametroAcrescimosEmissaoDocumento"
+		table="parametro_acresci_emissaodocto">
+
+		<id name="id" type="java.lang.Integer" column="paed_id">
+			<generator class="sequence">
+				<param name="sequence">sq_param_acresc_emissaodocto</param>
+			</generator>
+		</id>
+
+		<property name="dataInicioValidade" type="java.sql.Date"
+			column="paed_dtiniciovalidade" not-null="true" length="4" />
+
+		<property name="dataFimValidade" type="java.sql.Date" column="paed_dtfimvalidade"
+			not-null="true" length="4" />
+
+		<property name="indicadorJuros" type="java.lang.Short"
+			column="paed_icjuros" not-null="true" length="2" />
+
+		<property name="indicadorCorrecao" type="java.lang.Short"
+			column="paed_iccorrecao" not-null="true" length="2" />
+
+		<property name="indicadorMulta" type="java.lang.Short"
+			column="paed_icmulta" not-null="true" length="2" />
+
+		<property name="ultimaAlteracao" type="java.sql.Timestamp"
+			column="paed_tmultimaalteracao" not-null="true" length="8" />
+
+	</class>
+</hibernate-mapping>

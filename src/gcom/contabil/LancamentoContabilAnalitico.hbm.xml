@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="gcom.contabil.LancamentoContabilAnalitico" table="LANCAMENTO_CONTABIL_ANALITICO">
+		<id name="id" column="LACA_ID">
+			<generator class="sequence">
+		       <param name="sequence">SQ_LACA_ID</param>
+		    </generator>
+		</id>
+				
+      	<property name="ultimaAlteracao" type="java.sql.Timestamp" column="LACA_TMULTIMAALTERACAO" />
+      	<property name="indicadorUso" type="java.lang.Short" column="LACA_ICUSO"  />    
+
+      	<property name="codigoObjeto" column="LACA_IDOBJETO" not-null="true"/> 
+      	<property name="valor" column="LACA_VL" not-null="true" /> 
+
+		<many-to-one name="lancamentoContabilSintetico" class="gcom.contabil.LancamentoContabilSintetico" >
+      		<column name="LACS_ID" not-null="true" />
+      	</many-to-one>
+	</class>
+
+</hibernate-mapping>
