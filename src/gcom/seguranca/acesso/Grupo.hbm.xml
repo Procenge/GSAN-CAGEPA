@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.seguranca.acesso.Grupo" 
+    table="grupo"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="grup_id"
+    >
+	    <generator class="sequence">
+	       <param name="sequence">sq_grupo</param>
+	    </generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="grup_dsgrupo"
+        length="40"
+    />
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="grup_dsabreviado"
+        length="10"
+    />
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="grup_icuso"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="grup_tmultimaalteracao"
+        length="8"
+    />
+
+    <!-- Associations -->
+    
+    
+          <set
+        name="resolucaoDiretoriaGrupos"
+        lazy="true"
+        inverse="true"
+		cascade="delete"
+    >
+        <key>
+            <column name="grup_id" />
+        </key>
+        <one-to-many
+            class="gcom.cobranca.ResolucaoDiretoriaGrupo"
+        />
+    </set>
+    
+  
+    <!-- bi-directional one-to-many association to GrupoFuncionalidadeOperacao -->
+    <!--
+    <set
+        name="grupoFuncionalidadeOperacaos"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="grup_id" />
+        </key>
+        <one-to-many 
+            class="gcom.GrupoFuncionalidadeOperacao"
+        />
+    </set>
+    -->
+    <!-- bi-directional one-to-many association to UsuarioGrupo -->
+    <!--
+    <set
+        name="usuarioGrupos"
+        lazy="true"
+        inverse="true"
+		cascade="all"
+    >
+        <key>
+            <column name="grup_id" />
+        </key>
+        <one-to-many 
+            class="gcom.UsuarioGrupo"
+        />
+    </set>
+	-->
+	
+	
+</class>
+</hibernate-mapping>
