@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="ehcache.xsd">
+ 
+ <diskStore path="java.io.tmpdir" />
+
+ <defaultCache maxElementsInMemory="10000"
+       eternal="false"
+       timeToIdleSeconds="300" timeToLiveSeconds="300"
+       overflowToDisk="false" diskPersistent="false"
+       diskExpiryThreadIntervalSeconds="600"
+       memoryStoreEvictionPolicy="LRU" />
+ 
+<cache name="gcom.arrecadacao.RegistroCodigo"
+     maxElementsInMemory="20"
+     eternal="false"
+     timeToIdleSeconds="60"
+     timeToLiveSeconds="60"
+     overflowToDisk="true"
+ />
+ 
+<cache
+     name="gcom.cadastro.endereco.Cep"
+     maxElementsInMemory="450"
+     eternal="false"
+     timeToIdleSeconds="300"
+     timeToLiveSeconds="300"
+     overflowToDisk="true"
+ />
+ 
+<cache
+     name="gcom.cobranca.MunicipioFeriado"
+     maxElementsInMemory="30"
+     eternal="false"
+     timeToIdleSeconds="300"
+     timeToLiveSeconds="300"
+     overflowToDisk="true"
+ />
+ 
+<cache
+     name="gcom.cobranca.NacionalFeriado"
+     maxElementsInMemory="30"
+     eternal="false"
+     timeToIdleSeconds="300"
+     timeToLiveSeconds="300"
+     overflowToDisk="true"
+ />
+ 
+<cache
+     name="gcom.cadastro.geografico.Bairro"
+     maxElementsInMemory="450"
+     eternal="false"
+     timeToIdleSeconds="300"
+     timeToLiveSeconds="300"
+     overflowToDisk="true"
+ />
+ 
+<cache
+     name="gcom.cadastro.endereco.Logradouro"
+     maxElementsInMemory="450"
+     eternal="false"
+     timeToIdleSeconds="300"
+     timeToLiveSeconds="300"
+     overflowToDisk="true"
+ />
+
+<cache name="SQL_SistemaParametro"  
+       maxElementsInMemory="60"
+       eternal="false"
+       timeToIdleSeconds="300" 
+       timeToLiveSeconds="300"
+       overflowToDisk="false" diskPersistent="false"
+       diskExpiryThreadIntervalSeconds="600"
+       memoryStoreEvictionPolicy="LRU"
+ /> 
+</ehcache>

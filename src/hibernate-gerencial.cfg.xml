@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC  
+    "-//Hibernate/Hibernate Configuration DTD 3.0//EN"  
+    "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">  
+
+<hibernate-configuration>
+
+    <!-- a SessionFactory instance listed as /jndi/name -->
+    <session-factory>
+
+        <!-- mapping files -->
+		<mapping resource="gcom/gerencial/arrecadacao/GArrecadacaoForma.hbm.xml" />
+		<mapping resource="gcom/gerencial/arrecadacao/GArrecadador.hbm.xml" />
+		<mapping resource="gcom/gerencial/arrecadacao/UnResumoArrecadacao.hbm.xml" />
+		<mapping resource="gcom/gerencial/arrecadacao/UnResumoArrecadacaoAguaEsgoto.hbm.xml" />
+		<mapping resource="gcom/gerencial/arrecadacao/UnResumoArrecadacaoCredito.hbm.xml" />
+		<mapping resource="gcom/gerencial/arrecadacao/UnResumoArrecadacaoOutro.hbm.xml" />
+		<mapping resource="gcom/gerencial/arrecadacao/pagamento/GEpocaPagamento.hbm.xml" />
+		<mapping resource="gcom/gerencial/arrecadacao/pagamento/GPagamentoSituacao.hbm.xml" />
+		<mapping resource="gcom/gerencial/atendimentopublico/ligacaoagua/GLigacaoAguaPerfil.hbm.xml" />
+		<mapping resource="gcom/gerencial/atendimentopublico/ligacaoagua/GLigacaoAguaSituacao.hbm.xml" />
+		<mapping resource="gcom/gerencial/atendimentopublico/ligacaoesgoto/GLigacaoEsgotoPerfil.hbm.xml" />
+		<mapping resource="gcom/gerencial/atendimentopublico/ligacaoesgoto/GLigacaoEsgotoSituacao.hbm.xml" />
+		<mapping resource="gcom/gerencial/atendimentopublico/registroatendimento/GMeioSolicitacao.hbm.xml" />
+		<mapping resource="gcom/gerencial/atendimentopublico/registroatendimento/GSolicitacaoTipo.hbm.xml" />
+		<mapping resource="gcom/gerencial/atendimentopublico/registroatendimento/GSolicitacaoTipoEspecificacao.hbm.xml" />
+		<mapping resource="gcom/gerencial/atendimentopublico/registroatendimento/UnResumoRegistroAtendimento.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/GEmpresa.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/Indicador.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/RgResumoLigacaoEconomia.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/UnResumoConsumoAgua.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/UnResumoIndicadorLigacaoEconomia.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/UnResumoLigacaoEconomia.hbm.xml" />	
+		<mapping resource="gcom/gerencial/cadastro/cliente/GClienteTipo.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/cliente/GEsferaPoder.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/geografico/GBairro.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/geografico/GMicrorregiao.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/geografico/GMunicipio.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/geografico/GRegiao.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/imovel/GCategoria.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/imovel/GImovelPerfil.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/imovel/GSubcategoria.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/localidade/GGerenciaRegional.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/localidade/GLocalidade.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/localidade/GLocalidadePorte.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/localidade/GQuadra.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/localidade/GSetorComercial.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/localidade/GUnidadeNegocio.hbm.xml" />
+		<mapping resource="gcom/gerencial/cadastro/unidade/GUnidadeOrganizacional.hbm.xml" />
+		<mapping resource="gcom/gerencial/cobranca/FaixaValor.hbm.xml" />
+		<mapping resource="gcom/gerencial/cobranca/GDocumentoTipo.hbm.xml" />
+		<mapping resource="gcom/gerencial/cobranca/UnResumoParcelamento.hbm.xml" />
+		<mapping resource="gcom/gerencial/cobranca/UnResumoPendencia.hbm.xml" />
+		<mapping resource="gcom/gerencial/faturamento/GConsumoTarifa.hbm.xml" />
+		<mapping resource="gcom/gerencial/faturamento/GFaturamentoGrupo.hbm.xml" />
+		<mapping resource="gcom/gerencial/faturamento/GImpostoTipo.hbm.xml" />
+		<mapping resource="gcom/gerencial/faturamento/UnResumoFaturamento.hbm.xml" />
+		<mapping resource="gcom/gerencial/faturamento/UnResumoFaturamentoAguaEsgoto.hbm.xml" />
+		<mapping resource="gcom/gerencial/faturamento/UnResumoFaturamentoCredito.hbm.xml" />
+		<mapping resource="gcom/gerencial/faturamento/UnResumoFaturamentoOutro.hbm.xml" />
+		<mapping resource="gcom/gerencial/faturamento/UnResumoIndicadoresFaturamento.hbm.xml" />
+		<mapping resource="gcom/gerencial/faturamento/UnResumoRefaturamento.hbm.xml" />
+		<mapping resource="gcom/gerencial/faturamento/UnResumoRefaturamentoAguaEsgoto.hbm.xml" />
+		<mapping resource="gcom/gerencial/faturamento/UnResumoRefaturamentoCredito.hbm.xml" />
+		<mapping resource="gcom/gerencial/faturamento/UnResumoRefaturamentoOutro.hbm.xml" />
+		<mapping resource="gcom/gerencial/faturamento/credito/GCreditoOrigem.hbm.xml" />
+		<mapping resource="gcom/gerencial/faturamento/credito/GCreditoTipo.hbm.xml" />
+		<mapping resource="gcom/gerencial/faturamento/debito/GDebitoTipo.hbm.xml" />
+		<mapping resource="gcom/gerencial/financeiro/GFinanciamentoTipo.hbm.xml" />
+		<mapping resource="gcom/gerencial/financeiro/lancamento/GLancamentoItem.hbm.xml" />
+		<mapping resource="gcom/gerencial/financeiro/lancamento/GLancamentoItemContabil.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/GRota.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/UnResumoColetaEsgoto.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/UnResumoHidrometro.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/UnResumoInstalacaoHidrometro.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/UnResumoLeituraAnormalidade.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/UnResumoMeta.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/UnResumoMetasAcumulado.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/consumo/GConsumoTipo.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/hidrometro/GHidrometroCapacidade.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/hidrometro/GHidrometroClasseMetrologica.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/hidrometro/GHidrometroDiametro.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/hidrometro/GHidrometroLocalArmazenagem.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/hidrometro/GHidrometroMarca.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/hidrometro/GHidrometroMotivoBaixa.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/hidrometro/GHidrometroSituacao.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/hidrometro/GHidrometroTipo.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/leitura/GLeituraSituacao.hbm.xml" />
+		<mapping resource="gcom/gerencial/micromedicao/medicao/GMedicaoTipo.hbm.xml" />
+		
+
+    </session-factory>
+
+</hibernate-configuration>
+
+
+
