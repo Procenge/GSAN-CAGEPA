@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="br.com.procenge.parametrosistema.impl.ParametroSistemaFuncionalidade" table="parametro_sist_funcionalidade">
+	
+		<id name="id" column="PSFN_ID">
+			<generator class="sequence">
+		       <param name="sequence">SQ_SISTEMA_PARMS_FUNC</param>
+		    </generator>
+		</id> 
+		
+		<property name="valor" column="PSVL_VALOR" />
+
+		<component name="funcionalidade" class="gcom.seguranca.acesso.Funcionalidade">
+			<property name="id" column="FNCD_ID" not-null="true" />
+		</component>
+		
+		<component name="parametroSistema" class="br.com.procenge.parametrosistema.impl.ParametroSistemaImpl">
+			<property name="chavePrimaria" column="PASI_ID" not-null="true" />
+		</component>
+		
+	</class>
+	
+</hibernate-mapping>
+

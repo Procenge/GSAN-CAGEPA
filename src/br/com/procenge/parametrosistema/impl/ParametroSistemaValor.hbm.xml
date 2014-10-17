@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="br.com.procenge.parametrosistema.impl.ParametroSistemaValor" table="parametro_sistema_valor">
+	
+		<id name="id" column="PSVL_ID">
+			<generator class="sequence">
+			<param name="sequence">
+				sq_parametro_sistema_valor
+			</param>
+		</generator>
+		</id> 
+		
+		<property name="valor" column="PSVL_VALOR" />
+		<property name="descricao" column="PSVL_DSVALOR" />
+
+		<many-to-one name="parametroSistema" class="br.com.procenge.parametrosistema.impl.ParametroSistemaImpl" not-null="true">
+		 <column name="PASI_ID"/>
+		</many-to-one>
+		
+	</class>
+	
+	<query name="consultarParametroSistemaValor">
+		<![CDATA[
+			FROM ParametroSistemaValor where parametroSistema.chavePrimaria = :chavePrimaria	
+		]]>
+	</query>
+	
+</hibernate-mapping>
+

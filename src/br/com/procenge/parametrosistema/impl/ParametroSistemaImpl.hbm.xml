@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class name="br.com.procenge.parametrosistema.impl.ParametroSistemaImpl" table="parametro_sistema">
+		<id name="chavePrimaria" column="PASI_ID">
+			<generator class="assigned" />
+		</id>
+		
+		<property name="codigo" column="PASI_CDPARAMETRO" not-null="true" />
+		<property name="descricao" column="PASI_DSPARAMETRO" not-null="true" />
+		<property name="valor" column="PASI_VLPARAMETRO" not-null="true" />
+		<property name="classeEntidade" column="PASI_NMCLASSEENTIDADE" not-null="false" />
+
+		<component name="tipoParametroSistema" class="br.com.procenge.parametrosistema.impl.TipoParametroSistemaImpl">
+			<property name="codigo" column="PASI_CDTIPOPARAMETRO" not-null="true" />
+		</component>
+		
+		<property name="versao" column="PASI_NNVERSAO" not-null="true" />
+		
+		<!-- 1 sim 2 nao -->
+		<property name="uso" column="PASI_ICUSO" not-null="true" />
+		
+		<property name="ultimaAlteracao" column="PASI_TMULTIMAALTERACAO" not-null="true" />
+		  
+	
+	</class>
+	
+	<query name="obterParametroSistemaPorCodigo">
+		<![CDATA[
+			FROM ParametroSistemaImpl where codigo = :codigo	
+		]]>
+	</query>
+	
+	<query name="consultarParametroSistema">
+		<![CDATA[
+			FROM ParametroSistemaImpl	
+		]]>
+	</query>
+	
+	
+</hibernate-mapping>
+
