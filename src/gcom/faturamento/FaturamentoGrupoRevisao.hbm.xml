@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+<class
+    name="gcom.faturamento.FaturamentoGrupoRevisao"
+    table="faturamento_grupo_revisao"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="fgrv_id"
+    >
+        <generator class="sequence">
+        	<param name="sequence">sq_faturamento_grupo_revisao</param>
+     	</generator>
+    </id>
+
+    <property
+        name="anoMesReferenciaFaturamentoInicial"
+        type="int"
+        column="fgrv_amreferenciafaturinicial"
+        not-null="true"
+        length="4"
+    />
+    
+    <property
+        name="anoMesReferenciaFaturamentoFinal"
+        type="int"
+        column="fgrv_amreferenciafaturfinal"
+        not-null="true"
+        length="4"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="fgrv_tmultimaalteracao"
+        length="8"
+    />
+  
+        
+    <property
+        name="indicadorImpressao"
+        type="java.lang.Short"
+        column="fgrv_icimpressao"  
+    />
+    
+    <property
+        name="indicadorImpressaoCampo"
+        type="java.lang.Short"
+        column="fgrv_icimpressaocampo"  
+    />    
+
+   <!-- associations -->
+    <!-- bi-directional many-to-one association to FaturamentoGrupo -->
+    
+    <many-to-one
+        name="faturamentoGrupo"
+        class="gcom.faturamento.FaturamentoGrupo"
+        not-null="true"
+        
+    >
+        <column name="ftgr_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to ContaMotivoRevisao -->
+    
+    <many-to-one
+        name="contaMotivoRevisao"
+        class="gcom.faturamento.conta.ContaMotivoRevisao"
+        not-null="true"
+        
+    >
+        <column name="cmrv_id" />
+    </many-to-one>
+    
+
+</class>
+</hibernate-mapping>

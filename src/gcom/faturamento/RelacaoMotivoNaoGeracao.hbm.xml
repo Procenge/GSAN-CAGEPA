@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+	<class name="gcom.faturamento.RelacaoMotivoNaoGeracao" table="relacao_motivo_nao_geracao">
+
+		<id name="id" type="java.lang.Integer" column="rmng_id">
+			<generator class="sequence">
+				<param name="sequence">sq_relacao_motivo_nao_geracao</param>
+			</generator>
+		</id>
+
+		<property name="idImovel" type="java.lang.Integer" column="imov_id" />
+
+		<property name="motivo" type="java.lang.String" column="rmng_motivo" />
+
+		<property name="ultimaAlteracao" type="java.sql.Timestamp"
+			column="rmng_tmultimaalteracao" length="8" />
+
+	</class>
+</hibernate-mapping>

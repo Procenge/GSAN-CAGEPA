@@ -1,0 +1,309 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 01/10/2008 17:59:14 by Hibernate Tools 3.2.1.GA -->
+<hibernate-mapping>
+    <class name="gcom.faturamento.conta.MovimentoSegundaVia" table="movimento_segunda_via">
+        <id name="id" type="java.lang.Integer">
+            <column name="msgv_id" />
+            <generator class="assigned" />
+        </id>
+        <property name="anoMesMovimentoReferencia" type="java.lang.Integer">
+            <column name="msgv_ammovimento" not-null="true" />
+        </property>
+        <property name="numeroInscricao" type="java.lang.String">
+            <column name="msgv_inscricao" length="30" not-null="true" />
+        </property>
+        <property name="idImovel" type="java.lang.Integer">
+            <column name="imov_id" not-null="true" />
+        </property>
+        <property name="nomeCliente" type="java.lang.String">
+            <column name="msgv_nmcliente" length="30" />
+        </property>
+        <property name="enderecoImovel" type="java.lang.String">
+            <column name="msgv_enderecoimovel" length="60" />
+        </property>
+        <property name="complementoEndereco" type="java.lang.String">
+            <column name="msgv_dscomplementoendereco" length="25" />
+        </property>
+        <property name="cep" type="java.lang.String">
+            <column name="msgv_cep" length="10" />
+        </property>
+        <property name="bairro" type="java.lang.String">
+            <column name="msgv_nmbairro" length="30" />
+        </property>
+        <property name="municipio" type="java.lang.String">
+            <column name="msgv_nmmunicipio" length="30" />
+        </property>
+        <property name="zonaTerritorial" type="java.lang.String">
+            <column name="msgv_dszonaterritorial" length="15" />
+        </property>
+        <property name="quantidadeEconomiaResidencial" type="java.lang.Short">
+            <column name="msgv_qteconomiaresidencial" />
+        </property>
+        <property name="quantidadeEconomiaComercial" type="java.lang.Short">
+            <column name="msgv_qteconomiacomercial" />
+        </property>
+        <property name="quantidadeEconomiaIndustrial" type="java.lang.Short">
+            <column name="msgv_qteconomiaindustrial" />
+        </property>
+        <property name="quantidadeEconomiaPublica" type="java.lang.Short">
+            <column name="msgv_qteconomiapublica" />
+        </property>
+        <property name="idLigacaoAguaSituacao" type="java.lang.Integer">
+            <column name="last_id" not-null="true" />
+        </property>
+        <property name="idLigacaoEsgotoSituacao" type="java.lang.Integer">
+            <column name="lest_id" not-null="true" />
+        </property>
+        <property name="indicadorGrandeCliente" type="java.lang.Short">
+            <column name="msgv_icgrandecliente" />
+        </property>
+        <property name="numeroHidrometro" type="java.lang.String">
+            <column name="msgv_nnhidrometro" length="10" />
+        </property>
+        <property name="idMedicaoTipo" type="java.lang.Integer">
+            <column name="medt_id" />
+        </property>
+        <property name="numeroLeituraAnterior" type="java.lang.Integer">
+            <column name="msgv_nnleituraanterior" />
+        </property>
+        <property name="dataLeituraAnterior" type="java.sql.Date">
+            <column name="msgv_dtleituraanterior" length="4" />
+        </property>
+        <property name="numeroConsumoMedio" type="java.lang.Integer">
+            <column name="msgv_nnconsumomedio" />
+        </property>
+        <property name="dataVencimento" type="java.sql.Date">
+            <column name="msgv_dtvencimento" length="4" />
+        </property>
+        <property name="indicadorEmissao" type="java.lang.Short">
+            <column name="msgv_icemissao" />
+        </property>
+        <property name="descricaoRubrica1" type="java.lang.String">
+            <column name="msgv_dsrubrica1" length="20" />
+        </property>
+        <property name="referenciaRubrica1" type="java.lang.String">
+            <column name="msgv_rfrubrica1" length="7" />
+        </property>
+        <property name="valorRubrica1" type="java.math.BigDecimal">
+            <column name="msgv_vlrubrica1" precision="13" />
+        </property>
+        <property name="descricaoRubrica2" type="java.lang.String">
+            <column name="msgv_dsrubrica2" length="20" />
+        </property>
+        <property name="referenciaRubrica2" type="java.lang.String">
+            <column name="msgv_rfrubrica2" length="7" />
+        </property>
+        <property name="valorRubrica2" type="java.math.BigDecimal">
+            <column name="msgv_vlrubrica2" precision="13" />
+        </property>
+        <property name="descricaoRubrica3" type="java.lang.String">
+            <column name="msgv_dsrubrica3" length="20" />
+        </property>
+        <property name="referenciaRubrica3" type="java.lang.String">
+            <column name="msgv_rfrubrica3" length="7" />
+        </property>
+        <property name="valorRubrica3" type="java.math.BigDecimal">
+            <column name="msgv_vlrubrica3" precision="13" />
+        </property>
+        <property name="descricaoRubrica4" type="java.lang.String">
+            <column name="msgv_dsrubrica4" length="20" />
+        </property>
+        <property name="referenciaRubrica4" type="java.lang.String">
+            <column name="msgv_rfrubrica4" length="7" />
+        </property>
+        <property name="valorRubrica4" type="java.math.BigDecimal">
+            <column name="msgv_vlrubrica4" precision="13" />
+        </property>
+        <property name="descricaoRubrica5" type="java.lang.String">
+            <column name="msgv_dsrubrica5" length="20" />
+        </property>
+        <property name="referenciaRubrica5" type="java.lang.String">
+            <column name="msgv_rfrubrica5" length="7" />
+        </property>
+        <property name="valorRubrica5" type="java.math.BigDecimal">
+            <column name="msgv_vlrubrica5" precision="13" />
+        </property>
+        <property name="descricaoRubrica6" type="java.lang.String">
+            <column name="msgv_dsrubrica6" length="20" />
+        </property>
+        <property name="referenciaRubrica6" type="java.lang.String">
+            <column name="msgv_rfrubrica6" length="7" />
+        </property>
+        <property name="valorRubrica6" type="java.math.BigDecimal">
+            <column name="msgv_vlrubrica6" precision="13" />
+        </property>
+        <property name="descricaoRubrica7" type="java.lang.String">
+            <column name="msgv_dsrubrica7" length="20" />
+        </property>
+        <property name="referenciaRubrica7" type="java.lang.String">
+            <column name="msgv_rfrubrica7" length="7" />
+        </property>
+        <property name="valorRubrica7" type="java.math.BigDecimal">
+            <column name="msgv_vlrubrica7" precision="13" />
+        </property>
+        <property name="descricaoRubrica8" type="java.lang.String">
+            <column name="msgv_dsrubrica8" length="20" />
+        </property>
+        <property name="referenciaRubrica8" type="java.lang.String">
+            <column name="msgv_rfrubrica8" length="7" />
+        </property>
+        <property name="valorRubrica8" type="java.math.BigDecimal">
+            <column name="msgv_vlrubrica8" precision="13" />
+        </property>
+        <property name="descricaoRubrica9" type="java.lang.String">
+            <column name="msgv_dsrubrica9" length="20" />
+        </property>
+        <property name="referenciaRubrica9" type="java.lang.String">
+            <column name="msgv_rfrubrica9" length="7" />
+        </property>
+        <property name="valorRubrica9" type="java.math.BigDecimal">
+            <column name="msgv_vlrubrica9" precision="13" />
+        </property>
+        <property name="descricaoRubrica10" type="java.lang.String">
+            <column name="msgv_dsrubrica10" length="20" />
+        </property>
+        <property name="referenciaRubrica10" type="java.lang.String">
+            <column name="msgv_rfrubrica10" length="7" />
+        </property>
+        <property name="valorRubrica10" type="java.math.BigDecimal">
+            <column name="msgv_vlrubrica10" precision="13" />
+        </property>
+        <property name="descricaoRubrica11" type="java.lang.String">
+            <column name="msgv_dsrubrica11" length="20" />
+        </property>
+        <property name="referenciaRubrica11" type="java.lang.String">
+            <column name="msgv_rfrubrica11" length="7" />
+        </property>
+        <property name="valorRubrica11" type="java.math.BigDecimal">
+            <column name="msgv_vlrubrica11" precision="13" />
+        </property>
+        <property name="descricaoRubrica12" type="java.lang.String">
+            <column name="msgv_dsrubrica12" length="20" />
+        </property>
+        <property name="referenciaRubrica12" type="java.lang.String">
+            <column name="msgv_rfrubrica12" length="7" />
+        </property>
+        <property name="valorRubrica12" type="java.math.BigDecimal">
+            <column name="msgv_vlrubrica12" precision="13" />
+        </property>
+        <property name="descricaoRubrica13" type="java.lang.String">
+            <column name="msgv_dsrubrica13" length="20" />
+        </property>
+        <property name="referenciaRubrica13" type="java.lang.String">
+            <column name="msgv_rfrubrica13" length="7" />
+        </property>
+        <property name="valorRubrica13" type="java.math.BigDecimal">
+            <column name="msgv_vlrubrica13" precision="13" />
+        </property>
+        <property name="descricaoRubrica14" type="java.lang.String">
+            <column name="msgv_dsrubrica14" length="20" />
+        </property>
+        <property name="referenciaRubrica14" type="java.lang.String">
+            <column name="msgv_rfrubrica14" length="7" />
+        </property>
+        <property name="valorRubrica14" type="java.math.BigDecimal">
+            <column name="msgv_vlrubrica14" precision="13" />
+        </property>
+        <property name="descricaoRubrica15" type="java.lang.String">
+            <column name="msgv_dsrubrica15" length="20" />
+        </property>
+        <property name="referenciaRubrica15" type="java.lang.String">
+            <column name="msgv_rfrubrica15" length="7" />
+        </property>
+        <property name="valorRubrica15" type="java.math.BigDecimal">
+            <column name="msgv_vlrubrica15" precision="13" />
+        </property>
+        <property name="referenciaConsumo1" type="java.lang.String">
+            <column name="msgv_rfconsumo1" length="7" />
+        </property>
+        <property name="numeroConsumo1" type="java.lang.Integer">
+            <column name="msgv_nnconsumo1" />
+        </property>
+        <property name="idAnormalidadeLeitura1" type="java.lang.Integer">
+            <column name="msgv_idanormalidadeleitura1" />
+        </property>
+        <property name="referenciaConsumo2" type="java.lang.String">
+            <column name="msgv_rfconsumo2" length="7" />
+        </property>
+        <property name="numeroConsumo2" type="java.lang.Integer">
+            <column name="msgv_nnconsumo2" />
+        </property>
+        <property name="idAnormalidadeLeitura2" type="java.lang.Integer">
+            <column name="msgv_idanormalidadeleitura2" />
+        </property>
+        <property name="referenciaConsumo3" type="java.lang.String">
+            <column name="msgv_rfconsumo3" length="7" />
+        </property>
+        <property name="numeroConsumo3" type="java.lang.Integer">
+            <column name="msgv_nnconsumo3" />
+        </property>
+        <property name="idAnormalidadeLeitura3" type="java.lang.Integer">
+            <column name="msgv_idanormalidadeleitura3" />
+        </property>
+        <property name="referenciaConsumo4" type="java.lang.String">
+            <column name="msgv_rfconsumo4" length="7" />
+        </property>
+        <property name="numeroConsumo4" type="java.lang.Integer">
+            <column name="msgv_nnconsumo4" />
+        </property>
+        <property name="idAnormalidadeLeitura4" type="java.lang.Integer">
+            <column name="msgv_idanormalidadeleitura4" />
+        </property>
+        <property name="referenciaConsumo5" type="java.lang.String">
+            <column name="msgv_rfconsumo5" length="7" />
+        </property>
+        <property name="numeroConsumo5" type="java.lang.Integer">
+            <column name="msgv_nnconsumo5" />
+        </property>
+        <property name="idAnormalidadeLeitura5" type="java.lang.Integer">
+            <column name="msgv_idanormalidadeleitura5" />
+        </property>
+        <property name="referenciaConsumo6" type="java.lang.String">
+            <column name="msgv_rfconsumo6" length="7" />
+        </property>
+        <property name="numeroConsumo6" type="java.lang.Integer">
+            <column name="msgv_nnconsumo6" />
+        </property>
+        <property name="idAnormalidadeLeitura6" type="java.lang.Integer">
+            <column name="msgv_idanormalidadeleitura6" />
+        </property>
+        <property name="dataLeituraAtual" type="java.sql.Date">
+            <column name="msgv_dtleituraatual" length="4" />
+        </property>
+        <property name="numeroLeituraAtual" type="java.lang.Integer">
+            <column name="msgv_nnleituraatual" />
+        </property>
+        <property name="numeroConsumoMedido" type="java.lang.Integer">
+            <column name="msgv_nnconsumomedido" />
+        </property>
+        <property name="numeroConsumoFaturado" type="java.lang.Integer">
+            <column name="msgv_nnconsumofaturado" />
+        </property>
+        <property name="numeroDiasConsumo" type="java.lang.Short">
+            <column name="msgv_nndiasconsumo" />
+        </property>
+        <property name="valorAgua" type="java.math.BigDecimal">
+            <column name="msgv_vlagua" precision="13" not-null="true" />
+        </property>
+        <property name="valorEsgoto" type="java.math.BigDecimal">
+            <column name="msgv_vlesgoto" precision="13" not-null="true" />
+        </property>
+        <property name="valorDebitos" type="java.math.BigDecimal">
+            <column name="msgv_vldebitos" precision="13" not-null="true" />
+        </property>
+        <property name="valorCreditos" type="java.math.BigDecimal">
+            <column name="msgv_vlcreditos" precision="13" not-null="true" />
+        </property>
+        <property name="valorImpostoFederal" type="java.math.BigDecimal">
+            <column name="msgv_vlipf" precision="13" not-null="true" />
+        </property>
+        <property name="valorTotal" type="java.math.BigDecimal">
+            <column name="msgv_vltotal" precision="13" not-null="true" />
+        </property>
+        <property name="dataEmissao" type="java.sql.Date">
+            <column name="msgv_dtemissao" length="4" />
+        </property>
+    </class>
+</hibernate-mapping>

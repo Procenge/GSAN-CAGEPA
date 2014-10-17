@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.faturamento.SetorComercialVencimento"
+    table="setor_comercial_vencimento"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="stcv_id">  
+
+    <generator class="sequence">
+       <param name="sequence">sq_setor_comercial_vencimento</param>
+    </generator>
+
+    </id>
+    
+    
+    <!-- bi-directional many-to-one association to Localidade -->
+    <many-to-one
+        name="localidade"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="true"
+    >
+        <column name="loca_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Localidade -->
+    <many-to-one
+        name="setorComercial"
+        class="gcom.cadastro.localidade.SetorComercial"
+        not-null="true"
+    >
+        <column name="stcm_id" />
+    </many-to-one>
+    
+    <property
+        name="diaVencimento"
+        type="java.lang.Short"
+        column="stcv_diavencimento"
+        length="2"
+    />
+    
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="stcv_icuso"
+        length="2"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="stcv_tmultimaalteracao"
+        length="8"
+    />
+
+</class>
+</hibernate-mapping>

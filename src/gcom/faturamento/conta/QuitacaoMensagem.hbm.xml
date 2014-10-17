@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+	<class
+		name="gcom.faturamento.conta.QuitacaoMensagem"
+		table="quitacao_mensagem">
+
+		<id
+			name="id"
+			type="java.lang.Integer"
+			column="qtms_id">
+			<generator
+				class="sequence">
+				<param
+					name="sequence">sq_quitacao_mensagem</param>
+			</generator>
+		</id>
+
+		<property
+			name="descricaoQuitacaoMensagem01"
+			type="java.lang.String"
+			column="qtms_dsquitacaomensagem01"
+			length="100"
+			not-null="true" />
+
+		<property
+			name="descricaoQuitacaoMensagem02"
+			type="java.lang.String"
+			column="qtms_dsquitacaomensagem02"
+			length="100"
+			not-null="false" />
+
+
+		<property
+			name="descricaoQuitacaoMensagem03"
+			type="java.lang.String"
+			column="qtms_dsquitacaomensagem03"
+			length="100"
+			not-null="false" />
+
+		<property
+			name="indicadorUso"
+			type="java.lang.Short"
+			column="qtms_icuso"
+			length="2"
+			not-null="true" />
+
+		<property
+			name="ultimaAlteracao"
+			type="java.sql.Timestamp"
+			column="qtms_tmultimaalteracao"
+			length="8"
+			not-null="true" />
+
+	</class>
+</hibernate-mapping>

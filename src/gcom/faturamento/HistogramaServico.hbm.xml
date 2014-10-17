@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+	<class name="gcom.faturamento.HistogramaServico"
+		table="histograma_servico">
+                                                                                                                                                                                    
+		
+		<id name="id" type="java.lang.Integer" column="hise_id">
+			<generator class="sequence">
+				<param name="sequence">SQ_HISTOGRAMA_SERVICO</param>
+			</generator>
+		</id>
+		
+
+
+		<property name="qtdTotalDebitoCobrado" type="java.lang.Integer"
+			column="HISE_QTTOTALDEBITOCOBRADO" />
+
+		<property name="valorTotalDebitoCobrado" type="java.math.BigDecimal"
+			column="HISE_VLTOTALDEBITOCOBRADO" />
+
+
+		 <!-- bi-directional many-to-one association to Localidade -->
+		<many-to-one name="localidade" class="gcom.cadastro.localidade.Localidade"
+			not-null="true">
+			<column name="loca_id" />
+		</many-to-one>
+		
+		<!-- bi-directional many-to-one association to SetorComercial-->
+		<many-to-one name="setorComercial" class="gcom.cadastro.localidade.SetorComercial"
+			not-null="true">
+			<column name="stcm_id" />
+		</many-to-one>
+
+		<!-- bi-directional many-to-one association to Categoria-->
+		<many-to-one name="categoria" class="gcom.cadastro.imovel.Categoria"
+			not-null="true">
+			<column name="catg_id" />
+		</many-to-one>
+		
+		<!-- bi-directional many-to-one association to DebitoTipo-->
+		<many-to-one name="debitoTipo" class="gcom.faturamento.debito.DebitoTipo"
+			not-null="true">
+			<column name="dbtp_id" />
+		</many-to-one>
+
+	</class>
+</hibernate-mapping>

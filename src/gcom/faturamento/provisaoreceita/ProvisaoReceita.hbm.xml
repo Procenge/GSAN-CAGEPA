@@ -1,0 +1,154 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.faturamento.provisaoreceita.ProvisaoReceita"
+    table="provisao_receita"
+>
+	
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="prec_id">
+        
+     <generator class="sequence">
+        	<param name="sequence">sq_provisao_receita</param>
+     </generator>
+
+    </id>
+
+	<property
+        name="anoMesReferenciaProvisao"
+        type="java.lang.Integer"
+        column="prec_amreferenciaprovisao"
+        not-null="true"
+        length="4"
+    />
+
+	<property
+        name="idGerenciaRegional"
+        type="java.lang.Integer"
+        column="greg_id"
+        not-null="true"
+        length="8"
+    />
+        
+    <property
+        name="idLocalidade"
+        type="java.lang.Integer"
+        column="loca_id"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="idImovel"
+        type="java.lang.Integer"
+        column="imov_id"
+        not-null="true"
+    />
+    
+    <property name="dataLeituraMesProvisao" 
+    	type="java.sql.Date"
+		column="prec_dtleitura" 
+		not-null="false" 
+		length="4" 
+	/>
+    
+    <property 
+    	name="numeroDiasConsumoMes"
+		type="java.lang.Short" 
+		column="prec_nndiasconsumo"
+		length="2" 
+	/>
+			
+	<property
+        name="consumoMedio"
+        type="java.lang.Integer"
+        column="prec_nnconsumomedio"
+    />
+    
+    <property 
+    	name="numeroDiasFaturar"
+		type="java.lang.Short" 
+		column="prec_nndiasate31"
+		length="2" 
+	/>
+	
+	<property
+        name="consumoDia"
+        type="java.math.BigDecimal"
+        column="prec_nnconsumodia"
+        length="13"
+    />
+    
+    <property
+        name="consumoFaturar"
+        type="java.lang.Integer"
+        column="prec_nnconsumoafaturar"
+    />
+    
+    <property
+        name="quantidadeEconomias"
+        type="java.lang.Integer"
+        column="prec_qteconomia"
+        not-null="true"
+    />
+    
+    <property
+        name="valorConsumoMinimoDia"
+        type="java.math.BigDecimal"
+        column="prec_vlconsumominimodia"
+        length="13"
+    />
+    
+    <property
+        name="valorAgua"
+        type="java.math.BigDecimal"
+        column="prec_vlagua"
+        length="13"
+    />
+    
+    <property
+        name="valorEsgoto"
+        type="java.math.BigDecimal"
+        column="prec_vlesgoto"
+        length="13"
+    />
+    
+    <property
+        name="valorFaturar"
+        type="java.math.BigDecimal"
+        column="prec_vlfaturar"
+        length="13"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="prec_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    /> 
+    
+    <property
+        name="idCategoria"
+        type="java.lang.Short"
+        column="catg_id"
+        not-null="true"
+        length="2"
+    />
+			   
+</class>
+</hibernate-mapping>

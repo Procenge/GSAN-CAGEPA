@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.faturamento.FaturamentoAtividadeCriterio"
+    table="faturamento_atividade_criterio"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="fatc_id"
+    >
+        <generator class="sequence">
+        	<param name="sequence">sq_faturamento_atividade_crit</param>
+     	</generator>
+    </id>
+    
+    <many-to-one
+        name="faturamentoAtividade"
+        class="gcom.faturamento.FaturamentoAtividade"
+        not-null="true"
+    >
+            <column name="ftat_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="ligacaoAguaSituacao"
+        class="gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao"
+    >
+            <column name="last_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="ligacaoEsgotoSituacao"
+        class="gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao"
+    >
+            <column name="lest_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to LeituraTipo -->
+    <many-to-one
+        name="leituraTipo"
+        class="gcom.micromedicao.leitura.LeituraTipo"
+        not-null="true"
+    >
+        <column name="lttp_id" />
+    </many-to-one>
+    
+    <property
+        name="indicadorHidrometroLigacaoAgua"
+        type="java.lang.Short"
+        column="fatc_ichidrometroligagua"
+        length="2"
+        not-null="true"
+    />
+    
+    <property
+        name="indicadorHidrometroLigacaoPoco"
+        type="java.lang.Short"
+        column="fatc_ichidrometroligpoco"
+        length="2"
+        not-null="true"
+    />
+    
+    <property
+        name="indicadorLeituraFiscalizacaoCortado"
+        type="java.lang.Short"
+        column="fatc_icleiturafiscalizacaocort"
+        length="2"
+        not-null="true"
+    />
+    
+    <property
+        name="indicadorLeituraFiscalizacaoSuprimido"
+        type="java.lang.Short"
+        column="fatc_icleiturafiscalizacaosupr"
+        length="2"
+        not-null="true"
+    />
+    
+   <property
+        name="indicadorSituacaoLigacaoAguaFaturavel"
+        type="java.lang.Short"
+        column="ftac_icsitligacaoaguafaturavel"
+        length="2"
+        not-null="false"
+    />
+    
+    <property
+        name="indicadorSituacaoLigacaoEsgotoFaturavel"
+        type="java.lang.Short"
+        column="ftac_icsitligacaoesgfaturavel"
+        length="2"
+        not-null="false"
+    />
+    
+    <property
+        name="indicadorDebitoACobrar"
+        type="java.lang.Short"
+        column="fatc_icdebitosacobrar"
+        length="1"
+        not-null="false"
+    />
+    
+    <property
+        name="indicadorDebitoACobrarParcelamento"
+        type="java.lang.Short"
+        column="fatc_icdebitosacobrarparc"
+        length="1"
+        not-null="false"
+    />
+
+</class>
+</hibernate-mapping>

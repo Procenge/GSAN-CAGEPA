@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.faturamento.QualidadeAguaPadrao" 
+    table="qualidade_agua_padrao"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="qlap_id">
+        
+        <generator class="sequence">
+          <param name="sequence">sq_qualidade_agua_padrao</param>
+      </generator>
+    </id>
+
+    <property
+        name="descricaoPadraoTurbidez"
+        type="java.lang.String"
+        column="qlap_dspadraoturbidez"
+        length="20"
+    />
+    <property
+        name="descricaoPadraoPH"
+        type="java.lang.String"
+        column="qlap_dspadraoph"
+        length="20"
+    />
+    <property
+        name="descricaoPadraoCor"
+        type="java.lang.String"
+        column="qlap_dspadraocor"
+        length="20"
+    />
+    <property
+        name="descricaoPadraoCloro"
+        type="java.lang.String"
+        column="qlap_dspadraocloro"
+        length="20"
+    />
+ 
+    <property
+        name="numeroAmostrasExigidasPH"
+        type="java.lang.Short"
+        column="qlap_nnexigidaph"
+        not-null="false"
+        length="3"
+    />  
+ 
+    <property
+        name="descricaoPadraoFluor"
+        type="java.lang.String"
+        column="qlap_dspadraofluor"
+        length="20"
+    />
+    <property
+        name="descricaoPadraoFerro"
+        type="java.lang.String"
+        column="qlap_dspadraoferro"
+        length="20"
+    />
+    <property
+        name="descricaoPadraoColiformesTotais"
+        type="java.lang.String"
+        column="qlap_dspadraocoliformestotais"
+        length="20"
+    />
+    <property
+        name="descricaoPadraoColiformesTermotolerantes"
+        type="java.lang.String"
+        column="qlap_dspadraocoliformestermoto"
+        length="20"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="qlap_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="descricaoPadraoNitrato"
+        type="java.lang.String"
+        column="qlap_dspadraonitrato"
+        length="20"
+    />
+    
+    <property
+        name="numeroAmostrasExigidasTurbidez"
+        type="java.lang.Short"
+        column="qlag_nnexigidaturbidez"
+        not-null="false"
+        length="3"
+    />  
+    
+    <property
+        name="numeroAmostrasExigidasCor"
+        type="java.lang.Short"
+        column="qlag_nnexigidacor"
+        not-null="false"
+        length="3"
+    />
+    
+    <property
+        name="numeroAmostrasExigidasCloro"
+        type="java.lang.Short"
+        column="qlag_nnexigidacloro"
+        not-null="false"
+        length="3"
+    />
+    
+     <property
+        name="numeroAmostrasExigidasFluor"
+        type="java.lang.Short"
+        column="qlag_nnexigidafluor"
+        not-null="false"
+        length="3"
+    />
+    
+     <property
+        name="numeroAmostrasExigidasColiformesTotais"
+        type="java.lang.Short"
+        column="qlag_nnexigidacoliformestotais"
+        not-null="false"
+        length="3"
+    />
+    
+     <property
+        name="numeroAmostrasExigidasColiformesTermotolerantes"
+        type="java.lang.Short"
+        column="qlag_nnexigidacoliformestermot"
+        not-null="false"
+        length="3"
+    />
+    
+    <property
+        name="descricaoConclusao"
+        type="java.lang.String"
+        column="qlap_dsconclusao"
+        length="100"
+    />
+    
+    <!-- Associations -->
+
+</class>
+</hibernate-mapping>

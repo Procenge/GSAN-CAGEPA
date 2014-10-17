@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.faturamento.FaturamentoSituacaoHistorico"
+    table="faturamento_situacao_historico"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ftsh_id"
+    >
+      <generator class="sequence">
+        <param name="sequence">sq_fatr_sit_hist</param>
+      </generator>
+    </id>
+
+    <property
+        name="anoMesFaturamentoSituacaoInicio"
+        type="java.lang.Integer"
+        column="ftsh_amfaturamentosituacaoinic"
+        not-null="true"
+        length="6"
+    />
+    <property
+        name="anoMesFaturamentoSituacaoFim"
+        type="java.lang.Integer"
+        column="ftsh_amfaturamentosituacaofim"
+        not-null="true"
+        length="6"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ftsh_tmultimaalteracao"
+        length="8"
+    />
+    <property
+        name="anoMesFaturamentoRetirada"
+        type="java.lang.Integer"
+        column="ftsh_amfaturamentoretirada"
+        length="6"
+    />
+    <property
+        name="volume"
+        type="java.lang.Integer"
+        column="ftsh_nnvolume"
+        length="6"
+    />
+    <property
+        name="percentualEsgoto"
+        type="java.math.BigDecimal"
+        column="ftsh_pcesgoto"
+        length="5"
+    />
+
+    <!-- associations -->
+    <!-- bi-directional many-to-one association to FaturamentoSituacaoMotivo -->
+    <many-to-one
+        name="faturamentoSituacaoMotivo"
+        class="gcom.faturamento.FaturamentoSituacaoMotivo"
+        not-null="true"
+    >
+        <column name="ftsm_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Imovel -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="true"
+    >
+        <column name="imov_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to FaturamentoSituacaoTipo -->
+    <many-to-one
+        name="faturamentoSituacaoTipo"
+        class="gcom.faturamento.FaturamentoSituacaoTipo"
+        not-null="true"
+    >
+        <column name="ftst_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to Usuario -->
+    <many-to-one
+        name="usuario"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="true"
+    >
+        <column name="usur_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

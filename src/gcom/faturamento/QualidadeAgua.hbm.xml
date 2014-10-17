@@ -1,0 +1,461 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.faturamento.QualidadeAgua" 
+    table="qualidade_agua"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="qlag_id"
+    >
+      <generator class="sequence">
+          <param name="sequence">sq_qualidade_agua</param>
+      </generator>
+
+    </id>
+
+
+	<property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="qlag_tmultimaalteracao"
+        length="8"
+    />
+    
+    <property
+        name="anoMesReferencia"
+        type="java.lang.Integer"
+        column="qlag_amreferencia"
+        length="4"
+    />
+    <property
+        name="numeroIndiceTurbidez"
+        type="java.math.BigDecimal"
+        column="qlag_nnindiceturbidez"
+        not-null="false"
+        length="5"
+    />
+    <property
+        name="numeroCloroResidual"
+        type="java.math.BigDecimal"
+        column="qlag_nnclororesidual"
+        not-null="false"
+        length="5"
+    />
+    
+    <property
+        name="numeroIndicePH"
+        type="java.math.BigDecimal"
+        column="qlag_nnindiceph"
+        not-null="false"
+        length="5"
+    />
+    
+    <property
+        name="numeroIndiceCor"
+        type="java.math.BigDecimal"
+        column="qlag_nnindicecor"
+        not-null="false"
+        length="5"
+    />
+
+    <property
+        name="numeroIndiceFluor"
+        type="java.math.BigDecimal"
+        column="qlag_nnindicefluor"
+        not-null="false"
+        length="5"
+    />
+
+    <property
+        name="numeroIndiceFerro"
+        type="java.math.BigDecimal"
+        column="qlag_nnindiceferro"
+        not-null="false"
+        length="5"
+    />
+
+  <property
+        name="numeroIndiceColiformesTotais"
+        type="java.math.BigDecimal"
+        column="qlag_nnindicecoliformestotais"
+        not-null="false"
+        length="5"
+    />
+    
+    <property
+        name="numeroIndiceColiformesFecais"
+        type="java.math.BigDecimal"
+        column="qlag_nnindicecoliformesfecais"
+        not-null="false"
+        length="5"
+    />
+    
+        <property
+        name="numeroNitrato"
+        type="java.math.BigDecimal"
+        column="qlag_nnnitrato"
+        not-null="false"
+        length="5"
+    />
+    
+    <property
+        name="descricaoFonteCaptacao"
+        type="java.lang.String"
+        column="qlag_dsfontecaptacao"
+        length="30"
+    />
+    
+  
+    
+
+	<property
+        name="numeroAmostrasRealizadasTurbidez"
+        type="java.math.BigDecimal"
+        column="qlag_nnrealizadaturbidez"
+        not-null="false"
+        
+    />    
+    
+    <property
+        name="numeroAmostrasRealizadasCor"
+        type="java.math.BigDecimal"
+        column="qlag_nnrealizadacor"
+        not-null="false"
+        
+    />   
+    
+    <property
+        name="numeroAmostrasRealizadasCloro"
+        type="java.math.BigDecimal"
+        column="qlag_nnrealizadacloro"
+        not-null="false"
+       
+    /> 
+
+    <property
+        name="numeroAmostrasRealizadasPH"
+        type="java.math.BigDecimal"
+        column="qlag_nnrealizadaph"
+        not-null="false"
+       
+    />
+    
+    <property
+        name="numeroAmostrasRealizadasFluor"
+        type="java.math.BigDecimal"
+        column="qlag_nnrealizadafluor"
+        not-null="false"
+       
+    />
+    
+    <property
+        name="numeroAmostrasRealizadasColiformesTotais"
+        type="java.math.BigDecimal"
+        column="qlag_nnrealizadacoliformestota"
+        not-null="false"
+       
+    />
+    
+    
+     
+    
+	<property
+        name="numeroAmostrasRealizadasColiformesTermotolerantes"
+        type="java.math.BigDecimal"
+        column="qlag_nnrealizadacoliformesterm"
+        not-null="false"
+     
+    />    
+    
+   
+      
+
+	<property
+        name="numeroAmostrasConformesTurbidez"
+        type="java.math.BigDecimal"
+        column="qlag_nnconformeturbidez"
+        not-null="false"
+      
+    />    
+    
+    <property
+        name="numeroAmostrasConformesCor"
+        type="java.math.BigDecimal"
+        column="qlag_nnconformecor"
+        not-null="false"
+       
+    />  
+    
+   <property
+        name="numeroAmostrasConformesCloro"
+        type="java.math.BigDecimal"
+        column="qlag_nnconformecloro"
+        not-null="false"
+        
+    />  
+    
+  
+ 
+  
+   
+    
+
+    <property
+        name="numeroAmostrasConformesPH"
+        type="java.math.BigDecimal"
+        column="qlag_nnconformeph"
+        not-null="false"
+      
+    />
+    
+
+    
+    <property
+        name="numeroAmostrasConformesFluor"
+        type="java.math.BigDecimal"
+        column="qlag_nnconformefluor"
+        not-null="false"
+       
+    /> 
+      
+    
+    
+    
+    <property
+        name="numeroAmostrasConformesColiformesTotais"
+        type="java.math.BigDecimal"
+        column="qlag_nnconformecoliformestotai"
+        not-null="false"
+        
+    /> 
+
+    
+	<property
+        name="numeroAmostrasConformesColiformesTermotolerantes"
+        type="java.math.BigDecimal"
+        column="qlag_nnconformecoliformestermo"
+        not-null="false"
+       
+    />    
+
+    
+    
+    <property
+        name="numeroAmostrasMediaTurbidez"
+        type="java.math.BigDecimal"
+        column="qlag_nnmediaturbidez"
+        not-null="false"
+        length="5"
+    />    
+    
+    <property
+        name="numeroAmostrasMediaCor"
+        type="java.math.BigDecimal"
+        column="qlag_nnmediacor"
+        not-null="false"
+        length="5"
+    /> 
+    
+	<property
+        name="numeroAmostrasMediaCloro"
+        type="java.math.BigDecimal"
+        column="qlag_nnmediacloro"
+        not-null="false"
+        length="5"
+    />     
+
+    <property
+        name="numeroAmostrasMediaPH"
+        type="java.math.BigDecimal"
+        column="qlag_nnmediaph"
+        not-null="false"
+        length="5"
+    />
+    
+    <property
+        name="numeroAmostrasMediaFluor"
+        type="java.math.BigDecimal"
+        column="qlag_nnmediafluor"
+        not-null="false"
+        length="5"
+    />   
+    
+    <property
+        name="numeroAmostrasMediaColiformesTotais"
+        type="java.math.BigDecimal"
+        column="qlag_nnmediacoliformestotais"
+        not-null="false"
+        length="5"
+    />   
+    
+   <property
+        name="numeroAmostrasMediaColiformesTermotolerantes"
+        type="java.math.BigDecimal"
+        column="qlag_nnmediacoliformestermotol"
+        not-null="false"
+        length="5"
+    /> 
+    
+   <property 
+        name="numeroAmostrasMediaBacteriasHeterotroficas"
+        type="java.math.BigDecimal"
+        column="qlag_nnmediabacteriasheterot"
+        not-null="false"
+        length="5"
+    />
+    
+    <property
+        name="descricaoConclusaoAnalisesRealizadas"
+        type="java.lang.String"
+        column="qlag_dsconclusao"
+        length="100"
+    />
+        
+    <!-- Associations -->
+    <!-- derived association(s) for compound key -->
+    <!-- bi-directional many-to-one association to Tabela -->
+    <many-to-one
+        name="localidade"
+	    class="gcom.cadastro.localidade.Localidade"
+	    not-null="false"
+	    
+	>
+    	<column name="loca_id" />
+	</many-to-one>
+	<many-to-one
+        name="setorComercial"
+	    class="gcom.cadastro.localidade.SetorComercial"
+	    not-null="false"
+	    
+	>
+    	<column name="stcm_id" />
+	</many-to-one>
+	
+	
+	
+	 <property
+        name="descricaoPadraoTurbidez"
+        type="java.lang.String"
+        column="qlag_dspadraoturbidez"
+        length="20"
+    />
+	
+	<property
+        name="descricaoPadraoPh"
+        type="java.lang.String"
+        column="qlag_dspadraoph"
+        length="20"
+    />
+    
+    <property
+        name="descricaoPadraoCor"
+        type="java.lang.String"
+        column="qlag_dspadraocor"
+        length="20"
+    />
+    
+    <property
+        name="descricaoPadraoCloro"
+        type="java.lang.String"
+        column="qlag_dspadraocloro"
+        length="20"
+    />
+    
+    <property
+        name="descricaoPadraoFluor"
+        type="java.lang.String"
+        column="qlag_dspadraofluor"
+        length="20"
+    />
+    
+     <property
+        name="descricaoPadraoColiformesTotais"
+        type="java.lang.String"
+        column="qlag_dspadraocoliformestotais"
+        length="20"
+    />
+    
+    <property
+        name="descricaoPadraoColiformesTermoto"
+        type="java.lang.String"
+        column="qlag_dspadraocoliformestermoto"
+        length="20"
+    />
+    
+    
+    
+  
+	<property
+        name="numeroAmostrasExigidasTurbidez"
+        type="java.math.BigDecimal"
+        column="qlag_nnexigidaturbidez"
+        not-null="false"
+        
+    /> 
+    
+     <property
+        name="numeroAmostrasExigidasCor"
+        type="java.math.BigDecimal"
+        column="qlag_nnexigidacor"
+        not-null="false"
+       
+    />
+	
+	<property
+        name="numeroAmostrasExigidasCloro"
+        type="java.math.BigDecimal"
+        column="qlag_nnexigidacloro"
+        not-null="false"
+       
+    />
+    
+     <property
+        name="numeroAmostrasExigidasFluor"
+        type="java.math.BigDecimal"
+        column="qlag_nnexigidafluor"
+        not-null="false"
+        
+    />
+    
+    <property
+        name="numeroAmostrasExigidasColiformesTotais"
+        type="java.math.BigDecimal"
+        column="qlag_nnexigidacoliformestotais"
+        not-null="false"
+        
+    />
+    
+    <property
+        name="numeroAmostrasExigidasColiformesTermotolerantes"
+        type="java.math.BigDecimal"
+        column="qlag_nnexigidacoliformestermot"
+        not-null="false"
+       
+    />
+    
+	<property
+        name="numeroAmostrasExigidasPh"
+        type="java.math.BigDecimal"
+        column="qlag_nnexigidaph"
+        not-null="false"
+       
+    />
+	
+	
+
+</class>
+</hibernate-mapping>

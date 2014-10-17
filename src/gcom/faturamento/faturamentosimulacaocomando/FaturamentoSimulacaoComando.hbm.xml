@@ -1,0 +1,186 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.faturamento.faturamentosimulacaocomando.FaturamentoSimulacaoComando"
+    table="faturamento_simulacao_comando"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ftsc_id"
+    >
+        <generator class="sequence">
+          <param name="sequence">sq_faturament_simulac_comand</param>
+      	</generator>
+    </id>
+
+    <property
+        name="descricaoTitulo"
+        type="java.lang.String"
+        column="ftsc_dstitulo"
+        length="70"
+    />
+    
+    <property
+        name="dataRealizacao"
+        type="java.sql.Timestamp"
+        column="ftsc_tmrealizacao"
+        length="8"
+    />
+    
+    <property
+        name="dataComando"
+        type="java.sql.Timestamp"
+        column="ftsc_tmcomando"
+        length="8"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ftsc_tmultimaalteracao"
+        length="8"
+    />
+    
+    <property
+        name="loteInicial"
+        type="java.lang.Short"
+        column="ftsc_nnloteinicial"
+        length="4"
+    />
+    
+    <property
+        name="loteFinal"
+        type="java.lang.Short"
+        column="ftsc_nnlotefinal"
+        length="4"
+    />
+    
+    <property
+        name="codigoTipoConsumoAgua"
+        type="java.lang.Short"
+        column="ftsc_cdtipoconsumoagua"
+        length="2"
+        not-null="true"
+    />
+    
+    <property
+        name="codigoTipoConsumoEsgoto"
+        type="java.lang.Short"
+        column="ftsc_cdtipoconsumoesgoto"
+        length="2"
+        not-null="true"
+    />
+
+    <!-- associations -->
+    
+    <many-to-one
+        name="faturamentoGrupo"
+        class="gcom.faturamento.FaturamentoGrupo"
+        not-null="false"
+    >
+        <column name="ftgr_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="gerenciaRegional"
+        class="gcom.cadastro.localidade.GerenciaRegional"
+        not-null="false"
+    >
+        <column name="greg_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="unidadeNegocio"
+        class="gcom.cadastro.localidade.UnidadeNegocio"
+        not-null="false"
+    >
+        <column name="uneg_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="localidadeInicial"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="false"
+    >
+        <column name="ftsc_idlocainicial"/>
+    </many-to-one>
+    
+    <many-to-one
+        name="localidadeFinal"
+        class="gcom.cadastro.localidade.Localidade"
+        not-null="false"
+    >
+        <column name="ftsc_idlocafinal"/>
+    </many-to-one>
+    
+    <many-to-one
+        name="setorComercialInicial"
+        class="gcom.cadastro.localidade.SetorComercial"
+        not-null="false"
+    >
+        <column name="ftsc_idsetorinicial" />
+    </many-to-one>
+    
+    <many-to-one
+        name="setorComercialFinal"
+        class="gcom.cadastro.localidade.SetorComercial"
+        not-null="false"
+    >
+        <column name="ftsc_idsetorfinal" />
+    </many-to-one>
+    
+     <many-to-one
+        name="quadraInicial"
+        class="gcom.cadastro.localidade.Quadra"
+        not-null="false"
+    >
+        <column name="ftsc_idquadrainicial" />
+    </many-to-one>
+    
+    <many-to-one
+        name="quadraFinal"
+        class="gcom.cadastro.localidade.Quadra"
+        not-null="false"
+    >
+        <column name="ftsc_idquadrafinal" />
+    </many-to-one>
+    
+    <many-to-one
+        name="rotaInicial"
+        class="gcom.micromedicao.Rota"
+        not-null="false"
+    >
+        <column name="ftsc_idrotainicial" />
+    </many-to-one>
+    
+    <many-to-one
+        name="rotaFinal"
+        class="gcom.micromedicao.Rota"
+        not-null="false"
+    >
+        <column name="ftsc_idrotafinal" />
+    </many-to-one>
+    
+    <many-to-one
+        name="consumoTarifa"
+        class="gcom.faturamento.consumotarifa.ConsumoTarifa"
+        not-null="false"
+    >
+        <column name="cstf_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

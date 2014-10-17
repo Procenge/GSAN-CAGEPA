@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+	<class name="gcom.faturamento.RelacaoTresDeso" table="relacao_tres_deso">
+
+		<id name="id" type="java.lang.Integer" column="reld_id">
+			<generator class="sequence">
+				<param name="sequence">sq_relacao_tres_deso</param>
+			</generator>
+		</id>
+
+		<property name="idFaturamentoGrupo" type="java.lang.Integer"
+			column="ftgr_id" />
+
+		<property name="idImovel" type="java.lang.Integer" column="imov_id" />
+
+		<property name="idDebitoTipo" type="java.lang.Integer"
+			column="dbtp_id" />
+
+		<property name="valorRestanteSerCobrado" type="java.math.BigDecimal"
+			column="reld_vlrestantesercobrado" />
+
+		<property name="valorGeradoPrimeiraRotinaAjt" type="java.math.BigDecimal"
+			column="reld_vlgeradoprimeirarotinaajt" />
+
+		<property name="valorGeradoRotinaAjusteAtual" type="java.math.BigDecimal"
+			column="reld_vlgeradorotinaajusteatual" />
+			
+		<property name="valorFaturado" type="java.math.BigDecimal"
+			column="reld_vlfaturado" />
+
+		<property name="valorEnviado" type="java.math.BigDecimal"
+			column="reld_vlenviado" />
+
+		<property name="ultimaAlteracao" type="java.sql.Timestamp"
+			column="reld_tmultimaalteracao" length="8" />
+			
+		 <property name="anoMesReferencia" 
+		 	type="java.lang.Integer" column="reld_amreferencia"/>
+		 	
+		 <property name="mediaAnterior" type="java.lang.Integer"
+			column="reld_nnmediaanterior" />
+			
+		<property name="novaMedia" type="java.lang.Integer"
+			column="reld_nnnovamedia" />
+			
+	    <property name="idConta" type="java.lang.Integer" column="cnta_id" />
+
+	</class>
+</hibernate-mapping>

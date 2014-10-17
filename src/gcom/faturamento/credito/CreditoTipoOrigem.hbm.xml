@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+	<class name="gcom.faturamento.credito.CreditoTipoOrigem" table="credito_tipo_origem">
+	
+		<id name="id" type="java.lang.Integer" column="crto_id">
+        
+        	<generator class="sequence">
+        	
+        		<param name="sequence">sq_credito_tipo_origem</param>
+        		
+    		</generator>
+        	
+        </id>	
+		
+		<many-to-one name="creditoTipo" class="gcom.faturamento.credito.CreditoTipo" not-null="true">
+        	
+        	<column name="crti_id" />
+    
+    	</many-to-one>
+		
+		<many-to-one name="creditoOrigem" class="gcom.faturamento.credito.CreditoOrigem" not-null="true">
+        
+        	<column name="crog_id" />
+    
+    	</many-to-one>
+    	
+    	<property name="ultimaAlteracao" type="java.sql.Timestamp" column="crto_tmultimaalteracao" length="8" />
+			
+	</class>
+	
+</hibernate-mapping>
