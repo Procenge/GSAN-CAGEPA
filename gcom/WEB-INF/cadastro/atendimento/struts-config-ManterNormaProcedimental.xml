@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="ManutencaoRegistroActionForm" type="gcom.gui.ManutencaoRegistroActionForm" />
+		<form-bean name="AtualizarNormaProcedimentalActionForm" type="gcom.gui.cadastro.atendimento.AtualizarNormaProcedimentalActionForm" />
+	</form-beans>
+	<global-forwards />
+	<action-mappings>
+
+	<action name="ManutencaoRegistroActionForm" 
+		type="gcom.gui.cadastro.atendimento.ExibirManterNormaProcedimentalAction" 
+		scope="session" validate="false"
+		path="/exibirManterNormaProcedimentalAction">
+		<forward name="exibirManterNormaProcedimental" path="/jsp/cadastro/atendimento/norma_procedimental_manter.jsp" />
+		<forward name="atualizarNormaProcedimental" path="/exibirAtualizarNormaProcedimentalAction.do?filtrar=sim" />
+	</action>	
+
+	
+	<action name="ManutencaoRegistroActionForm"
+		type="gcom.gui.cadastro.atendimento.RemoverNormaProcedimentalAction"
+		validate="false" input="/exibirManterNormaProcedimentalAction.do"
+		scope="request" path="/removerNormaProcedimentalAction">
+	</action>
+	
+	
+	<action name="AtualizarNormaProcedimentalActionForm"
+      	type="gcom.gui.cadastro.atendimento.ExibirAtualizarNormaProcedimentalAction"
+      	validate="false" scope="session"
+      	path="/exibirAtualizarNormaProcedimentalAction">
+		<forward name="atualizarNormaProcedimental" path="/jsp/cadastro/atendimento/norma_procedimental_atualizar.jsp" />
+	</action>
+	
+	<!--Exibir conteudo -->
+		<action 
+			type="gcom.gui.cadastro.atendimento.ExibirConteudoNormaProcedimentalAction"
+			path="/exibirConteudoNormaProcedimentalAction"
+			validate="false"
+			scope="session" >
+		</action>
+				
+	
+	<action name="AtualizarNormaProcedimentalActionForm" 
+			type="gcom.gui.cadastro.atendimento.AtualizarNormaProcedimentalAction" 
+			scope="request" path="/atualizarNormaProcedimentalAction"/>
+
+	</action-mappings>
+	<message-resources null="false" parameter="gcom.properties.application" />
+</struts-config>

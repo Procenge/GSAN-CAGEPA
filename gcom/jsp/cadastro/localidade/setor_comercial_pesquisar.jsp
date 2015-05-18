@@ -136,7 +136,7 @@
 								<logic:notPresent name="Popup">
 									<INPUT TYPE="button" name="voltar" class="bottonRightCol"
 										value="Voltar"
-										onclick="redirecionarSubmit('${caminhoRetornoTelaPesquisaSetorComercial}.do')" />
+										onclick="redirecionarSubmit('${caminhoRetornoTelaPesquisaSetorComercial}.do?retornoTelaConsulta=1')" />
 								</logic:notPresent>
 								<logic:present name="Popup"></logic:present>
 							</logic:present></td>

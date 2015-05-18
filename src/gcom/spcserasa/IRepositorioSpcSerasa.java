@@ -1838,4 +1838,14 @@ public interface IRepositorioSpcSerasa {
 	 */
 	public Collection pesquisarNegativadorMovimentoRegParaGerarResumoDiarioNegativacao() throws ErroRepositorioException;
 
+	public Date pesquisaMaiorDataVencimentoDosDebitos(int idImovel) throws ErroRepositorioException;
+
+	/**
+	 * @param negativadorMovimento
+	 * @param numeroRegistro
+	 * @return
+	 */
+	public Collection getNegativadorMovimentoRegSpcBoaVista(NegativadorMovimento negativadorMovimento, Integer numeroRegistro)
+					throws ErroRepositorioException;
+
 }

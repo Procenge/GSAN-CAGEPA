@@ -693,7 +693,7 @@ public class AtualizarPagamentosAction
 
 			// Chama o metódo de atualizar pagamento da fachada, para atualiza o pagamento
 			fachada.atualizarPagamento(pagamentoAtualizacao, usuarioLogado, manterPagamentoActionForm.getGerarDevolucaoValores(),
-							idCreditoTipo, manterPagamentoActionForm.getSituacaoPagamentoOriginal());
+							idCreditoTipo, manterPagamentoActionForm.getSituacaoPagamentoOriginal(), true);
 
 			// Alterado por Sávio Luiz data:16/03/2007
 

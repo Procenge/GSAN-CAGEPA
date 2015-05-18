@@ -13,7 +13,7 @@
 		<%@ include file="/jsp/util/titulo.jsp"%>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 		<link rel="stylesheet" href="<bean:message key="caminho.css"/>EstilosCompesa.css" type="text/css">
-		
+		<%@ page import="gcom.util.ConstantesSistema"%>
 		<script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/regras_validator.js"></script>
 		<html:javascript staticJavascript="false" formName="GerarRelatorioQuadroHidrometrosActionForm" dynamicJavascript="true" />
 		<script language="JavaScript" src="<bean:message key="caminho.js"/>util.js"></script>		
@@ -22,6 +22,54 @@
 			function validarForm(form){
 					form.submit();
 			}
+			
+			
+		function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
+			var form = document.GerarRelatorioQuadroHidrometrosActionForm;
+			
+			if (tipoConsulta == 'localidade') {
+		    	form.idLocalidade.value = codigoRegistro;
+		    	form.descricaoLocalidade.value = descricaoRegistro;
+		 		form.descricaoLocalidade.style.color = "#000000";    	
+			}
+			
+		}
+		 
+			
+		
+	  function limparBorracha(tipo){
+		var form = document.forms[0];
+		
+		switch(tipo){
+		
+			case 2: // Localidade
+				form.idLocalidade.value = "";
+	  			form.descricaoLocalidade.value = "";	 
+				break;
+			
+		}
+	}
+			
+	  
+
+	  function chamarPopup(url, tipo, objeto, codigoObjeto, altura, largura, msg,objetoRelacionado){
+
+			if(objetoRelacionado.disabled != true){
+				if (objeto == null || codigoObjeto == null){
+					abrirPopup(url + "?" + "tipo=" + tipo, altura, largura);
+				}
+				else{
+					if (codigoObjeto.length < 1 || isNaN(codigoObjeto)){
+						alert(msg);
+					}
+					else{
+						abrirPopup(url + "?" + "tipo=" + tipo + "&" + objeto + "=" + codigoObjeto + "&caminhoRetornoTelaPesquisa=" + tipo, altura, largura);
+					}
+				}
+			}
+		}
+			
+			
 		</script>
 	</head>
 
@@ -74,6 +122,105 @@
 								dd/mm/aaaa
 							</td>
 						</tr>
+						
+						
+				
+					<tr>
+					<td><strong>Localidade:<font color="#FF0000"></font></strong></td>
+					
+					<td>
+						
+						<html:text maxlength="3" 
+							tabindex="1"
+							property="idLocalidade" 
+							size="3"		
+							onkeypress="javascript:validaEnterComMensagem(event, 'exibirGerarRelatorioQuadroHidrometrosAction.do?objetoConsulta=2','idLocalidade','Localidade');return isCampoNumerico(event);"/>
+							
+						<a href="javascript:chamarPopup('exibirPesquisarLocalidadeAction.do', 'localidade', null, null, 275, 480, '','idLocalidade');">
+							<img width="23" 
+								height="21" 
+								border="0" 
+								src="<bean:message key="caminho.imagens"/>pesquisa.gif"
+								title="Pesquisar Localidade" /></a>
+								
+                        <logic:empty name="GerarRelatorioQuadroHidrometrosActionForm" property="idLocalidade">
+							<html:text property="descricaoLocalidade" 
+								size="30"
+								maxlength="30" 
+								readonly="true"
+								style="background-color:#EFEFEF; border:0; color: red" />                        
+						</logic:empty>
+						<logic:notEmpty name="GerarRelatorioQuadroHidrometrosActionForm" property="idLocalidade">
+						    <html:text property="descricaoLocalidade" 
+								size="30"
+								maxlength="30" 
+								readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #000000" />
+						</logic:notEmpty>
+						<a href="javascript:limparBorracha(2);"> 
+							<img src="<bean:message key="caminho.imagens"/>limparcampo.gif"
+								border="0" 
+								title="Apagar" /></a>
+					</td>
+				</tr>
+				
+				
+				
+				
+				
+				
+						
+						
+								<tr>
+					<td>
+						<strong>Ger&ecirc;ncia Regional:<font color="#FF0000"></font></strong>
+					</td>
+
+					<td>
+						<strong> 
+						<html:select property="idGerenciaRegional" 
+							style="width: 230px;">
+							
+							<html:option
+								value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+							</html:option>
+					
+							<logic:present name="colecaoGerenciaRegional" scope="request">
+								<html:options collection="colecaoGerenciaRegional"
+									labelProperty="nomeComId" 
+									property="id" />
+							</logic:present>
+						</html:select> 														
+						</strong>
+					</td>
+				</tr>
+						
+				 <tr>
+					<td>
+						<strong>Unidade Neg&oacute;cio:<font color="#FF0000"></font></strong>
+					</td>
+
+					<td>
+						<strong> 
+						<html:select property="idUnidadeNegocio" 
+							style="width: 230px;">
+							
+							<html:option
+								value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+							</html:option>
+					
+							<logic:present name="colecaoUnidadeNegocio" scope="request">
+								<html:options collection="colecaoUnidadeNegocio"
+									labelProperty="nomeComId" 
+									property="id" />
+							</logic:present>
+						</html:select> 														
+						</strong>
+					</td>
+				</tr>	
+						
+						
+						
 						<tr>
 							<td>&nbsp;</td>
 							<td align="left">

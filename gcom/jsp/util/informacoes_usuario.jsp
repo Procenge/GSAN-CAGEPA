@@ -105,6 +105,9 @@ function localizarMenu(nome){
 		    <td><strong><a href="/gsan/exibirInformarMelhoriasGcomAction.do">Entre em Contato</a></strong><br></td>
 		  </tr>
 		  <tr>
+		    <td><strong><a href="/gsan/exibirInformarImovelComentarioAction.do?limpar=1">Comentários do Imóvel</a></strong><br></td>
+		  </tr>
+		  <tr>
 		    <td><strong><a href="/gsan/exibirEfetuarAlteracaoSenhaSimplificadaAction.do">Alterar Senha</a></strong><br></td>
 		  </tr>
 		  <tr>

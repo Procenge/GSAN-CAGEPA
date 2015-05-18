@@ -1398,4 +1398,25 @@ public class RepositorioUtilHBM
 		return retorno;
 	}
 
+	/**
+	 * Recupera a coleção de feriados municipais
+	 * 
+	 * @author Anderson Italo
+	 * @date 13/06/2014
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<MunicipioFeriado> pesquisarFeriadosMunicipais() throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+
+		try{
+			return session.createCriteria(MunicipioFeriado.class).list();
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+	}
+
 }

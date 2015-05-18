@@ -53,16 +53,29 @@
         not-null="true"
         length="8"
     />
+    
+	<property
+        name="referenciaInicial"
+        type="java.lang.Integer"
+        column="imdo_amreferenciainicial"
+        length="4"
+    />
+    
+	<property
+        name="referenciaFinal"
+        type="java.lang.Integer"
+        column="imdo_amreferenciafinal"
+        length="4"
+    />        
 
     <!-- Associations -->
   
-    <!-- bi-directional many-to-one association to EntidadeBeneficente -->
+    <!-- bi-directional many-to-one association to EntidadeBeneficenteContrato -->
     <many-to-one
-        name="entidadeBeneficente"
-        class="gcom.cadastro.imovel.EntidadeBeneficente"
-        not-null="true"
+        name="entidadeBeneficenteContrato"
+        class="gcom.cadastro.imovel.EntidadeBeneficenteContrato"
     >
-        <column name="eben_id" />
+        <column name="ebct_id" />
     </many-to-one>
     <!-- bi-directional many-to-one association to Usuario -->
     <many-to-one

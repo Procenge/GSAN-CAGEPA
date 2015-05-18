@@ -82,11 +82,7 @@ import gcom.gui.GcomAction;
 import gcom.util.ControladorException;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -118,7 +114,7 @@ public class AtualizarImovelSubCategoriaAction
 	 * @return Descrição do retorno
 	 */
 	public ActionForward execute(ActionMapping actionMapping, ActionForm actionForm, HttpServletRequest httpServletRequest,
-					HttpServletResponse httpServletResponse) throws ControladorException{
+					HttpServletResponse httpServletResponse){
 
 		ActionForward retorno = actionMapping.findForward("gerenciadorProcesso");
 
@@ -127,7 +123,14 @@ public class AtualizarImovelSubCategoriaAction
 
 		// Parâmtro utilizado para definir se na aba de subcategoria o botão CADASTRO IMOVEL CONSUMO
 		// FAIXA AREA CATG será exibido ou não.
-		String indicadorImovelConsumoFaixaAreaCatg = ParametroCadastro.P_INDICADOR_IMOVEL_CONSUMO_FAIXA_AREA_CATG.executar();
+		String indicadorImovelConsumoFaixaAreaCatg = "";
+		try{
+			indicadorImovelConsumoFaixaAreaCatg = ParametroCadastro.P_INDICADOR_IMOVEL_CONSUMO_FAIXA_AREA_CATG.executar();
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new ActionServletException(e.getMessage(), e);
+		}
 
 		Collection subCategorias = (Collection) sessao.getAttribute("colecaoImovelSubCategorias");
 

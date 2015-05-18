@@ -78,6 +78,8 @@ package gcom.gui.faturamento;
 
 import gcom.cadastro.cliente.ClienteImovel;
 import gcom.cadastro.cliente.FiltroClienteImovel;
+import gcom.cadastro.geografico.Bairro;
+import gcom.cadastro.geografico.FiltroBairro;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.localidade.*;
 import gcom.fachada.Fachada;
@@ -159,6 +161,12 @@ public class ExibirSituacaoEspecialFaturamentoInformarAction
 					pesquisarSetorComercial(inscricaoTipo, situacaoEspecialFaturamentoInformarActionForm, fachada, httpServletRequest);
 					pesquisarQuadra(inscricaoTipo, situacaoEspecialFaturamentoInformarActionForm, fachada, httpServletRequest);
 					break;
+				//Bairro
+				case 4:
+				
+					pesquisarBairro(inscricaoTipo, situacaoEspecialFaturamentoInformarActionForm, fachada, httpServletRequest);
+				
+				
 				default:
 					break;
 			}
@@ -229,9 +237,14 @@ public class ExibirSituacaoEspecialFaturamentoInformarAction
 
 				if(httpServletRequest.getParameter("tipoConsulta").equals("imovel")){
 					situacaoEspecialFaturamentoInformarActionForm.setIdImovel(httpServletRequest.getParameter("idCampoEnviarDados"));
-					situacaoEspecialFaturamentoInformarActionForm.setInscricaoImovel(httpServletRequest
-									.getParameter("descricaoCampoEnviarDados"));
+					situacaoEspecialFaturamentoInformarActionForm.setInscricaoImovel(httpServletRequest.getParameter("descricaoCampoEnviarDados"));
 					httpServletRequest.setAttribute("nomeCampo", "idImovel");
+				}
+
+				if(httpServletRequest.getParameter("tipoConsulta").equals("bairro")){
+					situacaoEspecialFaturamentoInformarActionForm.setIdBairro(httpServletRequest.getParameter("idCampoEnviarDados"));
+					situacaoEspecialFaturamentoInformarActionForm.setNomeBairro(httpServletRequest.getParameter("descricaoCampoEnviarDados"));
+					httpServletRequest.setAttribute("nomeCampo", "idBairro");
 				}
 
 				if(httpServletRequest.getParameter("tipoConsulta").equals("localidadeOrigem")){
@@ -284,6 +297,8 @@ public class ExibirSituacaoEspecialFaturamentoInformarAction
 									.getParameter("descricaoCampoEnviarDados"));
 					httpServletRequest.setAttribute("nomeCampo", "setorComercialDestinoID");
 				}
+
+
 
 				if(httpServletRequest.getParameter("tipoConsulta").equals("quadraDestino")){
 					situacaoEspecialFaturamentoInformarActionForm.setQuadraDestinoID(httpServletRequest.getParameter("idCampoEnviarDados"));
@@ -472,6 +487,7 @@ public class ExibirSituacaoEspecialFaturamentoInformarAction
 
 		return retorno;
 	}
+
 
 	private void validacaoFinal(SituacaoEspecialFaturamentoInformarActionForm form, Fachada fachada, String url){
 
@@ -687,6 +703,44 @@ public class ExibirSituacaoEspecialFaturamentoInformarAction
 		}
 		// validar Sublote sendo maior que localidade final
 
+	}
+
+	/**
+	 * Pesquisa Bairro
+	 * 
+	 * @author Adriano Sousa
+	 * @date 21/01/2015
+	 */
+	private void pesquisarBairro(String inscricaoTipo,
+					SituacaoEspecialFaturamentoInformarActionForm situacaoEspecialFaturamentoInformarActionForm, Fachada fachada,
+					HttpServletRequest httpServletRequest){
+
+		Collection colecaoPesquisa = null;
+		String idBairro = null;
+
+		FiltroBairro filtroBairro = new FiltroBairro();
+
+		if(inscricaoTipo.equalsIgnoreCase("bairro")){
+			situacaoEspecialFaturamentoInformarActionForm.setInscricaoTipo("bairro");
+			idBairro = situacaoEspecialFaturamentoInformarActionForm.getIdBairro();
+
+			filtroBairro.adicionarParametro(new ParametroSimples(FiltroBairro.ID, idBairro));
+			filtroBairro.adicionarParametro(new ParametroSimples(FiltroBairro.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
+			colecaoPesquisa = fachada.pesquisar(filtroBairro, Bairro.class.getName());
+
+			if(colecaoPesquisa == null || colecaoPesquisa.isEmpty()){
+				situacaoEspecialFaturamentoInformarActionForm.setIdBairro("");
+				situacaoEspecialFaturamentoInformarActionForm.setNomeBairro("BAIRRO INEXISTENTE");
+				httpServletRequest.setAttribute("corBairro", "exception");
+				httpServletRequest.setAttribute("nomeCampo", "idBairro");
+			}else{
+				Bairro objetoBairro = (Bairro) Util.retonarObjetoDeColecao(colecaoPesquisa);
+				situacaoEspecialFaturamentoInformarActionForm.setIdBairro(String.valueOf(objetoBairro.getId()));
+				situacaoEspecialFaturamentoInformarActionForm.setNomeBairro(objetoBairro.getNome());
+				httpServletRequest.setAttribute("corBairro", "valor");
+				httpServletRequest.setAttribute("nomeCampo", "idBairro");
+			}
+		}
 	}
 
 	private void pesquisarLocalidade(String inscricaoTipo,

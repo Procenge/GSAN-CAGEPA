@@ -79,12 +79,11 @@ package gcom.gui.micromedicao.hidrometro;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.micromedicao.hidrometro.FiltroHidrometro;
+import gcom.micromedicao.bean.FiltroHidrometroHelper;
 import gcom.micromedicao.hidrometro.Hidrometro;
 import gcom.util.Util;
 
 import java.util.Collection;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -125,7 +124,7 @@ public class ExibirManterHidrometroAction
 		// Obtém o action form
 		// HidrometroActionForm hidrometroActionForm = (HidrometroActionForm) actionForm;
 
-		Collection hidrometros = null;
+		Collection colecaoHidrometro = null;
 
 		Collection hidrometros2 = null;
 
@@ -145,12 +144,13 @@ public class ExibirManterHidrometroAction
 		}
 		String atualizar = httpServletRequest.getParameter("atualizar");
 		// Parte da verificação do filtro
-		FiltroHidrometro filtroHidrometro = new FiltroHidrometro();
+		FiltroHidrometroHelper filtroHidrometroHelper = new FiltroHidrometroHelper();
 
 		// Verifica se o filtro foi informado pela página de filtragem de
 		// hidrometro
-		if(sessao.getAttribute("filtroHidrometro") != null && sessao.getAttribute("voltarFiltrar") != null){
-			filtroHidrometro = (FiltroHidrometro) sessao.getAttribute("filtroHidrometro");
+		if(sessao.getAttribute("filtroHidrometroHelper") != null && sessao.getAttribute("voltarFiltrar") != null){
+
+			filtroHidrometroHelper = (FiltroHidrometroHelper) sessao.getAttribute("filtroHidrometroHelper");
 			sessao.removeAttribute("voltarFiltrar");
 		}else{
 			if(sessao.getAttribute("fixo") == null){
@@ -158,7 +158,7 @@ public class ExibirManterHidrometroAction
 				// de filtro,
 				// a quantidade de registros é verificada para avaliar a
 				// necessidade de filtragem
-				filtroHidrometro = new FiltroHidrometro();
+				filtroHidrometroHelper = new FiltroHidrometroHelper();
 
 				// Se o limite de registros foi atingido, a página de
 				// filtragem é chamada
@@ -203,9 +203,10 @@ public class ExibirManterHidrometroAction
 				// 2º Passo - Chamar a função de Paginação passando o total de registros
 				retorno = this.controlarPaginacao(httpServletRequest, retorno, totalRegistros);
 
-				hidrometros = fachada.pesquisarNumeroHidrometroFaixaPaginacao(fixo, faixaInicial, faixaFinal, ((Integer) httpServletRequest
+				colecaoHidrometro = fachada.pesquisarNumeroHidrometroFaixaPaginacao(fixo, faixaInicial, faixaFinal,
+								((Integer) httpServletRequest
 								.getAttribute("numeroPaginasPesquisa")));
-				if(hidrometros == null || hidrometros.isEmpty()){
+				if(colecaoHidrometro == null || colecaoHidrometro.isEmpty()){
 					// Nenhum hidrometro cadastrado
 					throw new ActionServletException("atencao.pesquisa.nenhumresultado");
 				}else{
@@ -218,23 +219,25 @@ public class ExibirManterHidrometroAction
 				// hidrometroActionForm.setConjuntoHidrometro("1");
 				httpServletRequest.setAttribute("conjuntoHidrometro", new Boolean(true));
 			}else{
-				// Seta a ordenação desejada do filtro
-				filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade("hidrometroMarca");
-				filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade("hidrometroCapacidade");
-				filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade("hidrometroSituacao");
-				filtroHidrometro.setCampoOrderBy(FiltroHidrometro.NUMERO_HIDROMETRO);
 
 				// Aciona o controle de paginação para que sejam pesquisados apenas
 				// os registros que aparecem na página
-				Map resultado = controlarPaginacao(httpServletRequest, retorno, filtroHidrometro, Hidrometro.class.getName());
-				hidrometros = (Collection) resultado.get("colecaoRetorno");
-				retorno = (ActionForward) resultado.get("destinoActionForward");
 
-				if(hidrometros == null || hidrometros.isEmpty()){
+				Integer totalRegistros = fachada.pesquisarHidrometroFiltroTotalRegistros(filtroHidrometroHelper);
+
+				retorno = this.controlarPaginacao(httpServletRequest, retorno, totalRegistros);
+
+				colecaoHidrometro = fachada.pesquisarHidrometroFiltro(filtroHidrometroHelper,
+								(Integer) httpServletRequest.getAttribute("numeroPaginasPesquisa"));
+
+
+				if(colecaoHidrometro == null || colecaoHidrometro.isEmpty()){
+
 					// Nenhum hidrometro cadastrado
 					throw new ActionServletException("atencao.pesquisa.nenhumresultado");
-				}else if(atualizar != null && hidrometros.size() == 1){
-					Hidrometro hidrometro = (Hidrometro) hidrometros.iterator().next();
+				}else if(atualizar != null && colecaoHidrometro.size() == 1){
+
+					Hidrometro hidrometro = (Hidrometro) colecaoHidrometro.iterator().next();
 					httpServletRequest.setAttribute("idRegistroAtualizacao", hidrometro.getId());
 
 					retorno = actionMapping.findForward("exibirAtualizarHidrometro");
@@ -242,13 +245,15 @@ public class ExibirManterHidrometroAction
 			}
 
 			if(hidrometros2 != null && !hidrometros2.isEmpty()){
+
 				sessao.setAttribute("hidrometros2", hidrometros2);
 			}
-			sessao.setAttribute("hidrometros", hidrometros);
 
+			sessao.setAttribute("hidrometros", colecaoHidrometro);
 			sessao.setAttribute("parametroInformado", "sim");
 
 		}
+
 		httpServletRequest.setAttribute("nomeCampo", "numeroHidrometro");
 		return retorno;
 	}

@@ -1,14 +1,14 @@
 
 package gcom.relatorio.cobranca.parcelamento;
 
+import gcom.cobranca.bean.ContaValoresHelper;
+import gcom.cobranca.bean.GuiaPagamentoValoresHelper;
 import gcom.cobranca.parcelamento.Parcelamento;
+import gcom.faturamento.credito.CreditoARealizar;
+import gcom.faturamento.debito.DebitoACobrar;
 import gcom.tarefa.ParametroTarefa;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Essa classe representa um gerador de dados para o relatório de resolucao diretoria
@@ -38,6 +38,12 @@ public abstract class GeradorDadosRelatorioResolucaoDiretoria {
 	 */
 	public abstract List<RelatorioParcelamentoResolucaoDiretoriaLayoutBean> gerarDados(Collection<Parcelamento> colecaoParcelamento,
 					int idFuncionalidadeIniciada) throws GeradorRelatorioParcelamentoException;
+
+	public abstract List<RelatorioParcelamentoResolucaoDiretoriaLayoutBean> gerarDados(Parcelamento parcelamento,
+					Collection<ContaValoresHelper> colecaoContaValores, Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores,
+					Collection<DebitoACobrar> colecaoDebitoACobrar, Collection<CreditoARealizar> colecaoCreditoARealizar,
+					Integer numeroDiasVencimentoEntrada)
+					throws GeradorRelatorioParcelamentoException;
 
 	@SuppressWarnings("unchecked")
 	public Set getParametroTarefa(){
@@ -83,5 +89,9 @@ public abstract class GeradorDadosRelatorioResolucaoDiretoria {
 		}
 		return retorno;
 	}
+
+	public abstract String gerarTextoHtml(RelatorioParcelamentoResolucaoDiretoriaLayoutBean dadosRelatorioParcelameto,
+					String nomeRelatorio, Parcelamento parcelamento)
+					throws GeradorRelatorioParcelamentoException;
 
 }

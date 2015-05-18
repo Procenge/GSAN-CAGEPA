@@ -76,11 +76,7 @@
 
 package gcom.gui.atendimentopublico.registroatendimento;
 
-import gcom.atendimentopublico.registroatendimento.LocalOcorrencia;
-import gcom.atendimentopublico.registroatendimento.MeioSolicitacao;
-import gcom.atendimentopublico.registroatendimento.RaMotivoReativacao;
-import gcom.atendimentopublico.registroatendimento.RegistroAtendimento;
-import gcom.atendimentopublico.registroatendimento.SolicitacaoTipoEspecificacao;
+import gcom.atendimentopublico.registroatendimento.*;
 import gcom.cadastro.endereco.LogradouroBairro;
 import gcom.cadastro.endereco.LogradouroCep;
 import gcom.cadastro.geografico.BairroArea;
@@ -241,6 +237,8 @@ public class ReativarRegistroAtendimentoActionForm
 
 	private String unidadeDestino;
 
+	private String descricaoUnidadeDestino;
+
 	private String parecerUnidadeDestino;
 
 	private String observacao;
@@ -335,6 +333,9 @@ public class ReativarRegistroAtendimentoActionForm
 		this.setValidaUnidadeDestino("false");
 		this.setValidaUnidadeAtendimento("false");
 		this.setResetarReativar("false");
+
+		this.setIdUnidadeDestino(null);
+		this.setDescricaoUnidadeDestino(null);
 	}
 
 	public String getDataAtendimentoReativado(){
@@ -1183,4 +1184,15 @@ public class ReativarRegistroAtendimentoActionForm
 
 		return descricaoRA;
 	}
+
+	public String getDescricaoUnidadeDestino(){
+
+		return descricaoUnidadeDestino;
+	}
+
+	public void setDescricaoUnidadeDestino(String descricaoUnidadeDestino){
+
+		this.descricaoUnidadeDestino = descricaoUnidadeDestino;
+	}
+
 }

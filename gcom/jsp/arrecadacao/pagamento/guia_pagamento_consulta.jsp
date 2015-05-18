@@ -6,6 +6,8 @@
 <%@ taglib uri="/WEB-INF/pager-taglib.tld" prefix="pg"%>
 <%@ page import="gcom.cobranca.parcelamento.ParcelamentoItem"
 	isELIgnored="false"%>
+<%@ page import="gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao"
+	isELIgnored="false"%>
 
 
 <html>
@@ -242,6 +244,35 @@
 			</tr>
 
 			<tr>
+
+						<%
+								String pctQtdColunasGuias="7";
+						
+								String pctDataEmissao   = "15%";
+								String pctDataVencimento = "15%";
+								String pctTipoDebito   = "25%";
+								String pctValorParcela   = "12%";
+								String pctNumeroParcela = "12%";
+								String pctPago   = "8%";
+								String pctSituacaoGuia 	 = "13%";
+								String pctDividaAtivaGuia  = "0%";
+								String pctNumeroProcessoAdm  = "0%";
+						
+								if (session.getAttribute("exibirDividaAtivaColuna") != null) {
+									pctDataEmissao   = "14%";
+									pctDataVencimento = "14%";
+									pctTipoDebito   = "18%";
+									pctValorParcela   = "10%";
+									pctNumeroParcela = "10%";
+									pctPago   = "8%";
+									pctSituacaoGuia 	 = "10%";
+									pctDividaAtivaGuia  = "8%";
+									pctNumeroProcessoAdm  = "8%";
+									
+									pctQtdColunasGuias      = "9";
+								}						
+						%>
+									
 				<td colspan="2">
 					<table width="100%" cellpadding="0" cellspacing="0" >						
 						<tr>						
@@ -249,30 +280,39 @@
 								<table width="100%" bgcolor="#90c7fc" border="0">
 									<!--header da tabela interna -->
 									<tr bgcolor="#90c7fc">
-										<td width="15%" align="center">
+										<td width="<%= pctDataEmissao%>" align="center">
 											<strong>Emissão</strong>
 										</td>
-										<td width="15%" align="center">
+										<td width="<%= pctDataVencimento%>" align="center">
 											<strong>Vencimento</strong>
 										</td>
-										<td width="25%" align="left">
+										<td width="<%= pctTipoDebito%>" align="center">
 											<strong>Débito</strong>
 										</td>
-										<td width="12%" align="right">
+										<td width="<%= pctValorParcela%>" align="center">
 											<strong>Valor</strong>
 										</td>
-										<td width="12%" align="right">
+										<td width="<%= pctNumeroParcela%>" align="center">
 											<strong>Prestação</strong>
 										</td>
-										<td width="8%" bgcolor="#90c7fc" align="center">
+										<td width="<%= pctPago%>" bgcolor="#90c7fc" align="center">
 												<strong>Paga</strong>
 										</td>
-										<td width="10%" align="center">
+										<td width="<%= pctSituacaoGuia%>" align="center">
 											<strong>Situação</strong>
 										</td>
+										
+										<logic:present name="exibirDividaAtivaColuna" scope="session">
+											<td width="<%= pctDividaAtivaGuia%>" bgcolor="#90c7fc" align="center">
+												<strong>DA</strong>
+											</td>
+											<td width="<%= pctNumeroProcessoAdm%>" bgcolor="#90c7fc" align="center">
+												<strong>Proc. EF</strong>
+											</td>																
+										</logic:present>										
 									</tr>
 									<tr>
-								<td colspan="7">
+								<td colspan="<%= pctQtdColunasGuias%>">
 									<div style="width: 100%; height: 100%; overflow: auto;">
 									<table width="100%" bgcolor="#99CCFF">										
 										<logic:present name="guiaPagamento" property="guiasPagamentoPrestacao">
@@ -287,29 +327,72 @@
 													<%} else { %>
 														<tr bgcolor="#FFFFFF">
 													<%}%>
-													<td width="15%">
+													<td width="<%= pctDataEmissao%>">
 														<div align="center"><bean:write name="prestacoes" property="dataEmissao" formatKey="date.format"/><font color="#333333"></font>
 														</div>
 													</td>
-													<td width="15%">
+													<td width="<%= pctDataVencimento%>">
 														<div align="center"><bean:write name="prestacoes" property="dataVencimento" formatKey="date.format"/><font color="#333333"></font>
 														</div>
 													</td>
-													<td width="25%" align="left"><div><bean:write name="prestacoes" property="debitoTipo.descricao" /></div></td>
-													<td width="12%" align="right"><bean:write name="prestacoes" property="valorPrestacao" formatKey="money.format"/></td>
-													<td width="12%" align="right"><bean:write name="prestacoes" property="comp_id.numeroPrestacao" /> / <bean:write name="guiaPagamento" property="numeroPrestacaoTotal"/> </td>
+													<td width="<%= pctTipoDebito%>" align="left"><div><bean:write name="prestacoes" property="debitoTipo.descricao" /></div></td>
+													<td width="<%= pctValorParcela%>" align="right"><bean:write name="prestacoes" property="valorPrestacao" formatKey="money.format"/></td>
+													<td width="<%= pctNumeroParcela%>" align="right"><bean:write name="prestacoes" property="comp_id.numeroPrestacao" /> / <bean:write name="guiaPagamento" property="numeroPrestacaoTotal"/> </td>
 
 													<logic:notEmpty name="prestacoes" property="indicadorPagamentoHint">
-														<td width="8%" align="center" title=" ${prestacoes.indicadorPagamentoHint}"><div><bean:write name="prestacoes" property="indicadorPagamentoPendenteStr" /></div>  </td>
+														<td width="<%= pctPago%>" align="center" title=" ${prestacoes.indicadorPagamentoHint}"><div><bean:write name="prestacoes" property="indicadorPagamentoPendenteStr" /></div>  </td>
 													</logic:notEmpty>
 													<logic:empty name="prestacoes" property="indicadorPagamentoHint">
-														<td width="8%" align="center" ><div><bean:write name="prestacoes" property="indicadorPagamentoPendenteStr" /></div>  </td>
+														<td width="<%= pctPago%>" align="center" ><div><bean:write name="prestacoes" property="indicadorPagamentoPendenteStr" /></div>  </td>
 													</logic:empty>
 
-													<td width="10%" align="center"><div><bean:write name="prestacoes" property="debitoCreditoSituacao.descricaoAbreviada" /></div></td>
+													<td width="<%= pctSituacaoGuia%>" align="center"><div><bean:write name="prestacoes" property="debitoCreditoSituacao.descricaoAbreviada" /></div></td>
+													
+													<logic:present name="exibirDividaAtivaColuna" scope="session">
+														<td width="<%= pctDividaAtivaGuia%>" align="center">
+															<logic:equal name="prestacoes" property="indicadorDividaAtiva" value="2">
+																<logic:equal name="prestacoes" property="indicadorExecucaoFiscal" value="2">
+																	N
+																</logic:equal>
+															</logic:equal>
+								
+															<logic:equal name="prestacoes" property="indicadorDividaAtiva" value="1">
+																<logic:equal name="prestacoes" property="indicadorExecucaoFiscal" value="2">
+																	A
+																</logic:equal>
+															</logic:equal>
+														
+															<logic:equal name="prestacoes" property="indicadorExecucaoFiscal" value="1">
+																E
+															</logic:equal>
+														</td>				
+
+														<td width="<%= pctNumeroProcessoAdm%>" align="center">
+															<div>
+																
+																<%if (((GuiaPagamentoPrestacao)prestacoes).getComp_id().getNumeroProcessoAdministrativoExecucaoFiscal().compareTo(Integer.valueOf(0)) != 0) {%>
+																		<bean:write name="prestacoes" property="comp_id.numeroProcessoAdministrativoExecucaoFiscal"/>
+																<%}%>																
+																
+															</div>
+														</td>														
+													</logic:present>													
 												</tr>				
 												</logic:iterate>
 											</logic:present>
+											
+											<logic:present name="exibirDividaAtivaColuna" scope="session">											
+												<tr>
+													<td colspan="<%= pctQtdColunasGuias%>" height="23">
+														<font color="#000000" style="font-size:10px" face="Verdana, Arial, Helvetica, sans-serif"> 
+															<strong>DA-Situação da Guia na Dívida Ativa;  
+																<br>Proc. EF-Nº do Processo Administrativo da Execução Fiscal
+															</strong>
+														</font><br>
+													</td>
+												</tr>
+											</logic:present>																
+											
 												</table>
 											</div>
 										</td>

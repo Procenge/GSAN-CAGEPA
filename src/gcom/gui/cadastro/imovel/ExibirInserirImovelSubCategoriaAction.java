@@ -76,12 +76,7 @@
 
 package gcom.gui.cadastro.imovel;
 
-import gcom.cadastro.imovel.Categoria;
-import gcom.cadastro.imovel.FiltroCategoria;
-import gcom.cadastro.imovel.FiltroSubCategoria;
-import gcom.cadastro.imovel.ImovelSubcategoria;
-import gcom.cadastro.imovel.ImovelSubcategoriaPK;
-import gcom.cadastro.imovel.Subcategoria;
+import gcom.cadastro.imovel.*;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
@@ -91,11 +86,7 @@ import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -176,13 +167,13 @@ public class ExibirInserirImovelSubCategoriaAction
 			Collection colecaoCategoria = fachada.pesquisar(filtroCategoria, Categoria.class.getName());
 			Categoria categoriaNaBase = (Categoria) Util.retonarObjetoDeColecao(colecaoCategoria);
 
-			if(categoriaNaBase.getConsumoMaximoEconomiasValidacao() < new Integer(quantidadeEconomia)){
+			if(categoriaNaBase.getQuantidadeMaximoEconomiasValidacao() < new Integer(quantidadeEconomia)){
 				if(httpServletRequest.getParameter("confirmado") == null){
 
 					httpServletRequest.setAttribute("destino", "4");
 					sessao.setAttribute("botaoAdicionar", botaoAdicionar);
 					retorno = montarPaginaConfirmacaoWizard("atencao.usuario.limite_ultrapassado_economias_validacao", httpServletRequest,
-									actionMapping, "" + categoriaNaBase.getConsumoMaximoEconomiasValidacao());
+									actionMapping, "" + categoriaNaBase.getQuantidadeMaximoEconomiasValidacao());
 
 				}else{
 					if(httpServletRequest.getParameter("confirmado").equalsIgnoreCase("ok")){

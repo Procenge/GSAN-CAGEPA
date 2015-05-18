@@ -138,6 +138,12 @@ public class GerarOrdemServicoActionForm
 
 	private String primeiraVez;
 
+	private String idOSPrincipal;
+
+	private String indicadorTelaOrdemServico;
+
+	private String quantidadePrestacoesGuiaPagamento;
+
 	public void reset(ActionMapping actionMapping, HttpServletRequest httpServletRequest){
 
 		this.idServicoTipo = null;
@@ -153,6 +159,16 @@ public class GerarOrdemServicoActionForm
 		this.idPrioridadeServicoAtual = null;
 		this.observacao = null;
 
+	}
+
+	public String getQuantidadePrestacoesGuiaPagamento(){
+
+		return quantidadePrestacoesGuiaPagamento;
+	}
+
+	public void setQuantidadePrestacoesGuiaPagamento(String quantidadePrestacoesGuiaPagamento){
+
+		this.quantidadePrestacoesGuiaPagamento = quantidadePrestacoesGuiaPagamento;
 	}
 
 	public String getDescricaoOrdemServicoReferencia(){
@@ -375,6 +391,26 @@ public class GerarOrdemServicoActionForm
 	public void setPrimeiraVez(String primeiraVez){
 
 		this.primeiraVez = primeiraVez;
+	}
+
+	public String getIdOSPrincipal(){
+
+		return idOSPrincipal;
+	}
+
+	public void setIdOSPrincipal(String idOSPrincipal){
+
+		this.idOSPrincipal = idOSPrincipal;
+	}
+
+	public String getIndicadorTelaOrdemServico(){
+
+		return indicadorTelaOrdemServico;
+	}
+
+	public void setIndicadorTelaOrdemServico(String indicadorTelaOrdemServico){
+
+		this.indicadorTelaOrdemServico = indicadorTelaOrdemServico;
 	}
 
 }

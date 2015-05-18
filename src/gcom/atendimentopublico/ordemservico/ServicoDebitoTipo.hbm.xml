@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.ServicoDebitoTipo" 
+    table="SERVICO_TIPO_DEBITO"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="SVTD_ID"
+    >
+        <generator class="sequence">
+        	<param name="sequence">SQ_SERVICO_TIPO_DEBITO</param>
+     	</generator>
+    </id>
+
+    <property
+        name="valorServicoDebitoTipo"
+        type="java.math.BigDecimal"
+        column="SVTD_VLSERVICODEBITO"
+        not-null="true"
+        length="13"
+    />        
+
+    <property
+        name="numeroPrestacoes"
+        type="java.lang.Short"
+        column="SVTD_NNPRESTACOES"
+        not-null="true"
+        length="2"
+    />
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="SVTD_TMULTIMAALTERACAO"
+        not-null="true"
+        length="8"
+    />
+
+     <!-- Associations -->
+    
+    <!-- bi-directional many-to-one association to servicoTipo -->
+    <many-to-one
+        name="servicoTipo"
+        class="gcom.atendimentopublico.ordemservico.ServicoTipo"
+        not-null="true"
+    >
+        <column name="SVTP_ID" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to debitoTipo -->
+    <many-to-one
+        name="debitoTipo"
+        class="gcom.faturamento.debito.DebitoTipo"
+        not-null="true"
+    >
+        <column name="DBTP_ID" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

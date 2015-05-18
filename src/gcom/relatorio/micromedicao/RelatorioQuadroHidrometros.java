@@ -42,6 +42,26 @@ public class RelatorioQuadroHidrometros
 		// ------------------------------------
 
 		String dataReferencia = (String) getParametro("dataReferencia");
+
+		String idLocalidadeStr = (String) getParametro("idLocalidadde");
+		String idGerenciaRegionalStr = getParametro("idGerenciaRegional").toString();
+		String idUnidadeNegocioStr = (String) getParametro("idUnidadeNegocio");
+
+		Integer idLocalidade = null;
+		if(idLocalidadeStr != null){
+			idLocalidade = Util.converterStringParaInteger(idLocalidadeStr);
+		}
+
+		Integer idGerenciaRegional = null;
+		if(idGerenciaRegionalStr != null){
+			idGerenciaRegional = Util.converterStringParaInteger(idGerenciaRegionalStr);
+		}
+
+		Integer idUnidadeNegocio = null;
+		if(idUnidadeNegocioStr != null){
+			idUnidadeNegocio = Util.converterStringParaInteger(idUnidadeNegocioStr);
+		}
+
 		int tipoFormatoRelatorio = (Integer) getParametro("tipoFormatoRelatorio");
 
 		Date dateReferencia = Util.converterStringParaData(dataReferencia);
@@ -53,7 +73,8 @@ public class RelatorioQuadroHidrometros
 		
 		RelatorioQuadroHidrometrosBean relatorioBean = null;		
 
-		Collection colecaoDadosRelatorioQuadroHidrometros = fachada.pesquisarQuadroHidrometros(dateReferencia);
+		Collection colecaoDadosRelatorioQuadroHidrometros = fachada.pesquisarQuadroHidrometros(dateReferencia, idLocalidade,
+						idGerenciaRegional, idUnidadeNegocio);
 
 		// se a coleção de parâmetros da analise não for vazia
 		if(colecaoDadosRelatorioQuadroHidrometros != null && !colecaoDadosRelatorioQuadroHidrometros.isEmpty()){
@@ -82,7 +103,7 @@ public class RelatorioQuadroHidrometros
 					marca = quadroHidrometrosRelatorioHelper.getMarca();
 				}
 
-				Integer idLocalidade = 0;
+				idLocalidade = 0;
 				if(quadroHidrometrosRelatorioHelper.getIdlocalidade() != null){
 					idLocalidade = quadroHidrometrosRelatorioHelper.getIdlocalidade();
 				}
@@ -143,7 +164,7 @@ public class RelatorioQuadroHidrometros
 
 		parametros.put("imagem", sistemaParametro.getImagemRelatorio());
 
-		parametros.put("P_NM_ESTADO", sistemaParametro.getNomeEstado());
+		parametros.put("P_NM_EMPRESA", sistemaParametro.getNomeEmpresa());
 
 		parametros.put("dataReferencia", dataReferencia);
 

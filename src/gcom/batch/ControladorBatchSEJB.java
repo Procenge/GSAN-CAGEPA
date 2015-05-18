@@ -75,13 +75,16 @@
  */
 
 package gcom.batch;
-import gcom.arrecadacao.ControladorArrecadacaoLocal;
+
+import gcom.arrecadacao.ControladorArrecadacaoLocal;
 import gcom.arrecadacao.ControladorArrecadacaoLocalHome;
 import gcom.batch.arrecadacao.*;
 import gcom.batch.cadastro.*;
 import gcom.batch.cobranca.*;
 import gcom.batch.cobranca.administrativa.TarefaBatchMarcarItensRemuneraveisCobrancaAdministrativa;
+import gcom.batch.cobranca.dividaativa.TarefaBatchImportarDadosDividaAtiva;
 import gcom.batch.cobranca.spcserasa.*;
+import gcom.batch.contabil.TarefaBatchAjustarLancamentosContabiesSinteticos;
 import gcom.batch.contabil.TarefaBatchProvisaoDevedoresDuvidosos;
 import gcom.batch.faturamento.*;
 import gcom.batch.financeiro.*;
@@ -151,7 +154,6 @@ import javax.ejb.SessionContext;
 
 import org.apache.log4j.Logger;
 
-
 /**
  * Controlador que possui os metodos de negocio de toda a parte que da suporte
  * ao batch
@@ -161,6 +163,7 @@ import org.apache.log4j.Logger;
  */
 public class ControladorBatchSEJB
 				implements SessionBean {
+
 	private static final Logger LOGGER = Logger.getLogger(ControladorBatchSEJB.class);
 
 	private static final List<Integer> SITUACOES_PROCESSO_PENDENTE = Arrays.asList(new Integer[] {//
@@ -169,6 +172,7 @@ public class ControladorBatchSEJB
 					ProcessoSituacao.EM_PROCESSAMENTO, //
 					ProcessoSituacao.CONCLUIDO_COM_ERRO, //
 					ProcessoSituacao.INICIO_A_COMANDAR});
+
 
 	SessionContext sessionContext;
 
@@ -215,6 +219,115 @@ public class ControladorBatchSEJB
 	public void setSessionContext(SessionContext sessionContext){
 
 		this.sessionContext = sessionContext;
+	}
+
+
+	/**
+	 * Verifica no sistema a presenca de ProcessosIniciados nao agendados para
+	 * iniciar a execucao
+	 * 
+	 * @author Rodrigo Silveira
+	 * @param processosId
+	 * @date 22/08/2006
+	 */
+	public void verificarProcessosIniciados(Collection<Integer> processosId) throws ControladorException{
+
+		try{
+			Date agora = new Date();
+
+			// Procurar as funcionalidadesIniciadas de processosIniciados em
+			// Situacao de Inicio - Agendado ou em espera
+			// ---------------------------------------------------------------
+			// Sï¿½ vai procurar as funcionalidades Iniciadas para iniciar
+			// execuï¿½ï¿½o em que o processo Iniciado nï¿½o tem precedente ou que o
+			// precedente tenha sido finalizado
+
+			Collection<FuncionalidadeIniciada> colecaoFuncionalidadesIniciadasParaExecucao = verificarFuncionalidadesIniciadasProntasParaExecucao(processosId);
+
+			Iterator<FuncionalidadeIniciada> iterator = colecaoFuncionalidadesIniciadasParaExecucao.iterator();
+
+			FuncionalidadeSituacao funcionalidadeSituacao = new FuncionalidadeSituacao();
+			funcionalidadeSituacao.setId(FuncionalidadeSituacao.EM_PROCESSAMENTO);
+
+			ProcessoSituacao processoSituacao = new ProcessoSituacao();
+			processoSituacao.setId(ProcessoSituacao.EM_PROCESSAMENTO);
+
+			while(iterator.hasNext()){
+				// Recuperar a tarefa batch armazenada
+				FuncionalidadeIniciada funcionalidadeIniciada = iterator.next();
+
+				// TarefaBatch tarefaBatch = (TarefaBatch)
+				// IoUtil.transformarBytesParaObjeto(funcionalidadeIniciada.getTarefaBatch());
+				Tarefa tarefa = (Tarefa) IoUtil.transformarBytesParaObjeto(funcionalidadeIniciada.getTarefaBatch());
+
+				// Atualizar a FuncionalidadeSituacao para EM_PROCESSAMENTO
+				funcionalidadeIniciada.setFuncionalidadeSituacao(funcionalidadeSituacao);
+				funcionalidadeIniciada.setDataHoraInicio(agora);
+
+				// Atualiza o Processo Iniciado para EM_PROCESSAMENTO
+				ProcessoIniciado processoIniciado = funcionalidadeIniciada.getProcessoIniciado();
+
+				if(tarefa == null){
+					LOGGER.info("Atenção: tarefa igual a NULL. (verificarProcessosIniciados())");
+					LOGGER.info("funcionalidadeIniciada: " + funcionalidadeIniciada.getId());
+					if(processoIniciado != null){
+						LOGGER.info("processoIniciado: " + processoIniciado.getId());
+					}
+					continue;
+				}
+
+				if(!processoIniciado.getProcessoSituacao().getId().equals(ProcessoSituacao.EM_PROCESSAMENTO)){
+
+
+					if(processoIniciado.getProcesso().getId().equals(Processo.REGISTRA_MOVIMENTO_ARRECADADORES)){
+
+						if(this.verificarProcessoIniciadoPrecedenteConcluido(processoIniciado)){
+
+							if(processoIniciado.getDataHoraInicio() == null){
+								processoIniciado.setDataHoraInicio(agora);
+							}
+
+							System.out.println("O processo dependente foi concluido ou concluindo com erro " + processoIniciado.getId());
+
+							processoIniciado.setProcessoSituacao(processoSituacao);
+							getControladorUtil().atualizar(processoIniciado);
+						}
+
+					}else{
+						if(processoIniciado.getDataHoraInicio() == null){
+							processoIniciado.setDataHoraInicio(agora);
+						}
+
+						processoIniciado.setProcessoSituacao(processoSituacao);
+						getControladorUtil().atualizar(processoIniciado);
+					}
+
+
+				}
+
+				getControladorUtil().atualizar(funcionalidadeIniciada);
+
+				// Agendar a tarefa Batch
+				if(tarefa != null){
+					tarefa.agendarTarefaBatch();
+				}
+
+			}
+
+		}catch(IOException e){
+			e.printStackTrace();
+
+			sessionContext.setRollbackOnly();
+			throw new ControladorException("erro.sistema", e);
+
+		}catch(ClassNotFoundException e){
+			e.printStackTrace();
+
+			sessionContext.setRollbackOnly();
+			throw new ControladorException("erro.sistema", e);
+
+		}
+
 	}
 
 	/**
@@ -291,6 +404,24 @@ public class ControladorBatchSEJB
 				try{
 
 					switch(funcionalidadeIniciada.getProcessoFuncionalidade().getFuncionalidade().getId()){
+
+						case Funcionalidade.BATCH_ENCERRAR_FATURAMENTO_GERAR_RESUMO_LIGACOES_ECONOMIAS:
+
+							TarefaBatchEncerrarFaturamentoGerarResumoLigacoesEconomias tarefaBatchResumo = new TarefaBatchEncerrarFaturamentoGerarResumoLigacoesEconomias(
+											processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
+
+							tarefaBatchResumo.addParametro("TODAS_ROTAS", Boolean.TRUE);
+
+							try{
+								funcionalidadeIniciada.setTarefaBatch(IoUtil.transformarObjetoParaBytes(tarefaBatchResumo));
+							}catch(IOException e){
+								sessionContext.setRollbackOnly();
+								throw new ControladorException("erro.sistema", e);
+							}
+
+							this.getControladorUtil().atualizar(funcionalidadeIniciada);
+
+							break;
 
 						case Funcionalidade.MARCAR_ITENS_REMUNERAVEIS_COBRANCA_ADMINISTRATIVA:
 							TarefaBatchMarcarItensRemuneraveisCobrancaAdministrativa marcarItensRemuneraveis = new TarefaBatchMarcarItensRemuneraveisCobrancaAdministrativa(
@@ -436,7 +567,6 @@ public class ControladorBatchSEJB
 							 */
 							/*
 							 * Collection<Integer> colecaoIdsSetoresEncerrarArrecadacaoMes =
-							 * 
 							 * getControladorArrecadacao().pesquisarIdsSetoresComPagamentosOuDevolucoes
 							 * ();
 							 */
@@ -459,8 +589,8 @@ public class ControladorBatchSEJB
 
 						/** Pedro Alexandre */
 						case Funcionalidade.GERAR_HISTORICO_CONTA:
-							TarefaBatchGerarHistoricoConta dadosGerarHistoricoConta = new TarefaBatchGerarHistoricoConta(processoIniciado
-											.getUsuario(), funcionalidadeIniciada.getId());
+							TarefaBatchGerarHistoricoConta dadosGerarHistoricoConta = new TarefaBatchGerarHistoricoConta(
+											processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
 
 							/**
 							 * Coleï¿½ï¿½o de ids de localidades para encerrar a arrecadaï¿½ï¿½o do
@@ -556,8 +686,8 @@ public class ControladorBatchSEJB
 							break;
 
 						case Funcionalidade.GERAR_RESUMO_HIDROMETRO:
-							TarefaBatchGerarResumoHidrometro gerarResumoHidrometro = new TarefaBatchGerarResumoHidrometro(processoIniciado
-											.getUsuario(), funcionalidadeIniciada.getId());
+							TarefaBatchGerarResumoHidrometro gerarResumoHidrometro = new TarefaBatchGerarResumoHidrometro(
+											processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
 
 							FiltroHidrometroMarca filtroHidrometro = new FiltroHidrometroMarca();
 							Collection colMarca = getControladorUtil().pesquisar(filtroHidrometro, HidrometroMarca.class.getName());
@@ -582,8 +712,8 @@ public class ControladorBatchSEJB
 							gerarResumoRegistroAtendimento.addParametro(ConstantesSistema.COLECAO_UNIDADES_PROCESSAMENTO_BATCH,
 											colecaoIdsLocalidadesGerarResumoRegistroAtendimentoMes);
 
-							gerarResumoRegistroAtendimento.addParametro("anoMesFaturamentoSistemaParametro", sistemaParametros
-											.getAnoMesFaturamento());
+							gerarResumoRegistroAtendimento.addParametro("anoMesFaturamentoSistemaParametro",
+											sistemaParametros.getAnoMesFaturamento());
 
 							// Seta o objeto para ser serializado no banco, onde
 							// depois serï¿½ executado por uma thread
@@ -619,8 +749,8 @@ public class ControladorBatchSEJB
 											.pesquisarIdsLocalidadesParaGerarLancamentosContabeisArrecadacao(
 															sistemaParametros.getAnoMesArrecadacao());
 
-							dadosGerarLancamentosContabeisArrecadacao.addParametro("anoMesArrecadacao", sistemaParametros
-											.getAnoMesArrecadacao());
+							dadosGerarLancamentosContabeisArrecadacao.addParametro("anoMesArrecadacao",
+											sistemaParametros.getAnoMesArrecadacao());
 
 							// Seta os parametros para rodar a funcionalidade
 							dadosGerarLancamentosContabeisArrecadacao.addParametro(ConstantesSistema.COLECAO_UNIDADES_PROCESSAMENTO_BATCH,
@@ -1411,8 +1541,8 @@ public class ControladorBatchSEJB
 							dadosGerarResumoLeituraAnormalidade.addParametro(ConstantesSistema.COLECAO_UNIDADES_PROCESSAMENTO_BATCH,
 											colSetorComercial);
 
-							dadosGerarResumoLeituraAnormalidade.addParametro("anoMesReferenciaFaturamento", sistemaParametros
-											.getAnoMesFaturamento());
+							dadosGerarResumoLeituraAnormalidade.addParametro("anoMesReferenciaFaturamento",
+											sistemaParametros.getAnoMesFaturamento());
 
 							// Seta o objeto para ser serializado no banco, onde
 							// depois serï¿½ executado por uma thread
@@ -1433,8 +1563,8 @@ public class ControladorBatchSEJB
 							dadosGerarResumoArrecadacao.addParametro(ConstantesSistema.COLECAO_UNIDADES_PROCESSAMENTO_BATCH,
 											gra_colSetorComercial);
 
-							dadosGerarResumoArrecadacao.addParametro("anoMesReferenciaArrecadacao", sistemaParametros
-											.getAnoMesArrecadacao());
+							dadosGerarResumoArrecadacao.addParametro("anoMesReferenciaArrecadacao",
+											sistemaParametros.getAnoMesArrecadacao());
 
 							// Seta o objeto para ser serializado no banco, onde
 							// depois serï¿½ executado por uma thread
@@ -1476,8 +1606,8 @@ public class ControladorBatchSEJB
 							dadosGerarResumoFaturamentoAguaEsgoto.addParametro(ConstantesSistema.COLECAO_UNIDADES_PROCESSAMENTO_BATCH,
 											colSetorFaturamento);
 
-							dadosGerarResumoFaturamentoAguaEsgoto.addParametro("anoMesFaturamento", sistemaParametros
-											.getAnoMesFaturamento());
+							dadosGerarResumoFaturamentoAguaEsgoto.addParametro("anoMesFaturamento",
+											sistemaParametros.getAnoMesFaturamento());
 
 							// Seta o objeto para ser serializado no banco, onde
 							// depois serï¿½ executado por uma thread
@@ -1496,8 +1626,8 @@ public class ControladorBatchSEJB
 											.pesquisarIdsLocalidadesParaGerarLancamentosContabeisFaturamento(
 															sistemaParametros.getAnoMesFaturamento());
 
-							dadosGerarLancamentosContabeisFaturamento.addParametro("anoMesFaturamento", sistemaParametros
-											.getAnoMesFaturamento());
+							dadosGerarLancamentosContabeisFaturamento.addParametro("anoMesFaturamento",
+											sistemaParametros.getAnoMesFaturamento());
 
 							// Seta os parametros para rodar a funcionalidade
 							dadosGerarLancamentosContabeisFaturamento.addParametro(ConstantesSistema.COLECAO_UNIDADES_PROCESSAMENTO_BATCH,
@@ -1535,8 +1665,8 @@ public class ControladorBatchSEJB
 
 							break;
 						case Funcionalidade.GERAR_RESUMO_METAS:
-							TarefaBatchGerarResumoMetas tarefaBatchGerarResumoMetas = new TarefaBatchGerarResumoMetas(processoIniciado
-											.getUsuario(), funcionalidadeIniciada.getId());
+							TarefaBatchGerarResumoMetas tarefaBatchGerarResumoMetas = new TarefaBatchGerarResumoMetas(
+											processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
 
 							FiltroSetorComercial filtroSetorC = new FiltroSetorComercial();
 							Collection<SetorComercial> colSetorC = getControladorUtil().pesquisar(filtroSetorC,
@@ -1846,8 +1976,8 @@ public class ControladorBatchSEJB
 							break;
 
 						case Funcionalidade.GERAR_PROVISAO_RECEITA:
-							TarefaBatchGerarProvisaoReceita gerarProvisaoReceita = new TarefaBatchGerarProvisaoReceita(processoIniciado
-											.getUsuario(), funcionalidadeIniciada.getId());
+							TarefaBatchGerarProvisaoReceita gerarProvisaoReceita = new TarefaBatchGerarProvisaoReceita(
+											processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
 
 							FiltroSetorComercial novoFiltroSetor = new FiltroSetorComercial();
 							Collection<SetorComercial> colecaoSetorComercialNova = getControladorUtil().pesquisar(novoFiltroSetor,
@@ -1876,8 +2006,8 @@ public class ControladorBatchSEJB
 							break;
 
 						case Funcionalidade.ENCERRAR_ARRECADACAO:
-							TarefaBatchEncerrarArrecadacao dadosEncerrarArrecadacao = new TarefaBatchEncerrarArrecadacao(processoIniciado
-											.getUsuario(), funcionalidadeIniciada.getId());
+							TarefaBatchEncerrarArrecadacao dadosEncerrarArrecadacao = new TarefaBatchEncerrarArrecadacao(
+											processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
 
 							// Seta o objeto para ser serializado no banco, onde
 							// depois seria executado por uma thread
@@ -1886,7 +2016,7 @@ public class ControladorBatchSEJB
 							getControladorUtil().atualizar(funcionalidadeIniciada);
 
 							break;
-							
+
 						case Funcionalidade.GERAR_INTEGRACAO_SPED_PIS_COFINS: // [OC777360][UC3078]
 							criarTarefaBatchGerarIntegracaoSpedPisCofins(processoIniciado, funcionalidadeIniciada);
 							break;
@@ -1959,6 +2089,46 @@ public class ControladorBatchSEJB
 
 							break;
 
+						case Funcionalidade.AJUSTA_LANCAMENTOS_CONTABIES_SINTETICOS:
+							TarefaBatchAjustarLancamentosContabiesSinteticos ajustarSintetico = new TarefaBatchAjustarLancamentosContabiesSinteticos(
+											processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
+
+							// Seta o objeto para ser serializado no banco, onde
+							// depois serï¿½ executado por uma thread
+							funcionalidadeIniciada.setTarefaBatch(IoUtil.transformarObjetoParaBytes(ajustarSintetico));
+
+							getControladorUtil().atualizar(funcionalidadeIniciada);
+
+							break;
+
+						case Funcionalidade.AJUSTA_RELACAO_USUARIO_CLIENTE_IMOVEL:
+							TarefaBatchAjustarRelacaoUsuarioClienteImovel ajustarRelacaoUsuario = new TarefaBatchAjustarRelacaoUsuarioClienteImovel(
+											processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
+
+							// Seta o objeto para ser serializado no banco, onde
+							// depois serï¿½ executado por uma thread
+							funcionalidadeIniciada.setTarefaBatch(IoUtil.transformarObjetoParaBytes(ajustarRelacaoUsuario));
+
+
+							getControladorUtil().atualizar(funcionalidadeIniciada);
+
+							break;
+
+						case Funcionalidade.BATCH_SUPRESSAO_DEFINITIVA_IMOVEIS_MDB:
+							LOGGER.info("*** Funcionalidade.BATCH_SUPRESSAO_DEFINITIVA_IMOVEIS_MDB");
+							LOGGER.info("*** Instanciando TarefaBatchSupressaoDefinitivaImoveis");
+							TarefaBatchSupressaoDefinitivaImoveis tarefaBatchSupressaoDefinitivaImoveis = new TarefaBatchSupressaoDefinitivaImoveis(
+											processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
+
+							LOGGER.info("*** Setando TarefaBatch");
+							funcionalidadeIniciada.setTarefaBatch(IoUtil.transformarObjetoParaBytes(tarefaBatchSupressaoDefinitivaImoveis));
+
+							LOGGER.info("*** Atualizando FuncionalidadeIniciada");
+							this.getControladorUtil().atualizar(funcionalidadeIniciada);
+
+							break;
+
+
 						default:
 							LOGGER.warn("default");
 					}
@@ -1984,8 +2154,8 @@ public class ControladorBatchSEJB
 	private void criarTarefaBatchGerarIntegracaoSpedPisCofins(ProcessoIniciado processoIniciado,
 					FuncionalidadeIniciada funcionalidadeIniciada) throws ControladorException, IOException{
 
-		TarefaBatchGerarIntegracaoSpedPisCofins tarefaIntegracao = new TarefaBatchGerarIntegracaoSpedPisCofins(processoIniciado
-						.getUsuario(), funcionalidadeIniciada.getId());
+		TarefaBatchGerarIntegracaoSpedPisCofins tarefaIntegracao = new TarefaBatchGerarIntegracaoSpedPisCofins(
+						processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
 
 		// tarefaIntegracao.addParametro(TarefaBatchGerarIntegracaoSpedPisCofins.PARAM_IDS_LOCALIDADE,
 		// getControladorLocalidade()
@@ -2033,13 +2203,12 @@ public class ControladorBatchSEJB
 	 * @throws ControladorException
 	 */
 	public Integer inserirProcessoIniciadoFaturamentoComandado(Collection<Integer> idsFaturamentoAtividadeCronograma,
-					Collection<Integer> idsFaturamentoSimulacaoComando,
-					Date dataHoraAgendamento, Usuario usuario) throws ControladorException{
+					Collection<Integer> idsFaturamentoSimulacaoComando, Date dataHoraAgendamento, Usuario usuario)
+					throws ControladorException{
 
 		Integer codigoProcessoIniciadoGerado = null;
 		Date agora = new Date();
 		try{
-
 
 			ProcessoSituacao processoSituacao = new ProcessoSituacao();
 			processoSituacao.setId(ProcessoSituacao.EM_ESPERA); // Ver
@@ -2346,7 +2515,8 @@ public class ControladorBatchSEJB
 												.getFaturamentoGrupoCronogramaMensal().getFaturamentoGrupo().getAnoMesReferencia());
 								verificarAnormalidadesConsumo.addParametro("faturamentoGrupo", faturamentoAtividadeCronograma
 												.getFaturamentoGrupoCronogramaMensal().getFaturamentoGrupo());
-								verificarAnormalidadesConsumo.addParametro(ConstantesSistema.COLECAO_UNIDADES_PROCESSAMENTO_BATCH,
+								verificarAnormalidadesConsumo
+												.addParametro("colecaoFaturamentoAtivCronRota",
 												colecaoFaturamentoAtivCronRota);
 
 								// Seta o objeto para ser serializado no banco, onde
@@ -2392,6 +2562,29 @@ public class ControladorBatchSEJB
 								// Seta o objeto para ser serializado no banco, onde
 								// depois serï¿½ executado por uma thread
 								funcionalidadeIniciada.setTarefaBatch(IoUtil.transformarObjetoParaBytes(taxaEntrega));
+
+								getControladorUtil().atualizar(funcionalidadeIniciada);
+
+								break;
+							case Funcionalidade.AJUSTA_LANCAMENTOS_CONTABIES_SINTETICOS:
+								TarefaBatchAjustarLancamentosContabiesSinteticos ajustarSintetico = new TarefaBatchAjustarLancamentosContabiesSinteticos(
+												processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
+
+								// Seta o objeto para ser serializado no banco, onde
+								// depois serï¿½ executado por uma thread
+								funcionalidadeIniciada.setTarefaBatch(IoUtil.transformarObjetoParaBytes(ajustarSintetico));
+
+								getControladorUtil().atualizar(funcionalidadeIniciada);
+
+								break;
+
+							case Funcionalidade.AJUSTA_RELACAO_USUARIO_CLIENTE_IMOVEL:
+								TarefaBatchAjustarRelacaoUsuarioClienteImovel ajustarRelacaoUsuario = new TarefaBatchAjustarRelacaoUsuarioClienteImovel(
+												processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
+
+								// Seta o objeto para ser serializado no banco, onde
+								// depois serï¿½ executado por uma thread
+								funcionalidadeIniciada.setTarefaBatch(IoUtil.transformarObjetoParaBytes(ajustarRelacaoUsuario));
 
 								getControladorUtil().atualizar(funcionalidadeIniciada);
 
@@ -2542,6 +2735,33 @@ public class ControladorBatchSEJB
 								// Seta o objeto para ser serializado no banco, onde
 								// depois será executado por uma thread
 								funcionalidadeIniciada.setTarefaBatch(IoUtil.transformarObjetoParaBytes(tarefaBatchGerarAvisoCorte));
+
+								getControladorUtil().atualizar(funcionalidadeIniciada);
+
+								break;
+
+							case Funcionalidade.GERAR_NOTIFICACAO_AMIGAVEL:
+								TarefaBatchGerarNotificacaoAmigavel tarefaBatchGerarNotificacaoAmigavel = new TarefaBatchGerarNotificacaoAmigavel(
+												processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
+
+								// Seta os parametros para rodar a funcionalidade
+								tarefaBatchGerarNotificacaoAmigavel.addParametro(ConstantesSistema.COLECAO_UNIDADES_PROCESSAMENTO_BATCH,
+												colecaoFaturamentoAtivCronRota);
+								tarefaBatchGerarNotificacaoAmigavel.addParametro("anoMesFaturamentoGrupo", faturamentoAtividadeCronograma
+												.getFaturamentoGrupoCronogramaMensal().getFaturamentoGrupo().getAnoMesReferencia());
+								tarefaBatchGerarNotificacaoAmigavel.addParametro("faturamentoGrupo", faturamentoAtividadeCronograma
+												.getFaturamentoGrupoCronogramaMensal().getFaturamentoGrupo());
+								tarefaBatchGerarNotificacaoAmigavel.addParametro("faturamentoAtividade",
+												faturamentoAtividadeCronograma.getFaturamentoAtividade());
+								tarefaBatchGerarNotificacaoAmigavel.addParametro("faturamentoGrupoCronogramaMensal",
+												faturamentoAtividadeCronograma.getFaturamentoGrupoCronogramaMensal());
+								tarefaBatchGerarNotificacaoAmigavel.addParametro("idProcessoIniciado", codigoProcessoIniciadoGerado);
+								tarefaBatchGerarNotificacaoAmigavel.addParametro("rotas", colecaoFaturamentoAtivCronRota);
+
+								// Seta o objeto para ser serializado no banco, onde
+								// depois será executado por uma thread
+								funcionalidadeIniciada.setTarefaBatch(IoUtil
+												.transformarObjetoParaBytes(tarefaBatchGerarNotificacaoAmigavel));
 
 								getControladorUtil().atualizar(funcionalidadeIniciada);
 
@@ -2842,7 +3062,7 @@ public class ControladorBatchSEJB
 			helper.setAcaoCobranca(cobrancaAcaoAtividadeCronograma.getCobrancaAcaoCronograma().getCobrancaAcao());
 			helper.setCobrancaAcaoAtividadeComando(null);
 			helper.setCobrancaAcaoAtividadeCronograma(cobrancaAcaoAtividadeCronograma);
-			helper.setCriterioCobranca(null);
+			helper.setCriterioCobranca(cobrancaAcaoAtividadeCronograma.getCobrancaAcaoCronograma().getCobrancaAcao().getCobrancaCriterio());
 			helper.setDataAtual(dataAtual);
 			helper.setGrupoCobranca(cobrancaAcaoAtividadeCronograma.getCobrancaAcaoCronograma().getCobrancaGrupoCronogramaMes()
 							.getCobrancaGrupo());
@@ -2873,8 +3093,8 @@ public class ControladorBatchSEJB
 				switch(funcionalidadeIniciada.getProcessoFuncionalidade().getFuncionalidade().getId()){
 
 					case Funcionalidade.GERAR_ATIVIDADE_ACAO_COBRANCA:
-						TarefaBatchGerarAtividadeAcaoCobranca acaoCobranca = new TarefaBatchGerarAtividadeAcaoCobranca(processoIniciado
-										.getUsuario(), funcionalidadeIniciada.getId());
+						TarefaBatchGerarAtividadeAcaoCobranca acaoCobranca = new TarefaBatchGerarAtividadeAcaoCobranca(
+										processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
 						acaoCobranca.addParametro("usuario", processoIniciado.getUsuario());
 
 						// --------------------------------------------------------------------------------------------------------------
@@ -2917,8 +3137,10 @@ public class ControladorBatchSEJB
 						// -----------------------------------------------------------------------------------------------------
 
 						acaoCobranca.addParametro("anoMesReferenciaInicial", 000101);
-						acaoCobranca.addParametro("anoMesReferenciaFinal", (new Integer(Util.subtrairMesDoAnoMes(getControladorUtil()
-										.pesquisarParametrosDoSistema().getAnoMesFaturamento(), 1))));
+						acaoCobranca.addParametro(
+										"anoMesReferenciaFinal",
+										(new Integer(Util.subtrairMesDoAnoMes(getControladorUtil().pesquisarParametrosDoSistema()
+														.getAnoMesFaturamento(), 1))));
 						acaoCobranca.addParametro("dataVencimentoInicial", formato.parse("01/01/0001"));
 						acaoCobranca.addParametro("dataAtual", dataAtual);
 
@@ -3048,7 +3270,7 @@ public class ControladorBatchSEJB
 			codigoProcessoIniciadoGerado = (Integer) getControladorUtil().inserir(processoIniciado);
 			LOGGER.info("INCLUINDO PROCESSO INICIADO[" + codigoProcessoIniciadoGerado + "] - DADOS COMPLEMENTARES ["
 							+ descricaoDadosComplementares + "]");
-			
+
 			// Este trecho pesquisa todos do processoFuncionalidade relacionados com o processo do
 			// objeto a ser inserido
 			FiltroProcessoFuncionalidade filtroProcessoFuncionalidade = new FiltroProcessoFuncionalidade();
@@ -3084,8 +3306,8 @@ public class ControladorBatchSEJB
 				// Seta os parametros da funcionalidade Iniciada
 				switch(funcionalidadeIniciada.getProcessoFuncionalidade().getFuncionalidade().getId()){
 					case Funcionalidade.GERAR_ATIVIDADE_ACAO_COBRANCA:
-						TarefaBatchGerarAtividadeAcaoCobranca acaoCobranca = new TarefaBatchGerarAtividadeAcaoCobranca(processoIniciado
-										.getUsuario(), funcionalidadeIniciada.getId());
+						TarefaBatchGerarAtividadeAcaoCobranca acaoCobranca = new TarefaBatchGerarAtividadeAcaoCobranca(
+										processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
 						acaoCobranca.addParametro("usuario", processoIniciado.getUsuario());
 
 						// --------------------------------------------------------------------------------------------------------------
@@ -3133,9 +3355,7 @@ public class ControladorBatchSEJB
 						acaoCobranca.addParametro("cliente", cobrancaAcaoAtividadeComando.getCliente());
 						acaoCobranca.addParametro("clienteSuperior", cobrancaAcaoAtividadeComando.getSuperior());
 						acaoCobranca.addParametro("clienteRelacaoTipo", cobrancaAcaoAtividadeComando.getClienteRelacaoTipo());
-						acaoCobranca
-										.addParametro("anoMesReferenciaInicial", cobrancaAcaoAtividadeComando
-														.getAnoMesReferenciaContaInicial());
+						acaoCobranca.addParametro("anoMesReferenciaInicial", cobrancaAcaoAtividadeComando.getAnoMesReferenciaContaInicial());
 						acaoCobranca.addParametro("anoMesReferenciaFinal", cobrancaAcaoAtividadeComando.getAnoMesReferenciaContaFinal());
 						acaoCobranca.addParametro("dataVencimentoInicial", cobrancaAcaoAtividadeComando.getDataVencimentoContaInicial());
 						acaoCobranca.addParametro("dataVencimentoFinal", cobrancaAcaoAtividadeComando.getDataVencimentoContaFinal());
@@ -3254,94 +3474,36 @@ public class ControladorBatchSEJB
 
 	}
 
+
 	/**
-	 * Verifica no sistema a presenca de ProcessosIniciados nao agendados para
-	 * iniciar a execucao
-	 * 
-	 * @author Rodrigo Silveira
-	 * @param processosId
-	 * @date 22/08/2006
+	 * @param processoIniciado
+	 * @return
 	 */
-	public void verificarProcessosIniciados(Collection<Integer> processosId) throws ControladorException{
+	public boolean verificarProcessoIniciadoPrecedenteConcluido(ProcessoIniciado processoIniciado){
+
+		boolean retorno = false;
 
 		try{
-			Date agora = new Date();
+			if(processoIniciado.getProcessoIniciadoPrecedente() != null){
+				Integer situacaoProcesso = repositorioBatch.verificarProcessoSituacao(processoIniciado.getProcessoIniciadoPrecedente()
+								.getId());
 
-			// Procurar as funcionalidadesIniciadas de processosIniciados em
-			// Situacao de Inicio - Agendado ou em espera
-			// ---------------------------------------------------------------
-			// Sï¿½ vai procurar as funcionalidades Iniciadas para iniciar
-			// execuï¿½ï¿½o em que o processo Iniciado nï¿½o tem precedente ou que o
-			// precedente tenha sido finalizado
-
-			Collection<FuncionalidadeIniciada> colecaoFuncionalidadesIniciadasParaExecucao = verificarFuncionalidadesIniciadasProntasParaExecucao(processosId);
-
-			Iterator<FuncionalidadeIniciada> iterator = colecaoFuncionalidadesIniciadasParaExecucao.iterator();
-
-			FuncionalidadeSituacao funcionalidadeSituacao = new FuncionalidadeSituacao();
-			funcionalidadeSituacao.setId(FuncionalidadeSituacao.EM_PROCESSAMENTO);
-
-			ProcessoSituacao processoSituacao = new ProcessoSituacao();
-			processoSituacao.setId(ProcessoSituacao.EM_PROCESSAMENTO);
-
-			while(iterator.hasNext()){
-				// Recuperar a tarefa batch armazenada
-				FuncionalidadeIniciada funcionalidadeIniciada = iterator.next();
-
-				// TarefaBatch tarefaBatch = (TarefaBatch)
-				// IoUtil.transformarBytesParaObjeto(funcionalidadeIniciada.getTarefaBatch());
-				Tarefa tarefa = (Tarefa) IoUtil.transformarBytesParaObjeto(funcionalidadeIniciada.getTarefaBatch());
-
-				// Atualizar a FuncionalidadeSituacao para EM_PROCESSAMENTO
-				funcionalidadeIniciada.setFuncionalidadeSituacao(funcionalidadeSituacao);
-				funcionalidadeIniciada.setDataHoraInicio(agora);
-
-				// Atualiza o Processo Iniciado para EM_PROCESSAMENTO
-				ProcessoIniciado processoIniciado = funcionalidadeIniciada.getProcessoIniciado();
-
-				if(tarefa == null){
-					LOGGER.info("Atenção: tarefa igual a NULL. (verificarProcessosIniciados())");
-					LOGGER.info("funcionalidadeIniciada: " + funcionalidadeIniciada.getId());
-					if(processoIniciado != null){
-						LOGGER.info("processoIniciado: " + processoIniciado.getId());
-					}
-					continue;
+				if(situacaoProcesso.equals(ProcessoSituacao.CONCLUIDO) || situacaoProcesso.equals(ProcessoSituacao.CONCLUIDO_COM_ERRO)){
+					retorno = true;
 				}
 
-				if(!processoIniciado.getProcessoSituacao().getId().equals(ProcessoSituacao.EM_PROCESSAMENTO)){
-
-					if(processoIniciado.getDataHoraInicio() == null){
-						processoIniciado.setDataHoraInicio(agora);
-					}
-					processoIniciado.setProcessoSituacao(processoSituacao);
-					getControladorUtil().atualizar(processoIniciado);
-				}
-
-				getControladorUtil().atualizar(funcionalidadeIniciada);
-
-				// Agendar a tarefa Batch
-				if(tarefa != null){
-					tarefa.agendarTarefaBatch();
-				}
-
+			}else{
+				retorno = true;
 			}
 
-		}catch(IOException e){
+		}catch(ErroRepositorioException e){
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-
-			sessionContext.setRollbackOnly();
-			throw new ControladorException("erro.sistema", e);
-
-		}catch(ClassNotFoundException e){
-			e.printStackTrace();
-
-			sessionContext.setRollbackOnly();
-			throw new ControladorException("erro.sistema", e);
-
 		}
 
-	}
+		return retorno;
 
+	}
 
 	/**
 	 * Encerra os Processos Iniciados no sistema quando todas as funcionalidades do mesmo
@@ -3631,7 +3793,11 @@ public class ControladorBatchSEJB
 	 */
 	public void verificadorProcessosSistema() throws ControladorException{
 
+		verificarProcessosDependentesProntosParaExecucao();
+
 		Collection<Integer> processosId = consultarProcessosProntosParaExecucao();
+
+
 		if(!Util.isVazioOrNulo(processosId)){
 			this.verificarProcessosIniciados(processosId);
 		}
@@ -3639,7 +3805,6 @@ public class ControladorBatchSEJB
 		this.encerrarFuncionalidadesIniciadas();
 		this.encerrarProcessosIniciados();
 	}
-
 
 	/**
 	 * Método consultarProcessosProntosParaExecucao
@@ -3662,13 +3827,15 @@ public class ControladorBatchSEJB
 		String ip = VerificadorIP.getInstancia().getIpAtivo();
 		if(ip != null) filtro.adicionarParametro(new ParametroSimples(FiltroProcessoIniciado.IP, ip));
 
-		 Collection processosAguardando = getControladorUtil().pesquisar(filtro, ProcessoIniciado.class.getName());
-		 List<Integer> processosContinuamEmEspera = new ArrayList<Integer>();
-		 Collection<Integer> processosProntosParaExecutar = new ArrayList<Integer>();
+		Collection processosAguardando = getControladorUtil().pesquisar(filtro, ProcessoIniciado.class.getName());
+		List<Integer> processosContinuamEmEspera = new ArrayList<Integer>();
+		Collection<Integer> processosProntosParaExecutar = new ArrayList<Integer>();
 		Collection processosProntosParaExecutarLista = new ArrayList();
 		try{
 			for(Object object : processosAguardando){
+
 				ProcessoIniciado processoEmEspera = (ProcessoIniciado) object;
+
 				// SE EM_PROCESSAMENTO OU EM_ESPERA e NÃO TEM PENDENCIAS
 				if(isProcessoProntoParaExecutar(processoEmEspera)){
 
@@ -3677,11 +3844,11 @@ public class ControladorBatchSEJB
 					Iterator it = processosProntosParaExecutarLista.iterator();
 					while(it.hasNext()){
 						ProcessoIniciado pi = (ProcessoIniciado) it.next();
-						
+
 						if(pi.getProcesso().getId().equals(processoEmEspera.getProcesso().getId())
 										&& ((pi.getDescricaoDadosComplementares() != null
-														&& processoEmEspera.getDescricaoDadosComplementares() != null
-										&& pi.getDescricaoDadosComplementares().compareTo(
+														&& processoEmEspera.getDescricaoDadosComplementares() != null && pi
+														.getDescricaoDadosComplementares().compareTo(
 																		processoEmEspera.getDescricaoDadosComplementares()) == 0) || (pi
 														.getDescricaoDadosComplementares() == null && processoEmEspera
 														.getDescricaoDadosComplementares() == null))){
@@ -3693,7 +3860,6 @@ public class ControladorBatchSEJB
 						processosProntosParaExecutarLista.add(processoEmEspera);
 						processosProntosParaExecutar.add(processoEmEspera.getId());
 					}
-
 
 				}else{
 
@@ -3715,9 +3881,11 @@ public class ControladorBatchSEJB
 
 	private boolean isProcessoProntoParaExecutar(ProcessoIniciado processoEmEspera) throws ErroRepositorioException{
 
+
 		boolean estaPronto = Arrays.asList(ProcessoSituacao.EM_ESPERA, ProcessoSituacao.EM_PROCESSAMENTO)//
-						.contains(processoEmEspera.getProcessoSituacao().getId())//
-						&& repositorioBatch.consultarQtdProcessoAntecedenteEmSituacao(processoEmEspera, SITUACOES_PROCESSO_PENDENTE) == 0;
+							.contains(processoEmEspera.getProcessoSituacao().getId())//
+							&& repositorioBatch.consultarQtdProcessoAntecedenteEmSituacao(processoEmEspera, SITUACOES_PROCESSO_PENDENTE) == 0;
+
 
 		LOGGER.debug("PROCESSO[" + processoEmEspera.getId() + "] NÃO POSSUI pendencias no momento e esta pronto para rodar? " + estaPronto);
 
@@ -3762,7 +3930,7 @@ public class ControladorBatchSEJB
 				e.printStackTrace();
 			}
 			// ..........................................................................................................
-			
+
 		}
 		return estaPronto;
 	}
@@ -4641,7 +4809,7 @@ public class ControladorBatchSEJB
 
 					switch(funcionalidadeIniciada.getProcessoFuncionalidade().getFuncionalidade().getId()){
 
-						/** Pedro Alexandre 18-06-2007 */
+					/** Pedro Alexandre 18-06-2007 */
 						case Funcionalidade.GERAR_RESUMO_DEVEDORES_DUVIDOSOS:
 							TarefaBatchGerarResumoDevedoresDuvidosos dadosGerarResumoDevedoresDuvidosos = new TarefaBatchGerarResumoDevedoresDuvidosos(
 											processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
@@ -4670,8 +4838,8 @@ public class ControladorBatchSEJB
 							TarefaBatchGerarLancamentosContabeisDevedoresDuvidosos dadosGerarLancamentosContabeisDevedoresDuvidosos = new TarefaBatchGerarLancamentosContabeisDevedoresDuvidosos(
 											processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
 
-							Integer anoMesReferenciaContabilLancamentosContabeis = new Integer((String) dadosProcessamento
-											.get("anoMesReferenciaContabil"));
+							Integer anoMesReferenciaContabilLancamentosContabeis = new Integer(
+											(String) dadosProcessamento.get("anoMesReferenciaContabil"));
 
 							Collection<Integer> colecaoIdsLocalidadesGerarLancamentosContabeisDevedoresDuvidosos = getControladorFinanceiro()
 											.pesquisarIdsLocalidadesParaGerarResumoDevedoresDuvidosos(
@@ -4959,8 +5127,8 @@ public class ControladorBatchSEJB
 				filtroProcessoFuncionalidade.adicionarParametro(new ParametroSimples(FiltroProcessoFuncionalidade.INDICADOR_USO,
 								ConstantesSistema.INDICADOR_USO_ATIVO));
 
-				ProcessoFuncionalidade processoFuncionalidade = (ProcessoFuncionalidade) this.getControladorUtil().pesquisar(
-								filtroProcessoFuncionalidade, ProcessoFuncionalidade.class.getName()).iterator().next();
+				ProcessoFuncionalidade processoFuncionalidade = (ProcessoFuncionalidade) this.getControladorUtil()
+								.pesquisar(filtroProcessoFuncionalidade, ProcessoFuncionalidade.class.getName()).iterator().next();
 
 				FuncionalidadeSituacao funcionalidadeSituacao = new FuncionalidadeSituacao();
 				funcionalidadeSituacao.setId(FuncionalidadeSituacao.EM_ESPERA);
@@ -5025,15 +5193,15 @@ public class ControladorBatchSEJB
 				Object codigoProcessoIniciadoGerado = this.getControladorUtil().inserir(processoIniciadoLeitura);
 				LOGGER.info("INCLUINDO PROCESSO INICIADO[" + codigoProcessoIniciadoGerado + "] - DADOS COMPLEMENTARES ["
 								+ descricaoDadosComplementares + "]");
-				
+
 				FiltroProcessoFuncionalidade filtroProcessoFuncionalidadeLeitura = new FiltroProcessoFuncionalidade();
 				filtroProcessoFuncionalidadeLeitura.adicionarParametro(new ParametroSimples(FiltroProcessoFuncionalidade.ID_PROCESSO,
 								processoIniciadoLeitura.getProcesso().getId()));
 				filtroProcessoFuncionalidadeLeitura.adicionarParametro(new ParametroSimples(FiltroProcessoFuncionalidade.INDICADOR_USO,
 								ConstantesSistema.INDICADOR_USO_ATIVO));
 
-				ProcessoFuncionalidade processoFuncionalidadeLeitura = (ProcessoFuncionalidade) this.getControladorUtil().pesquisar(
-								filtroProcessoFuncionalidadeLeitura, ProcessoFuncionalidade.class.getName()).iterator().next();
+				ProcessoFuncionalidade processoFuncionalidadeLeitura = (ProcessoFuncionalidade) this.getControladorUtil()
+								.pesquisar(filtroProcessoFuncionalidadeLeitura, ProcessoFuncionalidade.class.getName()).iterator().next();
 
 				FuncionalidadeSituacao funcionalidadeSituacaoLeitura = new FuncionalidadeSituacao();
 				funcionalidadeSituacaoLeitura.setId(FuncionalidadeSituacao.EM_ESPERA);
@@ -5087,8 +5255,8 @@ public class ControladorBatchSEJB
 				filtroProcessoFuncionalidadeResumo.adicionarParametro(new ParametroSimples(FiltroProcessoFuncionalidade.INDICADOR_USO,
 								ConstantesSistema.INDICADOR_USO_ATIVO));
 
-				ProcessoFuncionalidade processoFuncionalidadeResumo = (ProcessoFuncionalidade) this.getControladorUtil().pesquisar(
-								filtroProcessoFuncionalidadeResumo, ProcessoFuncionalidade.class.getName()).iterator().next();
+				ProcessoFuncionalidade processoFuncionalidadeResumo = (ProcessoFuncionalidade) this.getControladorUtil()
+								.pesquisar(filtroProcessoFuncionalidadeResumo, ProcessoFuncionalidade.class.getName()).iterator().next();
 
 				FuncionalidadeSituacao funcionalidadeSituacaoResumo = new FuncionalidadeSituacao();
 				funcionalidadeSituacaoResumo.setId(FuncionalidadeSituacao.EM_ESPERA);
@@ -5145,15 +5313,15 @@ public class ControladorBatchSEJB
 				this.getControladorUtil().inserir(procIniciado);
 
 				FiltroProcessoFuncionalidade filtroProcFuncionalidade = new FiltroProcessoFuncionalidade();
-				filtroProcFuncionalidade.adicionarParametro(new ParametroSimples(FiltroProcessoFuncionalidade.ID_PROCESSO,
-								procIniciado.getProcesso().getId()));
+				filtroProcFuncionalidade.adicionarParametro(new ParametroSimples(FiltroProcessoFuncionalidade.ID_PROCESSO, procIniciado
+								.getProcesso().getId()));
 				filtroProcFuncionalidade.adicionarParametro(new ParametroSimples(FiltroProcessoFuncionalidade.INDICADOR_USO,
 								ConstantesSistema.INDICADOR_USO_ATIVO));
 
 				filtroProcFuncionalidade.setCampoOrderBy(FiltroProcessoFuncionalidade.SEQUENCIAL_EXECUCAO);
 
-				Collection colProcFuncionalidade = this.getControladorUtil().pesquisar(
-								filtroProcFuncionalidade, ProcessoFuncionalidade.class.getName());
+				Collection colProcFuncionalidade = this.getControladorUtil().pesquisar(filtroProcFuncionalidade,
+								ProcessoFuncionalidade.class.getName());
 
 				FuncionalidadeSituacao funcSituacaoResumo = new FuncionalidadeSituacao();
 				funcSituacaoResumo.setId(FuncionalidadeSituacao.EM_ESPERA);
@@ -5338,7 +5506,11 @@ public class ControladorBatchSEJB
 			// Todos os processo serão iniciados com a situação EM_ESPERA
 			ProcessoSituacao processoSituacao = new ProcessoSituacao();
 			processoSituacao.setId(ProcessoSituacao.EM_ESPERA);
-			processoIniciado.setProcessoSituacao(processoSituacao);
+
+			if(processoIniciado.getProcessoSituacao() == null){
+				processoIniciado.setProcessoSituacao(processoSituacao);
+			}
+
 			processoIniciado.setDataHoraComando(agora);
 
 			codigoProcessoIniciadoGerado = (Integer) getControladorUtil().inserir(processoIniciado);
@@ -5377,6 +5549,22 @@ public class ControladorBatchSEJB
 				// Verifica qual funcionalidade(processo) foi iniciada
 				switch(funcionalidadeIniciada.getProcessoFuncionalidade().getFuncionalidade().getId()){
 
+					case Funcionalidade.REGISTRAR_LEITURAS_ANORMALIDADES:
+
+						TarefaBatchRegistrarLeiturasAnormalidades registrarLeiturasAnormalidadesBatch = new TarefaBatchRegistrarLeiturasAnormalidades(
+										processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
+
+						registrarLeiturasAnormalidadesBatch.addParametro("colecaoRotas", colecaoParametros.get(0));
+						registrarLeiturasAnormalidadesBatch.addParametro("idFaturamentoGrupo", colecaoParametros.get(1));
+						registrarLeiturasAnormalidadesBatch.addParametro("anoMesReferenciaFaturamento", colecaoParametros.get(2));
+						registrarLeiturasAnormalidadesBatch.addParametro("usuario", colecaoParametros.get(3));
+
+						funcionalidadeIniciada.setTarefaBatch(IoUtil.transformarObjetoParaBytes(registrarLeiturasAnormalidadesBatch));
+
+						getControladorUtil().atualizar(funcionalidadeIniciada);
+
+						break;
+
 					case Funcionalidade.REGISTRAR_MOVIMENTO_ARRECADADORES:
 
 						TarefaBatchRegistrarMovimentoArrecadadores registrarMovimentoArrecadadoresBatch = new TarefaBatchRegistrarMovimentoArrecadadores(
@@ -5410,6 +5598,7 @@ public class ControladorBatchSEJB
 
 						gerarPagamentosNaoClassificados.addParametro("classificarLotePagamentosNaoClassificadosHelper",
 										colecaoParametros.get(0));
+						gerarPagamentosNaoClassificados.addParametro("gerarDebitoACobrar", colecaoParametros.get(1));
 						funcionalidadeIniciada.setTarefaBatch(IoUtil.transformarObjetoParaBytes(gerarPagamentosNaoClassificados));
 
 						getControladorUtil().atualizar(funcionalidadeIniciada);
@@ -5492,6 +5681,29 @@ public class ControladorBatchSEJB
 
 						break;
 
+					case Funcionalidade.IMPORTAR_DADOS_DIVIDA_ATIVA:
+
+						LOGGER.info("Removendo Divida Ativa Inscricao Debito");
+						this.getControladorCobranca().removerDividaAtivaInscricaoDebito();
+
+						LOGGER.info("Removendo Divida Ativa Inscricao Resumo");
+						this.getControladorCobranca().removerDividaAtivaInscricaoResumo();
+
+
+						TarefaBatchImportarDadosDividaAtiva tarefaBatchImportarDadosDividaAtiva = new TarefaBatchImportarDadosDividaAtiva(
+										processoIniciado.getUsuario(), funcionalidadeIniciada.getId());
+
+						tarefaBatchImportarDadosDividaAtiva.addParametro("periodoInicial", colecaoParametros.get(0));
+						tarefaBatchImportarDadosDividaAtiva.addParametro("periodoFinal", colecaoParametros.get(1));
+						tarefaBatchImportarDadosDividaAtiva.addParametro("colecaoSetorComercial", colecaoParametros.get(2));
+
+						funcionalidadeIniciada.setTarefaBatch(IoUtil.transformarObjetoParaBytes(tarefaBatchImportarDadosDividaAtiva));
+
+						this.getControladorUtil().atualizar(funcionalidadeIniciada);
+
+						break;
+
+
 					default:
 						break;
 				}
@@ -5542,6 +5754,7 @@ public class ControladorBatchSEJB
 	 */
 	public Collection<FuncionalidadeIniciada> pesquisarFuncionalidadeIniciadaPeloProcessoVinculado(Integer idProcessoIniciadoVinculado)
 					throws ControladorException{
+
 		try{
 			return this.repositorioBatch.pesquisarFuncionalidadeIniciadaPeloProcessoVinculado(idProcessoIniciadoVinculado);
 		}catch(ErroRepositorioException e){
@@ -5584,6 +5797,81 @@ public class ControladorBatchSEJB
 
 			throw new ControladorException("erro.sistema", e);
 		}
+	}
+
+	/**
+	 * @throws ControladorException
+	 */
+
+	private void verificarProcessosDependentesProntosParaExecucao() throws ControladorException{
+
+		FiltroProcessoIniciado filtroProcessoIniciado = new FiltroProcessoIniciado();
+		filtroProcessoIniciado.adicionarParametro(new ParametroSimples(FiltroProcessoIniciado.PROCESSO_SITUACAO_ID,
+						ProcessoSituacao.AGUARDANDO_PROCESSAMENTO));
+		Collection colecaoProcessosIniciadoAguardando = getControladorUtil().pesquisar(filtroProcessoIniciado,
+						ProcessoIniciado.class.getName());
+
+		if(!Util.isVazioOrNulo(colecaoProcessosIniciadoAguardando)){
+
+			Collection<Integer> processosProntosParaExecutar;
+			try{
+				processosProntosParaExecutar = repositorioBatch.pesquisarProcessoDependeConcluido();
+
+				Iterator it = processosProntosParaExecutar.iterator();
+
+				while(it.hasNext()){
+
+					Integer idProcessoIniciado = (Integer) it.next();
+
+					FiltroProcessoIniciado fpi = new FiltroProcessoIniciado();
+					fpi.adicionarParametro(new ParametroSimples(FiltroProcessoIniciado.ID_PROCESSO_INICIADO_DEPENDENTE, idProcessoIniciado));
+					Collection colecao = getControladorUtil().pesquisar(fpi, ProcessoIniciado.class.getName());
+
+					ProcessoIniciado processoIniciado = (ProcessoIniciado) Util.retonarObjetoDeColecao(colecao);
+
+					ProcessoSituacao processoSituacao = new ProcessoSituacao();
+					processoSituacao.setId(ProcessoSituacao.EM_ESPERA);
+					processoIniciado.setProcessoSituacao(processoSituacao);
+
+					this.getControladorUtil().atualizar(processoIniciado);
+
+				}
+			}catch(ErroRepositorioException e){
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+
+		}
+
+	}
+
+	/**
+	 * @return
+	 * @throws ControladorException
+	 */
+
+	public Collection pesquisarSetorComercialProcessamentoBatch() throws ControladorException{
+
+		try{
+
+			return this.repositorioBatch.pesquisarSetorComercialProcessamentoBatch();
+		}catch(ErroRepositorioException e){
+
+			throw new ControladorException("erro.sistema", e);
+		}
+	}
+
+	public List<Object[]> pesquisarRotasComAlteracaoNasLigacoesEconomiasComReferencia() throws ControladorException{
+
+		try{
+
+			return this.repositorioMicromedicao.pesquisarRotasComAlteracaoNasLigacoesEconomiasComReferencia();
+		}catch(ErroRepositorioException e){
+
+			throw new ControladorException("erro.sistema", e);
+		}
+
 	}
 
 }

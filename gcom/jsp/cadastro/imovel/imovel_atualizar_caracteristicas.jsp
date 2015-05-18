@@ -330,8 +330,8 @@ function desabilitaCampoReservatorioInferior(){
 	<%@ include file="/jsp/util/cabecalho.jsp"%>
 	<%@ include file="/jsp/util/menu.jsp"%>
 
+	<input type="hidden" name="numeroPagina" value="6" />
 	<table width="770" border="0" cellspacing="4" cellpadding="0">
-		<input type="hidden" name="numeroPagina" value="6" />
 		<html:hidden property="url" value="5" />
 		<tr>
 			<td width="149" valign="top" class="leftcoltext">
@@ -386,21 +386,24 @@ function desabilitaCampoReservatorioInferior(){
 			<table width="100%" border="0">		
 					
 				<tr>
-					
 					<td align="left"><strong> Foto do imóvel: </strong></td>
-					<td align="center">											
-							
-							<td colspan="3" align="left"><input type="file" style="textbox"	name="fotoFachada" size="50" />	</td>
-														
-							<td>
-								<logic:notEmpty name="fotoFachada">
-								<a href="javascript:abrirPopup('exibirFotoFachadaImovelAction.do?id=<bean:write name="idImovel"/>', 600, 800)">
-									<input name="imageField" type="image" src="imagens/imgfolder.gif" width="18" height="18" border="0" disabled="disabled">
-								</a>
-								
-								</logic:notEmpty>
+					<td align="center">
+							<td align="left" colspan="3">
+								<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+									<input type="file" style="textbox"	name="fotoFachada" size="50" />
+								</logic:present>
+								<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+									<input type="file" style="textbox"	name="fotoFachada" size="50" disabled="disabled" />
+								</logic:notPresent>										
 							</td>
 							
+							<td>
+								<logic:notEmpty name="fotoFachada">
+									<a href="javascript:abrirPopup('exibirFotoFachadaImovelAction.do?id=<bean:write name="idImovel"/>', 600, 800)">
+										<input name="imageField" type="image" src="imagens/imgfolder.gif" width="18" height="18" border="0" disabled="disabled" />
+									</a>
+								</logic:notEmpty>
+							</td>							
 					</td>
 			    	<td align="right"></td>
 				</tr>						
@@ -419,35 +422,54 @@ function desabilitaCampoReservatorioInferior(){
 								<logic:equal name="<%=SistemaParametro.SISTEMA_PARAMETRO%>" property="parmId" value="<%="" + SistemaParametro.INDICADOR_EMPRESA_ADA%>" scope="session">							
 								<tr>
 									<td width="23%"><strong>&Aacute;rea Constru&iacute;da:</strong></td>
-									<td height="10"><logic:equal name="tarifaSocial" value="1">
-										<html:text maxlength="10" size="10" property="areaConstruida" style="text-align: right;"
-											onkeyup="javaScript:desabilitaCampoAreaConstruida();formataValorMonetario(this, 8);"
-											onkeypress="javaScript:desabilitaCampoAreaConstruida();"
-											disabled="true" />&nbsp;m<sup>2</sup>
-									</logic:equal> <logic:notEqual name="tarifaSocial" value="1">
-										<html:text maxlength="10" size="10" property="areaConstruida" style="text-align: right;"
-											onkeyup="javaScript:desabilitaCampoAreaConstruida();formataValorMonetario(this, 8);" 
-											onkeypress="javaScript:desabilitaCampoAreaConstruida();"
-											/>&nbsp;m<sup>2</sup>
-									</logic:notEqual>
+									<td height="10">
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											<logic:equal name="tarifaSocial" value="1">
+												<html:text maxlength="10" size="10" property="areaConstruida" style="text-align: right;"
+													onkeyup="javaScript:desabilitaCampoAreaConstruida();formataValorMonetario(this, 8);"
+													onkeypress="javaScript:desabilitaCampoAreaConstruida();"
+													disabled="true" />&nbsp;m<sup>2</sup>
+											</logic:equal> <logic:notEqual name="tarifaSocial" value="1">
+												<html:text maxlength="10" size="10" property="areaConstruida" style="text-align: right;"
+													onkeyup="javaScript:desabilitaCampoAreaConstruida();formataValorMonetario(this, 8);" 
+													onkeypress="javaScript:desabilitaCampoAreaConstruida();"
+													/>&nbsp;m<sup>2</sup>
+											</logic:notEqual>
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+											<html:text maxlength="10" size="10" property="areaConstruida" style="text-align: right;"
+												onkeyup="javaScript:desabilitaCampoAreaConstruida();formataValorMonetario(this, 8);"
+												onkeypress="javaScript:desabilitaCampoAreaConstruida();"
+												disabled="true" />&nbsp;m<sup>2</sup>										
+										</logic:notPresent>											
 									</td>
 									
 									
 									<td colspan="2">
-									  <logic:equal name="tarifaSocial" value="1">
-										<html:select property="faixaAreaConstruida" disabled="true">
-										  <html:option value="-1">&nbsp;</html:option>
-										  <html:options collection="areaContruidaFaixas" labelProperty="faixaCompletaComId" property="id" />
-										</html:select>
-									  </logic:equal> 
-									  
-									  <logic:notEqual name="tarifaSocial" value="1">
-										<html:select property="faixaAreaConstruida">
-											<html:option value="-1">&nbsp;</html:option>
-											<html:options collection="areaContruidaFaixas"
-												labelProperty="faixaCompleta" property="id" />
-										</html:select>
-									  </logic:notEqual>
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											  <logic:equal name="tarifaSocial" value="1">
+												<html:select property="faixaAreaConstruida" disabled="true">
+												  <html:option value="-1">&nbsp;</html:option>
+												  <html:options collection="areaContruidaFaixas" labelProperty="faixaCompletaComId" property="id" />
+												</html:select>
+											  </logic:equal> 
+											  
+											  <logic:notEqual name="tarifaSocial" value="1">
+												<html:select property="faixaAreaConstruida">
+													<html:option value="-1">&nbsp;</html:option>
+													<html:options collection="areaContruidaFaixas"
+														labelProperty="faixaCompleta" property="id" />
+												</html:select>
+											  </logic:notEqual>
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+											  <logic:equal name="tarifaSocial" value="1">
+												<html:select property="faixaAreaConstruida" disabled="true">
+												  <html:option value="-1">&nbsp;</html:option>
+												  <html:options collection="areaContruidaFaixas" labelProperty="faixaCompletaComId" property="id" />
+												</html:select>
+											  </logic:equal> 
+										</logic:notPresent>
 								    </td>
 								</tr>
 								</logic:equal>
@@ -456,10 +478,18 @@ function desabilitaCampoReservatorioInferior(){
 				                    		<p><strong>Padrão de Construção:</strong></p>
 				                    	</td>
 				                    	<td>
-				                    		<html:select property="padraoConstrucao">
-							                 <html:option value="-1">&nbsp;</html:option>
-				                             <html:options collection="padroesConstrucao" labelProperty="descricaoComId" property="id"/>
-				                       </html:select>
+				                    		<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+					                    		<html:select property="padraoConstrucao">
+								                	<html:option value="-1">&nbsp;</html:option>
+					                            	<html:options collection="padroesConstrucao" labelProperty="descricaoComId" property="id"/>
+				                       			</html:select>
+											</logic:present>
+											<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+					                    		<html:select property="padraoConstrucao" disabled="true">
+								                	<html:option value="-1">&nbsp;</html:option>
+					                            	<html:options collection="padroesConstrucao" labelProperty="descricaoComId" property="id"/>
+				                       			</html:select>												
+											</logic:notPresent>			                       			
 				                    	</td>
                  			   </tr>
 								
@@ -467,19 +497,34 @@ function desabilitaCampoReservatorioInferior(){
 									<td>
 									<p><strong>Volume Reservat&oacute;rio Inferior:</strong></p>
 									</td>
-									<td height="10"><html:text maxlength="9" size="9"
-										property="reservatorioInferior" style="text-align: right;"
-										onkeyup="javaScript:formataValorMonetario(this, 7);desabilitaCampoReservatorioInferior();"
-										onkeypress="javaScript:desabilitaCampoReservatorioInferior();"
-										 />&nbsp;m<sup>3</sup>
+									<td height="10">
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											<html:text maxlength="9" size="9" property="reservatorioInferior" style="text-align: right;"
+													onkeyup="javaScript:formataValorMonetario(this, 7);desabilitaCampoReservatorioInferior();"
+													onkeypress="javaScript:desabilitaCampoReservatorioInferior();" />&nbsp;m
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+											<html:text maxlength="9" size="9" property="reservatorioInferior" disabled="true" style="text-align: right;"
+													onkeyup="javaScript:formataValorMonetario(this, 7);desabilitaCampoReservatorioInferior();"
+													onkeypress="javaScript:desabilitaCampoReservatorioInferior();" />&nbsp;m										
+										</logic:notPresent>
+																							
+										<sup>3</sup>
 									</td>
 										 
-									<td width="29%"><html:select
-										property="faixaReservatorioInferior">
-										<html:option value="-1">&nbsp;</html:option>
-										<html:options collection="reservatorioVolumeFaixas"
-											labelProperty="faixaCompletaComId" property="id" />
-									</html:select>
+									<td width="29%">
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											<html:select property="faixaReservatorioInferior">
+												<html:option value="-1">&nbsp;</html:option>
+												<html:options collection="reservatorioVolumeFaixas"	labelProperty="faixaCompletaComId" property="id" />
+											</html:select>
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+											<html:select property="faixaReservatorioInferior" disabled="true">
+												<html:option value="-1">&nbsp;</html:option>
+												<html:options collection="reservatorioVolumeFaixas"	labelProperty="faixaCompletaComId" property="id" />
+											</html:select>										
+										</logic:notPresent>
 									</td>
 									<td width="24%">&nbsp;</td>
 								</tr>
@@ -487,18 +532,33 @@ function desabilitaCampoReservatorioInferior(){
 									<td height="10">
 									<p><strong>Volume Reservat&oacute;rio Superior:</strong></p>
 									</td>
-									<td><html:text maxlength="9" size="9"
-										property="reservatorioSuperior" style="text-align: right;"
-										onkeyup="javaScript:formataValorMonetario(this, 7);desabilitaCampoReservatorioSuperior()"
-										onkeypress="javaScript:desabilitaCampoReservatorioSuperior();"
-										 />&nbsp;m<sup>3</sup>
+									<td>
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											<html:text maxlength="9" size="9" property="reservatorioSuperior" style="text-align: right;"
+													onkeyup="javaScript:formataValorMonetario(this, 7);desabilitaCampoReservatorioSuperior()"
+													onkeypress="javaScript:desabilitaCampoReservatorioSuperior();" />&nbsp;m
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+											<html:text maxlength="9" size="9" property="reservatorioSuperior" disabled="true" style="text-align: right;"
+													onkeyup="javaScript:formataValorMonetario(this, 7);desabilitaCampoReservatorioSuperior()"
+													onkeypress="javaScript:desabilitaCampoReservatorioSuperior();" />&nbsp;m
+										</logic:notPresent>
+										<sup>3</sup>
 									</td>
 									
 									<td>
-									  <html:select property="faixaResevatorioSuperior">
-										<html:option value="-1">&nbsp;</html:option>
-										<html:options collection="reservatorioVolumeFaixas" labelProperty="faixaCompletaComId" property="id" />
-									  </html:select>
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											  <html:select property="faixaResevatorioSuperior">
+												<html:option value="-1">&nbsp;</html:option>
+												<html:options collection="reservatorioVolumeFaixas" labelProperty="faixaCompletaComId" property="id" />
+											  </html:select>
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+											  <html:select property="faixaResevatorioSuperior" disabled="true" >
+												<html:option value="-1">&nbsp;</html:option>
+												<html:options collection="reservatorioVolumeFaixas" labelProperty="faixaCompletaComId" property="id" />
+											  </html:select>										
+										</logic:notPresent>											  
 									</td>
 									
 									<td>&nbsp;</td>
@@ -507,17 +567,33 @@ function desabilitaCampoReservatorioInferior(){
 									<td width="23%" height="10">
 									<p><strong>Volume Piscina Im&oacute;vel:</strong></p>
 									</td>
-									<td width="24%"><html:text maxlength="9" size="9"
-										property="piscina" style="text-align: right;"
-										onkeyup="javaScript:formataValorMonetario(this, 7);desabilitaCampoPiscina();"
-										onkeypress="javaScript:desabilitaCampoPiscina();" />&nbsp;m<sup>3</sup>
+									<td width="24%">
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											<html:text maxlength="9" size="9" property="piscina" style="text-align: right;"
+												onkeyup="javaScript:formataValorMonetario(this, 7);desabilitaCampoPiscina();"
+												onkeypress="javaScript:desabilitaCampoPiscina();" />&nbsp;m
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">												
+											<html:text maxlength="9" size="9" property="piscina" disabled="true" style="text-align: right;"
+												onkeyup="javaScript:formataValorMonetario(this, 7);desabilitaCampoPiscina();"
+												onkeypress="javaScript:desabilitaCampoPiscina();" />&nbsp;m											
+										</logic:notPresent>	
+										<sup>3</sup>
 									</td>
 									
 									<td>
-									  <html:select property="faixaPiscina">
-										<html:option value="-1">&nbsp;</html:option>
-										<html:options collection="piscinaVolumeFaixas" labelProperty="faixaCompletaComId" property="id" />
-									  </html:select>
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											  <html:select property="faixaPiscina">
+												<html:option value="-1">&nbsp;</html:option>
+												<html:options collection="piscinaVolumeFaixas" labelProperty="faixaCompletaComId" property="id" />
+											  </html:select>
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+											  <html:select property="faixaPiscina" disabled="true">
+												<html:option value="-1">&nbsp;</html:option>
+												<html:options collection="piscinaVolumeFaixas" labelProperty="faixaCompletaComId" property="id" />
+											  </html:select>
+										</logic:notPresent>	  
 									</td>
 									
 									<td>
@@ -530,8 +606,14 @@ function desabilitaCampoReservatorioInferior(){
 				                    <tr>
 				                      <td width="23%" height="10"><p><strong>Jardim:</strong></p></td>
 				                      <td colspan="3">
-										<strong><html:radio property="jardim" value="1" />Sim</strong> 
-				    					<strong><html:radio property="jardim" value="2" />Não</strong>
+				                      	<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											<strong><html:radio property="jardim" value="1" />Sim</strong> 
+					    					<strong><html:radio property="jardim" value="2" />Não</strong>
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+											<strong><html:radio property="jardim" disabled="true" value="1" />Sim</strong> 
+					    					<strong><html:radio property="jardim" disabled="true" value="2" />Não</strong>											
+										</logic:notPresent>					    					
 				                      </td>
 				                      <td><p>&nbsp;</p>
 				                          <p>&nbsp;</p></td>
@@ -559,24 +641,41 @@ function desabilitaCampoReservatorioInferior(){
 							<table width="100%" border="0">
 								<tr>
 									<td width="20%" height="27"><strong>Pavimento Cal&ccedil;ada:<font	color="#FF0000">*</font></strong></td>
-									<td width="36%"><html:select property="pavimentoCalcada">
-				         <html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
-				         </html:option>
-
-										<html:options collection="pavimetoCalcadas"	labelProperty="descricaoComId" property="id" />
-									</html:select></td>
+									<td width="36%">
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											<html:select property="pavimentoCalcada">
+												<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+												<html:options collection="pavimetoCalcadas"	labelProperty="descricaoComId" property="id" />
+											</html:select>
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+											<html:select property="pavimentoCalcada" disabled="true" >
+												<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+												<html:options collection="pavimetoCalcadas"	labelProperty="descricaoComId" property="id" />
+											</html:select>										
+										</logic:notPresent>											
+									</td>
 									<td width="23%">&nbsp;</td>
 									<td width="21%">&nbsp;</td>
 								</tr>
 								<tr>
 									<td><strong>Pavimento Rua:</strong><font	color="#FF0000">*</font></td>
-									<td height="24"><html:select property="pavimentoRua">
-				         <html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
-				         </html:option>
-
-										<html:options collection="pavimentoRuas"
-											labelProperty="descricaoComId" property="id" />
-									</html:select></td>
+									<td height="24">
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											<html:select property="pavimentoRua">
+				         						<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+				         						</html:option>
+												<html:options collection="pavimentoRuas" labelProperty="descricaoComId" property="id" />
+											</html:select>
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">	
+											<html:select property="pavimentoRua" disabled="true">
+				         						<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+				         						</html:option>
+												<html:options collection="pavimentoRuas" labelProperty="descricaoComId" property="id" />
+											</html:select>
+										</logic:notPresent>																				
+									</td>
 									<td>&nbsp;</td>
 									<td>&nbsp;</td>
 								</tr>
@@ -588,13 +687,25 @@ function desabilitaCampoReservatorioInferior(){
 				                      </logic:present>
 									</font>
 									</strong></td>
-									<td height="24"><html:select property="fonteAbastecimento">
-				         <html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
-				         </html:option>
-
-										<html:options collection="fonteAbastecimentos"
-											labelProperty="descricaoComId" property="id" />
-									</html:select></td>
+									<td height="24">
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+												<html:select property="fonteAbastecimento">
+						         					<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+						         				</html:option>
+		
+												<html:options collection="fonteAbastecimentos"
+													labelProperty="descricaoComId" property="id" />
+												</html:select>
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">	
+												<html:select property="fonteAbastecimento" disabled="true">
+						         					<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+							         				</html:option>
+													<html:options collection="fonteAbastecimentos" 
+														labelProperty="descricaoComId" property="id" />
+												</html:select>	
+										</logic:notPresent>																		
+									</td>
 									<td>&nbsp;</td>
 									<td>&nbsp;</td>
 								</tr>
@@ -602,25 +713,34 @@ function desabilitaCampoReservatorioInferior(){
 									<td><strong>Situa&ccedil;&atilde;o Liga&ccedil;&atilde;o
 									&Aacute;gua:<font	color="#FF0000">*</font></strong></td>
 									<td height="23">
-									<logic:equal name="semSituacaoAgua" value="true">
-										<html:select property="situacaoLigacaoAgua" disabled="true">
-				         <html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
-				         </html:option>
-
-											<html:options collection="ligacaoAguaSituacaos"
-												labelProperty="descricaoComId" property="id" />
-										</html:select>
-									</logic:equal>
-									<logic:notEqual name="semSituacaoAgua" value="true">
-										<html:select property="situacaoLigacaoAgua">
-				         <html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
-				         </html:option>
-
+									
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											<logic:equal name="semSituacaoAgua" value="true">
+												<html:select property="situacaoLigacaoAgua" disabled="true">
+				         							<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+				         							</html:option>
+													<html:options collection="ligacaoAguaSituacaos"
+														labelProperty="descricaoComId" property="id" />
+												</html:select>
+											</logic:equal>
+											<logic:notEqual name="semSituacaoAgua" value="true">
+												<html:select property="situacaoLigacaoAgua">
+				         							<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+				         							</html:option>
+													<html:options collection="ligacaoAguaSituacaos"
+															labelProperty="descricaoComId" property="id" />
+													</html:select>
+											</logic:notEqual>	
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+											<html:select property="situacaoLigacaoAgua" disabled="true">
+			         							<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+			         							</html:option>
 												<html:options collection="ligacaoAguaSituacaos"
 													labelProperty="descricaoComId" property="id" />
-											</html:select>
-									</logic:notEqual>										
-										</td>
+											</html:select>										
+										</logic:notPresent>																				
+									</td>
 									<td>&nbsp;</td>
 									<td>&nbsp;</td>
 								</tr>
@@ -628,77 +748,114 @@ function desabilitaCampoReservatorioInferior(){
 									<td><strong>Situa&ccedil;&atilde;o Liga&ccedil;&atilde;o
 									Esgoto:<font	color="#FF0000">*</font></strong></td>
 									<td height="24">
-									<logic:equal name="semSituacaoEsgoto" value="true">
-										<html:select property="situacaoLigacaoEsgoto" disabled="true" onchange="javaScript:verificaSituacaoEsgoto(this);">
-				         <html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
-				         </html:option>
-
-											<html:options collection="ligacaoEsgotoSituacaos"
-												labelProperty="descricaoComId" property="id" />
-										</html:select>
-									</logic:equal>
-									<logic:notEqual name="semSituacaoEsgoto" value="true">
-										
-										<logic:equal name="alterarEsgoto" value="<%=""+ConstantesSistema.SIM%>" scope="session">
-											<html:select property="situacaoLigacaoEsgoto" onchange="javaScript:verificaSituacaoEsgoto(this);"  disabled="false">
-				         						<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											<logic:equal name="semSituacaoEsgoto" value="true">
+												<html:select property="situacaoLigacaoEsgoto" disabled="true" onchange="javaScript:verificaSituacaoEsgoto(this);">
+				         							<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
 				         							</html:option>
-												<html:options collection="ligacaoEsgotoSituacaos"
-													labelProperty="descricaoComId" property="id" />
-											</html:select>
-										</logic:equal>
-										<logic:equal name="alterarEsgoto" value="<%=""+ConstantesSistema.NAO%>" scope="session">
+													<html:options collection="ligacaoEsgotoSituacaos"
+															labelProperty="descricaoComId" property="id" />
+												</html:select>
+											</logic:equal>
+											<logic:notEqual name="semSituacaoEsgoto" value="true">
+												<logic:equal name="alterarEsgoto" value="<%=""+ConstantesSistema.SIM%>" scope="session">
+													<html:select property="situacaoLigacaoEsgoto" onchange="javaScript:verificaSituacaoEsgoto(this);"  disabled="false">
+				         								<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+				         								</html:option>
+														<html:options collection="ligacaoEsgotoSituacaos"
+																labelProperty="descricaoComId" property="id" />
+													</html:select>
+												</logic:equal>
+												<logic:equal name="alterarEsgoto" value="<%=""+ConstantesSistema.NAO%>" scope="session">
+														<html:select property="situacaoLigacaoEsgoto" onchange="javaScript:verificaSituacaoEsgoto(this);"  disabled="true">
+				         									<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+				         									</html:option>
+															<html:options collection="ligacaoEsgotoSituacaos"
+																labelProperty="descricaoComId" property="id" />
+															</html:select>
+												</logic:equal>
+											</logic:notEqual>
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
 											<html:select property="situacaoLigacaoEsgoto" onchange="javaScript:verificaSituacaoEsgoto(this);"  disabled="true">
-				         						<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
-				         							</html:option>
-											<html:options collection="ligacaoEsgotoSituacaos"
-												labelProperty="descricaoComId" property="id" />
-										</html:select>
-										</logic:equal>
-									</logic:notEqual>										
-										</td>
+		         								<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+		         								</html:option>
+												<html:options collection="ligacaoEsgotoSituacaos"
+														labelProperty="descricaoComId" property="id" />
+											</html:select>										
+										</logic:notPresent>
+									</td>
 									<td>&nbsp;</td>
 									<td>&nbsp;</td>
 								</tr>
 								<tr>
 									<td><strong>Perfil do Im&oacute;vel:<font	color="#FF0000">*</font></strong></td>
 									<td height="24">
-										<logic:equal name="factivelEmEspera" value="1">
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											<logic:equal name="factivelEmEspera" value="1">
+												<html:select property="perfilImovel" disabled="true">
+						        					 <html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+													 <html:options collection="perfilImoveis" labelProperty="descricaoComId" property="id" />
+												</html:select>
+											</logic:equal> 
+											<logic:notEqual name="factivelEmEspera" value="1">
+												<html:select property="perfilImovel">
+					        						<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+													<html:options collection="perfilImoveis" labelProperty="descricaoComId" property="id" />
+												</html:select>
+											</logic:notEqual>
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
 											<html:select property="perfilImovel" disabled="true">
 					        					 <html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
 												 <html:options collection="perfilImoveis" labelProperty="descricaoComId" property="id" />
-											</html:select>
-										</logic:equal> 
-										<logic:notEqual name="factivelEmEspera" value="1">
-											<html:select property="perfilImovel">
-				        						<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-												<html:options collection="perfilImoveis" labelProperty="descricaoComId" property="id" />
-											</html:select>
-										</logic:notEqual>
-										</td>
+											</html:select>										
+										</logic:notPresent>											
+									</td>
 									<td>&nbsp;</td>
 									<td>&nbsp;</td>
 								</tr>
 								<tr>
 									<td><strong>Po&ccedil;o:<font	color="#FF0000"></font></strong></td>
-									<td height="27"><html:select property="poco">
-				         <html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
-				         </html:option>
-
-										<html:options collection="pocoTipos" labelProperty="descricaoComId"
-											property="id" />
-									</html:select></td>
+									<td height="27">
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">									
+											<html:select property="poco">
+				         						<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+				         						</html:option>
+												<html:options collection="pocoTipos" labelProperty="descricaoComId"	property="id" />
+											</html:select>
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+											<html:select property="poco" disabled="true" >
+				         						<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+				         						</html:option>
+												<html:options collection="pocoTipos" labelProperty="descricaoComId"	property="id" />
+											</html:select>										
+										</logic:notPresent>									
+									</td>
 									<td>&nbsp;</td>
 									<td>&nbsp;</td>
 								</tr>
 								<tr>
 									<td><strong>Tipo de Despejo:</strong></td>
-									<td height="27"><html:select property="tipoDespejo">
-				         <html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
-				         </html:option>
-										<html:options collection="tipoDespejos"
-											labelProperty="descricaoComId" property="id" />
-									</html:select></td>
+									<td height="27">
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											<html:select property="tipoDespejo">
+				         						<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+				         						</html:option>
+												<html:options collection="tipoDespejos"
+													labelProperty="descricaoComId" property="id" />
+											</html:select>
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+											<html:select property="tipoDespejo" disabled="true">
+				         						<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+				         						</html:option>
+												<html:options collection="tipoDespejos"
+													labelProperty="descricaoComId" property="id" />
+											</html:select>										
+										</logic:notPresent>											
+									</td>
 									<td>&nbsp;</td>
 									<td>&nbsp;</td>
 								</tr>
@@ -708,22 +865,40 @@ function desabilitaCampoReservatorioInferior(){
 				                    		<p><strong>Tipo de Esgotamento:</strong></p>
 				                    	</td>
 				                    	<td>
-				                    		<html:select property="esgotamento">
-							                 <html:option value="-1">&nbsp;</html:option>
-				                             <html:options collection="esgotamentos" labelProperty="descricaoComId" property="id"/>
-				                       </html:select>
+				                    		<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+				                    			<html:select property="esgotamento">
+							                 		<html:option value="-1">&nbsp;</html:option>
+				                             		<html:options collection="esgotamentos" labelProperty="descricaoComId" property="id"/>
+				                       			</html:select>
+											</logic:present>
+											<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+				                    			<html:select property="esgotamento" disabled="true">
+							                 		<html:option value="-1">&nbsp;</html:option>
+				                             		<html:options collection="esgotamentos" labelProperty="descricaoComId" property="id"/>
+				                       			</html:select>											
+											</logic:notPresent>				                       			
 				                    	</td>
                     			</tr>
 
 								<tr>
 									<td width="20%" height="27"><strong>Setor de Abastecimento:</strong></td>
 									<td width="36%">
-										<html:select property="setorAbastecimento">
-											<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-											<logic:present name="colecaoSetorAbastecimento">
-												<html:options collection="colecaoSetorAbastecimento" labelProperty="descricaoComCodigo" property="id"/>
-											</logic:present>
-										</html:select>
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											<html:select property="setorAbastecimento">
+												<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+												<logic:present name="colecaoSetorAbastecimento">
+													<html:options collection="colecaoSetorAbastecimento" labelProperty="descricaoComCodigo" property="id"/>
+												</logic:present>
+											</html:select>
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">
+											<html:select property="setorAbastecimento" disabled="true" >
+												<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+												<logic:present name="colecaoSetorAbastecimento">
+													<html:options collection="colecaoSetorAbastecimento" labelProperty="descricaoComCodigo" property="id"/>
+												</logic:present>
+											</html:select>										
+										</logic:notPresent>											
 									</td>
 									<td width="23%">&nbsp;</td>
 									<td width="21%">&nbsp;</td>
@@ -732,12 +907,22 @@ function desabilitaCampoReservatorioInferior(){
 								<tr>
 									<td width="20%" height="27"><strong>Sub-bacia:</strong></td>
 									<td width="36%">
-										<html:select property="subBacia">
-											<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-											<logic:present name="colecaoSubBacia">
-												<html:options collection="colecaoSubBacia" labelProperty="descricaoComCodigo" property="id"/>
-											</logic:present>
-										</html:select>
+										<logic:present name="permitirAtualizarCaracteristicas" scope="session">
+											<html:select property="subBacia">
+												<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+												<logic:present name="colecaoSubBacia">
+													<html:options collection="colecaoSubBacia" labelProperty="descricaoComCodigo" property="id"/>
+												</logic:present>
+											</html:select>
+										</logic:present>
+										<logic:notPresent name="permitirAtualizarCaracteristicas" scope="session">	
+											<html:select property="subBacia" disabled="true" >
+												<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+												<logic:present name="colecaoSubBacia">
+													<html:options collection="colecaoSubBacia" labelProperty="descricaoComCodigo" property="id"/>
+												</logic:present>
+											</html:select>										
+										</logic:notPresent>											
 									</td>
 									<td width="23%">&nbsp;</td>
 									<td width="21%">&nbsp;</td>

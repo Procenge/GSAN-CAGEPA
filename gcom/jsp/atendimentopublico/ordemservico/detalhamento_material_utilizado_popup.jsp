@@ -84,6 +84,13 @@
 															<bean:write name="helper" property="qtdeMaterial"/> <bean:write name="helper" property="materialUnidade.descricao"/>
 														</div>
 													</td>
+													<logic:equal name="permiteCobrarMaterial" value="1" scope="request">
+													<td bordercolor="#90c7fc">
+							                        	<div align="center">
+															R$ <bean:write name="helper" property="valorMaterial"/> 
+														</div>
+													</td>
+													</logic:equal>
 												</tr>
 											</logic:iterate>
 									</table>

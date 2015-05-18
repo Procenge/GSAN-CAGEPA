@@ -143,4 +143,6 @@ public class FiltroImovelCobrancaSituacao
 
 	public final static String COBRANCA_ACAO_ATIVIDADE_COMANDO = "cobrancaAcaoAtividadeComando";
 
+	public final static String NUMERO_PROCESSO_ADM_EXECUCAO_FISCAL = "numeroProcessoAdministrativoExecucaoFiscal";
+
 }

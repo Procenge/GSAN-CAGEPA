@@ -111,6 +111,18 @@ public class GuiaPagamentoPrestacao
 	@ControleAlteracao(value = FiltroGuiaPagamentoPrestacao.DEBITO_CREDITO_SITUACAO_ANTERIOR, funcionalidade = {ATRIBUTOS_DESMARCAR_PRESCRICAO_DEBITOS})
 	private DebitoCreditoSituacao debitoCreditoSituacaoAnterior;
 
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_GUIA_PAGAMENTO_CANCELAR})
+	private Short indicadorDividaAtiva = 2;
+
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_GUIA_PAGAMENTO_CANCELAR})
+	private Date dataDividaAtiva;
+
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_GUIA_PAGAMENTO_CANCELAR})
+	private Short indicadorExecucaoFiscal = 2;
+
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_GUIA_PAGAMENTO_CANCELAR})
+	private Date dataExecucaoFiscal;
+	
 	/**
 	 * Default Constructor
 	 */
@@ -139,7 +151,8 @@ public class GuiaPagamentoPrestacao
 									Short indicadorPagamentoPendente, Short indicadorCobrancaMulta, Integer anoMesReferenciaFaturamento,
 									Date dataEmissao, Date ultimaAlteracao, GuiaPagamento guiaPagamento, DebitoTipo debitoTipo,
 									LancamentoItemContabil lancamentoItemContabil, FinanciamentoTipo financiamentoTipo,
-									DebitoCreditoSituacao debitoCreditoSituacao) {
+									DebitoCreditoSituacao debitoCreditoSituacao, Short indicadorDividaAtiva, Date dataDividaAtiva,
+									Short indicadorExecucaoFiscal, Date dataExecucaoFiscal) {
 
 		this.comp_id = comp_id;
 		this.valorPrestacao = valorPrestacao;
@@ -154,6 +167,10 @@ public class GuiaPagamentoPrestacao
 		this.lancamentoItemContabil = lancamentoItemContabil;
 		this.financiamentoTipo = financiamentoTipo;
 		this.debitoCreditoSituacao = debitoCreditoSituacao;
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+		this.dataDividaAtiva = dataDividaAtiva;
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+		this.dataExecucaoFiscal = dataExecucaoFiscal;
 	}
 
 	@Override
@@ -207,6 +224,8 @@ public class GuiaPagamentoPrestacao
 		filtroGuiaPagamentoPrestacao.adicionarParametro(new ParametroSimples(FiltroGuiaPagamentoPrestacao.DEBITO_TIPO_ID, debitoTipoId));
 		filtroGuiaPagamentoPrestacao.adicionarParametro(new ParametroSimples(FiltroGuiaPagamentoPrestacao.ITEM_LANCAMENTO_CONTABIL_ID,
 						lancamentoItemContabilId));
+		filtroGuiaPagamentoPrestacao.adicionarParametro(new ParametroSimples(FiltroGuiaPagamentoPrestacao.NUMERO_PROCESSO_ADM_EXEC_FISCAL,
+						comp_id.getNumeroProcessoAdministrativoExecucaoFiscal()));
 		return filtroGuiaPagamentoPrestacao;
 	}
 
@@ -541,6 +560,46 @@ public class GuiaPagamentoPrestacao
 		this.debitoCreditoSituacaoAnterior = debitoCreditoSituacaoAnterior;
 	}
 
+	public Short getIndicadorDividaAtiva(){
+
+		return indicadorDividaAtiva;
+	}
+
+	public void setIndicadorDividaAtiva(Short indicadorDividaAtiva){
+
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+	}
+
+	public Date getDataDividaAtiva(){
+
+		return dataDividaAtiva;
+	}
+
+	public void setDataDividaAtiva(Date dataDividaAtiva){
+
+		this.dataDividaAtiva = dataDividaAtiva;
+	}
+
+	public Short getIndicadorExecucaoFiscal(){
+
+		return indicadorExecucaoFiscal;
+	}
+
+	public void setIndicadorExecucaoFiscal(Short indicadorExecucaoFiscal){
+
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+	}
+
+	public Date getDataExecucaoFiscal(){
+
+		return dataExecucaoFiscal;
+	}
+
+	public void setDataExecucaoFiscal(Date dataExecucaoFiscal){
+
+		this.dataExecucaoFiscal = dataExecucaoFiscal;
+	}
+
 	public String[] retornarAtributosInformacoesOperacaoEfetuada(){
 
 		String[] atributos = {"comp_id.guiaPagamentoId", "comp_id.numeroPrestacao"};
@@ -558,4 +617,5 @@ public class GuiaPagamentoPrestacao
 
 		return getComp_id().getGuiaPagamentoId().toString() + "-" + getComp_id().getNumeroPrestacao().toString();
 	}
+
 }

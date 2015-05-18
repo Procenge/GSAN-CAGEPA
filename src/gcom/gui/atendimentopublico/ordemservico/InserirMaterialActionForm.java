@@ -79,6 +79,8 @@
 
 package gcom.gui.atendimentopublico.ordemservico;
 
+import java.math.BigDecimal;
+
 import org.apache.struts.validator.ValidatorActionForm;
 
 /**
@@ -97,6 +99,8 @@ public class InserirMaterialActionForm
 	private String descricaoAbreviada;
 
 	private String unidadeMaterial;
+
+	private String materialValor;
 
 	/**
 	 * @return Retorna o campo descricao.
@@ -147,6 +151,16 @@ public class InserirMaterialActionForm
 	public void setUnidadeMaterial(String unidadeMaterial){
 
 		this.unidadeMaterial = unidadeMaterial;
+	}
+
+	public String getMaterialValor(){
+
+		return materialValor;
+	}
+
+	public void setMaterialValor(String materialValor){
+
+		this.materialValor = materialValor;
 	}
 
 }

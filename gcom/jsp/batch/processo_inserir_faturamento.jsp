@@ -183,6 +183,13 @@ function verificarMarcados(checkbox) {
 		<p>&nbsp;</p>
 		<table width="100%" border="0" align="center">
 			<tr>
+				<td height="0"><strong>Data e Hora Corrente:</strong></td>
+				<td><input type="text" name="dataAtualServidor" size="15" maxlength="15"
+					tabindex="8" value="${requestScope.dataAtualServidor}" disabled="disabled" />
+				(hh:mm:ss)</td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
 				<td height="0"><strong>Data do Agendamento:</strong></td>
 				<td><input type="text" name="dataAgendamento" size="10" maxlength="10"
 					tabindex="3" onkeyup="javascript:mascaraData(this, event);" /> <a

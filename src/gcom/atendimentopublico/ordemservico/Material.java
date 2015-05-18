@@ -80,6 +80,7 @@ import gcom.util.filtro.Filtro;
 import gcom.util.tabelaauxiliar.unidade.TabelaAuxiliarUnidade;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
@@ -89,6 +90,18 @@ public class Material
 				implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	private BigDecimal materialValor;
+
+	public BigDecimal getMaterialValor(){
+
+		return materialValor;
+	}
+
+	public void setMaterialValor(BigDecimal materialValor){
+
+		this.materialValor = materialValor;
+	}
 
 	// /** identifier field */
 	// private Integer id;

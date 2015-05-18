@@ -20,6 +20,8 @@ public class AvisoInteligest
 
 	private Integer numeroSequencial;// Id Documento GSAN
 
+	private Integer numeroEmissao; // Número da pestação no caso de guia de parcelamento
+
 	public AvisoInteligest() {
 
 	}
@@ -78,6 +80,16 @@ public class AvisoInteligest
 	public void setNumeroSequencial(Integer numeroSequencial){
 
 		this.numeroSequencial = numeroSequencial;
+	}
+
+	public Integer getNumeroEmissao(){
+
+		return numeroEmissao;
+	}
+
+	public void setNumeroEmissao(Integer numeroEmissao){
+
+		this.numeroEmissao = numeroEmissao;
 	}
 
 }

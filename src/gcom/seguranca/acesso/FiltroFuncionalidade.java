@@ -143,6 +143,8 @@ public class FiltroFuncionalidade
 
 	public final static String NUMERO_ORDEM_MENU = "numeroOrdemMenu";
 
+	public final static String DESCRICAO_CARGO = "descricaoCargo";
+
 	/**
 	 * Construtor de FiltroFuncionalidade
 	 */

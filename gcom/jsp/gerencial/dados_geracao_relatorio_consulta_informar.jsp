@@ -651,7 +651,7 @@ pageContext.setAttribute("tipoResumoSessao", tipoResumoSessao);
       <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0">
         <tr>
           <td width="11"><img border="0" src="<bean:message key='caminho.imagens'/>parahead_left.gif"/></td>
-          <td class="parabg">Informação de Dados para Geração de Relatório ou Consulta</td>
+          <td class="parabg">Informação de Dados para Geração de Relatório ou Consulta </td>
           <td width="11"><img border="0" src="<bean:message key='caminho.imagens'/>parahead_right.gif"/></td>
         </tr>
       </table>

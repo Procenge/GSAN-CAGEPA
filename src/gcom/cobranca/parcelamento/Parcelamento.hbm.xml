@@ -263,6 +263,64 @@
         not-null="false"
     />
 
+    <property
+        name="valorAtualizacaoMonetariaSucumbenciaAnterior"
+        type="java.math.BigDecimal"
+        column="PARC_VLATUALIZMONETSUCUMBANT"
+        length="15"
+    />
+
+	<property
+        name="valorJurosMoraSucumbenciaAnterior"
+        type="java.math.BigDecimal"
+        column="PARC_VLJUROSMORASUCUMBANT"
+        length="15"
+    />
+
+	<property
+        name="valorSucumbenciaAnterior"
+        type="java.math.BigDecimal"
+        column="PARC_VLSUCUMBENCIAANTERIOR"
+        length="15"
+    />
+
+	<property
+        name="valorSucumbenciaAtual"
+        type="java.math.BigDecimal"
+        column="PARC_VLSUCUMBENCIAATUAL"
+        length="15"
+    />
+
+	<property
+        name="valorDiligencias"
+        type="java.math.BigDecimal"
+        column="PARC_VLDILIGENCIAS"
+        length="15"
+    />
+
+	<property
+        name="numeroParcelasSucumbencia"
+        type="java.lang.Short"
+        column="PARC_NNPARCELASSUCUMBENCIA"
+        length="4"
+    />
+
+    <property
+        name="conteudoTermoParcelamentoInicial"
+        type="org.hibernate.type.BinaryType"
+        column="parc_cntermoparcelamentoini"
+        not-null="false"
+        length="-1"        
+    />
+
+    <property
+        name="conteudoTermoParcelamentoFinal"
+        type="org.hibernate.type.BinaryType"
+        column="parc_cntermoparcelamentofinal"
+        not-null="false"
+        length="-1"        
+    />
+
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to ParcelamentoTipo -->
@@ -512,5 +570,26 @@
         length="4"
     />
 
+    <property
+        name="valorNegociado"
+        type="java.math.BigDecimal"
+        column="PARC_VLNEGOCIADO"
+        length="13"
+    />
+    
+    <property
+        name="valorParcelado"
+        type="java.math.BigDecimal"
+        column="PARC_VLPARCELADO"
+        length="13"
+    />
+    
+    <property
+        name="valorSucumbenciaAtualEP"
+        type="java.math.BigDecimal"
+        column="PARC_VLSUCUMBENCIAATUALEP"
+        length="13"
+    />        
+    
 </class>
 </hibernate-mapping>

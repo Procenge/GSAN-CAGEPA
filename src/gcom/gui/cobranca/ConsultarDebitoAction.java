@@ -145,6 +145,14 @@ public class ConsultarDebitoAction
 
 		}
 
+		if(consultarDebitoActionForm.getIdClienteRelacaoImovelSelecionado() != null
+						&& !consultarDebitoActionForm.getIdClienteRelacaoImovelSelecionado().equals("")){
+			String[] dados = consultarDebitoActionForm.getIdClienteRelacaoImovelSelecionado().split("\\.");
+
+			httpServletRequest.setAttribute("idClienteDebito", Integer.valueOf(dados[1]));
+			httpServletRequest.setAttribute("idRelacaoClienteDebito", Integer.valueOf(dados[0]));
+		}
+
 		String codigoClienteSuperior = (String) consultarDebitoActionForm.getCodigoClienteSuperior();
 
 		String codigoCliente = (String) consultarDebitoActionForm.getCodigoCliente();

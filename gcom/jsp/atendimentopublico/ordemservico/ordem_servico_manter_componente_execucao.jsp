@@ -68,6 +68,10 @@ function remover(objetoRemocao){
   redirecionarSubmit("/gsan/exibirManterComponenteExecucaoOSAction.do?removerComponente=" + objetoRemocao);
 }
 
+function tornarResponsavel(objetoResponsavel){
+	  redirecionarSubmit("/gsan/exibirManterComponenteExecucaoOSAction.do?tornarResponsavel=" + objetoResponsavel);
+}
+
 function voltarParaEncerrar(){
 
 	var form = document.forms[0];
@@ -276,14 +280,14 @@ function voltarParaEncerrar(){
 																						
 																</td>
 																					
-																<td width="10%" align="center">
-																
+																<td width="10%" align="center">																																	
+																	  
 																	<logic:equal name="osExecucaoEquipeComponentes" property="indicadorResponsavel" value="1">
 																		SIM
 																	</logic:equal>
 																	
 																	<logic:notEqual name="osExecucaoEquipeComponentes" property="indicadorResponsavel" value="1">
-																		NÃO
+																		<a href="javascript:{tornarResponsavel(<%="" + GcomAction.obterTimestampIdObjeto(osExecucaoEquipeComponentes) %>);}" alt="TornarResponsavel">NÃO</a>																		
 																	</logic:notEqual>
 																	
 																</td>

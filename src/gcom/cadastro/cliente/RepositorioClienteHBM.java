@@ -632,13 +632,20 @@ public class RepositorioClienteHBM
 							+ // 17
 							" clienteResponsavel.nome, "
 							+ // 18
-							" cliente.inscricaoEstadual "
+							" cliente.inscricaoEstadual, "
 							+ // 19
+							" atec.codigo, "
+							+ // 20
+							" atec.descricao, "
+							+ // 21
+							" cliente.numeroBeneficio "
+							+ // 22
 							"from Cliente cliente " + "left join cliente.clienteTipo clienteTipo "
 							+ "left join cliente.orgaoExpedidorRg orgaoExpedidorRg "
 							+ "left join cliente.unidadeFederacao unidadeFederacao " + "left join cliente.profissao profissao "
 							+ "left join cliente.pessoaSexo pessoaSexo " + "left join cliente.ramoAtividade ramoAtividade "
-							+ "left join cliente.cliente clienteResponsavel " + "where cliente.id = :idCliente ";
+							+ "left join cliente.cliente clienteResponsavel " + "left join cliente.atividadeEconomica atec "
+							+ "where cliente.id = :idCliente ";
 
 			retorno = session.createQuery(consulta).setInteger("idCliente", idCliente.intValue()).list();
 
@@ -833,7 +840,7 @@ public class RepositorioClienteHBM
 	public Collection filtrarCliente(String codigo, String cpf, String rg, String cnpj, String nome, String nomeMae, String cep,
 					String idMunicipio, String idBairro, String idLogradouro, String indicadorUso, String tipoPesquisa,
 					String tipoPesquisaNomeMae, String clienteTipo, Integer numeroPagina, String inscricaoEstadual,
-					String indicadorContaBraille)
+					String indicadorContaBraille, String documentoValidado, String numeroBeneficio)
 					throws ErroRepositorioException{
 
 		Collection retorno = null;
@@ -861,7 +868,9 @@ public class RepositorioClienteHBM
 							+ // 8
 							" cliente.indicadorUso, "
 							+ // 9
-							" cliente.indicadorContaBraille "
+							" cliente.indicadorContaBraille, "
+							+ // 10
+							" cliente.documentoValidado "
 
 							+ "from Cliente cliente " + "left join cliente.clienteTipo clienteTipo "
 							+ "left join cliente.orgaoExpedidorRg orgaoExpedidorRg "
@@ -991,6 +1000,17 @@ public class RepositorioClienteHBM
 				consulta = consulta + " cliente.indicadorContaBraille = :indicadorContaBraille and  ";
 			}
 
+			// Documento Validado
+			if((documentoValidado != null && !documentoValidado.equals(""))){
+				consulta = consulta + " cliente.documentoValidado = :documentoValidado and  ";
+			}
+
+			// Número do Benefíco
+			if(!Util.isVazioOuBranco(numeroBeneficio)){
+
+				consulta = consulta + " cliente.numeroBeneficio = :numeroBeneficio and  ";
+			}
+
 			consulta = consulta.substring(0, (consulta.length() - 5));
 
 			consulta = consulta + " order by cliente.nome ";
@@ -1076,6 +1096,18 @@ public class RepositorioClienteHBM
 							.toString()))){
 				query.setString("indicadorContaBraille", indicadorContaBraille);
 			}
+
+			// Documento Validado
+			if((documentoValidado != null && !documentoValidado.equals(""))){
+				query.setString("documentoValidado", documentoValidado);
+			}
+
+			// Número do Benefíco
+			if(!Util.isVazioOuBranco(numeroBeneficio)){
+
+				query.setString("numeroBeneficio", numeroBeneficio);
+			}
+
 			retorno = query.setFirstResult(10 * numeroPagina).setMaxResults(10).list();
 
 		}catch(HibernateException e){
@@ -1104,7 +1136,8 @@ public class RepositorioClienteHBM
 	public Object filtrarQuantidadeCliente(String codigo, String cpf, String rg, String cnpj, String nome, String nomeMae, String cep,
 					String idMunicipio, String idBairro, String idLogradouro, String indicadorUso, String tipoPesquisa,
 
-					String tipoPesquisaNomeMae, String clienteTipo, String inscricaoEstadual, String indicadorContaBraille)
+					String tipoPesquisaNomeMae, String clienteTipo, String inscricaoEstadual, String indicadorContaBraille,
+					String documentoValidado, String numeroBeneficio)
 					throws ErroRepositorioException{
 
 		Object retorno = null;
@@ -1243,6 +1276,17 @@ public class RepositorioClienteHBM
 				consulta = consulta + " cliente.indicadorContaBraille = :indicadorContaBraille and  ";
 			}
 
+			// Documento Validado
+			if((documentoValidado != null && !documentoValidado.equals(""))){
+
+				consulta = consulta + " cliente.documentoValidado = :documentoValidado and  ";
+			}
+
+			// Número do Benefíco
+			if(!Util.isVazioOuBranco(numeroBeneficio)){
+
+				consulta = consulta + " cliente.numeroBeneficio = :numeroBeneficio and  ";
+			}
 
 			Query query = session.createQuery(consulta.substring(0, (consulta.length() - 5)));
 
@@ -1320,6 +1364,18 @@ public class RepositorioClienteHBM
 			// indicador conta braille
 			if((!Util.isVazioOuBranco(indicadorContaBraille) && !indicadorContaBraille.equals(ConstantesSistema.TODOS.toString()))){
 				query.setString("indicadorContaBraille", indicadorContaBraille);
+			}
+
+			// Documento Validado
+			if((documentoValidado != null && !documentoValidado.equals(""))){
+
+				query.setString("documentoValidado", documentoValidado);
+			}
+
+			// Número do Benefíco
+			if(!Util.isVazioOuBranco(numeroBeneficio)){
+
+				query.setString("numeroBeneficio", numeroBeneficio);
 			}
 
 			retorno = ((Number) query.uniqueResult()).intValue();

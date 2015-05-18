@@ -370,6 +370,8 @@ public class ExibirPesquisarUnidadeOrganizacionalAction
 
 		// Filtro para obter unidade organizacional ativo de id informado
 		FiltroUnidadeOrganizacional filtroUnidadeOrganizacional = new FiltroUnidadeOrganizacional();
+		filtroUnidadeOrganizacional.adicionarParametro(new ParametroSimples(FiltroUnidadeOrganizacional.INDICADOR_USO,
+						ConstantesSistema.INDICADOR_USO_ATIVO));
 
 		String idUnidade = pesquisarUnidadeOrganizacionalActionForm.getIdUnidadeSuperior();
 

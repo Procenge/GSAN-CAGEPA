@@ -179,6 +179,54 @@ public class AcompanharRoteiroProgramacaoOrdemServicoActionForm
 	private Integer qtdFotos;
 
 	private String submitAutomatico;
+	
+	private String motivoVisitaImprodutiva;
+	
+	private String dataVisita;
+
+	private String horaVisita;
+
+	private String motivoCobrarVisitaImprodutiva;
+
+	public String getMotivoCobrarVisitaImprodutiva(){
+
+		return motivoCobrarVisitaImprodutiva;
+	}
+
+	public void setMotivoCobrarVisitaImprodutiva(String motivoCobrarVisitaImprodutiva){
+
+		this.motivoCobrarVisitaImprodutiva = motivoCobrarVisitaImprodutiva;
+	}
+
+	public String getHoraVisita(){
+
+		return horaVisita;
+	}
+
+	public void setHoraVisita(String horaVisita){
+
+		this.horaVisita = horaVisita;
+	}
+
+	public String getDataVisita(){
+
+		return dataVisita;
+	}
+
+	public void setDataVisita(String dataVisita){
+
+		this.dataVisita = dataVisita;
+	}
+
+	public String getMotivoVisitaImprodutiva(){
+
+		return motivoVisitaImprodutiva;
+	}
+
+	public void setMotivoVisitaImprodutiva(String motivoVisitaImprodutiva){
+
+		this.motivoVisitaImprodutiva = motivoVisitaImprodutiva;
+	}	
 
 	public String getChaveEquipe(){
 

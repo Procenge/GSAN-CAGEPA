@@ -98,6 +98,8 @@ public class FaturamentoActionForm
 
 	private String comandar;
 
+	private String quantidadeCronogramas;
+
 	public String getComandar(){
 
 		return comandar;
@@ -197,6 +199,16 @@ public class FaturamentoActionForm
 	public void setMesAno(String mesAno){
 
 		this.mesAno = mesAno;
+	}
+
+	public String getQuantidadeCronogramas(){
+
+		return quantidadeCronogramas;
+	}
+
+	public void setQuantidadeCronogramas(String quantidadeCronogramas){
+
+		this.quantidadeCronogramas = quantidadeCronogramas;
 	}
 
 }

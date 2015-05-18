@@ -110,6 +110,24 @@ public class AtualizarFaturamentoGrupoAction
 		objeto.setIndicadorUso(Short.parseShort((String) form.get("indicadorUso")));
 		objeto.setUltimaAlteracao(new Date());
 
+		if(!Util.isVazioOuBranco(form.get("diaVencimentoDebitoAutomatico"))){
+
+			objeto.setDiaVencimentoDebitoAutomatico(Short.parseShort((String) form.get("diaVencimentoDebitoAutomatico")));
+		}else{
+
+			objeto.setDiaVencimentoDebitoAutomatico(null);
+
+		}
+
+		if(!Util.isVazioOuBranco(form.get("diaVencimentoEntregaAlternativa"))){
+
+			objeto.setDiaVencimentoEntregaAlternativa(Short.parseShort((String) form.get("diaVencimentoEntregaAlternativa")));
+
+		}else{
+
+			objeto.setDiaVencimentoEntregaAlternativa(null);
+
+		}
 		return objeto;
 	}
 }

@@ -103,7 +103,6 @@ import org.apache.struts.action.ActionMapping;
 /**
  * [UC0188] Manter Guia de Pagamento
  * [SB0009] – Alterar Vencimento Prestações
- * 
  */
 public class ExibirAlterarVencimentoPrestacoesGuiaPagamentoAction
 				extends GcomAction {

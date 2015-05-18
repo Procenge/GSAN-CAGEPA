@@ -45,6 +45,7 @@ import gcom.batch.ProcessoIniciado;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.relatorio.ExibidorProcessamentoTarefaRelatorio;
+import gcom.seguranca.acesso.PermissaoEspecial;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaRelatorio;
 import gcom.util.ConstantesSistema;
@@ -95,16 +96,26 @@ public class ClassificarLotePagamentosNaoClassificadosAction
 
 		Usuario usuarioLogado = (Usuario) sessao.getAttribute("usuarioLogado");
 
+		boolean gerarDebitoACobrar = true;
+
 		// Recupera o form
 		ClassificarLotePagamentosNaoClassificadosActionForm form = (ClassificarLotePagamentosNaoClassificadosActionForm) actionForm;
 
 		// [FS0027] – Validar referência;
-		this.ValidarReferencias(form);
+		this.validarReferencias(form);
 
 		// [FS0019] – Validar data do pagamento
-		this.ValidarDatas(form);
+		this.validarDatas(form);
 		
+		this.validarSituacaoPagamentoAMenor(form, fachada, usuarioLogado);
+
 		ClassificarLotePagamentosNaoClassificadosHelper helper = this.converterFormularioParaHelper(form);
+		
+		
+		if(form.getIndicadorCorancaDiferencaPagtoAMenor().equals(ConstantesSistema.NAO.toString())){
+			gerarDebitoACobrar = false;
+		}
+			
 
 		Integer quantidadePagamentos = fachada.pesquisarQuantidadePagamentos(helper);
 
@@ -134,6 +145,7 @@ public class ClassificarLotePagamentosNaoClassificadosAction
 
 			List<Object> colecaoParametros = new ArrayList<Object>();
 			colecaoParametros.add(helper);
+			colecaoParametros.add(gerarDebitoACobrar);
 
 			Integer codigoProcessoIniciadoGerado = (Integer) fachada.inserirProcessoIniciadoOnline(processoIniciado, colecaoParametros);
 
@@ -157,7 +169,7 @@ public class ClassificarLotePagamentosNaoClassificadosAction
 			if(!Util.isVazioOuBranco(quantidadePagamentos) && quantidadePagamentos > ConstantesSistema.ZERO){
 
 				Collection<ClassificarPagamentosNaoClassificadosHelper> colecaoClassificarPagamentosNaoClassificadosHelper = fachada
-								.classificarLotePagamentosNaoClassificados(helper, usuarioLogado);
+								.classificarLotePagamentosNaoClassificados(helper, usuarioLogado, gerarDebitoACobrar);
 
 				if(!Util.isVazioOrNulo(colecaoClassificarPagamentosNaoClassificadosHelper)){
 
@@ -207,7 +219,7 @@ public class ClassificarLotePagamentosNaoClassificadosAction
 	 * 
 	 * @param form
 	 */
-	private void ValidarReferencias(ClassificarLotePagamentosNaoClassificadosActionForm form){
+	private void validarReferencias(ClassificarLotePagamentosNaoClassificadosActionForm form){
 
 		if(!Util.isVazioOuBranco(form.getReferenciaArrecadacaoInicial())){
 			if(!Util.validarMesAno(form.getReferenciaArrecadacaoInicial())){
@@ -239,7 +251,7 @@ public class ClassificarLotePagamentosNaoClassificadosAction
 	 * 
 	 * @param form
 	 */
-	private void ValidarDatas(ClassificarLotePagamentosNaoClassificadosActionForm form){
+	private void validarDatas(ClassificarLotePagamentosNaoClassificadosActionForm form){
 
 		if(!Util.isVazioOuBranco(form.getDataPagamentoInicial())){
 			if(Util.validarDiaMesAno(form.getDataPagamentoInicial())){
@@ -267,7 +279,7 @@ public class ClassificarLotePagamentosNaoClassificadosAction
 		// neste ponto
 		// @author Luciano Galvão (OC1084348)
 		// @date 19/09/2013
-		helper.setOpcaoGeracao('C');
+		helper.setOpcaoGeracao(form.getOpcaoGeracao());
 
 		if(!form.getLocalidadeInicial().equals(Integer.parseInt(ConstantesSistema.ZERO.toString()))){
 			helper.setLocalidadeInicial(form.getLocalidadeInicial());
@@ -316,8 +328,34 @@ public class ClassificarLotePagamentosNaoClassificadosAction
 			}
 		}
 
+		if(!Util.isVazioOuBranco(form.getIndicadorCorancaDiferencaPagtoAMenor())){
+			
+		}
+
 		helper.setLimiteMaximoDiferenca(Util.formatarStringParaBigDecimal(form.getLimiteMaximoDiferenca(), 2, false));
+
 
 		return helper;
 	}
+
+	/**
+	 * @param form
+	 */
+
+	private void validarSituacaoPagamentoAMenor(ClassificarLotePagamentosNaoClassificadosActionForm form, Fachada fachada, Usuario usuario){
+
+		if(form.getSituacaoPagamento() != null && form.getSituacaoPagamento().equals(PagamentoSituacao.PAGAMENTO_A_MENOR)){
+
+			boolean temPermissaoCobrarDiferencaPgtoAMenor = fachada.verificarPermissaoEspecial(
+							PermissaoEspecial.PERMITIR_NAO_COBRAR_DIFERENCA_PGTO_A_MENOR, usuario);
+
+			if(!temPermissaoCobrarDiferencaPgtoAMenor
+							&& form.getIndicadorCorancaDiferencaPagtoAMenor().equals(ConstantesSistema.NAO.toString())){
+				throw new ActionServletException("atencao.usuario.sem.permissao.para.executar.acao");
+			}
+
+		}
+
+	}
+
 }

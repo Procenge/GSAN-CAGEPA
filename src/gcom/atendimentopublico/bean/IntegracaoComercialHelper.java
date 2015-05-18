@@ -139,6 +139,10 @@ public class IntegracaoComercialHelper
 
 	private Integer idMedicaoTipo;
 
+	private Integer idGrupo;
+
+	private Integer codigoRota;
+
 	public HidrometroInstalacaoHistorico getRegistroMagneticoInstalacaoHistorico(){
 
 		return registroMagneticoInstalacaoHistorico;
@@ -385,6 +389,26 @@ public class IntegracaoComercialHelper
 	public void setIdMedicaoTipo(Integer idMedicaoTipo){
 
 		this.idMedicaoTipo = idMedicaoTipo;
+	}
+
+	public Integer getIdGrupo(){
+
+		return idGrupo;
+	}
+
+	public void setIdGrupo(Integer idGrupo){
+
+		this.idGrupo = idGrupo;
+	}
+
+	public Integer getCodigoRota(){
+
+		return codigoRota;
+	}
+
+	public void setCodigoRota(Integer codigoRota){
+
+		this.codigoRota = codigoRota;
 	}
 
 }

@@ -24,6 +24,7 @@
 			<form-property name="cep" type="java.lang.String" />
 			<form-property name="retornoCep" type="java.lang.String" />
 			<form-property name="idMunicipioCliente" type="java.lang.String" />
+			<form-property name="imovelDescricao" type="java.lang.String" />
 			
 			<form-property
 				name="descricaoMunicipioClienTabelaAuxiliarIndicadorActionFormte"
@@ -164,7 +165,8 @@
             <form-property name="faturamentoGrupo" type="java.lang.String" />
            <form-property name="idUnidadeNegocio" type="java.lang.String" />
            <form-property name="indicadorContaBraille" type="java.lang.String" />
-            
+           <form-property name="documentoValidado" type="java.lang.String" />
+          
             
 		</form-bean>
 
@@ -175,6 +177,7 @@
 			<form-property name="nome" type="java.lang.String" />
 			<form-property name="nomeAbreviado" type="java.lang.String" />
 			<form-property name="email" type="java.lang.String" />
+			<form-property name="numeroBeneficio" type="java.lang.String" />
 			<form-property name="tipoPessoa" type="java.lang.Short" />
 			<form-property name="clienteTipoEspecial" type="java.lang.Integer" />
 			<form-property name="clienteTipoEspecialAntes" type="java.lang.Integer" />
@@ -196,6 +199,8 @@
 			<form-property name="inscricaoEstadual" type="java.lang.String" />
 			<form-property name="idRamoAtividade"
 				type="java.lang.Integer" />
+			<form-property name="codigoAtividadeEconomica"
+				type="java.lang.String" />
 			<form-property name="codigoClienteResponsavel"
 				type="java.lang.String" />
 			<form-property name="nomeClienteResponsavel"
@@ -241,6 +246,7 @@
 			<form-property name="idEstadoCivil" type="java.lang.Integer" />
 			<form-property name="idNacionalidade" type="java.lang.Integer" />
 			<form-property name="indicadorContaBraille" type="java.lang.String" initial="2" />
+			<form-property name="documentoValidado" type="java.lang.String" />
 
 		</form-bean>
 		<!--Action Form Dinâmico que serve para alterar a inscrição do imovel-->
@@ -396,6 +402,9 @@
 			<form-property name="matricula" type="java.lang.String" />
 			<form-property name="idLogradouro" type="java.lang.String" />
 			<form-property name="dataInicioClienteImovelRelacao" type="java.lang.String" />
+			<form-property name="dataFimClienteImovelRelacao" type="java.lang.String" />
+			<form-property name="idMotivoFimClienteImovelRelacao" type="java.lang.String" />
+			<form-property name="indicadorEnvioCorreio" type="java.lang.String" />
 			<form-property name="sequencialRota" type="java.lang.String" />
 			<form-property name="idFuncionario" type="java.lang.String" />
 			<form-property name="nomeFuncionario" type="java.lang.String" />
@@ -508,6 +517,9 @@
 			<form-property name="matricula" type="java.lang.String" />
 			<form-property name="idLogradouro" type="java.lang.String" />
 			<form-property name="dataInicioClienteImovelRelacao" type="java.lang.String" />
+			<form-property name="dataFimClienteImovelRelacao" type="java.lang.String" />
+			<form-property name="idMotivoFimClienteImovelRelacao" type="java.lang.String" />
+			<form-property name="clienteRetira" type="java.lang.String" />
 			<form-property name="sequencialRota" type="java.lang.String" />
 			<form-property name="idFuncionario" type="java.lang.String" />
 			<form-property name="nomeFuncionario" type="java.lang.String" />
@@ -524,6 +536,9 @@
 			<form-property name="rotaHelper" type="java.lang.String" />
 			<form-property name="cdRotaHelper" type="java.lang.String" />
 			<form-property name="msgAlteracaoInscrPendente" type="java.lang.String" />
+			<form-property name="dataCorrenteServidor" type="java.lang.String" />
+			<form-property name="indicadorAtualizarDebitos" type="java.lang.String" />
+			<form-property name="indicadorEnvioCorreio" type="java.lang.String" />
 		</form-bean>
 
 		<!--Action Form Dinâmico que serve para informar a Tarifa Social -->
@@ -837,6 +852,8 @@
 		<form-bean name="AlterarDadosDasPrestacoesForm"
 			type="gcom.gui.faturamento.AlterarDadosDasPrestacoesForm" />				
 		
+		<form-bean name="ExibirErroActionForm" 
+			type="gcom.gui.util.erro.ExibirErroActionForm" />
 	</form-beans>
 
 	<!--******************* PÁGINAS GLOBAIS *******************-->
@@ -873,6 +890,15 @@
 			path="/jsp/util/imprimir_popup.jsp" />
 	</global-forwards>
 	<action-mappings>
+	
+		<action name="ExibirErroActionForm"
+			type="gcom.gui.util.erro.ExibirErroAction"
+			validate="true" 
+			path="/exibirErroAction">
+			
+			<forward name="exibirErro" path="/jsp/util/erro.jsp" />
+		</action>	
+	
 		<!--******************* PÁGINA PRINCIPAL *******************-->
 		<action type="gcom.gui.CarregarParametrosAction"
 			path="/carregarParametrosAction">
@@ -2586,7 +2612,7 @@
 		</action>
 		<action name="InserirCategoriaConsumoTarifaActionForm"
 			type="gcom.gui.faturamento.consumotarifa.InserirCategoriaConsumoTarifaAction"
-			validate="true" scope="session"
+			validate="false" scope="session"
 			path="/inserirCategoriaConsumoTarifaAction">
 			<forward name="exibirInserirCategoriaConsumoTarifa"
 				path="/exibirInserirCategoriaConsumoTarifaAction.do" />
@@ -2647,15 +2673,21 @@
 			<forward name="inserirCategoriaFaixaConsumoTarifa"
 				path="/exibirInserirCategoriaFaixaConsumoTarifaAction.do?limpaForm=sim" />
 		</action>
-		<action name="InserirConsumoTarifaActionForm"
+		<action name="InserirCategoriaConsumoTarifaActionForm"
 			type="gcom.gui.faturamento.consumotarifa.ExibirInserirCategoriaConsumoTarifaAction"
 			validate="false" path="/exibirInserirCategoriaConsumoTarifaAction">
 			<forward name="inserirCategoriaConsumoTarifa"
 				path="/jsp/faturamento/consumotarifa/consumo_tarifa_categoria_adicionar.jsp" />
+			<forward name="inserirCategoriaFaixaConsumoTarifa"
+				path="/exibirInserirCategoriaFaixaConsumoTarifaAction.do?limpaForm=sim" />	
+			<forward name="inserirCategoriaConsumoTarifaAction"
+				path="/inserirCategoriaConsumoTarifaAction.do" />		
+			<forward name="manterCategoriaFaixaConsumoTarifa"
+				path="/exibirManterCategoriaFaixaConsumoTarifaAction.do?limpaFaixa=1" />						
 		</action>
 		<action name="InserirCategoriaConsumoTarifaActionForm"
 			type="gcom.gui.faturamento.consumotarifa.InserirCategoriaConsumoTarifaAction"
-			validate="true" scope="session"
+			validate="false" scope="session"
 			path="/inserirCategoriaConsumoTarifaAction">
 			<forward name="exibirInserirCategoriaConsumoTarifa"
 				path="/exibirInserirCategoriaConsumoTarifaAction.do" />
@@ -2702,7 +2734,7 @@
 		</action>
 
 
-		<action
+		<action name="InserirConsumoTarifaActionForm"
 			type="gcom.gui.faturamento.consumotarifa.ExibirManterConsumoTarifaExistenteAction"
 			validate="false" path="/exibirManterConsumoTarifaExistenteAction">
 			<forward name="manterConsumoTarifaExistenteAction"
@@ -2721,15 +2753,17 @@
 				path="/jsp/faturamento/consumotarifa/consumo_tarifa_categoria_manter.jsp" />
 
 		</action>
-		<action
+		<action name="InserirCategoriaConsumoTarifaActionForm"
 			type="gcom.gui.faturamento.consumotarifa.ExibirManterCategoriaConsumoTarifaAction"
 			validate="false" path="/exibirManterCategoriaConsumoTarifaAction">
 			<forward name="manterCategoriaConsumoTarifa"
 				path="/jsp/faturamento/consumotarifa/consumo_tarifa_categoria_manter.jsp" />
+			<forward name="exibirManterCategoriaFaixaConsumoTarifaAction"
+				path="/exibirManterCategoriaFaixaConsumoTarifaAction.do?limpaFaixa=1" />				
 		</action>
 		<action name="InserirCategoriaConsumoTarifaActionForm"
 			type="gcom.gui.faturamento.consumotarifa.ManterCategoriaConsumoTarifaAction"
-			validate="true" scope="session"
+			validate="false" scope="session"
 			path="/manterCategoriaConsumoTarifaAction">
 			<forward name="exibirManterCategoriaConsumoTarifa"
 				path="/exibirManterCategoriaConsumoTarifaAction.do" />
@@ -2746,7 +2780,7 @@
 
 		<action name="InserirCategoriaFaixaConsumoTarifaActionForm"
 			type="gcom.gui.faturamento.consumotarifa.ManterCategoriaFaixaConsumoTarifaAction"
-			validate="true" scope="session"
+			validate="false" scope="session"
 			path="/manterCategoriaFaixaConsumoTarifaAction">
 			<forward name="manterCategoriaConsumoTarifa"
 				path="/exibirManterCategoriaConsumoTarifaAction.do" />
@@ -3001,6 +3035,21 @@
 			path="/gerarRelatorioClienteOutrosCriteriosManterAction" />
 		<!--FIM RELATÓRIO CLIENTE MANTER-->
 		
+		
+		
+		<!--INICIO RELATÓRIO ORDEM DE SERVIÇO MANTER-->
+		<action name="PesquisarActionForm"
+			type="gcom.gui.relatorio.atendimentopublico.ordemservico.GerarRelatorioOrdemServicoManterAction"
+			scope="session" path="/gerarRelatorioOrdemServicoManterAction" />
+		<action name="FiltrarOrdemServicoActionForm"
+			type="gcom.gui.relatorio.atendimentopublico.ordemservico.GerarRelatorioOrdemServicoManterAction"
+			scope="session" path="/gerarRelatorioOrdemServicoManterAction" />
+		<action name="PesquisarActionForm"
+			type="gcom.gui.relatorio.atendimentopublico.ordemservico.GerarRelatorioOrdemServicoManterAction"
+			scope="session"
+			path="/gerarRelatorioOrdemServicoManterAction" />
+		<!--FIM RELATÓRIO ORDEM DE SERVIÇO MANTER-->
+		
 		<!--INICIO RELATÓRIO PARCELAMENTO-->
 		<action
 			type="gcom.gui.relatorio.cobranca.parcelamento.GerarRelatorioParcelamentoAction"
@@ -3012,6 +3061,12 @@
 			path="/gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction">
 			<forward name="exibirParcelamentoTermoTestemunhasAction"
 				path="/exibirParcelamentoTermoTestemunhasAction.do" />
+			<forward name="exibirParcelamentoEditarResolucaoDiretoriaAction"
+				path="/exibirParcelamentoEditarResolucaoDiretoriaAction.do" />	
+			<forward name="exibirParcelamentoDadosTermoAction"
+				path="/exibirParcelamentoDadosTermoAction.do" />
+			<forward name="exibirParcelamentoDadosTermoExecFiscalAction"
+				path="/exibirParcelamentoDadosTermoExecFiscalAction.do" />												
 		</action>
 		
 		<action name="ParcelamentoTermoTestemunhasActionForm"
@@ -3022,8 +3077,43 @@
 				path="/jsp/cobranca/parcelamento/parcelamento_termo_testemunhas.jsp" />
 			<forward name="atualizarParcelamentoTermoTestemunhasAction"
 				path="/gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction.do" />
+			<forward name="exibirParcelamentoEditarResolucaoDiretoriaAction"
+				path="/exibirParcelamentoEditarResolucaoDiretoriaAction.do" />					
+		</action>
+		
+		<action name="ParcelamentoDadosTermoActionForm"
+			type="gcom.gui.cobranca.parcelamento.ExibirParcelamentoDadosTermoAction"
+			validate="false" scope="session"
+			path="/exibirParcelamentoDadosTermoAction">
+			<forward name="informarParcelamentoDadosTermo"
+				path="/jsp/cobranca/parcelamento/parcelamento_dados_termo.jsp" />
+			<forward name="atualizarParcelamentoDadosTermoAction"
+				path="/gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction.do" />
+			<forward name="exibirParcelamentoEditarResolucaoDiretoriaAction"
+				path="/exibirParcelamentoEditarResolucaoDiretoriaAction.do" />					
+		</action>	
+		
+		<action name="ParcelamentoDadosTermoActionForm"
+			type="gcom.gui.cobranca.parcelamento.ExibirParcelamentoDadosTermoExecFiscalAction"
+			validate="false" scope="session"
+			path="/exibirParcelamentoDadosTermoExecFiscalAction">
+			<forward name="informarParcelamentoDadosTermoExecFiscal"
+				path="/jsp/cobranca/parcelamento/parcelamento_dados_termo_exec_fiscal.jsp" />
+			<forward name="exibirParcelamentoEditarResolucaoDiretoriaAction"
+				path="/exibirParcelamentoEditarResolucaoDiretoriaAction.do" />										
+		</action>				
+		
+		<action name="ParcelamentoEditarTermoResolucaoDiretoriaActionForm"
+			type="gcom.gui.cobranca.parcelamento.ExibirParcelamentoEditarResolucaoDiretoriaAction"
+			validate="false" scope="session"
+			path="/exibirParcelamentoEditarResolucaoDiretoriaAction">
+			<forward name="editarParcelamentoResolucaoDiretoria"
+				path="/jsp/cobranca/parcelamento/parcelamento_editar_termo_resolucao_diretoria.jsp" />
+			<forward name="exibirParcelamentoEditarResolucaoDiretoriaAction"
+				path="/exibirParcelamentoEditarResolucaoDiretoriaAction.do" />
 		</action>
 
+				
 		<!--FIM RELATÓRIO PARCELAMENTO-->
 
 		<!--INICIO RELATÓRIO SUBSISTEMA DE ESGOTO MANTER-->
@@ -3486,6 +3576,10 @@
 			type="gcom.gui.relatorio.cobranca.GerarRelatorioCertidaoNegativaAction"
 			validate="true" scope="session"
 			path="/gerarRelatorioCertidaoNegativaAction" />
+		<action name="ConsultarDebitoImovelActionForm"
+			type="gcom.gui.relatorio.cobranca.GerarRelatorioCertidaoPositivaAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioCertidaoPositivaAction" />
 		<!-- Fim de [UC0203] Consultar Débitos -->
 		<!-- [UC0179] CONSULTAR HISTORICO DE MEDIÇÃO INDIVIDUALIZADA Auhtor: Rafael Santos Data:17/01/2006-->
 		<action
@@ -4027,7 +4121,34 @@
 			type="gcom.gui.atendimentopublico.hidrometro.EfetuarInstalacaoHidrometroLoteAction"
 			validate="true" scope="session"
 			path="/efetuarInstalacaoHidrometroLoteAction">
+		</action>	
+		
+			<!-- Lote  -->
+		
+		
+		<action	name="EfetuarInstalacaoHidrometroActionForm"
+			type="gcom.gui.atendimentopublico.hidrometro.ExibirEfetuarInstalacaoHidrometroComLigacaoAguaLoteAction"
+			validate="true"
+			scope="session"
+			path="/exibirEfetuarInstalacaoHidrometroComLigacaoAguaLoteAction">
+			<forward
+				name="efetuarInstalacaoHidrometroComLigacaoAguaLoteAction"
+				path="/jsp/atendimentopublico/hidrometro/instalacao_hidrometro_com_ligacao_agua_lote_efetuar.jsp" />
+		</action>
+		<action name="EfetuarInstalacaoHidrometroActionForm"
+			type="gcom.gui.atendimentopublico.hidrometro.EfetuarInstalacaoHidrometroComLigacaoAguaLoteAction"
+			validate="true" scope="session"
+			path="/efetuarInstalacaoHidrometroComLigacaoAguaLoteAction">
 		</action>		
+		
+		
+		<!--  -->
+		
+		
+		
+		
+		
+			
 		<action name="RetificarContaActionForm"
 			type="gcom.gui.faturamento.conta.CalcularValoresRetificarContaAction"
 			validate="true" scope="request"
@@ -4224,7 +4345,7 @@
 				
 		</action>
 		
-		<!--  -->
+	
 		
 		<action name="ExibirInserirContaMotivoRevisaoActionForm" 
 				type="gcom.gui.faturamento.conta.contamotivo.ExibirInserirContaMotivoRevisaoAction" 
@@ -4677,6 +4798,10 @@
 			<forward name="exibirConsultarHistoricoFaturamento"
 				path="/jsp/faturamento/historico_faturamento_consultar.jsp" />
 		</action>
+		<action name="ConsultarImovelActionForm"
+            type="gcom.gui.relatorio.faturamento.GerarRelatorioHistoricoFaturamentoAction"
+            scope="session" path="/gerarRelatorioHistoricoFaturamentoAction" />
+            
 		<!-- FIM [UC0193] CONSULTAR HISTORICO DE FATURAMENTO -->
 
 		<!-- [UC0204] CONSULTAR CONTA -->
@@ -4797,6 +4922,8 @@
 				path="/exibirPesquisarQuadraAction.do" />
 			<forward name="quadraDestino"
 				path="/exibirPesquisarQuadraAction.do" />
+			<forward name="bairro"
+				path="/exibirPesquisarBairroAction.do" />	
 		</action>
 
 		<action name="SituacaoEspecialFaturamentoInformarActionForm"
@@ -5259,6 +5386,11 @@
 		<action type="gcom.gui.relatorio.cobranca.spcserasa.GerarRelatorioPosicaoDebitoNegativacaoLegadoCasalAction"
 			validate="true" scope="session"
 			path="/gerarRelatorioPosicaoDebitoNegativacaoLegadoCasalAction">
+		</action>
+
+		<action type="gcom.gui.relatorio.cobranca.spcserasa.GerarRelatorioPosicaoDebitoNegativacaoLegadoCagepaAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioPosicaoDebitoNegativacaoLegadoCagepaAction">
 		</action>
 
 		<!-- [UC3014] EMITIR DECLARAÇÃO ANUAL QUITAÇÃO DÉBITOS -->

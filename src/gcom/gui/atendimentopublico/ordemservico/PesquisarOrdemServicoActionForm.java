@@ -76,9 +76,6 @@
 
 package gcom.gui.atendimentopublico.ordemservico;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.struts.action.ActionMapping;
 import org.apache.struts.validator.ValidatorActionForm;
 
 /**
@@ -159,6 +156,8 @@ public class PesquisarOrdemServicoActionForm
 	private String logradouro;
 
 	private String descricaoLogradouro;
+
+
 
 	/*
 	 * public void reset(ActionMapping actionMapping, HttpServletRequest httpServletRequest) {
@@ -535,5 +534,6 @@ public class PesquisarOrdemServicoActionForm
 
 		this.idBairro = idBairro;
 	}
+
 
 }

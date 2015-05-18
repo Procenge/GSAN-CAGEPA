@@ -572,6 +572,31 @@ public class ExibirEfetuarSupressaoLigacaoAguaAction
 					httpServletRequest.removeAttribute("supressaoSemRetirada");
 				}
 
+				// Caso o serviço tenha sido pago antecipadamente
+
+				/*
+				 * FiltroGuiaPagamentoHistorico filtroGuiaPagamentoHistorico = new
+				 * FiltroGuiaPagamentoHistorico();
+				 * filtroGuiaPagamentoHistorico.adicionarParametro(new
+				 * ParametroSimples(FiltroGuiaPagamentoHistorico.ORDEM_SERVICO_ID,
+				 * ordemServico.getId()));
+				 * filtroGuiaPagamentoHistorico.adicionarParametro(new ParametroSimples(
+				 * FiltroGuiaPagamentoHistorico.ORDEM_SERVICO_SERVICO_TIPO_DEBITO_ID,
+				 * ordemServico.getServicoTipo().getId()));
+				 * filtroGuiaPagamentoHistorico
+				 * .adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.DEBITO_TIPO
+				 * );
+				 * Collection<GuiaPagamentoHistorico> colecaoGuiaPagamentoHistorico =
+				 * fachada.pesquisar(
+				 * filtroGuiaPagamentoHistorico, GuiaPagamentoHistorico.class.getName());
+				 * if(colecaoGuiaPagamentoHistorico.size() > 0){
+				 * sessao.setAttribute("colecaoGuiaPagamentoHistorico",
+				 * colecaoGuiaPagamentoHistorico);
+				 * }else{
+				 * sessao.removeAttribute("colecaoGuiaPagamentoHistorico");
+				 * }
+				 */
+
 			}else{
 
 				httpServletRequest.setAttribute("OrdemServicoInexistente", true);

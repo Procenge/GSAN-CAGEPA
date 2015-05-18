@@ -311,6 +311,23 @@ function verificaSetorComercial(){
                 	</logic:present>  
                   </td>
                 </tr>
+                
+                <!--  tr>
+                  <td><strong>Negativa&ccedil;&atilde;o:<font color="#FF0000">*</font></strong></td>
+                  <td>
+                  	<logic:present name="collNegativador">
+                  	   <strong> Todas </strong>
+                  	   <html:radio property="negativacao"  value="TODAS" ></html:radio>
+                  	   <strong> Confirmada </strong>
+                  	   <html:radio property="negativacao"  value="CONFIRMADA"></html:radio>
+                  	   <strong> N&atilde;o Confirmada </strong>
+                  	   <html:radio property="negativacao"  value="NAO_CONFIRMADA"></html:radio>
+                  	      
+                   	   
+                	</logic:present>  
+                  </td>
+                </tr-->
+                
                 <tr>
 
                   <td width="35%"><strong>Per&iacute;odo do Envio da Negativa&ccedil;&atilde;o:<font color="#FF0000"></font></strong></td>
@@ -373,7 +390,7 @@ function verificaSetorComercial(){
                 </logic:equal>
                 
              
-                <tr>
+                <!--  tr>
                   <td><strong> T&iacute;tulo do Comando:</strong></td>
                   <td><strong><b><span class="style2">
                     <html:textarea property="tituloComando" cols="38" rows="2" readonly="true"></html:textarea>
@@ -386,7 +403,7 @@ function verificaSetorComercial(){
                  	</a> 	
                   </td>
                   	
-                </tr>
+                </tr-->
                 <tr> 
                   <td><strong> <strong>Grupo de Cobran&ccedil;a:</strong></strong></td>
                   <td>
@@ -428,7 +445,7 @@ function verificaSetorComercial(){
                 	</logic:present>
 				  </td>
                 </tr>
-                <tr> 
+                <!--  tr> 
                   <td><strong> Localidade Pólo:</strong></td>
                   <td>
                   	<html:text property="idEloPolo" maxlength="3" size="3" onkeyup="return validaEnterEloPolo(event, 'exibirInformarDadosConsultaNegativacaoAction.do', 'idEloPolo'); " />
@@ -458,7 +475,7 @@ function verificaSetorComercial(){
 						<img border="0" src="<bean:message key='caminho.imagens'/>limparcampo.gif" style="cursor: hand;" /> 
 					</a>
                   </td>
-                </tr>
+                </tr-->
                 <tr> 
                   <td><strong> <font color="#FF0000"></font></strong><strong> 
                     Localidade:</strong></td>
@@ -468,21 +485,21 @@ function verificaSetorComercial(){
 					<img width="23" height="21" src="<bean:message key='caminho.imagens'/>pesquisa.gif" border="0" /></a>
 					<logic:present name="corLocalidade">
 						<logic:equal name="corLocalidade" value="exception">
-							<html:text property="descricaoLocalidade" size="38"	readonly="true"
+							<html:text property="descricaoLocalidade" size="30"	readonly="true"
 								style="background-color:#EFEFEF; border:0; color: #ff0000" />
 						</logic:equal>
 						<logic:notEqual name="corLocalidade" value="exception">
-							<html:text property="descricaoLocalidade" size="38"	readonly="true"
+							<html:text property="descricaoLocalidade" size="30"	readonly="true"
 								style="background-color:#EFEFEF; border:0; color: #000000" />
 						</logic:notEqual>
 					</logic:present> 
 					<logic:notPresent name="corLocalidade">
 						<logic:empty name="InformarDadosConsultaNegativacaoActionForm"	property="idLocalidade">
-							<html:text property="descricaoLocalidade" size="38" value="" readonly="true"
+							<html:text property="descricaoLocalidade" size="30" value="" readonly="true"
 								style="background-color:#EFEFEF; border:0; color: #ff0000" />
 						</logic:empty>
 						<logic:notEmpty name="InformarDadosConsultaNegativacaoActionForm" property="idLocalidade">
-							<html:text property="descricaoLocalidade" size="38"	readonly="true"
+							<html:text property="descricaoLocalidade" size="30"	readonly="true"
 								style="background-color:#EFEFEF; border:0; color: #000000" />
 						</logic:notEmpty>
 					</logic:notPresent>
@@ -500,21 +517,21 @@ function verificaSetorComercial(){
 					<img width="23" height="21" src="<bean:message key='caminho.imagens'/>pesquisa.gif" border="0" /></a>
 					<logic:present name="corSetorComercial">
 						<logic:equal name="corSetorComercial" value="exception">
-							<html:text property="descricaoSetorComercial" size="38"	readonly="true"
+							<html:text property="descricaoSetorComercial" size="30"	readonly="true"
 								style="background-color:#EFEFEF; border:0; color: #ff0000" />
 						</logic:equal>
 						<logic:notEqual name="corSetorComercial" value="exception">
-							<html:text property="descricaoSetorComercial" size="38"	readonly="true"
+							<html:text property="descricaoSetorComercial" size="30"	readonly="true"
 								style="background-color:#EFEFEF; border:0; color: #000000" />
 						</logic:notEqual>
 					</logic:present> 
 					<logic:notPresent name="corSetorComercial">
 						<logic:empty name="InformarDadosConsultaNegativacaoActionForm"	property="idSetorComercial">
-							<html:text property="descricaoSetorComercial" size="38" value="" readonly="true"
+							<html:text property="descricaoSetorComercial" size="30" value="" readonly="true"
 								style="background-color:#EFEFEF; border:0; color: #ff0000" />
 						</logic:empty>
 						<logic:notEmpty name="InformarDadosConsultaNegativacaoActionForm" property="idSetorComercial">
-							<html:text property="descricaoSetorComercial" size="38"	readonly="true"
+							<html:text property="descricaoSetorComercial" size="30"	readonly="true"
 								style="background-color:#EFEFEF; border:0; color: #000000" />
 						</logic:notEmpty>
 					</logic:notPresent>
@@ -538,41 +555,38 @@ function verificaSetorComercial(){
 					</logic:present> <logic:notPresent name="codigoQuadraNaoEncontrada"
 						scope="request">
 					</logic:notPresent>
-				  </td>
-				<!-- 	
-						<a href="javascript:habilitarPesquisaQuadra(document.forms[0]);" alt="Pesquisar Setor Comercial">
+				  	<a href="javascript:habilitarPesquisaQuadra(document.forms[0]);" alt="Pesquisar Setor Comercial">
 						<img width="23" height="21" src="<bean:message key='caminho.imagens'/>pesquisa.gif" border="0" /></a>
 										
 					<logic:present name="corQuadra">
 						<logic:equal name="corQuadra" value="exception">
-							<html:text property="descricaoQuadra" size="38"	readonly="true"
+							<html:text property="descricaoQuadra" size="30"	readonly="true"
 								style="background-color:#EFEFEF; border:0; color: #ff0000" />
 						</logic:equal>
 						<logic:notEqual name="corQuadra" value="exception">
-							<html:text property="descricaoQuadra" size="38"	readonly="true"
+							<html:text property="descricaoQuadra" size="30"	readonly="true"
 								style="background-color:#EFEFEF; border:0; color: #000000" />
 						</logic:notEqual>
 					</logic:present> 
 					<logic:notPresent name="corQuadra">
 						<logic:empty name="InformarDadosConsultaNegativacaoActionForm"	property="idQuadra">
-							<html:text property="descricaoQuadra" size="38" value="" readonly="true"
+							<html:text property="descricaoQuadra" size="30" value="" readonly="true"
 								style="background-color:#EFEFEF; border:0; color: #ff0000" />
 						</logic:empty>
 						<logic:notEmpty name="InformarDadosConsultaNegativacaoActionForm" property="idQuadra">
-							<html:text property="descricaoQuadra" size="38"	readonly="true"
+							<html:text property="descricaoQuadra" size="30"	readonly="true"
 								style="background-color:#EFEFEF; border:0; color: #000000" />
 						</logic:notEmpty>
 					</logic:notPresent>
 					<a href="javascript:limparForm('quadra');"> 
 						<img border="0" src="<bean:message key='caminho.imagens'/>limparcampo.gif" style="cursor: hand;" /> 
 					</a>
-					-->  
-                  
+			      </td>
                 </tr>
                 
                 
                 
-                <tr> 
+                <!-- tr> 
                   <td><strong> Perfil do Im&oacute;vel:<font color="#FF0000"></font></strong></td>
 
                   <td align="left"><strong>           
@@ -589,8 +603,8 @@ function verificaSetorComercial(){
                 	
 				  </td>
 
-                </tr>
-                <tr> 
+                </tr-->
+                <!-- tr> 
                   <td><strong> Categoria:<font color="#FF0000"></font></strong></td>
                   <td align="left"> 
                  	  <logic:present name="collCategoria">  
@@ -602,8 +616,8 @@ function verificaSetorComercial(){
 						</html:select>
                 	</logic:present>
                     </td>
-                </tr>
-                <tr>
+                </tr-->
+                <!-- tr>
                   <td><strong> Tipo de Cliente:<font color="#FF0000"></font></strong></td>
                   <td align="left">			
                 	<logic:present name="collClienteTipo">  
@@ -617,8 +631,8 @@ function verificaSetorComercial(){
                 	
                 	               
                   </td>
-                </tr>
-                <tr> 
+                </tr-->
+                <!-- tr> 
                   <td><strong> Esfera de Poder:<font color="#FF0000"></font></strong></td>
                   <td align="left">
                 	 <logic:present name="collEsferaPoder">  
@@ -632,7 +646,7 @@ function verificaSetorComercial(){
                 	
                 	               
                   </td>
-                </tr>
+                </tr-->
                 <tr> 
                   <td>&nbsp;</td>
                   <td align="left"><font color="#FF0000">*</font> Campo Obrigat&oacute;rio                  </td>

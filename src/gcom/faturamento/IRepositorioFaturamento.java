@@ -78,10 +78,7 @@ package gcom.faturamento;
 
 import gcom.arrecadacao.debitoautomatico.DebitoAutomatico;
 import gcom.arrecadacao.debitoautomatico.DebitoAutomaticoMovimento;
-import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacaoHistoricoPK;
-import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacaoPK;
-import gcom.arrecadacao.pagamento.Pagamento;
-import gcom.arrecadacao.pagamento.PagamentoHistorico;
+import gcom.arrecadacao.pagamento.*;
 import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgoto;
 import gcom.cadastro.cliente.ClienteConta;
 import gcom.cadastro.imovel.Categoria;
@@ -2518,7 +2515,8 @@ public interface IRepositorioFaturamento {
 					String municipio, String idTipoMedicao, String indicadorMedicao, String idSubCategoria, String idCategoria,
 					String quantidadeEconomiasInicial, String quantidadeEconomiasFinal, String diaVencimento, String idCliente,
 					String idClienteTipo, String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal,
-					String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa
+					String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal
 
 	) throws ErroRepositorioException;
 
@@ -3617,8 +3615,7 @@ public interface IRepositorioFaturamento {
 	 */
 
 	public Collection filtrarResumoContasLocalidade(Integer idGrupoFaturamento, String anoMes, Integer idFirma, Integer idSetorFaturamento,
-					Integer idLocalidade)
-					throws ErroRepositorioException;
+					Integer idLocalidade) throws ErroRepositorioException;
 
 	/**
 	 * Author: Vivianne Sousa Data: 06/03/2007
@@ -4086,7 +4083,8 @@ public interface IRepositorioFaturamento {
 	 * @return
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarConsumoTarifaRelatorio(String descricao, Date dataVigenciaInicial, Date dataVigenciaFinal)
+	public Collection pesquisarConsumoTarifaRelatorio(String descricao, Date dataVigenciaInicial, Date dataVigenciaFinal,
+					String descricaoAtoAdministrativo)
 					throws ErroRepositorioException;
 
 	/**
@@ -4649,9 +4647,9 @@ public interface IRepositorioFaturamento {
 	 * @return Integer
 	 * @throws ErroRepositorioException
 	 */
-	public Integer pesquisarQuantidadeContasGrupoFaturamento(Integer anoMes, Integer idGrupoFaturamento, Date dataVencimentoContaInicio,
-					Date dataVencimentoContaFim, Integer anoMesFim, String inContasRevisao, Integer[] motivosRevisaoDisponiveis)
-					throws ErroRepositorioException;
+	public Integer pesquisarQuantidadeContasGrupoFaturamento(Integer anoMes, Collection colecaoGrupoFaturamento,
+					Date dataVencimentoContaInicio, Date dataVencimentoContaFim, Integer anoMesFim, String inContasRevisao,
+					Integer[] motivosRevisaoDisponiveis) throws ErroRepositorioException;
 
 	/**
 	 * Recupera as contas de um grupo de faturamento
@@ -4661,7 +4659,7 @@ public interface IRepositorioFaturamento {
 	 * @return Collection
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarContasGrupoFaturamento(Integer anoMes, Integer idGrupoFaturamento, Date dataVencimentoContaInicio,
+	public Collection pesquisarContasGrupoFaturamento(Integer anoMes, Collection colecaoGrupoFaturamento, Date dataVencimentoContaInicio,
 					Date dataVencimentoContaFim, Integer anoMesFim, String inContasRevisao, Integer[] motivosRevisaoDisponiveis)
 					throws ErroRepositorioException;
 
@@ -4673,7 +4671,7 @@ public interface IRepositorioFaturamento {
 	 * @return Collection
 	 * @throws ErroRepositorioException
 	 */
-	public Collection obterContasGrupoFaturamento(Integer anoMes, Integer idGrupoFaturamento, Date dataVencimentoContaInicio,
+	public Collection obterContasGrupoFaturamento(Integer anoMes, String idGrupoFaturamento, Date dataVencimentoContaInicio,
 					Date dataVencimentoContaFim, Integer anoMesFim) throws ErroRepositorioException;
 
 	/**
@@ -4684,7 +4682,7 @@ public interface IRepositorioFaturamento {
 	 * @return Collection
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarIdContasGrupoFaturamento(Integer anoMes, Integer idGrupoFaturamento, Date dataVencimentoContaInicio,
+	public Collection pesquisarIdContasGrupoFaturamento(Integer anoMes, String idGrupoFaturamento, Date dataVencimentoContaInicio,
 					Date dataVencimentoContaFim, Integer anoMesFim) throws ErroRepositorioException;
 
 	/**
@@ -4816,6 +4814,11 @@ public interface IRepositorioFaturamento {
 	public Collection pesquisarDadosRelatorioContasRevisao(Integer idGerenciaRegional, Integer idUnidadeNegocio, Integer idElo,
 					Integer idLocalidadeInicial, Integer idLocalidadeFinal, Integer idMotivoRevisao, Integer idImovelPerfil,
 					Integer referenciaInicial, Integer referenciaFinal) throws ErroRepositorioException;
+
+	// Relatorio Analitico de Contas
+	public Collection pesquisarDadosRelatorioAnaliticoContas(Integer idGerenciaRegional, Integer idLocalidade, Integer idCategoria,
+					Integer idCliente, Integer IdImovel, Integer idSituacao, Integer motivoRetificacao, Integer referencia,
+					Integer faturamentoGrupo, Integer setorComercial, Integer quadra) throws ErroRepositorioException;
 
 	/**
 	 * Pesquisa os dados necessário para a geração do relatório resumido
@@ -6308,8 +6311,7 @@ public interface IRepositorioFaturamento {
 	 * @throws ErroRepositorioException
 	 */
 	public void deletarResumoFaturamentoSimulacaoPorColecaoRotas(Integer idFaturamentoGrupo, Integer anoMesReferencia,
-					Collection<Integer> idRotas)
-					throws ErroRepositorioException;
+					Collection<Integer> idRotas) throws ErroRepositorioException;
 
 	/**
 	 * @author Yara Souza
@@ -6824,8 +6826,7 @@ public interface IRepositorioFaturamento {
 	 *          Exibir Contas Pré-Faturadas.
 	 */
 	public Collection<Integer> pesquisarQuantidadeContasPreFaturadas(FaturaContasPreFaturadasHelper faturaContasPreFaturadasHelper,
-					Short permiteFaturarContaPreFaturadaZero)
-					throws ErroRepositorioException;
+					Short permiteFaturarContaPreFaturadaZero) throws ErroRepositorioException;
 
 	/**
 	 * [UC3037] Filtrar Contas Pré-Faturadas
@@ -6950,8 +6951,7 @@ public interface IRepositorioFaturamento {
 	 * @date 02/06/2012
 	 * @throws ErroRepositorioException
 	 */
-	public List pesquisarTarifasArquivoTextoFaturamentoImediato(Integer referencia)
-					throws ErroRepositorioException;
+	public List pesquisarTarifasArquivoTextoFaturamentoImediato(Integer referencia) throws ErroRepositorioException;
 
 	/**
 	 * [UC3012] Gerar Arquivo Texto Faturamento Imediato
@@ -7091,6 +7091,15 @@ public interface IRepositorioFaturamento {
 	public Collection<ContaHistorico> pesquisarContaEmProcessoNegativacao(Integer anoMesFaturamento) throws ErroRepositorioException;
 
 	/**
+	 * [UC3165] Gerar Relatório Posição do Débito da Negativação - Legado CAGEPA
+	 * Pesquisar as contas em processo de negativação e já transferidas para o histórico
+	 * 
+	 * @date 07/03/2015
+	 * @author Luciano Galvão
+	 */
+	public Collection<ContaHistorico> pesquisarContaEmProcessoNegativacaoCagepa(Integer anoMesFaturamento) throws ErroRepositorioException;
+
+	/**
 	 * [UC0614] Gerar Resumo das Ações de Cobrança Eventuais
 	 * 
 	 * @author Anderson Italo
@@ -7148,7 +7157,8 @@ public interface IRepositorioFaturamento {
 					String indicadorMedicao, String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial,
 					String quantidadeEconomiasFinal, String diaVencimento, String idCliente, String idClienteTipo,
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
-					String numeroMoradoresFinal, String idAreaConstruidaFaixa) throws ErroRepositorioException;
+					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal) throws ErroRepositorioException;
 
 	/**
 	 * @author Diogo Monteiro
@@ -7158,15 +7168,6 @@ public interface IRepositorioFaturamento {
 	 * @throws ErroRepositorioException
 	 */
 	public Collection<Integer> obterValorTotalContasSelicionadas(String anoMesFaturamento) throws ErroRepositorioException;
-
-	/**
-	 * Método responsável por obter ContaMotivoRevisao pelo ID
-	 * 
-	 * @param id
-	 * @return
-	 * @throws ErroRepositorioException
-	 */
-	ContaMotivoRevisao obterContaMotivoRevisao(Integer id) throws ErroRepositorioException;
 
 	/**
 	 * Método responsável por listar os débitos cobrados de uma conta
@@ -7401,7 +7402,7 @@ public interface IRepositorioFaturamento {
 	 * @date 01/04/2013
 	 */
 	public Object verificarDebitosPendentesImovelTipoConta(Integer idImovel) throws ErroRepositorioException;
-	
+
 	/**
 	 * Método responsável por listar CreditoOrigem a partir do tipo de crédito
 	 * 
@@ -7421,6 +7422,7 @@ public interface IRepositorioFaturamento {
 	 */
 	public Collection<Object[]> pesquisarDadosContasVinculadasDocumentoReaviso(Integer idGrupo, Integer anoMesReferencia)
 					throws ErroRepositorioException;
+
 	/**
 	 * @return
 	 * @throws ErroRepositorioException
@@ -7437,7 +7439,7 @@ public interface IRepositorioFaturamento {
 	 * @date 05/04/2013
 	 */
 	public Integer pesquisarBancoDebitoAutomaticoImovel(Integer idImovel) throws ErroRepositorioException;
-	
+
 	/**
 	 * Método responsável por estornar um credito a realizar
 	 * 
@@ -7452,7 +7454,6 @@ public interface IRepositorioFaturamento {
 	 * Pesquisa a conta digitada
 	 */
 	public Object[] pesquisarContaHistoricoDigitada(String idImovel, String referenciaConta) throws ErroRepositorioException;
-
 
 	/**
 	 * Método responsável por obter o total de economias e o total de ligações do histograma de agua
@@ -7516,9 +7517,8 @@ public interface IRepositorioFaturamento {
 	 * @created 27/04/2013
 	 */
 	public Collection<QuitacaoDebitoAnual> pesquisarQuitacaoDebitoAnualParaEmicao(Integer idFaturamentoGrupo, Integer anoReferencia,
-					Integer idImovel)
-					throws ErroRepositorioException;
-	
+					Integer idImovel) throws ErroRepositorioException;
+
 	/**
 	 * [UC3013] Gerar Declaração Anual Quitação Débitos
 	 * [SB0003] Verificar Não Geração da Declaração para o Imóvel – Modelo 2
@@ -7595,8 +7595,8 @@ public interface IRepositorioFaturamento {
 	 * @throws ErroRepositorioException
 	 */
 	BigDecimal obterValorTarifaVigentePorCategoria(Integer idConsumoTarifaDefault, Integer anoMesReferencia, Integer idCategoria,
-					Integer numeroFaixaInicio, Integer numeroFaixaFim, boolean isPrimeiraFaixa)
-					throws ErroRepositorioException;
+					Integer numeroFaixaInicio, Integer numeroFaixaFim, boolean isPrimeiraFaixa) throws ErroRepositorioException;
+
 	/**
 	 * @param referencia
 	 * @param faturamentoGrupo
@@ -7669,8 +7669,7 @@ public interface IRepositorioFaturamento {
 	 * @throws ErroRepositorioException
 	 */
 
-	public Collection<ContaCategoria> pesquisarContaCategoriaPorConta(Integer idConta)
-					throws ErroRepositorioException;
+	public Collection<ContaCategoria> pesquisarContaCategoriaPorConta(Integer idConta) throws ErroRepositorioException;
 
 	/**
 	 * @param referencia
@@ -7831,8 +7830,7 @@ public interface IRepositorioFaturamento {
 	 * @date 08/05/2013
 	 */
 	public Collection<CreditoARealizar> pesquisarCreditosARealizarImovelFaturamentoImediato(Integer idImovel, Integer anoMesCobranca,
-					boolean isRetornoFaturamento, Date dataGeracaoFaturamento)
-					throws ErroRepositorioException;
+					boolean isRetornoFaturamento, Date dataGeracaoFaturamento) throws ErroRepositorioException;
 
 	/**
 	 * @param idDebitoACobrar
@@ -7899,8 +7897,8 @@ public interface IRepositorioFaturamento {
 	 * @return
 	 * @throws ErroRepositorioException
 	 */
-	public HistoricoMedicaoIndividualizadaHelper pesquisarHistoricoMedicaoIndividualizadaHelper(Integer idImovel,
-					Integer idLigacaoTipo, Integer anoMesRefFaturamento) throws ErroRepositorioException;
+	public HistoricoMedicaoIndividualizadaHelper pesquisarHistoricoMedicaoIndividualizadaHelper(Integer idImovel, Integer idLigacaoTipo,
+					Integer anoMesRefFaturamento) throws ErroRepositorioException;
 
 	/**
 	 * [UC3103] Cancelar Débito a Cobrar de Rateio por Macromedidor.
@@ -7956,8 +7954,8 @@ public interface IRepositorioFaturamento {
 	 * @created
 	 * @throws ControladorException
 	 */
-	public Collection pesquisarDadosRelatorioMaioresConsumidores(Integer anoMes, Integer localidade,
-					Integer registros) throws ErroRepositorioException;
+	public Collection pesquisarDadosRelatorioMaioresConsumidores(Integer anoMes, Integer localidade, Integer registros)
+					throws ErroRepositorioException;
 
 	/**
 	 * Pesquisa os dados necessário para a geração do relatório
@@ -7967,7 +7965,8 @@ public interface IRepositorioFaturamento {
 	 * @created
 	 * @throws ControladorException
 	 */
-	public Collection pesquisarDadosRelatorioMaioresDevedores(Integer localidade, Integer registros) throws ErroRepositorioException;
+	public Collection pesquisarDadosRelatorioMaioresDevedores(Integer localidade, Integer registros, Integer[] idsTipoCliente)
+					throws ErroRepositorioException;
 
 	/**
 	 * [UC3128] GerarRelatorioImóveiscomLigaçãoCortadacomConsumo
@@ -8056,8 +8055,7 @@ public interface IRepositorioFaturamento {
 	 * @created 17/01/2014
 	 * @throws ErroRepositorioException
 	 */
-	public ClienteConta pesquisarClienteContaPorTipoRelacao(Integer idConta, Integer idClienteRelacaoTipo)
-					throws ErroRepositorioException;
+	public ClienteConta pesquisarClienteContaPorTipoRelacao(Integer idConta, Integer idClienteRelacaoTipo) throws ErroRepositorioException;
 
 	/**
 	 * [UC3134] Manter Comando de Simulação de Faturamento
@@ -8066,8 +8064,7 @@ public interface IRepositorioFaturamento {
 	 * @date 19/01/2014
 	 */
 	public Collection<FaturamentoSimulacaoComando> pesquisarFaturamentoSimulacaoComando(Integer numeroPagina, Date dataInicialComando,
-					Date dataFinalComando,
-					Short indicadorExecutado) throws ErroRepositorioException;
+					Date dataFinalComando, Short indicadorExecutado) throws ErroRepositorioException;
 
 	/**
 	 * [UC3134] Manter Comando de Simulação de Faturamento
@@ -8077,6 +8074,7 @@ public interface IRepositorioFaturamento {
 	 */
 	public Integer pesquisarTotalRegistrosFaturamentoSimulacaoComando(Date dataInicialComando, Date dataFinalComando,
 					Short indicadorExecutado) throws ErroRepositorioException;
+
 	public Collection pesquisarIdsLigacaoEsgotoAjusteErroCalculoConsumoMedio() throws ErroRepositorioException;
 
 	/**
@@ -8098,7 +8096,7 @@ public interface IRepositorioFaturamento {
 	public Collection pesquisarDadosRelatorioContratoDemandaConsumo(Integer faturamentoGrupo, Integer[] localidades, String tipoContrato,
 					Integer tarifaConsumo, Integer mesAnoFaturamentoInicial, Integer mesAnoFaturamentoFinal, Integer encerrado)
 					throws ErroRepositorioException;
-	
+
 	/**
 	 * [UC3132] Gerar Relatório de Contratos de Demanda de Consumo
 	 * 
@@ -8110,7 +8108,7 @@ public interface IRepositorioFaturamento {
 	public Integer pesquisarDadosRelatorioContratoDemandaConsumoCount(Integer faturamentoGrupo, Integer[] localidades, String tipoContrato,
 					Integer tarifaConsumo, Integer mesAnoFaturamentoInicial, Integer mesAnoFaturamentoFinal, Integer encerrado)
 					throws ErroRepositorioException;
-	
+
 	/**
 	 * [UC3055] Encerrar Faturamento
 	 * [SB0007] Encerrar contratos de demanda de consumo
@@ -8155,8 +8153,7 @@ public interface IRepositorioFaturamento {
 	 * @throws ErroRepositorioException
 	 */
 	public Collection obterContasHistoricoIntervalo(Integer anoMesInicio, Integer anoMesFim, Integer idSituacaoConta,
-					FaturamentoGrupo faturamentoGrupo)
-					throws ErroRepositorioException;
+					FaturamentoGrupo faturamentoGrupo) throws ErroRepositorioException;
 
 	/**
 	 * Obtém os ids das contas que estiverem com o somatório do valor das faixas diferentes do valor
@@ -8225,5 +8222,228 @@ public interface IRepositorioFaturamento {
 	 */
 	public Collection<CreditoRealizadoHistorico> pesquisarCreditosRealizadosHistoricoPorCreditoTipo(Integer idConta, Integer idCreditoTipo,
 					String sinal) throws ErroRepositorioException;
+
+	/**
+	 * Método que retorna a conta_categoria maior quantidade de economias
+	 * [UC0083] Gerar Dados para Leitura
+	 * [SB0001] - Gerar Arquivo Convencional
+	 * [SB0010] - Gerar Arquivo - Modelo 2
+	 * Dados para leitura (TIPO E)
+	 * 
+	 * @author Anderson Italo
+	 * @date 11/06/2014
+	 * @throws ErroRepositorioException
+	 */
+	public ContaCategoria pesquisarContaCategoriaComMaiorQuantidadeEconomias(Integer idConta) throws ErroRepositorioException;
+
+	/**
+	 * @param debitoACobrar
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection pesquisarClienteDebitoACobrar(DebitoACobrar debitoACobrar) throws ErroRepositorioException;
+
+	/**
+	 * @param creditoARealizar
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection pesquisarClienteCreditoARealizar(CreditoARealizar creditoARealizar) throws ErroRepositorioException;
+
+	/**
+	 * @param debitoACobrarHistorico
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection pesquisarClienteDebitoACobrarHistorico(DebitoACobrarHistorico debitoACobrarHistorico) throws ErroRepositorioException;
+
+
+
+	/**
+	 * [UC0150] Retificar Conta
+	 * Atualizar itens da execução fiscal.
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 10/08/2014
+	 */
+	public void alterarContaExecucaoFiscalItem(Integer idContaAntiga, Integer idContaNova) throws ErroRepositorioException;
+
+	/**
+	 * [UC1016] Estornar Pagamentos
+	 * Atualizar itens da execução fiscal.
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 12/08/2014
+	 */
+	public void estornarContaExecucaoFiscalItem(Integer idConta, Date dataEstorno) throws ErroRepositorioException;
+
+	/**
+	 * [UC1016] Estornar Pagamentos
+	 * Atualizar itens da execução fiscal.
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 12/08/2014
+	 */
+	public void estornarGuiaPagamentoExecucaoFiscalItem(Integer idGuiaPagamento, Short numeroPrestacao, Date dataEstorno)
+					throws ErroRepositorioException;
+
+	/**
+	 * [UC3082] Atualizar Item Documento Cobrança
+	 * Atualizar itens da execução fiscal.
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 12/08/2014
+	 */
+	public void alterarGuiaPagamentoExecucaoFiscalItem(Integer idGuiaPagamento, Short numeroPrestacao, Integer idSituacaoDebitoItem,
+					Date dataSituacaoDebitoItem) throws ErroRepositorioException;
+
+	/**
+	 * [UC3082] Atualizar Item Documento Cobrança
+	 * Atualizar itens da execução fiscal.
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 12/08/2014
+	 */
+	public void alterarContaExecucaoFiscalItem(Integer idConta, Integer idSituacaoDebitoItem, Date dataSituacaoDebitoItem)
+					throws ErroRepositorioException;
+
+	public Collection<FaturamentoGrupoCronogramaMensal> pesquisarFaturamentoGrupoCronogramaMensalReferenciaMaior(
+					Integer idFaturamentoGrupo, Integer anoMesReferencia) throws ErroRepositorioException;
+
+	public FaturamentoGrupoCronogramaMensal pesquisarUltimoFaturamentoGrupoCronogramaMensal(Integer idFaturamentoGrupo)
+					throws ErroRepositorioException;
+
+	/**
+	 * <p>
+	 * [OC1348276] [NF] Refaturar todas as contas da localidade 062 com referência de 10/2009 a
+	 * 08/2014
+	 * </p>
+	 * <p>
+	 * Refaturar todas as contas geradas para o municipio de Siriri, para atendermos ao trabalho que
+	 * a Deso está desenvolvendo naquele município e a RDE 12/2014. Parâmetros:
+	 * <ul>
+	 * <li>Localidade: 062</li>
+	 * <li>Período de referência das faturas: 10/2009 a 08/2014</li>
+	 * <li>Refaturar consumo de todas as matrículas de categoria Residencial e Comercial para 10m³ e
+	 * categoria Industrial para 30m³</li>
+	 * </ul>
+	 * </p>
+	 * 
+	 * @author msilveira <magno.silveira@procenge.com.br>
+	 * @since 2014-09-02
+	 * @param idLocalidade
+	 * @param anoMesReferenciaInicial
+	 * @param anoMesReferenciaFinal
+	 * @return Coleção de Contas
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<Conta> obterContasPorLocalidade(Integer idLocalidade, Integer anoMesReferencia) throws ErroRepositorioException;
+
+	public List<Object[]> gerarRelatorioTotalContasEmitidasLocalidade(Integer anoMesReferencia) throws ErroRepositorioException;
+
+	public Long gerarQuantidadeRelatorioTotalContasEmitidasLocalidade(Integer anoMesReferencia) throws ErroRepositorioException;
+
+	/**
+	 * [UC0187] Inserir Guia de Pagamento
+	 * Processos das execuções especiais pendentes de cobrança do valor de sucumbência
+	 * 
+	 * @date 08/09/2014
+	 * @author Gicevalter Couto
+	 */
+	public Collection<Integer> pesquisarProcessosExecucaoEspeciaisPendentesCobranca(Integer idImovel, Integer idCobrancaSituacaoExecFiscal,
+					Integer idSucumbencia) throws ErroRepositorioException;
+
+	/**
+	 * [UC3156] Simular Cálculo da Conta Dados Reais
+	 * 
+	 * @author Anderson Italo
+	 * @date 22/09/2014
+	 */
+	public Collection pesquisarContasSimularCalculoDadosReais(FiltroContaSimularCalculoHelper helper, Integer numeroPagina)
+					throws ErroRepositorioException;
+
+	/**
+	 * [UC3156] Simular Cálculo da Conta Dados Reais
+	 * 
+	 * @author Anderson Italo
+	 * @date 22/09/2014
+	 */
+	public Integer pesquisarTotalRegistrosContasSimularCalculoDadosReais(FiltroContaSimularCalculoHelper helper)
+					throws ErroRepositorioException;
+	/**
+	 * [UC3013] Gerar Declaração Anual Quitação Débitos
+	 * [SB0001] - Gerar Declaração Anual Quitação Débitos
+	 * 
+	 * @param idImovel
+	 * @param referenciaFinal
+	 * @param dataFinal
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<GuiaPagamentoPrestacaoHistorico> pesquisaGuiasPagamentoQuitadasAnoReferencia(Integer idImovel,
+					Integer referenciaFinal, Date dataFinal)
+					throws ErroRepositorioException;
+
+	/**
+	 * [UC3013] Gerar Declaração Anual Quitação Débitos
+	 * [SB0004 - Verificar Não Geração da Declaração para o Imóvel - Modelo Default]
+	 * 
+	 * @param idImovel
+	 * @param ultimoDiaDoAnoDeReferencia
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public boolean verificarImovelContasVencidasAnoReferenciaEmRevisao(Integer idImovel, Date ultimoDiaDoAnoDeReferencia,
+					Integer pVerificarPagamentoPendente)
+					throws ErroRepositorioException;
+	
+	
+	/**
+	 * [UC3013] Gerar Declaração Anual Quitação Débitos
+	 * [SB0004 - Verificar Não Geração da Declaração para o Imóvel - Modelo Default]
+	 * 
+	 * @author Yara Souza
+	 * @created 01/10/2014
+	 */
+	public boolean verificarImovelGuiasVencidasAnoReferencia(Integer idImovel, Date ultimoDiaDoAnoDeReferencia,
+					Integer pVerificarPagamentoPendente) throws ErroRepositorioException;
+
+	/**
+	 * [UC3013] Gerar Declaração Anual Quitação Débitos
+	 * [SB0004 - Verificar Não Geração da Declaração para o Imóvel - Modelo Default]
+	 * 
+	 * @author Yara Souza
+	 * @created 01/10/2014
+	 */
+	public boolean verificarPagamentosHistoricoParaImovelAnoReferencia(Integer idImovel, Integer referenciaInicial,
+					Integer referenciaFinal,
+					Integer pVerificarPagamentoPendente) throws ErroRepositorioException;
+
+	/**
+	 * @param idCliente
+	 * @param idCobrancaSituacaoExecFiscal
+	 * @param idSucumbencia
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<Integer> pesquisarProcessosExecucaoEspeciaisPendentesCobrancaPorCliente(Integer idCliente,
+					Integer idCobrancaSituacaoExecFiscal, Integer idSucumbencia) throws ErroRepositorioException;
+
+	public Collection<GuiaPagamentoPrestacaoHelper> pesquisarGuiasPagamentoPrestacaoPorParcelamento(Integer parcelamentoId)
+					throws ErroRepositorioException;
+
+	public void inserirRegistrosTabelaTemporariaRelatorioTotalContasEmitidasLocalidade(Integer anoMesReferencia)
+					throws ErroRepositorioException;
+		
+	public void criarTabelaTemporariaRelatorioTotalContasEmitidasLocalidade() throws ErroRepositorioException;
+	/**
+	 * @author Magno Silveira <magno.silveira@procenge.com.br>
+	 * @since 16/04/2015
+	 * @param idImovel
+	 * @param paramMotivoRetificaoOcorrenciaConsumo
+	 * @return
+	 */
+	public int obterQtdContasRetificadasPorMotivoRetificacao(Integer idImovel, Integer paramMotivoRetificaoOcorrenciaConsumo)
+					throws ErroRepositorioException;
 
 }

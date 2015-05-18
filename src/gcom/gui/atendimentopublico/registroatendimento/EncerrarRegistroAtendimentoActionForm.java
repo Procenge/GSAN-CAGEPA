@@ -217,6 +217,18 @@ public class EncerrarRegistroAtendimentoActionForm
 
 	private String indicadorDuplicidade;
 
+	private String numerosRAs;
+
+	public String getNumerosRAs(){
+
+		return numerosRAs;
+	}
+
+	public void setNumerosRAs(String numerosRAs){
+
+		this.numerosRAs = numerosRAs;
+	}
+
 	public String getIndicadorDuplicidade(){
 
 		return indicadorDuplicidade;

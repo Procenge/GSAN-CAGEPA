@@ -45,6 +45,13 @@
         column="poco_tmultimaalteracao"
         length="8"
     />
+    
+    <property
+        name="codigoConstante"
+        type="java.lang.String"
+        column="poco_cdconstante"
+        length="60"
+    />
 
     <!-- associations -->
     <!-- bi-directional one-to-many association to Imovel 

@@ -118,6 +118,7 @@ public class FiltrarMaterialAction
 		String abrevMaterial = form.getAbrevMaterial();
 		String unidadeMaterial = form.getUnidadeMaterial();
 		String indicadorUso = form.getIndicadorUso();
+		String materialValor = form.getMaterialValor();
 
 		String indicadorAtualizar = httpServletRequest.getParameter("indicadorAtualizar");
 

@@ -444,6 +444,48 @@
 									<strong>Inativo</strong></div>
 									</td>
 								</tr>
+								
+									<tr>
+											<td><strong>DDD:<font color="#FF0000">*</font></strong></td>
+											<td><html:text maxlength="2" property="ddd" size="5" onkeyup="javascript:verificaNumeroInteiro(this);" /></td>
+										</tr>
+										
+										
+												<tr>
+											<td><strong>Fone:</strong></td>
+											<td><html:text maxlength="10" property="telefone" size="20"  onkeyup="javascript:verificaNumeroInteiro(this);" /></td>
+										</tr>
+										
+										
+												<tr>
+											<td><strong>Ramal:</strong></td>
+											<td><html:text maxlength="4" property="ramal" size="5" onkeyup="javascript:verificaNumeroInteiro(this);" /></td>
+										</tr>
+										
+										
+										<tr>
+											<td><strong>Fax:</strong></td>
+											<td><html:text maxlength="10" property="fax" size="20" onkeyup="javascript:verificaNumeroInteiro(this);" /></td>
+										</tr>
+										
+										
+										
+										<tr>
+											<td><strong>Observação:</strong></td>
+											<td>
+											<html:textarea property="observacao" cols="40" rows="5" onkeyup="limitTextArea(document.forms[0].observacao, 400, document.getElementById('utilizado'), document.getElementById('limite'));"/>
+												<strong><span id="utilizado">0</span>/<span id="limite">400</span></strong>
+											
+											</td>
+										</tr>
+										
+										
+								
+								
+								
+								
+								
+								
 							</table>
 							</td>
 						</tr>

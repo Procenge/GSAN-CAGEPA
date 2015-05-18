@@ -82,6 +82,7 @@ import gcom.arrecadacao.Concessionaria;
 import gcom.arrecadacao.bean.MovimentoArrecadadoresRelatorioHelper;
 import gcom.batch.Relatorio;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
+import gcom.cobranca.CobrancaSituacao;
 import gcom.fachada.Fachada;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaException;
@@ -235,11 +236,23 @@ public class RelatorioAcompanhamentoMovimentoArrecadadores
 					String dataPagamentoFormatada = Util.formatarData(movimentoArrecadadoresRelatorioHelper.getDataPagamento());
 					dia = dataPagamentoFormatada.substring(0, 2);
 				}
+				
+				String valorDividaInscrita = Util.formatarMoedaReal(movimentoArrecadadoresRelatorioHelper.getValorDividaInscrita());
+				String valorDividaExecutada = Util.formatarMoedaReal(movimentoArrecadadoresRelatorioHelper.getValorDividaExecutada());
+				
+				if (valorDividaInscrita.equals("")) {
+					valorDividaInscrita = "0,00";
+				}
+
+				if(valorDividaExecutada.equals("")){
+					valorDividaExecutada = "0,00";
+				}
 
 				relatorioBean = new RelatorioAcompanhamentoMovimentoArrecadadoresBean(banco, formaArrecadacao, dia, valorPagamento,
 								movimentoArrecadadoresRelatorioHelper.getQtdePagamentos().toString(), movimentoArrecadadoresRelatorioHelper
 												.getQtdeDocumentos().toString(), valorAteDiaFormatado, qtdePagamentosAteDiaFormatado,
-								qtdeDocumentosAteDiaFormatado, movimentoArrecadadoresRelatorioHelper.getConcessionaria());
+								qtdeDocumentosAteDiaFormatado, movimentoArrecadadoresRelatorioHelper.getConcessionaria(),
+								valorDividaInscrita, valorDividaExecutada);
 
 				// adiciona o bean a coleção
 				relatorioBeans.add(relatorioBean);
@@ -285,7 +298,14 @@ public class RelatorioAcompanhamentoMovimentoArrecadadores
 		// cria uma instância do dataSource do relatório
 		RelatorioDataSource ds = new RelatorioDataSource(relatorioBeans);
 
-		retorno = gerarRelatorio(ConstantesRelatorios.RELATORIO_ACOMPANHAMENTO_MOVIMENTO_ARRECADADORES, parametros, ds,
+		String nomeRelatorio = "";
+		if(CobrancaSituacao.EXECUCAO_FISCAL != null){
+			nomeRelatorio = ConstantesRelatorios.RELATORIO_ACOMPANHAMENTO_MOVIMENTO_ARRECADADORES_DIVIDA;
+		}else{
+			nomeRelatorio = ConstantesRelatorios.RELATORIO_ACOMPANHAMENTO_MOVIMENTO_ARRECADADORES;
+		}
+
+		retorno = gerarRelatorio(nomeRelatorio, parametros, ds,
 						tipoFormatoRelatorio);
 
 		// ------------------------------------

@@ -72,9 +72,10 @@ public class TarefaBatchClassificarLotePagamentosNaoClassificados
 	public Object executar() throws TarefaException{
 
 		ClassificarLotePagamentosNaoClassificadosHelper helper = (ClassificarLotePagamentosNaoClassificadosHelper) getParametro("classificarLotePagamentosNaoClassificadosHelper");
+		boolean gerarDebitoACobrar = (Boolean) getParametro("gerarDebitoACobrar");
 
 		enviarMensagemControladorBatch(ConstantesJNDI.BATCH_CLASSIFICAR_LOTE_PAGAMENTOS_NAO_CLASSIFICADOS_MDB,
-						new Object[] {helper, this.getUsuario(), this.getIdFuncionalidadeIniciada()});
+						new Object[] {helper, this.getUsuario(), this.getIdFuncionalidadeIniciada(), gerarDebitoACobrar});
 
 		return null;
 	}

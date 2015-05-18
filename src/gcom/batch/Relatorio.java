@@ -451,6 +451,8 @@ public class Relatorio
 
 	public static final int RELATORIO_POSICAO_DEBITO_NEGATIVACAO_LEGADO_CASAL = 269;
 
+	public static final int RELATORIO_POSICAO_DEBITO_NEGATIVACAO_LEGADO_CAGEPA = 354;
+
 	public static final int RELATORIO_ACOMPANHAMENTO_FATURAMENTO = 270;
 
 	public static final int RELATORIO_ESTATISTICO_REGISTRO_ATENDIMENTO = 271;
@@ -478,6 +480,8 @@ public class Relatorio
 	public static final int RELATORIO_IMOVEIS_INSCRICAO_ALTERADA = 281;
 
 	public static final int RELATORIO_RELACAO_IMOVEIS_EM_COBRANCA_ADMINISTRATIVA = 288;
+
+	public static final int RELATORIO_ANALITICO_RELACAO_IMOVEIS_EM_COBRANCA_ADMINISTRATIVA = 288;
 
 	public static final int RELATORIO_OCORRENCIAS_PROCESSO_DIARIO_COBRANCA_BANCARIA = 290;
 
@@ -560,6 +564,22 @@ public class Relatorio
 	public static final int RELATORIO_DEBITOS_PRESCRITOS = 341;
 
 	public static final int RELATORIO_ACOMPANHAMENTO_DEBITOS_PRESCRITOS = 344;
+
+	public static final int RELATORIO_REGISTRAR_LEITURAS_ANORMALIDADES = 346;
+
+	public static final int RELATORIO_MANTER_ATIVIDADE_ECONOMICA = 347;
+
+	public static final int RELATORIO_CONTAS_RECALCULADAS = 349;
+
+	public static final int RELATORIO_ANALITICO_CONTAS = 348;
+
+	public static final int RELATORIO_MANTER_ORDEM_SERVICO = 353;
+
+	public static final int RELATORIO_CONTAS_RECEBER_VALORES_CORRIGIDOS = 354;
+
+	public static final int RELATORIO_TOTAL_CONTAS_EMITIDAS_LOCALIDADE = 355;
+
+	public static final int RELATORIO_HISTORICO_FATURAMENTO_IMOVEL = 362;
 
 	/** identifier field */
 	/*

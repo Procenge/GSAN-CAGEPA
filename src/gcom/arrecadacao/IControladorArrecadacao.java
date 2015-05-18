@@ -98,6 +98,7 @@ import gcom.cadastro.endereco.LogradouroCep;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.cobranca.CobrancaDocumento;
+import gcom.cobranca.bean.IntervaloReferenciaHelper;
 import gcom.faturamento.conta.Conta;
 import gcom.faturamento.debito.DebitoACobrar;
 import gcom.faturamento.debito.DebitoACobrarHistorico;
@@ -309,6 +310,8 @@ public interface IControladorArrecadacao {
 					String codigoSetorComercialInicial, String codigoSetorComercialFinal, String indicadorTotalizarPorDataPagamento,
 					Collection<Integer> idsArrecadadores, String[] idsCategoria) throws ControladorException;
 
+	public Collection<Pagamento> pesquisarPagamentoImovel(String idImovel);
+
 	/**
 	 * Este caso de uso cria um filtro que será usado na pesquisa de pagamentos
 	 * para pesquisar os pagamento historicos
@@ -328,6 +331,8 @@ public interface IControladorArrecadacao {
 					String[] idsDebitosTipos, String[] idsArrecadacaoForma, String[] idsDocumentosTipos,
 					String codigoSetorComercialInicial, String codigoSetorComercialFinal, String indicadorTotalizarPorDataPagamento,
 					Collection<Integer> idsArrecadadores, String[] idsCategoria) throws ControladorException;
+
+	public Collection<PagamentoHistorico> pesquisarPagamentoHistoricoImovel(String idImovel);
 
 	/**
 	 * Método que pesquisa os pagamentos histórico para tela de consulta de Imóvel
@@ -733,7 +738,7 @@ public interface IControladorArrecadacao {
 	 * @throws ControladorException
 	 */
 	public void atualizarPagamento(Pagamento pagamento, Usuario usuarioLogado, String gerarDevolucaoValores, Integer idCreditoTipo,
-					PagamentoSituacao situacaoPagamentoOriginal)
+					PagamentoSituacao situacaoPagamentoOriginal, boolean gerarDebitoACobrar)
 					throws ControladorException;
 
 	/**
@@ -854,6 +859,18 @@ public interface IControladorArrecadacao {
 	 * @throws ControladorException
 	 */
 	public Integer inserirGuiaDevolucao(GuiaDevolucao guiaDevolucao, Usuario usuarioLogado) throws ControladorException;
+
+	/**
+	 * [UC0322] - Inserir Guia de Devolução
+	 * Insere uma Guia de Devolução
+	 * 
+	 * @author Rafael Corrêa, Pedro Alexandre
+	 * @date 02/05/2006, 21/11/2006
+	 * @return Integer
+	 * @throws ControladorException
+	 */
+	public Integer inserirGuiaDevolucao(GuiaDevolucao guiaDevolucao, Usuario usuarioLogado, Boolean gerarErro,
+					Boolean gerarLimitePorHistoricoPagamento, Integer constanteCreditoTipo) throws ControladorException;
 
 	/**
 	 * Faz a pesquisa de guia de devolução para o relatório fazendo os
@@ -1986,7 +2003,8 @@ public interface IControladorArrecadacao {
 	 * @param colecaoGuiasPagamento
 	 * @throws ControladorException
 	 */
-	public void transferirGuiaPagamentoParaHistorico(Collection<GuiaPagamento> colecaoGuiasPagamento) throws ControladorException;
+	public void transferirGuiaPagamentoParaHistorico(Collection<GuiaPagamento> colecaoGuiasPagamento, boolean indicadorParcelamento)
+					throws ControladorException;
 
 	/**
 	 * [UC0276] Gerar Resumo do Faturamento / [UC0188] - Manter Guia de Pagamento
@@ -2000,8 +2018,8 @@ public interface IControladorArrecadacao {
 	 * @param colecaoGuiasPagamento
 	 * @throws ControladorException
 	 */
-	public void transferirGuiaPagamentoParaHistorico(Collection<GuiaPagamento> colecaoGuiasPagamento, Usuario usuario, Integer idOperacao)
-					throws ControladorException;
+	public void transferirGuiaPagamentoParaHistorico(Collection<GuiaPagamento> colecaoGuiasPagamento, Usuario usuario, Integer idOperacao,
+					boolean indicadorParcelamento) throws ControladorException;
 
 	/**
 	 * Transfere as 'Guias de Pagamento Prestação Histórico' para 'Guia de Pagamento Prestação'
@@ -2832,7 +2850,7 @@ public interface IControladorArrecadacao {
 	 *       Adicionar mais uma identificação: adaTipoDocumento <> "000"
 	 */
 	public boolean validarRegistroLegadoADA(Short codigoEmpresaFebraban, String adaGrupoFaturamentoConstanteLegado,
-					String adaAnoMesReferenciaContaLegado, String adaTipoDocumento);
+					String adaAnoMesReferenciaContaLegado, String adaTipoDocumento, String registroCodigo);
 
 	/**
 	 * definir a origem do pagamento (Pagamento ou PagamentoHistorico) e a operação contabil do
@@ -3091,7 +3109,8 @@ public interface IControladorArrecadacao {
 	 * @date 30/11/2012
 	 */
 	public Collection<ClassificarPagamentosNaoClassificadosHelper> classificarLotePagamentosNaoClassificados(
-					ClassificarLotePagamentosNaoClassificadosHelper helper, Usuario usuario) throws ControladorException;
+					ClassificarLotePagamentosNaoClassificadosHelper helper, Usuario usuario, boolean gerarDebitoACobrar)
+					throws ControladorException;
 
 	/**
 	 * [UC3080] Classificar em Lote Pagamentos Não Classificados.
@@ -3100,7 +3119,7 @@ public interface IControladorArrecadacao {
 	 * @date 14/11/2012
 	 */
 	public void classificarLotePagamentosNaoClassificados(ClassificarLotePagamentosNaoClassificadosHelper helper, Usuario usuario,
-					int idFuncionalidadeIniciada) throws ControladorException;
+					int idFuncionalidadeIniciada, boolean gerarDebitoACobrar) throws ControladorException;
 
 	/**
 	 * @param idGuiaPagamento
@@ -3286,5 +3305,14 @@ public interface IControladorArrecadacao {
 	 */
 
 	public void gerarQuadroComparativoFaturamentoEArrecadacao(int idFuncionalidadeIniciada) throws ControladorException;
+
+	/**
+	 * @param idClienteResponsavel
+	 * @param colecaoReferencias
+	 * @return
+	 * @throws ControladorException
+	 */
+	public BigDecimal obterValorTotalContasParaCancelamento(Integer idClienteResponsavel,
+					Collection<IntervaloReferenciaHelper> colecaoReferencias) throws ControladorException;
 
 }

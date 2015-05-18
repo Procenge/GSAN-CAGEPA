@@ -113,6 +113,14 @@ public class OrdemServicoValaPavimento
 
 	private Date ultimaAlteracao;
 
+	private EntulhoMedida entulhoMedida;
+
+	private BigDecimal numeroComprimentoTutulacaoAguaPluvial;
+
+	private BigDecimal numeroDiametroTutulacaoAguaPluvial;
+
+	private Integer quantidadeEntulho;
+
 	public Integer getId(){
 
 		return id;
@@ -231,6 +239,46 @@ public class OrdemServicoValaPavimento
 	public void setUltimaAlteracao(Date ultimaAlteracao){
 
 		this.ultimaAlteracao = ultimaAlteracao;
+	}
+
+	public EntulhoMedida getEntulhoMedida(){
+
+		return entulhoMedida;
+	}
+
+	public void setEntulhoMedida(EntulhoMedida entulhoMedida){
+
+		this.entulhoMedida = entulhoMedida;
+	}
+
+	public BigDecimal getNumeroComprimentoTutulacaoAguaPluvial(){
+
+		return numeroComprimentoTutulacaoAguaPluvial;
+	}
+
+	public void setNumeroComprimentoTutulacaoAguaPluvial(BigDecimal numeroComprimentoTutulacaoAguaPluvial){
+
+		this.numeroComprimentoTutulacaoAguaPluvial = numeroComprimentoTutulacaoAguaPluvial;
+	}
+
+	public BigDecimal getNumeroDiametroTutulacaoAguaPluvial(){
+
+		return numeroDiametroTutulacaoAguaPluvial;
+	}
+
+	public void setNumeroDiametroTutulacaoAguaPluvial(BigDecimal numeroDiametroTutulacaoAguaPluvial){
+
+		this.numeroDiametroTutulacaoAguaPluvial = numeroDiametroTutulacaoAguaPluvial;
+	}
+
+	public Integer getQuantidadeEntulho(){
+
+		return quantidadeEntulho;
+	}
+
+	public void setQuantidadeEntulho(Integer quantidadeEntulho){
+
+		this.quantidadeEntulho = quantidadeEntulho;
 	}
 
 }

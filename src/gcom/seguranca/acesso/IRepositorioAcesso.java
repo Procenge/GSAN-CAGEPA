@@ -77,7 +77,6 @@
 package gcom.seguranca.acesso;
 
 import gcom.seguranca.acesso.usuario.Usuario;
-import gcom.util.ControladorException;
 import gcom.util.ErroRepositorioException;
 
 import java.util.Collection;
@@ -124,4 +123,6 @@ public interface IRepositorioAcesso {
 	 * @ throws ErroRepositorioException
 	 */
 	public Object[] consultarDadosAcessoGcsME(Usuario usuariologado)  throws ErroRepositorioException;
+
+	public Collection<String> pesquisarUsuarioSenha(Integer idUsuario, int quantidadeHistorico) throws ErroRepositorioException;
 }

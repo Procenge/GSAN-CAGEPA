@@ -117,4 +117,6 @@ public class FiltroParcelamentoTermoTestemunhas
 
 	public final static String PARCELAMENTO_ID = "parcelamento.id";
 
+	public final static String IMOVEL = "imovel";
+
 }

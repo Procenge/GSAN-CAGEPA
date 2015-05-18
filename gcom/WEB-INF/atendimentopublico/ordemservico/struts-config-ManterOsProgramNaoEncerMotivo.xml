@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="ManutencaoRegistroActionForm"
+			type="gcom.gui.ManutencaoRegistroActionForm" />
+		<form-bean name="AtualizarOsProgramNaoEncerMotivoActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.AtualizarOsProgramNaoEncerMotivoActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ExibirManterOsProgramNaoEncerMotivoAction"
+			validate="false" scope="session"
+			path="/exibirManterOsProgramNaoEncerMotivoAction">
+			<forward name="manterOsProgramNaoEncerMotivo"
+				path="/jsp/atendimentopublico/ordemservico/osProgramNaoEncerMotivo_manter.jsp" />
+			<forward name="exibirAtualizarOsProgramNaoEncerMotivo"
+				path="/exibirAtualizarOsProgramNaoEncerMotivoAction.do" />
+		</action>
+
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.RemoverOsProgramNaoEncerMotivoAction" scope="session"
+			path="/removerOsProgramNaoEncerMotivoAction">
+		</action>
+		
+		<action name="AtualizarOsProgramNaoEncerMotivoActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ExibirAtualizarOsProgramNaoEncerMotivoAction"
+			validate="false" scope="session"
+			path="/exibirAtualizarOsProgramNaoEncerMotivoAction">
+			<forward name="atualizarOsProgramNaoEncerMotivo"
+				path="/jsp/atendimentopublico/ordemservico/osProgramNaoEncerMotivo_atualizar.jsp" />
+		</action>
+		<action name="AtualizarOsProgramNaoEncerMotivoActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.AtualizarOsProgramNaoEncerMotivoAction"
+			validate="true" scope="session"
+			path="/atualizarOsProgramNaoEncerMotivoAction">
+		</action>
+
+	</action-mappings>
+
+</struts-config>

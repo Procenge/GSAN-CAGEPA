@@ -115,6 +115,24 @@ public class ParametroCadastro
 	public static final Parametro P_TIPO_SOLICITACAO_ESPECIFICACAO_CONTA_BRAILLE = new ParametroCadastro(
 					"P_TIPO_SOLICITACAO_ESPECIFICACAO_CONTA_BRAILLE");
 
+	public static final Parametro P_CNAE_OBRIGATORIO = new ParametroCadastro("P_CNAE_OBRIGATORIO");
+
+
+
+	public static final Parametro P_MATRICULA_COM_DIGITO_VERIFICADOR = new ParametroCadastro("P_MATRICULA_COM_DIGITO_VERIFICADOR");
+
+	public static final Parametro P_METODO_CALCULO_DIGITO_VERIFICADOR = new ParametroCadastro("P_METODO_CALCULO_DIGITO_VERIFICADOR");
+
+	public static final Parametro P_INDICADOR_RESTRICAO_ALTERACAO_QTDE_ECONOMIAS_IMOVEL = new ParametroCadastro(
+					"P_INDICADOR_RESTRICAO_ALTERACAO_QTDE_ECONOMIAS_IMOVEL");
+
+	public static final Parametro P_NUMERO_BENEFICIO_OBRIGATORIO = new ParametroCadastro("P_NUMERO_BENEFICIO_OBRIGATORIO");
+
+	public static final Parametro P_INDICADOR_INFORMAR_DATA_RELACAO_FIM_INSERIR_CLIENTE_IMOVEL = new ParametroCadastro(
+					"P_INDICADOR_INFORMAR_DATA_RELACAO_FIM_INSERIR_CLIENTE_IMOVEL");
+
+	public static final Parametro P_NUMERO_QUADRA_COM_5_DIGITOS = new ParametroCadastro("P_NUMERO_QUADRA_COM_5_DIGITOS");
+
 	private ParametroCadastro(String parametro) {
 
 		super(parametro);

@@ -78,7 +78,6 @@ package gcom.gui.atendimentopublico.ligacaoagua;
 
 import gcom.atendimentopublico.ligacaoagua.LigacaoAgua;
 import gcom.cadastro.imovel.Imovel;
-import gcom.micromedicao.RateioTipo;
 import gcom.micromedicao.hidrometro.HidrometroInstalacaoHistorico;
 import gcom.micromedicao.hidrometro.HidrometroLocalInstalacao;
 import gcom.micromedicao.hidrometro.HidrometroProtecao;
@@ -798,8 +797,6 @@ public class EfetuarReligacaoAguaComSubstituicaoHidrometroActionForm
 		// numero hidrometro
 		hidrometroInstalacaoHistorico.setNumeroHidrometro(getNumeroHidrometroNovo());
 
-		// tipo de rateio
-		hidrometroInstalacaoHistorico.setRateioTipo(new RateioTipo(RateioTipo.RATEIO_POR_IMOVEL));
 		hidrometroInstalacaoHistorico.setDataImplantacaoSistema(new Date());
 
 		// indicador instalação substituição

@@ -76,11 +76,17 @@
 
 package gcom.gui.cadastro.imovel;
 
+import gcom.atendimentopublico.registroatendimento.bean.ObterIndicadorExistenciaHidrometroHelper;
 import gcom.cadastro.imovel.Imovel;
 import gcom.fachada.Fachada;
 import gcom.faturamento.conta.Conta;
 import gcom.faturamento.conta.ContaHistorico;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
+import gcom.util.Util;
+import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
 import java.util.*;
 
@@ -144,7 +150,9 @@ public class ExibirConsultarImovelHistoricoFaturamentoAction
 
 
 			consultarImovelActionForm.setMatriculaImovelHistoricoFaturamento(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelHistoricoFaturamento(null);
 			consultarImovelActionForm.setSituacaoAguaHistoricoFaturamento(null);
+			consultarImovelActionForm.setTipoLigacao(null);
 			consultarImovelActionForm.setSituacaoEsgotoHistoricoFaturamento(null);
 			consultarImovelActionForm.setConta(null);
 			consultarImovelActionForm.setDescricaoImovel(null);
@@ -221,10 +229,40 @@ public class ExibirConsultarImovelHistoricoFaturamentoAction
 					consultarImovelActionForm.setMatriculaImovelHistoricoFaturamento(fachada.pesquisarInscricaoImovel(Integer
 									.valueOf(idImovelHistoricoFaturamento.trim()), true));
 
+					try{
+						if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString()
+										.equals(ConstantesSistema.NAO.toString())){
+							if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+								consultarImovelActionForm.setDigitoVerificadorImovelHistoricoFaturamento(Imovel
+												.getDigitoVerificadorMatricula(idImovelHistoricoFaturamento.trim()));
+							}
+						}
+					}catch(ControladorException e1){
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						throw new ActionServletException(e1.getMessage(), e1);
+					}
+
 					httpServletRequest.setAttribute("idImovelHistoricoFaturamentoNaoEncontrado", null);
 
 					// seta a situação de agua
 					consultarImovelActionForm.setSituacaoAguaHistoricoFaturamento(imovel.getLigacaoAguaSituacao().getDescricao());
+
+					// seta o tipo de ligação
+					if(idImovelHistoricoFaturamento != null || idImovelHistoricoFaturamento != ""){
+						boolean tipoLigacaoBoolean = false;
+						ObterIndicadorExistenciaHidrometroHelper obterIndicadorExistenciaHidrometroHelper = fachada
+										.obterIndicadorExistenciaHidrometroLigacaoAguaPoco(Util.obterInteger(idImovelHistoricoFaturamento),
+														tipoLigacaoBoolean);
+						if(obterIndicadorExistenciaHidrometroHelper.getIndicadorLigacaoAgua().intValue() == 1
+										|| obterIndicadorExistenciaHidrometroHelper.getIndicadorPoco().intValue() == 1){
+							consultarImovelActionForm.setTipoLigacao("Hidrometrado");
+						}else{
+							consultarImovelActionForm.setTipoLigacao("Consumo Fixo");
+						}
+
+					}
+
 					// seta a situação de esgoto
 					consultarImovelActionForm.setSituacaoEsgotoHistoricoFaturamento(imovel.getLigacaoEsgotoSituacao().getDescricao());
 
@@ -314,8 +352,10 @@ public class ExibirConsultarImovelHistoricoFaturamentoAction
 
 				consultarImovelActionForm.setMatriculaImovelHistoricoFaturamento("IMÓVEL INEXISTENTE");
 
+				consultarImovelActionForm.setDigitoVerificadorImovelHistoricoFaturamento(null);
 				consultarImovelActionForm.setIdImovelHistoricoFaturamento(null);
 				consultarImovelActionForm.setSituacaoAguaHistoricoFaturamento(null);
+				consultarImovelActionForm.setTipoLigacao(null);
 				consultarImovelActionForm.setSituacaoEsgotoHistoricoFaturamento(null);
 				consultarImovelActionForm.setConta(null);
 				consultarImovelActionForm.setDescricaoImovel(null);
@@ -332,7 +372,9 @@ public class ExibirConsultarImovelHistoricoFaturamentoAction
 			httpServletRequest.setAttribute("idImovelHistoricoFaturamentoNaoEncontrado", null);
 
 			consultarImovelActionForm.setMatriculaImovelHistoricoFaturamento(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelHistoricoFaturamento(null);
 			consultarImovelActionForm.setSituacaoAguaHistoricoFaturamento(null);
+			consultarImovelActionForm.setTipoLigacao(null);
 			consultarImovelActionForm.setSituacaoEsgotoHistoricoFaturamento(null);
 			consultarImovelActionForm.setConta(null);
 			consultarImovelActionForm.setDescricaoImovel(null);
@@ -343,6 +385,24 @@ public class ExibirConsultarImovelHistoricoFaturamentoAction
 			sessao.removeAttribute("idImovelPrincipalAba");
 
 		}
+
+		try{
+			if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+				if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+					httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '1');
+				}else{
+					throw new ControladorException("erro.parametro.nao.informado", null, "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+				}
+
+			}else{
+				httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '0');
+			}
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new ActionServletException(e.getMessage(), e);
+		}
+
 		// httpServletRequest.setAttribute("colecaoContaImovel", colecaoContaImovel);
 		// httpServletRequest.setAttribute("colecaoContaHistoricoImovel",
 		// colecaoContaHistoricoImovel);

@@ -362,6 +362,8 @@ public class ImovelRelatorioHelper
 
 	private Short codigoRota;
 
+	private String consumoFixadoPoco;
+
 	public String getTipoFaturamento(){
 
 		return tipoFaturamento;
@@ -1869,6 +1871,23 @@ public class ImovelRelatorioHelper
 	public void setCodigoRota(Short codigoRota){
 
 		this.codigoRota = codigoRota;
+	}
+
+	/**
+	 * @return the consumoFixadoPoco
+	 */
+	public String getConsumoFixadoPoco(){
+
+		return consumoFixadoPoco;
+	}
+
+	/**
+	 * @param consumoFixadoPoco
+	 *            the consumoFixadoPoco to set
+	 */
+	public void setConsumoFixadoPoco(String consumoFixadoPoco){
+
+		this.consumoFixadoPoco = consumoFixadoPoco;
 	}
 
 }

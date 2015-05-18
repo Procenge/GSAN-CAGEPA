@@ -79,6 +79,8 @@
 
 package gcom.gui.cadastro.funcionario;
 
+import gcom.atendimentopublico.ordemservico.EquipeTipo;
+import gcom.atendimentopublico.ordemservico.FiltroEquipeTipo;
 import gcom.cadastro.empresa.Empresa;
 import gcom.cadastro.empresa.FiltroEmpresa;
 import gcom.cadastro.unidade.FiltroUnidadeOrganizacional;
@@ -145,6 +147,12 @@ public class ExibirInserirFuncionarioAction
 
 		httpServletRequest.setAttribute("colecaoEmpresa", colecaoEmpresa);
 
+		FiltroEquipeTipo filtroEquipeTipo = new FiltroEquipeTipo();
+		filtroEquipeTipo.setCampoOrderBy(FiltroEquipeTipo.DESCRICAO);
+
+		httpServletRequest
+						.setAttribute("colecaoEquipeTipo", Fachada.getInstancia().pesquisar(filtroEquipeTipo, EquipeTipo.class.getName()));
+
 		// -------Parte que trata do código quando o usuário tecla enter
 
 		String idDigitadoEnterUnidadeEmpresa = form.getIdUnidade();
@@ -186,6 +194,7 @@ public class ExibirInserirFuncionarioAction
 			form.setIdUnidade("");
 			form.setNomeUnidade("");
 			form.setNome("");
+			form.setIdEquipeTipo(ConstantesSistema.NUMERO_NAO_INFORMADO);
 
 		}
 		// Fim------------Desfazer--------------------

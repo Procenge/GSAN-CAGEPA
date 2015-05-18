@@ -64,6 +64,18 @@
         column="cmrv_icinibeparcelamento"
         length="2"
     />
+    
+      <property
+        name="indicadorInibeDeclaracaoQuitacao"
+        type="java.lang.Short"
+        column="CMRV_ICINIBEDECLARACAOQUITACAO"
+        length="2"
+    />
+    
+    
+     
+    
+    
 
     <!-- Associations -->
   

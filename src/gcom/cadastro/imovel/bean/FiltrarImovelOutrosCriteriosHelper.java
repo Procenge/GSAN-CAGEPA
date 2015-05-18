@@ -180,6 +180,10 @@ public class FiltrarImovelOutrosCriteriosHelper {
 
 	private String consumoMinimoFixadoEsgotoFinal;
 
+	private String consumoFixadoEsgotoPocoInicial;
+
+	private String consumoFixadoEsgotoPocoFinal;
+
 	private String tipoMedicao;
 
 	private String perfilImovel;
@@ -1318,6 +1322,40 @@ public class FiltrarImovelOutrosCriteriosHelper {
 	public void setRecadastramentoNumeroFinal(String recadastramentoNumeroFinal){
 
 		this.recadastramentoNumeroFinal = recadastramentoNumeroFinal;
+	}
+
+	/**
+	 * @return the consumoFixadoEsgotoPocoInicial
+	 */
+	public String getConsumoFixadoEsgotoPocoInicial(){
+
+		return consumoFixadoEsgotoPocoInicial;
+	}
+
+	/**
+	 * @param consumoFixadoEsgotoPocoInicial
+	 *            the consumoFixadoEsgotoPocoInicial to set
+	 */
+	public void setConsumoFixadoEsgotoPocoInicial(String consumoFixadoEsgotoPocoInicial){
+
+		this.consumoFixadoEsgotoPocoInicial = consumoFixadoEsgotoPocoInicial;
+	}
+
+	/**
+	 * @return the consumoFixadoEsgotoPocoFinal
+	 */
+	public String getConsumoFixadoEsgotoPocoFinal(){
+
+		return consumoFixadoEsgotoPocoFinal;
+	}
+
+	/**
+	 * @param consumoFixadoEsgotoPocoFinal
+	 *            the consumoFixadoEsgotoPocoFinal to set
+	 */
+	public void setConsumoFixadoEsgotoPocoFinal(String consumoFixadoEsgotoPocoFinal){
+
+		this.consumoFixadoEsgotoPocoFinal = consumoFixadoEsgotoPocoFinal;
 	}
 
 }

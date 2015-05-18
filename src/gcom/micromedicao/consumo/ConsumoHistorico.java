@@ -149,6 +149,8 @@ public class ConsumoHistorico
 	/** nullable persistent field */
 	private Integer consumoMinimoCreditado;
 
+	private Integer consumoPoco;
+
 	private Rota rota;
 
 	/**
@@ -619,6 +621,16 @@ public class ConsumoHistorico
 	public String getDescricaoParaRegistroTransacao(){
 
 		return getId() + "";
+	}
+
+	public Integer getConsumoPoco(){
+
+		return consumoPoco;
+	}
+
+	public void setConsumoPoco(Integer consumoPoco){
+
+		this.consumoPoco = consumoPoco;
 	}
 
 }

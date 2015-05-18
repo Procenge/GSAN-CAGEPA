@@ -44,10 +44,10 @@ public class GcsME
 			dadosAcessoGcsME = Fachada.getInstancia().consultarDadosAcessoGcsME(usuariologado);
 
 			if(dadosAcessoGcsME == null || dadosAcessoGcsME[1] == null || dadosAcessoGcsME[2] == null){
-				throw new ActionServletException("erro.usuario.logado.nao.acesso.modulo.gestao.leitura");
+				throw new ActionServletException("atencao.usuario.logado.nao.acesso.modulo.gestao.leitura");
 			}
 		}else{
-			throw new ActionServletException("erro.usuario.logado.nao.associado.funcionario");
+			throw new ActionServletException("atencao.usuario.logado.nao.associado.funcionario");
 		}
 		
 		String login =  ((Integer)dadosAcessoGcsME[0]).toString();

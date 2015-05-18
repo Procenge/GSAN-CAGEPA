@@ -34,6 +34,7 @@
 	<parameter name="mesAno6" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="periodoEncerramento" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_NM_ESTADO" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NOME_EMPRESA_RELATORIO" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="getEquipe" class="java.lang.String"/>
 	<field name="getUnidadeAtual" class="java.lang.String"/>
@@ -375,7 +376,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["COMPANHIA DE SANEAMENTO DE  "  + $P{P_NM_ESTADO}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NOME_EMPRESA_RELATORIO}+" "  + $P{P_NM_ESTADO}]]></textFieldExpression>
 				</textField>
 			</band>
 			</groupHeader>

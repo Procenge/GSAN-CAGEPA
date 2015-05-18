@@ -255,6 +255,30 @@ public class FiltrarRegistroAtendimentoAction
 			parametroInformado = true;
 		}
 
+		// Indicador Ra Vencidas
+		String indicadorRaVencidas = "";
+
+		if(!Util.isVazioOuBranco(filtrarRegistroAtendimentoActionForm.getIndicadorRaVencidas())){
+			indicadorRaVencidas = filtrarRegistroAtendimentoActionForm.getIndicadorRaVencidas();
+			parametroInformado = true;
+		}
+
+		// Indicador Ra com Pagamento()
+		String indicadorRaPagamento = "";
+
+		if(!Util.isVazioOuBranco(filtrarRegistroAtendimentoActionForm.getIndicadorRaPagamento())){
+			indicadorRaPagamento = filtrarRegistroAtendimentoActionForm.getIndicadorRaPagamento();
+			parametroInformado = true;
+		}
+
+		// Indicador Ra Devolucao
+		String indicadorRaDevolucao = "";
+
+		if(!Util.isVazioOuBranco(filtrarRegistroAtendimentoActionForm.getIndicadorRaDevolucao())){
+			indicadorRaDevolucao = filtrarRegistroAtendimentoActionForm.getIndicadorRaDevolucao();
+			parametroInformado = true;
+		}
+
 		// Tipo Solicitação
 		Collection<Integer> colecaoSolicitacaoTipoSolicitacao = new ArrayList();
 		if(filtrarRegistroAtendimentoActionForm.getTipoSolicitacao() != null
@@ -614,6 +638,9 @@ public class FiltrarRegistroAtendimentoAction
 			filtroRA.setIndicadorOrdemServicoGerada(IndicadorOrdemServicoGerada);
 			filtroRA.setIndicadorGeradaPelaUnidadeAtual(IndicadorGeradaPelaUnidadeAtual);
 			filtroRA.setIndicadorProcessoAdmJud(indicadorProcessoAdmJud);
+			filtroRA.setIndicadorRaVencidas(indicadorRaVencidas);
+			filtroRA.setIndicadorRaPagamento(indicadorRaPagamento);
+			filtroRA.setIndicadorRaDevolucao(indicadorRaDevolucao);
 
 			if(filtrarRegistroAtendimentoActionForm.getTipoPesquisa() != null){
 
@@ -738,6 +765,8 @@ public class FiltrarRegistroAtendimentoAction
 
 			helper.setEnderecoOcorrencia(enderecoOcorrencia);
 			// Cria um OSFiltroHelper para cada OS associada ao RA
+
+			helper.setQuantidadeGuiasPendentes(registroAtendimento.getQuantidadeGuiasPendentes());
 
 			colecaoRAHelper.add(helper);
 

@@ -6,14 +6,7 @@ import gcom.cadastro.localidade.Localidade;
 import gcom.cadastro.localidade.SetorComercial;
 import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.interceptor.ObjetoGcom;
-import gcom.operacional.Bacia;
-import gcom.operacional.DistritoOperacional;
-import gcom.operacional.SetorAbastecimento;
-import gcom.operacional.SistemaAbastecimento;
-import gcom.operacional.SistemaEsgoto;
-import gcom.operacional.SubBacia;
-import gcom.operacional.SubsistemaEsgoto;
-import gcom.operacional.ZonaAbastecimento;
+import gcom.operacional.*;
 
 import java.util.Date;
 
@@ -61,6 +54,8 @@ public class ServicoTipoTramite
 	private UnidadeOrganizacional unidadeOrganizacionalOrigem;
 
 	private UnidadeOrganizacional unidadeOrganizacionalDestino;
+
+	private Short indicadorPrimeiroTramite;
 
 	public Integer getId(){
 
@@ -236,6 +231,16 @@ public class ServicoTipoTramite
 
 		String[] retorno = {"id"};
 		return retorno;
+	}
+
+	public Short getIndicadorPrimeiroTramite(){
+
+		return indicadorPrimeiroTramite;
+	}
+
+	public void setIndicadorPrimeiroTramite(Short indicadorPrimeiroTramite){
+
+		this.indicadorPrimeiroTramite = indicadorPrimeiroTramite;
 	}
 
 }

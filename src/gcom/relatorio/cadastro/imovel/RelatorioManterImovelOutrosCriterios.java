@@ -219,6 +219,13 @@ public class RelatorioManterImovelOutrosCriterios
 		String consumoMinimoFixadoEsgotoInicial = (String) getParametro("consumoMinimoFixadoEsgotoInicial");
 		// consumo Minimo Fixado Esgoto Final
 		String consumoMinimoFixadoEsgotoFinal = (String) getParametro("consumoMinimoFixadoEsgotoFinal");
+
+		// consumo Fixado Esgoto do Poço Inicial
+		String consumoFixadoEsgotoPocoInicial = (String) getParametro("consumoFixadoEsgotoPocoInicial");
+
+		// consumo Fixado Esgoto do Poço Final
+		String consumoFixadoEsgotoPocoFinal = (String) getParametro("consumoFixadoEsgotoPocoFinal");
+
 		// intervalo Percentual Esgoto Inicial
 		String intervaloPercentualEsgotoInicial = (String) getParametro("intervaloPercentualEsgotoInicial");
 		// intervalor Percentual Esgoto Final
@@ -299,7 +306,8 @@ public class RelatorioManterImovelOutrosCriterios
 						quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimentoAlternativo, clienteID, clienteTipoID,
 						clienteRelacaoTipoID, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 						areaConstruidaFaixa, idUnidadeNegoio, rotaInicial, rotaFinal, sequencialRotaInicial, sequencialRotaFinal,
-						segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+						segmentoInicial, segmentoFinal, subloteInicial, subloteFinal, consumoFixadoEsgotoPocoInicial,
+						consumoFixadoEsgotoPocoFinal);
 
 		// valor de retorno
 		byte[] retorno = null;
@@ -620,7 +628,10 @@ public class RelatorioManterImovelOutrosCriterios
 												.getNumeroSequencialRota().toString(),
 
 								// id Logradouro
-								imovelRelatorioHelper.getIdLogradouro() == null ? "" : imovelRelatorioHelper.getIdLogradouro().toString());
+								imovelRelatorioHelper.getIdLogradouro() == null ? "" : imovelRelatorioHelper.getIdLogradouro().toString(),
+
+								// Consumo Fixado Poço
+								imovelRelatorioHelper.getConsumoFixadoPoco() == null ? "" : imovelRelatorioHelper.getConsumoFixadoPoco());
 
 				// Fim dos Dados do Hidrômetro Instalado na Saída do
 				// Poço
@@ -820,6 +831,13 @@ public class RelatorioManterImovelOutrosCriterios
 		String consumoMinimoFixadoEsgotoInicial = (String) getParametro("consumoMinimoFixadoEsgotoInicial");
 		// consumo Minimo Fixado Esgoto Final
 		String consumoMinimoFixadoEsgotoFinal = (String) getParametro("consumoMinimoFixadoEsgotoFinal");
+
+		// consumo Fixado Esgoto do Poço Inicial
+		String consumoFixadoEsgotoPocoInicial = (String) getParametro("consumoFixadoEsgotoPocoInicial");
+
+		// consumo Fixado Esgoto do Poço Final
+		String consumoFixadoEsgotoPocoFinal = (String) getParametro("consumoFixadoEsgotoPocoFinal");
+
 		// intervalo Percentual Esgoto Inicial
 		String intervaloPercentualEsgotoInicial = (String) getParametro("intervaloPercentualEsgotoInicial");
 		// intervalor Percentual Esgoto Final
@@ -900,7 +918,8 @@ public class RelatorioManterImovelOutrosCriterios
 						quantidadeEconomiasFinal, diaVencimentoAlternativo, clienteID, clienteTipoID, clienteRelacaoTipoID,
 						numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal, areaConstruidaFaixa,
 						idUnidadeNegocio, ConstantesSistema.GERAR_RELATORIO_IMOVEL, rotaInicial, rotaFinal, sequencialRotaInicial,
-						sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+						sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal, consumoFixadoEsgotoPocoInicial,
+						consumoFixadoEsgotoPocoFinal);
 
 		return quantidade.intValue();
 	}

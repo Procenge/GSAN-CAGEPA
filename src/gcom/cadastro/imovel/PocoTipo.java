@@ -78,6 +78,9 @@ package gcom.cadastro.imovel;
 
 import gcom.interceptor.ControleAlteracao;
 import gcom.interceptor.ObjetoTransacao;
+import gcom.util.ErroRepositorioException;
+import gcom.util.RepositorioUtilHBM;
+import gcom.util.SistemaException;
 import gcom.util.filtro.Filtro;
 import gcom.util.filtro.ParametroSimples;
 
@@ -119,9 +122,60 @@ public class PocoTipo
 	 */
 	private String descricaoComId;
 
+	private String codigoConstante;
 
+	// Constantes
+	public static Integer POCO_TEE;
 
-	public final static Integer POCO_TEE = Integer.valueOf(6);
+	public static Integer SEM_POCO;
+
+	/**
+	 * Este enum foi criado para dar suporte ao carregamento de constantes da classe em tempo de
+	 * execução. As constantes foram criadas aqui como atributos do enum, o que resolveu o problema
+	 * das constantes com descrições diferentes mas que utilizavam o mesmo
+	 * valor. Caso a constante não seja utilizada por um determinado cliente será atribuído -1 ao
+	 * seu valor.
+	 * 
+	 * @author Anderson Italo
+	 * @date 21/07/2014
+	 */
+	public static enum PocoTipoEnum {
+
+		POCO_TEE, SEM_POCO;
+
+		private Integer id = -1;
+
+		private PocoTipoEnum() {
+
+			try{
+				PocoTipo pocoTipo = RepositorioUtilHBM.getInstancia().pesquisarPorCodigo(name(), PocoTipo.class);
+
+				if(pocoTipo != null){
+
+					id = pocoTipo.getId();
+				}
+			}catch(ErroRepositorioException e){
+
+				e.printStackTrace();
+				throw new SistemaException(e, e.getMessage());
+			}
+		}
+
+		public Integer getId(){
+
+			return id;
+		}
+	}
+
+	/**
+	 * @author Anderson Italo
+	 * @date 21/07/2014
+	 */
+	public static void inicializarConstantes(){
+
+		POCO_TEE = PocoTipoEnum.POCO_TEE.getId();
+		SEM_POCO = PocoTipoEnum.SEM_POCO.getId();
+	}
 
 	/**
 	 * full constructor
@@ -286,4 +340,15 @@ public class PocoTipo
 
 		return getId() + " " + getDescricao();
 	}
+
+	public String getCodigoConstante(){
+
+		return codigoConstante;
+	}
+
+	public void setCodigoConstante(String codigoConstante){
+
+		this.codigoConstante = codigoConstante;
+	}
+
 }

@@ -116,6 +116,8 @@ public class ClassificarLotePagamentosNaoClassificadosHelper
 
 	private String DescricaoSitucaoPagamento;
 
+
+
 	public char getOpcaoGeracao(){
 
 		return opcaoGeracao;
@@ -235,5 +237,7 @@ public class ClassificarLotePagamentosNaoClassificadosHelper
 
 		DescricaoSitucaoPagamento = descricaoSitucaoPagamento;
 	}
+
+
 
 }

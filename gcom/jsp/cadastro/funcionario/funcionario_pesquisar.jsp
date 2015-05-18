@@ -97,6 +97,15 @@
 			<td><html:text maxlength="40" property="nome"
 				size="40" tabindex="2" /></td>
 		</tr>
+		
+		<tr>
+			<td width="162"><strong>Tipo da Equipe:</strong></td>
+			<td><html:select property="idEquipeTipo">
+				<option value=""></option>
+				<html:options name="request" collection="colecaoEquipeTipo"
+					labelProperty="descricao" property="id" />
+			</html:select></td>
+		</tr>
                   
         <tr> 
         <tr> 

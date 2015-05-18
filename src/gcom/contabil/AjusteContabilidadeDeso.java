@@ -8,37 +8,46 @@ import gcom.arrecadacao.RepositorioArrecadacaoHBM;
 import gcom.arrecadacao.bean.OperacaoContabilHelper;
 import gcom.arrecadacao.pagamento.*;
 import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao;
+import gcom.atendimentopublico.registroatendimento.ControladorRegistroAtendimentoLocal;
+import gcom.atendimentopublico.registroatendimento.ControladorRegistroAtendimentoLocalHome;
 import gcom.batch.ControladorBatchLocal;
 import gcom.batch.ControladorBatchLocalHome;
+import gcom.cadastro.ControladorCadastroLocal;
+import gcom.cadastro.ControladorCadastroLocalHome;
+import gcom.cadastro.cliente.Cliente;
+import gcom.cadastro.cliente.ClienteTipo;
 import gcom.cadastro.imovel.*;
 import gcom.cobranca.CobrancaForma;
 import gcom.cobranca.CobrancaSituacao;
 import gcom.cobranca.ControladorCobrancaLocal;
 import gcom.cobranca.ControladorCobrancaLocalHome;
+import gcom.cobranca.bean.ContaValoresHelper;
+import gcom.cobranca.bean.IntervaloReferenciaHelper;
 import gcom.cobranca.parcelamento.Parcelamento;
 import gcom.fachada.Fachada;
 import gcom.faturamento.*;
 import gcom.faturamento.bean.CalcularValoresAguaEsgotoFaixaHelper;
 import gcom.faturamento.bean.CalcularValoresAguaEsgotoHelper;
 import gcom.faturamento.conta.*;
-import gcom.faturamento.credito.CreditoARealizar;
-import gcom.faturamento.credito.CreditoRealizado;
-import gcom.faturamento.credito.CreditoTipo;
-import gcom.faturamento.credito.FiltroCreditoARealizar;
+import gcom.faturamento.credito.*;
 import gcom.faturamento.debito.*;
 import gcom.financeiro.lancamento.AjusteContabilidade;
 import gcom.financeiro.lancamento.LancamentoItemContabil;
+import gcom.gui.ActionServletException;
 import gcom.micromedicao.*;
 import gcom.micromedicao.medicao.FiltroMedicaoHistorico;
 import gcom.micromedicao.medicao.MedicaoHistorico;
 import gcom.micromedicao.medicao.MedicaoTipo;
+import gcom.seguranca.acesso.usuario.FiltroUsuario;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.*;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.ExecutorParametro;
 import gcom.util.parametrizacao.Parametrizacao;
+import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 import gcom.util.parametrizacao.cobranca.parcelamento.ParametroParcelamento;
 import gcom.util.parametrizacao.faturamento.ExecutorParametrosFaturamento;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -71,6 +80,144 @@ public class AjusteContabilidadeDeso
 
 	}
 
+	/**
+	 * @throws ControladorException
+	 * @throws ErroRepositorioException
+	 */
+	public void gerarCreditoARealizarAjuste(Integer referencia, String idsGrupos) throws ControladorException, ErroRepositorioException{
+
+		try{
+
+			this.ejbCreate();
+
+
+			log.info("Início Ajuste gerarCreditoARealizarConta Grupos: " + idsGrupos);
+			log.info("Ano Mês Referência: " + referencia.toString());
+
+			// ...Obter imoveis/contas
+
+			Collection colecaoDadosImoveisAjuste = repositorioMicromedicao.obterImoveisParaCreditoARealizarConta(referencia, idsGrupos);
+
+			if(!Util.isVazioOrNulo(colecaoDadosImoveisAjuste)){
+
+				log.info("Quantidade de Contas dos Grupos = " + colecaoDadosImoveisAjuste.size());
+
+				Integer qtd = 0;
+
+				for(Iterator iterator = colecaoDadosImoveisAjuste.iterator(); iterator.hasNext();){
+
+
+
+					Object[] dadosImovelAjuste = (Object[]) iterator.next();
+
+					Integer idImovel = (Integer) dadosImovelAjuste[0];
+					Integer consumoMedido = (Integer) dadosImovelAjuste[1];
+					Integer idConsumoTarifa = (Integer) dadosImovelAjuste[2];
+					Integer consumoFaturadoAgua = (Integer) dadosImovelAjuste[3];
+					Integer consumoFaturadoEsgoto = (Integer) dadosImovelAjuste[4];
+					Date dataLeituraAnterior = (Date) dadosImovelAjuste[5];
+					Date dataLeituraAtual = (Date) dadosImovelAjuste[6];
+
+					Imovel imovel = this.getControladorImovel().pesquisarImovel(idImovel);
+
+					Collection<Categoria> colecaoCategoria = getControladorImovel().obterQuantidadeEconomiasCategoria(imovel);
+					/*
+					 * Consumo mínimo da ligação <<Inclui>> [UC0105 – Obter Consumo Mínimo da
+					 * Ligação]
+					 */
+					int consumoMinimoLigacaoImovel = this.getControladorMicromedicao().obterConsumoMinimoLigacao(imovel, colecaoCategoria);
+
+					if(consumoMedido.intValue() < consumoMinimoLigacaoImovel){
+
+						log.info("Imóvel = " + imovel.getId());
+
+						// ****
+
+						// 1.1. Chamar “[UC0194] Inserir Crédito A Realizar” passando:
+						CreditoARealizar creditoARealizar = new CreditoARealizar();
+
+						CreditoTipo creditoTipo = new CreditoTipo();
+						creditoTipo.setId(CreditoTipo.CREDITOS_ANTERIORES);
+						creditoARealizar.setCreditoTipo(creditoTipo);
+
+						CreditoOrigem creditoOrigem = new CreditoOrigem();
+						creditoOrigem.setId(CreditoOrigem.DESCONTOS_CONDICIONAIS);
+						creditoARealizar.setCreditoOrigem(creditoOrigem);
+
+						creditoARealizar.setRegistroAtendimento(null);
+						creditoARealizar.setOrdemServico(null);
+						creditoARealizar.setAnoMesReferenciaCredito(referencia);
+						creditoARealizar.setNumeroPrestacaoCredito(ConstantesSistema.SIM);
+
+						creditoARealizar.setImovel(imovel);
+
+						creditoARealizar.setCodigoSetorComercial(imovel.getSetorComercial().getCodigo());
+						creditoARealizar.setNumeroQuadra(imovel.getQuadra().getNumeroQuadra());
+						creditoARealizar.setNumeroLote(imovel.getLote());
+						creditoARealizar.setNumeroSubLote(imovel.getSubLote());
+						creditoARealizar.setQuadra(imovel.getQuadra());
+						creditoARealizar.setLocalidade(imovel.getLocalidade());
+
+						// [SB0021] – Determinar valor do crédito
+
+						// [UC0120] - Calcular Valores de Água e/ou Esgoto]
+						Collection colecaoCalcularValoresAguaEsgotoHelper = null;
+
+						BigDecimal percentualEsgoto = BigDecimal.ZERO;
+
+						BigDecimal valorCredito = BigDecimal.ZERO;
+
+						colecaoCalcularValoresAguaEsgotoHelper = this.getControladorFaturamento().calcularValoresAguaEsgoto(referencia,
+										imovel.getLigacaoAguaSituacao().getId(), imovel.getLigacaoEsgotoSituacao().getId(),
+										imovel.getLigacaoAguaSituacao().getIndicadorFaturamentoSituacao(),
+										imovel.getLigacaoEsgotoSituacao().getIndicadorFaturamentoSituacao(), colecaoCategoria,
+										consumoFaturadoAgua, consumoFaturadoEsgoto, consumoMinimoLigacaoImovel, dataLeituraAnterior,
+										dataLeituraAtual, percentualEsgoto, idConsumoTarifa, imovel.getId(), null);
+
+						for(Iterator iteratorColecaoCalcularValoresAguaEsgotoHelper = colecaoCalcularValoresAguaEsgotoHelper.iterator(); iteratorColecaoCalcularValoresAguaEsgotoHelper
+										.hasNext();){
+
+							CalcularValoresAguaEsgotoHelper calcularValoresAguaEsgotoHelper = (CalcularValoresAguaEsgotoHelper) iteratorColecaoCalcularValoresAguaEsgotoHelper
+											.next();
+
+							valorCredito = valorCredito.add(calcularValoresAguaEsgotoHelper.getValorTarifaMinimaAguaCategoria());
+
+
+						}
+
+						// ---------------------------------------------------------------------------------
+						// [SB0003] - Determinar Valores para Faturamento de Água e/ou Esgoto - Fim
+						// ---------------------------------------------------------------------------------
+						if(valorCredito.compareTo(BigDecimal.ZERO) > 0){
+
+							creditoARealizar.setValorCredito(valorCredito);
+
+							this.getControladorFaturamento().inserirCreditoARealizar(imovel, creditoARealizar, Usuario.USUARIO_BATCH);
+
+							qtd++;
+
+							log.info("Quantidade de Contas Processadas = " + qtd);
+						}
+
+					}
+
+
+
+					// ***
+
+				}
+
+				log.info("********Fim Execução! Ajuste gerarCreditoARealizarAjuste Grupos: " + idsGrupos
+								+ " Quantidade de Creditos Inseridos Processadas= " + qtd);
+
+			}
+
+		}catch(CreateException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
 
 	private ControladorContabilLocal getControladorContabil(){
 
@@ -235,6 +382,46 @@ public class AjusteContabilidadeDeso
 		}
 	}
 
+	private ControladorCadastroLocal getControladorCadastro(){
+
+		ControladorCadastroLocalHome localHome = null;
+		ControladorCadastroLocal local = null;
+
+		ServiceLocator locator = null;
+
+		try{
+			locator = ServiceLocator.getInstancia();
+			localHome = (ControladorCadastroLocalHome) locator.getLocalHome(ConstantesJNDI.CONTROLADOR_CADASTRO_SEJB);
+			local = localHome.create();
+
+			return local;
+		}catch(CreateException e){
+			throw new SistemaException(e);
+		}catch(ServiceLocatorException e){
+			throw new SistemaException(e);
+		}
+	}
+
+	private ControladorRegistroAtendimentoLocal getControladorRegistroAtendimento(){
+
+		ControladorRegistroAtendimentoLocalHome localHome = null;
+		ControladorRegistroAtendimentoLocal local = null;
+
+		ServiceLocator locator = null;
+
+		try{
+			locator = ServiceLocator.getInstancia();
+			localHome = (ControladorRegistroAtendimentoLocalHome) locator
+							.getLocalHome(ConstantesJNDI.CONTROLADOR_REGISTRO_ATENDIMENTO_SEJB);
+			local = localHome.create();
+
+			return local;
+		}catch(CreateException e){
+			throw new SistemaException(e);
+		}catch(ServiceLocatorException e){
+			throw new SistemaException(e);
+		}
+	}
 
 	/**
 	 * Ajuste Resumo ação de cobrança
@@ -522,10 +709,10 @@ public class AjusteContabilidadeDeso
 			this.ejbCreate();
 
 			// Atenção !!! lembra de mudar!!!
-			Integer idFaturamentoGrupo = 100;
+			Integer idFaturamentoGrupo = 19;
 			
-			Integer anoMesReferencia = 201304;
-			Integer anoMesReferenciaUltimaCobranca = 201302;
+			Integer anoMesReferencia = 201503;
+			Integer anoMesReferenciaUltimaCobranca = 201502;
 			Collection collDebitoACobrarParaAtualizarPrestacoes = new ArrayList();
 
 
@@ -716,6 +903,8 @@ public class AjusteContabilidadeDeso
 
 								}
 
+							this.getControladorCobranca().removerClienteDebitoACobrarHistorico(debitoACobrarHistorico);
+
 							repositorioFaturamento.removerDebitoACobrarCategoriaHistorico(debitoACobrarHistorico.getId());
 
 							repositorioFaturamento.deletarDebitoACobrarHistorico(debitoACobrarHistorico.getId());
@@ -723,6 +912,8 @@ public class AjusteContabilidadeDeso
 							repositorioFaturamento.inserirDebitoACobrar(debitoACobrar);
 
 							repositorioFaturamento.inserirDebitoACobrarCategoria(debitoACobrarCategoria);
+
+							this.getControladorCobranca().inserirClienteDebitoACobrar(debitoACobrar);
 
 							}
 
@@ -844,7 +1035,8 @@ public class AjusteContabilidadeDeso
 	}
 
 
-	public void executarAjustarRegistrosContaEGuiaDeso() throws Exception{
+	public void executarAjustarRegistrosContaEGuia(Integer idClienteResponsavel, Integer idImovel,
+					Collection<IntervaloReferenciaHelper> colecaoReferencias, BigDecimal valorJuros) throws Exception{
 
 		this.ejbCreate();
 
@@ -857,17 +1049,10 @@ public class AjusteContabilidadeDeso
 
 		String nomeArquivo = "AjusteRegistrosContaEGuiaDeso" + Util.formatarDataComTracoAAAAMMDDHHMMSS(new Date()) + ".txt";
 
-		// this.ajustarGuiasInvalidas(arquivoConferencia);
-		//
-		// arquivoConferencia.append(System.getProperty("line.separator"));
-		// arquivoConferencia.append(System.getProperty("line.separator"));
-
-		this.ajustarContasInvalidas(arquivoConferencia);
-
 		arquivoConferencia.append(System.getProperty("line.separator"));
 		arquivoConferencia.append(System.getProperty("line.separator"));
 
-		this.ajustarContasHistoricoInvalidas(arquivoConferencia);
+		this.executarGerarGuiaParcelamentoOrgaoPublico(arquivoConferencia, idClienteResponsavel, idImovel, colecaoReferencias, valorJuros);
 
 		arquivoConferencia.append(System.getProperty("line.separator"));
 		arquivoConferencia.append(System.getProperty("line.separator"));
@@ -877,6 +1062,7 @@ public class AjusteContabilidadeDeso
 		log.info("*** FIM AJUSTE REGISTOS CONTA E GUIA");
 
 		this.gerarArquivo(arquivoConferencia, nomeArquivo);
+
 	}
 
 	public void executarAjustarContabilidadeArrecadacao(Integer limite) throws Exception{
@@ -1225,7 +1411,7 @@ public class AjusteContabilidadeDeso
 													indicadorFaturamentoEsgoto, colecaoCategorias, conta.getConsumoAgua(),
 													conta.getConsumoEsgoto(), consumoMinimoLigacao, dataLeituraAnteriorFaturamento,
 													dataLeituraAtualFaturamento, conta.getPercentualEsgoto(),
-													conta.getConsumoTarifa().getId(), imovel.getId());
+													conta.getConsumoTarifa().getId(), imovel.getId(), null);
 
 					BigDecimal valorTotalAgua = BigDecimal.ZERO;
 					BigDecimal valorTotalEsgoto = BigDecimal.ZERO;
@@ -1428,7 +1614,7 @@ public class AjusteContabilidadeDeso
 													contaHistorico.getConsumoEsgoto(), consumoMinimoLigacao,
 													dataLeituraAnteriorFaturamento, dataLeituraAtualFaturamento,
 													contaHistorico.getPercentualEsgoto(), contaHistorico.getConsumoTarifa().getId(),
-													imovel.getId());
+													imovel.getId(), null);
 
 					BigDecimal valorTotalAgua = BigDecimal.ZERO;
 					BigDecimal valorTotalEsgoto = BigDecimal.ZERO;
@@ -1549,7 +1735,9 @@ public class AjusteContabilidadeDeso
 
 				contaCategoriaPK.setConta(conta);
 				contaCategoriaPK.setCategoria(categoria);
-				contaCategoriaPK.setSubcategoria(Subcategoria.SUBCATEGORIA_ZERO);
+				contaCategoriaPK.setSubcategoria(this.getControladorImovel()
+								.obterPrincipalSubcategoria(categoria.getId(), conta.getImovel().getId()).getComp_id().getSubcategoria());
+
 
 				contaCategoria.setComp_id(contaCategoriaPK);
 				contaCategoria.setValorAgua(calcularValoresAguaEsgotoHelper.getValorFaturadoAguaCategoria());
@@ -2241,5 +2429,96 @@ public class AjusteContabilidadeDeso
 		return ExecutorParametrosFaturamento.getInstancia();
 	}
 
+
+	public void executarGerarGuiaParcelamentoOrgaoPublico(StringBuilder arquivoConferencia, Integer idClienteResponsavel, Integer idImovel,
+					Collection<IntervaloReferenciaHelper> colecaoReferencias, BigDecimal valorJuros) throws Exception{
+
+		this.ejbCreate();
+
+		Collection colecaoContaValoresHelper = new ArrayList();
+		
+		Collection colecaoContasSelecionadas = new ArrayList();
+
+		Integer pClienteRelacaoTipo = null;
+		try{
+
+			pClienteRelacaoTipo = Util.converterStringParaInteger((String) ParametroFaturamento.P_TIPO_RELACAO_ATUAL_TITULAR_DEBITO_IMOVEL
+							.executar());
+
+		}catch(ControladorException e){
+
+			throw new ActionServletException("atencao.sistemaparametro_inexistente", null, "P_TIPO_RELACAO_ATUAL_TITULAR_DEBITO_IMOVEL");
+		}
+
+		BigDecimal valorTotalContasParaGuia = repositorioArrecadacao.obterValorTotalContasParaCancelamento(pClienteRelacaoTipo,
+						idClienteResponsavel,
+						colecaoReferencias);
+
+
+		Collection colecaoIdContasParaCancelar = repositorioArrecadacao.obterContasParaCancelamento(idClienteResponsavel,
+						colecaoReferencias);
+
+		Iterator it = colecaoIdContasParaCancelar.iterator();
+		while(it.hasNext()){
+			Integer idConta = (Integer) it.next();
+
+			Conta conta = this.getControladorFaturamento().consultarConta(idConta);
+
+			colecaoContasSelecionadas.add(conta);
+
+			ContaValoresHelper contaValoresHelper = new ContaValoresHelper();
+
+			contaValoresHelper.setConta(conta);
+
+			colecaoContaValoresHelper.add(contaValoresHelper);
+
+			arquivoConferencia.append("conta =" + conta.getId() + "-" + "Valor Conta = " + conta.getValorTotalContaSemImpostoECredito());
+
+			arquivoConferencia.append(System.getProperty("line.separator"));
+		}
+
+		arquivoConferencia.append("valorTotalContasParaGuia =" + valorTotalContasParaGuia);
+
+		// Filtra usuário
+		FiltroUsuario filtroUsuario = new FiltroUsuario();
+		filtroUsuario.adicionarParametro(new ParametroSimples(FiltroUsuario.ID, Usuario.USUARIO_BATCH.getId()));
+		filtroUsuario.adicionarCaminhoParaCarregamentoEntidade("unidadeOrganizacional");
+		// Recupera usuário
+		Collection colecaoUsuario = this.getControladorUtil().pesquisar(filtroUsuario, Usuario.class.getName());
+		Usuario usuario = (Usuario) Util.retonarObjetoDeColecao(colecaoUsuario);
+		// .............................................................................
+		
+		Cliente cliente = new Cliente();
+		cliente.setId(idClienteResponsavel);
+
+		ClienteTipo clienteTipo = new ClienteTipo();
+		clienteTipo.setIndicadorPessoaFisicaJuridica(ClienteTipo.INDICADOR_ESFERA_PODER_FEDERAL);
+		cliente.setClienteTipo(clienteTipo);
+
+		Imovel imovel = new Imovel();
+		imovel.setId(idImovel);
+
+		Integer parametroTipoSolicitacao = Integer
+						.valueOf(ParametroAtendimentoPublico.P_TIPO_SOLICITACAO_RA_CANCELAMENTO_CONTAS_ORGAO_PUBLICO
+						.executar());
+
+		Integer idRa = this.getControladorRegistroAtendimento().inserirRAPorSolicitacaoTipoEspecificacao(parametroTipoSolicitacao, usuario,
+						cliente, imovel);
+		//.............................................................................
+		
+		ContaMotivoCancelamento contaMotivoCancelamento = new ContaMotivoCancelamento();
+		contaMotivoCancelamento.setId(ContaMotivoCancelamento.CANCELAMENTO_PARA_GUIA);
+
+		this.getControladorFaturamento()
+						.cancelarConjuntoConta(colecaoContasSelecionadas, contaMotivoCancelamento, usuario,
+						idRa.toString());
+
+		this.getControladorCobranca().tratarContasParaGerarGuia(colecaoContaValoresHelper, valorTotalContasParaGuia, idImovel, valorJuros);
+
+	}
+
+
+
+	
 
 }

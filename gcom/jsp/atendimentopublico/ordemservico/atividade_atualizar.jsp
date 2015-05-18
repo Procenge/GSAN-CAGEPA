@@ -142,6 +142,16 @@
 					<td colspan="2"><span class="style2"> <html:text
 						property="descricaoAbreviada" size="8" maxlength="5" /> </span></td>
 				</tr>
+				
+				<!-- Valor Hora -->
+
+				<logic:equal name="permiteCobrarHora" value="1" scope="session">
+					<tr>
+					<td><strong>Valor Hora:</font></strong></td>
+					<td colspan="2"><span class="style2"> <html:text
+						property="valorHora" size="8" maxlength="11" onkeyup="javascript:formataValorMonetario(this, 11)" /> </span></td>
+				</tr>
+				</logic:equal>
 
 				<!-- Indicador de Uso -->
 

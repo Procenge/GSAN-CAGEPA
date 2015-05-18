@@ -140,6 +140,8 @@ public class FiltrarFuncionarioAction
 
 		String descricaoCargo = form.getDescricaoCargo();
 
+		Integer idEquipeTipo = form.getIdEquipeTipo();
+
 		// Verifica se o campo matricula foi informado
 
 		if(matricula != null && !matricula.trim().equalsIgnoreCase("")){
@@ -186,6 +188,11 @@ public class FiltrarFuncionarioAction
 
 			filtroFuncionario.adicionarParametro(new ParametroSimples(FiltroFuncionario.UNIDADE_ORGANIZACIONAL_ID, new Integer(idUnidade)));
 
+		}
+
+		if(idEquipeTipo != null && idEquipeTipo != ConstantesSistema.NUMERO_NAO_INFORMADO && idEquipeTipo != 0){
+			peloMenosUmParametroInformado = true;
+			filtroFuncionario.adicionarParametro(new ParametroSimples(FiltroFuncionario.EQUIPE_TIPO_ID, idEquipeTipo));
 		}
 
 		// Erro caso o usuário mandou Pesquisar sem nenhum parâmetro

@@ -82,8 +82,10 @@ import gcom.atendimentopublico.ordemservico.Material;
 import gcom.atendimentopublico.ordemservico.MaterialUnidade;
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 
 import java.util.Collection;
 
@@ -126,6 +128,15 @@ public class ExibirAtualizarMaterialAction
 
 		String idMaterial = null;
 
+		String permiteCobrarMaterial = "0";
+		try{
+			permiteCobrarMaterial = ParametroAtendimentoPublico.P_PERMITE_COBRAR_MATERIAL_OS.executar();
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		sessao.setAttribute("permiteCobrarMaterial", permiteCobrarMaterial);
 		if(httpServletRequest.getParameter("idMaterial") != null){
 			// tela do manter
 			idMaterial = (String) httpServletRequest.getParameter("idMaterial");
@@ -180,6 +191,11 @@ public class ExibirAtualizarMaterialAction
 		atualizarMaterialActionForm.setAbrevMaterial(material.getDescricaoAbreviada());
 
 		atualizarMaterialActionForm.setUnidadeMaterial(material.getMaterialUnidade().getId().toString());
+
+		if(material.getMaterialValor() != null){
+			String valoraux = material.getMaterialValor().toString().replace(".", ",");
+			atualizarMaterialActionForm.setMaterialValor(valoraux);
+		}
 
 		atualizarMaterialActionForm.setIndicadorUso("" + material.getIndicadorUso());
 

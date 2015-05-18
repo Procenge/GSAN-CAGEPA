@@ -101,6 +101,8 @@ public class InserirConsumoTarifaActionForm
 
 	private String slcCalculoTipo;
 
+	private String descricaoAtoAdministrativo;
+
 	public String getDataVigencia(){
 
 		return dataVigencia;
@@ -155,7 +157,17 @@ public class InserirConsumoTarifaActionForm
 
 		descTarifa = null;
 		dataVigencia = null;
+		descricaoAtoAdministrativo = null;
+	}
 
+	public String getDescricaoAtoAdministrativo(){
+
+		return descricaoAtoAdministrativo;
+	}
+
+	public void setDescricaoAtoAdministrativo(String descricaoAtoAdministrativo){
+
+		this.descricaoAtoAdministrativo = descricaoAtoAdministrativo;
 	}
 
 }

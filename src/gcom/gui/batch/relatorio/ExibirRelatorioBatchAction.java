@@ -135,7 +135,13 @@ public class ExibirRelatorioBatchAction
 			// filename=relatorio");
 
 			String mimeType = null;
-			switch((Integer) tarefaRelatorio.getParametro("tipoFormatoRelatorio")){
+
+			Integer tipoFormatoRelatorio = TarefaRelatorio.TIPO_PDF;
+			if(!Util.isVazioOuBranco(tarefaRelatorio.getParametro("tipoFormatoRelatorio"))){
+				tipoFormatoRelatorio = (Integer) tarefaRelatorio.getParametro("tipoFormatoRelatorio");
+			}
+
+			switch(tipoFormatoRelatorio){
 				case TarefaRelatorio.TIPO_PDF:
 					httpServletResponse.addHeader("Content-Disposition", "attachment; filename=relatorio.pdf");
 					mimeType = "application/pdf";

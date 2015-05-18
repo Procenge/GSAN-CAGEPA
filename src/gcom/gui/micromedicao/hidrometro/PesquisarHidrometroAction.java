@@ -79,18 +79,16 @@ package gcom.gui.micromedicao.hidrometro;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.micromedicao.hidrometro.FiltroHidrometro;
+import gcom.micromedicao.bean.FiltroHidrometroHelper;
 import gcom.micromedicao.hidrometro.Hidrometro;
+import gcom.micromedicao.hidrometro.HidrometroSituacao;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
-import gcom.util.filtro.ComparacaoTexto;
-import gcom.util.filtro.ParametroSimples;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -110,7 +108,7 @@ public class PesquisarHidrometroAction
 		PesquisarHidrometroActionForm pesquisarHidrometroActionForm = (PesquisarHidrometroActionForm) actionForm;
 
 		// Coleção que armazena o resultado da pesquisa
-		Collection<Hidrometro> hidrometros = null;
+		Collection<Hidrometro> colecaoHidrometros = null;
 
 		// Seta o caminho de retorno
 		ActionForward retorno = actionMapping.findForward("listaHidrometro");
@@ -121,7 +119,7 @@ public class PesquisarHidrometroAction
 		// Pega a instancia da fachada
 		Fachada fachada = Fachada.getInstancia();
 
-		FiltroHidrometro filtroHidrometro = new FiltroHidrometro(FiltroHidrometro.NUMERO_HIDROMETRO);
+		FiltroHidrometroHelper filtroHidrometroHelper = new FiltroHidrometroHelper();
 
 		// Recupera os parâmetros do form
 		String numeroHidrometro = pesquisarHidrometroActionForm.getNumeroHidrometro();
@@ -138,6 +136,7 @@ public class PesquisarHidrometroAction
 		String fixo = pesquisarHidrometroActionForm.getFixo();
 		String faixaInicial = pesquisarHidrometroActionForm.getFaixaInicial();
 		String faixaFinal = pesquisarHidrometroActionForm.getFaixaFinal();
+		String dataInstalacao = pesquisarHidrometroActionForm.getDataInstalacao();
 
 		boolean peloMenosUmParametroInformado = false;
 
@@ -172,13 +171,15 @@ public class PesquisarHidrometroAction
 				}
 			}
 
-			hidrometros = fachada.pesquisarNumeroHidrometroFaixa(fixo, faixaInicial, faixaFinal);
+			colecaoHidrometros = fachada.pesquisarNumeroHidrometroFaixa(fixo, faixaInicial, faixaFinal);
 		}else{
 			// Insere os parâmetros informados no filtro
 			if(numeroHidrometro != null && !numeroHidrometro.trim().equalsIgnoreCase("")){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ComparacaoTexto(FiltroHidrometro.NUMERO_HIDROMETRO, numeroHidrometro));
+				filtroHidrometroHelper.setNumero(numeroHidrometro);
 			}
+
 			if(dataAquisicao != null && !dataAquisicao.trim().equalsIgnoreCase("")){
 
 				// Caso a data de aquisição seja maior que a data atual
@@ -199,8 +200,7 @@ public class PesquisarHidrometroAction
 				}
 
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.DATA_AQUISICAO, Util
-								.converteStringParaDate(dataAquisicao)));
+				filtroHidrometroHelper.setDataAquisicao(Util.converteStringParaDate(dataAquisicao, true));
 			}
 
 			if(anoFabricacao != null && !anoFabricacao.trim().equalsIgnoreCase("")){
@@ -218,52 +218,76 @@ public class PesquisarHidrometroAction
 				}
 
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.ANO_FABRICACAO, anoFabricacao));
+				filtroHidrometroHelper.setAnoFabricacao(Util.obterShort(anoFabricacao));
 			}
 
 			if(indicadorMacromedidor != null && !indicadorMacromedidor.trim().equalsIgnoreCase("")
 							&& !indicadorMacromedidor.equals("" + ConstantesSistema.NUMERO_NAO_INFORMADO)){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.INDICADOR_MACROMEDIDOR, indicadorMacromedidor));
+				filtroHidrometroHelper.setIndicadorMacromedidor(Util.obterShort(indicadorMacromedidor));
 			}
 
 			if(idHidrometroClasseMetrologica != null
 							&& Integer.parseInt(idHidrometroClasseMetrologica) > ConstantesSistema.NUMERO_NAO_INFORMADO){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.HIDROMETRO_CLASSE_METROLOGICA_ID,
-								idHidrometroClasseMetrologica));
+				filtroHidrometroHelper.setIdHidrometroClasseMetrologica(Util.obterInteger(idHidrometroClasseMetrologica));
 			}
 
 			if(idHidrometroMarca != null && Integer.parseInt(idHidrometroMarca) > ConstantesSistema.NUMERO_NAO_INFORMADO){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.HIDROMETRO_MARCA_ID, idHidrometroMarca));
+				filtroHidrometroHelper.setIdHidrometroMarca(Util.obterInteger(idHidrometroMarca));
 			}
 
 			if(idHidrometroDiametro != null && Integer.parseInt(idHidrometroDiametro) > ConstantesSistema.NUMERO_NAO_INFORMADO){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.HIDROMETRO_DIAMETRO_ID, idHidrometroDiametro));
+				filtroHidrometroHelper.setIdHidrometroDiametro(Util.obterInteger(idHidrometroDiametro));
 			}
 
 			if(idHidrometroCapacidade != null && Integer.parseInt(idHidrometroCapacidade) > ConstantesSistema.NUMERO_NAO_INFORMADO){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro
-								.adicionarParametro(new ParametroSimples(FiltroHidrometro.HIDROMETRO_CAPACIDADE_ID, idHidrometroCapacidade));
+				filtroHidrometroHelper.setIdHidrometroCapacidade(Util.obterInteger(idHidrometroCapacidade));
 			}
 			if(idHidrometroTipo != null && Integer.parseInt(idHidrometroTipo) > ConstantesSistema.NUMERO_NAO_INFORMADO){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.HIDROMETRO_TIPO_ID, idHidrometroTipo));
+				filtroHidrometroHelper.setIdHidrometroTipo(Util.obterInteger(idHidrometroTipo));
 			}
 
 			if(idLocalArmazenagem != null && !idLocalArmazenagem.equals("")){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.HIDROMETRO_LOCAL_ARMAZENAGEM_ID,
-								idLocalArmazenagem));
+				filtroHidrometroHelper.setIdHidrometroLocalArmazenagem(Util.obterInteger(idLocalArmazenagem));
 			}
 
-			if(idHidrometroSituacao != null && Integer.parseInt(idHidrometroSituacao) > ConstantesSistema.NUMERO_NAO_INFORMADO){
+			if(!Util.isVazioOuBranco(idHidrometroSituacao)){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.HIDROMETRO_SITUACAO_ID,
-								pesquisarHidrometroActionForm.getIdHidrometroSituacao()));
+				filtroHidrometroHelper.setIdHidrometroSituacao(Util.obterInteger(idHidrometroSituacao));
+			}
+
+			if(!Util.isVazioOuBranco(dataInstalacao)
+							&& (filtroHidrometroHelper.getIdHidrometroSituacao() == null || filtroHidrometroHelper
+											.getIdHidrometroSituacao().equals(HidrometroSituacao.INSTALADO))){
+
+				Date dataInstalacaoDate = Util.converteStringParaDate(dataInstalacao, true);
+
+				// Caso a data de instalção seja maior que a data corrente
+				if(dataInstalacaoDate.after(new Date())){
+
+					throw new ActionServletException("atencao.data.instalacao.nao.superior.data.corrente");
+				}
+
+				peloMenosUmParametroInformado = true;
+				filtroHidrometroHelper.setDataInstalacao(dataInstalacaoDate);
+				filtroHidrometroHelper.setConsultarHistoricoInstalacao(true);
+			}else{
+
+				filtroHidrometroHelper.setDataInstalacao(null);
 			}
 
 			// Erro caso o usuário mandou filtrar sem nenhum parâmetro
@@ -271,29 +295,24 @@ public class PesquisarHidrometroAction
 				throw new ActionServletException("atencao.filtro.nenhum_parametro_informado");
 			}
 
-			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade("hidrometroSituacao");
-			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade("hidrometroMarca");
-			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade("hidrometroCapacidade");
+			Integer totalRegistros = fachada.pesquisarHidrometroFiltroTotalRegistros(filtroHidrometroHelper);
 
-			// Faz a pesquisa baseada no filtro
-			// hidrometros = fachada.pesquisar(filtroHidrometro, Hidrometro.class
-			// .getName());
+			retorno = this.controlarPaginacao(httpServletRequest, retorno, totalRegistros);
 
-			Map resultado = controlarPaginacao(httpServletRequest, retorno, filtroHidrometro, Hidrometro.class.getName());
-			hidrometros = (Collection) resultado.get("colecaoRetorno");
-			retorno = (ActionForward) resultado.get("destinoActionForward");
+			colecaoHidrometros = fachada.pesquisarHidrometroFiltro(filtroHidrometroHelper,
+							(Integer) httpServletRequest.getAttribute("numeroPaginasPesquisa"));
 
 		}
 
 		// Verificar se a pesquisa de hidrometros retornou vazia
-		if(hidrometros == null || hidrometros.isEmpty()){
-			throw new ActionServletException("atencao.pesquisa.nenhumresultado", null, "Hidrômetro");
+		if(colecaoHidrometros == null || colecaoHidrometros.isEmpty()){
 
+			throw new ActionServletException("atencao.pesquisa.nenhumresultado", null, "Hidrômetro");
 		}
 
-		sessao.setAttribute("colecaoHidrometros", hidrometros);
+		sessao.setAttribute("colecaoHidrometros", colecaoHidrometros);
 		// Manda a coleção dos hidrômetros pesquisados para o request
-		httpServletRequest.getSession(false).setAttribute("colecaoHidrometros", hidrometros);
+		httpServletRequest.getSession(false).setAttribute("colecaoHidrometros", colecaoHidrometros);
 
 		return retorno;
 	}

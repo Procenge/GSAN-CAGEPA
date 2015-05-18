@@ -117,9 +117,11 @@ public class InserirFeriadoAction
 
 		Fachada fachada = Fachada.getInstancia();
 
-		String municipio = inserirFeriadoActionForm.getIdMunicipio();
-
 		Usuario usuarioLogado = (Usuario) sessao.getAttribute(Usuario.USUARIO_LOGADO);
+
+
+
+		String municipio = inserirFeriadoActionForm.getIdMunicipio();
 
 		if(municipio != null && !municipio.trim().equals("")){
 
@@ -131,7 +133,7 @@ public class InserirFeriadoAction
 
 			if(colecaoMunicipio == null || colecaoMunicipio.isEmpty()){
 				inserirFeriadoActionForm.setIdMunicipio("");
-				throw new ActionServletException("atencao.municipio_inexistente");
+				this.levantarExcecaoUrlSetada(new ActionServletException("atencao.municipio_inexistente"));
 			}
 		}
 
@@ -172,5 +174,11 @@ public class InserirFeriadoAction
 		sessao.removeAttribute("InserirFeriadoActionForm");
 
 		return retorno;
+	}
+
+	private void levantarExcecaoUrlSetada(ActionServletException actionServletException){
+
+		actionServletException.setUrlBotaoVoltar("/gsan/exibirInserirFeriadoAction.do");
+		throw actionServletException;
 	}
 }

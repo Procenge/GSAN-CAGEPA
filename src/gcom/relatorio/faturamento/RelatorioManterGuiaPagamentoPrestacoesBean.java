@@ -29,6 +29,30 @@ public class RelatorioManterGuiaPagamentoPrestacoesBean
 	private String dataPagamento;
 
 	private String nuValorPago;
+	
+	private String statusDividaAtiva;
+	
+	private String numeroProcessoAdministrativoExecucaoFiscal;
+
+	public String getNumeroProcessoAdministrativoExecucaoFiscal(){
+
+		return numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public void setNumeroProcessoAdministrativoExecucaoFiscal(String numeroProcessoAdministrativoExecucaoFiscal){
+
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public String getStatusDividaAtiva(){
+
+		return statusDividaAtiva;
+	}
+
+	public void setStatusDividaAtiva(String statusDividaAtiva){
+
+		this.statusDividaAtiva = statusDividaAtiva;
+	}	
 
 	public String getNuPrestacao(){
 

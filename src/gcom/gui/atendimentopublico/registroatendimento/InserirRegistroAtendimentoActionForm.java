@@ -250,6 +250,18 @@ public class InserirRegistroAtendimentoActionForm
 
 	private String sugerirUnidadeDestinoRA = "S";
 
+	private String quantidadePrestacoesGuiaPagamento;
+
+	public String getQuantidadePrestacoesGuiaPagamento(){
+
+		return quantidadePrestacoesGuiaPagamento;
+	}
+
+	public void setQuantidadePrestacoesGuiaPagamento(String quantidadePrestacoesGuiaPagamento){
+
+		this.quantidadePrestacoesGuiaPagamento = quantidadePrestacoesGuiaPagamento;
+	}
+
 	public String getDescricaoRA(){
 
 		return descricaoRA;

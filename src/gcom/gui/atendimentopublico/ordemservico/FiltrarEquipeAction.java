@@ -86,6 +86,7 @@ import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
 import gcom.util.filtro.ParametroSimples;
 
 import java.util.Collection;
@@ -135,6 +136,7 @@ public class FiltrarEquipeAction
 		String idFuncionario = filtrarEquipeActionForm.getIdFuncionario();
 		String idPerfilServico = filtrarEquipeActionForm.getIdPerfilServico();
 		String indicadorUso = filtrarEquipeActionForm.getIndicadorUso();
+		Integer idEquipeTipo = filtrarEquipeActionForm.getIdEquipeTipo();
 
 		// Cria o filtro
 		FiltroEquipeComponentes filtroEquipeComponentes = new FiltroEquipeComponentes();
@@ -219,6 +221,10 @@ public class FiltrarEquipeAction
 			peloMenosUmParametroInformado = true;
 		}
 
+		if(idEquipeTipo != null && idEquipeTipo != ConstantesSistema.NUMERO_NAO_INFORMADO){
+			peloMenosUmParametroInformado = true;
+		}
+
 		// Erro caso o usuário mandou filtrar sem nenhum parâmetro
 		if(!peloMenosUmParametroInformado){
 			throw new ActionServletException("atencao.filtro.nenhum_parametro_informado");
@@ -247,6 +253,7 @@ public class FiltrarEquipeAction
 		sessao.setAttribute("idFuncionario", idFuncionario);
 		sessao.setAttribute("idPerfilServico", idPerfilServico);
 		sessao.setAttribute("indicadorUso", indicadorUso);
+		sessao.setAttribute("idEquipeTipo", idEquipeTipo);
 
 		return retorno;
 	}

@@ -139,6 +139,13 @@ public class GerarRelatorioConsumoTarifaManterAction
 			dataVigenciaFinalFormatada = Util.converteStringParaDate(dataVigenciaFinal);
 		}
 
+		String descricaoAtoAdministrativo = null;
+		if(filtrarConsumoTarifaActionForm.getDescricaoAtoAdministrativo() != null
+						&& !filtrarConsumoTarifaActionForm.getDescricaoAtoAdministrativo().trim().equals("")){
+
+			descricaoAtoAdministrativo = filtrarConsumoTarifaActionForm.getDescricaoAtoAdministrativo().toUpperCase();
+		}
+
 		// Fim da parte que vai mandar os parametros para o relatório
 		String tipoRelatorio = httpServletRequest.getParameter("tipoRelatorio");
 
@@ -147,6 +154,7 @@ public class GerarRelatorioConsumoTarifaManterAction
 		relatorio.addParametro("descricao", descricao);
 		relatorio.addParametro("dataVigenciaInicial", dataVigenciaInicialFormatada);
 		relatorio.addParametro("dataVigenciaFinal", dataVigenciaFinalFormatada);
+		relatorio.addParametro("descricaoAtoAdministrativo", descricaoAtoAdministrativo);
 
 		if(tipoRelatorio == null){
 			tipoRelatorio = TarefaRelatorio.TIPO_PDF + "";

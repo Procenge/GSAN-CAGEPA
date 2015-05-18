@@ -83,11 +83,12 @@ import gcom.cobranca.FiltroResolucaoDiretoriaLayout;
 import gcom.cobranca.ResolucaoDiretoria;
 import gcom.cobranca.ResolucaoDiretoriaLayout;
 import gcom.cobranca.bean.ContaValoresHelper;
-import gcom.cobranca.parcelamento.FiltroParcelamento;
-import gcom.cobranca.parcelamento.Parcelamento;
-import gcom.cobranca.parcelamento.ParcelamentoTermoTestemunhas;
+import gcom.cobranca.bean.GuiaPagamentoValoresHelper;
+import gcom.cobranca.parcelamento.*;
 import gcom.fachada.Fachada;
 import gcom.faturamento.conta.Conta;
+import gcom.faturamento.credito.CreditoARealizar;
+import gcom.faturamento.debito.DebitoACobrar;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.ParametroTarefa;
 import gcom.tarefa.TarefaException;
@@ -129,6 +130,20 @@ public class GeradorRelatorioResolucaoDiretoria
 
 	private static GeradorRelatorioResolucaoDiretoria instancia = new GeradorRelatorioResolucaoDiretoria();
 
+	String textoHtml;
+
+	private void setTextoHtml(String textoHtml){
+
+		this.textoHtml = textoHtml;
+
+	}
+
+	private String getTextoHtml(){
+
+		return textoHtml;
+
+	}
+
 	public GeradorRelatorioResolucaoDiretoria(Usuario usuario, String nomeRelatorio) {
 
 		super(usuario, nomeRelatorio);
@@ -162,7 +177,8 @@ public class GeradorRelatorioResolucaoDiretoria
 	 * @throws GeradorRelatorioParcelamentoException
 	 *             Casso ocorra algum erro na geração do relatório
 	 */
-	public byte[] gerarRelatorioResolucaoDiretoria(List<Parcelamento> listaParcelamento, Collection<ContaValoresHelper> colecaoContaValores)
+	public byte[] gerarRelatorioResolucaoDiretoria(List<Parcelamento> listaParcelamento,
+					Collection<ContaValoresHelper> colecaoContaValores, String stringTextoHtmlEditado)
 					throws GeradorRelatorioParcelamentoException{
 
 		String arquivoLayout = null;
@@ -257,11 +273,11 @@ public class GeradorRelatorioResolucaoDiretoria
 				nomeClasse = resolucaoDiretoriaLayoutPadrao.getNomeClasse();
 				arquivoLayout = resolucaoDiretoriaLayoutPadrao.getNomeRelatorio();
 				dados = this.getGeradorDados(nomeClasse, listaParcelamento, this.getIdFuncionalidadeIniciada());
-				novoPdf = this.gerarRelatorioPDF(arquivoLayout, this.getParametros(), dados);
+				novoPdf = this.gerarRelatorio(arquivoLayout, this.getParametros(), dados);
 				for(int i = 0; i < resolucaoDiretoriaLayoutPadrao.getQuantidadeVias(); i++){
 					pdfsGerados.add(novoPdf);
 				}
-				retorno = this.concatenarPFDs(pdfsGerados);
+				retorno = this.concatenarArquivos(pdfsGerados);
 			}else{
 
 				// Associar resolução diretoria a resolução diretoria layout
@@ -294,11 +310,11 @@ public class GeradorRelatorioResolucaoDiretoria
 							nomeClasse = resolucaoDiretoria.getResolucaoDiretoriaLayout().getNomeClasse();
 							arquivoLayout = resolucaoDiretoria.getResolucaoDiretoriaLayout().getNomeRelatorio();
 							dados = this.getGeradorDados(nomeClasse, listaParcelamento, this.getIdFuncionalidadeIniciada());
-							novoPdf = this.gerarRelatorioPDF(arquivoLayout, this.getParametros(), dados);
+							novoPdf = this.gerarRelatorio(arquivoLayout, this.getParametros(), dados);
 							for(int i = 0; i < resolucaoDiretoria.getResolucaoDiretoriaLayout().getQuantidadeVias(); i++){
 								pdfsGerados.add(novoPdf);
 							}
-							retorno = this.concatenarPFDs(pdfsGerados);
+							retorno = this.concatenarArquivos(pdfsGerados);
 
 						}else{
 
@@ -307,13 +323,13 @@ public class GeradorRelatorioResolucaoDiretoria
 								parcelamento = (Parcelamento) iterator.next();
 								nomeClasse = parcelamento.getResolucaoDiretoria().getResolucaoDiretoriaLayout().getNomeClasse();
 								arquivoLayout = parcelamento.getResolucaoDiretoria().getResolucaoDiretoriaLayout().getNomeRelatorio();
-								dados = this.getGeradorDados(nomeClasse, parcelamento);
-								novoPdf = this.gerarRelatorioPDF(arquivoLayout, this.getParametros(), dados);
+								dados = this.getGeradorDados(nomeClasse, arquivoLayout, parcelamento, stringTextoHtmlEditado);
+								novoPdf = this.gerarRelatorio(arquivoLayout, this.getParametros(), dados);
 								for(int i = 0; i < parcelamento.getResolucaoDiretoria().getResolucaoDiretoriaLayout().getQuantidadeVias(); i++){
 									pdfsGerados.add(novoPdf);
 								}
 							}
-							retorno = this.concatenarPFDs(pdfsGerados);
+							retorno = this.concatenarArquivos(pdfsGerados);
 						}
 					}else{
 						FiltroResolucaoDiretoriaLayout filtroResolucaoDiretoriaLayout = new FiltroResolucaoDiretoriaLayout();
@@ -329,11 +345,11 @@ public class GeradorRelatorioResolucaoDiretoria
 						nomeClasse = resolucaoDiretoriaLayoutPadrao.getNomeClasse();
 						arquivoLayout = resolucaoDiretoriaLayoutPadrao.getNomeRelatorio();
 						dados = this.getGeradorDados(nomeClasse, listaParcelamento, this.getIdFuncionalidadeIniciada());
-						novoPdf = this.gerarRelatorioPDF(arquivoLayout, this.getParametros(), dados);
+						novoPdf = this.gerarRelatorio(arquivoLayout, this.getParametros(), dados);
 						for(int i = 0; i < resolucaoDiretoriaLayoutPadrao.getQuantidadeVias(); i++){
 							pdfsGerados.add(novoPdf);
 						}
-						retorno = this.concatenarPFDs(pdfsGerados);
+						retorno = this.concatenarArquivos(pdfsGerados);
 					}
 
 				}
@@ -353,7 +369,8 @@ public class GeradorRelatorioResolucaoDiretoria
 	 * @throws ControladorException
 	 */
 	public byte[] gerarRelatorioResolucaoDiretoria(Collection<Integer> idsParcelamento, Collection<ContaValoresHelper> colecaoContaValores,
-					String indicadorParcelamentoCobrancaBancaria, ParcelamentoTermoTestemunhas parcelamentoTermoTestemunhas)
+					String indicadorParcelamentoCobrancaBancaria, ParcelamentoTermoTestemunhas parcelamentoTermoTestemunhas,
+					ParcelamentoDadosTermo parcelamentoDadosTermo, String stringTextoHtmlEditado)
 					throws GeradorRelatorioParcelamentoException, ControladorException{
 
 		Boolean consultarParcelamentoDebitos = (Boolean) this.getParametro("consultarParcelamentoDebitos");
@@ -364,6 +381,7 @@ public class GeradorRelatorioResolucaoDiretoria
 		byte[] retorno = null;
 		List<byte[]> pdfsGerados = new ArrayList<byte[]>();
 		Parcelamento parcelamento = null;
+		Boolean indicadorExecucaoFiscal = false;
 
 		FiltroParcelamento filtroParcelamento = new FiltroParcelamento();
 		filtroParcelamento.adicionarCaminhoParaCarregamentoEntidade("resolucaoDiretoria");
@@ -465,6 +483,53 @@ public class GeradorRelatorioResolucaoDiretoria
 
 					int caracteristicaParcelamento = Fachada.getInstancia().obterCaracteristicaParcelamento(parcelamentoAux);
 
+					parcelamentoAux.setParcelamentoTermoTestemunhas(parcelamentoTermoTestemunhas);
+
+					FiltroParcelamentoDadosTermo filtroParcelamentoDadosTermo = new FiltroParcelamentoDadosTermo();
+					filtroParcelamentoDadosTermo.adicionarParametro(new ParametroSimples(FiltroParcelamentoDadosTermo.PARCELAMENTO_ID,
+									parcelamentoAux.getId()));
+					Collection<ParcelamentoDadosTermo> colecaoParcelamentoDadosTermo = Fachada.getInstancia().pesquisar(
+									filtroParcelamentoDadosTermo, ParcelamentoDadosTermo.class.getName());
+
+					if(colecaoParcelamentoDadosTermo.size() > 0){
+						// Mudar o Layout Quando foi armazenados dados relacionados a Execução
+						// Fiscal
+						parcelamentoAux.setParcelamentoDadosTermo(colecaoParcelamentoDadosTermo.iterator().next());
+						if(parcelamentoAux.getParcelamentoDadosTermo().getParcelamentoAcordoTipo() != null
+										&& parcelamentoAux.getParcelamentoDadosTermo().getParcelamentoAcordoTipo().getId() != null){
+							indicadorExecucaoFiscal = true;
+
+							FiltroParcelamentoAcordoTipo filtroParcelamentoAcordoTipo = new FiltroParcelamentoAcordoTipo();
+							filtroParcelamentoAcordoTipo.adicionarParametro(new ParametroSimples(FiltroParcelamentoAcordoTipo.ID,
+											parcelamentoAux.getParcelamentoDadosTermo().getParcelamentoAcordoTipo().getId()));
+
+							Collection<ParcelamentoAcordoTipo> colecaoParcelamentoAcordoTipo = Fachada.getInstancia().pesquisar(
+											filtroParcelamentoAcordoTipo, ParcelamentoAcordoTipo.class.getName());
+							if(colecaoParcelamentoAcordoTipo.size() > 0){
+								ParcelamentoAcordoTipo parcelamentoAcordoTipo = colecaoParcelamentoAcordoTipo.iterator().next();
+
+								if(parcelamentoAcordoTipo.getIndicadorParcelamentoNormal().equals(2)){
+									if(parcelamentoAcordoTipo.getDescricaoLayoutProcurador() != null){
+										ResolucaoDiretoriaLayout resolucaoDiretoriaLayout = new ResolucaoDiretoriaLayout();
+										resolucaoDiretoriaLayout.setIndicadorImpressaoDoisPorPagina(2);
+										resolucaoDiretoriaLayout.setIndicadorUso(1);
+										resolucaoDiretoriaLayout.setIndicadorPadrao(1);
+										resolucaoDiretoriaLayout.setIndicadorSolicitaTestemunhas(2);
+										resolucaoDiretoriaLayout.setDescricao(parcelamentoAcordoTipo.getDescricaoLayoutProcurador());
+										resolucaoDiretoriaLayout.setNomeRelatorio(parcelamentoAcordoTipo.getNomeRelatorioProcurador());
+										resolucaoDiretoriaLayout.setNomeClasse(parcelamentoAcordoTipo.getNomeClasseProcurador());
+										resolucaoDiretoriaLayout.setQuantidadeVias(1);
+
+										ResolucaoDiretoria resolucaoDiretoria = new ResolucaoDiretoria();
+										resolucaoDiretoria.setResolucaoDiretoriaLayout(resolucaoDiretoriaLayout);
+
+										parcelamentoAux.setResolucaoDiretoria(resolucaoDiretoria);
+									}
+								}
+							}
+						}
+					}
+
 					switch(caracteristicaParcelamento){
 
 					// 13.1. Caso seja parcelamento de cobrança bancária (CBFM_ID da tabela
@@ -472,24 +537,26 @@ public class GeradorRelatorioResolucaoDiretoria
 					// CBFM_DSCOBRANCAFORMA=“BOLETO BANCARIO”):
 						case 1:
 
+
 							// 13.1.1. Caso o termo da RD do parcelamento prevaleça sobre o termo do
 							// parcelamento de cobrança bancária (RDIR_ID da tabela PARCELAMENTO
 							// contido
 							// em PASI_VLPARAMETROS da tabela PARAMETRO_SISTEMA com
 							// PASI_CDPARAMETRO=”P_LISTA_RD_COM_TERMO_PREFERENCIAL_AO_TERMO_COBRANCABANCARIA”):
-							if(parcelamentoAux.getResolucaoDiretoria() != null
-											&& this.termoRdPrevalece(parcelamentoAux.getResolucaoDiretoria().getId())){
+							if((parcelamentoAux.getResolucaoDiretoria() != null && this.termoRdPrevalece(parcelamentoAux
+											.getResolucaoDiretoria().getId())) || indicadorExecucaoFiscal){
 
 								// 13.1.1.1. Imprime termo da RD
 								// [SB0005 – Emite Termo da RD].
 								if(parcelamentoAux.getResolucaoDiretoria().getResolucaoDiretoriaLayout() == null){
 
-									this.adicionarPdfsGerados(parcelamentoAux, this.obterResolucaoDiretoriaLayoutPadrao(), pdfsGerados);
+									this.adicionarArquivosGerados(parcelamentoAux, this.obterResolucaoDiretoriaLayoutPadrao(), pdfsGerados,
+													stringTextoHtmlEditado);
 
 								}else{
 
-									this.adicionarPdfsGerados(parcelamentoAux, parcelamentoAux.getResolucaoDiretoria()
-													.getResolucaoDiretoriaLayout(), pdfsGerados);
+									this.adicionarArquivosGerados(parcelamentoAux, parcelamentoAux.getResolucaoDiretoria()
+													.getResolucaoDiretoriaLayout(), pdfsGerados, stringTextoHtmlEditado);
 								}
 
 							}else{
@@ -502,8 +569,8 @@ public class GeradorRelatorioResolucaoDiretoria
 								// com
 								// RDLY_ID=PASI_VLPARAMETRO da tabela PARAMETRO_SISTEMA com
 								// PASI_CDPARAMETRO=”P_LAYOUT_PARCELAMENTO_COBRANCA_BANCARIA”).
-								this.adicionarPdfsGerados(parcelamentoAux, this.obterResolucaoDiretoriaLayoutParcCobrancaBancaria(),
-												pdfsGerados);
+								this.adicionarArquivosGerados(parcelamentoAux, this.obterResolucaoDiretoriaLayoutParcCobrancaBancaria(),
+												pdfsGerados, stringTextoHtmlEditado);
 							}
 							break;
 						case 2:
@@ -514,9 +581,27 @@ public class GeradorRelatorioResolucaoDiretoria
 
 							parcelamentoAux.setParcelamentoTermoTestemunhas(parcelamentoTermoTestemunhas);
 
-							// Imprime termo com layout de cobrança administrativa
-							this.adicionarPdfsGerados(parcelamentoAux, Fachada.getInstancia()
-											.obterResolucaoDiretoriaLayoutParcCobrancaAdministrativa(), pdfsGerados);
+							if(!indicadorExecucaoFiscal){
+								// Imprime termo com layout de cobrança administrativa
+								this.adicionarArquivosGerados(parcelamentoAux, Fachada.getInstancia()
+												.obterResolucaoDiretoriaLayoutParcCobrancaAdministrativa(), pdfsGerados,
+												stringTextoHtmlEditado);
+							}else{
+
+								if(parcelamentoAux == null || parcelamentoAux.getResolucaoDiretoria() == null
+												|| parcelamentoAux.getResolucaoDiretoria().getResolucaoDiretoriaLayout() == null){
+
+									this.adicionarArquivosGerados(parcelamentoAux, this.obterResolucaoDiretoriaLayoutPadrao(), pdfsGerados,
+													stringTextoHtmlEditado);
+
+								}else{
+
+									this.adicionarArquivosGerados(parcelamentoAux, parcelamentoAux.getResolucaoDiretoria()
+													.getResolucaoDiretoriaLayout(), pdfsGerados, stringTextoHtmlEditado);
+
+								}
+
+							}
 
 							break;
 						case 3:
@@ -529,12 +614,13 @@ public class GeradorRelatorioResolucaoDiretoria
 							if(parcelamentoAux == null || parcelamentoAux.getResolucaoDiretoria() == null
 											|| parcelamentoAux.getResolucaoDiretoria().getResolucaoDiretoriaLayout() == null){
 
-								this.adicionarPdfsGerados(parcelamentoAux, this.obterResolucaoDiretoriaLayoutPadrao(), pdfsGerados);
+								this.adicionarArquivosGerados(parcelamentoAux, this.obterResolucaoDiretoriaLayoutPadrao(), pdfsGerados,
+												stringTextoHtmlEditado);
 
 							}else{
 
-								this.adicionarPdfsGerados(parcelamentoAux, parcelamentoAux.getResolucaoDiretoria()
-												.getResolucaoDiretoriaLayout(), pdfsGerados);
+								this.adicionarArquivosGerados(parcelamentoAux, parcelamentoAux.getResolucaoDiretoria()
+												.getResolucaoDiretoriaLayout(), pdfsGerados, stringTextoHtmlEditado);
 
 							}
 							break;
@@ -563,7 +649,54 @@ public class GeradorRelatorioResolucaoDiretoria
 						addParametro("P_EXIBIR_MATRICULA_USUARIO_EFETUOU_PARCELAMENTO", ConstantesSistema.INATIVO);
 					}
 
+					FiltroParcelamentoDadosTermo filtroParcelamentoDadosTermo = new FiltroParcelamentoDadosTermo();
+					filtroParcelamentoDadosTermo.adicionarParametro(new ParametroSimples(FiltroParcelamentoDadosTermo.PARCELAMENTO_ID,
+									parcelamentoAux.getId()));
+					Collection<ParcelamentoDadosTermo> colecaoParcelamentoDadosTermo = Fachada.getInstancia().pesquisar(
+									filtroParcelamentoDadosTermo, ParcelamentoDadosTermo.class.getName());
+
+					if(colecaoParcelamentoDadosTermo.size() > 0){
+						// Mudar o Layout Quando foi armazenados dados relacionados a Execução
+						// Fiscal
+						parcelamentoAux.setParcelamentoDadosTermo(colecaoParcelamentoDadosTermo.iterator().next());
+						if(parcelamentoAux.getParcelamentoDadosTermo().getParcelamentoAcordoTipo() != null
+										&& parcelamentoAux.getParcelamentoDadosTermo().getParcelamentoAcordoTipo().getId() != null){
+							indicadorExecucaoFiscal = true;
+
+							FiltroParcelamentoAcordoTipo filtroParcelamentoAcordoTipo = new FiltroParcelamentoAcordoTipo();
+							filtroParcelamentoAcordoTipo.adicionarParametro(new ParametroSimples(FiltroParcelamentoAcordoTipo.ID,
+											parcelamentoAux.getParcelamentoDadosTermo().getParcelamentoAcordoTipo().getId()));
+
+							Collection<ParcelamentoAcordoTipo> colecaoParcelamentoAcordoTipo = Fachada.getInstancia().pesquisar(
+											filtroParcelamentoAcordoTipo, ParcelamentoAcordoTipo.class.getName());
+							if(colecaoParcelamentoAcordoTipo.size() > 0){
+								ParcelamentoAcordoTipo parcelamentoAcordoTipo = colecaoParcelamentoAcordoTipo.iterator().next();
+
+								if(parcelamentoAcordoTipo.getIndicadorParcelamentoNormal().equals(2)){
+									if(parcelamentoAcordoTipo.getDescricaoLayoutProcurador() != null){
+										ResolucaoDiretoriaLayout resolucaoDiretoriaLayout = new ResolucaoDiretoriaLayout();
+										resolucaoDiretoriaLayout.setIndicadorImpressaoDoisPorPagina(2);
+										resolucaoDiretoriaLayout.setIndicadorUso(1);
+										resolucaoDiretoriaLayout.setIndicadorPadrao(1);
+										resolucaoDiretoriaLayout.setIndicadorSolicitaTestemunhas(2);
+										resolucaoDiretoriaLayout.setDescricao(parcelamentoAcordoTipo.getDescricaoLayoutProcurador());
+										resolucaoDiretoriaLayout.setNomeRelatorio(parcelamentoAcordoTipo.getNomeRelatorioProcurador());
+										resolucaoDiretoriaLayout.setNomeClasse(parcelamentoAcordoTipo.getNomeClasseProcurador());
+										resolucaoDiretoriaLayout.setQuantidadeVias(1);
+
+										ResolucaoDiretoria resolucaoDiretoria = new ResolucaoDiretoria();
+										resolucaoDiretoria.setResolucaoDiretoriaLayout(resolucaoDiretoriaLayout);
+
+										parcelamentoAux.setResolucaoDiretoria(resolucaoDiretoria);
+									}
+								}
+							}
+						}
+					}
+
 					int caracteristicaParcelamento = Fachada.getInstancia().obterCaracteristicaParcelamento(parcelamentoAux);
+
+					parcelamentoAux.setParcelamentoTermoTestemunhas(parcelamentoTermoTestemunhas);
 
 					switch(caracteristicaParcelamento){
 						case 1:
@@ -577,8 +710,8 @@ public class GeradorRelatorioResolucaoDiretoria
 							// PARCELAMENTO contido em PASI_VLPARAMETROS da tabela PARAMETRO_SISTEMA
 							// com
 							// PASI_CDPARAMETRO=”P_LISTA_RD_COM_TERMO_PREFERENCIAL_AO_TERMO_COBRANCABANCARIA”):
-							if(parcelamentoAux.getResolucaoDiretoria() != null
-											&& this.termoRdPrevalece(parcelamentoAux.getResolucaoDiretoria().getId())){
+							if((parcelamentoAux.getResolucaoDiretoria() != null && this.termoRdPrevalece(parcelamentoAux
+											.getResolucaoDiretoria().getId())) || indicadorExecucaoFiscal){
 
 								// 1. Caso a RD não possua layout associado (RDLY_ID com o valor
 								// igual a nulo na tabela RESOLUCAO_DIRETORIA):
@@ -592,12 +725,13 @@ public class GeradorRelatorioResolucaoDiretoria
 								// RDLY_ID=RDLY_ID da tabela RESOLUCAO_DIRETORIA).
 								if(parcelamentoAux.getResolucaoDiretoria().getResolucaoDiretoriaLayout() == null){
 
-									this.adicionarPdfsGerados(parcelamentoAux, this.obterResolucaoDiretoriaLayoutPadrao(), pdfsGerados);
+									this.adicionarArquivosGerados(parcelamentoAux, this.obterResolucaoDiretoriaLayoutPadrao(), pdfsGerados,
+													stringTextoHtmlEditado);
 
 								}else{
 
-									this.adicionarPdfsGerados(parcelamentoAux, parcelamentoAux.getResolucaoDiretoria()
-													.getResolucaoDiretoriaLayout(), pdfsGerados);
+									this.adicionarArquivosGerados(parcelamentoAux, parcelamentoAux.getResolucaoDiretoria()
+													.getResolucaoDiretoriaLayout(), pdfsGerados, stringTextoHtmlEditado);
 
 								}
 
@@ -611,8 +745,8 @@ public class GeradorRelatorioResolucaoDiretoria
 								// RESOLUCAO_DIRETORIA_LAYOUT com RDLY_ID=PASI_VLPARAMETRO da tabela
 								// PARAMETRO_SISTEMA com
 								// PASI_CDPARAMETRO=”P_LAYOUT_PARCELAMENTO_COBRANCA_BANCARIA”).
-								this.adicionarPdfsGerados(parcelamentoAux, this.obterResolucaoDiretoriaLayoutParcCobrancaBancaria(),
-												pdfsGerados);
+								this.adicionarArquivosGerados(parcelamentoAux, this.obterResolucaoDiretoriaLayoutParcCobrancaBancaria(),
+												pdfsGerados, stringTextoHtmlEditado);
 							}
 
 							break;
@@ -621,9 +755,28 @@ public class GeradorRelatorioResolucaoDiretoria
 
 							parcelamentoAux.setParcelamentoTermoTestemunhas(parcelamentoTermoTestemunhas);
 
-							// 7.1.16.2.2.1. Imprime termo com layout de cobrança administrativa
-							this.adicionarPdfsGerados(parcelamentoAux, Fachada.getInstancia()
-											.obterResolucaoDiretoriaLayoutParcCobrancaAdministrativa(), pdfsGerados);
+							if(!indicadorExecucaoFiscal){
+								// 7.1.16.2.2.1. Imprime termo com layout de cobrança administrativa
+								this.adicionarArquivosGerados(parcelamentoAux, Fachada.getInstancia()
+												.obterResolucaoDiretoriaLayoutParcCobrancaAdministrativa(), pdfsGerados,
+												stringTextoHtmlEditado);
+							}else{
+
+								if(parcelamentoAux == null || parcelamentoAux.getResolucaoDiretoria() == null
+												|| parcelamentoAux.getResolucaoDiretoria().getResolucaoDiretoriaLayout() == null){
+
+									this.adicionarArquivosGerados(parcelamentoAux, this.obterResolucaoDiretoriaLayoutPadrao(), pdfsGerados,
+													stringTextoHtmlEditado);
+
+								}else{
+
+									this.adicionarArquivosGerados(parcelamentoAux, parcelamentoAux.getResolucaoDiretoria()
+													.getResolucaoDiretoriaLayout(), pdfsGerados, stringTextoHtmlEditado);
+
+								}
+
+							}
+
 							break;
 
 						case 3:
@@ -633,14 +786,16 @@ public class GeradorRelatorioResolucaoDiretoria
 							// 7.1.11.2.1. Imprime termo da RD
 							// [SB0037 – Emite Termo da RD].
 
-							if(parcelamentoAux.getResolucaoDiretoria().getResolucaoDiretoriaLayout() == null){
+							if(parcelamentoAux.getResolucaoDiretoria() == null
+											|| parcelamentoAux.getResolucaoDiretoria().getResolucaoDiretoriaLayout() == null){
 
-								this.adicionarPdfsGerados(parcelamentoAux, this.obterResolucaoDiretoriaLayoutPadrao(), pdfsGerados);
+								this.adicionarArquivosGerados(parcelamentoAux, this.obterResolucaoDiretoriaLayoutPadrao(), pdfsGerados,
+												stringTextoHtmlEditado);
 
 							}else{
 
-								this.adicionarPdfsGerados(parcelamentoAux, parcelamentoAux.getResolucaoDiretoria()
-												.getResolucaoDiretoriaLayout(), pdfsGerados);
+								this.adicionarArquivosGerados(parcelamentoAux, parcelamentoAux.getResolucaoDiretoria()
+												.getResolucaoDiretoriaLayout(), pdfsGerados, stringTextoHtmlEditado);
 
 							}
 
@@ -651,7 +806,7 @@ public class GeradorRelatorioResolucaoDiretoria
 				}
 			}
 
-			retorno = this.concatenarPFDs(pdfsGerados);
+			retorno = this.concatenarArquivos(pdfsGerados);
 
 			if(retorno == null){
 
@@ -695,13 +850,13 @@ public class GeradorRelatorioResolucaoDiretoria
 							parcelamento = (Parcelamento) iterator.next();
 							nomeClasse = resolucaoDiretoria.getResolucaoDiretoriaLayout().getNomeClasse();
 							arquivoLayout = resolucaoDiretoria.getResolucaoDiretoriaLayout().getNomeRelatorio();
-							dados = this.getGeradorDados(nomeClasse, parcelamento);
-							novoPdf = this.gerarRelatorioPDF(arquivoLayout, this.getParametros(), dados);
+							dados = this.getGeradorDados(nomeClasse, arquivoLayout, parcelamento, stringTextoHtmlEditado);
+							novoPdf = this.gerarRelatorio(arquivoLayout, this.getParametros(), dados);
 							for(int i = 0; i < resolucaoDiretoria.getResolucaoDiretoriaLayout().getQuantidadeVias(); i++){
 								pdfsGerados.add(novoPdf);
 							}
 						}
-						retorno = this.concatenarPFDs(pdfsGerados);
+						retorno = this.concatenarArquivos(pdfsGerados);
 
 					}else{
 
@@ -710,8 +865,8 @@ public class GeradorRelatorioResolucaoDiretoria
 							parcelamento = (Parcelamento) iterator.next();
 							nomeClasse = parcelamento.getResolucaoDiretoria().getResolucaoDiretoriaLayout().getNomeClasse();
 							arquivoLayout = parcelamento.getResolucaoDiretoria().getResolucaoDiretoriaLayout().getNomeRelatorio();
-							dados = this.getGeradorDados(nomeClasse, parcelamento);
-							novoPdf = this.gerarRelatorioPDF(arquivoLayout, this.getParametros(), dados);
+							dados = this.getGeradorDados(nomeClasse, arquivoLayout, parcelamento, stringTextoHtmlEditado);
+							novoPdf = this.gerarRelatorio(arquivoLayout, this.getParametros(), dados);
 
 							for(int i = 0; i < parcelamento.getResolucaoDiretoria().getResolucaoDiretoriaLayout().getQuantidadeVias(); i++){
 
@@ -721,7 +876,7 @@ public class GeradorRelatorioResolucaoDiretoria
 
 						}
 
-						retorno = this.concatenarPFDs(pdfsGerados);
+						retorno = this.concatenarArquivos(pdfsGerados);
 
 					}
 
@@ -735,7 +890,356 @@ public class GeradorRelatorioResolucaoDiretoria
 
 	}
 
-	private List<RelatorioParcelamentoResolucaoDiretoriaLayoutBean> getGeradorDados(String nomeClasse, Parcelamento parcelamento)
+	/**
+	 * Método responsável por gerar os relatórios de ordem de servico
+	 * 
+	 * @param idsParcelamento
+	 * @return Um PDF.
+	 * @throws GeradorRelatorioParcelamentoException
+	 *             Casso ocorra algum erro na geração do relatório
+	 * @throws ControladorException
+	 */
+	public byte[] gerarRelatorioResolucaoDiretoria(Parcelamento parcelamentoEfetuado, Collection<ContaValoresHelper> colecaoContaValores,
+					String indicadorParcelamentoCobrancaBancaria, ParcelamentoTermoTestemunhas parcelamentoTermoTestemunhas,
+					ParcelamentoDadosTermo parcelamentoDadosTermo, Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores,
+					Collection<DebitoACobrar> colecaoDebitoACobrarItem, Collection<CreditoARealizar> colecaoCreditoARealizar,
+					String indicadorCobrancaBancaria, String stringTextoHtmlEditado, Integer numeroDiasVencimentoEntrada)
+					throws GeradorRelatorioParcelamentoException, ControladorException{
+
+		String arquivoLayout = null;
+		String nomeClasse = null;
+		List<RelatorioParcelamentoResolucaoDiretoriaLayoutBean> dados = null;
+		byte[] novoPdf = null;
+		byte[] retorno = null;
+		List<byte[]> pdfsGerados = new ArrayList<byte[]>();
+		Parcelamento parcelamento = null;
+		Fachada fachada = Fachada.getInstancia();
+		boolean indicadorExecucaoFiscal = false;
+
+		Map<Integer, Collection<ResolucaoDiretoria>> mapLayoutResolucaoDiretoria = new TreeMap<Integer, Collection<ResolucaoDiretoria>>();
+
+		String P_EXIBIR_MATRICULA_USUARIO_EFETUOU_PARCELAMENTO = ParametroCobranca.P_EXIBIR_MATRICULA_USUARIO_EFETUOU_PARCELAMENTO
+						.executar();
+
+		if(parcelamentoEfetuado != null){
+			if(parcelamentoTermoTestemunhas != null){
+				parcelamentoEfetuado.setParcelamentoTermoTestemunhas(parcelamentoTermoTestemunhas);
+			}
+			
+			if(parcelamentoDadosTermo != null){
+				parcelamentoEfetuado.setParcelamentoDadosTermo(parcelamentoDadosTermo);
+
+				// Mudar o Layout Quando foi armazenados dados relacionados a Execução Fiscal
+				if(parcelamentoEfetuado.getParcelamentoDadosTermo().getParcelamentoAcordoTipo() != null
+								&& parcelamentoEfetuado.getParcelamentoDadosTermo().getParcelamentoAcordoTipo().getId() != null){
+					indicadorExecucaoFiscal = true;
+
+					FiltroParcelamentoAcordoTipo filtroParcelamentoAcordoTipo= new FiltroParcelamentoAcordoTipo();
+					filtroParcelamentoAcordoTipo.adicionarParametro(new ParametroSimples(FiltroParcelamentoAcordoTipo.ID,
+									parcelamentoEfetuado.getParcelamentoDadosTermo().getParcelamentoAcordoTipo().getId()));
+					
+					Collection<ParcelamentoAcordoTipo> colecaoParcelamentoAcordoTipo = fachada.pesquisar(filtroParcelamentoAcordoTipo,
+									ParcelamentoAcordoTipo.class.getName());
+					if(colecaoParcelamentoAcordoTipo.size() > 0){
+						ParcelamentoAcordoTipo parcelamentoAcordoTipo = colecaoParcelamentoAcordoTipo.iterator().next();
+
+						if(parcelamentoAcordoTipo.getIndicadorParcelamentoNormal().equals(2)){
+							if(parcelamentoAcordoTipo.getDescricaoLayoutProcurador() != null){
+								ResolucaoDiretoriaLayout resolucaoDiretoriaLayout = new ResolucaoDiretoriaLayout();
+								resolucaoDiretoriaLayout.setIndicadorImpressaoDoisPorPagina(2);
+								resolucaoDiretoriaLayout.setIndicadorUso(1);
+								resolucaoDiretoriaLayout.setIndicadorPadrao(1);
+								resolucaoDiretoriaLayout.setIndicadorSolicitaTestemunhas(2);
+								resolucaoDiretoriaLayout.setDescricao(parcelamentoAcordoTipo.getDescricaoLayoutProcurador());
+								resolucaoDiretoriaLayout.setNomeRelatorio(parcelamentoAcordoTipo.getNomeRelatorioProcurador());
+								resolucaoDiretoriaLayout.setNomeClasse(parcelamentoAcordoTipo.getNomeClasseProcurador());
+								resolucaoDiretoriaLayout.setQuantidadeVias(1);
+
+								ResolucaoDiretoria resolucaoDiretoria = new ResolucaoDiretoria();
+								resolucaoDiretoria.setResolucaoDiretoriaLayout(resolucaoDiretoriaLayout);
+
+								parcelamentoEfetuado.setResolucaoDiretoria(resolucaoDiretoria);
+							}
+						}
+					}
+				}
+
+			}
+
+			// Parâmetros do relatório
+			SistemaParametro sistemaParametro = Fachada.getInstancia().pesquisarParametrosDoSistema();
+
+			if(sistemaParametro != null){
+				addParametro("imagem", sistemaParametro.getImagemRelatorio());
+
+				// Empresa
+				if(sistemaParametro.getNomeEmpresa() != null){
+
+					addParametro("empresa", sistemaParametro.getNomeEmpresa());
+
+				}else{
+					addParametro("empresa", "");
+				}
+
+				// Endereco Empresa
+				String enderecoEmpresa = "";
+
+				boolean virgula = false;
+
+				if(sistemaParametro.getLogradouro() != null){
+					Logradouro logradouro = sistemaParametro.getLogradouro();
+					if(logradouro.getNome() != null && !logradouro.getNome().equals("")){
+						enderecoEmpresa = sistemaParametro.getLogradouro().getNome();
+						virgula = true;
+					}
+				}
+
+				// Adiciona o número
+				if(sistemaParametro.getNumeroImovel() != null){
+					enderecoEmpresa += (virgula == true ? ", " : "") + sistemaParametro.getNumeroImovel();
+					virgula = true;
+				}
+
+				// Adiciona o complemento
+				if(sistemaParametro.getComplementoEndereco() != null){
+					enderecoEmpresa += (virgula == true ? ", " : "") + sistemaParametro.getComplementoEndereco();
+					virgula = true;
+				}
+
+				// Adiciona o bairro
+				if(sistemaParametro.getBairro() != null){
+					enderecoEmpresa += (virgula == true ? ", " : "") + sistemaParametro.getBairro().getNome();
+					virgula = true;
+				}
+
+				// Adiciona o cep
+				if(sistemaParametro.getCep() != null){
+					enderecoEmpresa += (virgula == true ? ", Cep: " : "") + sistemaParametro.getCep().getCepFormatado();
+				}
+
+				addParametro("enderecoEmpresa", enderecoEmpresa);
+
+				// CNPJ da Empresa
+				String cnpjFormatado = "";
+				if(sistemaParametro.getCnpjEmpresa() != null){
+					cnpjFormatado = Util.formatarCnpj(sistemaParametro.getCnpjEmpresa());
+				}
+				addParametro("cnpj", cnpjFormatado);
+
+			}
+
+			// [UC0252]
+			// [UC0214]
+			Parcelamento parcelamentoAux = parcelamentoEfetuado;
+			if(P_EXIBIR_MATRICULA_USUARIO_EFETUOU_PARCELAMENTO.equals(ConstantesSistema.ATIVO)){
+				addParametro("loginUsuario", parcelamentoAux.getUsuario().getLogin());
+				addParametro("dataParcelamento", parcelamentoAux.getDataEntradaParcelamento());
+				addParametro("mesPortugues", Util.retornaDescricaoMes(Util.getMes(parcelamentoAux.getDataEntradaParcelamento())));
+				addParametro("P_EXIBIR_MATRICULA_USUARIO_EFETUOU_PARCELAMENTO", ConstantesSistema.ATIVO);
+			}else{
+				if(this.getUsuario().getLogin() != null){
+					addParametro("loginUsuario", this.getUsuario().getLogin());
+				}
+
+				addParametro("mesPortugues", Util.retornaDescricaoMes(Util.getMes(new Date())));
+				addParametro("P_EXIBIR_MATRICULA_USUARIO_EFETUOU_PARCELAMENTO", ConstantesSistema.INATIVO);
+			}
+
+			int caracteristicaParcelamento = fachada.obterCaracteristicaParcelamento(colecaoContaValores, colecaoGuiaPagamentoValores,
+							parcelamentoEfetuado.getCobrancaForma().getId(), indicadorCobrancaBancaria, colecaoDebitoACobrarItem);
+
+			switch(caracteristicaParcelamento){
+				case 1:
+
+					// 7.1.11.1. Caso seja parcelamento de contas em cobrança bancária
+					// (campo
+					// “Parcelamento de Cobrança Bancária?” com a opção “Sim” selecionada):
+
+					// 7.1.11.1.1. Caso o termo da RD do parcelamento prevaleça sobre o
+					// termo do parcelamento de cobrança bancária (RDIR_ID da tabela
+					// PARCELAMENTO contido em PASI_VLPARAMETROS da tabela PARAMETRO_SISTEMA
+					// com
+					// PASI_CDPARAMETRO=”P_LISTA_RD_COM_TERMO_PREFERENCIAL_AO_TERMO_COBRANCABANCARIA”):
+					if((parcelamentoAux.getResolucaoDiretoria() != null
+									&& this.termoRdPrevalece(parcelamentoAux.getResolucaoDiretoria().getId())) || indicadorExecucaoFiscal) {
+
+						// 1. Caso a RD não possua layout associado (RDLY_ID com o valor
+						// igual a nulo na tabela RESOLUCAO_DIRETORIA):
+						// 1.1. Imprime layout padrão (RDLY_NMRELATORIO, RDLY_QTVIAS e
+						// RDLY_DSLAYOUT da tabela RESOLUCAO_DIRETORIA_LAYOUT com
+						// RDLY_ICPADRAO=1).
+						// 2. Caso contrário, ou seja, a RD possui layout associado (RDLY_ID
+						// com o valor diferente de nulo na tabela RESOLUCAO_DIRETORIA):
+						// 2.1. Imprime layout da RD (RDLY_NMRELATORIO, RDLY_QTVIAS e
+						// RDLY_DSLAYOUT da tabela RESOLUCAO_DIRETORIA_LAYOUT com
+						// RDLY_ID=RDLY_ID da tabela RESOLUCAO_DIRETORIA).
+						if(parcelamentoAux.getResolucaoDiretoria().getResolucaoDiretoriaLayout() == null){
+
+							this.adicionarPreviewArquivosGerados(parcelamentoAux, colecaoContaValores, colecaoGuiaPagamentoValores,
+											colecaoDebitoACobrarItem, colecaoCreditoARealizar, this.obterResolucaoDiretoriaLayoutPadrao(),
+											pdfsGerados, stringTextoHtmlEditado, numeroDiasVencimentoEntrada);
+
+						}else{
+
+							this.adicionarPreviewArquivosGerados(parcelamentoAux, colecaoContaValores, colecaoGuiaPagamentoValores,
+											colecaoDebitoACobrarItem, colecaoCreditoARealizar, parcelamentoAux.getResolucaoDiretoria()
+															.getResolucaoDiretoriaLayout(), pdfsGerados, stringTextoHtmlEditado,
+											numeroDiasVencimentoEntrada);
+
+						}
+
+					}else{
+
+						// 7.1.11.1.2. Caso contrário, ou seja, caso o termo da RD do
+						// parcelamento não prevaleça sobre o termo do parcelamento de
+						// cobrança bancária:
+						// 7.1.11.1.2.1. Imprime termo com layout de cobrança bancária
+						// (RDLY_NMRELATORIO, RDLY_QTVIAS e RDLY_DSLAYOUT da tabela
+						// RESOLUCAO_DIRETORIA_LAYOUT com RDLY_ID=PASI_VLPARAMETRO da tabela
+						// PARAMETRO_SISTEMA com
+						// PASI_CDPARAMETRO=”P_LAYOUT_PARCELAMENTO_COBRANCA_BANCARIA”).
+						this.adicionarPreviewArquivosGerados(parcelamentoAux, colecaoContaValores, colecaoGuiaPagamentoValores,
+										colecaoDebitoACobrarItem, colecaoCreditoARealizar,
+										this.obterResolucaoDiretoriaLayoutParcCobrancaBancaria(), pdfsGerados, stringTextoHtmlEditado,
+										numeroDiasVencimentoEntrada);
+					}
+
+					break;
+
+				case 2:
+
+					parcelamentoAux.setParcelamentoTermoTestemunhas(parcelamentoTermoTestemunhas);
+
+					// 7.1.16.2.2.1. Imprime termo com layout de cobrança administrativa
+					if (indicadorExecucaoFiscal == false) {
+						this.adicionarPreviewArquivosGerados(parcelamentoAux, colecaoContaValores, colecaoGuiaPagamentoValores,
+										colecaoDebitoACobrarItem, colecaoCreditoARealizar, Fachada.getInstancia()
+														.obterResolucaoDiretoriaLayoutParcCobrancaAdministrativa(), pdfsGerados,
+										stringTextoHtmlEditado, numeroDiasVencimentoEntrada);
+					} else {
+						if(parcelamentoAux.getResolucaoDiretoria().getResolucaoDiretoriaLayout() == null){
+
+							this.adicionarPreviewArquivosGerados(parcelamentoAux, colecaoContaValores, colecaoGuiaPagamentoValores,
+											colecaoDebitoACobrarItem, colecaoCreditoARealizar, this.obterResolucaoDiretoriaLayoutPadrao(),
+											pdfsGerados, stringTextoHtmlEditado, numeroDiasVencimentoEntrada);
+
+						}else{
+
+							this.adicionarPreviewArquivosGerados(parcelamentoAux, colecaoContaValores, colecaoGuiaPagamentoValores,
+											colecaoDebitoACobrarItem, colecaoCreditoARealizar, parcelamentoAux.getResolucaoDiretoria()
+															.getResolucaoDiretoriaLayout(), pdfsGerados, stringTextoHtmlEditado,
+											numeroDiasVencimentoEntrada);
+
+						}					
+					}
+
+					break;
+
+				case 3:
+					// 7.1.16.2.3. Caso contrário, ou seja, não seja parcelamento de
+					// cobrança administrativa:
+
+					// 7.1.11.2.1. Imprime termo da RD
+					// [SB0037 – Emite Termo da RD].
+
+					if(parcelamentoAux.getResolucaoDiretoria().getResolucaoDiretoriaLayout() == null){
+
+						this.adicionarPreviewArquivosGerados(parcelamentoAux, colecaoContaValores, colecaoGuiaPagamentoValores,
+										colecaoDebitoACobrarItem, colecaoCreditoARealizar, this.obterResolucaoDiretoriaLayoutPadrao(),
+										pdfsGerados, stringTextoHtmlEditado, numeroDiasVencimentoEntrada);
+
+					}else{
+
+						this.adicionarPreviewArquivosGerados(parcelamentoAux, colecaoContaValores, colecaoGuiaPagamentoValores,
+										colecaoDebitoACobrarItem, colecaoCreditoARealizar, parcelamentoAux.getResolucaoDiretoria()
+														.getResolucaoDiretoriaLayout(), pdfsGerados, stringTextoHtmlEditado,
+										numeroDiasVencimentoEntrada);
+
+					}
+
+					break;
+				default:
+					break;
+			}
+
+			retorno = this.concatenarArquivos(pdfsGerados);
+
+			if(retorno == null){
+
+				ResolucaoDiretoriaLayout resolucaoDiretoriaLayoutPadrao = this.obterResolucaoDiretoriaLayoutPadrao();
+
+				// Associar resolução diretoria a resolução diretoria layout
+				parcelamentoAux = parcelamentoEfetuado;
+
+				// Caso a resolução diretoria não possua layout associado, seta a resolução
+				// diretoria layout padrão
+				if(parcelamentoAux.getResolucaoDiretoria().getResolucaoDiretoriaLayout() == null){
+
+					parcelamentoAux.getResolucaoDiretoria().setResolucaoDiretoriaLayout(resolucaoDiretoriaLayoutPadrao);
+					this.addValorMapLayoutOrdens(mapLayoutResolucaoDiretoria, parcelamentoAux.getResolucaoDiretoria()
+									.getResolucaoDiretoriaLayout().getId(), parcelamentoAux.getResolucaoDiretoria());
+				}else{
+
+					this.addValorMapLayoutOrdens(mapLayoutResolucaoDiretoria, parcelamentoAux.getResolucaoDiretoria()
+									.getResolucaoDiretoriaLayout().getId(), parcelamentoAux.getResolucaoDiretoria());
+				}
+
+				Set chaveLayouts = mapLayoutResolucaoDiretoria.keySet();
+				Iterator iterMap = chaveLayouts.iterator();
+
+				while(iterMap.hasNext()){
+					// Para cada Layout
+
+					Integer chaveLayout = (Integer) iterMap.next();
+					Collection<ResolucaoDiretoria> listaResolucoesDiretoria = mapLayoutResolucaoDiretoria.get(chaveLayout);
+
+					ResolucaoDiretoria resolucaoDiretoria = (ResolucaoDiretoria) Util.retonarObjetoDeColecao(listaResolucoesDiretoria);
+
+					// verifica se a resolução diretoria irá imprimir 2 por página
+					if(resolucaoDiretoria.getResolucaoDiretoriaLayout().getIndicadorImpressaoDoisPorPagina().intValue() == ConstantesSistema.SIM
+									.intValue()){
+
+						parcelamento = parcelamentoEfetuado;
+						nomeClasse = resolucaoDiretoria.getResolucaoDiretoriaLayout().getNomeClasse();
+						arquivoLayout = resolucaoDiretoria.getResolucaoDiretoriaLayout().getNomeRelatorio();
+						dados = this.getGeradorDados(nomeClasse, arquivoLayout, parcelamento, stringTextoHtmlEditado);
+						novoPdf = this.gerarRelatorio(arquivoLayout, this.getParametros(), dados);
+						for(int i = 0; i < resolucaoDiretoria.getResolucaoDiretoriaLayout().getQuantidadeVias(); i++){
+							pdfsGerados.add(novoPdf);
+						}
+						retorno = this.concatenarArquivos(pdfsGerados);
+
+					}else{
+
+						parcelamento = parcelamentoEfetuado;
+						nomeClasse = parcelamento.getResolucaoDiretoria().getResolucaoDiretoriaLayout().getNomeClasse();
+						arquivoLayout = parcelamento.getResolucaoDiretoria().getResolucaoDiretoriaLayout().getNomeRelatorio();
+						dados = this.getGeradorDados(nomeClasse, arquivoLayout, parcelamento, stringTextoHtmlEditado);
+						novoPdf = this.gerarRelatorio(arquivoLayout, this.getParametros(), dados);
+
+						for(int i = 0; i < parcelamento.getResolucaoDiretoria().getResolucaoDiretoriaLayout().getQuantidadeVias(); i++){
+
+							pdfsGerados.add(novoPdf);
+
+						}
+
+						retorno = this.concatenarArquivos(pdfsGerados);
+
+					}
+
+				}
+
+			}
+
+		}
+
+		return retorno;
+
+	}
+
+	private List<RelatorioParcelamentoResolucaoDiretoriaLayoutBean> getGeradorDados(String nomeClasse, String arquivoLayout,
+					Parcelamento parcelamento,
+					String stringTextoHtmlEditado)
 					throws GeradorRelatorioParcelamentoException{
 
 		List<RelatorioParcelamentoResolucaoDiretoriaLayoutBean> dados = null;
@@ -746,6 +1250,61 @@ public class GeradorRelatorioResolucaoDiretoria
 
 			if(geradorDados.getParametroTarefa() != null && !geradorDados.getParametroTarefa().isEmpty()){
 				adicionarParametrosTarefa(geradorDados.getParametroTarefa());
+			}
+
+			String stringHtml = "";
+			for(int index = 0; index < dados.size(); index++){
+				if(stringTextoHtmlEditado.trim().length() == 0){
+					stringHtml = geradorDados.gerarTextoHtml(dados.get(index), arquivoLayout, parcelamento);
+				}else{
+					stringHtml = stringTextoHtmlEditado;
+				}
+
+				dados.get(index).setTextoHtml(stringHtml);
+				this.setTextoHtml(stringHtml);
+			}
+
+		}catch(ClassNotFoundException e){
+			throw new GeradorRelatorioParcelamentoException(e.getMessage(), e);
+		}catch(SecurityException e){
+			throw new GeradorRelatorioParcelamentoException(e.getMessage(), e);
+		}catch(InstantiationException e){
+			throw new GeradorRelatorioParcelamentoException(e.getMessage(), e);
+		}catch(IllegalAccessException e){
+			throw new GeradorRelatorioParcelamentoException(e.getMessage(), e);
+		}
+
+		return dados;
+	}
+
+	private List<RelatorioParcelamentoResolucaoDiretoriaLayoutBean> getGeradorPreviewDados(String nomeClasse, String arquivoLayout,
+					Parcelamento parcelamento, Collection<ContaValoresHelper> colecaoContaValores,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores, Collection<DebitoACobrar> colecaoDebitoACobrar,
+					Collection<CreditoARealizar> colecaoCreditoARealizar, String stringTextoHtmlEditado, Integer numeroDiasVencimentoEntrada)
+					throws GeradorRelatorioParcelamentoException{
+
+		List<RelatorioParcelamentoResolucaoDiretoriaLayoutBean> dados = null;
+		try{
+			Class clazz = Class.forName(nomeClasse);
+			GeradorDadosRelatorioResolucaoDiretoria geradorDados = (GeradorDadosRelatorioResolucaoDiretoria) clazz.newInstance();
+			dados = geradorDados.gerarDados(parcelamento, colecaoContaValores, colecaoGuiaPagamentoValores, colecaoDebitoACobrar,
+							colecaoCreditoARealizar, numeroDiasVencimentoEntrada);
+
+			if(geradorDados.getParametroTarefa() != null && !geradorDados.getParametroTarefa().isEmpty()){
+				adicionarParametrosTarefa(geradorDados.getParametroTarefa());
+			}
+
+
+			String stringHtml = "";
+			for(int index = 0; index < dados.size(); index++){
+				if(stringTextoHtmlEditado.trim().length() == 0){
+					stringHtml = geradorDados.gerarTextoHtml(dados.get(index), arquivoLayout, parcelamento);
+				}else{
+					stringHtml = stringTextoHtmlEditado;
+				}
+
+				dados.get(index).setTextoHtml(stringHtml);
+				this.setTextoHtml(stringHtml);
 			}
 
 		}catch(ClassNotFoundException e){
@@ -797,15 +1356,19 @@ public class GeradorRelatorioResolucaoDiretoria
 		return dados;
 	}
 
-	private byte[] gerarRelatorioPDF(String arquivoLayout, Map<String, Object> parametros,
-					Collection<RelatorioParcelamentoResolucaoDiretoriaLayoutBean> dados) throws GeradorRelatorioParcelamentoException{
+	private byte[] gerarRelatorio(String arquivoLayout, Map<String, Object> parametros,
+					Collection<RelatorioParcelamentoResolucaoDiretoriaLayoutBean> dados)
+					throws GeradorRelatorioParcelamentoException{
 
 		byte[] bytes = null;
 
 		try{
-			JasperReport relatorioJasper = (JasperReport) JRLoader.loadObject(this.getClass().getClassLoader().getResourceAsStream(
-							arquivoLayout));
+
+			JasperReport relatorioJasper = (JasperReport) JRLoader.loadObject(this.getClass().getClassLoader()
+							.getResourceAsStream(arquivoLayout));
+
 			bytes = JasperRunManager.runReportToPdf(relatorioJasper, parametros, new JRBeanCollectionDataSource(dados));
+
 		}catch(JRException e){
 			throw new GeradorRelatorioParcelamentoException(e.getMessage(), e);
 		}
@@ -813,17 +1376,19 @@ public class GeradorRelatorioResolucaoDiretoria
 		return bytes;
 	}
 
-	private byte[] concatenarPFDs(List<byte[]> pdfsGerados) throws GeradorRelatorioParcelamentoException{
+	private byte[] concatenarArquivos(List<byte[]> pdfsGerados) throws GeradorRelatorioParcelamentoException{
 
 		int pageOffset = 0;
 		int f = 0;
 		Document document = null;
 		PdfCopy writer = null;
+		
 		byte[] pdfGerado = null;
 		byte[] novoPDF = null;
 		ByteArrayOutputStream baos = null;
 
 		try{
+
 			if(pdfsGerados != null && !pdfsGerados.isEmpty()){
 				Iterator<byte[]> iterator = pdfsGerados.iterator();
 				baos = new ByteArrayOutputStream();
@@ -851,6 +1416,7 @@ public class GeradorRelatorioResolucaoDiretoria
 				}
 				document.close();
 			}
+
 		}catch(Exception e){
 			throw new GeradorRelatorioParcelamentoException(e.getMessage(), e);
 		}
@@ -889,7 +1455,12 @@ public class GeradorRelatorioResolucaoDiretoria
 	@Override
 	public int calcularTotalRegistrosRelatorio(){
 
-		return ((Collection<Integer>) getParametro("colecaoIdsParcelamento")).size();
+		if (getParametro("colecaoIdsParcelamento") != null) {
+			return ((Collection<Integer>) getParametro("colecaoIdsParcelamento")).size();
+		} else {
+			return 1;
+		}
+		
 	}
 
 	@Override
@@ -903,20 +1474,41 @@ public class GeradorRelatorioResolucaoDiretoria
 	public Object executar() throws TarefaException{
 
 		byte[] retorno = null;
-
+		
 		try{
+
+			String stringTextoHtmlEditado = "";
+			if(getParametro("stringTextoHtmlEditado") != null){
+				stringTextoHtmlEditado = getParametro("stringTextoHtmlEditado").toString();
+			}
 
 			if(getParametro("listaParcelamento") != null){
 
 				retorno = this.gerarRelatorioResolucaoDiretoria((List<Parcelamento>) getParametro("listaParcelamento"),
-								(Collection<ContaValoresHelper>) getParametro("colecaoContaValores"));
+								(Collection<ContaValoresHelper>) getParametro("colecaoContaValores"), stringTextoHtmlEditado);
 			}else if(getParametro("colecaoIdsParcelamento") != null){
 
 				retorno = this.gerarRelatorioResolucaoDiretoria(((Collection<Integer>) getParametro("colecaoIdsParcelamento")),
 								(Collection<ContaValoresHelper>) getParametro("colecaoContaValores"),
 								(String) getParametro("indicadorParcelamentoCobrancaBancaria"),
-								(ParcelamentoTermoTestemunhas) getParametro("parcelamentoTermoTestemunhas"));
+								(ParcelamentoTermoTestemunhas) getParametro("parcelamentoTermoTestemunhas"),
+								(ParcelamentoDadosTermo) getParametro("parcelamentoDadosTermos"), stringTextoHtmlEditado);
+			}else if(getParametro("parcelamento") != null){
+
+				retorno = this.gerarRelatorioResolucaoDiretoria(((Parcelamento) getParametro("parcelamento")),
+								(Collection<ContaValoresHelper>) getParametro("colecaoContaValores"),
+								(String) getParametro("indicadorParcelamentoCobrancaBancaria"),
+								(ParcelamentoTermoTestemunhas) getParametro("parcelamentoTermoTestemunhas"),
+								(ParcelamentoDadosTermo) getParametro("parcelamentoDadosTermos"),
+								(Collection<GuiaPagamentoValoresHelper>) getParametro("colecaoGuiaPagamentoValores"),
+								(Collection<DebitoACobrar>) getParametro("colecaoDebitoACobrar"),
+								(Collection<CreditoARealizar>) getParametro("colecaoCreditoARealizar"),
+								(String) getParametro("indicadorCobrancaBancaria"), stringTextoHtmlEditado,
+								(Integer) getParametro("numeroDiasVencimentoEntrada"));
 			}
+
+			this.addParametro("relatorio", retorno);
+			this.addParametro("stringTextoHtml", this.getTextoHtml());
 
 			persistirRelatorioConcluido(retorno, Relatorio.RELATORIO_ORDEM_SERVICO_COBRANCA, getIdFuncionalidadeIniciada(), null);
 
@@ -1114,15 +1706,41 @@ public class GeradorRelatorioResolucaoDiretoria
 
 	}
 
-	private void adicionarPdfsGerados(Parcelamento parcelamento, ResolucaoDiretoriaLayout resolucaoDiretoriaLayout, List<byte[]> pdfsGerados)
+	private void adicionarArquivosGerados(Parcelamento parcelamento, ResolucaoDiretoriaLayout resolucaoDiretoriaLayout,
+					List<byte[]> pdfsGerados, String stringTextoHtmlEditado)
 					throws GeradorRelatorioParcelamentoException{
 
 		String nomeClasse = resolucaoDiretoriaLayout.getNomeClasse();
 		String arquivoLayout = resolucaoDiretoriaLayout.getNomeRelatorio();
 		Integer qtdVias = resolucaoDiretoriaLayout.getQuantidadeVias();
 
-		List<RelatorioParcelamentoResolucaoDiretoriaLayoutBean> dados = this.getGeradorDados(nomeClasse, parcelamento);
-		byte[] novoPdf = this.gerarRelatorioPDF(arquivoLayout, this.getParametros(), dados);
+		List<RelatorioParcelamentoResolucaoDiretoriaLayoutBean> dados = this.getGeradorDados(nomeClasse, arquivoLayout, parcelamento,
+						stringTextoHtmlEditado);
+		byte[] novoPdf = this.gerarRelatorio(arquivoLayout, this.getParametros(), dados);
+
+		for(int i = 0; i < qtdVias; i++){
+
+			pdfsGerados.add(novoPdf);
+
+		}
+
+	}
+
+	private void adicionarPreviewArquivosGerados(Parcelamento parcelamento, Collection<ContaValoresHelper> colecaoContaValores,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores, Collection<DebitoACobrar> colecaoDebitoACobrar,
+					Collection<CreditoARealizar> colecaoCreditoARealizar, ResolucaoDiretoriaLayout resolucaoDiretoriaLayout,
+					List<byte[]> pdfsGerados, String stringTextoHtmlEditado, Integer numeroDiasVencimentoEntrada)
+					throws GeradorRelatorioParcelamentoException{
+
+		String nomeClasse = resolucaoDiretoriaLayout.getNomeClasse();
+		String arquivoLayout = resolucaoDiretoriaLayout.getNomeRelatorio();
+		Integer qtdVias = resolucaoDiretoriaLayout.getQuantidadeVias();
+
+		List<RelatorioParcelamentoResolucaoDiretoriaLayoutBean> dados = this.getGeradorPreviewDados(nomeClasse, arquivoLayout,
+						parcelamento, colecaoContaValores, colecaoGuiaPagamentoValores, colecaoDebitoACobrar, colecaoCreditoARealizar,
+						stringTextoHtmlEditado, numeroDiasVencimentoEntrada);
+		
+		byte[] novoPdf = this.gerarRelatorio(arquivoLayout, this.getParametros(), dados);
 
 		for(int i = 0; i < qtdVias; i++){
 

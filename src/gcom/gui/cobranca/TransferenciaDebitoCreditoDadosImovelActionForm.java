@@ -76,6 +76,9 @@
 
 package gcom.gui.cobranca;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.struts.validator.ValidatorActionForm;
 
 /**
@@ -117,14 +120,180 @@ public class TransferenciaDebitoCreditoDadosImovelActionForm
 
 	private String descricaoLigacaoEsgotoSituacaoImovelDestino;
 
+	private String tipoTransferencia;
+
+	private String idRelacaoClienteOrigem;
+
+	private String idClienteDestino;
+
+	private String nomeClienteDestino;
+
+	private String cpfCnpjClienteDestino;
+
+	private String idClienteImovelSelecionado;
+
+	private Integer idClienteOrigemSelecionado;
+
+	private Integer idClienteRelacaoOrigemSelecionado;
+
+	List<Integer> idClienteOrigem = new ArrayList<Integer>();
+
+	List<Integer> idClienteRelacaoOrigem = new ArrayList<Integer>();
+
+	List<String> idsContas = new ArrayList<String>();
+
+	List<String> idsDebitos = new ArrayList<String>();
+
+	List<String> idsCreditos = new ArrayList<String>();
+
+	List<String> idsGuias = new ArrayList<String>();
+
+	String idsContasSelecionadas;
+
+	String idsDebitosSelecionadas;
+
+	String idsCreditosSelecionadas;
+
+	String idsGuiasSelecionadas;
+
+	public String getIdsContasSelecionadas(){
+
+		return idsContasSelecionadas;
+	}
+
+	public void setIdsContasSelecionadas(String idsContasSelecionadas){
+
+		this.idsContasSelecionadas = idsContasSelecionadas;
+	}
+
+	public String getIdsDebitosSelecionadas(){
+
+		return idsDebitosSelecionadas;
+	}
+
+	public void setIdsDebitosSelecionadas(String idsDebitosSelecionadas){
+
+		this.idsDebitosSelecionadas = idsDebitosSelecionadas;
+	}
+
+	public String getIdsCreditosSelecionadas(){
+
+		return idsCreditosSelecionadas;
+	}
+
+	public void setIdsCreditosSelecionadas(String idsCreditosSelecionadas){
+
+		this.idsCreditosSelecionadas = idsCreditosSelecionadas;
+	}
+
+	public String getIdsGuiasSelecionadas(){
+
+		return idsGuiasSelecionadas;
+	}
+
+	public void setIdsGuiasSelecionadas(String idsGuiasSelecionadas){
+
+		this.idsGuiasSelecionadas = idsGuiasSelecionadas;
+	}
+
+	public List<String> getIdsGuias(){
+
+		return idsGuias;
+	}
+
+	public List<String> getIdsCreditos(){
+
+		return idsCreditos;
+	}
+
+	public List<String> getIdsDebitos(){
+
+		return idsDebitos;
+	}
+
+	public List<String> getIdsContas(){
+
+		return idsContas;
+	}
+
+	public List<Integer> getIdClienteRelacaoOrigem(){
+
+		return idClienteRelacaoOrigem;
+	}
+
+	public List<Integer> getIdClienteOrigem(){
+
+		return idClienteOrigem;
+	}
+
+	public String getIdClienteImovelSelecionado(){
+
+		return idClienteImovelSelecionado;
+	}
+
+	public void setIdClienteImovelSelecionado(String idClienteImovelSelecionado){
+
+		this.idClienteImovelSelecionado = idClienteImovelSelecionado;
+	}
+
+	public String getCpfCnpjClienteDestino(){
+
+		return cpfCnpjClienteDestino;
+	}
+
+	public void setCpfCnpjClienteDestino(String cpfCnpjClienteDestino){
+
+		this.cpfCnpjClienteDestino = cpfCnpjClienteDestino;
+	}
+
+	public String getNomeClienteDestino(){
+
+		return nomeClienteDestino;
+	}
+
+	public void setNomeClienteDestino(String nomeClienteDestino){
+
+		this.nomeClienteDestino = nomeClienteDestino;
+	}
+
+	public String getTipoTransferencia(){
+
+		return tipoTransferencia;
+	}
+
+	public void setTipoTransferencia(String tipoTransferencia){
+
+		this.tipoTransferencia = tipoTransferencia;
+	}
+
+	public String getIdClienteDestino(){
+
+		return idClienteDestino;
+	}
+
+	public void setIdClienteDestino(String idClienteDestino){
+
+		this.idClienteDestino = idClienteDestino;
+	}
+
+	public String getIdRelacaoClienteOrigem(){
+
+		return idRelacaoClienteOrigem;
+	}
+
+	public void setIdRelacaoClienteOrigem(String idRelacaoClienteOrigem){
+
+		this.idRelacaoClienteOrigem = idRelacaoClienteOrigem;
+	}
+
 	public String getDescricaoEspecificacaoRA(){
 
 		return descricaoEspecificacaoRA;
 	}
 
-	public void setDescricaoEspecificacaoRA(String descricaoEspecificacaoRA){
+	public void setDescricaoEspecificacaoRA(String idClienteOrigem){
 
-		this.descricaoEspecificacaoRA = descricaoEspecificacaoRA;
+		this.descricaoEspecificacaoRA = idClienteOrigem;
 	}
 
 	public String getNomeClienteUsuarioImovelDestino(){
@@ -236,5 +405,26 @@ public class TransferenciaDebitoCreditoDadosImovelActionForm
 
 		this.inscricaoImovelOrigem = inscricaoImovelOrigem;
 	}
+	
+	public Integer getIdClienteOrigemSelecionado(){
+
+		return idClienteOrigemSelecionado;
+	}
+
+	public void setIdClienteOrigemSelecionado(Integer idClienteOrigemSelecionado){
+
+		this.idClienteOrigemSelecionado = idClienteOrigemSelecionado;
+	}
+
+	public Integer getIdClienteRelacaoOrigemSelecionado(){
+
+		return idClienteRelacaoOrigemSelecionado;
+	}
+
+	public void setIdClienteRelacaoOrigemSelecionado(Integer idClienteRelacaoOrigemSelecionado){
+
+		this.idClienteRelacaoOrigemSelecionado = idClienteRelacaoOrigemSelecionado;
+
+	}	
 
 }

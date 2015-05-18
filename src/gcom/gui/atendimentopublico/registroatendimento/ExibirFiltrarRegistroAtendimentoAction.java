@@ -250,6 +250,29 @@ public class ExibirFiltrarRegistroAtendimentoAction
 			filtrarRegistroAtendimentoActionForm.setIndicadorProcessoAdmJud(ConstantesSistema.TODOS.toString());
 		}
 
+		// Preenche o indicador na tela
+		String indicadorRaVencidas = filtrarRegistroAtendimentoActionForm.getIndicadorRaVencidas();
+
+		// Coloca com default o indicador de processo adm jud como (Todos)
+		if(Util.isVazioOuBranco(indicadorRaVencidas)){
+			filtrarRegistroAtendimentoActionForm.setIndicadorRaVencidas(ConstantesSistema.TODOS.toString());
+		}
+
+		// Preenche o indicador na tela
+		String indicadorRaPagamento = filtrarRegistroAtendimentoActionForm.getIndicadorRaPagamento();
+
+		// Coloca com default o indicador de processo adm jud como (Todos)
+		if(Util.isVazioOuBranco(indicadorRaPagamento)){
+			filtrarRegistroAtendimentoActionForm.setIndicadorRaPagamento(ConstantesSistema.TODOS.toString());
+		}
+
+		// Preenche o indicador na tela
+		String indicadorRaDevolucao = filtrarRegistroAtendimentoActionForm.getIndicadorRaDevolucao();
+
+		// Coloca com default o indicador de processo adm jud como (Todos)
+		if(Util.isVazioOuBranco(indicadorRaDevolucao)){
+			filtrarRegistroAtendimentoActionForm.setIndicadorRaDevolucao(ConstantesSistema.TODOS.toString());
+		}
 
 		return retorno;
 	}

@@ -383,7 +383,8 @@ public class GerenciadorExecucaoTarefaRelatorio {
 						|| nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_FISCALIZACAO_ORDEM_SUPRESSAO)
 						|| nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_ORDEM_SERVICO_COBRANCA)
 						|| nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_ORDEM_SERVICO_PADRAO_COM_OCORRENCIA)
-						|| nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_ORDEM_SERVICO_ESTRUTURA)){
+						|| nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_ORDEM_SERVICO_ESTRUTURA)
+						|| nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_ORDEM_SERVICO_BASE_COM_SUBRELATORIOS)){
 
 			retornoCodigoProcesso = Processo.GERAR_RELATORIO_ORDEM_SERVICO;
 
@@ -556,7 +557,7 @@ public class GerenciadorExecucaoTarefaRelatorio {
 			retornoCodigoProcesso = Processo.GERAR_RELATORIO_CERTIDAO_NEGATIVA;
 
 		}else if(nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_AVISO_DEBITO)
-						|| nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_AVISO_DEBITO_MODELO_2)){
+						|| nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_AVISO_DEBITO_MODELO_2) || nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_AVISO_DEBITO_MODELO3)){
 
 			retornoCodigoProcesso = Processo.GERAR_RELATORIO_AVISO_DEBITO;
 
@@ -911,7 +912,7 @@ public class GerenciadorExecucaoTarefaRelatorio {
 		}else if(nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_COMANDO_OS_SELETIVA)){
 
 			retornoCodigoProcesso = Processo.RELATORIO_COMANDO_OS_SELETIVA;
-			
+
 		}else if(nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_FATURAMENTO_LIGACOES_MEDICAO_INDIVIDUALIZADA)){
 
 			retornoCodigoProcesso = Processo.RELATORIO_FATURAMENTO_LIGACOES_MEDICAO_INDIVIDUALIZADA;
@@ -953,9 +954,9 @@ public class GerenciadorExecucaoTarefaRelatorio {
 		}else if(nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_REGISTRO_ATENDIMENTO_COM_PROCESSO_ADM_JUD)){
 
 			retornoCodigoProcesso = Processo.GERAR_RELATORIO_RA_COM_PROCESSO_ADM_JUD;
-		
+
 		}else if(nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_DEBITOS_PRESCRITOS)){
-					retornoCodigoProcesso = Processo.RELATORIO_DEBITOS_PRESCRITOS;
+			retornoCodigoProcesso = Processo.RELATORIO_DEBITOS_PRESCRITOS;
 		}else if(nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_ACOMPANHAMENTO_DEBITOS_PRESCRITOS)){
 
 			retornoCodigoProcesso = Processo.RELATORIO_ACOMPANHAMENTO_DEBITOS_PRESCRITOS;
@@ -976,6 +977,37 @@ public class GerenciadorExecucaoTarefaRelatorio {
 
 			retornoCodigoProcesso = Processo.GERAR_RELATORIO_ANALITICO_FATURAMENTO;
 
+		}else if(nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_REGISTRAR_LEITURAS_ANORMALIDADES)){
+
+			retornoCodigoProcesso = Processo.RELATORIO_REGISTRAR_LEITURAS_ANORMALIDADES;
+		}else if(nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_MANTER_ATIVIDADE_ECONOMICA)){
+
+			retornoCodigoProcesso = Processo.RELATORIO_MANTER_ATIVIDADE_ECONOMICA;
+
+		}else if(nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_CONTAS_RECALCULADAS)){
+
+			retornoCodigoProcesso = Processo.RELATORIO_CONTAS_RECALCULADAS;
+
+		}else if(nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_ANALITICO_CONTAS)){
+
+			retornoCodigoProcesso = Processo.RELATORIO_ANALITICO_CONTAS;
+
+		}else if(nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_RESUMO_ORDENS_SERVICO_DOC_COB)){
+
+			retornoCodigoProcesso = Processo.RELATORIO_RESUMO_ORDENS_SERVICO_DOC_COB;
+
+		}else if(nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_ANALITICO_RELACAO_IMOVEIS_EM_COBRANCA_ADMINISTRATIVA)){
+			retornoCodigoProcesso = Processo.RELATORIO_ANALITICO_RELACAO_IMOVEIS_EM_COBRANCA_ADMINISTRATIVA;
+		}else if(nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_MANTER_ORDEM_SERVICO)){
+			retornoCodigoProcesso = Processo.RELATORIO_MANTER_ORDEM_SERVICO;
+
+		}else if(nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_CONTAS_RECEBER_VALORES_CORRIGIDOS)){
+
+			retornoCodigoProcesso = Processo.RELATORIO_CONTAS_RECEBER_VALORES_CORRIGIDOS;
+
+		}else if(nomeRelatorio.equals(ConstantesRelatorios.RELATORIO_TOTAL_CONTAS_EMITIDAS_LOCALIDADE)){
+
+			retornoCodigoProcesso = Processo.RELATORIO_TOTAL_CONTAS_EMITIDAS_LOCALIDADE;
 		}
 
 		return retornoCodigoProcesso;
@@ -1032,6 +1064,22 @@ public class GerenciadorExecucaoTarefaRelatorio {
 		}
 
 		return retorno;
+	}
+
+	public static RelatorioProcessado analisarExecucaoRelatorioResumoOrdemServico(TarefaRelatorio tarefaRelatorio, int tipoTarefa){
+
+		RelatorioProcessado retorno = null;
+		// pegando a quantidade de registro dessa tarefa
+
+		String nomeClasseRelatorio = tarefaRelatorio.getClass().getSimpleName();
+
+		// caso contrario executa e monta o relatorio processado
+		// Fazer depois -- toda tarefa deverá passar pelo agendador, mesmo se for imediata
+		byte[] dados = (byte[]) tarefaRelatorio.executar();
+		retorno = new RelatorioProcessado(dados, tipoTarefa);
+
+		return retorno;
+
 	}
 
 }

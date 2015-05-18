@@ -84,10 +84,9 @@ import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
 import gcom.util.filtro.ParametroSimples;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -180,8 +179,46 @@ public class AdicionarInserirImovelClienteAction
 		clienteRelacaoTipo.setDescricao((String) inserirImovelActionForm.get("textoSelecionado"));
 
 		// inicializa o cliente imovel
-		ClienteImovel clienteImovel = new ClienteImovel(new Date(), null, null, cliente, clienteRelacaoTipo);
+		Calendar dataInicioRelacao = Calendar.getInstance();
+		ClienteImovel clienteImovel = new ClienteImovel(dataInicioRelacao.getTime(), null, null, cliente, clienteRelacaoTipo);
 
+		if(inserirImovelActionForm.get("dataFimClienteImovelRelacao") != null
+						&& !((String) inserirImovelActionForm.get("dataFimClienteImovelRelacao")).equals("")){
+			
+			Calendar dataFimRelacao = Calendar.getInstance();
+
+			SimpleDateFormat dateformato = new SimpleDateFormat("dd/MM/yyyy");
+			try{
+				dataFimRelacao.setTime(dateformato.parse((String) inserirImovelActionForm.get("dataFimClienteImovelRelacao")));
+			}catch(ParseException e){
+				// TODO Auto-generated catch block
+				throw new ActionServletException("erro.sistema", e);
+			}
+
+			dataFimRelacao.set(Calendar.HOUR, dataInicioRelacao.get(Calendar.HOUR_OF_DAY));
+			dataFimRelacao.set(Calendar.MINUTE, dataInicioRelacao.get(Calendar.MINUTE));
+			dataFimRelacao.set(Calendar.SECOND, dataInicioRelacao.get(Calendar.SECOND));
+			dataFimRelacao.set(Calendar.MILLISECOND, dataInicioRelacao.get(Calendar.MILLISECOND));
+
+			if(dataFimRelacao.before(dataInicioRelacao)){
+				throw new ActionServletException("atencao.data_fim_relacao_incorreta.cliente_imovel_usuario");
+			}
+
+			clienteImovel.setDataPrevistaFimRelacao(dataFimRelacao.getTime());
+		}
+
+		if((clienteImovel.getClienteRelacaoTipo().getId().intValue() == ConstantesSistema.CLIENTE_IMOVEL_TIPO_USUARIO.intValue())){
+			if(inserirImovelActionForm.get("idMotivoFimClienteImovelRelacao") != null
+							&& !((String) inserirImovelActionForm.get("idMotivoFimClienteImovelRelacao")).equals("")
+							&& !((String) inserirImovelActionForm.get("idMotivoFimClienteImovelRelacao")).equals(String
+											.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				ClienteImovelFimRelacaoMotivo clienteImovelFimRelacaoMotivo = new ClienteImovelFimRelacaoMotivo();
+				clienteImovelFimRelacaoMotivo
+								.setId(Integer.valueOf((String) inserirImovelActionForm.get("idMotivoFimClienteImovelRelacao")));
+
+				clienteImovel.setClienteImovelFimRelacaoMotivo(clienteImovelFimRelacaoMotivo);
+			}
+		}
 
 		// Coloca a data de ultima alteração para identificar o objeto
 		clienteImovel.setUltimaAlteracao(new Date());
@@ -290,7 +327,6 @@ public class AdicionarInserirImovelClienteAction
 
 			inserirImovelActionForm.set("idCliente", null);
 			inserirImovelActionForm.set("nomeCliente", null);
-
 
 			// manda para a sessão a coleção de imovelClienteNovos
 			sessao.setAttribute("imovelClientesNovos", imovelClientesNovos);

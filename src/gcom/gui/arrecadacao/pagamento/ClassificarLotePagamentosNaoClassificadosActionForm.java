@@ -120,6 +120,8 @@ public class ClassificarLotePagamentosNaoClassificadosActionForm
 
 	private String limiteMaximoDiferenca;
 
+	private String indicadorCorancaDiferencaPagtoAMenor;
+
 	public char getOpcaoGeracao(){
 
 		return opcaoGeracao;
@@ -268,6 +270,16 @@ public class ClassificarLotePagamentosNaoClassificadosActionForm
 	public void setLimiteMaximoDiferenca(String limiteMaximoDiferenca){
 
 		this.limiteMaximoDiferenca = limiteMaximoDiferenca;
+	}
+
+	public String getIndicadorCorancaDiferencaPagtoAMenor(){
+
+		return indicadorCorancaDiferencaPagtoAMenor;
+	}
+
+	public void setIndicadorCorancaDiferencaPagtoAMenor(String indicadorCorancaDiferencaPagtoAMenor){
+
+		this.indicadorCorancaDiferencaPagtoAMenor = indicadorCorancaDiferencaPagtoAMenor;
 	}
 
 }

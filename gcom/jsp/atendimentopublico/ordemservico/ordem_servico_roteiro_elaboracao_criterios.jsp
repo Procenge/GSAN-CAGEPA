@@ -319,6 +319,8 @@
 							<html:option value="4">Localidade</html:option>
 							<html:option value="5">Setor Comercial</html:option>
 							<html:option value="6">Distrito Operacional</html:option>
+							<html:option value="7">Bairro</html:option>
+							<html:option value="8">Prioridade</html:option>
 						</html:select>
 						</strong>
 					</td>
@@ -462,6 +464,23 @@
 								size="4" 
 								maxlength="4" 
 								tabindex="3"/>
+	                  	</strong>
+	                  	</span>
+	              	</td>
+              	</tr>
+              	<tr>
+	                <td>
+	                	<strong>Quantidade Dias na Unidade:</strong>
+	                </td>
+                
+	                <td colspan="6">
+	                	<span class="style2">
+	                	<strong> 
+							<html:text property="quantidadeDiasUnidade" 
+								size="4" 
+								maxlength="4" 
+								tabindex="3"
+								onkeypress="return isCampoNumerico(event);"/>
 	                  	</strong>
 	                  	</span>
 	              	</td>

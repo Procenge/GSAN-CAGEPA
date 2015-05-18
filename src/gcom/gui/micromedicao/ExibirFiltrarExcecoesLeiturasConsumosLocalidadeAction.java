@@ -78,14 +78,7 @@ package gcom.gui.micromedicao;
 
 import gcom.cadastro.empresa.Empresa;
 import gcom.cadastro.empresa.FiltroEmpresa;
-import gcom.cadastro.localidade.FiltroGerenciaRegional;
-import gcom.cadastro.localidade.FiltroLocalidade;
-import gcom.cadastro.localidade.FiltroQuadra;
-import gcom.cadastro.localidade.FiltroSetorComercial;
-import gcom.cadastro.localidade.GerenciaRegional;
-import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.localidade.Quadra;
-import gcom.cadastro.localidade.SetorComercial;
+import gcom.cadastro.localidade.*;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
 import gcom.faturamento.FaturamentoGrupo;

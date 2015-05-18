@@ -151,7 +151,7 @@ public class ExibirRegistroAtendimentoTramitacaoPopupAction
 
 		// Verifica se a tramitacao será feita também para OS
 		try{
-			if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().equals(ConstantesSistema.SIM.toString())){
+			if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().toString().equals(ConstantesSistema.SIM.toString())){
 				sessao.setAttribute("indicadorParametroTramite", true);
 			}
 		}catch(ControladorException e){

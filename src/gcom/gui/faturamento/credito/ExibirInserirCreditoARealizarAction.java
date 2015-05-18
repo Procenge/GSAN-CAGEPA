@@ -138,6 +138,10 @@ public class ExibirInserirCreditoARealizarAction
 
 		Fachada fachada = Fachada.getInstancia();
 
+		if(httpServletRequest.getParameter("numeroRA") != null){
+			inserirCreditoARealizarActionForm.setRegistroAtendimento(httpServletRequest.getParameter("numeroRA").toString());
+		}
+
 		// Coleção de Tipo de Crédito
 		FiltroCreditoTipo filtroCreditoTipo = new FiltroCreditoTipo();
 		Collection<CreditoTipo> collectionCreditoTipo = fachada.pesquisar(filtroCreditoTipo, CreditoTipo.class.getName());

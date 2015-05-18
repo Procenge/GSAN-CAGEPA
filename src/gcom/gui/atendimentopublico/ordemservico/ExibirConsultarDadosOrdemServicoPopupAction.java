@@ -95,8 +95,11 @@ import gcom.faturamento.debito.FiltroDebitoACobrar;
 import gcom.faturamento.debito.FiltroDebitoACobrarHistorico;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -222,6 +225,17 @@ public class ExibirConsultarDadosOrdemServicoPopupAction
 
 			consultarDadosOrdemServicoPopupActionForm.setUnidadeAtualId("");
 			consultarDadosOrdemServicoPopupActionForm.setUnidadeAtualDescricao("");
+		}
+
+		if(ordemServico.getValorHorasTrabalhadas() != null){
+			consultarDadosOrdemServicoPopupActionForm.setValorHorasTrabalhadas(ordemServico.getValorHorasTrabalhadas().toString());
+		}else{
+			consultarDadosOrdemServicoPopupActionForm.setValorHorasTrabalhadas("0");
+		}
+		if(ordemServico.getValorMateriais() != null){
+			consultarDadosOrdemServicoPopupActionForm.setValorMateriais(ordemServico.getValorMateriais().toString());
+		}else{
+			consultarDadosOrdemServicoPopupActionForm.setValorMateriais("0");
 		}
 
 		// Pesquisar dados da programação
@@ -446,6 +460,22 @@ public class ExibirConsultarDadosOrdemServicoPopupAction
 			}
 		}else{
 			consultarDadosOrdemServicoPopupActionForm.setPossuiExecucaoServico("");
+		}
+
+		try{
+			if(ParametroAtendimentoPublico.P_PERMITE_COBRAR_MATERIAL_OS.executar().equals(ConstantesSistema.SIM.toString())){
+				httpServletRequest.setAttribute("permiteCobrarMaterial", "1");
+			}else{
+				httpServletRequest.setAttribute("permiteCobrarMaterial", "0");
+			}
+			if(ParametroAtendimentoPublico.P_PERMITE_COBRAR_HORA_OS.executar().equals(ConstantesSistema.SIM.toString())){
+				httpServletRequest.setAttribute("permiteCobrarHora", "1");
+			}else{
+				httpServletRequest.setAttribute("permiteCobrarHora", "0");
+			}
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		// ---------------------------------------------------------------------------------------------------------

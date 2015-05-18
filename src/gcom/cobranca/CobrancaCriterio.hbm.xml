@@ -83,6 +83,12 @@
         length="2"
     />
     <property
+        name="indicadorDividaAtiva"
+        type="java.lang.Short"
+        column="cbct_icdividaativa"
+        length="2"
+    />
+    <property
         name="indicadorEmissaoInquilinoDebitoContaMes"
         type="java.lang.Short"
         column="cbct_icemissaoinquilinodebitoc"
@@ -128,6 +134,14 @@
         name="indicadorComTelefone"
         type="java.lang.Short"
         column="CBCT_ICTELEFONE"
+        not-null="true"
+        length="2"
+    />
+    
+     <property
+        name="indicadorCriterioCobranca"
+        type="java.lang.Short"
+        column="cbct_icemissaocpfcnpjvalidado"
         not-null="true"
         length="2"
     />

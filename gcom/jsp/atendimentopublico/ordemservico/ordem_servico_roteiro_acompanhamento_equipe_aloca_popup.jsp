@@ -255,6 +255,7 @@
 			                	<td width="19%"><div align="center"><strong>Placa do Ve&iacute;culo</strong></div></td>
 			                	<td width="17%"><div align="center"><strong>Unidade</strong></div></td>
 			                	<td width="18%"><div align="center"><strong>Tipo Perfil</strong></div></td>
+			                	<td width="18%"><div align="center"><strong>Tipo Equipe</strong></div></td>
 			              	</tr>
 
 							<logic:present name="AcompanharRoteiroProgramacaoOrdemServicoActionForm" 
@@ -344,6 +345,14 @@
 			                        	<div align="center">
 			                        		<c:if test="${equipe.servicoPerfilTipo != null}">
 			                        			<bean:write name="equipe" property="servicoPerfilTipo.id" />
+			                        		</c:if>
+			                        	</div>
+			                        </td>
+			                        
+			                        <td bordercolor="#90c7fc">
+			                        	<div align="center">
+			                        		<c:if test="${equipe.equipeTipo != null}">
+			                        			<bean:write name="equipe" property="equipeTipo.descricao" />
 			                        		</c:if>
 			                        	</div>
 			                        </td>

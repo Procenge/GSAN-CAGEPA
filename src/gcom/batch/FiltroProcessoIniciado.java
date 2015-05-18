@@ -126,4 +126,7 @@ public class FiltroProcessoIniciado
 
 	public static final String DESCRICAO_DADOS_COMPLEMENTARES = "descricaoDadosComplementares";
 
+	public static final String ID_PROCESSO_INICIADO_DEPENDENTE = "processoIniciadoPrecedente";
+
+	public final static String PROCESSO_SITUACAO = "processoSituacao";
 }

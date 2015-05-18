@@ -79,10 +79,8 @@
 
 package gcom.gui.relatorio.arrecadacao.pagamento;
 
-import gcom.arrecadacao.pagamento.FiltroGuiaPagamento;
-import gcom.arrecadacao.pagamento.FiltroGuiaPagamentoPrestacaoHistorico;
-import gcom.arrecadacao.pagamento.GuiaPagamento;
-import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacaoHistorico;
+import gcom.arrecadacao.pagamento.*;
+import gcom.cobranca.DocumentoTipo;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.arrecadacao.pagamento.ExibirFiltrarGuiaPagtGeracaoDebAutomActionForm;
@@ -91,18 +89,22 @@ import gcom.gui.cobranca.ParcelamentoDebitoActionForm;
 import gcom.gui.faturamento.ManterGuiaPagamentoActionForm;
 import gcom.gui.faturamento.bean.GuiaPagamentoPrestacaoHelper;
 import gcom.gui.faturamento.guiapagamento.AtualizarGuiaPagamentoActionForm;
+import gcom.interceptor.RegistradorOperacao;
 import gcom.relatorio.ExibidorProcessamentoTarefaRelatorio;
 import gcom.relatorio.RelatorioVazioException;
 import gcom.relatorio.arrecadacao.pagamento.RelatorioEmitirGuiaPagamento;
+import gcom.seguranca.acesso.Argumento;
+import gcom.seguranca.acesso.DocumentoEmissaoEfetuada;
+import gcom.seguranca.acesso.Operacao;
+import gcom.seguranca.acesso.PermissaoEspecial;
 import gcom.seguranca.acesso.usuario.Usuario;
+import gcom.seguranca.acesso.usuario.UsuarioAcao;
+import gcom.seguranca.acesso.usuario.UsuarioAcaoUsuarioHelper;
 import gcom.tarefa.TarefaRelatorio;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -131,6 +133,7 @@ public class GerarRelatorioEmitirGuiaPagamentoAction
 		ActionForward retorno = null;
 		Fachada fachada = Fachada.getInstancia();
 		HttpSession sessao = httpServletRequest.getSession(false);
+		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
 
 		String[] ids = null;
 		Collection<GuiaPagamentoPrestacaoHelper> guiasPagamentoPrestacao = (Collection<GuiaPagamentoPrestacaoHelper>) sessao
@@ -177,6 +180,9 @@ public class GerarRelatorioEmitirGuiaPagamentoAction
 			ids = (String[]) idSelecionados.toArray(new String[idSelecionados.size()]);
 
 		}else if(actionForm instanceof AtualizarGuiaPagamentoActionForm){
+			boolean temPermissaoAtualizarDebitosExecFiscal = fachada.verificarPermissaoEspecial(
+							PermissaoEspecial.ATUALIZAR_DEBITOS_EXECUCAO_FISCAL, this.getUsuarioLogado(httpServletRequest));
+
 			// tela de Manter Guia de Parcelamento
 			AtualizarGuiaPagamentoActionForm atualizarGuiaPagamentoActionForm = (AtualizarGuiaPagamentoActionForm) actionForm;
 			ids = atualizarGuiaPagamentoActionForm.getIdRegistrosRemocao();
@@ -188,6 +194,7 @@ public class GerarRelatorioEmitirGuiaPagamentoAction
 
 			Usuario usuarioLogado = (Usuario) sessao.getAttribute(Usuario.USUARIO_LOGADO);
 			String idImovel = atualizarGuiaPagamentoActionForm.getIdImovel();
+			StringBuffer parametroExecucaoFiscal = new StringBuffer();
 
 			// Monta a colecao com as guias contempladas no checklist
 			Collection<GuiaPagamentoPrestacaoHelper> colecaoGuiaPagamentoPrestacaoValidacao = new ArrayList<GuiaPagamentoPrestacaoHelper>();
@@ -195,6 +202,27 @@ public class GerarRelatorioEmitirGuiaPagamentoAction
 			for(GuiaPagamentoPrestacaoHelper guiaPagamentoPrestacao : (Collection<GuiaPagamentoPrestacaoHelper>) guiasPagamentoPrestacao){
 				if(listaArray.contains(guiaPagamentoPrestacao.getId().toString())){
 					colecaoGuiaPagamentoPrestacaoValidacao.add(guiaPagamentoPrestacao);
+
+					/**
+					 * [UC0188] Manter Guia de Pagamento
+					 * [SB0012] Verificar Execução Fiscal
+					 * 
+					 * @param parcelamento
+					 * @author Gicevalter Couto
+					 * @date 05/08/2014
+					 */
+					GuiaPagamentoPrestacao guiaPagamentoPrestacaoAux = new GuiaPagamentoPrestacao();
+					guiaPagamentoPrestacaoAux.setGuiaPagamento(new GuiaPagamento(guiaPagamentoPrestacao.getIdGuiaPagamento()));
+					guiaPagamentoPrestacaoAux.setNumeroPrestacao(guiaPagamentoPrestacao.getNumeroPrestacao());
+					guiaPagamentoPrestacaoAux.setDataVencimento(guiaPagamentoPrestacao.getDataVencimento());
+
+					if(fachada.verificarGuiaPagamentoPrestacaoExecucaoFiscal(guiaPagamentoPrestacaoAux).equals(Short.valueOf("1"))
+									&& !temPermissaoAtualizarDebitosExecFiscal){
+						parametroExecucaoFiscal.append(guiaPagamentoPrestacao.getId());
+						parametroExecucaoFiscal.append("/");
+						parametroExecucaoFiscal.append(guiaPagamentoPrestacao.getNumeroPrestacao());
+						parametroExecucaoFiscal.append(", ");
+					}
 				}
 			}
 
@@ -202,6 +230,15 @@ public class GerarRelatorioEmitirGuiaPagamentoAction
 				// [SB0005] – Validar autorização de acesso a prestação da guia de imóvel
 				fachada.validarAutorizacaoAcessoPrestacaoGuiaImovel(usuarioLogado, Integer.valueOf(idImovel),
 								colecaoGuiaPagamentoPrestacaoValidacao);
+			}
+
+			String parametroMensagemExecFiscal = parametroExecucaoFiscal.toString();
+
+			if(!Util.isVazioOuBranco(parametroMensagemExecFiscal)){
+				parametroMensagemExecFiscal = parametroMensagemExecFiscal.substring(0, parametroMensagemExecFiscal.length() - 2);
+
+				throw new ActionServletException("atencao.guia.prestacao.debito.execucao.fiscal", usuario.getNomeUsuario().toString(),
+								parametroMensagemExecFiscal);
 			}
 
 			// [SB0010] Verificar Guia de Pagamento Prescrita
@@ -347,6 +384,39 @@ public class GerarRelatorioEmitirGuiaPagamentoAction
 				retorno = actionMapping.findForward("telaAtencaoPopup");
 			}
 
+			DocumentoEmissaoEfetuada documentoEmissaoEfetuada = new DocumentoEmissaoEfetuada();
+
+			// ------------ REGISTRAR TRANSação----------------------------
+
+			FiltroGuiaPagamento filtroGuiaPagamento = new FiltroGuiaPagamento();
+			filtroGuiaPagamento.adicionarParametro(new ParametroSimples(FiltroGuiaPagamento.ID, idGuiaPagamento));
+			filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.IMOVEL);
+
+			Collection colecaoGuiaPagamento = fachada.pesquisar(filtroGuiaPagamento, GuiaPagamento.class.getName());
+			GuiaPagamento guiaPagamento = (GuiaPagamento) Util.retonarObjetoDeColecao(colecaoGuiaPagamento);
+
+			documentoEmissaoEfetuada.setImovel(guiaPagamento.getImovel());
+			documentoEmissaoEfetuada.setUsuario(usuario);
+			DocumentoTipo documentoTipo = new DocumentoTipo();
+			documentoTipo.setId(DocumentoTipo.GUIA_PAGAMENTO);
+			documentoEmissaoEfetuada.setDocumentoTipo(documentoTipo);
+			documentoEmissaoEfetuada.setUltimaAlteracao(new Date());
+
+
+			Argumento argumento = new Argumento();
+			argumento.setId(Argumento.IMOVEL);
+
+			RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_EMITIR_DOCUMENTO_GUIA_PAGAMENTO,
+							guiaPagamento.getImovel().getId(), argumento, guiaPagamento.getImovel().getId(), new UsuarioAcaoUsuarioHelper(
+											usuario,
+											UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+			RegistradorOperacao.set(registradorOperacao);
+			documentoEmissaoEfetuada.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+			registradorOperacao.registrarOperacao(documentoEmissaoEfetuada);
+			this.getFachada().inserir(documentoEmissaoEfetuada);
+
+			// ------------ REGISTRAR TRANSAÇÃO ----------------
+
 			return retorno;
 
 		}else if(actionForm instanceof ParcelamentoDebitoActionForm){
@@ -459,6 +529,50 @@ public class GerarRelatorioEmitirGuiaPagamentoAction
 			retorno = actionMapping.findForward("telaAtencaoPopup");
 
 		}
+
+		DocumentoEmissaoEfetuada documentoEmissaoEfetuada = new DocumentoEmissaoEfetuada();
+
+		// ------------ REGISTRAR TRANSação----------------------------
+
+		FiltroGuiaPagamento filtroGuiaPagamento = new FiltroGuiaPagamento();
+		filtroGuiaPagamento.adicionarParametro(new ParametroSimples(FiltroGuiaPagamento.ID, idGuiaPagamento));
+		filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.IMOVEL);
+
+		Collection colecaoGuiaPagamento = fachada.pesquisar(filtroGuiaPagamento, GuiaPagamento.class.getName());
+		GuiaPagamento guiaPagamento = (GuiaPagamento) Util.retonarObjetoDeColecao(colecaoGuiaPagamento);
+
+		Integer identificaoSolicitante = null;
+		if(guiaPagamento.getImovel() != null){
+			documentoEmissaoEfetuada.setImovel(guiaPagamento.getImovel());
+			identificaoSolicitante = guiaPagamento.getImovel().getId();
+		}else{
+			if(guiaPagamento.getCliente() != null){
+				documentoEmissaoEfetuada.setCliente(guiaPagamento.getCliente());
+
+				if(identificaoSolicitante == null){
+					identificaoSolicitante = guiaPagamento.getCliente().getId();
+				}
+			}
+		}
+
+		documentoEmissaoEfetuada.setUsuario(usuario);
+		DocumentoTipo documentoTipo = new DocumentoTipo();
+		documentoTipo.setId(DocumentoTipo.GUIA_PAGAMENTO);
+		documentoEmissaoEfetuada.setDocumentoTipo(documentoTipo);
+		documentoEmissaoEfetuada.setUltimaAlteracao(new Date());
+
+		Argumento argumento = new Argumento();
+		argumento.setId(Argumento.IMOVEL);
+
+		RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_EMITIR_DOCUMENTO_GUIA_PAGAMENTO,
+						identificaoSolicitante, argumento, identificaoSolicitante, new UsuarioAcaoUsuarioHelper(
+										usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+		RegistradorOperacao.set(registradorOperacao);
+		documentoEmissaoEfetuada.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+		registradorOperacao.registrarOperacao(documentoEmissaoEfetuada);
+		this.getFachada().inserir(documentoEmissaoEfetuada);
+
+		// ------------ REGISTRAR TRANSAÇÃO ----------------
 
 		return retorno;
 	}

@@ -76,6 +76,7 @@
 
 package gcom.relatorio.micromedicao;
 
+import gcom.batch.Relatorio;
 import gcom.cadastro.localidade.Localidade;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
@@ -89,12 +90,9 @@ import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaException;
 import gcom.tarefa.TarefaRelatorio;
 import gcom.util.Util;
+import gcom.util.agendadortarefas.AgendadorTarefas;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -124,6 +122,12 @@ public class RelatorioRegistrarLeiturasAnormalidades
 		super(usuario, ConstantesRelatorios.RELATORIO_REGISTRAR_LEITURAS_ANORMALIDADES);
 	}
 
+	@Deprecated
+	public RelatorioRegistrarLeiturasAnormalidades() {
+
+		super(null, "");
+	}
+
 	/**
 	 * < <Descrição do método>>
 	 * 
@@ -138,10 +142,7 @@ public class RelatorioRegistrarLeiturasAnormalidades
 
 	public Object executar() throws TarefaException{
 
-		// public byte[] gerarRelatorioRegistrarLeiturasAnormalidades(
-		// Collection<MedicaoHistorico> colecaoMedicaoHistoricoRelatorio,
-		// String idFaturamento, String anoMesReferencia)
-		// throws RelatorioVazioException {
+		Integer idFuncionalidadeIniciada = this.getIdFuncionalidadeIniciada();
 		Collection<MedicaoHistorico> colecaoMedicaoHistoricoRelatorio = (Collection<MedicaoHistorico>) getParametro("colecaoMedicaoHistoricoRelatorio");
 		String grupoFaturamento = (String) getParametro("faturamentoGrupo");
 		String localidade = (String) getParametro("localidade");
@@ -242,6 +243,15 @@ public class RelatorioRegistrarLeiturasAnormalidades
 
 		retorno = gerarRelatorio(ConstantesRelatorios.RELATORIO_REGISTRAR_LEITURAS_ANORMALIDADES, parametros, ds, tipoFormatoRelatorio);
 
+		try{
+
+			this.persistirRelatorioConcluido(retorno, Relatorio.RELATORIO_REGISTRAR_LEITURAS_ANORMALIDADES, idFuncionalidadeIniciada,
+							nomeArquivo);
+		}catch(Exception e){
+			e.printStackTrace();
+			throw new TarefaException("Erro ao gravar relatório no sistema", e);
+		}
+
 		// retorna o relatório gerado
 		return retorno;
 	}
@@ -265,6 +275,7 @@ public class RelatorioRegistrarLeiturasAnormalidades
 
 	public void agendarTarefaBatch(){
 
+		AgendadorTarefas.agendarTarefa("RelatorioRegistrarLeiturasAnormalidades", this);
 	}
 
 }

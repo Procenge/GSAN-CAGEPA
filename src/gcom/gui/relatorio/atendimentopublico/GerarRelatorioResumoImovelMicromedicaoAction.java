@@ -88,12 +88,7 @@ import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaRelatorio;
 import gcom.util.SistemaException;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -136,10 +131,11 @@ public class GerarRelatorioResumoImovelMicromedicaoAction
 
 		ConsultarImovelActionForm consultarImovelActionForm = (ConsultarImovelActionForm) actionForm;
 
-		Collection colecaoMedicaoHistorico = fachada.carregarDadosMedicaoResumo(new Integer(consultarImovelActionForm
-						.getIdImovelAnaliseMedicaoConsumo()), true);
+		Integer idImovel = new Integer(consultarImovelActionForm.getIdImovelAnaliseMedicaoConsumo());
 
-		Collection imoveisMicromedicaoCarregamento = null;
+		Collection colecaoMedicaoHistorico = fachada.carregarDadosMedicaoResumo(idImovel, true);
+
+		Collection<ImovelMicromedicao> imoveisMicromedicaoCarregamento = null;
 		Collection colecaoImovelMicromedicao = new ArrayList();
 
 		if(colecaoMedicaoHistorico != null && !colecaoMedicaoHistorico.isEmpty()){
@@ -149,20 +145,32 @@ public class GerarRelatorioResumoImovelMicromedicaoAction
 				MedicaoHistorico medicaoHistoricoConsumo = (MedicaoHistorico) iteratorMedicaoHistorico.next();
 				if(medicaoHistoricoConsumo.getAnoMesReferencia() != 0){
 
-					imoveisMicromedicaoCarregamento = fachada.carregarDadosConsumo(new Integer(consultarImovelActionForm
-									.getIdImovelAnaliseMedicaoConsumo()), medicaoHistoricoConsumo.getAnoMesReferencia(), true);
+					imoveisMicromedicaoCarregamento = fachada.carregarDadosConsumo(
+									new Integer(consultarImovelActionForm.getIdImovelAnaliseMedicaoConsumo()),
+									medicaoHistoricoConsumo.getAnoMesReferencia(), true);
 
-					if(imoveisMicromedicaoCarregamento != null){
-						ImovelMicromedicao imovelMicromedicao = (ImovelMicromedicao) imoveisMicromedicaoCarregamento.iterator().next();
+					String numeroHidrometroHistorico = medicaoHistoricoConsumo.getHidrometroInstalacaoHistorico().getHidrometro()
+									.getNumero();
+
+					if(imoveisMicromedicaoCarregamento != null && !imoveisMicromedicaoCarregamento.isEmpty()){
+						ImovelMicromedicao imovelMicromedicao = imoveisMicromedicaoCarregamento.iterator().next();
+
 						if(imovelMicromedicao.getMedicaoHistorico() != null
 										&& imovelMicromedicao.getMedicaoHistorico().getNumeroConsumoMes() != null){
 							medicaoHistoricoConsumo.setNumeroConsumoMes(imovelMicromedicao.getMedicaoHistorico().getNumeroConsumoMes());
 
 						}
 
+						int anoMesReferencia = medicaoHistoricoConsumo.getAnoMesReferencia();
+
+						imovelMicromedicao.setCategorias(fachada.getInstancia().obterCategorias(idImovel, anoMesReferencia));
+
 						imovelMicromedicao.setMedicaoHistorico(medicaoHistoricoConsumo);
 
+						imovelMicromedicao.setNumeroHidrometro(numeroHidrometroHistorico);
+
 						colecaoImovelMicromedicao.add(imovelMicromedicao);
+
 					}
 				}
 			}
@@ -200,8 +208,8 @@ public class GerarRelatorioResumoImovelMicromedicaoAction
 		relatorioResumoImovelMicromedicao.addParametro("matricula", consultarImovelActionForm.getIdImovelAnaliseMedicaoConsumo());
 		relatorioResumoImovelMicromedicao.addParametro("inscricao", consultarImovelActionForm.getMatriculaImovelAnaliseMedicaoConsumo());
 		relatorioResumoImovelMicromedicao.addParametro("sitLigacaoAgua", consultarImovelActionForm.getSituacaoAguaAnaliseMedicaoConsumo());
-		relatorioResumoImovelMicromedicao.addParametro("sitLigacaoEsgoto", consultarImovelActionForm
-						.getSituacaoEsgotoAnaliseMedicaoConsumo());
+		relatorioResumoImovelMicromedicao.addParametro("sitLigacaoEsgoto",
+						consultarImovelActionForm.getSituacaoEsgotoAnaliseMedicaoConsumo());
 		relatorioResumoImovelMicromedicao.addParametro("endereco", endereco);
 		relatorioResumoImovelMicromedicao.addParametro("clienteUsuario", cliente.getNome());
 

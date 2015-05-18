@@ -124,11 +124,20 @@
 											property="arrecadador.codigoAgente" /></div>
 										</td>
 										<td>
-										<div><a
-											href="javascript:enviarDadosCincoParametros('<bean:write name="aviso" property="id"/>', '<bean:write name="aviso" property="arrecadador.codigoAgente"/>', '<bean:write name="aviso" property="dataLancamento" format="dd/MM/yyyy"/>', '<bean:write name="aviso" property="numeroSequencial"/>', 'avisoBancario');">
-										<bean:write name="aviso"
-											property="arrecadador.cliente.nome" />
-										</a></div>
+										<div>
+										
+											<logic:present name="aviso" property="arrecadador.cliente" >
+												<a	href="javascript:enviarDadosCincoParametros('<bean:write name="aviso" property="id"/>', '<bean:write name="aviso" property="arrecadador.codigoAgente"/>', '<bean:write name="aviso" property="dataLancamento" format="dd/MM/yyyy"/>', '<bean:write name="aviso" property="numeroSequencial"/>', 'avisoBancario');">
+													<bean:write name="aviso" property="arrecadador.cliente.nome" />
+												</a>
+											</logic:present>
+											
+											<logic:notPresent name="aviso" property="arrecadador.cliente" >
+												<a	href="javascript:enviarDadosCincoParametros('<bean:write name="aviso" property="id"/>', '<bean:write name="aviso" property="arrecadador.codigoAgente"/>', '<bean:write name="aviso" property="dataLancamento" format="dd/MM/yyyy"/>', '<bean:write name="aviso" property="numeroSequencial"/>', 'avisoBancario');">
+													Não possui Arrecadador
+												</a>
+											</logic:notPresent>											
+										</div>
 										</td>
 										<td>
 										<div align="center"><bean:write name="aviso"

@@ -249,6 +249,10 @@ public class DebitoACobrar
 
 	private Short indicadorRemuneraCobrancaAdministrativa = 2;
 
+	private Integer numeroProcessoAdministrativoExecucaoFiscal;
+
+	private Set clientesDebitoACobrar;
+
 	public String[] retornaCamposChavePrimaria(){
 
 		String[] retorno = new String[1];
@@ -733,6 +737,33 @@ public class DebitoACobrar
 		return retorno;
 	}
 
+	// public BigDecimal getValorRestanteCobradoSemSucumbencia(){
+	//
+	// BigDecimal retorno = new BigDecimal("0.00");
+	//
+	// BigDecimal valorDebito = getValorDebito();
+	// BigDecimal numeroPrestacaoDebito = new BigDecimal(getNumeroPrestacaoDebito());
+	// BigDecimal numeroPrestacaoCobradas = new BigDecimal(getNumeroPrestacaoCobradas());
+	// numeroPrestacaoDebito = numeroPrestacaoDebito.setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO);
+	// numeroPrestacaoCobradas = numeroPrestacaoCobradas.setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO);
+	//
+	// retorno = valorDebito.divide(numeroPrestacaoDebito, Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO);
+	// retorno = retorno.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+	// retorno = retorno.multiply(numeroPrestacaoCobradas);
+	// retorno = retorno.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+	// retorno = valorDebito.subtract(retorno).setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO);
+	//
+	// // retorno =
+	// //
+	// valorDebito.subtract(((valorDebito.divide(numeroPrestacaoDebito)).multiply(numeroPrestacaoCobradas)));
+	//
+	// return retorno;
+	// }
+
 	public String getFormatarAnoMesCobrancaDebito(){
 
 		String anoMesRecebido = "" + this.getAnoMesCobrancaDebito();
@@ -1087,4 +1118,23 @@ public class DebitoACobrar
 		this.indicadorRemuneraCobrancaAdministrativa = indicadorRemuneraCobrancaAdministrativa;
 	}
 
+	public Integer getNumeroProcessoAdministrativoExecucaoFiscal(){
+
+		return numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public void setNumeroProcessoAdministrativoExecucaoFiscal(Integer numeroProcessoAdministrativoExecucaoFiscal){
+
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public Set getClientesDebitoACobrar(){
+
+		return clientesDebitoACobrar;
+	}
+
+	public void setClientesDebitoACobrar(Set clientesDebitoACobrar){
+
+		this.clientesDebitoACobrar = clientesDebitoACobrar;
+	}
 }

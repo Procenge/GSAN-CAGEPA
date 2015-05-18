@@ -469,8 +469,8 @@ public class ExecutorParametrosCobranca
 			// 3.2.1. Linha 1.
 			cartaTxt.append("11");
 
-			if(imovel != null){
-				cartaTxt.append(Util.completaString(this.obterNomeImovelOuCliente(imovel.getId()), 30));
+			if(cobrancaDocumento.getCliente() != null && cobrancaDocumento.getCliente().getNome() != null){
+				cartaTxt.append(Util.completaString(cobrancaDocumento.getCliente().getNome().trim(), 30));
 			}else{
 				cartaTxt.append(Util.completaString("", 30));
 			}
@@ -995,7 +995,13 @@ public class ExecutorParametrosCobranca
 		conteudo.append(Util.completarStringComValorEsquerda(numeroSegmento, "0", 2));
 		conteudo.append(Util.completarStringComValorEsquerda(String.valueOf(imovel.getLote()), "0", 4));
 		conteudo.append(Util.completarStringComValorEsquerda(String.valueOf(imovel.getSubLote()), "0", 2));
-		conteudo.append(Util.completaString(obterNomeImovelOuCliente(imovel.getId()), 30));
+
+		if(cobrancaDocumento.getCliente() != null && cobrancaDocumento.getCliente().getNome() != null){
+			conteudo.append(Util.completaString(cobrancaDocumento.getCliente().getNome(), 30));
+		}else{
+			conteudo.append(Util.completaString("", 30));
+		}
+
 		conteudo.append(Util.completaString(this.getControladorEndereco().pesquisarEndereco(imovel.getId()), 50));
 		conteudo.append(Util.completarStringComValorEsquerda(sequencial + "", "0", 6));
 		conteudo.append(Util.formatarData(new Date()));
@@ -1102,31 +1108,7 @@ public class ExecutorParametrosCobranca
 		return conteudo;
 	}
 
-	/**
-	 * Método que Consulta o nome do imovel. Caso seja nulo ou vazio, consulta o nome do cliente.
-	 * 
-	 * @author Ailton Sousa
-	 * @date 12/10/2011
-	 * @param idImovel
-	 * @return
-	 * @throws ControladorException
-	 */
-	private String obterNomeImovelOuCliente(Integer idImovel) throws ControladorException{
 
-		String retorno = null;
-
-		retorno = getControladorImovel().pesquisarNomeImovel(idImovel);
-
-		if(retorno == null || retorno.equals("")){
-			retorno = getControladorCliente().pesquisarNomeClientePorImovel(idImovel);
-
-			if(retorno == null){
-				retorno = "";
-			}
-		}
-
-		return retorno;
-	}
 
 	/**
 	 * Método que retorna o Municipio formata com data, como se fosse um cabeçalho.
@@ -1377,6 +1359,30 @@ public class ExecutorParametrosCobranca
 
 	}
 
+	/**
+	 * Este caso de uso gera os avisos de corte
+	 * [UC0349] [SB0008] – Gerar Arquivo PDF Aviso de Corte – Modelo 4
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 07/04/2015
+	 * @throws ControladorException
+	 * @throws ErroRepositorioException
+	 * @throws IOException
+	 * @throws CreateException
+	 */
+	public void execParamGerarOrdemCorteArquivoPdfModelo4(ParametroSistema parametroSistema,
+					CobrancaAcaoAtividadeCronograma cobrancaAcaoAtividadeCronograma,
+					CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComando, Date dataAtualPesquisa, CobrancaAcao acaoCobranca,
+					CobrancaGrupo grupoCobranca, CobrancaCriterio cobrancaCriterio, Usuario usuario, Integer idFuncionalidadeIniciada)
+					throws ControladorException, ErroRepositorioException, IOException, CreateException{
+
+		this.ejbCreate();
+
+		getControladorCobrancaOrdemCorte().gerarOrdemCorteArquivoPDFModelo4(cobrancaAcaoAtividadeCronograma, cobrancaAcaoAtividadeComando,
+						usuario, idFuncionalidadeIniciada);
+
+	}
+
 
 	/**
 	 * Este caso de uso gera os avisos de corte
@@ -1409,22 +1415,8 @@ public class ExecutorParametrosCobranca
 			idAcaoCobranca = acaoCobranca.getId();
 		}
 
-		// long ini = 0, dif = 0;
-
-		// ini = System.currentTimeMillis();
-
 		colecaoCobrancaDocumento = getControladorCobranca().pesquisarTodosCobrancaDocumentoParaEmitir(idCronogramaAtividadeAcaoCobranca,
 						idComandoAtividadeAcaoCobranca, dataAtualPesquisa, idAcaoCobranca);
-
-		// try {
-		// } catch (ErroRepositorioException ex) {
-		// ex.printStackTrace();
-		// throw new ControladorException("erro.sistema", ex);
-		// }
-
-		// dif = System.currentTimeMillis() - ini;
-		// System.out.println("0 - ############################## -> " + dif);
-		// ini = System.currentTimeMillis();
 
 		if(colecaoCobrancaDocumento != null && !colecaoCobrancaDocumento.isEmpty()){
 
@@ -1474,55 +1466,23 @@ public class ExecutorParametrosCobranca
 
 					if(cobrancaDocumento != null){
 
-						// ini = System.currentTimeMillis();
-
 						// pesquisa todas as contas, debitos e guias
 						colecaoCobrancaDocumentoItemConta = this.repositorioCobranca
 										.selecionarCobrancaDocumentoItemReferenteConta(cobrancaDocumento);
 
-						// dif = System.currentTimeMillis() - ini;
-						// System.out.println("1 - ############################## -> " + dif);
-						// ini = System.currentTimeMillis();
-
 						if(colecaoCobrancaDocumentoItemConta == null){
-
-							// ini = System.currentTimeMillis();
 
 							colecaoCobrancaDocumentoItemGuiaPagamento = this.repositorioCobranca
 											.selecionarDadosCobrancaDocumentoItemReferenteGuiaPagamento(cobrancaDocumento);
-
-							// dif = System.currentTimeMillis() - ini;
-							// System.out.println("2 - ############################## -> " + dif);
-							// ini = System.currentTimeMillis();
 						}
 						if(colecaoCobrancaDocumentoItemConta == null && colecaoCobrancaDocumentoItemGuiaPagamento == null){
 
-							// ini = System.currentTimeMillis();
-
 							colecaoCobrancaDocumentoDebitoACobrar = this.repositorioCobranca
 											.selecionarCobrancaDocumentoItemReferenteDebitoACobrar(cobrancaDocumento);
-
-							// dif = System.currentTimeMillis() - ini;
-							// System.out.println("3 - ############################## -> " + dif);
-							// ini = System.currentTimeMillis();
 						}
-						// try {
-						//
-						// } catch (ErroRepositorioException ex) {
-						// ex.printStackTrace();
-						// throw new ControladorException("erro.sistema", ex);
-						// }
 
-						// ini = System.currentTimeMillis();
-
-						Cliente cliente = getControladorImovel().pesquisarClienteUsuarioImovel(cobrancaDocumento.getImovel().getId());
-
-						// dif = System.currentTimeMillis() - ini;
-						// System.out.println("4 - ############################## -> " + dif);
-						// ini = System.currentTimeMillis();
-
-						if(cliente != null){
-							emitirAvisoCobrancaHelper.setNomeCliente(cliente.getNome());
+						if(cobrancaDocumento.getCliente() != null && cobrancaDocumento.getCliente().getNome() != null){
+							emitirAvisoCobrancaHelper.setNomeCliente(cobrancaDocumento.getCliente().getNome());
 						}else{
 							emitirAvisoCobrancaHelper.setNomeCliente("");
 						}
@@ -1930,11 +1890,8 @@ public class ExecutorParametrosCobranca
 											.getSubLote()).toString(), 2));
 
 							// 9 - Nome do cliente
-
-							Cliente cliente = getControladorImovel().pesquisarClienteUsuarioImovel(cobrancaDocumento.getImovel().getId());
-
-							if(cliente != null){
-								cobrancaDocumentoAvisoCorteTxt.append(Util.completaString(cliente.getNome(), 30));
+							if(cobrancaDocumento.getCliente() != null && cobrancaDocumento.getCliente().getNome() != null){
+								cobrancaDocumentoAvisoCorteTxt.append(Util.completaString(cobrancaDocumento.getCliente().getNome(), 30));
 							}else{
 								cobrancaDocumentoAvisoCorteTxt.append(Util.completaString("", 30));
 							}
@@ -2333,6 +2290,7 @@ public class ExecutorParametrosCobranca
 			filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroCobrancaDocumento.COBRANCA_ACAO);
 			filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroCobrancaDocumento.ATIVIDADE_COMANDO);
 			filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroCobrancaDocumento.EMPRESA);
+			filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroCobrancaDocumento.CLIENTE);
 			filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroCobrancaDocumento.IMOVEL + "." + FiltroImovel.IMOVEL_CONTA_ENVIO);
 			filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroCobrancaDocumento.IMOVEL + "." + FiltroImovel.LOCALIDADE);
 
@@ -3121,5 +3079,24 @@ public class ExecutorParametrosCobranca
 						usuario);
 
 	}
+	
+	
+	/**
+	 * Gera os avisos de débito Modelo 3 (SAAE)
+	 */
+	public void execParamGerarRelatorioAvisoDebitoModelo3(ParametroSistema parametroSistema,
+					CobrancaAcaoAtividadeCronograma cobrancaAcaoAtividadeCronograma,
+					CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComando, Date dataAtualPesquisa, CobrancaAcao acaoCobranca,
+					CobrancaGrupo grupoCobranca, CobrancaCriterio cobrancaCriterio, Usuario usuario) throws ControladorException,
+					CreateException{
+
+		this.ejbCreate();
+
+
+		getControladorCobrancaAvisoDebito().gerarRelatorioAvisoDebitoModelo3(cobrancaAcaoAtividadeCronograma, cobrancaAcaoAtividadeComando,
+						dataAtualPesquisa, acaoCobranca, grupoCobranca, cobrancaCriterio, usuario);
+
+	}
+	
 
 }

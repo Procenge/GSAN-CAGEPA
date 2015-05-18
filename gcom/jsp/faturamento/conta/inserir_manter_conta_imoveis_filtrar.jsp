@@ -6,6 +6,7 @@
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <%@page import="gcom.util.ConstantesSistema"%>
+<%@ page import="gcom.cadastro.endereco.Logradouro" %>
 <head>
 <html:html>
 <%@ include file="/jsp/util/titulo.jsp"%>
@@ -25,7 +26,10 @@
 <script language="JavaScript"
 	src="<bean:message key="caminho.js"/>Calendario.js"></script>
 <script language="JavaScript">
+
+
 <!-- Begin
+
 
 function recuperarDadosQuatroParametros(idRegistro, descricaoRegistro, codigoRegistro, tipoConsulta) {
 
@@ -124,8 +128,49 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
       form.nomeCliente.style.color = "#000000";
       bloquearLSQLS();
     }
+	
+	
+	
+	 if (tipoConsulta == 'logradouro') {
+	      limparPesquisaLogradouro();
+	      form.idLogradouro.value = codigoRegistro;
+	      form.descricaoLogradouro.value = descricaoRegistro;
+	      form.descricaoLogradouro.style.color = "#000000";
+	      form.idLogradouro.focus();
+	    }
+	
+	
+	 if (tipoConsulta == 'bairro') {
+	      limparPesquisaBairro();
+	      form.idBairroFiltro.value = codigoRegistro;
+	      form.bairroFiltro.value = descricaoRegistro;
+	      form.bairroFiltro.style.color = "#000000";
+	      form.idLogradouroFiltro.focus();
+	    }
+
+	    if (tipoConsulta == 'municipio') {
+	      limparPesquisaMunicipio();
+	      limparPesquisaSetorComercial();      
+	      form.idMunicipioFiltro.value = codigoRegistro;
+	      form.municipioFiltro.value = descricaoRegistro;
+	      form.municipioFiltro.style.color = "#000000";
+	      form.idBairroFiltro.focus();
+	    }
 
 }
+
+function verificarSituacaoMunicipioPesquisarMunicipio(){
+	var form = document.forms[0];
+	if(form.idMunicipioFiltro.disabled == false){
+    	limparPesquisaBairro();
+		abrirPopup('exibirPesquisarMunicipioAction.do?indicadorUsoTodos=1', 400, 800);
+	}
+
+}
+
+
+
+
 function limparLocalidade(tipo) {
     var form = document.FiltrarImovelContaActionForm;
    	switch (tipo){
@@ -167,7 +212,6 @@ function limpar(tipo){
 	var form = document.FiltrarImovelContaActionForm;
    
 	switch (tipo){
-	//savio
 	
      case 1:
 		   form.idImovel.value = "";
@@ -185,7 +229,7 @@ function limpar(tipo){
 		   //Coloca o foco no objeto selecionado
 		   form.setorComercialOrigemCD.focus();
 		   break;
-		   //savio
+		 
 	   case 3:
 		   form.localidadeDestinoID.value = "";
 		   form.nomeLocalidadeDestino.value = "";
@@ -210,8 +254,8 @@ function limpar(tipo){
 		   form.codigoRotaDestino.value = "";
 		   form.sequencialRotaOrigem.value = "";
 		   form.sequencialRotaDestino.value = "";
-	
-		   form.idFaturamentoGrupo.value = "";
+		   
+		   form.faturamentoGrupo.selectedIndex = 0
 		   
 		   break;  
 	   case 4:
@@ -293,7 +337,7 @@ function limpar(tipo){
 		   break;
 		   
 		 case 11:
-		   
+		 
 		   form.codigoCliente.value = "";
 		   
 		   form.localidadeDestinoID.value = "";
@@ -320,6 +364,10 @@ function limpar(tipo){
 		   form.sequencialRotaOrigem.value = "";
 		   form.sequencialRotaDestino.value = "";
 		   
+		   form.idLogradouro.value = "";
+		   form.descricaoLogradouro.value = "";
+		   
+	
 		   break;
 		   
 		case 12:
@@ -375,7 +423,7 @@ function limpar(tipo){
 			
 		case 18:
 		   form.codigoCliente.value = "";
-		   form.idFaturamentoGrupo.value = "";
+		   form.faturamentoGrupo.selectedIndex = 0;
 		   
 		   break;
 	   default:
@@ -383,6 +431,47 @@ function limpar(tipo){
 	}
 }
 
+
+
+function limparPesquisaBairroDescricao(){
+    var form = document.forms[0];
+
+      form.bairroFiltro.value = "";
+
+}
+
+function limparPesquisaBairro() {
+    var form = document.forms[0];
+
+      form.idBairroFiltro.value = "";
+      form.bairroFiltro.value = "";
+      
+      
+
+
+  }
+
+function limparPesquisaMunicipio() {
+    var form = document.forms[0];
+
+      form.idMunicipioFiltro.value = "";
+      form.municipioFiltro.value = "";
+
+
+  }
+  
+  
+
+function limparPesquisaLogradouro(){
+    var form = document.forms[0];
+
+    form.idLogradouro.value = "";
+    form.descricaoLogradouro.value = "";
+
+} 
+  
+  
+  
 function habilitarPesquisaCliente(form) {
 	if (form.codigoCliente.readOnly == false) {
 		chamarPopup('exibirPesquisarClienteAction.do', 'cliente', null, null, 275, 480, '',form.codigoCliente.value);
@@ -421,8 +510,7 @@ function validarForm(form){
 	  var rotaFinal = form.codigoRotaDestino;
 	  var seqRotaFinal = form.sequencialRotaDestino;
 	  
-	  var grupoFaturamento = form.idFaturamentoGrupo; 
-	  
+  
 	  if(form.localidadeOrigemID.value != "" && form.localidadeDestinoID.value != ""){
 	    
 	    var obrigatorio = validarInscricao(form);
@@ -488,7 +576,8 @@ function validarForm(form){
 	    }
 	    
 	  }
-	  else if (grupoFaturamento.value != "" && validateFiltrarImovelContaActionForm(form)){
+	 
+	 else if (form.faturamentoGrupo.selectedIndex > 0 ){
 	  	form.submit();
 	  }
 	  else if(form.codigoRotaOrigem.value != "" && form.codigoRotaDestino.value != ""){
@@ -558,7 +647,9 @@ function validarForm(form){
 	    
 	  }else if (form.arquivoDownload.value != ""){
 		  form.submit();
-	  }else{
+	  }else if(form.idLogradouro != ""){
+		  form.submit();
+	  } else{
 	   alert(" Informe Código do Cliente ou \n Informe Localidade da inscrição inicial e\n Informe Localidade da inscrição final ou\n Informe Grupo de Faturamento ou\n Informe Rota Inicial e\n Informe Rota Final"); 
 	  }
 	}else{
@@ -618,6 +709,7 @@ function validarInscricao(form){
    	var setorComercialDestino = form.setorComercialDestinoCD;
    	var quadraDestino = form.quadraDestinoNM;
    	var loteDestino = form.loteDestino;
+   	
 	  
 	
 	var obrigatorio = true;
@@ -672,6 +764,9 @@ function campoObrigatorio(campoDependencia, dependente, msg){
 }
 
 function bloquearLSQLS(){
+	
+
+	
 	var form = document.FiltrarImovelContaActionForm;
 	if(form.codigoCliente.value != "" ){
 		
@@ -694,11 +789,13 @@ function bloquearLSQLS(){
 		form.sequencialRotaOrigem.readOnly = true;
 		form.sequencialRotaDestino.readOnly = true;
 		
-		form.idFaturamentoGrupo.readOnly = true;
+		form.faturamentoGrupo.readOnly = true;
+		
+
 				
 	}
-	else if (form.idFaturamentoGrupo.value != ""){
-	
+	else if (form.faturamentoGrupo.selectedIndex > 0){
+
 		limpar(11);
 		
 		form.codigoCliente.readOnly = true;
@@ -722,6 +819,15 @@ function bloquearLSQLS(){
 		form.codigoRotaDestino.readOnly = true;
 		form.sequencialRotaOrigem.readOnly = true;
 		form.sequencialRotaDestino.readOnly = true;
+		
+		form.nomeBairro.readOnly = true;
+		form.idLogradouro.readOnly = true;
+		
+		form.logradouro.disabled = true;	
+		form.idMunicipioFiltro.readOnly = true;		
+		form.idBairroFiltro.readOnly = true;
+		
+
 	}
 	else if (form.codigoRotaOrigem.value != "" || form.codigoRotaDestino.value != "" ||
 			form.sequencialRotaOrigem.value != "" || form.sequencialRotaDestino.value != ""){
@@ -733,7 +839,7 @@ function bloquearLSQLS(){
 		form.tipoRelacao.options[0].selected = true;
 		form.tipoRelacao.disabled = true;
 		
-		form.idFaturamentoGrupo.readOnly = true;
+		form.faturamentoGrupo.readOnly = true;
 	}
 	else{
 	
@@ -757,7 +863,15 @@ function bloquearLSQLS(){
 		form.sequencialRotaOrigem.readOnly = false;
 		form.sequencialRotaDestino.readOnly = false;
 		
-		form.idFaturamentoGrupo.readOnly = false;	  
+		form.faturamentoGrupo.readOnly = false;	 
+		form.faturamentoGrupo.selectedIndex = 0;
+		form.nomeBairro.readOnly = false;
+		form.idLogradouro.readOnly = false;
+		form.idMunicipioFiltro.readOnly = false;		
+		form.idBairroFiltro.readOnly = false;
+		verificarBotaoLogradouro();
+		
+		
 	}
 }
 
@@ -771,7 +885,9 @@ function bloquearLSQLS(){
   }
   
   function verificarBotao(){
+	  
     var form = document.FiltrarImovelContaActionForm;
+    
   	if(form.quadraOrigemNM.value != "" && form.quadraDestinoNM.value != ""){
   		form.quadra.disabled = true;
   	}else if(form.localidadeOrigemID.value != "" && form.localidadeOrigemID.value != "" &&
@@ -780,8 +896,24 @@ function bloquearLSQLS(){
   		form.quadra.disabled = false;
   	}else{
   		form.quadra.disabled = true;
-  	}
+  	}  	
+  	
+
+  	
   }
+  
+  function verificarBotaoLogradouro(){
+	  var form = document.FiltrarImovelContaActionForm;
+
+	  	if(form.faturamentoGrupo.selectedIndex > 0){
+	  		
+	  		removerTodoLogradouro();
+	  	}else{
+	  		form.logradouro.disabled = false;
+	  	}
+	 	
+  }
+  
   
   function chmarPopupQuadra() {
   	var form = document.FiltrarImovelContaActionForm;
@@ -799,6 +931,30 @@ function bloquearLSQLS(){
 		form.action = 'exibirFiltrarImovelInserirManterContaAction.do?menu=sim';
 		form.submit();
 	}
+	
+	
+	
+	 function adicionarLogradouro() {	
+		 var form = document.forms[0];
+		  form.action='exibirFiltrarImovelInserirManterContaAction.do?adicionarLogradouro=sim';	    
+	      form.submit(); 				
+	}
+	 
+	 
+	 function removerLogradouro(idRegistro) {		
+		 var form = document.forms[0];
+		  form.action='exibirFiltrarImovelInserirManterContaAction.do?removerLogradouro=sim&idLogradouroRemover=' + idRegistro;	   		 
+	      form.submit(); 				
+	} 
+	 
+	 
+	 function removerTodoLogradouro() {		
+		 var form = document.forms[0];
+		  form.action='exibirFiltrarImovelInserirManterContaAction.do?removerLogradouro=todos';	   		 
+	      form.submit(); 				
+	} 
+	 
+	 
 -->
 </script>
 </head>
@@ -916,11 +1072,195 @@ function bloquearLSQLS(){
 					<hr>
 					</td>
 				</tr>
+				
+				<tr>
+					<td height="24"><strong>Município:</strong></td>
+					<td colspan="2"><html:text maxlength="4" tabindex="7"
+						property="idMunicipioFiltro" size="4"
+						onkeypress="limparPesquisaBairro();javascript:validaEnter(event, 'exibirFiltrarImovelInserirManterContaAction.do', 'idMunicipioFiltro');" />
+					
+					<img width="23" height="21" border="0"
+						src="<bean:message key="caminho.imagens"/>pesquisa.gif"
+						title="Pesquisar Municipio" /></a> <logic:present
+						name="idMunicipioFiltroImovelNaoEncontrado">
+						<logic:equal name="idMunicipioFiltroImovelNaoEncontrado"
+							value="exception">
+							<html:text property="municipioFiltro" size="40" maxlength="30"
+								readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #ff0000" />
+						</logic:equal>
+						<logic:notEqual name="idMunicipioFiltroImovelNaoEncontrado"
+							value="exception">
+							<html:text property="municipioFiltro" size="40" maxlength="30"
+								readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #000000" />
+						</logic:notEqual>
+					</logic:present> <logic:notPresent
+						name="idMunicipioFiltroImovelNaoEncontrado">
+						<logic:empty name="FiltrarImovelContaActionForm"
+							property="idMunicipioFiltro">
+							<html:text property="municipioFiltro" value="" size="40"
+								maxlength="30" readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #ff0000" />
+						</logic:empty>
+						<logic:notEmpty name="FiltrarImovelContaActionForm"
+							property="idMunicipioFiltro">
+							<html:text property="municipioFiltro" size="40" maxlength="30"
+								readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #000000" />
+						</logic:notEmpty>
+					</logic:notPresent> 
+					 <a
+						href="javascript:limparPesquisaMunicipio();">
+					<img src="<bean:message key="caminho.imagens"/>limparcampo.gif"
+						border="0" title="Apagar" /></a></td>
+				</tr>
+				<tr>
+					<td><strong>Bairro:</strong></td>
+					<td height="24" colspan="2"><html:text maxlength="4"
+						property="idBairroFiltro" size="4" tabindex="8"
+						onkeypress="javascript:limparPesquisaBairroDescricao();return validaEnterDependencia(event, 'exibirFiltrarImovelInserirManterContaAction.do', this, document.forms[0].idMunicipioFiltro.value, 'Município');" />
+					<a
+						href="javascript:abrirPopup('exibirPesquisarBairroAction.do?idMunicipio='+document.forms[0].idMunicipioFiltro.value+'&indicadorUsoTodos=1', 400, 800);">
+					<img width="23" height="21" border="0"
+						src="<bean:message key="caminho.imagens"/>pesquisa.gif"
+						title="Pesquisar Bairro" /></a> <logic:present
+						name="codigoBairroImovelNaoEncontrado">
+						<logic:equal name="codigoBairroImovelNaoEncontrado"
+							value="exception">
+							<html:text property="bairroFiltro" size="40" maxlength="30"
+								readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #ff0000" />
+						</logic:equal>
+						<logic:notEqual name="codigoBairroImovelNaoEncontrado"
+							value="exception">
+							<html:text property="bairroFiltro" size="40" maxlength="30"
+								readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #000000" />
+						</logic:notEqual>
+					</logic:present> <logic:notPresent
+						name="codigoBairroImovelNaoEncontrado">
+						<logic:empty name="FiltrarImovelContaActionForm"
+							property="idBairroFiltro">
+							<html:text property="bairroFiltro" value="" size="40"
+								maxlength="30" readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #ff0000" />
+						</logic:empty>
+						<logic:notEmpty name="FiltrarImovelContaActionForm"
+							property="idBairroFiltro">
+							<html:text property="bairroFiltro" size="40" maxlength="30"
+								readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #000000" />
+						</logic:notEmpty>
+					</logic:notPresent> <a
+						href="javascript:limparPesquisaBairro();">
+					<img src="<bean:message key="caminho.imagens"/>limparcampo.gif"
+						border="0" title="Apagar" /></a></td>
+				</tr>
+				
+				<tr>
+					<td height="30">
+						<strong>Logradouro:</strong>
+					</td>
+					
+					<td>
+						<html:text name="FiltrarImovelContaActionForm" property="idLogradouro" size="9" maxlength="9"
+							onkeypress="validaEnterComMensagem(event, 'exibirFiltrarImovelInserirManterContaAction.do?limpar=false', 'idLogradouro', 'Logradouro');"/>
+						<a
+						href="javascript:abrirPopup('exibirPesquisarLogradouroAction.do?codigoMunicipio='+document.forms[0].idMunicipioFiltro.value+'&codigoBairro='+document.forms[0].idBairroFiltro.value+'&indicadorUsoTodos=1&primeriaVez=1', 400, 800);">
+							<img src="<bean:message key='caminho.imagens'/>pesquisa.gif" width="23" 
+								height="21" border="0" alt="Pesquisar"></a>
+						<logic:present name="idLogradouroNaoEncontrado">
+							<logic:equal name="idLogradouroNaoEncontrado" value="exception">
+								<html:text property="descricaoLogradouro" size="30" maxlength="30" readonly="true"
+									style="background-color:#EFEFEF; border:0; color: #ff0000" />
+							</logic:equal>
+							<logic:notEqual name="idLogradouroNaoEncontrado" value="exception">
+								<html:text property="descricaoLogradouro" size="30" maxlength="30" readonly="true"
+									style="background-color:#EFEFEF; border:0; color: #000000" />
+							</logic:notEqual>
+						</logic:present>
+						<logic:notPresent name="idLogradouroNaoEncontrado">
+							<logic:empty name="FiltrarImovelContaActionForm" property="logradouro">
+								<html:text property="descricaoLogradouro" value="" size="30"	maxlength="30" readonly="true"
+									style="background-color:#EFEFEF; border:0; color: #ff0000" />
+							</logic:empty>
+							<logic:notEmpty name="FiltrarImovelContaActionForm" property="logradouro">
+								<html:text property="descricaoLogradouro" value="" size="30"	maxlength="30" readonly="true"
+									style="background-color:#EFEFEF; border:0; color: #000000" />
+							</logic:notEmpty>
+						</logic:notPresent>
+						<a href="javascript:limparPesquisaLogradouro();">
+							<img src="<bean:message key="caminho.imagens"/>limparcampo.gif" border="0" title="Apagar"/></a>
+					</td>
+					
+					<td align="right"  >
+						<input name="logradouro"
+						class="bottonRightCol" value="Adicionar" type="button" style="width: 80px"
+						onclick="javascript:adicionarLogradouro();"
+						onkeyup="bloqueraBotao();">
+					</td>
+				</tr>	
+				
+				
+			<tr>
+				<td colspan="2">
+					<table width="100%" cellpadding="0" cellspacing="0">
+						<tr bordercolor="#000000"> 
+					      <td bgcolor="#90c7fc" align="center" width="15%" height="20"><div align="center"><strong>Remover</strong></div></td>
+					      <td bgcolor="#90c7fc" align="center" width="45%" height="20"><strong>Nome Logradouro</strong></td>
+					      <td bgcolor="#90c7fc" align="center" width="40%" height="20"><strong>Municipio</strong></td>
+					   </tr>
+						<logic:present name="colecaoLogradouro">
+								<% String cor = "#cbe5fe";%>
+							<logic:iterate name="colecaoLogradouro"
+										id="logradouro" type="Logradouro">
+					
+						<%	if (cor.equalsIgnoreCase("#cbe5fe")){	
+							cor = "#FFFFFF";%>
+							<tr bgcolor="#FFFFFF" height="18">	
+						<%} else{	
+							cor = "#cbe5fe";%>
+							<tr bgcolor="#cbe5fe" height="18">		
+						<%}%>
+								<td width="13%" align="center >
+									<div align="center"><font color="#333333"> <img width="14"
+													height="14" border="0"
+													src="<bean:message key="caminho.imagens"/>Error.gif"
+													onclick="javascript:document.forms[0].target='';if(confirm('Confirma remoção?'));
+													removerLogradouro('${logradouro.id}');
+													" />
+								   </font></div>
+								</td>
+								
+								<td width="13%"  >
+									<bean:write name="logradouro" property="nome" />
+								</td>
+								
+								<td width="13%" >
+									<bean:write name="logradouro" property="municipio.nome" />
+								</td>
+							</tr>
+							</logic:iterate>
+						</logic:present>
+					</table>
+					</td>
+				</tr>
+				
+				
+			     <tr>
+					<td colspan="4">
+					<p>&nbsp;</p>
+					<hr>
+					</td>
+				</tr>
+				
 				<tr>
 					<td><strong>Bairro:</strong></td>
 					<td colspan="3"><html:text maxlength="30" property="nomeBairro" size="56" tabindex="3" /> 	
 					</td>
 				</tr>
+				
 				<tr>
 					<td colspan="4">
 					<hr>
@@ -1166,9 +1506,19 @@ function bloquearLSQLS(){
                   	    
                   	    <table width="100%" border="0">
 						 	<tr>
-								<td height="10" width="120"><strong>Grupo Faturamento:</strong></td>
-								<td><html:text maxlength="3" property="idFaturamentoGrupo"
-								size="5" tabindex="13" onkeyup="bloquearLSQLS();"/></td>																								
+							 <td><strong>Faturameno Grupo:</strong></td>
+                <td colspan="6"><span class="style2"><strong> 
+					<html:select property="faturamentoGrupo" 
+						style="width: 350px;" 
+						multiple="true" 
+						tabindex="8" onclick="verificarBotaoLogradouro();bloquearLSQLS();">
+						<html:option value="">&nbsp;</html:option>
+						<logic:present name="colecaoFaturamentoGrupo" scope="session">
+							<html:options collection="colecaoFaturamentoGrupo" labelProperty="descricao" property="id" />
+						</logic:present>
+					</html:select>                
+                  </strong></span>
+                 </td>																						
 						  	</tr>
 						</table>
 					  	
@@ -1180,6 +1530,7 @@ function bloquearLSQLS(){
                 </tr>
 				
 				<!-- FIM GRUPO FATURAMENTO -->
+				
 				
 				
 				<!-- ROTA INICIAL -->

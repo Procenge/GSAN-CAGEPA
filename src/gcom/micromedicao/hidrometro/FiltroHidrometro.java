@@ -133,6 +133,11 @@ public class FiltroHidrometro
 	/**
 	 * Description of the Field
 	 */
+	public final static String LOTE_ENTREGA = "loteEntrega";
+
+	/**
+	 * Description of the Field
+	 */
 	public final static String INDICADOR_MACROMEDIDOR = "indicadorMacromedidor";
 
 	/**
@@ -180,7 +185,6 @@ public class FiltroHidrometro
 
 	public final static String HIDROMETRO_HIDROMETRO_MOVIMENTADO_HIDROMETRO_MOVIMENTACAO_HIDROMETRO_LOCAL_ARMAZENAGEM_ORIGEM_DESCRICAO = "hidrometroMovimentado.hidrometroMovimentacao.hidrometroLocalArmazenagemOrigem.descricao";
 
-
 	/**
 	 * Description of the Field
 	 */
@@ -224,5 +228,7 @@ public class FiltroHidrometro
 	public final static String HIDROMETRO_TIPO_TURBINA = "hidrometroTipoTurbina";
 
 	public final static String HIDROMETRO_TIPO_TURBINA_ID = "hidrometroTipoTurbina.id";
+
+	public final static String EMPRESA_ULTIMA_AFERICAO = "empresaUltimaAfericao";
 
 }

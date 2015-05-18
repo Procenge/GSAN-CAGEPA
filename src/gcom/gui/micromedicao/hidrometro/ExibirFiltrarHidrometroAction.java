@@ -78,23 +78,7 @@ package gcom.gui.micromedicao.hidrometro;
 
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
-import gcom.micromedicao.hidrometro.FiltroHidrometroCapacidade;
-import gcom.micromedicao.hidrometro.FiltroHidrometroClasseMetrologica;
-import gcom.micromedicao.hidrometro.FiltroHidrometroDiametro;
-import gcom.micromedicao.hidrometro.FiltroHidrometroLocalArmazenagem;
-import gcom.micromedicao.hidrometro.FiltroHidrometroMarca;
-import gcom.micromedicao.hidrometro.FiltroHidrometroSituacao;
-import gcom.micromedicao.hidrometro.FiltroHidrometroTipo;
-import gcom.micromedicao.hidrometro.FiltroHidrometroTipoTurbina;
-import gcom.micromedicao.hidrometro.Hidrometro;
-import gcom.micromedicao.hidrometro.HidrometroCapacidade;
-import gcom.micromedicao.hidrometro.HidrometroClasseMetrologica;
-import gcom.micromedicao.hidrometro.HidrometroDiametro;
-import gcom.micromedicao.hidrometro.HidrometroLocalArmazenagem;
-import gcom.micromedicao.hidrometro.HidrometroMarca;
-import gcom.micromedicao.hidrometro.HidrometroSituacao;
-import gcom.micromedicao.hidrometro.HidrometroTipo;
-import gcom.micromedicao.hidrometro.HidrometroTipoTurbina;
+import gcom.micromedicao.hidrometro.*;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
@@ -308,6 +292,9 @@ public class ExibirFiltrarHidrometroAction
 			httpServletRequest.setAttribute("i", i);
 		}
 		httpServletRequest.setAttribute("nomeCampo", "numeroHidrometro");
+
+		httpServletRequest.setAttribute("idSituacaoHidrometroInstalado", HidrometroSituacao.INSTALADO.toString());
+
 		return retorno;
 	}
 

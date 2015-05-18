@@ -155,6 +155,32 @@ function validateInscricao(){
 	}
 
 }
+
+function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
+
+	  var form = document.forms[0];
+
+	  if (tipoConsulta == 'atividadeEconomica') {
+	    
+	    	form.codigoAtividadeEconomica.value = codigoRegistro;
+	    	form.action='inserirClienteWizardAction.do?action=exibirInserirClientePessoaAction&pesquisaAtividadeEconomica=' + codigoRegistro;   
+			form.submit();
+	  }
+}
+
+function verificarCheckDocumentoValidado(){
+    var form = document.forms[0];
+    
+    if(form.documentoValidado.value == "1"){
+    	
+    	form.documentoValidado.checked = true;
+    	form.documentoValidado.value = "1";
+    }else{
+    	
+    	form.documentoValidado.checked = false;
+    	form.documentoValidado.value = "2";
+    }
+}
 -->
 </script>
 <script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/regras_validator.js"></script><html:javascript staticJavascript="false"  formName="ClienteActionForm" dynamicJavascript="false"
@@ -165,7 +191,7 @@ function validateInscricao(){
 	src="<bean:message key="caminho.js"/>Calendario.js"></script>
 </head>
 <body leftmargin="5" topmargin="5"
-	onload="setarFoco('${requestScope.nomeCampo}');">
+	onload="setarFoco('${requestScope.nomeCampo}');verificarCheckDocumentoValidado();">
 	
 <div id="formDiv">
 <html:form action="/inserirClienteWizardAction" method="post">
@@ -277,7 +303,11 @@ function validateInscricao(){
 					<td width="13%"><strong> CNPJ:<font color="#FF0000">*</font></strong>
 					</td>
 					<td width="87%"><html:text property="cnpj" size="14" maxlength="14" tabindex="1" onkeypress="return isCampoNumerico(event);"/>
-					<font size="1"> &nbsp; </font></td>
+					<font size="1"> &nbsp; </font>
+						<strong> Documento Validado:<font color="#FF0000">*</font></strong>
+						<html:radio property="documentoValidado" value="<%=ConstantesSistema.SIM.toString()%>" disabled="false" /><strong>Sim</strong>
+						<html:radio property="documentoValidado" value="<%=ConstantesSistema.NAO.toString()%>" disabled="false" /><strong>Não</strong>
+					</td>
 				</tr>
 				<tr>
 					<td><strong> Ramo de Atividade: </strong></td>
@@ -288,6 +318,41 @@ function validateInscricao(){
 						</html:select>
 					</td>
 				</tr>
+				
+				<logic:present name="obrigatorioAtividadeEconomica" scope="request">
+						
+					<tr>
+						<td height="24"><strong>Atividade Ecônomica:<font color="#FF0000">*</font></strong></td>
+						<td> 
+							<html:text maxlength="10" 
+									property="codigoAtividadeEconomica" 
+									size="10" 
+									onkeypress="return validaEnterString(event, 'inserirClienteWizardAction.do?action=exibirInserirClientePessoaAction', 'codigoAtividadeEconomica');" />
+							<a href="javascript:abrirPopup('exibirPesquisarAtividadeEconomicaAction.do', 400, 800);">
+							<img border="0" src="<bean:message key="caminho.imagens"/>pesquisa.gif" border="0"/></a>
+							(X9999-9/99)
+						</td>
+
+					</tr>
+				</logic:present>
+				
+				<logic:notPresent name="obrigatorioAtividadeEconomica" scope="request">
+					
+					<tr>
+						<td height="24"><strong>Atividade Ecônomica:</strong></td>
+						<td> 
+							<html:text maxlength="10" 
+								property="codigoAtividadeEconomica" 
+								size="10" 
+								onkeypress="return validaEnterString(event, 'inserirClienteWizardAction.do?action=exibirInserirClientePessoaAction', 'codigoAtividadeEconomica');" />
+							<a href="javascript:abrirPopup('exibirPesquisarAtividadeEconomicaAction.do', 400, 800);">
+							<img border="0" src="<bean:message key="caminho.imagens"/>pesquisa.gif" border="0"/></a>
+							(X9999-9/99)
+						</td>
+
+					</tr>
+				</logic:notPresent>
+				
 				<tr>
 					<td width="13%"><strong> Inscrição Estadual: </strong>
 					</td>

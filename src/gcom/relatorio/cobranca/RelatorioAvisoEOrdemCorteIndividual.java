@@ -56,6 +56,9 @@ public class RelatorioAvisoEOrdemCorteIndividual
 		SistemaParametro sistemaParametro = fachada.pesquisarParametrosDoSistema();
 		parametros.put("imagem", sistemaParametro.getImagemRelatorio());
 
+		if(this.getUsuario() != null){
+			parametros.put("usuario", this.getUsuario().getLogin());
+		}
 
 		Collection<RelatorioAvisoEOrdemCorteIndividualBean> colecaoAux = (Collection<RelatorioAvisoEOrdemCorteIndividualBean>) getParametro("relatorioAvisoEOrdemCorteIndividualBean");
 

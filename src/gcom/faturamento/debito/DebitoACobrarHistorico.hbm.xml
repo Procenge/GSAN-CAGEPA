@@ -165,6 +165,13 @@
         not-null="true"
     />
 
+    <property
+        name="numeroProcessoAdministrativoExecucaoFiscal"
+        type="java.lang.Integer"
+        column="DAHI_NNPROCESADMEXECUCAOFISCAL"
+        length="14"
+    />
+
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to LancamentoItemContabil -->

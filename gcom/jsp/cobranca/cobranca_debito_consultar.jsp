@@ -3,6 +3,7 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/gcomLib.tld" prefix="gcom" %>
+<%@ page import="gcom.cadastro.cliente.ClienteImovel" isELIgnored="false"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <%@page import="gcom.util.ConstantesSistema"%>
@@ -14,12 +15,7 @@
 	href="<bean:message key="caminho.css"/>EstilosCompesa.css"
 	type="text/css">
 
-<%
-	Boolean semPermissao = (Boolean) session.getAttribute("semPermissao");
-%>
-
 <script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/regras_validator.js"></script><html:javascript staticJavascript="false"  formName="ConsultarDebitoActionForm" dynamicJavascript="false" />
-
 <script language="JavaScript" src="<bean:message key="caminho.js"/>util.js"></script>
 <script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/ManutencaoRegistro.js"></script>
 <script language="JavaScript" src="<bean:message key="caminho.js"/>Calendario.js" ></script>
@@ -96,6 +92,7 @@ function limparForm(tipo){
     	form.codigoClienteSuperior.readOnly = false;
     	form.codigoCliente.readOnly = false;
     	form.tipoRelacao.disabled = false;
+    	form.responsavel[0].disabled = false;
 		var ObjCodigoImovel = returnObject(form,"codigoImovel");
 		var ObjCodigoImovelClone = returnObject(form,"codigoImovelClone");
 		var ObjInscricaoImovel = returnObject(form,"inscricaoImovel");
@@ -111,10 +108,13 @@ function limparForm(tipo){
 		var ObjCodigoClienteClone = returnObject(form,"codigoClienteClone");
 		var ObjNomeCliente = returnObject(form,"nomeCliente");
 		var ObjTipoRelacao = returnObject(form,"tipoRelacao");
+
 		ObjCodigoCliente.value = "";
 		ObjCodigoClienteClone.value = "";
 		ObjNomeCliente.value = "";		
 		ObjTipoRelacao.value = <%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>;
+		
+		form.responsavel[0].value = "2";
 	}
 	if(tipo == 'clienteSuperior')
     {
@@ -124,14 +124,12 @@ function limparForm(tipo){
 		var ObjCodigoClienteSuperior = returnObject(form,"codigoClienteSuperior");
 		var ObjCodigoClienteSuperiorClone = returnObject(form,"codigoClienteSuperiorClone");
 		var ObjNomeClienteSuperior = returnObject(form,"nomeClienteSuperior");
+
 		ObjCodigoClienteSuperior.value = "";
 		ObjCodigoClienteSuperiorClone.value = "";
 		ObjNomeClienteSuperior.value = "";
+		form.responsavel[0].value = "2";
 		
-		<% if (semPermissao == null || !semPermissao.equals(new Boolean(true))) {	%>
-			form.responsavel[0].disabled = false;
-			form.responsavel[2].disabled = false;
-		<% } %>		
 	}
 }
 
@@ -171,9 +169,8 @@ function validaEnterClienteSuperior(tecla, caminhoActionReload, nomeCampo) {
 		form.codigoClienteClone.value = "";	
 		form.nomeCliente.value = "";
 		form.tipoRelacao.value = <%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>;
-		form.responsavel[1].checked = true;
 		form.responsavel[0].disabled = true;
-		form.responsavel[2].disabled = true;
+		form.responsavel[0].value = "2";
     } else {
 		form.codigoImovel.readOnly = false;
 		form.codigoClienteSuperior.value = "";
@@ -183,11 +180,9 @@ function validaEnterClienteSuperior(tecla, caminhoActionReload, nomeCampo) {
         form.inscricaoImovel.value = "";
         form.codigoCliente.readOnly = false;
 		form.tipoRelacao.disabled = false;
+		form.responsavel[0].disabled = false;
+		form.responsavel[0].value = "2";
 		
-		<% if (semPermissao == null || !semPermissao.equals(new Boolean(true))) {	%>
-			form.responsavel[0].disabled = false;
-			form.responsavel[2].disabled = false;
-		<% } %>
 	}
 }
 
@@ -232,6 +227,8 @@ function validaEnterImovel(tecla, caminhoActionReload, nomeCampo) {
 		form.codigoClienteSuperior.value = "";	
 		form.codigoClienteSuperiorClone.value = "";	
 		form.nomeClienteSuperior.value = "";
+		form.responsavel[0].disabled = true;
+		form.responsavel[0].value = "2";
 	} else {
 		form.codigoCliente.readOnly = false;
 		form.tipoRelacao.disabled = false;
@@ -240,6 +237,8 @@ function validaEnterImovel(tecla, caminhoActionReload, nomeCampo) {
         form.inscricaoImovel.value = "";
         form.nomeCliente.value = "";
         form.codigoClienteSuperior.readOnly = false;
+        form.responsavel[0].disabled = false;
+        form.responsavel[0].value = "2";
 	}
 }
 function controleImovel(){
@@ -248,6 +247,7 @@ function controleImovel(){
 		form.codigoCliente.readOnly = true;
 		form.tipoRelacao.disabled = true;
 		form.codigoClienteSuperior.readOnly = true;
+		form.responsavel[0].disabled = true;
 	}
 	else
 	{
@@ -255,6 +255,7 @@ function controleImovel(){
 			form.codigoCliente.readOnly = false;
 			form.tipoRelacao.disabled = false;
 			form.codigoClienteSuperior.readOnly = false;
+			form.responsavel[0].disabled = false;
 		}
 	}
 }
@@ -274,34 +275,13 @@ function controleCliente(){
 	}
 }
 
-// valida a necessidade do preenchimento do campo responsável a partir do cliente e tipo de relação
-function validarClienteRelacao () {
-	var form = document.ConsultarDebitoActionForm;
-	if ((form.codigoCliente.value.length > 0) && (form.tipoRelacao.value == '1' || form.tipoRelacao.value == '2')) {
-		form.responsavel[0].checked = false;
-		form.responsavel[0].disabled = true;
-		form.responsavel[1].checked = false;
-		form.responsavel[1].disabled = true;
-		form.responsavel[2].checked = false;
-		form.responsavel[2].disabled = true;
-	} else {
-		form.responsavel[0].disabled = false;
-		form.responsavel[1].disabled = false;
-		form.responsavel[2].disabled = false;
-	}
-	
-}
-
 function controleClienteSuperior(){
 	var form = document.ConsultarDebitoActionForm;
 	if(form.codigoClienteSuperior.value.length > 0){
 		form.codigoImovel.readOnly = true;
 		form.codigoCliente.readOnly = true;
 		form.tipoRelacao.disabled = true;
-		
-		form.responsavel[1].checked = true;
 		form.responsavel[0].disabled = true;
-		form.responsavel[2].disabled = true;
 		
 	}
 	else
@@ -310,12 +290,9 @@ function controleClienteSuperior(){
 			form.codigoImovel.readOnly = false;
 			form.codigoCliente.readOnly = false;
 			form.tipoRelacao.disabled = false;
+			form.responsavel[0].disabled = false;			
 		}
 		
-		<% if (semPermissao == null || !semPermissao.equals(new Boolean(true))) {	%>
-			form.responsavel[0].disabled = false;
-			form.responsavel[2].disabled = false;
-		<% } %>
 	}
 }
 
@@ -350,6 +327,7 @@ function validarForm(form)
 	var objRefFinal 		     = returnObject(form, "refFinal");
 	var objDtInicial 			 = returnObject(form, "dtInicial");
 	var objDtFinal   			 = returnObject(form, "dtFinal");
+	var objTipoRelacao   		 = returnObject(form, "tipoRelacao");
 	
 	if (validateConsultarDebitoActionForm(form))
 	{
@@ -375,12 +353,9 @@ function validarForm(form)
 		}else if ((objDataVencimentoInicial.value != "" && objDataVencimentoFinal.value != "" ) && (comparaData(objDataVencimentoInicial.value, ">", objDataVencimentoFinal.value))){
 			alert("Período de Vencimento do Débito Inicial posterior ao Período de Vencimento do Débito Final.");
 			return false;
-		}else if (form.codigoCliente.value != '' && (form.responsavel[2].checked 
-				|| (!form.responsavel[0].checked && !form.responsavel[1].checked && !form.responsavel[2].checked)) 
-				&& (form.tipoRelacao.value == 3 || form.tipoRelacao.value == '-1')){
-
-			alert('Informe Responsável. Indicado na Conta ou Atual do Imóvel.');
-			return false;
+		} else if (trim(objCodigoCliente.value) != '' && (trim(objTipoRelacao.value) == '-1' || trim(objTipoRelacao.value) == '')) {
+			alert("Deve ser informado o Tipo da Relação do Cliente.");
+			return false;			
 		}
 		
 		if( retorno == true ){
@@ -391,6 +366,26 @@ function validarForm(form)
 
 -->
 </script>
+
+	<logic:present name="indicadorFauramentoTitularDebito" scope="request">
+		<SCRIPT LANGUAGE="JavaScript">
+		<!--
+		
+		  	function marcarClienteOrigemId(objeto) {
+		  		var form = document.forms[0];
+		  		
+				var i = 0;
+				for (i = 0; i < document.forms[0].idClienteImovel.length; i++) { 
+				    if (document.forms[0].idClienteImovel[i].checked == true) {
+				    	form.idClienteRelacaoImovelSelecionado.value = document.forms[0].valorClienteImovel[i].value;
+				    }
+				}	  		
+		  	}
+	
+		//-->
+		</SCRIPT>
+	</logic:present>
+	
 </head>
 
 <body leftmargin="5" topmargin="5">
@@ -491,6 +486,66 @@ function validarForm(form)
 						</a>	
 					</td>
 				</tr>
+			
+			    <logic:present name="indicadorFauramentoTitularDebito" scope="request">
+			    <tr>
+				<td colspan="3">			    
+					<table width="100%" align="center" bgcolor="#90c7fc" border="0">
+					<tr>
+						<td align="center" ><strong>Clientes com Débitos</strong></td>
+					</tr>
+				    </table>
+			    	<html:hidden property="idClienteRelacaoImovelSelecionado"/>
+					<%int cont = 0;%>
+					<table width="100%" bgcolor="#99CCFF">
+						<tr bgcolor="#90c7fc">
+							<td align="center" width="7%"><strong></strong></td>
+							<td align="center" width="18%"><strong>Tipo de Relação</strong></td>
+							<td align="left" width="75%"><strong>Nome</strong></td>
+						</tr>
+						
+						<logic:notEmpty name="colecaoRelacaoImovel" scope="session">
+						<tr>
+							<td height="100" colspan="3" >
+							<div style="width: 100%; height: 100%; overflow: auto;">
+							<table width="100%">
+								<logic:iterate name="colecaoRelacaoImovel" type="ClienteImovel" id="clienteImovel">
+									<%cont = cont + 1;
+									if (cont % 2 == 0) {%>
+									<tr bgcolor="#cbe5fe" width="100%">
+									<%} else {%>
+									<tr bgcolor="#FFFFFF" width="100%">
+									<%}%>
+					
+									<td align="center" height="20" width="7%">
+										<input type="hidden" name="valorClienteImovel"
+											value="<bean:write name="clienteImovel" property="clienteRelacaoTipo.id"/>.<bean:write name="clienteImovel" property="cliente.id"/>" 
+											 >
+										
+										<input type="radio" id="idClienteImovel" 
+											name="idClienteImovel" 
+											 onclick="javascript:marcarClienteOrigemId(this);">
+		
+									</td>
+									<td align="center" height="20" width="18%">
+										<bean:write name="clienteImovel" property="clienteRelacaoTipo.descricao"/>
+									</td>
+									<td align="center" height="20" width="75%">
+										<bean:write name="clienteImovel" property="cliente.descricao"/>
+									</td>																				
+									</tr>
+								</logic:iterate>							
+							</table>
+							</div>
+							</td>
+						</tr>
+						</logic:notEmpty>							
+					</table>			
+				</td>
+				</tr>				       
+			   </logic:present>					
+				
+				
 				<tr>
 					<td colspan="4">
 					<hr>
@@ -530,7 +585,7 @@ function validarForm(form)
 				<tr>
 					<td width="30%"><strong>Código do Cliente:</strong></td>
 					<td colspan="3">
-						<html:text property="codigoCliente" maxlength="9" size="9" onkeyup="return validaEnterCliente(event, 'exibirConsultarDebitoAction.do', 'codigoCliente'); " onblur="javascript: validarClienteRelacao();"/>
+						<html:text property="codigoCliente" maxlength="9" size="9" onkeyup="return validaEnterCliente(event, 'exibirConsultarDebitoAction.do', 'codigoCliente'); " />
 						<a href="javascript:habilitarPesquisaCliente(document.forms[0]);" alt="Pesquisar Cliente">
 						<img width="23" height="21" src="<bean:message key='caminho.imagens'/>pesquisa.gif" border="0" /></a>
 						<logic:present name="corCliente">
@@ -561,40 +616,22 @@ function validarForm(form)
 				<tr>
 					<td width="30%"><strong>Tipo da Relação:</strong></td>
 					<td colspan="3" align="right">
-					<div align="left"><strong> <html:select property="tipoRelacao" onchange="javascript:validarClienteRelacao();">
+					<div align="left"><strong> <html:select property="tipoRelacao" >
 					<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
 						<logic:notEmpty name="collectionClienteRelacaoTipo">
 						<html:options collection="collectionClienteRelacaoTipo"
 							labelProperty="descricao" property="id" />
 						</logic:notEmpty>
-					</html:select></strong></div>
+					</html:select>
+	                  <label> 
+					  <html:checkbox property="responsavel" value="1" />
+	 				  Atual do Imóvel</label>					
+					  <html:hidden property="responsavel" value="2"/>
+					</strong></div>
+					
+					
 					</td>
 				</tr>
-			  <tr> 
-                <td><strong>Responsável:</strong></td>
-                <td colspan="6"><span class="style2"><strong> 
-                  <label>
-                  <logic:present name="semPermissao" scope="session">
-                  <html:radio property="responsavel" value="0" disabled="true" />
-                  </logic:present>
-                  <logic:notPresent name="semPermissao" scope="session">
-				  <html:radio property="responsavel" value="0" />
-				  </logic:notPresent>
- 				  Indicado na Conta</label>
-                  <label> 
-				  <html:radio property="responsavel" value="1" />
- 				  Atual do Imóvel</label>
-                  <label>
-                  <logic:present name="semPermissao" scope="session">
-                  <html:radio property="responsavel" value="2" disabled="true" /> 
-                  </logic:present>
-                  <logic:notPresent name="semPermissao" scope="session">
-				  <html:radio property="responsavel" value="2" />
-				  </logic:notPresent>
- 				  Todos</label> 				  
-                  </strong></span>
-				</td>
-              </tr>
 				<tr>
 					<td colspan="4">
 					<hr>
@@ -682,6 +719,30 @@ function validarForm(form)
 	-->
 	</script>
 
+	<logic:present name="indicadorFauramentoTitularDebito" scope="request">
+		<SCRIPT LANGUAGE="JavaScript">
+		<!--
+		
+			if (document.forms[0].idClienteImovel != undefined) {
+				if (document.forms[0].idClienteImovel.length != undefined) {
+					var i = 0;
+					for (i = 0; i < document.forms[0].valorClienteImovel.length; i++) { 
+					    if (document.forms[0].valorClienteImovel[i].value == document.forms[0].idClienteRelacaoImovelSelecionado.value) {
+					    	document.forms[0].idClienteImovel[i].checked = true;
+					    } else {
+					    	document.forms[0].idClienteImovel[i].checked = false;
+					    }
+					}				
+				} else {
+				    if (document.forms[0].valorClienteImovel.value == document.forms[0].idClienteRelacaoImovelSelecionado.value) {
+				    	document.forms[0].idClienteImovel.checked = true;			    	
+				    }				
+				}
+			}
+	
+		//-->
+		</SCRIPT>
+	</logic:present>
 
 </html:form>
 </body>

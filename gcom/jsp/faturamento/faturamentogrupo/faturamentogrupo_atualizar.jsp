@@ -31,6 +31,20 @@ function validarForm(form){
 	  			return;
 	  		}
 	  	}
+ 		
+ 		if(form.diaVencimentoDebitoAutomatico.value != ""){
+	  		if(form.diaVencimentoDebitoAutomatico.value < 1 || form.diaVencimentoDebitoAutomatico.value > 31){
+	  			alert("O dia do vencimento de débito automático deve ser entre 1 e 31");
+	  			return;
+	  		}
+	  	}
+ 		
+ 		if(form.diaVencimentoEntregaAlternativa.value != ""){
+	  		if(form.diaVencimentoEntregaAlternativa.value < 1 || form.diaVencimentoEntregaAlternativa.value > 31){
+	  			alert("O dia do vencimento da entrega alternativa deve ser entre 1 e 31");
+	  			return;
+	  		}
+	  	}
 		
 		form.submit();
 	}
@@ -141,7 +155,19 @@ function validarForm(form){
 					<td width="162"><strong>Dia do Vencimento:<font color="#FF0000">*</font></strong></td>
 					<td><strong> <html:text property="diaVencimento" size="1" maxlength="2" onkeypress="return isCampoNumerico(event);">
 								</html:text> </strong></td>
-				</tr>											
+				</tr>	
+				<tr>
+					<td width="162"><strong>Dia Vencimento Débito Automático:</strong></td>
+					<td><strong> <html:text property="diaVencimentoDebitoAutomatico" size="1" maxlength="2" onkeypress="return isCampoNumerico(event);">
+								</html:text> </strong></td>
+				</tr>	
+				
+				<tr>
+					<td width="162"><strong>Dia Vencimento Entrega Alternativa:</strong></td>
+					<td><strong> <html:text property="diaVencimentoEntregaAlternativa" size="1" maxlength="2" onkeypress="return isCampoNumerico(event);">
+								</html:text> </strong></td>
+				</tr>	
+														
 				<tr>
 					<td><strong>O vencimento do grupo é igual ao ano/mês do faturamento?<font color="#FF0000">*</font></strong></td>
 					<td><strong> <html:radio property="indicadorVencimentoMesFatura" value="1" />

@@ -25,6 +25,7 @@
 
 	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_NM_ESTADO" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NM_EMPRESA" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="inscricao1" class="java.lang.String"/>
 	<field name="inscricao2" class="java.lang.String"/>
@@ -1927,7 +1928,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="Courier New" pdfFontName="Courier-Bold" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["COMPANHIA DE SANEAMENTO DE  "  + $P{P_NM_ESTADO}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NM_EMPRESA}]]></textFieldExpression>
 				</textField>
 				<rectangle>
 					<reportElement
@@ -1960,7 +1961,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="Courier New" pdfFontName="Courier-Bold" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["COMPANHIA DE SANEAMENTO DE  "  + $P{P_NM_ESTADO}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NM_EMPRESA}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement

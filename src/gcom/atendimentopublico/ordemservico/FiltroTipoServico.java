@@ -161,6 +161,10 @@ public class FiltroTipoServico
 	 */
 	public final static String INDICADOR_VISTORIA = "indicadorVistoria";
 
+	public final static String INDICADOR_AFERICAO_HIDROMETRO = "indicadorAfericaoHidrometro";
+
+	public final static String INDICADOR_PAGAMENTO_ANTECIPADO = "indicadorPagamentoAntecipado";
+
 	/**
 	 * Indicador uso
 	 */

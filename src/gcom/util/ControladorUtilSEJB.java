@@ -83,6 +83,7 @@ import gcom.cadastro.endereco.Logradouro;
 import gcom.cadastro.geografico.Municipio;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
+import gcom.cobranca.MunicipioFeriado;
 import gcom.cobranca.NacionalFeriado;
 import gcom.interceptor.ObjetoTransacao;
 import gcom.interceptor.RegistradorOperacao;
@@ -94,6 +95,7 @@ import gcom.seguranca.acesso.usuario.UsuarioAcaoUsuarioHelper;
 import gcom.util.email.ServicosEmail;
 import gcom.util.filtro.Filtro;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -318,9 +320,13 @@ public class ControladorUtilSEJB
 				// type new_name = (type) name;
 				sequence = repositorioUtil.obterNextVal(objeto);
 
-				id = Util.obterDigitoVerificadorModulo11(((Integer) sequence).toString());
+				if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.SIM.toString())){
+					id = Util.obterDigitoVerificadorModulo11(((Integer) sequence).toString());
 
-				((Imovel) objeto).setId(new Integer((((Integer) sequence).toString() + id.toString())));
+					((Imovel) objeto).setId(new Integer((((Integer) sequence).toString() + id.toString())));
+				}else{
+					((Imovel) objeto).setId(new Integer((((Integer) sequence).toString())));
+				}
 
 				// verifica se o objeto é do tipo Cliente
 			}else if(objeto instanceof Cliente){
@@ -1253,6 +1259,24 @@ public class ControladorUtilSEJB
 
 		try{
 			return repositorioUtil.pesquisar(filtro, pageOffset, pacoteNomeObjeto, qtdRegistrosPorPagina);
+		}catch(ErroRepositorioException ex){
+			sessionContext.setRollbackOnly();
+			throw new ControladorException("erro.sistema", ex);
+		}
+	}
+
+	/**
+	 * Recupera a coleção de feriados municipais
+	 * 
+	 * @author Anderson Italo
+	 * @date 13/06/2014
+	 * @return
+	 * @throws ControladorException
+	 */
+	public Collection<MunicipioFeriado> pesquisarFeriadosMunicipais() throws ControladorException{
+
+		try{
+			return repositorioUtil.pesquisarFeriadosMunicipais();
 		}catch(ErroRepositorioException ex){
 			sessionContext.setRollbackOnly();
 			throw new ControladorException("erro.sistema", ex);

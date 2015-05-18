@@ -4,11 +4,7 @@
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
-<%@ page import="gcom.arrecadacao.pagamento.GuiaPagamento"%>
-<%@ page import="gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao"%>
-<%@ page import="gcom.arrecadacao.pagamento.GuiaPagamentoHistorico"%>
-<%@ page import="gcom.arrecadacao.pagamento.GuiaPagamentoPrestacaoHistorico"%>
-<%@ page import="gcom.cobranca.parcelamento.ParcelamentoItem" %>
+<%@ page import="gcom.gui.faturamento.bean.GuiaPagamentoPrestacaoHelper" %>
 
 <html:html>
 
@@ -60,61 +56,28 @@ function fechar(){
 			</table>
 			<table width="100%" bgcolor="#99CCFF" border="0">
 				<tr bordercolor="#90c7fc">
-					<td width="50%" bordercolor="#000000" bgcolor="#90c7fc">
+					<td width="20%" bordercolor="#000000" bgcolor="#90c7fc">
 						<div align="center"><strong>Número Guia</strong></div>
 					</td>
-					<td width="25%" bordercolor="#000000" bgcolor="#90c7fc">
+					<td width="20%" bordercolor="#000000" bgcolor="#90c7fc">
 						<div align="center"><strong>Prestação</strong></div>
 					</td>
-					<td width="25%" bordercolor="#000000" bgcolor="#90c7fc">
+					<td width="60%" bordercolor="#000000" bgcolor="#90c7fc">
 						<div align="center"><strong>Valor</strong></div>
 					</td>
 				</tr>
-				<logic:present name="colecaoParcelamentoItem">
-					<logic:iterate name="colecaoParcelamentoItem" id="parcelamentoItem" type="ParcelamentoItem">
+				<logic:present name="colecaoGuiaPagamentoPrestacao">
+					<logic:iterate name="colecaoGuiaPagamentoPrestacao" id="guiaPagamentoPrestacao" type="GuiaPagamentoPrestacaoHelper">
 						<tr bordercolor="#90c7fc">
-							<logic:notEmpty name="parcelamentoItem" property="guiaPagamentoGeral">
-							  <bean:define id="valorObtido" type="java.lang.String" value="nao" ></bean:define>	
-								<bean:define name="parcelamentoItem" property="guiaPagamentoGeral" id="guiaPagamentoGeral" />
-									<td align="left" bgcolor="#cbe5fe">
-										<bean:write name="guiaPagamentoGeral" property="id" />
-									</td>
-									<td align="center" bgcolor="#cbe5fe">
-										<bean:write name="parcelamentoItem" property="numeroPrestacao" />
-									</td>
-									<td align="right" bgcolor="#cbe5fe">
-										<logic:notEmpty name="guiaPagamentoGeral" property="guiaPagamento">																					
-											<bean:define name="guiaPagamentoGeral" property="guiaPagamento" id="guiaPagamento" type="GuiaPagamento"/>
-											<% Short numeroPrestacao = parcelamentoItem.getNumeroPrestacao();%>
-											<%= guiaPagamento.obterValorFormatadoPrestacaoGuia(numeroPrestacao) %>
-											<logic:notEmpty name="parcelamentoItem" property="guiaPagamentoGeral.guiaPagamento.guiasPagamentoPrestacao">
-													<logic:iterate name="parcelamentoItem" property="guiaPagamentoGeral.guiaPagamento.guiasPagamentoPrestacao" id="prestacoes">
-														     <% if ((((GuiaPagamentoPrestacao) prestacoes).getComp_id().getNumeroPrestacao().intValue() == parcelamentoItem.getNumeroPrestacao().intValue()) && "nao".equals(valorObtido)) { %>																   
-														       <%=	parcelamentoItem.getGuiaPagamentoGeral().getGuiaPagamento().obterValorFormatadoPrestacaoGuia(parcelamentoItem.getNumeroPrestacao().shortValue()) %>
-															     <% valorObtido = "sim";
-											  		     	} %>									    		
-													</logic:iterate>																
-											</logic:notEmpty>
-											<logic:notEmpty name="parcelamentoItem" property="guiaPagamentoGeral.guiaPagamento.guiasPagamentoPrestacaoHistorico">
-												<logic:iterate name="parcelamentoItem" property="guiaPagamentoGeral.guiaPagamento.guiasPagamentoPrestacaoHistorico" id="prestacoesHistorico">
-												    <% if ((((GuiaPagamentoPrestacaoHistorico) prestacoesHistorico).getComp_id().getNumeroPrestacao().intValue() == parcelamentoItem.getNumeroPrestacao().intValue()) && "nao".equals(valorObtido)) { %>
-												    	 <%=	parcelamentoItem.getGuiaPagamentoGeral().getGuiaPagamento().obterValorFormatadoPrestacaoGuiaHistorico(parcelamentoItem.getNumeroPrestacao().shortValue()) %>
-												 			<% valorObtido = "sim";
-														} %>													   
-												</logic:iterate>																
-											</logic:notEmpty>
-										</logic:notEmpty>
-										<logic:notEmpty name="guiaPagamentoGeral" property="guiaPagamentoHistorico">
-											<bean:define name="guiaPagamentoGeral" property="guiaPagamentoHistorico" id="guiaPagamentoHistorico" type="GuiaPagamentoHistorico"/>
-												<logic:iterate name="parcelamentoItem" property="guiaPagamentoGeral.guiaPagamentoHistorico.guiasPagamentoPrestacaoHistorico" id="prestacoesHistorico">
-													<% if ((((GuiaPagamentoPrestacaoHistorico) prestacoesHistorico).getComp_id().getNumeroPrestacao().intValue() == parcelamentoItem.getNumeroPrestacao().intValue()) && "nao".equals(valorObtido)) { %>
-												  	<%=	parcelamentoItem.getGuiaPagamentoGeral().getGuiaPagamentoHistorico().obterValorFormatadoPrestacaoGuiaHistorico(parcelamentoItem.getNumeroPrestacao().shortValue()) %>
-		     									  	<% valorObtido = "sim";
-		     										} %>
-		     									</logic:iterate>	
-										</logic:notEmpty>
-									</td>
-							</logic:notEmpty>
+							<td align="center" bgcolor="#cbe5fe">
+								<bean:write name="guiaPagamentoPrestacao" property="idGuiaPagamento" />
+							</td>
+							<td align="center" bgcolor="#cbe5fe">
+								<bean:write name="guiaPagamentoPrestacao" property="numeroPrestacao" />
+							</td>
+							<td align="right" bgcolor="#cbe5fe">
+								<bean:write name="guiaPagamentoPrestacao" property="valorTotalPorPrestacao"  formatKey="money.format"  />
+							</td>
 						</tr>
 					</logic:iterate>
 				</logic:present>

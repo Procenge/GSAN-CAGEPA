@@ -78,19 +78,13 @@ package gcom.gui.seguranca.acesso.usuario;
 
 import gcom.cadastro.funcionario.FiltroFuncionario;
 import gcom.cadastro.funcionario.Funcionario;
+import gcom.cadastro.unidade.FiltroUnidadeOrganizacional;
+import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.cadastro.unidade.FiltroUnidadeOrganizacional;
 import gcom.seguranca.acesso.Grupo;
-import gcom.cadastro.unidade.UnidadeOrganizacional;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioGrupo;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioTipo;
-import gcom.seguranca.acesso.usuario.Usuario;
-import gcom.seguranca.acesso.usuario.UsuarioAbrangencia;
-import gcom.seguranca.acesso.usuario.UsuarioGrupo;
-import gcom.seguranca.acesso.usuario.UsuarioSituacao;
-import gcom.seguranca.acesso.usuario.UsuarioTipo;
+import gcom.seguranca.acesso.usuario.*;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
@@ -453,7 +447,29 @@ public class ConcluirAtualizarUsuarioAction
 
 		// registradorOperacao.registrarOperacao(usuario);
 
-		Fachada.getInstancia().atualizarUsuario(usuarioParaAtualizar, idGrupos, processo, usuario);
+		Collection<UsuarioAcesso> colecaoUsuarioAcesso = null;
+		String indicadorHorarioAcessoRestrito = form.getIndicadorHorarioAcessoRestrito();
+		if(indicadorHorarioAcessoRestrito != null && indicadorHorarioAcessoRestrito.equals("1")){
+
+			colecaoUsuarioAcesso = (Collection<UsuarioAcesso>) sessao.getAttribute("colecaoUsuarioAcesso");
+
+			if(!Util.isVazioOrNulo(colecaoUsuarioAcesso)){
+				boolean achou = false;
+				for(UsuarioAcesso usuarioAcesso : colecaoUsuarioAcesso){
+
+					if(usuarioAcesso.getIndicadorSelecionado() == 1){
+						achou = true;
+						break;
+					}
+				}
+				if(!achou){
+					throw new ActionServletException("atencao.acesso_restrito");
+				}
+			}
+		}
+
+		Fachada.getInstancia().atualizarUsuario(usuarioParaAtualizar, idGrupos, processo, usuario, colecaoUsuarioAcesso,
+						indicadorHorarioAcessoRestrito);
 
 		if(usuario.getId().equals(usuarioParaAtualizar.getId())){
 			sessao.setAttribute("usuarioLogado", usuarioParaAtualizar);

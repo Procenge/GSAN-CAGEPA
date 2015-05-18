@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN"
+                               "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<data-sources />
+	<form-beans>
+		<form-bean name="GerarRelatorioDeferimentoPeriodoDynaForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="mesAnoReferencia"
+				type="java.lang.String" />
+			<form-property
+				name="dataFimDeferimento"
+				type="java.lang.String" />
+		</form-bean>					
+	</form-beans>
+	<global-exceptions />
+	<global-forwards />
+
+	<action-mappings>
+
+		<action name="GerarRelatorioDeferimentoPeriodoDynaForm"
+			type="gcom.gui.relatorio.arrecadacao.ExibirGerarRelatorioDeferimentoPeriodoAction"
+			validate="false" scope="session"
+			path="/exibirGerarRelatorioDeferimentoPeriodoAction">
+			<forward name="exibirGerarRelatorioDeferimentoPeriodoAction"
+				path="/jsp/relatorio/arrecadacao/relatorio_deferimento_periodo_gerar.jsp" />
+		</action>
+		<action
+			path="/gerarRelatorioDeferimentoPeriodoAction"
+			type="br.com.procenge.geradorrelatorio.gui.GeradorRelatorioAction"
+			scope="request"
+			name="GerarRelatorioDeferimentoPeriodoDynaForm"
+			parameter="acao">
+
+			<exception
+				handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO"
+				type="br.com.procenge.comum.exception.PCGException"
+				path="/telaPrincipal.do" />
+
+			<forward name="paginaPrincipal" path="/telaPrincipal.do" />
+
+		</action>
+
+	</action-mappings>
+	<controller />
+</struts-config>

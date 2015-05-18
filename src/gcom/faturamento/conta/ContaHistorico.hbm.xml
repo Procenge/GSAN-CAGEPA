@@ -254,6 +254,52 @@
         not-null="true"
     />
 
+
+
+     <property
+        name="indicadorDividaAtiva"
+        type="java.lang.Short"
+        column="CNHI_ICDIVIDAATIVA"
+        length="1"
+        not-null="true"
+    />
+    
+      <property
+        name="dataDividaAtiva"
+             type="java.sql.Date"
+        column="CNHI_DTDIVIDAATIVA"       
+        length="4"
+    />
+    
+      <property
+        name="indicadorExecucaoFiscal"
+        type="java.lang.Short"
+        column="CNHI_ICEXECUCAOFISCAL"
+        length="1"
+        not-null="true"
+    />
+    
+      <property
+        name="dataExecucaoFiscal"
+             type="java.sql.Date"
+        column="CNHI_DTEXECUCAOFISCAL"   
+        length="4"
+    />
+    
+    <property
+        name="consumoPoco"
+        type="java.lang.Integer"
+        column="cnhi_nnconsumopoco"   
+        length="9"
+    />
+
+     <property
+        name="numeroProcessoAdministrativoExecucaoFiscal"
+        type="java.lang.Integer"
+        column="CNHI_NNPROCESADMEXECUCAOFISCAL"
+        length="14"
+    />
+
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to FaturamentoTipo -->
@@ -422,7 +468,7 @@
     </many-to-one>
     <many-to-one
         name="usuario"
-        class="gcom.seguranca.acesso.usuario.Usuario"
+        class="gcom.seguranca.acesso.usuario.Usuario" lazy="false"
     >
         <column name="usur_id" />
     </many-to-one>

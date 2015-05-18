@@ -90,12 +90,7 @@ import gcom.util.Util;
 import gcom.util.agendadortarefas.AgendadorTarefas;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * classe responsável por criar o relatório de
@@ -157,10 +152,10 @@ public class RelatorioRelacaoParcelamento
 				matricula = helper.getMatricula().toString();
 			}
 
-			String idParcelamento = "";
-			if(helper.getParcelamento() != null){
-				idParcelamento = helper.getParcelamento().toString();
-			}
+			// String idParcelamento = "";
+			// if(helper.getParcelamento() != null){
+			// idParcelamento = helper.getParcelamento().toString();
+			// }
 
 			BigDecimal valorDebito = new BigDecimal("0.00");
 			if(helper.getDebitoTotal() != null){
@@ -182,11 +177,11 @@ public class RelatorioRelacaoParcelamento
 				dataParcelamento = Util.formatarData(helper.getDataParcelamento());
 			}
 
-			String vencimento = "";
-			if(helper.getVencimento() != null){
-				vencimento = helper.getVencimento().toString();
-				// vencimento = vencimento.substring(0, 2);
-			}
+			// String vencimento = "";
+			// if(helper.getVencimento() != null){
+			// vencimento = helper.getVencimento().toString();
+			// // vencimento = vencimento.substring(0, 2);
+			// }
 
 			String numeroParcelas = "";
 			if(helper.getNumeroParcelamento() != null){
@@ -213,9 +208,13 @@ public class RelatorioRelacaoParcelamento
 				unidade = helper.getUnidade();
 			}
 
+			String ultimaAlteracao = "";
+			if(helper.getUltimaAlteracao() != null){
+				ultimaAlteracao = Util.formatarData(helper.getUltimaAlteracao());
+			}
 			RelatorioRelacaoParcelamentoBean bean = new RelatorioRelacaoParcelamentoBean(situacao, localidade, cliente, telefone,
-							matricula, idParcelamento, valorDebito, valorEntrada, valorParcelas, dataParcelamento, vencimento,
-							numeroParcelas, idLocalidade, idGerencia, gerencia, unidade);
+							matricula, valorDebito, valorEntrada, valorParcelas, dataParcelamento,
+							numeroParcelas, idLocalidade, idGerencia, gerencia, unidade, ultimaAlteracao);
 
 			retorno.add(bean);
 

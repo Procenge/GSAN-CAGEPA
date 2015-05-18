@@ -76,17 +76,13 @@
 
 package gcom.batch.micromedicao;
 
-import gcom.fachada.Fachada;
 import gcom.faturamento.FaturamentoGrupo;
-import gcom.micromedicao.FiltroRota;
 import gcom.micromedicao.Rota;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaBatch;
 import gcom.tarefa.TarefaException;
 import gcom.util.ConstantesJNDI;
-import gcom.util.ConstantesSistema;
 import gcom.util.agendadortarefas.AgendadorTarefas;
-import gcom.util.filtro.ParametroSimples;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -118,7 +114,7 @@ public class TarefaBatchVerificarAnormalidadesConsumo
 
 		FaturamentoGrupo faturamentoGrupo = (FaturamentoGrupo) getParametro("faturamentoGrupo");
 		Integer anoMesFaturamento = (Integer) getParametro("anoMesFaturamentoGrupo");
-		Collection colecaoRotasParaExecucao = (Collection) getParametro(ConstantesSistema.COLECAO_UNIDADES_PROCESSAMENTO_BATCH);
+		Collection colecaoRotasParaExecucao = (Collection) getParametro("colecaoFaturamentoAtivCronRota");
 
 		Iterator iterator = colecaoRotasParaExecucao.iterator();
 
@@ -128,13 +124,9 @@ public class TarefaBatchVerificarAnormalidadesConsumo
 
 			Object[] array = (Object[]) iterator.next();
 
-			// System.out.println("Rota VERIFICAR ANORMALIDADES DE CONSUMO" + ((Rota)
-			// array[1]).getId()
-			// + "*********************************************************");
-
 			listaRotas.add((Rota) array[1]);
-
 		}
+
 		enviarMensagemControladorBatch(ConstantesJNDI.BATCH_VERIFICAR_ANORMALIDADES_CONSUMO_MDB,
 						new Object[] {listaRotas, anoMesFaturamento, faturamentoGrupo, this.getIdFuncionalidadeIniciada()});
 
@@ -144,11 +136,7 @@ public class TarefaBatchVerificarAnormalidadesConsumo
 	@Override
 	public Collection pesquisarTodasUnidadeProcessamentoBatch(){
 
-		FaturamentoGrupo faturamentoGrupo = (FaturamentoGrupo) getParametro("faturamentoGrupo");
-		FiltroRota filtroRota = new FiltroRota();
-		filtroRota.adicionarParametro(new ParametroSimples(FiltroRota.FATURAMENTO_GRUPO_ID, faturamentoGrupo.getId()));
-
-		return Fachada.getInstancia().pesquisar(filtroRota, Rota.class.getName());
+		return null;
 
 	}
 

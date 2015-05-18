@@ -177,6 +177,18 @@ public class FiltrarOrdemServicoActionForm
 
 	private String periodoExecucaoFinal;
 
+	private String indicadorReparo;
+
+	private String situacaoDocumentoCobranca;
+
+	private String periodoPrevisaoInicial;
+
+	private String periodoPrevisaoFinal;
+
+	private String quantidadeDiasUnidade;
+
+	private String ordenador;
+
 	public void resetOS(){
 
 		numeroRA = null;
@@ -218,6 +230,11 @@ public class FiltrarOrdemServicoActionForm
 
 		logradouro = null;
 		descricaoLogradouro = null;
+		situacaoDocumentoCobranca = null;
+
+		periodoPrevisaoInicial = null;
+		periodoPrevisaoFinal = null;
+		ordenador = null;
 
 	}
 
@@ -673,6 +690,66 @@ public class FiltrarOrdemServicoActionForm
 	public void setPeriodoExecucaoFinal(String periodoExecucaoFinal){
 
 		this.periodoExecucaoFinal = periodoExecucaoFinal;
+	}
+
+	public String getIndicadorReparo(){
+
+		return indicadorReparo;
+	}
+
+	public void setIndicadorReparo(String indicadorReparo){
+
+		this.indicadorReparo = indicadorReparo;
+	}
+
+	public String getSituacaoDocumentoCobranca(){
+
+		return situacaoDocumentoCobranca;
+	}
+
+	public void setSituacaoDocumentoCobranca(String situacaoDocumentoCobranca){
+
+		this.situacaoDocumentoCobranca = situacaoDocumentoCobranca;
+	}
+
+	public String getPeriodoPrevisaoInicial(){
+
+		return periodoPrevisaoInicial;
+	}
+
+	public void setPeriodoPrevisaoInicial(String periodoPrevisaoInicial){
+
+		this.periodoPrevisaoInicial = periodoPrevisaoInicial;
+	}
+
+	public String getPeriodoPrevisaoFinal(){
+
+		return periodoPrevisaoFinal;
+	}
+
+	public void setPeriodoPrevisaoFinal(String periodoPrevisaoFinal){
+
+		this.periodoPrevisaoFinal = periodoPrevisaoFinal;
+	}
+
+	public String getQuantidadeDiasUnidade(){
+
+		return quantidadeDiasUnidade;
+	}
+
+	public void setQuantidadeDiasUnidade(String quantidadeDiasUnidade){
+
+		this.quantidadeDiasUnidade = quantidadeDiasUnidade;
+	}
+
+	public String getOrdenador(){
+
+		return ordenador;
+	}
+
+	public void setOrdenador(String ordenador){
+
+		this.ordenador = ordenador;
 	}
 
 }

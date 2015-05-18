@@ -127,8 +127,15 @@ public class ExibirParcelamentoTermoTestemunhasAction
 		HttpSession sessao = httpServletRequest.getSession(false);
 		String atualizar = httpServletRequest.getParameter("atualizar");
 		String idParcelamento = (String) sessao.getAttribute("idParcelamento");
+		String idImovel = (String) (sessao.getAttribute("idImovel"));
 		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
-
+		
+		boolean indicadorTermoParcelamentoPreview = false;
+		if(sessao.getAttribute("TermoParcelamentoPreview") != null
+						&& ((String) sessao.getAttribute("TermoParcelamentoPreview")).equals("True")){
+			indicadorTermoParcelamentoPreview = true;		
+		}
+		
 		ParcelamentoTermoTestemunhasActionForm form = (ParcelamentoTermoTestemunhasActionForm) actionForm;
 
 		if(!Util.isVazioOuBranco(atualizar) && atualizar.equals("sim")){
@@ -141,23 +148,42 @@ public class ExibirParcelamentoTermoTestemunhasAction
 			}
 
 			ParcelamentoTermoTestemunhas parcelamentoTermoTestemunhas = new ParcelamentoTermoTestemunhas();
-			Parcelamento parcelamento = new Parcelamento(Integer.valueOf(idParcelamento));
-			parcelamentoTermoTestemunhas.setParcelamento(parcelamento);
+
+			if(!indicadorTermoParcelamentoPreview){
+				Parcelamento parcelamento = new Parcelamento(Integer.valueOf(idParcelamento));
+				parcelamentoTermoTestemunhas.setParcelamento(parcelamento);
+				
+				FiltroParcelamentoTermoTestemunhas filtro = new FiltroParcelamentoTermoTestemunhas();
+				filtro.adicionarParametro(new ParametroSimples(FiltroParcelamentoTermoTestemunhas.PARCELAMENTO_ID, idParcelamento));
+				Collection<ParcelamentoTermoTestemunhas> colecao = fachada.pesquisar(filtro, ParcelamentoTermoTestemunhas.class.getName());
+
+				if(!Util.isVazioOrNulo(colecao)){
+					parcelamentoTermoTestemunhas.setId(((ParcelamentoTermoTestemunhas) colecao.iterator().next()).getId());
+					form.setId(String.valueOf(parcelamentoTermoTestemunhas.getId()));
+				}				
+			}else{
+				parcelamentoTermoTestemunhas.setParcelamento(null);
+			}
+			
 			parcelamentoTermoTestemunhas.setNomeTestemunha1(form.getNomeTestemunha1());
 			parcelamentoTermoTestemunhas.setNomeTestemunha2(form.getNomeTestemunha2());
 			parcelamentoTermoTestemunhas.setCpfTestemunha1(form.getCpfTestemunha1());
 			parcelamentoTermoTestemunhas.setCpfTestemunha2(form.getCpfTestemunha2());
 			parcelamentoTermoTestemunhas.setUltimaAlteracao(GregorianCalendar.getInstance().getTime());
 
-			if(!Util.isVazioOuBranco(form.getId())){
-				// [SB0007] – Atualizar Dados Testemunhas Parcelamento
-				parcelamentoTermoTestemunhas.setId(Integer.valueOf(form.getId()));
-				fachada.atualizar(parcelamentoTermoTestemunhas);
-			}else{
-				// [SB0009] – Inserir Dados Testemunhas Parcelamento
-				fachada.inserir(parcelamentoTermoTestemunhas);
+			if (!indicadorTermoParcelamentoPreview) {
+				if(form.getId() != null && !Util.isVazioOuBranco(form.getId())){
+					// [SB0007] – Atualizar Dados Testemunhas Parcelamento
+					parcelamentoTermoTestemunhas.setId(Integer.valueOf(form.getId()));
+					fachada.atualizar(parcelamentoTermoTestemunhas);
+				}else{
+					// [SB0009] – Inserir Dados Testemunhas Parcelamento
+					form.setId(String.valueOf(fachada.inserir(parcelamentoTermoTestemunhas)));
+					parcelamentoTermoTestemunhas.setId(Integer.valueOf(form.getId()));
+				}				
 			}
 
+			sessao.setAttribute("atualizarEmitirTermoTestemunha", "true");
 			sessao.setAttribute("parcelamentoTermoTestemunhas", parcelamentoTermoTestemunhas);
 			retorno = actionMapping.findForward("atualizarParcelamentoTermoTestemunhasAction");
 
@@ -169,17 +195,35 @@ public class ExibirParcelamentoTermoTestemunhasAction
 			filtro.adicionarParametro(new ParametroSimples(FiltroParcelamentoTermoTestemunhas.PARCELAMENTO_ID, idParcelamento));
 			Collection<ParcelamentoTermoTestemunhas> colecao = fachada.pesquisar(filtro, ParcelamentoTermoTestemunhas.class.getName());
 
-			// 1. Caso existam dados das testemunhas do parcelamento
+			ParcelamentoTermoTestemunhas parcelamentoTermoTestemunhas = null;
 			if(!Util.isVazioOrNulo(colecao)){
+				parcelamentoTermoTestemunhas = colecao.iterator().next();
+			}else{
+				parcelamentoTermoTestemunhas = (ParcelamentoTermoTestemunhas) sessao.getAttribute("parcelamentoTermoTestemunhas");
+			}
 
-				ParcelamentoTermoTestemunhas parcelamentoTermoTestemunhas = colecao.iterator().next();
+			// 1. Caso existam dados das testemunhas do parcelamento
+			if(parcelamentoTermoTestemunhas != null){
+
+
 
 				// 1.1. Caso o usuário tenha permissão especial para alterar os dados das
 				// testemunhas
 				if(fachada.verificarPermissaoEspecial(PermissaoEspecial.ALTERAR_DADOS_PARCELAMENTO_TERMO_TESTEMUNHAS, usuario)){
 
-					form.setId(parcelamentoTermoTestemunhas.getId().toString());
-					form.setParcelamentoId(parcelamentoTermoTestemunhas.getParcelamento().getId().toString());
+					if(parcelamentoTermoTestemunhas.getId() != null){
+						form.setId(parcelamentoTermoTestemunhas.getId().toString());
+					}
+					
+					if(parcelamentoTermoTestemunhas.getParcelamento() != null
+									&& parcelamentoTermoTestemunhas.getParcelamento().getId() != null){
+						form.setParcelamentoId(parcelamentoTermoTestemunhas.getParcelamento().getId().toString());	
+					}
+
+					if(idImovel != null && !idImovel.equals("")){
+						form.setIdImovel(idImovel);
+					}
+
 					form.setNomeTestemunha1(parcelamentoTermoTestemunhas.getNomeTestemunha1());
 					form.setNomeTestemunha2(parcelamentoTermoTestemunhas.getNomeTestemunha2());
 					form.setCpfTestemunha1(parcelamentoTermoTestemunhas.getCpfTestemunha1());
@@ -199,7 +243,18 @@ public class ExibirParcelamentoTermoTestemunhasAction
 				// 2. Caso contrário, ou seja, não existam dados das testemunhas do parcelamento:
 				// 2.1. O sistema solicita os dados das testemunhas do parcelamento
 				// [SB0008 – Solicitar Dados Testemunhas Parcelamento]
+				if(idParcelamento != null && !idParcelamento.equals("")){
+					form.setParcelamentoId(idParcelamento);
+				}
 
+				if(idImovel != null && !idImovel.equals("")){
+					form.setIdImovel(idImovel);
+				}
+
+				form.setNomeTestemunha1("");
+				form.setNomeTestemunha2("");
+				form.setCpfTestemunha1("");
+				form.setCpfTestemunha2("");
 			}
 		}
 

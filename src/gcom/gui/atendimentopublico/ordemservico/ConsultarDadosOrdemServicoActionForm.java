@@ -114,6 +114,8 @@ public class ConsultarDadosOrdemServicoActionForm
 
 	private String dataUltimaEmissao;
 
+	private String idOSServicoReparo;
+
 	// Dados da Programação
 	private String dataProgramacao;
 
@@ -159,6 +161,8 @@ public class ConsultarDadosOrdemServicoActionForm
 	private String usuarioEncerramentoId;
 
 	private String usuarioEncerramentoNome;
+	
+	private String usuarioEncerramentoLogin;
 
 	// Vala
 	private String numeroVala;
@@ -180,6 +184,14 @@ public class ConsultarDadosOrdemServicoActionForm
 	private String descricaoLocalOcorrencia;
 
 	private String descricaoPavimento;
+
+	private String quantidadeEntulho;
+
+	private String descricaoEntulhoMedida;
+
+	private String comprimentoTutulacaoAguaPluvial;
+
+	private String diametroTutulacaoAguaPluvial;
 
 	// Rede/Ramal Água
 	private String idCausaAgua;
@@ -249,9 +261,27 @@ public class ConsultarDadosOrdemServicoActionForm
 
 	private String emissaoOSHabilitada;
 
+	private String permiteGerarOSReparo;
+
+	private String exibirDadosReparoOSPrincipal;
+
+	private String idOSPrincipal;
+
+	private String valorHorasTrabalhadas;
+
+	private String valorMateriais;
+
 	private Collection<ObterDadosAtividadeIdOSHelper> colecaoOSAtividade = new ArrayList<ObterDadosAtividadeIdOSHelper>();
 
 	Collection<RoteiroOSDadosProgramacaoHelper> collectionRoteiroOSDadosProgramacaoHelpers = new ArrayList<RoteiroOSDadosProgramacaoHelper>();
+
+	Collection<OSDadosInterrupcaoHelper> collectionOsInterrupcaoDeslocamentoHelpers = new ArrayList<OSDadosInterrupcaoHelper>();
+
+	Collection<OSDadosInterrupcaoHelper> collectionOsInterrupcaoExecucaoHelpers = new ArrayList<OSDadosInterrupcaoHelper>();
+
+	private String quantidadeDiasUnidade;
+
+	private String dataPrevisaoCliente;
 
 	public void reset(ActionMapping actionMapping, HttpServletRequest httpServletRequest){
 
@@ -297,6 +327,7 @@ public class ConsultarDadosOrdemServicoActionForm
 		this.unidadeEncerramentoDescricao = null;
 		this.usuarioEncerramentoId = null;
 		this.usuarioEncerramentoNome = null;
+		this.usuarioEncerramentoLogin = null;
 		this.exibirDadosRedeRamalAgua = null;
 		this.exibirDadosRedeRamalEsgoto = null;
 
@@ -677,6 +708,17 @@ public class ConsultarDadosOrdemServicoActionForm
 	public void setUsuarioEncerramentoNome(String usuarioEncerramentoNome){
 
 		this.usuarioEncerramentoNome = usuarioEncerramentoNome;
+	}
+	
+	public String getUsuarioEncerramentoLogin(){
+
+		return usuarioEncerramentoLogin;
+	}
+
+	public void setUsuarioEncerramentoLogin(String usuarioEncerramentoLogin){
+
+		this.usuarioEncerramentoLogin = usuarioEncerramentoLogin;
+
 	}
 
 	public String getUsuarioGeracaoId(){
@@ -1355,5 +1397,147 @@ public class ConsultarDadosOrdemServicoActionForm
 
 		this.emissaoOSHabilitada = emissaoOSHabilitada;
 	}
+
+	public String getQuantidadeEntulho(){
+
+		return quantidadeEntulho;
+	}
+
+	public void setQuantidadeEntulho(String quantidadeEntulho){
+
+		this.quantidadeEntulho = quantidadeEntulho;
+	}
+
+	public String getDescricaoEntulhoMedida(){
+
+		return descricaoEntulhoMedida;
+	}
+
+	public void setDescricaoEntulhoMedida(String descricaoEntulhoMedida){
+
+		this.descricaoEntulhoMedida = descricaoEntulhoMedida;
+	}
+
+	public String getComprimentoTutulacaoAguaPluvial(){
+
+		return comprimentoTutulacaoAguaPluvial;
+	}
+
+	public void setComprimentoTutulacaoAguaPluvial(String comprimentoTutulacaoAguaPluvial){
+
+		this.comprimentoTutulacaoAguaPluvial = comprimentoTutulacaoAguaPluvial;
+	}
+
+	public String getDiametroTutulacaoAguaPluvial(){
+
+		return diametroTutulacaoAguaPluvial;
+	}
+
+	public void setDiametroTutulacaoAguaPluvial(String diametroTutulacaoAguaPluvial){
+
+		this.diametroTutulacaoAguaPluvial = diametroTutulacaoAguaPluvial;
+	}
+
+	public String getPermiteGerarOSReparo(){
+
+		return permiteGerarOSReparo;
+	}
+
+	public void setPermiteGerarOSReparo(String permiteGerarOSReparo){
+
+		this.permiteGerarOSReparo = permiteGerarOSReparo;
+	}
+
+	public String getIdOSServicoReparo(){
+
+		return idOSServicoReparo;
+	}
+
+	public void setIdOSServicoReparo(String idOSServicoReparo){
+
+		this.idOSServicoReparo = idOSServicoReparo;
+	}
+
+	public String getExibirDadosReparoOSPrincipal(){
+
+		return exibirDadosReparoOSPrincipal;
+	}
+
+	public void setExibirDadosReparoOSPrincipal(String exibirDadosReparoOSPrincipal){
+
+		this.exibirDadosReparoOSPrincipal = exibirDadosReparoOSPrincipal;
+	}
+
+	public String getIdOSPrincipal(){
+
+		return idOSPrincipal;
+	}
+
+	public void setIdOSPrincipal(String idOSPrincipal){
+
+		this.idOSPrincipal = idOSPrincipal;
+	}
+
+	public String getValorHorasTrabalhadas(){
+
+		return valorHorasTrabalhadas;
+	}
+
+	public void setValorHorasTrabalhadas(String valorHorasTrabalhadas){
+
+		this.valorHorasTrabalhadas = valorHorasTrabalhadas;
+	}
+
+	public String getValorMateriais(){
+
+		return valorMateriais;
+	}
+
+	public void setValorMateriais(String valorMateriais){
+
+		this.valorMateriais = valorMateriais;
+	}
+
+	public Collection<OSDadosInterrupcaoHelper> getCollectionOsInterrupcaoDeslocamentoHelpers(){
+
+		return collectionOsInterrupcaoDeslocamentoHelpers;
+	}
+
+	public void setCollectionOsInterrupcaoDeslocamentoHelpers(
+					Collection<OSDadosInterrupcaoHelper> collectionOsInterrupcaoDeslocamentoHelpers){
+
+		this.collectionOsInterrupcaoDeslocamentoHelpers = collectionOsInterrupcaoDeslocamentoHelpers;
+	}
+
+	public Collection<OSDadosInterrupcaoHelper> getCollectionOsInterrupcaoExecucaoHelpers(){
+
+		return collectionOsInterrupcaoExecucaoHelpers;
+	}
+
+	public void setCollectionOsInterrupcaoExecucaoHelpers(Collection<OSDadosInterrupcaoHelper> collectionOsInterrupcaoExecucaoHelpers){
+
+		this.collectionOsInterrupcaoExecucaoHelpers = collectionOsInterrupcaoExecucaoHelpers;
+	}
+
+	public String getQuantidadeDiasUnidade(){
+
+		return quantidadeDiasUnidade;
+	}
+
+	public void setQuantidadeDiasUnidade(String quantidadeDiasUnidade){
+
+		this.quantidadeDiasUnidade = quantidadeDiasUnidade;
+	}
+
+	public String getDataPrevisaoCliente(){
+
+		return dataPrevisaoCliente;
+	}
+
+	public void setDataPrevisaoCliente(String dataPrevisaoCliente){
+
+		this.dataPrevisaoCliente = dataPrevisaoCliente;
+	}
+
 
 }

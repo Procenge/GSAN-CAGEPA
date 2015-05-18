@@ -110,7 +110,7 @@
         length="2"
     />
     <property
-        name="consumoMaximoEconomiasValidacao"
+        name="quantidadeMaximoEconomiasValidacao"
         type="java.lang.Integer"
         column="catg_nnmaxeconomiasvalidacao"
         length="4"
@@ -143,7 +143,7 @@
         name="indicadorValidarViradaHidrometro"
         type="java.lang.Short"
         column="catg_icvalidanormalviradahd"
-        length="2"
+        length="1"
         not-null="false"
     />
     

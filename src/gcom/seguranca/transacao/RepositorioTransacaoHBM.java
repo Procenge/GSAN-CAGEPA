@@ -156,13 +156,13 @@ public class RepositorioTransacaoHBM
 			consulta = " select count(distinct operacaoEfetuada.id)  "
 							+ " from OperacaoEfetuada as operacaoEfetuada "
 							+ " LEFT join operacaoEfetuada.argumento as argu " //
-							+ " inner join operacaoEfetuada.usuarioAlteracoes as usAlt "
-							+ " inner join operacaoEfetuada.tabelaLinhaAlteracoes as tabLinAlt "
-							+ " inner join tabLinAlt.tabelaLinhaColunaAlteracao as tabLinColAlt "
-							+ " inner join tabLinColAlt.tabelaColuna as tabCol " //
-							+ " inner join tabCol.tabela as tab " //
-							+ " inner join usAlt.usuario as usuario " //
-							+ " inner join operacaoEfetuada.operacao as operacao " //
+							+ " LEFT join operacaoEfetuada.usuarioAlteracoes as usAlt "
+							+ " LEFT join operacaoEfetuada.tabelaLinhaAlteracoes as tabLinAlt "
+							+ " LEFT join tabLinAlt.tabelaLinhaColunaAlteracao as tabLinColAlt "
+							+ " LEFT join tabLinColAlt.tabelaColuna as tabCol " //
+							+ " LEFT join tabCol.tabela as tab " //
+							+ " LEFT join usAlt.usuario as usuario " //
+							+ " LEFT join operacaoEfetuada.operacao as operacao " //
 							+ " LEFT OUTER join operacao.argumentoPesquisa as argumento " //
 							+ " LEFT OUTER join argumento.tabela as argTab ";
 
@@ -203,13 +203,13 @@ public class RepositorioTransacaoHBM
 			consulta = " select distinct operacaoEfetuada " //
 							+ " from OperacaoEfetuada as operacaoEfetuada "
 							+ " LEFT join fetch operacaoEfetuada.argumento as argu "
-							+ " inner join operacaoEfetuada.usuarioAlteracoes as usAlt "
-							+ " inner join operacaoEfetuada.tabelaLinhaAlteracoes as tabLinAlt "
-							+ " inner join tabLinAlt.tabelaLinhaColunaAlteracao as tabLinColAlt "
-							+ " inner join tabLinColAlt.tabelaColuna as tabCol " //
-							+ " inner join tabCol.tabela as tab " //
-							+ " inner join usAlt.usuario as usuario " //
-							+ " inner join fetch operacaoEfetuada.operacao as operacao " //
+							+ " LEFT join operacaoEfetuada.usuarioAlteracoes as usAlt "
+							+ " LEFT join operacaoEfetuada.tabelaLinhaAlteracoes as tabLinAlt "
+							+ " LEFT join tabLinAlt.tabelaLinhaColunaAlteracao as tabLinColAlt "
+							+ " LEFT join tabLinColAlt.tabelaColuna as tabCol " //
+							+ " LEFT join tabCol.tabela as tab " //
+							+ " LEFT join usAlt.usuario as usuario " //
+							+ " LEFT join fetch operacaoEfetuada.operacao as operacao " //
 							+ " LEFT OUTER join operacao.argumentoPesquisa as argumento " //
 							+ " LEFT OUTER join argumento.tabela as argTab ";
 
@@ -324,12 +324,12 @@ public class RepositorioTransacaoHBM
 			consulta = " select distinct operacaoEfetuada " //
 							+ " from OperacaoEfetuada as operacaoEfetuada "
 							+ " LEFT join fetch operacaoEfetuada.argumento as argu "
-							+ " inner join operacaoEfetuada.usuarioAlteracoes as usAlt "
-							+ " inner join operacaoEfetuada.tabelaLinhaAlteracoes as tabLinAlt "
-							+ " inner join tabLinAlt.tabelaLinhaColunaAlteracao as tabLinColAlt "
-							+ " inner join tabLinColAlt.tabelaColuna as tabCol " //
-							+ " inner join tabCol.tabela as tab " //
-							+ " inner join usAlt.usuario as usuario " //
+							+ " LEFT join operacaoEfetuada.usuarioAlteracoes as usAlt "
+							+ " LEFT join operacaoEfetuada.tabelaLinhaAlteracoes as tabLinAlt "
+							+ " LEFT join tabLinAlt.tabelaLinhaColunaAlteracao as tabLinColAlt "
+							+ " LEFT join tabLinColAlt.tabelaColuna as tabCol " //
+							+ " LEFT join tabCol.tabela as tab " //
+							+ " LEFT join usAlt.usuario as usuario " //
 							+ " inner join fetch operacaoEfetuada.operacao as operacao " //
 							+ " LEFT OUTER join operacao.argumentoPesquisa as argumento " //
 							+ " LEFT OUTER join argumento.tabela as argTab ";
@@ -440,6 +440,8 @@ public class RepositorioTransacaoHBM
 		// retira o " and " q fica sobrando no final da query
 		condicoes = Util.formatarHQL(condicoes, 4);
 
+		condicoes += " ORDER BY operacaoEfetuada.ultimaAlteracao DESC ";
+
 		return condicoes;
 
 	}
@@ -533,20 +535,25 @@ public class RepositorioTransacaoHBM
 			for(int i = 0; i < idTabelaColuna.length; i++){
 				ids += idTabelaColuna[i] + ", ";
 			}
-			ids = ids.substring(0, ids.length() - 2);
 
-			FiltroOperacaoOrdemExibicao filtroOperacaoOrdem = new FiltroOperacaoOrdemExibicao();
-			filtroOperacaoOrdem.adicionarCaminhoParaCarregamentoEntidade(FiltroOperacaoOrdemExibicao.OPERACAO);
-			// filtroOperacaoOrdem
-			// .adicionarCaminhoParaCarregamentoEntidade(FiltroOperacaoOrdemExibicao.TABELA_COLUNA);
-			filtroOperacaoOrdem.adicionarCaminhoParaCarregamentoEntidade(FiltroOperacaoOrdemExibicao.TABELA_COLUNA_TABELA);
+			if(!Util.isVazioOuBranco(ids)){
+				ids = ids.substring(0, ids.length() - 2);
 
-			consulta = "select operacaoOrdem from gcom.seguranca.acesso.OperacaoOrdemExibicao as operacaoOrdem "
-							+ PersistenciaUtil.processaObjetosParaCarregamentoJoinFetch("operacaoOrdem",
-											filtroOperacaoOrdem.getColecaoCaminhosParaCarregamentoEntidades())
-							+ " where operacaoOrdem.tabelaColuna.id in (" + ids + ") and " + "operacaoOrdem.operacao.id = " + idOperacao;
+				FiltroOperacaoOrdemExibicao filtroOperacaoOrdem = new FiltroOperacaoOrdemExibicao();
+				filtroOperacaoOrdem.adicionarCaminhoParaCarregamentoEntidade(FiltroOperacaoOrdemExibicao.OPERACAO);
+				// filtroOperacaoOrdem
+				// .adicionarCaminhoParaCarregamentoEntidade(FiltroOperacaoOrdemExibicao.TABELA_COLUNA);
+				filtroOperacaoOrdem.adicionarCaminhoParaCarregamentoEntidade(FiltroOperacaoOrdemExibicao.TABELA_COLUNA_TABELA);
 
-			retorno = new ArrayList(new CopyOnWriteArraySet<OperacaoOrdemExibicao>(session.createQuery(consulta).list()));
+				consulta = "select operacaoOrdem from gcom.seguranca.acesso.OperacaoOrdemExibicao as operacaoOrdem "
+								+ PersistenciaUtil.processaObjetosParaCarregamentoJoinFetch("operacaoOrdem",
+												filtroOperacaoOrdem.getColecaoCaminhosParaCarregamentoEntidades())
+								+ " where operacaoOrdem.tabelaColuna.id in (" + ids + ") and " + "operacaoOrdem.operacao.id = "
+								+ idOperacao;
+
+				retorno = new ArrayList(new CopyOnWriteArraySet<OperacaoOrdemExibicao>(session.createQuery(consulta).list()));
+			}
+
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
 			throw new ErroRepositorioException(e, "Erro no Hibernate");

@@ -239,6 +239,14 @@ public class FiltroCliente
 	 */
 	public final static String INDICADOR_USO = "indicadorUso";
 
+	/**
+	 * Description of the Field
+	 */
+	public final static String DOCUMENTO_VALIDADO = "documentoValidado";
+
+	/**
+	 * Description of the Field
+	 */
 	public final static String INSCRICAO_ESTADUAL = "inscricaoEstadual";
 
 	/**
@@ -303,4 +311,10 @@ public class FiltroCliente
 	public static final String ESTADO_CIVIL_ID = "estadoCivil.id";
 
 	public final static String INDICADOR_CONTA_BRAILLE = "indicadorContaBraille";
+
+	public final static String ATIVIDADE_ECONOMICA = "atividadeEconomica";
+
+	public final static String ATIVIDADE_ECONOMICA_ID = "atividadeEconomica.id";
+
+	public final static String NUMERO_BENEFICIO = "numeroBeneficio";
 }

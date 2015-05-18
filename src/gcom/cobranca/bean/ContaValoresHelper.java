@@ -1,6 +1,3 @@
-/**
- * 
- */
 /*
  * Copyright (C) 2007-2007 the GSAN – Sistema Integrado de Gestão de Serviços de Saneamento
  *
@@ -123,6 +120,21 @@ public class ContaValoresHelper
 	private BigDecimal valorAtualizacaoMonetaria = BigDecimal.ZERO;
 
 	/**
+	 * Valor da Sucumbencia
+	 */
+	private BigDecimal valorSucumbencia = BigDecimal.ZERO;
+
+	/**
+	 * Valor Atualizacao Juros Mora da Sucumbencia
+	 */
+	private BigDecimal valorJurosMoraSucumbencia = BigDecimal.ZERO;
+
+	/**
+	 * Valor Atualizacao Monetaria da Sucumbencia
+	 */
+	private BigDecimal valorAtualizacaoMonetariaSucumbencia = BigDecimal.ZERO;
+
+	/**
 	 * Valor Atualizacao Monetaria
 	 */
 	private Integer indicadorContasDebito;
@@ -170,6 +182,7 @@ public class ContaValoresHelper
 	public void setConta(Conta conta){
 
 		this.conta = conta;
+
 	}
 
 	/**
@@ -297,6 +310,26 @@ public class ContaValoresHelper
 		return retorno;
 	}
 
+	public BigDecimal getValorTotalAcrescimoSucumbencia(){
+
+		BigDecimal retorno = BigDecimal.ZERO;
+
+		// Valor de JurosMora
+		if(this.getValorJurosMoraSucumbencia() != null){
+			retorno = retorno.add(this.getValorJurosMoraSucumbencia().setScale(Parcelamento.CASAS_DECIMAIS,
+							Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+		// Valor de AtualizacaoMonetaria
+		if(this.getValorAtualizacaoMonetariaSucumbencia() != null){
+			retorno = retorno.add(this.getValorAtualizacaoMonetariaSucumbencia().setScale(Parcelamento.CASAS_DECIMAIS,
+							Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+
+		retorno = retorno.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+
+		return retorno;
+	}
+
 	/*
 	 * [UC0214] - Efetuar Parcelamento de Débitos Cálcula o valor total da conta
 	 * (água + esgoto + débitos - creditos) @author Roberta Costa @created
@@ -333,54 +366,54 @@ public class ContaValoresHelper
 		return retorno;
 	}
 
-	/**
-	 * Este método retorna o valor total da conta (VALOR_AGUA + VALOR_ESGOTO +
-	 * VALOR_DEBITOS) - VALOR_CREDITOS + (VALOR_MULTA + VALOR_JUROS_MORA +
-	 * VALOR_ATUALIZACAO_MONETARIA)
-	 * OBS - Este método foi alterado por Raphael pois não estava refletindo
-	 * corretamente o valor da conta
-	 * 
-	 * @author Rômulo Aurélio
-	 * @date 18/01/2006
-	 */
-	public BigDecimal getValorTotalComValorAtualizacaoMonetaria(){
-
-		BigDecimal valorTotalConta = BigDecimal.ZERO;
-
-		// Valor de Água
-		if(this.getConta().getValorAgua() != null){
-			valorTotalConta = valorTotalConta.add(this.getConta().getValorAgua());
-		}
-		// Valor de Esgoto
-		if(this.getConta().getValorEsgoto() != null){
-			valorTotalConta = valorTotalConta.add(this.getConta().getValorEsgoto());
-		}
-		// Valor de Débitos
-		if(this.getConta().getDebitos() != null){
-			valorTotalConta = valorTotalConta.add(this.getConta().getDebitos());
-		}
-		// Valor de Créditos
-		if(this.getConta().getValorCreditos() != null){
-			valorTotalConta = valorTotalConta.subtract(this.getConta().getValorCreditos());
-		}
-
-		// Valor de Multa
-		if(this.getValorMulta() != null){
-			valorTotalConta = valorTotalConta.add(this.getValorMulta());
-		}
-		// Valor de JurosMora
-		if(this.getValorJurosMora() != null){
-			valorTotalConta = valorTotalConta.add(this.getValorJurosMora());
-		}
-		// Valor de AtualizacaoMonetaria
-		if(this.getValorAtualizacaoMonetaria() != null){
-			valorTotalConta = valorTotalConta.add(this.getValorAtualizacaoMonetaria());
-		}
-
-		valorTotalConta = valorTotalConta.setScale(2, BigDecimal.ROUND_HALF_UP);
-
-		return valorTotalConta;
-	}
+	// /**
+	// * Este método retorna o valor total da conta (VALOR_AGUA + VALOR_ESGOTO +
+	// * VALOR_DEBITOS) - VALOR_CREDITOS + (VALOR_MULTA + VALOR_JUROS_MORA +
+	// * VALOR_ATUALIZACAO_MONETARIA)
+	// * OBS - Este método foi alterado por Raphael pois não estava refletindo
+	// * corretamente o valor da conta
+	// *
+	// * @author Rômulo Aurélio
+	// * @date 18/01/2006
+	// */
+	// public BigDecimal getValorTotalComValorAtualizacaoMonetaria(){
+	//
+	// BigDecimal valorTotalConta = BigDecimal.ZERO;
+	//
+	// // Valor de Água
+	// if(this.getConta().getValorAgua() != null){
+	// valorTotalConta = valorTotalConta.add(this.getConta().getValorAgua());
+	// }
+	// // Valor de Esgoto
+	// if(this.getConta().getValorEsgoto() != null){
+	// valorTotalConta = valorTotalConta.add(this.getConta().getValorEsgoto());
+	// }
+	// // Valor de Débitos
+	// if(this.getConta().getDebitos() != null){
+	// valorTotalConta = valorTotalConta.add(this.getConta().getDebitos());
+	// }
+	// // Valor de Créditos
+	// if(this.getConta().getValorCreditos() != null){
+	// valorTotalConta = valorTotalConta.subtract(this.getConta().getValorCreditos());
+	// }
+	//
+	// // Valor de Multa
+	// if(this.getValorMulta() != null){
+	// valorTotalConta = valorTotalConta.add(this.getValorMulta());
+	// }
+	// // Valor de JurosMora
+	// if(this.getValorJurosMora() != null){
+	// valorTotalConta = valorTotalConta.add(this.getValorJurosMora());
+	// }
+	// // Valor de AtualizacaoMonetaria
+	// if(this.getValorAtualizacaoMonetaria() != null){
+	// valorTotalConta = valorTotalConta.add(this.getValorAtualizacaoMonetaria());
+	// }
+	//
+	// valorTotalConta = valorTotalConta.setScale(2, BigDecimal.ROUND_HALF_UP);
+	//
+	// return valorTotalConta;
+	// }
 
 	public String getFormatarAnoMesParaMesAno(){
 
@@ -416,6 +449,18 @@ public class ContaValoresHelper
 		if(this.getValorAtualizacaoMonetaria() != null){
 			retorno.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
 			retorno = retorno.add(this.getValorAtualizacaoMonetaria().setScale(Parcelamento.CASAS_DECIMAIS,
+							Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+		// Valor de JurosMora Sucumbência
+		if(this.getValorJurosMoraSucumbencia() != null){
+			retorno.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+			retorno = retorno.add(this.getValorJurosMoraSucumbencia().setScale(Parcelamento.CASAS_DECIMAIS,
+							Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+		// Valor de AtualizacaoMonetaria Sucumbência
+		if(this.getValorAtualizacaoMonetariaSucumbencia() != null){
+			retorno.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+			retorno = retorno.add(this.getValorAtualizacaoMonetariaSucumbencia().setScale(Parcelamento.CASAS_DECIMAIS,
 							Parcelamento.TIPO_ARREDONDAMENTO));
 		}
 
@@ -473,6 +518,168 @@ public class ContaValoresHelper
 		return valorTotalConta;
 	}
 
+	public static BigDecimal[] retornarArrayValores(ContaValoresHelper contaValoresHelper){
+
+		BigDecimal[] valoresArray = new BigDecimal[8];
+
+		BigDecimal valorTotalContas = BigDecimal.ZERO;
+		BigDecimal valorAtualizacaoMonetaria = BigDecimal.ZERO;
+		BigDecimal valorJurosMora = BigDecimal.ZERO;
+		BigDecimal valorMulta = BigDecimal.ZERO;
+		BigDecimal valorAtualizacaoMonetariaSucumbencia = BigDecimal.ZERO;
+		BigDecimal valorJurosMoraSucumbencia = BigDecimal.ZERO;
+		BigDecimal valorSucumbencia = BigDecimal.ZERO;
+		BigDecimal valorTotalAcrescimoImpontualidadeContas = BigDecimal.ZERO;
+
+		valorTotalContas.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+		valorTotalContas = valorTotalContas.add(contaValoresHelper.getValorTotalConta().setScale(Parcelamento.CASAS_DECIMAIS,
+						Parcelamento.TIPO_ARREDONDAMENTO));
+
+		if(contaValoresHelper.getValorAtualizacaoMonetaria() != null && !contaValoresHelper.getValorAtualizacaoMonetaria().equals("")){
+			valorAtualizacaoMonetaria.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+			valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.add(contaValoresHelper.getValorAtualizacaoMonetaria().setScale(
+							Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+		if(contaValoresHelper.getValorJurosMora() != null && !contaValoresHelper.getValorJurosMora().equals("")){
+			valorJurosMora.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+			valorJurosMora = valorJurosMora.add(contaValoresHelper.getValorJurosMora().setScale(Parcelamento.CASAS_DECIMAIS,
+							Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+		if(contaValoresHelper.getValorMulta() != null && !contaValoresHelper.getValorMulta().equals("")){
+			valorMulta.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+			valorMulta = valorMulta.add(contaValoresHelper.getValorMulta().setScale(Parcelamento.CASAS_DECIMAIS,
+							Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+		if(contaValoresHelper.getValorAtualizacaoMonetariaSucumbencia() != null
+						&& !contaValoresHelper.getValorAtualizacaoMonetariaSucumbencia().equals("")){
+			valorAtualizacaoMonetariaSucumbencia.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+			valorAtualizacaoMonetariaSucumbencia = valorAtualizacaoMonetariaSucumbencia.add(contaValoresHelper
+							.getValorAtualizacaoMonetariaSucumbencia().setScale(Parcelamento.CASAS_DECIMAIS,
+											Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+		if(contaValoresHelper.getValorJurosMoraSucumbencia() != null && !contaValoresHelper.getValorJurosMoraSucumbencia().equals("")){
+			valorJurosMoraSucumbencia.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+			valorJurosMoraSucumbencia = valorJurosMoraSucumbencia.add(contaValoresHelper.getValorJurosMoraSucumbencia().setScale(
+							Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+		if(contaValoresHelper.getValorSucumbencia() != null && !contaValoresHelper.getValorSucumbencia().equals("")){
+			valorSucumbencia.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+			valorSucumbencia = valorSucumbencia.add(contaValoresHelper.getValorSucumbencia().setScale(Parcelamento.CASAS_DECIMAIS,
+							Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+
+		// Para cálculo do Acrescimo de Impontualidade
+		valorTotalAcrescimoImpontualidadeContas.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+		valorTotalAcrescimoImpontualidadeContas = valorTotalAcrescimoImpontualidadeContas.add(contaValoresHelper
+						.getValorTotalContaValoresParcelamento().setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
+
+		valoresArray[0] = valorTotalContas;
+		valoresArray[1] = valorAtualizacaoMonetaria;
+		valoresArray[2] = valorJurosMora;
+		valoresArray[3] = valorMulta;
+		valoresArray[4] = valorAtualizacaoMonetariaSucumbencia;
+		valoresArray[5] = valorJurosMoraSucumbencia;
+		valoresArray[6] = valorSucumbencia;
+		valoresArray[7] = valorTotalAcrescimoImpontualidadeContas;
+
+		return valoresArray;
+	}
+
+	// public static BigDecimal[] retornarArrayValores(ContaValoresHelper contaValoresHelper,
+	// BigDecimal valorTotalContas,
+	// BigDecimal valorTotalAcrescimoImpontualidadeContas, BigDecimal valorAtualizacaoMonetaria,
+	// BigDecimal valorJurosMora,
+	// BigDecimal valorMulta, BigDecimal valorAtualizacaoMonetariaSucumbencia, BigDecimal
+	// valorJurosMoraSucumbencia,
+	// BigDecimal valorSucumbencia){
+	//
+	// BigDecimal[] valoresArray = new BigDecimal[8];
+	//
+	// BigDecimal retornoValorTotalContas = BigDecimal.ZERO;
+	// BigDecimal retornoValorAtualizacaoMonetaria = BigDecimal.ZERO;
+	// BigDecimal retornoValorJurosMora = BigDecimal.ZERO;
+	// BigDecimal retornoValorMulta = BigDecimal.ZERO;
+	// BigDecimal retornoValorAtualizacaoMonetariaSucumbencia = BigDecimal.ZERO;
+	// BigDecimal retornoValorJurosMoraSucumbencia = BigDecimal.ZERO;
+	// BigDecimal retornoValorSucumbencia = BigDecimal.ZERO;
+	// BigDecimal retornoValorTotalAcrescimoImpontualidadeContas = BigDecimal.ZERO;
+	//
+	// retornoValorTotalContas.setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO);
+	// retornoValorTotalContas =
+	// valorTotalContas.add(contaValoresHelper.getValorTotalConta().setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO));
+	//
+	// if(contaValoresHelper.getValorAtualizacaoMonetaria() != null &&
+	// !contaValoresHelper.getValorAtualizacaoMonetaria().equals("")){
+	// retornoValorAtualizacaoMonetaria.setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO);
+	// retornoValorAtualizacaoMonetaria =
+	// valorAtualizacaoMonetaria.add(contaValoresHelper.getValorAtualizacaoMonetaria().setScale(
+	// Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
+	// }
+	// if(contaValoresHelper.getValorJurosMora() != null &&
+	// !contaValoresHelper.getValorJurosMora().equals("")){
+	// retornoValorJurosMora.setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO);
+	// retornoValorJurosMora =
+	// valorJurosMora.add(contaValoresHelper.getValorJurosMora().setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO));
+	// }
+	// if(contaValoresHelper.getValorMulta() != null &&
+	// !contaValoresHelper.getValorMulta().equals("")){
+	// retornoValorMulta.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+	// retornoValorMulta =
+	// valorMulta.add(contaValoresHelper.getValorMulta().setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO));
+	// }
+	//
+	// if(contaValoresHelper.getValorAtualizacaoMonetariaSucumbencia() != null
+	// && !contaValoresHelper.getValorAtualizacaoMonetariaSucumbencia().equals("")){
+	// retornoValorAtualizacaoMonetariaSucumbencia.setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO);
+	// retornoValorAtualizacaoMonetariaSucumbencia =
+	// valorAtualizacaoMonetariaSucumbencia.add(contaValoresHelper
+	// .getValorAtualizacaoMonetariaSucumbencia().setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO));
+	// }
+	// if(contaValoresHelper.getValorJurosMoraSucumbencia() != null &&
+	// !contaValoresHelper.getValorJurosMoraSucumbencia().equals("")){
+	// retornoValorJurosMoraSucumbencia.setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO);
+	// retornoValorJurosMoraSucumbencia =
+	// valorJurosMoraSucumbencia.add(contaValoresHelper.getValorJurosMoraSucumbencia().setScale(
+	// Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
+	// }
+	// if(contaValoresHelper.getValorSucumbencia() != null &&
+	// !contaValoresHelper.getValorSucumbencia().equals("")){
+	// retornoValorSucumbencia.setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO);
+	// retornoValorSucumbencia =
+	// valorSucumbencia.add(contaValoresHelper.getValorSucumbencia().setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO));
+	// }
+	//
+	// // Para cálculo do Acrescimo de Impontualidade
+	// retornoValorTotalAcrescimoImpontualidadeContas.setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO);
+	// retornoValorTotalAcrescimoImpontualidadeContas =
+	// valorTotalAcrescimoImpontualidadeContas.add(contaValoresHelper
+	// .getValorTotalContaValoresParcelamento().setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO));
+	//
+	// valoresArray[0] = retornoValorTotalContas;
+	// valoresArray[1] = retornoValorAtualizacaoMonetaria;
+	// valoresArray[2] = retornoValorJurosMora;
+	// valoresArray[3] = retornoValorMulta;
+	// valoresArray[4] = retornoValorAtualizacaoMonetariaSucumbencia;
+	// valoresArray[5] = retornoValorJurosMoraSucumbencia;
+	// valoresArray[6] = retornoValorSucumbencia;
+	// valoresArray[7] = retornoValorTotalAcrescimoImpontualidadeContas;
+	//
+	// return valoresArray;
+	// }
+
 	public Short getContaPermitida(){
 
 		return contaPermitida;
@@ -481,6 +688,36 @@ public class ContaValoresHelper
 	public void setContaPermitida(Short contaPermitida){
 
 		this.contaPermitida = contaPermitida;
+	}
+
+	public BigDecimal getValorSucumbencia(){
+
+		return valorSucumbencia;
+	}
+
+	public void setValorSucumbencia(BigDecimal valorSucumbencia){
+
+		this.valorSucumbencia = valorSucumbencia;
+	}
+
+	public BigDecimal getValorJurosMoraSucumbencia(){
+
+		return valorJurosMoraSucumbencia;
+	}
+
+	public void setValorJurosMoraSucumbencia(BigDecimal valorJurosMoraSucumbencia){
+
+		this.valorJurosMoraSucumbencia = valorJurosMoraSucumbencia;
+	}
+
+	public BigDecimal getValorAtualizacaoMonetariaSucumbencia(){
+
+		return valorAtualizacaoMonetariaSucumbencia;
+	}
+
+	public void setValorAtualizacaoMonetariaSucumbencia(BigDecimal valorAtualizacaoMonetariaSucumbencia){
+
+		this.valorAtualizacaoMonetariaSucumbencia = valorAtualizacaoMonetariaSucumbencia;
 	}
 
 }

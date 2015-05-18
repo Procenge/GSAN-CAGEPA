@@ -80,10 +80,13 @@ import gcom.fachada.Fachada;
 import gcom.faturamento.consumotarifa.ConsumoTarifa;
 import gcom.faturamento.consumotarifa.FiltroCalculoTipo;
 import gcom.faturamento.consumotarifa.FiltroConsumoTarifa;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.micromedicao.consumo.CalculoTipo;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.util.Collection;
 
@@ -140,10 +143,34 @@ public class ExibirInserirConsumoTarifaAction
 		Collection colecaoConsumoTarifa = fachada.pesquisar(filtroConsumoTarifa, ConsumoTarifa.class.getName());
 		sessao.setAttribute("colecaoConsumoTarifa", colecaoConsumoTarifa);
 
+		String pQuantidadeDecimaisValorTarifa = null;
+
+		try{
+
+			pQuantidadeDecimaisValorTarifa = (String) ParametroFaturamento.P_QUANTIDADE_DECIMAIS_VALOR_TARIFA.executar();
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
+
+		sessao.setAttribute("pQuantidadeDecimaisValorTarifa", pQuantidadeDecimaisValorTarifa);
 		sessao.setAttribute("inserirConsumoTarifaActionForm", inserirConsumoTarifaActionForm);
 
 		if(limparForm != null && !limparForm.trim().equalsIgnoreCase("")){
 			inserirConsumoTarifaActionForm.reset(actionMapping, httpServletRequest);
+		}
+
+		try{
+			String indicadorTarifaCosumoPorSubCategoria = (String) ParametroFaturamento.P_INDICADOR_TARIFA_CONSUMO_SUBCATEGORIA.executar();
+			if(indicadorTarifaCosumoPorSubCategoria.equals(ConstantesSistema.SIM.toString())){
+				sessao.setAttribute("indicadorTarifaCosumoPorSubCategoria", "S");
+			}else{
+				sessao.removeAttribute("indicadorTarifaCosumoPorSubCategoria");
+			}
+
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
 		}
 
 		return retorno;

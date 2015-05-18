@@ -96,6 +96,7 @@ import gcom.cadastro.imovel.Categoria;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.imovel.ImovelCobrancaSituacao;
 import gcom.cobranca.*;
+import gcom.cobranca.bean.IntervaloReferenciaHelper;
 import gcom.cobranca.contrato.CobrancaContrato;
 import gcom.cobranca.parcelamento.Parcelamento;
 import gcom.faturamento.ImpostoTipo;
@@ -157,6 +158,35 @@ public final class RepositorioArrecadacaoHBM
 		}
 
 		return instancia;
+	}
+
+	/**
+	 * @param colecaoReferencias
+	 * @return
+	 */
+
+	private String montarConsultaReferencias(Collection<IntervaloReferenciaHelper> colecaoReferencias){
+
+		String consultaReferencia = " a.cnta_amreferenciaconta ";
+		Iterator it = colecaoReferencias.iterator();
+		boolean primeiro = true;
+		while(it.hasNext()){
+
+			IntervaloReferenciaHelper helper = (IntervaloReferenciaHelper) it.next();
+
+			if(primeiro){
+				consultaReferencia = consultaReferencia + " between "
+								+ Util.formatarMesAnoComBarraParaAnoMes(helper.getReferenciaInicial())
+								+ " and " + Util.formatarMesAnoComBarraParaAnoMes(helper.getReferenciaFinal());
+				primeiro = false;
+			}else{
+				consultaReferencia = consultaReferencia + " OR a.cnta_amreferenciaconta between "
+								+ Util.formatarMesAnoComBarraParaAnoMes(helper.getReferenciaInicial()) + " and "
+								+ Util.formatarMesAnoComBarraParaAnoMes(helper.getReferenciaFinal());
+			}
+		}
+
+		return consultaReferencia;
 	}
 
 	public Integer pesquisarIdRegistroCodigo(String codigoRegistro) throws ErroRepositorioException{
@@ -2053,8 +2083,10 @@ public final class RepositorioArrecadacaoHBM
 			c.close();
 
 		}catch(HibernateException e){
+			e.printStackTrace();
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
 		}catch(SQLException e){
+			e.printStackTrace();
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
 		}finally{
 			HibernateUtil.closeSession(session);
@@ -8917,10 +8949,10 @@ public final class RepositorioArrecadacaoHBM
 							+ "conta.valorCreditos, dbcb.valorDebito, dbcb.numeroPrestacaoDebito, "
 							+ "dbcb.numeroPrestacaoCobradas, gpag.valorDebito, pagto.valorPagamento, "
 							+ "pagtoSitAtual.id, pagtoSitAtual.descricao, doctoTp.id, conta.dataVencimentoConta,gpag.id, pagto.numeroPrestacao, "
-							+ "dbcb.id, stcm.codigo, pagto.conta.id " + "FROM Pagamento pagto " + "INNER JOIN pagto.localidade loc "
-							+ "INNER JOIN loc.gerenciaRegional gr " + "INNER JOIN pagto.avisoBancario avbc "
-							+ "INNER JOIN avbc.arrecadador arrec " + "INNER JOIN arrec.cliente cliArrec "
-							+ "INNER JOIN pagto.documentoTipo doctoTp " + "LEFT JOIN pagto.imovel imov " + "LEFT JOIN pagto.cliente cli "
+							+ "dbcb.id, stcm.codigo, pagto.conta.id " + "FROM Pagamento pagto " + "LEFT JOIN pagto.localidade loc "
+							+ "LEFT JOIN loc.gerenciaRegional gr " + "LEFT JOIN pagto.avisoBancario avbc "
+							+ "LEFT JOIN avbc.arrecadador arrec " + "LEFT JOIN arrec.cliente cliArrec "
+							+ "LEFT JOIN pagto.documentoTipo doctoTp " + "LEFT JOIN pagto.imovel imov " + "LEFT JOIN pagto.cliente cli "
 							+ "LEFT JOIN pagto.debitoTipo dbtp " + "LEFT JOIN pagto.conta conta "
 							+ "LEFT JOIN pagto.guiaPagamentoGeral gpagGeral " + "LEFT JOIN gpagGeral.guiaPagamento gpag "
 							+ "LEFT JOIN pagto.debitoACobrar dbcb " + "LEFT JOIN pagto.pagamentoSituacaoAtual pagtoSitAtual "
@@ -15354,7 +15386,9 @@ public final class RepositorioArrecadacaoHBM
 
 		try{
 			consulta = "SELECT clienteGuiaPagamentoHistorico " + "FROM ClienteGuiaPagamentoHistorico clienteGuiaPagamentoHistorico "
-							+ "INNER JOIN clienteGuiaPagamentoHistorico.guiaPagamentoHistorico guiaPagamentoHistorico "
+							+ "INNER JOIN  fetch clienteGuiaPagamentoHistorico.guiaPagamentoHistorico guiaPagamentoHistorico "
+							+ "INNER JOIN  fetch clienteGuiaPagamentoHistorico.cliente cliente "
+							+ "INNER JOIN  fetch clienteGuiaPagamentoHistorico.clienteRelacaoTipo clienteRelacaoTipo "
 							+ "WHERE guiaPagamentoHistorico.id = :idGuiaPagamentoHistorico";
 
 			retorno = session.createQuery(consulta).setInteger("idGuiaPagamentoHistorico", idGuiaPagamentoHistorico).list();
@@ -21914,7 +21948,7 @@ public final class RepositorioArrecadacaoHBM
 			consulta.append("  inner join cb.arrecadador a ");
 
 			consulta.append(" where cb.dataContratoEncerramento is null ");
-			consulta.append(" and a.id = :idArrecadacao ");
+			consulta.append(" and a.codigoAgente = :idArrecadacao ");
 
 			retorno = session.createQuery(consulta.toString()).setInteger("idArrecadacao", idArrecadacao).list();
 
@@ -25372,5 +25406,93 @@ public final class RepositorioArrecadacaoHBM
 		return retorno;
 	}
 
+
+
+
+	/**
+	 * Rotina de ajuste - CAERD
+	 * 
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+
+	public Collection<Integer> obterContasParaCancelamento(Integer idClienteResponsavel,
+					Collection<IntervaloReferenciaHelper> colecaoReferencias) throws ErroRepositorioException{
+
+		Collection<Integer> retorno = null;
+		Session session = HibernateUtil.getSession();
+		StringBuffer consulta = new StringBuffer();
+
+		try{
+
+			consulta.append(" select a.cnta_id as idConta ");
+			consulta.append(" from conta a ");
+			consulta.append(" inner join cliente_conta b on b.cnta_id=a.cnta_id ");
+			consulta.append("   and b.clie_id=:idClienteResponsavel ");
+			consulta.append("   and b.crtp_id=:idClienteRelacaoTipo ");
+			consulta.append(" where ");
+			consulta.append(this.montarConsultaReferencias(colecaoReferencias));
+
+			SQLQuery query = session.createSQLQuery(consulta.toString());
+
+			query.addScalar("idConta", Hibernate.INTEGER);
+			query.setDouble("idClienteResponsavel", idClienteResponsavel);
+			query.setDouble("idClienteRelacaoTipo", ClienteRelacaoTipo.RESPONSAVEL);
+
+			retorno = (Collection<Integer>) query.list();
+
+		}catch(HibernateException e){
+
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+
+	}
+
+	/**
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public BigDecimal obterValorTotalContasParaCancelamento(Integer idClienteRelacaoTipo, Integer idClienteResponsavel,
+					Collection<IntervaloReferenciaHelper> colecaoReferencias) throws ErroRepositorioException{
+
+		BigDecimal retorno = null;
+		Session session = HibernateUtil.getSession();
+		StringBuffer consulta = new StringBuffer();
+
+
+		try{
+
+			consulta.append(" select sum(cnta_vlagua+cnta_vlesgoto+cnta_vldebitos) as valorTotalContas ");
+			consulta.append(" from conta a ");
+			consulta.append(" inner join cliente_conta b on b.cnta_id=a.cnta_id ");
+			consulta.append("  and b.clie_id=:idClienteResponsavel ");
+			consulta.append("  and b.crtp_id=:idClienteRelacaoTipo ");
+			consulta.append(" where ");
+			consulta.append(this.montarConsultaReferencias(colecaoReferencias));
+
+			SQLQuery query = session.createSQLQuery(consulta.toString());
+
+			query.addScalar("valorTotalContas", Hibernate.BIG_DECIMAL);
+			query.setDouble("idClienteResponsavel", idClienteResponsavel);
+			query.setDouble("idClienteRelacaoTipo", idClienteRelacaoTipo);
+
+			retorno = (BigDecimal) query.uniqueResult();
+
+		}catch(HibernateException e){
+
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+
+	}
 
 }

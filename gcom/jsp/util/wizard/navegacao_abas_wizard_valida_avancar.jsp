@@ -61,7 +61,7 @@ if (session.getAttribute("nomeUnicoWizard") != null){
 
 					%>
 				<a
-					href="javascript:document.forms[0].action='/gsan/<bean:write name="statusWizard" property="caminhoActionPrincipalWizard"/>.do?action=<%=item.getCaminhoActionInicial()%>';document.forms[0].submit();">
+					href="javascript:document.forms[0].action='/gsan/<bean:write name="statusWizard" property="caminhoActionPrincipalWizard"/>.do?action=<%=item.getCaminhoActionInicial()%>&pagina=<%=item.getNumeroPagina()%>';document.forms[0].submit();">
 				<img id="<%=contador%>" border="0"
 					src="<bean:message key="caminho.imagens"/><bean:write name="itemWizard" property="value.imagemNaoSelecionada"/>" />
 				</a>

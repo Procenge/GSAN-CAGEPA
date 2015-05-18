@@ -81,7 +81,10 @@ import gcom.cadastro.cliente.ClienteImovel;
 import gcom.cadastro.cliente.ClienteRelacaoTipo;
 import gcom.cadastro.cliente.FiltroClienteImovel;
 import gcom.cadastro.imovel.Imovel;
+import gcom.cobranca.DocumentoTipo;
 import gcom.cobranca.ResolucaoDiretoriaParametrosPagamentoAVista;
+import gcom.cobranca.ajustetarifa.AjusteTarifa;
+import gcom.cobranca.ajustetarifa.FiltroAjusteTarifa;
 import gcom.cobranca.bean.ContaValoresHelper;
 import gcom.cobranca.bean.GuiaPagamentoValoresHelper;
 import gcom.cobranca.bean.NegociacaoOpcoesParcelamentoHelper;
@@ -92,11 +95,18 @@ import gcom.faturamento.credito.FiltroCreditoARealizar;
 import gcom.faturamento.debito.DebitoACobrar;
 import gcom.faturamento.debito.DebitoTipo;
 import gcom.gui.ActionServletException;
+import gcom.interceptor.RegistradorOperacao;
 import gcom.relatorio.ExibidorProcessamentoTarefaRelatorio;
 import gcom.relatorio.RelatorioVazioException;
 import gcom.relatorio.cobranca.parcelamento.ExtratoDebitoRelatorioHelper;
 import gcom.relatorio.cobranca.parcelamento.RelatorioExtratoDebito;
+import gcom.seguranca.acesso.Argumento;
+import gcom.seguranca.acesso.DocumentoEmissaoEfetuada;
+import gcom.seguranca.acesso.Operacao;
+import gcom.seguranca.acesso.PermissaoEspecial;
 import gcom.seguranca.acesso.usuario.Usuario;
+import gcom.seguranca.acesso.usuario.UsuarioAcao;
+import gcom.seguranca.acesso.usuario.UsuarioAcaoUsuarioHelper;
 import gcom.tarefa.TarefaRelatorio;
 import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
@@ -143,10 +153,30 @@ public class GerarRelatorioExtratoDebitoAction
 		HttpSession sessao = httpServletRequest.getSession(false);
 		Usuario usuarioLogado = this.getUsuarioLogado(httpServletRequest);
 
+		/**
+		 * [UC0203] Consultar Débitos
+		 * [FS0015] Verificar Existência de Conta em Execução Fiscal
+		 * 
+		 * @author Gicevalter Couto
+		 * @date 06/08/2014
+		 */
+		boolean temPermissaoAtualizarDebitosExecFiscal = fachada.verificarPermissaoEspecial(
+						PermissaoEspecial.ATUALIZAR_DEBITOS_EXECUCAO_FISCAL, this.getUsuarioLogado(httpServletRequest));
+
+		Short indicadorExecFiscal;
+		indicadorExecFiscal = fachada.verificarImovelDebitoExecucaoFiscal(
+						(Collection<DebitoACobrar>) sessao.getAttribute("colecaoDebitoACobrar"),
+						(Collection<GuiaPagamentoValoresHelper>) sessao.getAttribute("colecaoGuiaPagamentoValores"),
+						(Collection<ContaValoresHelper>) sessao.getAttribute("colecaoContaValores"));
+
+		if(!temPermissaoAtualizarDebitosExecFiscal && indicadorExecFiscal.equals(Short.valueOf("1"))){
+			throw new ActionServletException("atencao.imprimir.imovel.possui.debito.execucao.fiscal");
+		}
+
 		if(httpServletRequest.getParameter("parcelamento") != null){
 			sessao.setAttribute("parcelamento", 1);
 		}
-
+		
 		// Linha 2
 		String inscricao = "";
 		String nomeUsuario = "";
@@ -169,10 +199,10 @@ public class GerarRelatorioExtratoDebitoAction
 		BigDecimal valorAcrescimosImpontualidadeTemp = BigDecimal.ZERO;
 		BigDecimal valorDocumento = BigDecimal.ZERO;
 		BigDecimal valorDesconto = BigDecimal.ZERO;
+		BigDecimal valorTotalSucumbencia = BigDecimal.ZERO;		
 		BigDecimal valorGuiaParcelamentoCobrancaBancaria = BigDecimal.ZERO;
 		Short indicadorGeracaoTaxaCobranca = Short.valueOf("2"); // no caso do parcelamento sempre 2
 		String quantidadeParcelasDebitos = "";
-		String quantidadeParcelasCreditos = "";
 		String quantidadeParcelas = "";
 		BigDecimal valorImpostoDeduzidoParcelamento = BigDecimal.ZERO;
 		BigDecimal valorTotalContas = BigDecimal.ZERO;
@@ -181,6 +211,8 @@ public class GerarRelatorioExtratoDebitoAction
 		BigDecimal valorTotalCreditoARealizar = BigDecimal.ZERO;
 		Integer quantidadeDebitoACobrar = null;
 		Integer quantidadeParcelamento = null;
+		BigDecimal valorTotalImpostos = BigDecimal.ZERO;
+		DocumentoTipo documentoTipo = new DocumentoTipo();
 
 		String confirmadoTaxas = httpServletRequest.getParameter("confirmado");
 		String textoMensagemPopUP = "atencao.confirmacao.extrato_debito.gerar_debito";
@@ -196,6 +228,8 @@ public class GerarRelatorioExtratoDebitoAction
 		if(Util.isNaoNuloBrancoZero(valorHiddenConfirmacao) && valorHiddenConfirmacao.equals(EXTRATO_DEBITO)){
 			isExtratoDebito = true;
 		}
+
+		Map<Integer, BigDecimal> mapProcessosExecFiscal = null;
 
 		if(isExtratoDebito){
 
@@ -232,6 +266,11 @@ public class GerarRelatorioExtratoDebitoAction
 				quantidadeParcelamento = (Integer) sessao.getAttribute("quantidadeParcelamento");
 			}
 
+			if(sessao.getAttribute("valorTotalImpostos") != null){
+
+				valorTotalImpostos = (BigDecimal) sessao.getAttribute("valorTotalImpostos");
+			}
+
 			// Créditos a realizar
 			colecaoCreditoARealizar = (Collection<CreditoARealizar>) sessao.getAttribute("colecaoCreditoARealizarExtratoSelecao");
 			valorAcrescimosImpontualidade = (BigDecimal) sessao.getAttribute("valorAcrescimosImpontualidadeExtrato");
@@ -245,6 +284,7 @@ public class GerarRelatorioExtratoDebitoAction
 			valorDesconto = valorDesconto.add((BigDecimal) sessao.getAttribute("valorIncluirAcrescimoComoDesconto"));
 
 			valorDocumento = valorDocumento.add(valorTotalDebitoACobrar).subtract(valorDesconto);
+
 
 			// Linha 2
 			inscricao = imovel.getInscricaoFormatada();
@@ -265,6 +305,7 @@ public class GerarRelatorioExtratoDebitoAction
 
 		}else if(sessao.getAttribute("parcelamento") != null){
 			// relatorio chamado a partir da tela de efetuar parcelamento
+			documentoTipo.setId(DocumentoTipo.EXTRATO_DE_DEBITO_PARCELAMENTO);
 
 			// Verifica se a aba 3 é chamada pela aba 2(colecaoContaValores) ou pela aba
 			// 1(colecaoContaValoresImovel)
@@ -309,7 +350,6 @@ public class GerarRelatorioExtratoDebitoAction
 
 			}
 			colecaoCreditoARealizar = (Collection<CreditoARealizar>) sessao.getAttribute("colecaoCreditoARealizar");
-			colecaoDebitosACobrar = fachada.obterColecaoDebitosACobrarDoParcelamento(colecaoDebitosACobrar);
 
 			// Obtém apenas débitos que não são juros de parcelamento
 			Object[] debitosSemJurosParcelamento = obterColecaoDebitosACobrarSemJurosParcelamento(colecaoDebitosACobrar);
@@ -345,16 +385,36 @@ public class GerarRelatorioExtratoDebitoAction
 			valorDocumento = valorDocumento.add(valorTotalDebitoACobrar);
 
 			valorTotalDebitoACobrar = valorTotalDebitoACobrar.add(valorDescontoAntecipacao);
+			
+			imovel = (Imovel) sessao.getAttribute("imovel");
 
+			mapProcessosExecFiscal = (Map<Integer, BigDecimal>) sessao.getAttribute("mapProcessos");
+			if(mapProcessosExecFiscal != null){
+				valorTotalSucumbencia = Util.somarMapBigDecimal(mapProcessosExecFiscal);
+
+				String valorTotalSucumbenciaString = (String) efetuarParcelamentoDebitosActionForm.get("valorSucumbenciaAtual");
+				if(valorTotalSucumbenciaString != null){
+					BigDecimal valorTotalSucumbenciaAlterado = Util.formatarMoedaRealparaBigDecimal(valorTotalSucumbenciaString);
+					if(!valorTotalSucumbencia.equals(valorTotalSucumbenciaAlterado)){
+						mapProcessosExecFiscal = fachada.distribuirValorEntreProcessosExecucaoFiscal(valorTotalSucumbenciaAlterado,
+										mapProcessosExecFiscal, Integer.valueOf(imovel.getId()));
+
+						valorTotalSucumbencia = Util.somarMapBigDecimal(mapProcessosExecFiscal);
+					}
+				}
+			}
+			
+			valorDocumento = valorDocumento.add(valorTotalSucumbencia);
+			
 			// inPagamentoCartaoCredito =
 			// efetuarParcelamentoDebitosActionForm.get("inPagamentoCartaoCredito").toString();
 			if(httpServletRequest.getParameter("inPagamentoCartaoCredito") != null){
 				inPagamentoCartaoCredito = httpServletRequest.getParameter("inPagamentoCartaoCredito");
 				sessao.setAttribute("inPagamentoCartaoCredito", inPagamentoCartaoCredito);
 				efetuarParcelamentoDebitosActionForm.set("inPagamentoCartaoCredito", inPagamentoCartaoCredito);
-			}
 
-			imovel = (Imovel) sessao.getAttribute("imovel");
+				documentoTipo.setId(DocumentoTipo.EXTRATO_DE_DEBITO_PARCELAMENTO_CARTAO);
+			}
 
 			// Linha 2
 			inscricao = (String) efetuarParcelamentoDebitosActionForm.get("inscricaoImovel");
@@ -410,6 +470,8 @@ public class GerarRelatorioExtratoDebitoAction
 			// [SB0004] – Verificar créditos de descontos nos acréscimos por impontualidade
 			colecaoCreditoARealizar = this.tratarCreditosDescontoAcrescimoPorImpontualidade(colecaoCreditoARealizar);
 		}else{
+
+			documentoTipo.setId(DocumentoTipo.EXTRATO_DE_DEBITO);
 
 			// Aba Consultar Débitos do Imóvel
 			colecaoContas = (Collection<ContaValoresHelper>) sessao.getAttribute("colecaoContaValores");
@@ -503,7 +565,7 @@ public class GerarRelatorioExtratoDebitoAction
 
 			}
 
-			colecaoCreditoARealizar = (Collection<CreditoARealizar>) sessao.getAttribute("colecaoCreditoARealizarSemDescontoParcelamento");
+			//colecaoCreditoARealizar = (Collection<CreditoARealizar>) sessao.getAttribute("colecaoCreditoARealizar");
 
 			Integer idImovel = Integer.valueOf((String) sessao.getAttribute("idImovelPrincipalAba"));
 			imovel = fachada.pesquisarImovel(idImovel);
@@ -680,12 +742,13 @@ public class GerarRelatorioExtratoDebitoAction
 		}
 
 		valorDocumento = valorDocumento.subtract(valorTotalCreditoARealizar);
-		
+
 		if(valorDocumento.compareTo(BigDecimal.ZERO) <= 0){
 			throw new ActionServletException("atencao.resultado.extrato.zero_negativo");
 		}
 
-
+		// [SB0008] - Verificar CREDTAC
+		verificarCREDTAC(fachada, usuarioLogado, imovel, colecaoCreditoARealizar, valorDocumento);
 
 		NegociacaoOpcoesParcelamentoHelper opcaoParcelamento = (NegociacaoOpcoesParcelamentoHelper) sessao
 						.getAttribute("opcoesParcelamento");
@@ -695,16 +758,18 @@ public class GerarRelatorioExtratoDebitoAction
 			opcaoParcelamento.setUsuarioLogado(usuarioLogado);
 		}
 
+		valorDocumento = valorDocumento.subtract(valorTotalImpostos);
+
 		ExtratoDebitoRelatorioHelper extratoDebitoRelatorioHelper = fachada.gerarEmitirExtratoDebito(imovel, indicadorGeracaoTaxaCobranca,
 						colecaoContasTEMP, colecaoGuiasPagamento, colecaoDebitosACobrar, valorAcrescimosImpontualidade, valorDesconto,
-						valorDocumento, colecaoCreditoARealizar, null, opcaoParcelamento, idResolucaoDiretoria);
+						valorDocumento, colecaoCreditoARealizar, null, opcaoParcelamento, idResolucaoDiretoria, mapProcessosExecFiscal);
 
 		Usuario usuario = (Usuario) (httpServletRequest.getSession(false)).getAttribute("usuarioLogado");
 
 		RelatorioExtratoDebito relatorioExtratoDebito = fachada.obterRelatorioExtratoDebito(extratoDebitoRelatorioHelper, imovel,
 						valorTotalDebitoACobrar, valorAcrescimosImpontualidade, valorTotalCreditoARealizar, valorDesconto, valorDocumento,
 						usuario, inscricao, nomeUsuario, matricula, enderecoImovel, quantidadeParcelas, mensagemPagamentoAVista,
-						quantidadeParcelasDebitos, quantidadeDebitoACobrar, quantidadeParcelamento);
+						quantidadeParcelasDebitos, quantidadeDebitoACobrar, quantidadeParcelamento, valorTotalSucumbencia);
 
 		try{
 			if(gerarDebitoACobrarTaxa){
@@ -713,6 +778,28 @@ public class GerarRelatorioExtratoDebitoAction
 			}
 			retorno = processarExibicaoRelatorio(relatorioExtratoDebito, Integer.toString(TarefaRelatorio.TIPO_PDF), httpServletRequest,
 							httpServletResponse, actionMapping);
+
+			DocumentoEmissaoEfetuada documentoEmissaoEfetuada = new DocumentoEmissaoEfetuada();
+
+			// ------------ REGISTRAR TRANSação----------------------------
+
+			documentoEmissaoEfetuada.setImovel(imovel);
+			documentoEmissaoEfetuada.setUsuario(usuario);
+			documentoEmissaoEfetuada.setDocumentoTipo(documentoTipo);
+			documentoEmissaoEfetuada.setUltimaAlteracao(new Date());
+			Argumento argumento = new Argumento();
+			argumento.setId(Argumento.IMOVEL);
+
+			RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_EMITIR_DOCUMENTO_EXTRATO_DEBITO,
+							imovel.getId(), argumento, imovel.getId(), new UsuarioAcaoUsuarioHelper(usuario,
+											UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+			RegistradorOperacao.set(registradorOperacao);
+			documentoEmissaoEfetuada.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+			registradorOperacao.registrarOperacao(documentoEmissaoEfetuada);
+			this.getFachada().inserir(documentoEmissaoEfetuada);
+
+			// ------------ REGISTRAR TRANSAÇÃO ----------------
+
 		}catch(RelatorioVazioException ex){
 			// manda o erro para a página no request atual
 			reportarErros(httpServletRequest, "atencao.relatorio.vazio");
@@ -905,5 +992,64 @@ public class GerarRelatorioExtratoDebitoAction
 		}
 
 		return valorContasSemPermissao;
+	}
+
+	/**
+	 * [UC0444] Gerar e Emitir Extrato de Débito
+	 * [SB0008] - Verificar CREDTAC
+	 * 
+	 * @author Anderson Italo
+	 * @date 26/09/2014
+	 */
+	private void verificarCREDTAC(Fachada fachada, Usuario usuarioLogado, Imovel imovel,
+					Collection<CreditoARealizar> colecaoCreditoARealizar, BigDecimal valorDocumento){
+
+		if(!Util.isVazioOrNulo(colecaoCreditoARealizar)){
+
+			for(CreditoARealizar creditoARealizar : colecaoCreditoARealizar){
+
+				/*
+				 * Caso o crédito (CRTI_CDCONSTANTE = "CREDTAC") corresponda ao crédito gerado pelo
+				 * termo de ajuste de conduta de realinhamento de tarifas (CREDTAC)
+				 */
+				if(creditoARealizar.getCreditoTipo().getId().equals(CreditoTipo.CREDTAC)){
+
+					// Atualiza o log de processamento na tabela AJUSTE_TARIFA para o imóvel e
+					// crédito a realizar
+					FiltroAjusteTarifa filtroAjusteTarifa = new FiltroAjusteTarifa();
+					filtroAjusteTarifa.adicionarParametro(new ParametroSimples(FiltroAjusteTarifa.IMOVEL_ID, imovel.getId()));
+					filtroAjusteTarifa.adicionarParametro(new ParametroSimples(FiltroAjusteTarifa.CREDITO_A_REALIZAR_ID, creditoARealizar
+									.getId()));
+					filtroAjusteTarifa.setCampoOrderByDesc(FiltroAjusteTarifa.DATA_CALCULO);
+
+					Collection<AjusteTarifa> colecaoAjusteTarifa = fachada.pesquisar(filtroAjusteTarifa, AjusteTarifa.class.getName());
+
+					AjusteTarifa ajusteTarifa = (AjusteTarifa) Util.retonarObjetoDeColecao(colecaoAjusteTarifa);
+
+					if(ajusteTarifa != null){
+
+						StringBuilder builderLog = new StringBuilder();
+
+						if(ajusteTarifa.getDescricaoLog() != null){
+
+							builderLog.append(ajusteTarifa.getDescricaoLog());
+						}
+
+						builderLog.append(System.getProperty("line.separator"));
+						builderLog.append("******************************************************************************************************************");
+						builderLog.append(System.getProperty("line.separator"));
+						builderLog.append("Emissão de Extrato de Débitos no valor de R$ ");
+						builderLog.append(Util.formatarMoedaReal(valorDocumento, 2));
+						builderLog.append(System.getProperty("line.separator"));
+						builderLog.append("Efetuado por " + usuarioLogado.getNomeUsuario());
+						builderLog.append(" em " + Util.formatarDataComHoraSemSegundos(new Date()));
+
+						ajusteTarifa.setDescricaoLog(builderLog.toString());
+
+						fachada.atualizar(ajusteTarifa);
+					}
+				}
+			}
+		}
 	}
 }

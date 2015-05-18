@@ -85,16 +85,7 @@ import gcom.cadastro.imovel.Categoria;
 import gcom.cadastro.imovel.FiltroCategoria;
 import gcom.cadastro.imovel.FiltroImovelPerfil;
 import gcom.cadastro.imovel.ImovelPerfil;
-import gcom.cadastro.localidade.FiltroGerenciaRegional;
-import gcom.cadastro.localidade.FiltroLocalidade;
-import gcom.cadastro.localidade.FiltroQuadra;
-import gcom.cadastro.localidade.FiltroSetorComercial;
-import gcom.cadastro.localidade.FiltroUnidadeNegocio;
-import gcom.cadastro.localidade.GerenciaRegional;
-import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.localidade.Quadra;
-import gcom.cadastro.localidade.SetorComercial;
-import gcom.cadastro.localidade.UnidadeNegocio;
+import gcom.cadastro.localidade.*;
 import gcom.cobranca.CobrancaGrupo;
 import gcom.cobranca.FiltroCobrancaGrupo;
 import gcom.cobranca.bean.DadosConsultaNegativacaoHelper;
@@ -166,28 +157,33 @@ public class InformarDadosConsultaNegativacaoAction
 		if(!Util.isVazioOuBranco(form.getPeriodoEnvioNegativacaoInicio())){
 			String periodoEnvioNegativacaoInicio = form.getPeriodoEnvioNegativacaoInicio();
 			sessao.setAttribute("periodoEnvioNegativacaoInicio", periodoEnvioNegativacaoInicio);
-			dadosConsultaNegativacaoHelper.setPeriodoEnvioNegativacaoInicio(Util.converteStringParaDate(form
-							.getPeriodoEnvioNegativacaoInicio()));
+
+			dadosConsultaNegativacaoHelper.setPeriodoEnvioNegativacaoInicio(Util.converterStringParaDate(
+							form.getPeriodoEnvioNegativacaoInicio(), "atencao.data_inicial_periodo_negativacao.invalida"));
 		}
 
 		if(!Util.isVazioOuBranco(form.getPeriodoEnvioNegativacaoFim())){
 			String periodoEnvioNegativacaoFim = form.getPeriodoEnvioNegativacaoFim();
 			sessao.setAttribute("periodoEnvioNegativacaoFim", periodoEnvioNegativacaoFim);
-			dadosConsultaNegativacaoHelper.setPeriodoEnvioNegativacaoFim(Util.converteStringParaDate(form.getPeriodoEnvioNegativacaoFim()));
+
+			dadosConsultaNegativacaoHelper.setPeriodoEnvioNegativacaoFim(Util.converterStringParaDate(form.getPeriodoEnvioNegativacaoFim(),
+							"atencao.data_final_periodo_negativacao.invalida"));
 		}
 
 		if(!Util.isVazioOuBranco(form.getPeriodoExclusaoNegativacaoInicio())){
 			String periodoExclusaoNegativacaoInicio = form.getPeriodoExclusaoNegativacaoInicio();
 			sessao.setAttribute("periodoExclusaoNegativacaoInicio", periodoExclusaoNegativacaoInicio);
-			dadosConsultaNegativacaoHelper.setPeriodoExclusaoNegativacaoInicio(Util.converteStringParaDate(form
-							.getPeriodoExclusaoNegativacaoInicio()));
+
+			dadosConsultaNegativacaoHelper.setPeriodoExclusaoNegativacaoInicio(Util.converterStringParaDate(
+							form.getPeriodoExclusaoNegativacaoInicio(), "atencao.data_inicial_periodo_exclusao.invalida"));
 		}
 
 		if(!Util.isVazioOuBranco(form.getPeriodoExclusaoNegativacaoFim())){
 			String periodoExclusaoNegativacaoFim = form.getPeriodoExclusaoNegativacaoFim();
 			sessao.setAttribute("periodoExclusaoNegativacaoFim", periodoExclusaoNegativacaoFim);
-			dadosConsultaNegativacaoHelper.setPeriodoExclusaoNegativacaoFim(Util.converteStringParaDate(form
-							.getPeriodoExclusaoNegativacaoFim()));
+
+			dadosConsultaNegativacaoHelper.setPeriodoExclusaoNegativacaoFim(Util.converterStringParaDate(
+							form.getPeriodoExclusaoNegativacaoFim(), "atencao.data_final_periodo_exclusao.invalida"));
 		}
 
 		if(dadosConsultaNegativacaoHelper.getPeriodoEnvioNegativacaoInicio() != null

@@ -200,6 +200,10 @@ public class ConsultarDadosOrdemServicoPopupActionForm
 
 	private String tipoCorteDescricao;
 
+	private String valorHorasTrabalhadas;
+
+	private String valorMateriais;
+
 	private Collection<ObterDadosAtividadeIdOSHelper> colecaoOSAtividade = new ArrayList<ObterDadosAtividadeIdOSHelper>();
 
 	Collection<RoteiroOSDadosProgramacaoHelper> collectionRoteiroOSDadosProgramacaoHelpers = new ArrayList<RoteiroOSDadosProgramacaoHelper>();
@@ -872,6 +876,26 @@ public class ConsultarDadosOrdemServicoPopupActionForm
 	public void setTipoCorteDescricao(String tipoCorteDescricao){
 
 		this.tipoCorteDescricao = tipoCorteDescricao;
+	}
+
+	public String getValorHorasTrabalhadas(){
+
+		return valorHorasTrabalhadas;
+	}
+
+	public void setValorHorasTrabalhadas(String valorHorasTrabalhadas){
+
+		this.valorHorasTrabalhadas = valorHorasTrabalhadas;
+	}
+
+	public String getValorMateriais(){
+
+		return valorMateriais;
+	}
+
+	public void setValorMateriais(String valorMateriais){
+
+		this.valorMateriais = valorMateriais;
 	}
 
 }

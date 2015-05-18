@@ -331,6 +331,14 @@
         length="4"
     />
     
+    <property
+        name="indicadorEnvioCorreio"
+        type="java.lang.Short"
+        column="IMOV_ICENVIOCORREIO"
+        length="1"
+        not-null="true"
+    />
+    
     <!-- associations -->
     <!-- bi-directional one-to-one association to LigacaoEsgoto -->
     <one-to-one
@@ -381,7 +389,7 @@
     <!-- bi-directional one-to-many association to ClienteImovel-->
     <set
         name="clienteImoveis"
-        lazy="true"
+        lazy="false"
         inverse="true"
     >
         <key>
@@ -530,6 +538,7 @@
         name="setorComercial"
         class="gcom.cadastro.localidade.SetorComercial"
         not-null="true"
+        lazy="false"
     >
         <column name="stcm_id" />
     </many-to-one>
@@ -594,6 +603,7 @@
         name="quadra"
         class="gcom.cadastro.localidade.Quadra"
         not-null="true"
+        lazy="false"
     >
         <column name="qdra_id" />
     </many-to-one>
@@ -843,7 +853,7 @@ ciation to LigacaoAguaSituacao -->
         name="numeroQuadra"
         type="java.lang.Integer"
         column="qdra_nnquadra"
-        length="4"
+        length="5"
     />
     
     <property
@@ -868,6 +878,35 @@ ciation to LigacaoAguaSituacao -->
         column="IMOV_NNCOORDENADANORTEY"
          length="22"
         
+    />
+    
+    <!-- bi-directional one-to-many association to ClienteImovel -->
+    <set
+        name="clientesImovel"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="imov_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.cliente.ClienteImovel"
+        />
+    </set>      
+
+    
+    <property
+        name="indicadorAtualizacaoCadastral"
+        type="java.lang.Short"
+        column="IMOV_ICATUCADASTRAL"
+        length="2"
+    />
+    
+    
+    <property
+        name="dataAtualizacaoCadastral"
+         type="java.sql.Date"
+        column="IMOV_DTATUCADASTRAL"
     />
 
 </class>

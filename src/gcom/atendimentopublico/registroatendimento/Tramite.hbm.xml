@@ -47,6 +47,11 @@
         not-null="true"
         length="8"
     />
+    
+    
+    
+    
+    
 
     <!-- Associations -->
   

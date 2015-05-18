@@ -106,6 +106,10 @@ public class Funcionalidade
 
 	public static final int GERAR_TAXA_ENTREGA_CONTA_OUTRO_ENDERECO = 187;
 
+	public static final int AJUSTA_LANCAMENTOS_CONTABIES_SINTETICOS = 9314;
+
+	public static final int AJUSTA_RELACAO_USUARIO_CLIENTE_IMOVEL = 9326;
+
 	public static final int GERAR_DEBITOS_A_COBRAR_ACRESCIMOS_IMPONTUALIDADE = 188;
 
 	public static final int GERAR_DADOS_DIARIOS_ARRECADACAO = 457;
@@ -299,6 +303,8 @@ public class Funcionalidade
 
 	public static final int REGISTRAR_MOVIMENTO_ARRECADADORES = 398;
 
+	public static final int REGISTRAR_LEITURAS_ANORMALIDADES = 9315;
+
 	public static final int GERAR_ENVIAR_RELATORIO_RESUMO_MOVIMENTO_ARRECADACAO = 2845;
 
 	public static final int GERAR_ARQUIVO_AGENCIA_VIRTUAL_WEB = 2848;
@@ -306,6 +312,8 @@ public class Funcionalidade
 	public static final int RETIRAR_CONTA_REVISAO_PRAZO_VENCIDO = 2867;
 
 	public static final int GERAR_AVISO_CORTE_FATURAMENTO = 2868;
+
+	public static final int GERAR_NOTIFICACAO_AMIGAVEL = 9320;
 
 	public static final int GERAR_RESUMO_ANORMALIDADE_CONSUMO = 2873;
 
@@ -396,6 +404,10 @@ public class Funcionalidade
 	public static final int COMANDAR_PRESCRICAO_DEBITOS_USUARIO = 9286;
 
 	public static final int COMANDAR_PRESCRICAO_DEBITOS_AUTOMATICA = 9289;
+
+	public static final int BATCH_SUPRESSAO_DEFINITIVA_IMOVEIS_MDB = 9384;
+
+	public static final int IMPORTAR_DADOS_DIVIDA_ATIVA = 9500;
 
 	/** identifier field */
 	private Integer id;

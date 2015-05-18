@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cadastro.cliente.ClienteDebitoACobrar" 
+    table="cliente_debito_a_cobrar"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="CLDC_ID"
+    >
+	<generator class="sequence">
+       <param name="sequence">SQ_CLIENTE_DEBITO_A_COBRAR</param>
+    </generator>
+
+    </id>
+
+	<property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="CLDC_TMULTIMAALTERACAO"
+        not-null="true"
+        length="8"
+    />
+    
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to Cliente -->
+    <many-to-one
+        name="cliente"
+        class="gcom.cadastro.cliente.Cliente"
+        not-null="true"
+    >
+        <column name="clie_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to ClienteRelacaoTipo -->
+    <many-to-one
+        name="clienteRelacaoTipo"
+        class="gcom.cadastro.cliente.ClienteRelacaoTipo"
+        not-null="true"
+    >
+        <column name="crtp_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to DebitoACobrar -->
+    <many-to-one
+        name="debitoACobrar"
+        class="gcom.faturamento.debito.DebitoACobrar"
+        not-null="true"
+    >
+        <column name="dbac_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

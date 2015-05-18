@@ -79,7 +79,7 @@ package gcom.relatorio.micromedicao.hidrometro;
 import gcom.batch.Relatorio;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
-import gcom.micromedicao.hidrometro.FiltroHidrometro;
+import gcom.micromedicao.bean.FiltroHidrometroHelper;
 import gcom.micromedicao.hidrometro.Hidrometro;
 import gcom.relatorio.ConstantesRelatorios;
 import gcom.relatorio.RelatorioDataSource;
@@ -92,12 +92,7 @@ import gcom.util.Util;
 import gcom.util.agendadortarefas.AgendadorTarefas;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -155,7 +150,7 @@ public class RelatorioManterHidrometro
 		Integer idFuncionalidadeIniciada = this.getIdFuncionalidadeIniciada();
 		// ------------------------------------
 
-		FiltroHidrometro filtroHidrometro = (FiltroHidrometro) getParametro("filtroHidrometro");
+		FiltroHidrometroHelper filtroHidrometroHelper = (FiltroHidrometroHelper) getParametro("filtroHidrometroHelper");
 		Hidrometro hidrometroParametros = (Hidrometro) getParametro("hidrometroParametros");
 		String fixo = (String) getParametro("fixo");
 		String faixaInicial = (String) getParametro("faixaInicial");
@@ -174,19 +169,12 @@ public class RelatorioManterHidrometro
 
 		Collection hidrometrosNovos = null;
 
-		if(filtroHidrometro != null){
+		if(filtroHidrometroHelper != null){
 
-			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade("hidrometroClasseMetrologica");
-			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade("hidrometroMarca");
-			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade("hidrometroDiametro");
-			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade("hidrometroCapacidade");
-			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade("hidrometroTipo");
-			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade("hidrometroSituacao");
-
-			filtroHidrometro.setConsultaSemLimites(true);
+			filtroHidrometroHelper.setConsultaSemLimites(true);
 
 			// consulta para trazer objeto completo
-			hidrometrosNovos = fachada.pesquisar(filtroHidrometro, Hidrometro.class.getName());
+			hidrometrosNovos = fachada.pesquisarHidrometroFiltro(filtroHidrometroHelper, null);
 
 		}else{
 			hidrometrosNovos = fachada.pesquisarNumeroHidrometroFaixaRelatorio(fixo, faixaInicial, faixaFinal);
@@ -263,6 +251,8 @@ public class RelatorioManterHidrometro
 		SistemaParametro sistemaParametro = fachada.pesquisarParametrosDoSistema();
 
 		parametros.put("imagem", sistemaParametro.getImagemRelatorio());
+
+		parametros.put("P_NM_ESTADO", sistemaParametro.getNomeEstado());
 
 		SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
 		String dataAquisicao = "";
@@ -341,10 +331,10 @@ public class RelatorioManterHidrometro
 
 		int retorno = 0;
 
-		if(getParametro("filtroHidrometro") != null){
+		if(getParametro("filtroHidrometroHelper") != null){
 
-			retorno = Fachada.getInstancia().totalRegistrosPesquisa((FiltroHidrometro) getParametro("filtroHidrometro"),
-							Hidrometro.class.getName());
+			retorno = Fachada.getInstancia().pesquisarHidrometroFiltroTotalRegistros(
+							(FiltroHidrometroHelper) getParametro("filtroHidrometroHelper"));
 
 		}else{
 

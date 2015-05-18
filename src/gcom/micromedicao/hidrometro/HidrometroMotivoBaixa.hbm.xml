@@ -32,6 +32,19 @@
         column="himb_dshidrometromotivobaixa"
         length="20"
     />
+    
+      <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="HIMB_DSABREVIADA"
+        not-null="true"
+        length="5"
+    />
+    
+    
+
+    
+    
     <property
         name="indicadorUso"
         type="java.lang.Short"

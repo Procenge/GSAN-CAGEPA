@@ -63,7 +63,22 @@ function abrirInserirDevolucao(){
 		abrirPopupDeNome('exibirInserirDevolucoesAction.do?menu=nao', 400, 800, 'InserirDevolucao', 'yes');
 	}	
 }
+
+function limparImovelTecla() {
+
+	var form = document.forms[0];
 	
+	form.matriculaImovelDevolucoesImovel.value = "";
+
+	if (form.digitoVerificadorImovelDevolucoesImovel != undefined) {
+		form.digitoVerificadorImovelDevolucoesImovel.value = "";
+	}
+		
+	form.situacaoAguaDevolucoesImovel.value = "";
+	form.situacaoEsgotoDevolucoesImovel.value = "";
+	form.tipoLigacao.value = "";
+
+}
 </script>
 
 
@@ -175,6 +190,7 @@ function abrirInserirDevolucao(){
 										onkeypress="validaEnterComMensagem(event, 
 										'consultarImovelWizardAction.do?action=exibirConsultarImovelDevolucoesAction&indicadorNovo=OK&limparForm=S',
 										'idImovelDevolucoesImovel','Im&oacute;vel');"
+										onkeyup="limparImovelTecla();"
 										/> 
 									<a
 										href="javascript:abrirPopup('exibirPesquisarImovelAction.do', 400, 800);">
@@ -182,23 +198,64 @@ function abrirInserirDevolucao(){
 										src="<bean:message key="caminho.imagens"/>pesquisa.gif"
 										border="0" /></a> <logic:present
 										name="idImovelDevolucoesImovelNaoEncontrado" scope="request">
-										<html:text property="matriculaImovelDevolucoesImovel" size="40"
-											readonly="true"
-											style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+											<html:text property="matriculaImovelDevolucoesImovel" size="40"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										</logic:equal>
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+											<html:text property="digitoVerificadorImovelDevolucoesImovel" size="2"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+																						
+											<html:text property="matriculaImovelDevolucoesImovel" size="31"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										</logic:equal>										
 
 									</logic:present> <logic:notPresent
 										name="idImovelDevolucoesImovelNaoEncontrado" scope="request">
 										<logic:present name="valorMatriculaImovelDevolucoesImovel"
 											scope="request">
-											<html:text property="matriculaImovelDevolucoesImovel"
-												size="40" readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+												<html:text property="matriculaImovelDevolucoesImovel"
+													size="40" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>
+													
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelDevolucoesImovel"
+													size="2" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+																								
+												<html:text property="matriculaImovelDevolucoesImovel"
+													size="31" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>
+																								
 										</logic:present>
 										<logic:notPresent name="valorMatriculaImovelDevolucoesImovel"
 											scope="request">
-											<html:text property="matriculaImovelDevolucoesImovel"
-												size="40" readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+												<html:text property="matriculaImovelDevolucoesImovel"
+													size="40" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelDevolucoesImovel"
+													size="2" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+																								
+												<html:text property="matriculaImovelDevolucoesImovel"
+													size="31" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>											
+													
 										</logic:notPresent>
 									</logic:notPresent> <a href="javascript:limparForm();"> <img
 										src="<bean:message key="caminho.imagens"/>limparcampo.gif"
@@ -218,6 +275,18 @@ function abrirInserirDevolucao(){
 										property="situacaoEsgotoDevolucoesImovel" readonly="true"
 										style="background-color:#EFEFEF; border:0; color: #000000"
 										size="15" maxlength="15" /></td>
+								</tr>
+									<tr>
+									<td height="10">
+										<div class="style9"><strong>Tipo de Ligação:</strong></div>
+									</td>
+									<td><html:text property="tipoLigacao"
+										readonly="true"
+										style="background-color:#EFEFEF; border:0; color: #000000"
+										size="15" maxlength="15" />
+									</td>
+									<td width="90"></td>
+									<td width="120"></td>
 								</tr>
 							</table>
 							</td>

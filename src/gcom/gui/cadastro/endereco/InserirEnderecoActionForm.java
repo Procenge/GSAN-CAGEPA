@@ -125,6 +125,32 @@ public class InserirEnderecoActionForm
 
 	private String flagCepSelecionado;
 
+	private String idMatriculaImovel;
+
+	private String imovelDescricao;
+
+
+	
+	public String getImovelDescricao(){
+
+		return imovelDescricao;
+	}
+
+	public void setImovelDescricao(String imovelDescricao){
+
+		this.imovelDescricao = imovelDescricao;
+	}
+
+	public String getIdMatriculaImovel(){
+
+		return idMatriculaImovel;
+	}
+
+	public void setIdMatriculaImovel(String idMatriculaImovel){
+
+		this.idMatriculaImovel = idMatriculaImovel;
+	}
+
 	public String getEnderecoCorrespondencia(){
 
 		return enderecoCorrespondencia;

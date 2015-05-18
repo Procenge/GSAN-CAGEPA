@@ -191,10 +191,23 @@ public class InserirCategoriaFaixaConsumoTarifaAction
 		}
 
 		consumoTarifaFaixa.setNumeroConsumoFaixaIFim(new Integer(inserirCategoriaFaixaConsumoTarifaActionForm.getLimiteSuperiorFaixa()));
-		consumoTarifaFaixa.setValorConsumoTarifa(Util.formatarMoedaRealparaBigDecimal(inserirCategoriaFaixaConsumoTarifaActionForm
-						.getValorM3Faixa(), 4));
+
+		String pQuantidadeDecimaisValorTarifa = null;
+
+		try{
+
+			pQuantidadeDecimaisValorTarifa = (String) ParametroFaturamento.P_QUANTIDADE_DECIMAIS_VALOR_TARIFA.executar();
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
+
+		consumoTarifaFaixa.setValorConsumoTarifa(Util.formatarMoedaRealparaBigDecimal(
+						inserirCategoriaFaixaConsumoTarifaActionForm.getValorM3Faixa(), Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
 		consumoTarifaFaixa.setValorUsoEsgotoTarifa(Util.formatarMoedaRealparaBigDecimal(
-						inserirCategoriaFaixaConsumoTarifaActionForm.getValorM3FaixaEsgoto(), 4));
+						inserirCategoriaFaixaConsumoTarifaActionForm.getValorM3FaixaEsgoto(),
+						Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
+
 		consumoTarifaFaixa.setUltimaAlteracao(new Date());
 
 		colecaoFaixa.add(consumoTarifaFaixa);

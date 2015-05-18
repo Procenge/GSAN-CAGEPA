@@ -148,6 +148,10 @@ public class EfetuarParcelamentoDebitosActionForm
 
 	private String chavesPrestacoes;
 
+	private String chavesSucumbenciasConta;
+
+	private String chavesSucumbenciasGuia;
+
 	private String popupEfetuarParcelamento;
 
 	private String dataVencimentoEntradaParcelamento;
@@ -155,6 +159,210 @@ public class EfetuarParcelamentoDebitosActionForm
 	private String inPagamentoCartaoCredito;
 
 	private String permitirRDComRestricao;
+
+	private String chavesDebitosACobrar;
+
+	private String valorTotalContaNormal;
+
+	private String valorTotalContaDividaAtiva;
+
+	private String valorTotalContaExecFiscal;
+
+	private String valorTotalContaAcresNormal;
+
+	private String valorTotalContaAcresDividaAtiva;
+
+	private String valorTotalContaAcresExecFiscal;
+
+	private String valorTotalGuiaNormal;
+
+	private String valorTotalGuiaDividaAtiva;
+
+	private String valorTotalGuiaExecFiscal;
+
+	private String valorTotalGuiaAcresNormal;
+
+	private String valorTotalGuiaAcresDividaAtiva;
+
+	private String valorTotalGuiaAcresExecFiscal;
+
+	private String valorTotalDebitoACobrarServicoNormal;
+
+	private String valorTotalDebitoACobrarParcelamentoNormal;
+	
+	private String idClienteRelacaoImovelSelecionado;
+
+	private String atendimentoSemPreencherDocumentosObrigatorios;
+
+	public String getAtendimentoSemPreencherDocumentosObrigatorios(){
+
+		return atendimentoSemPreencherDocumentosObrigatorios;
+	}
+
+	public void setAtendimentoSemPreencherDocumentosObrigatorios(String atendimentoSemPreencherDocumentosObrigatorios){
+
+		this.atendimentoSemPreencherDocumentosObrigatorios = atendimentoSemPreencherDocumentosObrigatorios;
+	}
+
+	public String getIdClienteRelacaoImovelSelecionado(){
+
+		return idClienteRelacaoImovelSelecionado;
+	}
+
+	public void setIdClienteRelacaoImovelSelecionado(String idClienteRelacaoImovelSelecionado){
+
+		this.idClienteRelacaoImovelSelecionado = idClienteRelacaoImovelSelecionado;
+	}
+
+	public String getValorTotalContaNormal(){
+
+		return valorTotalContaNormal;
+	}
+
+	public void setValorTotalContaNormal(String valorTotalContaNormal){
+
+		this.valorTotalContaNormal = valorTotalContaNormal;
+	}	
+
+	public String getValorTotalContaDividaAtiva(){
+
+		return valorTotalContaDividaAtiva;
+	}
+
+	public void setValorTotalContaDividaAtiva(String valorTotalContaDividaAtiva){
+
+		this.valorTotalContaDividaAtiva = valorTotalContaDividaAtiva;
+	}	
+
+	public String getValorTotalContaExecFiscal(){
+
+		return valorTotalContaExecFiscal;
+	}
+
+	public void setValorTotalContaExecFiscal(String valorTotalContaExecFiscal){
+
+		this.valorTotalContaExecFiscal = valorTotalContaExecFiscal;
+	}
+
+	public String getValorTotalContaAcresNormal(){
+
+		return valorTotalContaAcresNormal;
+	}
+
+	public void setValorTotalContaAcresNormal(String valorTotalContaAcresNormal){
+
+		this.valorTotalContaAcresNormal = valorTotalContaAcresNormal;
+	}
+
+	public String getValorTotalContaAcresDividaAtiva(){
+
+		return valorTotalContaAcresDividaAtiva;
+	}
+
+	public void setValorTotalContaAcresDividaAtiva(String valorTotalContaAcresDividaAtiva){
+
+		this.valorTotalContaAcresDividaAtiva = valorTotalContaAcresDividaAtiva;
+	}
+
+	public String getValorTotalContaAcresExecFiscal(){
+
+		return valorTotalContaAcresExecFiscal;
+	}
+
+	public void setValorTotalContaAcresExecFiscal(String valorTotalContaAcresExecFiscal){
+
+		this.valorTotalContaAcresExecFiscal = valorTotalContaAcresExecFiscal;
+	}
+
+	public String getValorTotalGuiaNormal(){
+
+		return valorTotalGuiaNormal;
+	}
+
+	public void setValorTotalGuiaNormal(String valorTotalGuiaNormal){
+
+		this.valorTotalGuiaNormal = valorTotalGuiaNormal;
+	}
+
+	public String getValorTotalGuiaDividaAtiva(){
+
+		return valorTotalGuiaDividaAtiva;
+	}
+
+	public void setValorTotalGuiaDividaAtiva(String valorTotalGuiaDividaAtiva){
+
+		this.valorTotalGuiaDividaAtiva = valorTotalGuiaDividaAtiva;
+	}
+
+	public String getValorTotalGuiaExecFiscal(){
+
+		return valorTotalGuiaExecFiscal;
+	}
+
+	public void setValorTotalGuiaExecFiscal(String valorTotalGuiaExecFiscal){
+
+		this.valorTotalGuiaExecFiscal = valorTotalGuiaExecFiscal;
+	}
+
+	public String getValorTotalGuiaAcresNormal(){
+
+		return valorTotalGuiaAcresNormal;
+	}
+
+	public void setValorTotalGuiaAcresNormal(String valorTotalGuiaAcresNormal){
+
+		this.valorTotalGuiaAcresNormal = valorTotalGuiaAcresNormal;
+	}
+
+	public String getValorTotalGuiaAcresDividaAtiva(){
+
+		return valorTotalGuiaAcresDividaAtiva;
+	}
+
+	public void setValorTotalGuiaAcresDividaAtiva(String valorTotalGuiaAcresDividaAtiva){
+
+		this.valorTotalGuiaAcresDividaAtiva = valorTotalGuiaAcresDividaAtiva;
+	}
+
+	public String getValorTotalGuiaAcresExecFiscal(){
+
+		return valorTotalGuiaAcresExecFiscal;
+	}
+
+	public void setValorTotalGuiaAcresExecFiscal(String valorTotalGuiaAcresExecFiscal){
+
+		this.valorTotalGuiaAcresExecFiscal = valorTotalGuiaAcresExecFiscal;
+	}
+
+	public String getValorTotalDebitoACobrarServicoNormal(){
+
+		return valorTotalDebitoACobrarServicoNormal;
+	}
+
+	public void setValorTotalDebitoACobrarServicoNormal(String valorTotalDebitoACobrarServicoNormal){
+
+		this.valorTotalDebitoACobrarServicoNormal = valorTotalDebitoACobrarServicoNormal;
+	}
+
+	public String getValorTotalDebitoACobrarParcelamentoNormal(){
+
+		return valorTotalDebitoACobrarParcelamentoNormal;
+	}
+
+	public void setValorTotalDebitoACobrarParcelamentoNormal(String valorTotalDebitoACobrarParcelamentoNormal){
+
+		this.valorTotalDebitoACobrarParcelamentoNormal = valorTotalDebitoACobrarParcelamentoNormal;
+	}
+
+	public String getChavesDebitosACobrar(){
+
+		return chavesDebitosACobrar;
+	}
+
+	public void setChavesDebitosACobrar(String chavesDebitosACobrar){
+
+		this.chavesDebitosACobrar = chavesDebitosACobrar;
+	}
 
 	/**
 	 * @return Retorna o campo indicadorRestabelecimento.
@@ -617,6 +825,26 @@ public class EfetuarParcelamentoDebitosActionForm
 	public void setChavesPrestacoes(String chavesPrestacoes){
 
 		this.chavesPrestacoes = chavesPrestacoes;
+	}
+
+	public String getChavesSucumbenciasConta(){
+
+		return chavesSucumbenciasConta;
+	}
+
+	public void setChavesSucumbenciasConta(String chavesSucumbenciasConta){
+
+		this.chavesSucumbenciasConta = chavesSucumbenciasConta;
+	}
+
+	public String getChavesSucumbenciasGuia(){
+
+		return chavesSucumbenciasGuia;
+	}
+
+	public void setChavesSucumbenciasGuia(String chavesSucumbenciasGuia){
+
+		this.chavesSucumbenciasGuia = chavesSucumbenciasGuia;
 	}
 
 	/**

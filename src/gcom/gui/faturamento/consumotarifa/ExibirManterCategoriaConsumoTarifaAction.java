@@ -81,22 +81,22 @@ package gcom.gui.faturamento.consumotarifa;
 
 import gcom.cadastro.imovel.Categoria;
 import gcom.cadastro.imovel.FiltroCategoria;
+import gcom.cadastro.imovel.FiltroSubCategoria;
+import gcom.cadastro.imovel.Subcategoria;
 import gcom.fachada.Fachada;
 import gcom.faturamento.consumotarifa.ConsumoTarifaFaixa;
 import gcom.faturamento.consumotarifa.ConsumoTarifaVigencia;
 import gcom.faturamento.consumotarifa.FiltroConsumoTarifaFaixa;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.gui.faturamento.consumotarifa.bean.CategoriaFaixaConsumoTarifaHelper;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -124,6 +124,29 @@ public class ExibirManterCategoriaConsumoTarifaAction
 
 		// Mudar isso quando tiver esquema de segurança
 		HttpSession sessao = httpServletRequest.getSession(false);
+		
+		InserirCategoriaConsumoTarifaActionForm form = (InserirCategoriaConsumoTarifaActionForm) actionForm;
+
+		if(httpServletRequest.getParameter("form") != null){
+			if(httpServletRequest.getParameter("form").equals("exibirManterCategoriaFaixaConsumoTarifaAction")){
+				sessao.setAttribute("consumoMinimo", form.getConsumoMinimo());
+				return actionMapping.findForward("exibirManterCategoriaFaixaConsumoTarifaAction");
+			}
+		}
+
+		String indicadorTarifaCosumoPorSubCategoria = null;
+		try{
+			indicadorTarifaCosumoPorSubCategoria = (String) ParametroFaturamento.P_INDICADOR_TARIFA_CONSUMO_SUBCATEGORIA.executar();
+			if(indicadorTarifaCosumoPorSubCategoria.equals(ConstantesSistema.SIM.toString())){
+				sessao.setAttribute("indicadorTarifaCosumoPorSubCategoria", "S");
+			}else{
+				sessao.removeAttribute("indicadorTarifaCosumoPorSubCategoria");
+			}
+
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
 
 		String inTarifaEsgotoPropria = null;
 		
@@ -195,42 +218,51 @@ public class ExibirManterCategoriaConsumoTarifaAction
 		// FiltroConsumoTarifaCategoria filtroConsumoTarifaCategoria = new
 		// FiltroConsumoTarifaCategoria();
 
-		InserirCategoriaConsumoTarifaActionForm inserirCategoriaConsumoTarifaActionForm = new InserirCategoriaConsumoTarifaActionForm();
-
 		if((httpServletRequest.getParameter("limpa") != null) && (httpServletRequest.getParameter("limpa").equals("1"))){
-			sessao.removeAttribute("InserirCategoriaConsumoTarifaActionForm");
-			sessao.removeAttribute("valorMinimo");
-			sessao.removeAttribute("valorMinimoEsgoto");
+			form.setValorTarifaMinima(null);
+			form.setConsumoMinimo(null);
+			form.setValorTarifaMinimaEsgoto(null);
+
+			form.setSlcCategoria(String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO));
+			form.setSlcSubCategoria(String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO));
+
 			sessao.removeAttribute("consumoMinimo");
 			sessao.removeAttribute("colecaoFaixa");
 			sessao.setAttribute("novaCategoria", "sim");
-			inserirCategoriaConsumoTarifaActionForm.setSlcCategoria(null);
-		}
-
-		if((sessao.getAttribute("valorMinimo") != null) && (!sessao.getAttribute("valorMinimo").equals(""))){
-			inserirCategoriaConsumoTarifaActionForm.setValorTarifaMinima((String) sessao.getAttribute("valorMinimo"));
-		}
-
-		if((sessao.getAttribute("consumoMinimo") != null) && (!sessao.getAttribute("consumoMinimo").equals(""))){
-			inserirCategoriaConsumoTarifaActionForm.setConsumoMinimo((String) sessao.getAttribute("consumoMinimo"));
-		}
-
-		if((sessao.getAttribute("valorMinimoEsgoto") != null) && (!sessao.getAttribute("valorMinimoEsgoto").equals(""))){
-			inserirCategoriaConsumoTarifaActionForm.setValorTarifaMinimaEsgoto((String) sessao.getAttribute("valorMinimoEsgoto"));
 		}
 
 		filtroCategoria.adicionarParametro(new ParametroSimples(FiltroCategoria.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
 		filtroCategoria.setCampoOrderBy(FiltroCategoria.DESCRICAO);
 
+		String pQuantidadeDecimaisValorTarifa = null;
+
+		try{
+
+			pQuantidadeDecimaisValorTarifa = (String) ParametroFaturamento.P_QUANTIDADE_DECIMAIS_VALOR_TARIFA.executar();
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
+
 		if(categoriaFaixaConsumoTarifaHelperAtualizacao != null){
-			inserirCategoriaConsumoTarifaActionForm.setSlcCategoria(""
+			form.setSlcCategoria(""
 							+ categoriaFaixaConsumoTarifaHelperAtualizacao.getConsumoTarifaCategoria().getCategoria().getId());
-			inserirCategoriaConsumoTarifaActionForm.setConsumoMinimo(""
+
+			if(categoriaFaixaConsumoTarifaHelperAtualizacao.getConsumoTarifaCategoria().getSubCategoria() != null){
+				form.setSlcSubCategoria(""
+								+ categoriaFaixaConsumoTarifaHelperAtualizacao.getConsumoTarifaCategoria().getSubCategoria().getId());
+			}else{
+				form.setSlcSubCategoria("");
+			}
+
+			form.setConsumoMinimo(""
 							+ categoriaFaixaConsumoTarifaHelperAtualizacao.getConsumoTarifaCategoria().getNumeroConsumoMinimo());
-			inserirCategoriaConsumoTarifaActionForm.setValorTarifaMinima(Util.formatarMoedaReal(
-							categoriaFaixaConsumoTarifaHelperAtualizacao.getConsumoTarifaCategoria().getValorTarifaMinima(), 4));
-			inserirCategoriaConsumoTarifaActionForm.setValorTarifaMinimaEsgoto(Util.formatarMoedaReal(
-							categoriaFaixaConsumoTarifaHelperAtualizacao.getConsumoTarifaCategoria().getValorTarifaMinimaEsgoto(), 4));
+			form.setValorTarifaMinima(Util.formatarMoedaReal(
+							categoriaFaixaConsumoTarifaHelperAtualizacao.getConsumoTarifaCategoria().getValorTarifaMinima(),
+							Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
+			form.setValorTarifaMinimaEsgoto(Util.formatarMoedaReal(
+							categoriaFaixaConsumoTarifaHelperAtualizacao.getConsumoTarifaCategoria().getValorTarifaMinimaEsgoto(),
+							Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
 
 			if(categoriaFaixaConsumoTarifaHelperAtualizacao.getColecaoFaixas() == null
 							|| categoriaFaixaConsumoTarifaHelperAtualizacao.getColecaoFaixas().isEmpty()){
@@ -277,10 +309,25 @@ public class ExibirManterCategoriaConsumoTarifaAction
 
 			}
 		}
-		sessao.setAttribute("InserirCategoriaConsumoTarifaActionForm", inserirCategoriaConsumoTarifaActionForm);
+
 		Collection colecaoCategoriaLista = fachada.pesquisar(filtroCategoria, Categoria.class.getName());
 
 		sessao.setAttribute("colecaoCategoriaLista", colecaoCategoriaLista);
+		
+		Collection<Subcategoria> colecaoSubCategoria = new ArrayList<Subcategoria>();
+		if(form.getSlcCategoria() != null && !form.getSlcCategoria().toString().equals("")
+						&& !form.getSlcCategoria().toString().equals("-1")){
+			FiltroSubCategoria filtroSubCategoria = new FiltroSubCategoria();
+			filtroSubCategoria.adicionarParametro(new ParametroSimples(FiltroSubCategoria.INDICADOR_USO,
+							ConstantesSistema.INDICADOR_USO_ATIVO));
+			filtroSubCategoria.adicionarParametro(new ParametroSimples(FiltroSubCategoria.CATEGORIA_ID, Integer.valueOf(form
+							.getSlcCategoria())));
+			filtroSubCategoria.setCampoOrderBy(FiltroSubCategoria.DESCRICAO);
+
+			colecaoSubCategoria = fachada.pesquisar(filtroSubCategoria, Subcategoria.class.getName());
+		}
+
+		sessao.setAttribute("colecaoSubCategoria", colecaoSubCategoria);
 
 		return retorno;
 	}

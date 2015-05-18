@@ -61,7 +61,62 @@
         not-null="false"
         length="4"
     />
-
+    
+    <!-- OC1162746 -->
+    
+    <property
+        name="extensaoRede"
+        type="java.lang.Integer"
+        column="STAB_NNEXTENSAOREDE"
+        not-null="false"
+    />
+     <property
+        name="pressaoMaxima"
+       type="java.math.BigDecimal"
+        column="STAB_NNPRESSAOMAXIMA"
+        not-null="false"
+         length="8" />
+    
+    <property
+        name="pressaoMedia"
+        type="java.math.BigDecimal"
+        column="STAB_NNPRESSAOMEDIA"
+        not-null="false"
+         length="8" />
+    
+    <property
+        name="pressaoMinima"
+        type="java.math.BigDecimal"
+        column="STAB_NNPRESSAOMINIMA"
+        not-null="false"
+         length="8" />
+    
+    <property
+        name="monitoramentoInicial"
+       type="java.sql.Date"
+        column="STAB_DTMONITORAMENTOINICIAL"
+        not-null="false"
+         length="8" />
+         
+     <property
+        name="monitoramentoFinal"
+        type="java.sql.Date"
+        column="STAB_DTMONITORAMENTOFINAL"
+        not-null="false"
+         length="8" />
+    
+	<property
+        name="idDiametro"
+        type="java.lang.Integer"
+        column="DRDA_ID"
+        not-null="false"
+         length="4" />
+         
+         
+         
+         
+         
+         
     <!-- Associations -->
     
     <!-- bi-directional many-to-one association to SistemaAbastecimento --> 

@@ -152,6 +152,10 @@ public class ConstantesRelatorios {
 
 	public static final String RELATORIO_GERAR_RELACAO_DEBITOS = "/relatorioGerarRelacaoDebitosResumido.jasper";
 
+	public static final String RELATORIO_CONTAS_RECEBER_VALORES_CORRIGIDOS = "/relatorioGerarContasReceberValoresCorrigidos.jasper";
+
+	public static final String RELATORIO_TOTAL_CONTAS_EMITIDAS_LOCALIDADE = "/relatorioTotalContasEmitidasLocalidade.jasper";
+
 	public static final String RELATORIO_RESUMO_ANORMALIDADE_LEITURA = "/relatorioResumoAnormalidadeLeitura.jasper";
 
 	public static final String RELATORIO_RESUMO_ANORMALIDADE_CONSUMO = "/relatorioResumoAnormalidadesConsumo.jasper";
@@ -254,6 +258,8 @@ public class ConstantesRelatorios {
 
 	public static final String RELATORIO_ACOMPANHAMENTO_MOVIMENTO_ARRECADADORES = "/relatorioAcompanhamentoMovimentoArrecadadores.jasper";
 
+	public static final String RELATORIO_ACOMPANHAMENTO_MOVIMENTO_ARRECADADORES_DIVIDA = "/relatorioAcompanhamentoMovimentoArrecadadoresDivida.jasper";
+
 	public static final String RELATORIO_COMPARATIVOS_LEITURAS_E_ANORMALIDADES = "/relatorioComparativoLeiturasEAnormalidades.jasper";
 
 	public static final String RELATORIO_EXTRATO_DEBITO_CLIENTE = "/relatorioExtratoDebitoCliente.jasper";
@@ -306,6 +312,10 @@ public class ConstantesRelatorios {
 
 	public static final String RELATORIO_CONTAS_EM_REVISAO = "/relatorioContasRevisao.jasper";
 
+	public static final String RELATORIO_ANALITICO_CONTAS = "/relatorioAnaliticoContas.jasper";
+
+	public static final String RELATORIO_MANTER_ORDEM_SERVICO = "/relatorioMaterOrdemServico.jasper";
+
 	public static final String RELATORIO_CONTAS_EM_REVISAO_RESUMIDO = "/relatorioContasRevisaoResumido.jasper";
 
 	public static final String RELATORIO_ANORMALIDADE_CONSUMO = "/relatorioAnormalidadeConsumoELeitura.jasper";
@@ -333,7 +343,7 @@ public class ConstantesRelatorios {
 	public static final String RELATORIO_EMITIR_ORDEM_SERVICO_SELETIVA_MODELO_3 = "/relatorioEmitirOrdemServicoSeletivaModelo3.jasper";
 
 	public static final String RELATORIO_EMITIR_ORDEM_SERVICO_SELETIVA_MODELO_4 = "/relatorioEmitirOrdemServicoSeletivaModelo4.jasper";
-	
+
 	public static final String RELATORIO_EMITIR_ORDEM_SERVICO_SELETIVA_MODELO_5 = "/relatorioEmitirOrdemServicoSeletivaModelo5.jasper";
 
 	public static final String RELATORIO_EMITIR_ORDEM_SERVICO_SELETIVA_MODELO_6 = "/relatorioEmitirOrdemServicoSeletivaModelo6.jasper";
@@ -578,7 +588,11 @@ public class ConstantesRelatorios {
 
 	public static final String RELATORIO_AVISO_DEBITO = "/relatorioAvisoDebito.jasper";
 
+	public static final String RELATORIO_AVISO_DEBITO_MODELO3 = "/relatorioAvisoDebitoModelo3.jasper";
+
 	public static final String RELATORIO_AVISO_CORTE = "/relatorioAvisoCorte.jasper";
+
+	public static final String RELATORIO_TRANSFERENCIA_TERMO_ASSUNCAO_MODELO_1 = "/relatorioTransferenciaTermoAssuncaoModelo1.jasper";
 
 	public static final String RELATORIO_AVISO_CORTE_ARQUIVO_TXT = "/relatorioAvisoCorteArquivoTxt.txt";
 
@@ -774,14 +788,16 @@ public class ConstantesRelatorios {
 	public static final String RELATORIO_OCORRENCIA_GERACAO_PRE_FATURAMENTO_RESUMO = "/relatorioOcorrenciaGeracaoPreFaturamentoResumo.jasper";
 
 	public static final String RELATORIO_CERTIDAO_NEGATIVA_MODELO_2 = "/relatorioCertidaoNegativaModelo2.jasper";
-					
-	public static final String RELATORIO_CERTIDAO_NEGATIVA_MODELO_3 = "/relatorioCertidaoNegativaModelo3.jasper";				
+
+	public static final String RELATORIO_CERTIDAO_NEGATIVA_MODELO_3 = "/relatorioCertidaoNegativaModelo3.jasper";
 
 	public static final String RELATORIO_RESUMO_LIGACOES_ECONOMIA = "/relatorioResumoLigacoesEconomiaGCS.jasper";
 
 	public static final String RELATORIO_ARQUIVO_FATURAMENTO_CONVENCIONAL = "/relatorioArquivoFaturamentoConvencional.txt";
 
 	public static final String RELATORIO_POSICAO_DEBITO_NEGATIVACAO_LEGADO_CASAL = "/relatorioPosicaoDebitoNegativacaoLegadoCasal.jasper";
+
+	public static final String RELATORIO_POSICAO_DEBITO_NEGATIVACAO_LEGADO_CAGEPA = "/relatorioPosicaoDebitoNegativacaoLegadoCagepa.jasper";
 
 	public static final String RELATORIO_ESTATISTICO_REGISTRO_ATENDIMENTO = "/relatorioEstatisticoRegistroAtendimento.jasper";
 
@@ -815,6 +831,8 @@ public class ConstantesRelatorios {
 
 	public static final String RELATORIO_RELACAO_IMOVEIS_EM_COBRANCA_ADMINISTRATIVA = "/relatorioImoveisEmCobrancaAdministrativa.jasper";
 
+	public static final String RELATORIO_ANALITICO_RELACAO_IMOVEIS_EM_COBRANCA_ADMINISTRATIVA = "/relatorioAnaliticoImoveisEmCobrancaAdministrativa.jasper";
+
 	public static final String RELATORIO_OCORRENCIAS_PROCESSO_DIARIO_COBRANCA_BANCARIA = "/relatorioOcorrenciasProcessoDiarioCobrancaBancaria.jasper";
 
 	public static final String RELATORIO_EMITIR_HISTOGRAMA_AGUA_ESGOTO_ECONOMIA_TXT = "/relatorioHistogramaAguaEsgotoEconomia.txt";
@@ -826,6 +844,8 @@ public class ConstantesRelatorios {
 	public static final String RELATORIO_ARQUIVO_DECLARACAO_ANUAL_QUITACAO_DEBITOS = "/relatorioArquivoDeclaracaoAnualQuitacaoDebitos.jasper";
 
 	public static final String RELATORIO_ARQUIVO_DECLARACAO_ANUAL_QUITACAO_DEBITOS_MODELO_2 = "/relatorioArquivoDeclaracaoAnualQuitacaoDebitosModelo2.jasper";
+
+	public static final String RELATORIO_ARQUIVO_DECLARACAO_ANUAL_QUITACAO_DEBITOS_MODELO_3 = "/relatorioArquivoDeclaracaoAnualQuitacaoDebitosModelo3.jasper";
 
 	public static final String RELATORIO_QUADRO_COMPARATIVO_FATURAMENTO_ARRECADACAO = "/relatorioQuadroComparativoFaturamentoArrecadacao.jasper";
 
@@ -890,6 +910,7 @@ public class ConstantesRelatorios {
 	public static final String RELATORIO_CONTRATO_DEMANDA = "/relatorioContratoDemanda.jasper";
 
 	public static final String RELATORIO_CONTRATO_DEMANDA_CONSUMO = "/relatorioContratoDemandaConsumo.jasper";
+
 	public static final String RELATORIO_REGISTRO_ATENDIMENTO_COM_PROCESSO_ADM_JUD = "/relatorioRegistroAtendimentoComProcessoAdmJud.jasper";
 
 	public static final String RELATORIO_DEBITOS_PRESCRITOS = "/relatorioDebitosPrescritos.jasper";
@@ -905,6 +926,42 @@ public class ConstantesRelatorios {
 	public static final String RELATORIO_SITUACAO_ESPECIAL_FATURAMENTO = "/relatorioSituacaoEspecialFaturamento.jasper";
 
 	public static final String RELATORIO_ORDEM_CORTE_CAERD = "/relatorioOrdemCorteCAERD.jasper";
+
+	public static final String RELATORIO_MANTER_ATIVIDADE_ECONOMICA = "/relatorioManterAtividadeEconomica.jasper";
+
+	public static final String RELATORIO_CERTIDAO_POSITIVA_MODELO_1 = "/relatorioCertidaoPositivaModelo1.jasper";
+
+	public static final String RELATORIO_CERTIDAO_NEGATIVA_MODELO_4 = "/relatorioCertidaoNegativaModelo4.jasper";
+
+	public static final String RELATORIO_CERTIDAO_NEGATIVA_COM_EFEITO_POSITIVA_MODELO_4 = "/relatorioCertidaoNegativaComEfeitoPositivaModelo4.jasper";
+
+	public static final String RELATORIO_CONTAS_RECALCULADAS = "/relatorioContasRecalculadas.jasper";
+
+	public static final Object RELATORIO_ORDEM_SERVICO_BASE_COM_SUBRELATORIOS = "relatorioOrdemServicoBaseComSubrelatorios.jasper";
+
+	public static final String SUBRELATORIO_ORDEM_SERVICO_LIGACAO_AGUA = "subrelatorioOrdemServicoLigacaoAgua.jasper";
+
+	public static final String SUBRELATORIO_ORDEM_SERVICO_LIGACAO_ESGOTO = "subrelatorioOrdemServicoLigacaoEsgoto.jasper";
+
+	public static final String SUBRELATORIO_ORDEM_SERVICO_MANUTENCAO_DRENAGEM = "subrelatorioOrdemServicoManutencaoDrenagem.jasper";
+
+	public static final String SUBRELATORIO_ORDEM_SERVICO_MANUTENCAO_ESGOTO = "subrelatorioOrdemServicoManutencaoEsgoto.jasper";
+
+	public static final String SUBRELATORIO_ORDEM_SERVICO_MANUTENCAO_AGUA = "subrelatorioOrdemServicoManutencaoAgua.jasper";
+
+	public static final String SUBRELATORIO_ORDEM_SERVICO_REDE_AGUA = "subrelatorioOrdemServicoRedeAgua.jasper";
+
+	public static final String SUBRELATORIO_ORDEM_SERVICO_REDE_ESGOTO = "subrelatorioOrdemServicoRedeEsgoto.jasper";
+
+	public static final String SUBRELATORIO_ORDEM_SERVICO_REPAROS_ASFALTO = "subrelatorioOrdemServicoReparosAsfalto.jasper";
+
+	public static final String SUBRELATORIO_ORDEM_SERVICO_REPAROS_ATERRO_LIMP = "subrelatorioOrdemServicoReparosAterroLimp.jasper";
+
+	public static final String SUBRELATORIO_ORDEM_SERVICO_REPAROS_CALCADA = "subrelatorioOrdemServicoReparosCalcada.jasper";
+
+	public static final String SUBRELATORIO_ORDEM_SERVICO_HIDROMETRIA = "subrelatorioOrdemServicoHidrometria.jasper";
+
+	public static final String RELATORIO_RESUMO_ORDENS_SERVICO_DOC_COB = "/relatorioResumoOrdensServicoDocCob.jasper";
 
 	private static Map<String, URL> relatorios = new HashMap();
 

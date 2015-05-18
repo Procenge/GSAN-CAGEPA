@@ -25,6 +25,11 @@
 
 	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_NM_ESTADO" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NM_EMPRESA" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_JUCOR" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_INSC_EST" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_CNPJ" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NN_FONE" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="matricula1" class="java.lang.String"/>
 	<field name="dataEmissao1" class="java.lang.String"/>
@@ -342,9 +347,9 @@ O]]></text>
 						key="staticText-271"/>
 					<box></box>
 					<textElement verticalAlignment="Top">
-						<font size="8"/>
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
 					</textElement>
-				<text><![CDATA[O fornecimento de água ao seu imóvel foi suspenso nesta data por falta de pagamento. Providencie o pagamento do débito e solicite religação através das nossas Lojas de Atendimento, antes que seja enviado para cobrança judicial. A despesa com a religação será de sua responsabilidade.]]></text>
+				<text><![CDATA[O fornecimento de água ao seu imóvel foi suspenso nesta data por falta de pagamento. Providencie o pagamento do débito e solicite religação através das nossas Lojas de Atendimento, antes que seja enviado para cobrança judicial. A despesa com a religação será de sua responsabilidade.                                 (Qualquer duvida ligue -                                                       )]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
@@ -1822,19 +1827,6 @@ O]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
-						x="61"
-						y="38"
-						width="87"
-						height="16"
-						key="staticText-306"/>
-					<box></box>
-					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica" isBold="false"/>
-					</textElement>
-				<text><![CDATA[PORTO VELHO]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
 						x="4"
 						y="251"
 						width="55"
@@ -1853,71 +1845,58 @@ O]]></text>
 				<text><![CDATA[VALOR
 TOTAL]]></text>
 				</staticText>
-				<staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="60"
 						y="391"
 						width="303"
 						height="14"
-						key="staticText-308"/>
+						key="textField-321"/>
 					<box></box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font pdfFontName="Helvetica-Bold" isBold="true"/>
 					</textElement>
-				<text><![CDATA[COMPANHIA DE ÁGUA E ESGOTOS DE RONDÔNIA - CAERD]]></text>
-				</staticText>
-				<staticText>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NM_EMPRESA}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="60"
 						y="404"
 						width="303"
 						height="14"
-						key="staticText-309"/>
+						key="textField-322"/>
 					<box></box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
 					</textElement>
-				<text><![CDATA[C.G.C 05.914.254/0001-39 - INSC.ESTADUAL: 0000000027648-1]]></text>
-				</staticText>
-				<staticText>
+				<textFieldExpression   class="java.lang.String"><![CDATA["CNPJ: " + $P{P_CNPJ}+ ( $P{P_JUCOR}.equals("-1") ? "" :" - JUCOR: " + $P{P_JUCOR})+( $P{P_INSC_EST}.equals("-1") ? "" :" - ISNC.ESTADUAL Nº " + $P{P_INSC_EST})]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="63"
 						y="3"
 						width="303"
 						height="14"
-						key="staticText-310"/>
+						key="textField-317"/>
 					<box></box>
 					<textElement textAlignment="Center">
 						<font pdfFontName="Helvetica-Bold" isBold="true"/>
 					</textElement>
-				<text><![CDATA[COMPANHIA DE ÁGUA E ESGOTOS DE RONDÔNIA - CAERD]]></text>
-				</staticText>
-				<staticText>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NM_EMPRESA}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="63"
 						y="15"
 						width="303"
 						height="14"
-						key="staticText-311"/>
+						key="textField-320"/>
 					<box></box>
 					<textElement textAlignment="Center">
-						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
 					</textElement>
-				<text><![CDATA[C.G.C 05.914.254/0001-39 - INSC.ESTADUAL: 0000000027648-1]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						x="63"
-						y="30"
-						width="42"
-						height="10"
-						key="staticText-312"/>
-					<box></box>
-					<textElement>
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[CAERD]]></text>
-				</staticText>
+				<textFieldExpression   class="java.lang.String"><![CDATA["CNPJ: "+$P{P_CNPJ}+( $P{P_JUCOR}.equals("-1") ? "" :" - JUCOR: " + $P{P_JUCOR})+( $P{P_INSC_EST}.equals("-1") ? "" :" - ISNC.ESTADUAL Nº " + $P{P_INSC_EST})]]></textFieldExpression>
+				</textField>
 				<line direction="TopDown">
 					<reportElement
 						x="184"
@@ -1985,19 +1964,6 @@ TOTAL]]></text>
 						positionType="FixRelativeToBottom"/>
 					<graphicElement stretchType="NoStretch"/>
 				</rectangle>
-				<staticText>
-					<reportElement
-						x="60"
-						y="419"
-						width="42"
-						height="10"
-						key="staticText-313"/>
-					<box></box>
-					<textElement>
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[CAERD]]></text>
-				</staticText>
 				<rectangle>
 					<reportElement
 						x="4"
@@ -2369,21 +2335,6 @@ O]]></text>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{nomeUsuario2}]]></textFieldExpression>
 				</textField>
-				<staticText>
-					<reportElement
-						x="416"
-						y="509"
-						width="361"
-						height="38"
-						key="staticText-328">
-							<printWhenExpression><![CDATA[new Boolean($F{matricula2} != null)]]></printWhenExpression>
-						</reportElement>
-					<box></box>
-					<textElement verticalAlignment="Top">
-						<font size="8"/>
-					</textElement>
-				<text><![CDATA[O fornecimento de água ao seu imóvel foi suspenso nesta data por falta de pagamento. Providencie o pagamento do débito e solicite religação através das nossas Lojas de Atendimento, antes que seja enviado para cobrança judicial. A despesa com a religação será de sua responsabilidade.]]></text>
-				</staticText>
 				<staticText>
 					<reportElement
 						x="527"
@@ -3602,21 +3553,6 @@ O]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
-						x="470"
-						y="38"
-						width="87"
-						height="16"
-						key="staticText-362">
-							<printWhenExpression><![CDATA[new Boolean($F{matricula2} != null)]]></printWhenExpression>
-						</reportElement>
-					<box></box>
-					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica" isBold="false"/>
-					</textElement>
-				<text><![CDATA[PORTO VELHO]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
 						x="413"
 						y="251"
 						width="55"
@@ -3637,81 +3573,66 @@ O]]></text>
 				<text><![CDATA[VALOR
 TOTAL]]></text>
 				</staticText>
-				<staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="469"
 						y="391"
 						width="303"
 						height="14"
-						key="staticText-364">
+						key="textField-324">
 							<printWhenExpression><![CDATA[new Boolean($F{matricula2} != null)]]></printWhenExpression>
 						</reportElement>
 					<box></box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font pdfFontName="Helvetica-Bold" isBold="true"/>
 					</textElement>
-				<text><![CDATA[COMPANHIA DE ÁGUA E ESGOTOS DE RONDÔNIA - CAERD]]></text>
-				</staticText>
-				<staticText>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NM_EMPRESA}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="469"
 						y="404"
 						width="303"
 						height="14"
-						key="staticText-365">
+						key="textField-323">
 							<printWhenExpression><![CDATA[new Boolean($F{matricula2} != null)]]></printWhenExpression>
 						</reportElement>
 					<box></box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
 					</textElement>
-				<text><![CDATA[C.G.C 05.914.254/0001-39 - INSC.ESTADUAL: 0000000027648-1]]></text>
-				</staticText>
-				<staticText>
+				<textFieldExpression   class="java.lang.String"><![CDATA["CNPJ: "+$P{P_CNPJ}+( $P{P_JUCOR}.equals("-1") ? "" :" - JUCOR: " + $P{P_JUCOR})+( $P{P_INSC_EST}.equals("-1") ? "" :" - ISNC.ESTADUAL Nº " + $P{P_INSC_EST})]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="472"
 						y="3"
 						width="303"
 						height="14"
-						key="staticText-366">
+						key="textField-318">
 							<printWhenExpression><![CDATA[new Boolean($F{matricula2} != null)]]></printWhenExpression>
 						</reportElement>
 					<box></box>
 					<textElement textAlignment="Center">
 						<font pdfFontName="Helvetica-Bold" isBold="true"/>
 					</textElement>
-				<text><![CDATA[COMPANHIA DE ÁGUA E ESGOTOS DE RONDÔNIA - CAERD]]></text>
-				</staticText>
-				<staticText>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NM_EMPRESA}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="472"
 						y="15"
 						width="303"
 						height="14"
-						key="staticText-367">
+						key="textField-319">
 							<printWhenExpression><![CDATA[new Boolean($F{matricula2} != null)]]></printWhenExpression>
 						</reportElement>
 					<box></box>
 					<textElement textAlignment="Center">
-						<font pdfFontName="Helvetica-Bold" isBold="true"/>
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
 					</textElement>
-				<text><![CDATA[C.G.C 05.914.254/0001-39 - INSC.ESTADUAL: 0000000027648-1]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						x="472"
-						y="30"
-						width="42"
-						height="10"
-						key="staticText-368">
-							<printWhenExpression><![CDATA[new Boolean($F{matricula2} != null)]]></printWhenExpression>
-						</reportElement>
-					<box></box>
-					<textElement>
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[CAERD]]></text>
-				</staticText>
+				<textFieldExpression   class="java.lang.String"><![CDATA["CNPJ: "+$P{P_CNPJ}+( $P{P_JUCOR}.equals("-1") ? "" :" - JUCOR: " + $P{P_JUCOR})+( $P{P_INSC_EST}.equals("-1") ? "" :" - ISNC.ESTADUAL Nº " + $P{P_INSC_EST})]]></textFieldExpression>
+				</textField>
 				<line direction="TopDown">
 					<reportElement
 						x="593"
@@ -3791,21 +3712,6 @@ TOTAL]]></text>
 						</reportElement>
 					<graphicElement stretchType="NoStretch"/>
 				</rectangle>
-				<staticText>
-					<reportElement
-						x="469"
-						y="419"
-						width="42"
-						height="10"
-						key="staticText-369">
-							<printWhenExpression><![CDATA[new Boolean($F{matricula2} != null)]]></printWhenExpression>
-						</reportElement>
-					<box></box>
-					<textElement>
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[CAERD]]></text>
-				</staticText>
 				<rectangle>
 					<reportElement
 						x="413"
@@ -4472,6 +4378,47 @@ TOTAL]]></text>
 						<font size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{servicoTipo2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="417"
+						y="509"
+						width="361"
+						height="38"
+						key="staticText-382"/>
+					<box></box>
+					<textElement verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[O fornecimento de água ao seu imóvel foi suspenso nesta data por falta de pagamento. Providencie o pagamento do débito e solicite religação através das nossas Lojas de Atendimento, antes que seja enviado para cobrança judicial. A despesa com a religação será de sua responsabilidade.                                 (Qualquer duvida ligue -                                                       )]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="503"
+						y="536"
+						width="96"
+						height="9"
+						key="textField-325">
+							<printWhenExpression><![CDATA[new Boolean($F{matricula2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement>
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NN_FONE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="91"
+						y="536"
+						width="101"
+						height="9"
+						key="textField"/>
+					<box></box>
+					<textElement>
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NN_FONE}]]></textFieldExpression>
 				</textField>
 			</band>
 		</detail>

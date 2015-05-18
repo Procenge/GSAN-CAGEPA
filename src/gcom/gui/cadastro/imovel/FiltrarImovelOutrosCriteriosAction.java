@@ -290,6 +290,14 @@ public class FiltrarImovelOutrosCriteriosAction
 						.getConsumoMinimoFixadoEsgotoFinal() == null ? "" : imovelLocalizacaoFiltrarActionForm
 						.getConsumoMinimoFixadoEsgotoFinal());
 
+		filtrarImovelOutrosCriteriosHelper.setConsumoFixadoEsgotoPocoInicial(imovelLocalizacaoFiltrarActionForm
+						.getConsumoFixadoEsgotoPocoInicial() == null ? "" : imovelLocalizacaoFiltrarActionForm
+						.getConsumoFixadoEsgotoPocoInicial());
+
+		filtrarImovelOutrosCriteriosHelper.setConsumoFixadoEsgotoPocoFinal(imovelLocalizacaoFiltrarActionForm
+						.getConsumoFixadoEsgotoPocoFinal() == null ? "" : imovelLocalizacaoFiltrarActionForm
+						.getConsumoFixadoEsgotoPocoFinal());
+
 		filtrarImovelOutrosCriteriosHelper.setTipoMedicao(imovelLocalizacaoFiltrarActionForm.getTipoMedicao() == null ? "-1"
 						: imovelLocalizacaoFiltrarActionForm.getTipoMedicao());
 
@@ -600,6 +608,10 @@ public class FiltrarImovelOutrosCriteriosAction
 		// consumo Minimo Fixado Esgoto Final
 		String consumoMinimoFixadoEsgotoFinal = imovelLocalizacaoFiltrarActionForm.getConsumoMinimoFixadoEsgotoFinal();
 
+		// consumo Fixado Esgoto do Poço Inicial
+		String consumoFixadoEsgotoPocoInicial = imovelLocalizacaoFiltrarActionForm.getConsumoFixadoEsgotoPocoInicial();
+		String consumoFixadoEsgotoPocoFinal = imovelLocalizacaoFiltrarActionForm.getConsumoFixadoEsgotoPocoFinal();
+
 		// intervalo Percentual Esgoto Inicial
 		String intervaloValorPercentualEsgotoInicial = imovelLocalizacaoFiltrarActionForm.getIntervaloPercentualEsgotoInicial();
 		// intervalor Percentual Esgoto Final
@@ -770,6 +782,14 @@ public class FiltrarImovelOutrosCriteriosAction
 										.trim().equalsIgnoreCase(new Integer(ConstantesSistema.NUMERO_NAO_INFORMADO).toString()))){
 			peloMenosUmParametroInformado = true;
 		}
+
+		// consumo fixado de esgoto do poço inicial e final
+		if(consumoFixadoEsgotoPocoInicial != null && !consumoFixadoEsgotoPocoInicial.toString().equals("")
+						&& consumoFixadoEsgotoPocoFinal != null && !consumoFixadoEsgotoPocoFinal.toString().equals("")){
+
+			peloMenosUmParametroInformado = true;
+		}
+
 		// percentual esgoto inicial e final
 		if((intervaloValorPercentualEsgotoInicial != null && !intervaloValorPercentualEsgotoInicial.equals("") && !intervaloValorPercentualEsgotoInicial
 						.trim().equalsIgnoreCase(new Integer(ConstantesSistema.NUMERO_NAO_INFORMADO).toString()))
@@ -799,8 +819,7 @@ public class FiltrarImovelOutrosCriteriosAction
 		}
 
 		// situação ligação de esgoto
-		if(idSituacaoLigacaoEsgoto != null && !idSituacaoLigacaoEsgoto.equals("")
-){
+		if(idSituacaoLigacaoEsgoto != null && !idSituacaoLigacaoEsgoto.equals("")){
 			peloMenosUmParametroInformado = true;
 		}
 		// imovel Perfil

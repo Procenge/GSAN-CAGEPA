@@ -293,7 +293,7 @@ public class ExecutorParametrosFaturamento
 		Date dataVencimentoConta = null;
 		try{
 			// Obter Último dia do ano, conforme ano base informado.
-			dataVencimentoConta = Util.gerarDataFinalDoAnoApartirDoAnoMesRefencia(anoBaseDeclaracaoQuitacaoDebitoAnual);
+			dataVencimentoConta = Util.gerarDataFinalDoAnoApartirDoAnoRefencia(anoBaseDeclaracaoQuitacaoDebitoAnual);
 
 			// Caso o imóvel tenha contas vencidas no ano de referência,
 			// não gerar a declaração para o imóvel e passar para o próximo imóvel.
@@ -2569,7 +2569,7 @@ public class ExecutorParametrosFaturamento
 					throws ControladorException, ErroRepositorioException{
 
 		String retorno = "";
-		Integer anoFaturamento = Util.converterStringParaInteger(anoMesFaturamento.toString().substring(0, 4));
+		Integer anoFaturamento = Util.converterStringParaInteger(anoMesFaturamento.toString().substring(0, 4)) - 1;
 		int index = 0;
 
 		Collection colecaoAnos = repositorioFaturamento.obterUltimosCincoAnosAnterioresReferenciaComContaVencida(idImovel, anoFaturamento);
@@ -4332,12 +4332,12 @@ public class ExecutorParametrosFaturamento
 
 		try{
 			// Obter Primeiro dia do ano, conforme ano base informado.
-			Date dataInicial = Util.gerarDataInicialDoAnoApartirDoAnoMesRefencia(anoBaseDeclaracaoQuitacaoDebitoAnual);
+			Date dataInicial = Util.gerarDataInicialDoAnoApartirDoAnoRefencia(anoBaseDeclaracaoQuitacaoDebitoAnual);
 
 			Integer referenciaInicial = Util.recuperaAnoMesDaData(dataInicial);
 
 			// Obter Último dia do ano, conforme ano base informado.
-			Date dataFinal = Util.gerarDataFinalDoAnoApartirDoAnoMesRefencia(anoBaseDeclaracaoQuitacaoDebitoAnual);
+			Date dataFinal = Util.gerarDataFinalDoAnoApartirDoAnoRefencia(anoBaseDeclaracaoQuitacaoDebitoAnual);
 
 			Integer referenciaFinal = Util.recuperaAnoMesDaData(dataFinal);
 
@@ -6829,4 +6829,186 @@ public class ExecutorParametrosFaturamento
 
 		return contaTxt;
 	}
+
+	/**
+	 * [UC3013] Gerar Declaração Anual Quitação Débitos
+	 * [SB0004] - Verificar Não Geração da Declaração para o Imóvel - Modelo Default–
+	 * 
+	 * @author Yara Souza
+	 * @date 29/09/2014
+	 */
+	public Boolean execParamVerificarNaoGeracaoDeclaracaoImovel(ParametroSistema parametroSistema, Integer idImovel,
+					Integer anoBaseDeclaracaoQuitacaoDebitoAnual) throws ControladorException, CreateException{
+
+		this.ejbCreate();
+
+		Boolean retorno = Boolean.TRUE;
+
+		try{
+			// Obter Primeiro dia do ano, conforme ano base informado.
+			Date dataInicial = Util.gerarDataInicialDoAnoApartirDoAnoRefencia(anoBaseDeclaracaoQuitacaoDebitoAnual);
+
+			Integer referenciaInicial = Util.recuperaAnoMesDaData(dataInicial);
+
+			// Obter Último dia do ano, conforme ano base informado.
+			Date dataFinal = Util.gerarDataFinalDoAnoApartirDoAnoRefencia(anoBaseDeclaracaoQuitacaoDebitoAnual);
+
+			Integer referenciaFinal = Util.recuperaAnoMesDaData(dataFinal);
+
+			// Caso o imóvel tenha contas vencidas no ano de referência
+			boolean verificarImovelContasVencidasAnoReferencia = repositorioFaturamento.verificarImovelContasVencidasAnoReferencia(
+							idImovel, dataInicial, dataFinal);
+
+			if(verificarImovelContasVencidasAnoReferencia){
+				retorno = Boolean.FALSE;
+			}
+
+			if(retorno){
+				// Caso o imóvel tenha guias de pagamento vencidas no ano de referência
+				boolean verificarImovelGuiasVencidasAnoReferencia = repositorioFaturamento.verificarImovelGuiasVencidasAnoReferencia(
+								idImovel, dataInicial, dataFinal);
+
+				if(verificarImovelGuiasVencidasAnoReferencia){
+					retorno = Boolean.FALSE;
+				}
+			}
+
+			if(retorno){
+				// Caso não existam pagamentos para o imóvel no ano de referência
+				boolean verificarPagamentosHistoricoParaImovelAnoReferencia = repositorioFaturamento
+								.verificarPagamentosHistoricoParaImovelAnoReferencia(idImovel, referenciaInicial, referenciaFinal);
+
+				if(!verificarPagamentosHistoricoParaImovelAnoReferencia){
+					retorno = Boolean.FALSE;
+				}
+			}
+
+			// if(retorno){
+			// // Caso exista pagamento ou parcelamento após o ano de referência
+			// boolean verificarImovelParcelamentoAnoReferencia =
+			// repositorioFaturamento.verificarImovelParcelamentoAnoReferencia(
+			// idImovel, referenciaFinal, dataFinal);
+			//
+			// if(verificarImovelParcelamentoAnoReferencia){
+			// retorno = Boolean.FALSE;
+			// }
+			// }
+		}catch(ErroRepositorioException e){
+			e.printStackTrace();
+			throw new ControladorException("erro.sistema", e);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC3013] Gerar Declaração Anual Quitação Débitos
+	 * [SB0002] Verificar Não Geração da Declaração para o Imóvel – Modelo Default
+	 * 
+	 * @author Yara Souza
+	 * @date 30/09/2014
+	 */
+	public Boolean execParamVerificarNaoGeracaoDeclaracaoImovelModeloDefault(ParametroSistema parametroSistema, Integer idImovel,
+					Integer anoBaseDeclaracaoQuitacaoDebitoAnual) throws ControladorException, CreateException{
+
+		this.ejbCreate();
+
+		Boolean retorno = Boolean.TRUE;
+
+		try{
+
+			// 1. Caso o imóvel tenha contas vencidas no ano de referência (existe ocorrência na
+			// tabela CONTA com IMOV_ID=IMOV_ID da tabela IMOVEL e DCST_IDATUAL=DCST_ID da tabela
+			// DEBITO_CREDITO_SITUACAO com DCST_ICVALIDO com o valor correspondente a "Sim" e
+			// CNTA_DTVENCIMENTOCONTA menor ou igual ao último dia do ano de referência e o motivo
+			// de revisão iniba a geração da declaração (CMRV_ICINIBEDECLARACAOQUITACAO = 1) e caso
+			// seja para verificar pagamento pendente
+			// ("P_VERIFICA_PAGTO_PENDENTE_DECLARACAO_QUITACAO_ANUAL" = 1) e não tenha pagamento
+			// (CNTA_ICPAGAMENTO = 2 OR CNTA_ICPAGAMENTO IS NULL)), não gerar a declaração para o
+			// imóvel e passar para o próximo imóvel.
+
+			// Obter Ultimo dia do ano, conforme ano base informado.
+			Date ultimoDiaDoAnoDeReferencia = Util.gerarDataFinalDoAnoApartirDoAnoRefencia(anoBaseDeclaracaoQuitacaoDebitoAnual);
+
+			// Integer referenciaFinal = Util.recuperaAnoMesDaData(ultimoDiaDoAnoDeReferencia);
+
+			Integer pConsiderarPgtoPendente = Util
+							.converterStringParaInteger((String) ParametroFaturamento.P_VERIFICA_PAGTO_PENDENTE_DECLARACAO_QUITACAO_ANUAL
+											.executar());
+						
+			boolean verificarImovelContasVencidasAnoReferencia = repositorioFaturamento
+							.verificarImovelContasVencidasAnoReferenciaEmRevisao(idImovel, ultimoDiaDoAnoDeReferencia,
+											pConsiderarPgtoPendente);
+
+			if(verificarImovelContasVencidasAnoReferencia){
+				retorno = Boolean.FALSE;
+			}
+
+			if(retorno){
+
+				// 2. Caso o sistema deva considerar guias de pagamentos vencidas
+				// (P_CONSIDERA_GUIA_PAGTO_DECLARACAO_QUITACAO_ANUAL = 1) e o imóvel tenha guias de
+				// pagamento vencidas no ano de referência (existe ocorrência na tabela
+				// GUIA_PAGAMENTO_PRESTACAO com GPAG_ID = GPAG_ID da tabela GUIA_PAGAMENTO com
+				// IMOV_ID = IMOV_ID da tabela IMOVEL e DCST_ID = DCST_ID da tabela
+				// DEBITO_CREDITO_SITUACAO com DCST_ICVALIDO com o valor correspondente a "Sim" e
+				// GPPR_DTVENCIMENTO menor ou igual ao último dia do ano de referência e caso seja
+				// para verificar pagamento pendente
+				// ("P_VERIFICA_PAGTO_PENDENTE_DECLARACAO_QUITACAO_ANUAL" = 1) e não tenha pagamento
+				// (GPPR_ICPAGAMENTO = 2 OR GPPR_ICPAGAMENTO IS NULL)), não gerar a declaração para
+				// o imóvel e passar para o próximo imóvel.
+
+				Integer pConsiderarPgtoGuiaPagamento = Util
+								.converterStringParaInteger((String) ParametroFaturamento.P_CONSIDERA_GUIA_PAGTO_DECLARACAO_QUITACAO_ANUAL
+												.executar());
+
+				if(pConsiderarPgtoGuiaPagamento.equals(Integer.valueOf(ConstantesSistema.SIM.intValue()))){
+
+					boolean verificarImovelGuiasVencidasAnoReferencia = repositorioFaturamento.verificarImovelGuiasVencidasAnoReferencia(
+									idImovel, ultimoDiaDoAnoDeReferencia, pConsiderarPgtoPendente);
+
+					if(verificarImovelGuiasVencidasAnoReferencia){
+						retorno = Boolean.FALSE;
+					}
+				}
+			}
+
+			if(retorno){
+				// 3. Caso não existam pagamentos de conta para o imóvel no ano de referência (não
+				// existe ocorrência na tabela PAGAMENTO_HISTORICO com IMOV_ID=IMOV_ID da tabela
+				// IMOVEL e CNTA_ID <> nulo ano e mês de PGMT_DTPAGAMENTO igual ao ano de
+				// referência) e caso o sistema deva considerar guias de pagamentos vencidas
+				// (P_CONSIDERA_GUIA_PAGTO_DECLARACAO_QUITACAO_ANUAL = 1) e não existam pagamentos
+				// de guias de pagamento para o imóvel no ano de referência (não existe ocorrência
+				// na tabela PAGAMENTO_HISTORICO com IMOV_ID=IMOV_ID da tabela IMOVEL e GPAG_ID <>
+				// nulo ano e mês de PGMT_DTPAGAMENTO igual ao ano de referência), não gerar a
+				// declaração para o imóvel e passar para o próximo imóvel.
+
+				// Obter Primeiro dia do ano, conforme ano base informado.
+				Date dataInicial = Util.gerarDataInicialDoAnoApartirDoAnoRefencia(anoBaseDeclaracaoQuitacaoDebitoAnual);
+
+				Integer referenciaInicial = Util.recuperaAnoMesDaData(dataInicial);
+
+				// Obter Último dia do ano, conforme ano base informado.
+				Date dataFinal = Util.gerarDataFinalDoAnoApartirDoAnoRefencia(anoBaseDeclaracaoQuitacaoDebitoAnual);
+
+				Integer referenciaFinal = Util.recuperaAnoMesDaData(dataFinal);
+
+				boolean verificarPagamentosHistoricoParaImovelAnoReferencia = repositorioFaturamento
+								.verificarPagamentosHistoricoParaImovelAnoReferencia(idImovel, referenciaInicial, referenciaFinal,
+												pConsiderarPgtoPendente);
+
+				if(!verificarPagamentosHistoricoParaImovelAnoReferencia){
+					retorno = Boolean.FALSE;
+				}
+			}
+
+		}catch(ErroRepositorioException e){
+			e.printStackTrace();
+			throw new ControladorException("erro.sistema", e);
+		}
+
+		return retorno;
+	}
+
 }

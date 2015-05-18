@@ -102,6 +102,19 @@ public class ParametroFaturamento
 
 	public static final Parametro P_VERIFICAR_CONSUMO_LIGACAO_CORTADA = new ParametroFaturamento("P_VERIFICAR_CONSUMO_LIGACAO_CORTADA");
 
+	public static final Parametro P_QUANTIDADE_MINIMA_DIAS_CICLO_FATURAMENTO = new ParametroFaturamento(
+					"P_QUANTIDADE_MINIMA_DIAS_CICLO_FATURAMENTO");
+
+	public static final Parametro P_QUANTIDADE_MAXIMA_DIAS_CICLO_FATURAMENTO = new ParametroFaturamento(
+					"P_QUANTIDADE_MAXIMA_DIAS_CICLO_FATURAMENTO");
+
+	public static final Parametro P_QUANTIDADE_MAXIMA_CRONOGRAMA_FATURAMENTO = new ParametroFaturamento(
+					"P_QUANTIDADE_MAXIMA_CRONOGRAMA_FATURAMENTO");
+
+	public static final Parametro P_GERA_CRONOGRAMA_AUTOMATICAMENTE = new ParametroFaturamento("P_GERA_CRONOGRAMA_AUTOMATICAMENTE");
+
+	public static final Parametro P_AJUSTA_CRONOGRAMA_AUTOMATICAMENTE = new ParametroFaturamento("P_AJUSTA_CRONOGRAMA_AUTOMATICAMENTE");
+
 	/*
 	 * Lista das situações de ligação de água com geração do valor do débito líquido inferior
 	 * (menor) ao valor mínimo para a emissão da conta no faturamento imediato
@@ -130,6 +143,9 @@ public class ParametroFaturamento
 					"P_EXIBIR_DATA_INFOMADA_COMANDO_FATUAMENTO");
 
 	public static final Parametro P_HABILITAR_CAUCIONAMENTO = new ParametroFaturamento("P_HABILITAR_CAUCIONAMENTO");
+
+	public static final Parametro P_LIMITE_MAXIMO_CONTAS_SELECIONADAS_OPERACAO_MANTER_CONTA = new ParametroFaturamento(
+					"P_LIMITE_MAXIMO_CONTAS_SELECIONADAS_OPERACAO_MANTER_CONTA");
 
 	/*
 	 * Indica a lista de motivos de revisão de conta que permitem gerar movimento de débito
@@ -291,6 +307,52 @@ public class ParametroFaturamento
 
 	public static final Parametro P_INDICADOR_GERACAO_ARQUIVO_PDF_EMISSAO_CONTA = new ParametroFaturamento(
 					"P_INDICADOR_GERACAO_ARQUIVO_PDF_EMISSAO_CONTA");
+
+	public static final Parametro P_TRUNCAR_VALOR_ESGOTO = new ParametroFaturamento("P_TRUNCAR_VALOR_ESGOTO");
+
+	public static final Parametro P_ALIQUOTA_IMPOSTO_COFINS = new ParametroFaturamento("P_ALIQUOTA_IMPOSTO_COFINS");
+
+	public static final Parametro P_ALIQUOTA_IMPOSTO_PIS_PASEP = new ParametroFaturamento("P_ALIQUOTA_IMPOSTO_PIS_PASEP");
+
+	public static final Parametro P_QUANTIDADE_DIAS_PROJECAO_CONSUMO = new ParametroFaturamento("P_QUANTIDADE_DIAS_PROJECAO_CONSUMO");
+
+	public static final Parametro P_QUANTIDADE_DECIMAIS_VALOR_TARIFA = new ParametroFaturamento("P_QUANTIDADE_DECIMAIS_VALOR_TARIFA");
+
+	public static final Parametro P_INDICADOR_TARIFA_CONSUMO_SUBCATEGORIA = new ParametroFaturamento(
+					"P_INDICADOR_TARIFA_CONSUMO_SUBCATEGORIA");
+
+	public static final Parametro P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS = new ParametroFaturamento("P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS");
+
+	public static final Parametro P_INDICADOR_FATURAMENTO_ATUAL_TITULAR_DEBITO_IMOVEL = new ParametroFaturamento(
+					"P_INDICADOR_FATURAMENTO_ATUAL_TITULAR_DEBITO_IMOVEL");
+
+	public static final Parametro P_MODELO_TERMO_ASSUNCAO_DIVIDA = new ParametroFaturamento("P_MODELO_TERMO_ASSUNCAO_DIVIDA");
+
+	public static final Parametro P_TIPO_RELACAO_ATUAL_TITULAR_DEBITO_IMOVEL = new ParametroFaturamento(
+					"P_TIPO_RELACAO_ATUAL_TITULAR_DEBITO_IMOVEL");
+
+	public static final Parametro P_MES_BASE_EMISSAO_QUITACAO_DEBITO_ANUAL = new ParametroFaturamento(
+					"P_MES_BASE_EMISSAO_QUITACAO_DEBITO_ANUAL");
+
+	public static final Parametro P_MENSAGEM_QUITACAO_DEBITO_ANUAL = new ParametroFaturamento("P_MENSAGEM_QUITACAO_DEBITO_ANUAL");
+
+	public static final Parametro P_EXIBIR_MENSAGEM_SUSBTITUICAO_CODIGO_BARRAS_2_VIA = new ParametroFaturamento(
+					"P_EXIBIR_MENSAGEM_SUSBTITUICAO_CODIGO_BARRAS_2_VIA");
+
+	
+	public static final Parametro P_CONSIDERA_GUIA_PAGTO_DECLARACAO_QUITACAO_ANUAL = new ParametroFaturamento(
+					"P_CONSIDERA_GUIA_PAGTO_DECLARACAO_QUITACAO_ANUAL");
+
+	public static final Parametro P_VERIFICA_PAGTO_PENDENTE_DECLARACAO_QUITACAO_ANUAL = new ParametroFaturamento(
+					"P_VERIFICA_PAGTO_PENDENTE_DECLARACAO_QUITACAO_ANUAL");
+
+	public static final Parametro P_NUMERO_DIAS_CALCULO_VENCIMENTO_GUIA_COBRANCA_SERVICO_ANTECIPADO = new ParametroFaturamento(
+					"P_NUMERO_DIAS_CALCULO_VENCIMENTO_GUIA_COBRANCA_SERVICO_ANTECIPADO");
+
+	public static final Parametro P_ATUALIZACAO_CADASTRAL_LEITURA = new ParametroFaturamento("P_ATUALIZACAO_CADASTRAL_LEITURA");
+
+	public static final Parametro P_HABILITAR_TARIFA_SOCIAL_PERCENTUAL_ESGOTO = new ParametroFaturamento(
+					"P_HABILITAR_TARIFA_SOCIAL_PERCENTUAL_ESGOTO");
 
 	private ParametroFaturamento(String parametro) {
 

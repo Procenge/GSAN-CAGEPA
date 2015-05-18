@@ -84,6 +84,7 @@ import gcom.seguranca.acesso.usuario.FiltroUsuarioTipo;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.seguranca.acesso.usuario.UsuarioTipo;
 import gcom.util.ConstantesSistema;
+import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
 import java.util.Collection;
@@ -115,7 +116,11 @@ public class UsuarioPesquisarAction
 		PesquisarUsuarioActionForm pesquisarUsuarioActionForm = (PesquisarUsuarioActionForm) actionForm;
 		Fachada fachada = Fachada.getInstancia();
 		HttpSession sessao = httpServletRequest.getSession(false);
+		String tipoPesquisa = (String) httpServletRequest.getParameter("tipo");
 		// Inicializando Variaveis
+		if(!Util.isVazioOuBranco(tipoPesquisa)){
+			sessao.setAttribute("tipoPesquisa", tipoPesquisa);
+		}
 
 		// Pesquisando usuarios tipo
 		FiltroUsuarioTipo filtroUsuarioTipo = new FiltroUsuarioTipo();

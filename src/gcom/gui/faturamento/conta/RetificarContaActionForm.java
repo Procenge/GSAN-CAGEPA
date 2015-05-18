@@ -171,6 +171,10 @@ public class RetificarContaActionForm
 
 	private String nomeCliente;
 
+	private String consumoFixoPoco;
+
+	private String habilitarConsumoFixoPoco;
+
 	public String getValorCredito(){
 
 		return valorCredito;
@@ -570,5 +574,27 @@ public class RetificarContaActionForm
 
 		this.nomeCliente = nomeCliente;
 	}
+
+
+	public String getConsumoFixoPoco(){
+
+		return consumoFixoPoco;
+	}
+
+	public void setConsumoFixoPoco(String consumoFixoPoco){
+
+		this.consumoFixoPoco = consumoFixoPoco;
+	}
+
+	public String getHabilitarConsumoFixoPoco(){
+
+		return habilitarConsumoFixoPoco;
+	}
+
+	public void setHabilitarConsumoFixoPoco(String habilitarConsumoFixoPoco){
+
+		this.habilitarConsumoFixoPoco = habilitarConsumoFixoPoco;
+	}
+
 
 }

@@ -210,11 +210,19 @@ public class ServicoTipo
 
 	private int indicadorServicoCritico;
 
+	private int indicadorPagamentoAntecipado;
+
 	private String codigoConstante;
 
 	private Integer prazoRestricaoNovaOrdemServico = 0;
 
 	private transient Integer qtidadeOs;
+
+	private Short indicadorAfericaoHidrometro;
+
+	private Integer numeroMaximoVisitasImprodutivasPermitidas;
+
+	private Short numeroMaximoGuiaPrestacaoAntecipadaPermitidas;
 
 	// Indicadores
 
@@ -229,6 +237,10 @@ public class ServicoTipo
 	public final static short INDICADOR_VISTORIA_SIM = 1;
 
 	public final static String INDICADOR_VISTORIA_SERVICO_TIPO_NAO = "2";
+
+	public final static short INDICADOR_AFERICAO_SIM = 1;
+
+	public final static short INDICADOR_AFERICAO_NAO = 2;
 
 	// Constantes
 
@@ -303,6 +315,26 @@ public class ServicoTipo
 	/** default constructor */
 	public ServicoTipo() {
 
+	}
+
+	public Integer getNumeroMaximoVisitasImprodutivasPermitidas(){
+
+		return this.numeroMaximoVisitasImprodutivasPermitidas;
+	}
+
+	public void setNumeroMaximoVisitasImprodutivasPermitidas(Integer numeroMaximoVisitasImprodutivasPermitidas){
+
+		this.numeroMaximoVisitasImprodutivasPermitidas = numeroMaximoVisitasImprodutivasPermitidas;
+	}
+
+	public Short getNumeroMaximoGuiaPrestacaoAntecipadaPermitidas(){
+
+		return this.numeroMaximoGuiaPrestacaoAntecipadaPermitidas;
+	}
+
+	public void setNumeroMaximoGuiaPrestacaoAntecipadaPermitidas(Short numeroMaximoGuiaPrestacaoAntecipadaPermitidas){
+
+		this.numeroMaximoGuiaPrestacaoAntecipadaPermitidas = numeroMaximoGuiaPrestacaoAntecipadaPermitidas;
 	}
 
 	public Integer getId(){
@@ -736,6 +768,16 @@ public class ServicoTipo
 		this.indicadorServicoCritico = indicadorServicoCritico;
 	}
 
+	public int getIndicadorPagamentoAntecipado(){
+
+		return indicadorPagamentoAntecipado;
+	}
+
+	public void setIndicadorPagamentoAntecipado(int indicadorPagamentoAntecipado){
+
+		this.indicadorPagamentoAntecipado = indicadorPagamentoAntecipado;
+	}
+
 	@Override
 	public String getDescricaoParaRegistroTransacao(){
 
@@ -944,6 +986,16 @@ public class ServicoTipo
 
 			return colecaoIds;
 		}
+	}
+
+	public Short getIndicadorAfericaoHidrometro(){
+
+		return indicadorAfericaoHidrometro;
+	}
+
+	public void setIndicadorAfericaoHidrometro(Short indicadorAfericaoHidrometro){
+
+		this.indicadorAfericaoHidrometro = indicadorAfericaoHidrometro;
 	}
 
 }

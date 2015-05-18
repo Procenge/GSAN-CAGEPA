@@ -119,10 +119,12 @@ public class Equipe
 	/** persistent field */
 	private gcom.atendimentopublico.ordemservico.ServicoPerfilTipo servicoPerfilTipo;
 
+	private EquipeTipo equipeTipo;
+
 	/** full constructor */
 	public Equipe(String nome, String placaVeiculo, Integer cargaTrabalho, Date ultimaAlteracao,
 					UnidadeOrganizacional unidadeOrganizacional, gcom.atendimentopublico.ordemservico.ServicoPerfilTipo servicoPerfilTipo,
-					short indicadorUso) {
+					short indicadorUso, EquipeTipo equipeTipo) {
 
 		this.nome = nome;
 		this.placaVeiculo = placaVeiculo;
@@ -131,6 +133,7 @@ public class Equipe
 		this.unidadeOrganizacional = unidadeOrganizacional;
 		this.servicoPerfilTipo = servicoPerfilTipo;
 		this.indicadorUso = indicadorUso;
+		this.equipeTipo = equipeTipo;
 	}
 
 	/** default constructor */
@@ -257,5 +260,15 @@ public class Equipe
 	public String getNomeComId(){
 
 		return getId() + " - " + getNome();
+	}
+
+	public EquipeTipo getEquipeTipo(){
+
+		return equipeTipo;
+	}
+
+	public void setEquipeTipo(EquipeTipo equipeTipo){
+
+		this.equipeTipo = equipeTipo;
 	}
 }

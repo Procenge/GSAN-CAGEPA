@@ -120,7 +120,7 @@ public class ExibirGerarFaturaClienteResponsavelAction
 		sessao.removeAttribute("PesquisarActionForm");
 
 		if(Util.isVazioOuBranco(gerarFaturaClienteResponsavelActionForm.getIndicadorContasRevisao())){
-			gerarFaturaClienteResponsavelActionForm.setIndicadorContasRevisao(ConstantesSistema.NAO.toString());
+			gerarFaturaClienteResponsavelActionForm.setIndicadorContasRevisao(ConstantesSistema.TODOS.toString());
 		}
 
 		// Pesquisar os motivos para conta em revisão

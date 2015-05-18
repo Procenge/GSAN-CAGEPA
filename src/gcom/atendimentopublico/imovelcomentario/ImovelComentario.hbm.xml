@@ -42,6 +42,21 @@
         length="8"
     />
     
+     <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="icom_icuso"
+        not-null="true"
+        length="2"
+    />
+    
+     <property
+        name="dataInclusao"
+        type="java.sql.Date"
+        column="icom_dtinclusao"
+        length="6"
+    />
+    
 
     <!-- associations -->
     <!-- bi-directional many-to-one association to Municipio -->
@@ -49,7 +64,6 @@
         name="imovel"
         class="gcom.cadastro.imovel.Imovel"
         not-null="true"
-        
     >
         <column name="imov_id" />
     </many-to-one>
@@ -58,10 +72,16 @@
         name="usuario"
         class="gcom.seguranca.acesso.usuario.Usuario"
         not-null="true"
-        
     >
         <column name="usur_id" />
     </many-to-one>
+    
+   <!-- bi-directional one-to-one association to ImovelComentario -->
+   <many-to-one
+        name="imovelComentarioAnterior"
+        class="gcom.atendimentopublico.imovelcomentario.ImovelComentario">
+        <column name="icom_idanterior"/>
+   </many-to-one>
 
 </class>
 </hibernate-mapping>

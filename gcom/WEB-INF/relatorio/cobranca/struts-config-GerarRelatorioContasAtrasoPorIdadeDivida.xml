@@ -51,6 +51,9 @@
 			<form-property
 				name="P_UNE_INI"
 				type="java.lang.String" />
+			<form-property
+				name="formatoRelatorio"
+				type="java.lang.String" />
 		</form-bean>					
 	</form-beans>
 

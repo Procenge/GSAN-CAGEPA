@@ -121,7 +121,7 @@
 						<html:option
 							value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
 							</html:option>
-
+ 
 						<logic:present name="colecaoLeiturista" scope="session">
 							<html:options collection="colecaoLeiturista"
 								labelProperty="idDescricao" property="id" />

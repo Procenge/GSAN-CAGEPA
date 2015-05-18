@@ -62,6 +62,13 @@
     >
         <column name="mtun_id" />
     </many-to-one>
+    
+    <property
+        name="materialValor"
+        type="java.math.BigDecimal"
+        column="mate_vlmaterial"
+        length="13"
+    />
 
     <!-- Associations -->
   

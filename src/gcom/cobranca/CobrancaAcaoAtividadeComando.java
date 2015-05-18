@@ -255,6 +255,10 @@ public class CobrancaAcaoAtividadeComando
 
 	public static final Short INDICADOR_DEBITO_SIM = 1;
 
+	public static final Short INDICADOR_CRITERIO_COMANDO = 2;
+
+	public static final Short INDICADOR_CRITERIO_ACAO = 1;
+
 	// public static final int TIPO_PDF = 1;
 	//
 	// public static final int TIPO_CSV = 5;
@@ -262,6 +266,18 @@ public class CobrancaAcaoAtividadeComando
 	public CobrancaAcaoAtividadeComando precedente;
 
 	public Short indicadorGerarRelacaoDocumento;
+
+	private gcom.cobranca.DocumentoTipoLayout documentoTipoLayout;
+
+	public gcom.cobranca.DocumentoTipoLayout getDocumentoTipoLayout(){
+
+		return this.documentoTipoLayout;
+	}
+
+	public void setDocumentoTipoLayout(gcom.cobranca.DocumentoTipoLayout documentoTipoLayout){
+
+		this.documentoTipoLayout = documentoTipoLayout;
+	}
 
 	/**
 	 * full constructor

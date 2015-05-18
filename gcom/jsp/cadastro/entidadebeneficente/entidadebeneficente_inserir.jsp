@@ -47,14 +47,16 @@
  
  function limparCliente(){
 		var form = document.forms[0];
+
 		form.idCliente.value = "";
-	     form.nomeCliente.value = "";
+	    form.nomeCliente.value = "";
 	}
  
  function limparDebitoTipo(){
 		var form = document.forms[0];
+		
 		form.idDebitoTipo.value = "";
-	   	  form.descricaoDebitoTipo.value = ""; 
+	   	form.descricaoDebitoTipo.value = ""; 
 	}
 	
  </script>
@@ -172,6 +174,15 @@
 					</a>
 				  </td>
 				</tr>
+				
+				<tr>
+					<td width="162"><strong>Empresa:<font color="#ff0000">*</font></strong></td>
+					<td><html:select property="idEmpresa">
+						<option value=""></option>
+						<html:options name="request" collection="colecaoEmpresa"
+							labelProperty="descricao" property="id" />
+					</html:select></td>
+				</tr>				
 				
 				<tr>
 					<td><strong> <font color="#FF0000"></font></strong></td>

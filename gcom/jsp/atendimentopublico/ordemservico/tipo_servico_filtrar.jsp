@@ -344,6 +344,30 @@
 					<label> <html:radio property="indicadorVistoria" value="" /> <strong>Todos</strong></label>
 					</td>
 				</tr>
+				
+				<!-- Indicativo de Aferição de Hidrômetro -->
+
+				<tr>
+					<td><strong><span class="style2">Indicativo de Aferição de Hidrômetro:<font
+						color="#FF0000">*</font></span></strong></td>
+					<td align="left" width="20%"><label> <html:radio
+						property="indicadorAfericaoHidrometro" value="1" /> <strong>Sim</strong></label>
+					<label> <html:radio property="indicadorAfericaoHidrometro" value="2" /> <strong>Não</strong></label>
+					<label> <html:radio property="indicadorAfericaoHidrometro" value="" /> <strong>Todos</strong></label>
+					</td>
+				</tr>
+				
+				<!-- Indicativo de Pagamento Antecipado -->
+
+				<tr>
+					<td><strong><span class="style2">Indicativo de Pagamento Antecipado:<font
+						color="#FF0000">*</font></span></strong></td>
+					<td align="left" width="20%"><label> <html:radio
+						property="indicadorPagamentoAntecipado" value="1" /> <strong>Sim</strong></label>
+					<label> <html:radio property="indicadorPagamentoAntecipado" value="2" /> <strong>Não</strong></label>
+					<label> <html:radio property="indicadorPagamentoAntecipado" value="" /> <strong>Todos</strong></label>
+					</td>
+				</tr>				
 
 				<!-- Código do Tipo de Serviço -->
 

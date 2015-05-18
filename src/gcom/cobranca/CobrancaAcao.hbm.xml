@@ -177,6 +177,12 @@
         column="cbac_icempresaobrigatoria"
         not-null="true"
     />
+    
+    <property
+        name="descricaoMensagemDocumento"
+        type="java.lang.String"
+        column="CBAC_DSMENSAGEMDOCUMENTO"
+    />    
 
     <!-- Associations -->
   

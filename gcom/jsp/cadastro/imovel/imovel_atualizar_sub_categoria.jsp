@@ -80,19 +80,36 @@
 		form.action='atualizarImovelWizardAction.do?action=exibirAtualizarImovelSubCategoriaAction&atualizarIndicador=S';
 		form.submit();
 	}
+</script>
+	
+<logic:present name="permitirAtualizarSubCategoria" scope="session">	
+	<script language="JavaScript">	
+		function checkContratoConsumo() {
+			var form = document.forms[0];
+	
+			if (form.indicadorContratoConsumo[0].checked) {
+				form.idCategoria.disabled = 1;
+				form.idSubCategoria.disabled = 1;
+			} else {
+				form.idCategoria.disabled = 0;
+				form.idSubCategoria.disabled = 0;
+			}
+		}
+	</script>
+</logic:present>
 
-	function checkContratoConsumo() {
-		var form = document.forms[0];
-
-		if (form.indicadorContratoConsumo[0].checked) {
+<logic:notPresent name="permitirAtualizarSubCategoria" scope="session">
+	<script language="JavaScript">	
+		function checkContratoConsumo() {
+			var form = document.forms[0];
+	
 			form.idCategoria.disabled = 1;
 			form.idSubCategoria.disabled = 1;
-		} else {
-			form.idCategoria.disabled = 0;
-			form.idSubCategoria.disabled = 0;
+	
 		}
-	}
-</script>
+	</script>
+</logic:notPresent>
+
 </logic:equal>
 
 <script language="JavaScript">
@@ -227,8 +244,13 @@ function removerSubcategoria(url){
               <logic:equal name="<%=SistemaParametro.SISTEMA_PARAMETRO%>" property="parmId" value="<%="" + SistemaParametro.INDICADOR_EMPRESA_DESO%>" scope="session">
               <tr>
 					<td width="30%"><strong>Contrato de Consumo:</strong></td>
-                	<td width="70%" colspan="2"> 
-                		<html:checkbox property="indicadorContratoConsumo" onclick="javascript:submitContratoConsumo();" value="true"/>
+                	<td width="70%" colspan="2">
+                		<logic:present name="permitirAtualizarSubCategoria" scope="session">
+                			<html:checkbox property="indicadorContratoConsumo" onclick="javascript:submitContratoConsumo();" value="true"/>
+						</logic:present>                	 
+                		<logic:notPresent name="permitirAtualizarSubCategoria" scope="session">
+                			<html:checkbox property="indicadorContratoConsumo" onclick="javascript:submitContratoConsumo();" disabled="true" value="true"/>
+						</logic:notPresent>                			
                 	</td>
               	</tr>
 				<input type="hidden" name="indicadorContratoConsumo" value="false">
@@ -237,34 +259,81 @@ function removerSubcategoria(url){
               <tr>
                 <td width="30%"><strong>Categoria:<font color="#FF0000">*</font></strong></td>
                 <td width="70%" colspan="2">
-                <font color="#FF0000">
-                <html:select property="idCategoria" onchange="javascript:document.ManterImovelActionForm.textoSelecionadoCategoria.value = this[this.selectedIndex].text.substring(5);pesquisaColecaoReload('atualizarImovelWizardAction.do?action=exibirAtualizarImovelSubCategoriaAction&subCategoriaEscolhida=2&recarregar=false','idCategoria');">
-                  <html:option value="-1">&nbsp;</html:option>
-                  <html:options collection="categorias" labelProperty="descricaoComId" property="id"/>
-                </html:select>
-                <html:hidden property="textoSelecionadoCategoria"/>
+                	<font color="#FF0000">
+	                	<logic:present name="permitirAtualizarSubCategoria" scope="session">
+	                		<html:select property="idCategoria" onchange="javascript:document.ManterImovelActionForm.textoSelecionadoCategoria.value = this[this.selectedIndex].text.substring(5);pesquisaColecaoReload('atualizarImovelWizardAction.do?action=exibirAtualizarImovelSubCategoriaAction&subCategoriaEscolhida=2&recarregar=false','idCategoria');">
+	                  			<html:option value="-1">&nbsp;</html:option>
+	                  			<html:options collection="categorias" labelProperty="descricaoComId" property="id"/>
+	                		</html:select>
+						</logic:present>                	 
+	                	<logic:notPresent name="permitirAtualizarSubCategoria" scope="session">
+	                		<html:select property="idCategoria" disabled="true"
+	                				onchange="javascript:document.ManterImovelActionForm.textoSelecionadoCategoria.value = this[this.selectedIndex].text.substring(5);pesquisaColecaoReload('atualizarImovelWizardAction.do?action=exibirAtualizarImovelSubCategoriaAction&subCategoriaEscolhida=2&recarregar=false','idCategoria');">
+	                  			<html:option value="-1">&nbsp;</html:option>
+	                  			<html:options collection="categorias"  labelProperty="descricaoComId" property="id"/>
+	                		</html:select>
+						</logic:notPresent>                	                	
+	                	<html:hidden property="textoSelecionadoCategoria"/>
                   </font>
                 </td>
                 <td width="29%"><font color="#FF0000"><html:hidden property="idSubCategoriaImovel"/></font></td>
               </tr>
               <tr>
                 <td width="30%"><strong>Subcategoria:<font color="#FF0000">*</font></strong></td>
-                <td width="70%" colspan="2"><font color="#FF0000">
-					<html:select property="idSubCategoria" onchange="javascript:document.ManterImovelActionForm.textoSelecionadoSubCategoria.value = this[this.selectedIndex].text;pesquisaColecaoReload('atualizarImovelWizardAction.do?action=exibirAtualizarImovelSubCategoriaAction&subCategoriaEscolhida=1&recarregar=false','idSubCategoria')">
-                  <html:option value="-1">&nbsp;</html:option>
-                  <html:options collection="subCategorias" labelProperty="descricaoComId" property="id"/>
-                </html:select>
-                <html:hidden property="textoSelecionadoSubCategoria"/> 
-                  </font></td>
-
+                <td width="70%" colspan="2">
+                	<font color="#FF0000">
+	                	<logic:present name="permitirAtualizarSubCategoria" scope="session">
+							<html:select property="idSubCategoria" 
+								onchange="javascript:document.ManterImovelActionForm.textoSelecionadoSubCategoria.value = this[this.selectedIndex].text;pesquisaColecaoReload('atualizarImovelWizardAction.do?action=exibirAtualizarImovelSubCategoriaAction&subCategoriaEscolhida=1&recarregar=false','idSubCategoria')">
+	                  			<html:option value="-1">&nbsp;</html:option>
+	                  			<html:options collection="subCategorias" labelProperty="descricaoComId" property="id"/>
+	                		</html:select>
+						</logic:present>                	 
+	                	<logic:notPresent name="permitirAtualizarSubCategoria" scope="session">
+							<html:select property="idSubCategoria" disabled="true"
+								onchange="javascript:document.ManterImovelActionForm.textoSelecionadoSubCategoria.value = this[this.selectedIndex].text;pesquisaColecaoReload('atualizarImovelWizardAction.do?action=exibirAtualizarImovelSubCategoriaAction&subCategoriaEscolhida=1&recarregar=false','idSubCategoria')">
+	                  			<html:option value="-1">&nbsp;</html:option>
+	                  			<html:options collection="subCategorias" labelProperty="descricaoComId" property="id"/>
+	                		</html:select>
+						</logic:notPresent>                  	
+	                	<html:hidden property="textoSelecionadoSubCategoria"/> 
+                  	</font>
+                 </td>
               </tr>
-
 
               <tr>
                 <td width="30%"><strong>Quantidade de Economias:<font color="#FF0000">*</font></strong></td>
-                <td width="70%" colspan="2"> <html:text maxlength="4" property="quantidadeEconomia" size="4"/>
 
-               </td>
+					<logic:present name="permitirAtualizarSubCategoria" scope="session">
+		                <logic:present name="habilitarCampoQuantidadeEconomias">
+		            	    <logic:equal  name="habilitarCampoQuantidadeEconomias" value="true" scope="session">                
+		                 		<td width="70%" colspan="2"> 
+		                 	  		<html:text maxlength="4" property="quantidadeEconomia" size="4"/>
+		                 	  	</td>
+		                	</logic:equal>
+		                
+		                	 <logic:equal  name="habilitarCampoQuantidadeEconomias" value="false" scope="session">
+		                	  	<td width="70%" colspan="2"> 
+		                	  		<html:text maxlength="4" property="quantidadeEconomia" size="4" readonly="true" style="background-color:#EFEFEF; border:0; color: #000000" />
+		                	  	</td>	
+		               		 </logic:equal>
+		                </logic:present>
+					</logic:present>                	 
+	                <logic:notPresent name="permitirAtualizarSubCategoria" scope="session">    
+		                <logic:present name="habilitarCampoQuantidadeEconomias">
+		            	    <logic:equal  name="habilitarCampoQuantidadeEconomias" value="true" scope="session">                
+		                 		<td width="70%" colspan="2"> 
+		                 	  		<html:text maxlength="4" property="quantidadeEconomia" disabled="true" size="4"/>
+               					</td>		                 	  	
+		                	</logic:equal>
+		                
+		                	<logic:equal  name="habilitarCampoQuantidadeEconomias" value="false" scope="session">
+		                	  	<td width="70%" colspan="2"> 
+		                	  		<html:text maxlength="4" property="quantidadeEconomia" size="4" disabled="true" readonly="true" style="background-color:#EFEFEF; border:0; color: #000000" />
+               					</td>		                	  		
+		               		</logic:equal>
+		                </logic:present>
+					</logic:notPresent>		                	                            
               </tr>
               <tr>
                 <td>&nbsp;</td>
@@ -274,12 +343,25 @@ function removerSubcategoria(url){
               <tr>
                 <td colspan="2"><strong>Subcategorias Informados</strong></td>
                 <td align="right">
-                  <html:button  styleClass="bottonRightCol" value="Adicionar" property="botaoAdicionar" onclick="javascript:verificarAdicionar();"/>
-				    	<logic:present name="indicadorImovelConsumoFaixaAreaCatg">
-                  		 <logic:equal name="indicadorImovelConsumoFaixaAreaCatg" value="1" scope="session">
-                  		<html:button  styleClass="bottonRightCol" value="Consumo Por Faixa de Área e Categoria"
-                  		 property="botaoAdicionar" onclick="javascript:abrirPopupComSubmit('exibirImovelConsumoFaixaAreaCategoriaPopupAction.do?indicadorContratoConsumo=<%= indicadorContratoConsumo %>', 310, 750, 'ImovelConsumoFaixaAreaCategoriaPopup');"/>
-                  	 </logic:equal>
+					<logic:present name="permitirAtualizarSubCategoria" scope="session">                  
+                  		<html:button  styleClass="bottonRightCol" value="Adicionar" property="botaoAdicionar" onclick="javascript:verificarAdicionar();"/>
+                  	</logic:present>
+					<logic:notPresent name="permitirAtualizarSubCategoria" scope="session">
+						<html:button  styleClass="bottonRightCol" value="Adicionar" disabled="true" property="botaoAdicionar" onclick="javascript:verificarAdicionar();"/>
+					</logic:notPresent>
+					
+					  
+				    <logic:present name="indicadorImovelConsumoFaixaAreaCatg">
+                  		<logic:equal name="indicadorImovelConsumoFaixaAreaCatg" value="1" scope="session">
+                  			<logic:present name="permitirAtualizarSubCategoria" scope="session">
+	                  			<html:button  styleClass="bottonRightCol" value="Consumo Por Faixa de Área e Categoria"
+	                  		 		property="botaoAdicionar" onclick="javascript:abrirPopupComSubmit('exibirImovelConsumoFaixaAreaCategoriaPopupAction.do?indicadorContratoConsumo='+document.forms[0].indicadorContratoConsumo[0].checked, 310, 750, 'ImovelConsumoFaixaAreaCategoriaPopup');"/>
+                  			</logic:present>
+							<logic:notPresent name="permitirAtualizarSubCategoria" scope="session">	                  		 		
+	                  			<html:button  styleClass="bottonRightCol" value="Consumo Por Faixa de Área e Categoria"
+	                  		 		property="botaoAdicionar" disabled="true" onclick="javascript:abrirPopupComSubmit('exibirImovelConsumoFaixaAreaCategoriaPopupAction.do?indicadorContratoConsumo='+document.forms[0].indicadorContratoConsumo[0].checked, 310, 750, 'ImovelConsumoFaixaAreaCategoriaPopup');"/>
+							</logic:notPresent>	                  		 									
+                  	 	</logic:equal>
                   	</logic:present>
                 </td>
               </tr>
@@ -318,15 +400,24 @@ function removerSubcategoria(url){
                                      <tr bgcolor="#FFFFFF">
                                 <% }%>
 					<td  width="10%">
-					  <div align="center">
-                                            <logic:equal name="<%=SistemaParametro.SISTEMA_PARAMETRO%>" property="parmId" value="<%="" + SistemaParametro.INDICADOR_EMPRESA_ADA%>" scope="session">
-                                            <a href="javascript:removerSubcategoria('removerAtualizarImovelSubCategoriaAction.do?removerImovelSubCategoria=<%=""+ExibirAtualizarImovelSubCategoriaAction.obterTimestampIdImovelSubcategoria(imovelSubCategoria)%>');"><img border="0" src="/gsan/imagens/Error.gif"/></a>
-                                            </logic:equal>
-
-                                            <logic:equal name="<%=SistemaParametro.SISTEMA_PARAMETRO%>" property="parmId" value="<%="" + SistemaParametro.INDICADOR_EMPRESA_DESO%>" scope="session">
-	                                          <a href="javascript:removerSubcategoria('removerAtualizarImovelSubCategoriaAction.do?indicadorContratoConsumo='+document.forms[0].indicadorContratoConsumo[0].checked+'&removerImovelSubCategoria=<%=""+ExibirAtualizarImovelSubCategoriaAction.obterTimestampIdImovelSubcategoria(imovelSubCategoria)%>');"><img border="0" src="/gsan/imagens/Error.gif"/></a>
-                                            </logic:equal>                                            
-                                          </div>
+					  	<div align="center">
+					  		<logic:present name="permitirRemoverSubCategoria" scope="session">
+		                        <logic:equal name="<%=SistemaParametro.SISTEMA_PARAMETRO%>" property="parmId" value="<%="" + SistemaParametro.INDICADOR_EMPRESA_ADA%>" scope="session">
+		                        	<a href="javascript:removerSubcategoria('removerAtualizarImovelSubCategoriaAction.do?removerImovelSubCategoria=<%=""+ExibirAtualizarImovelSubCategoriaAction.obterTimestampIdImovelSubcategoria(imovelSubCategoria)%>');">
+		                        		<img border="0" src="/gsan/imagens/Error.gif"/>
+		                        	</a>
+		                        </logic:equal>
+		                        <logic:equal name="<%=SistemaParametro.SISTEMA_PARAMETRO%>" property="parmId" value="<%="" + SistemaParametro.INDICADOR_EMPRESA_DESO%>" scope="session">
+		                       		<a href="javascript:removerSubcategoria('removerAtualizarImovelSubCategoriaAction.do?indicadorContratoConsumo='+document.forms[0].indicadorContratoConsumo[0].checked+'&removerImovelSubCategoria=<%=""+ExibirAtualizarImovelSubCategoriaAction.obterTimestampIdImovelSubcategoria(imovelSubCategoria)%>');">
+		                       			<img border="0" src="/gsan/imagens/Error.gif"/>
+		                       		</a>
+		                        </logic:equal>
+							</logic:present>		                                          
+							
+							<logic:notPresent name="permitirRemoverSubCategoria" scope="session">
+								<img border="0" src="/gsan/imagens/Error.gif"/>
+							</logic:notPresent>		                                                                    
+						</div>
 					</td>
                                         <td width="32%">
 					  <div>

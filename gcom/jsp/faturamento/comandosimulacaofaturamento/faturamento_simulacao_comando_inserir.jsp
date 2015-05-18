@@ -953,7 +953,7 @@
 					
 					<td>
 						
-						<html:text maxlength="4" 
+						<html:text maxlength="5" 
 							property="numeroQuadraInicial" 
 							size="4"
 							onblur="javascript:replicarQuadra();verificarBloqueioCampos(2);"
@@ -1128,7 +1128,7 @@
 					
 					<td>
 						
-						<html:text maxlength="4" 
+						<html:text maxlength="5" 
 							property="numeroQuadraFinal" 
 							size="4"
 							onblur="javascript:verificarBloqueioCampos(2);"

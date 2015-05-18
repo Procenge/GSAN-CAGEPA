@@ -1,6 +1,8 @@
 
 package gcom.gui.faturamento.guiapagamento;
 
+import gcom.atendimentopublico.registroatendimento.FiltroRegistroAtendimento;
+import gcom.atendimentopublico.registroatendimento.RegistroAtendimento;
 import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.cliente.ClienteRelacaoTipo;
 import gcom.cadastro.cliente.FiltroCliente;
@@ -58,6 +60,7 @@ public class ExibirFiltrarGuiaPagamentoAction
 
 		// Variável que indica quando o usuário fez uma consulta a partir da tecla Enter
 		String objetoConsulta = httpServletRequest.getParameter("objetoConsulta");
+		String objetoConsultaRA = httpServletRequest.getParameter("ConsultarRA");
 
 		// Imóvel da Guia
 		if((!Util.isVazioOuBranco(objetoConsulta) && objetoConsulta.trim().equals("1"))
@@ -117,6 +120,14 @@ public class ExibirFiltrarGuiaPagamentoAction
 
 			// [UC0023 - Pesquisar Localidade]
 			this.pesquisarLocalidade(formulario, httpServletRequest);
+		}
+
+		// Registro de Atendimeto
+		if((!Util.isVazioOuBranco(objetoConsultaRA) && objetoConsultaRA.trim().equals("S"))
+						|| !Util.isVazioOuBranco(formulario.getNumeroRA())){
+
+			// Registro de Atendimeto
+			this.pesquisarRegistroAtendimento(formulario);
 		}
 
 		// Tipo do Documento
@@ -266,6 +277,34 @@ public class ExibirFiltrarGuiaPagamentoAction
 
 			form.setIdLocalidade("");
 			form.setNomeLocalidade("Localidade Inexistente");
+		}
+	}
+
+	private void pesquisarRegistroAtendimento(FiltrarGuiaPagamentoActionForm form){
+
+		// Filtro para obter o localidade ativo de id informado
+		FiltroRegistroAtendimento filtroRegistroAtendimento = new FiltroRegistroAtendimento();
+
+		filtroRegistroAtendimento.adicionarParametro(new ParametroSimples(FiltroRegistroAtendimento.ID, new Integer(form.getNumeroRA())));
+		filtroRegistroAtendimento.adicionarCaminhoParaCarregamentoEntidade("solicitacaoTipoEspecificacao");
+
+		// Pesquisa de acordo com os parâmetros informados no filtro
+		Collection colecaoRegistros = Fachada.getInstancia().pesquisar(filtroRegistroAtendimento, RegistroAtendimento.class.getName());
+
+		// Verifica se a pesquisa retornou algum objeto para a coleção
+		if(colecaoRegistros != null && !colecaoRegistros.isEmpty()){
+
+			// Obtém o objeto da coleção pesquisada
+			RegistroAtendimento registroAtendimento = (RegistroAtendimento) Util.retonarObjetoDeColecao(colecaoRegistros);
+
+			form.setNumeroRA(registroAtendimento.getId().toString());
+			form.setDescricaoRA(registroAtendimento.getSolicitacaoTipoEspecificacao().getDescricao());
+
+		}else{
+
+			form.setDescricaoRA("RA - Registro de Atendimento inexistente");
+			form.setNumeroRA("");
+
 		}
 	}
 }

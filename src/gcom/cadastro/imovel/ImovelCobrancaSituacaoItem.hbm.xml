@@ -1,0 +1,204 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cadastro.imovel.ImovelCobrancaSituacaoItem" 
+    table="imovel_cobranca_situacao_item"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ICSI_ID"
+    >
+        <generator class="sequence">
+			<param name="sequence">sq_imovel_cobr_situacao_item</param>
+		</generator>
+    </id>
+    
+	<property
+        name="dataSituacaoDebito"
+        type="java.sql.Date"
+        column="ICSI_DTSITUACAODEBITO"
+        not-null="false"
+        length="4"
+    />
+
+    <property
+        name="numeroDaPrestacao"
+        type="java.lang.Short"
+        column="ICSI_NNPRESTACAO"
+        not-null="false"
+        length="2"
+    />
+    
+    <property
+        name="dataDividaAtiva"
+        type="java.sql.Date"
+        column="ICSI_DTDIVIDAATIVA"
+        not-null="false"
+        length="4"
+    />
+    
+	<property
+        name="valorItemDividaAtiva"
+        type="java.math.BigDecimal"
+        column="ICSI_VLITEMDIVIDAATIVA"
+        not-null="false"
+        length="13"
+    />
+    
+	<property
+        name="valorAcrescimoDividaAtiva"
+        type="java.math.BigDecimal"
+        column="ICSI_VLACRESCIMODIVIDAATIVA"
+        not-null="false"
+        length="13"
+    />
+    
+	<property
+        name="valorMultaDividaAtiva"
+        type="java.math.BigDecimal"
+        column="ICSI_VLMULTADIVIDAATIVA"
+        not-null="false"
+        length="13"
+    />
+    
+	<property
+        name="valorMoraDividaAtiva"
+        type="java.math.BigDecimal"
+        column="ICSI_VLMORADIVIDAATIVA"
+        not-null="false"
+        length="13"
+    />
+    
+	<property
+        name="valorMonetariaDividaAtiva"
+        type="java.math.BigDecimal"
+        column="ICSI_VLMONETARIADIVIDAATIVA"
+        not-null="false"
+        length="13"
+    />
+    
+    <property
+        name="dataExecucaoFiscal"
+        type="java.sql.Date"
+        column="ICSI_DTEXECUCAOFISCAL"
+        not-null="false"
+        length="4"
+    />
+    
+	<property
+        name="valorItemExecucaoFiscal"
+        type="java.math.BigDecimal"
+        column="ICSI_VLITEMEXECUCAOFISCAL"
+        not-null="false"
+        length="13"
+    />
+    
+	<property
+        name="valorAcrescimoExecucaoFiscal"
+        type="java.math.BigDecimal"
+        column="ICSI_VLACRESCIMOEXECUCAOFISCAL"
+        not-null="false"
+        length="13"
+    />
+    
+	<property
+        name="valorMultaExecucaoFiscal"
+        type="java.math.BigDecimal"
+        column="ICSI_VLMULTAEXECUCAOFISCAL"
+        not-null="false"
+        length="13"
+    />
+    
+	<property
+        name="valorMoraExecucaoFiscal"
+        type="java.math.BigDecimal"
+        column="ICSI_VLMORAEXECUCAOFISCAL"
+        not-null="false"
+        length="13"
+    />
+    
+	<property
+        name="valorMonetariaExecucaoFiscal"
+        type="java.math.BigDecimal"
+        column="ICSI_VLMONETARIAEXECUCAOFISCAL"
+        not-null="false"
+        length="13"
+    />
+    
+	<property
+        name="indicadorAtualizado"
+        type="short"
+        column="ICSI_ICATUALIZADO"        
+        not-null="true"
+    />	
+	
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ICSI_TMULTIMAALTERACAO"
+        not-null="true"
+        length="8"
+    />    
+
+    <!-- Associations -->
+
+	<!-- bi-directional many-to-one association to ImovelCobrancaSituacao -->
+    <many-to-one
+        name="imovelCobrancaSituacao"
+        class="gcom.cadastro.imovel.ImovelCobrancaSituacao"
+        not-null="true" 
+    >
+        <column name="ISCB_ID" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to DocumentoTipo -->
+    <many-to-one
+        name="documentoTipo"
+        class="gcom.cobranca.DocumentoTipo"
+        not-null="true"
+    >
+        <column name="dotp_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Conta -->
+    <many-to-one
+        name="contaGeral"
+        class="gcom.faturamento.conta.ContaGeral"
+        not-null="false"
+    >
+        <column name="cnta_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to GuiaPagamento -->
+    <many-to-one
+        name="guiaPagamentoGeral"
+        class="gcom.faturamento.GuiaPagamentoGeral"
+        not-null="false"
+    >
+        <column name="gpag_id" />
+    </many-to-one>
+
+    <!-- bi-directional many-to-one association to CobrancaDebitoSituacao -->
+    <many-to-one
+        name="cobrancaDebitoSituacao"
+        class="gcom.cobranca.CobrancaDebitoSituacao"
+        not-null="false"
+    >
+        <column name="cdst_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

@@ -107,12 +107,14 @@
 		this.ad = new Array("fixo", "Fixo da Numeração dos Hidrômetros possui caracteres especiais.", new Function ("varName", " return this[varName];"));
 		this.ae = new Array("faixaInicial", "Faixa Inicial da Numeração dos Hidrômetros possui caracteres especiais.", new Function ("varName", " return this[varName];"));
 		this.af = new Array("faixaFinal", "Faixa Final da Numeração dos Hidrômetros possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+		this.ag = new Array("numeroNotaFiscal", "Número da Nota Fiscal possui caracteres especiais.", new Function ("varName", " return this[varName];"));
     }
 
     function IntegerValidations(){
 		this.aa = new Array("anoFabricacao", "Ano de Fabricação deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
 		this.ab = new Array("faixaInicial", "Faixa Inicial da Numeração dos Hidrômetros deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
 		this.ac = new Array("faixaFinal", "Faixa Final da Numeração dos Hidrômetros deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+		this.ad = new Array("numeroNotaFiscal", "Número da Nota Fiscal deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
     }
 
     function DecimalZeroPositivoValidations(){
@@ -393,7 +395,7 @@
 					<td width="11"><img
 						src="<bean:message key="caminho.imagens"/>parahead_left.gif"
 						border="0" /></td>
-					<td class="parabg">Inserir Hidr&ocirc;metro</td>
+					<td class="parabg">Inserir Hidr&ocirc;metro </td>
 					<td width="11" valign="top"><img
 						src="<bean:message key="caminho.imagens"/>parahead_right.gif"
 						border="0" /></td>
@@ -476,6 +478,12 @@
 							labelProperty="descricao" property="id" />
 					</html:select></td>
 				</tr>
+				
+				<tr>
+					<td><strong>Lote de Entrega:</strong></td>
+					<td><html:text maxlength="10" property="loteEntrega" size="6" tabindex="2"/></td>
+				</tr>
+				
 
 				<logic:equal name="HidrometroActionForm" property="codigoFormatoNumeracao" value="<%=Hidrometro.FORMATO_NUMERACAO_5_X_5.toString()%>">
 				<tr>
@@ -505,6 +513,11 @@
 						src="<bean:message key="caminho.imagens"/>calendario.gif"
 						width="20" border="0" align="absmiddle" alt="Exibir Calendário" /></a>
 					dd/mm/aaaa</td>
+				</tr>
+				
+				<tr>
+					<td><strong>Número da Nota Fiscal:</strong></td>
+					<td><html:text property="numeroNotaFiscal" size="9" maxlength="9"/></td>
 				</tr>
 
 				<tr>

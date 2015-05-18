@@ -196,6 +196,9 @@ public class FiltroConta
 
 	public final static String PRESCRICAO_COMANDO = "prescricaoComando";
 
+	// OC1260067 - 29/12/2014 - João Carlos
+	public final static String USUARIO = "usuario";
+
 	/**
 	 * Construtor da classe FiltroCategoria
 	 * 

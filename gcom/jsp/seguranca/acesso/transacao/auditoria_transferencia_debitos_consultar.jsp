@@ -24,8 +24,42 @@
 			form.idFuncionario.value = codigoRegistro;
 			form.nomeFuncionario.value = descricaoRegistro;
 			form.nomeFuncionario.style.color = "#000000";
-		}
+		}else if ('idUsuarioOrigem' == tipoConsulta) {
+		 	form.idUsuarioOrigem.value = codigoRegistro;
+		 	form.nomeUsuarioOrigem.value = descricaoRegistro;
+		 	form.nomeUsuarioOrigem.style.color = "#000000";
+	 	}else if ('idUsuarioDestino' == tipoConsulta) {
+	 		form.idUsuarioDestino.value = codigoRegistro;
+	 		form.nomeUsuarioDestino.value = descricaoRegistro;
+	 		form.nomeUsuarioDestino.style.color = "#000000";
+	 	}
 	}
+	
+
+
+function chamarPopup(url, tipo, objeto, codigoObjeto, altura, largura, msg,campo){
+		
+		document.forms[0].tipoPesquisa.value = campo.name;
+		
+	  		if (objeto == null || codigoObjeto == null){
+	     		if(tipo == "" ){
+	      			abrirPopup(url,altura, largura);
+	     		}else{
+		  			abrirPopup(url + "?" + "tipo=" + tipo, altura, largura);
+		 		}
+	 		}else{
+				if (codigoObjeto.length < 1 || isNaN(codigoObjeto)){
+					alert(msg);
+				}else{
+					abrirPopup(url + "?" + "tipo=" + tipo + "&" + objeto + "=" + codigoObjeto, altura, largura);
+				}
+			}
+		
+	}
+	
+	
+	
+	
 	
 	function dataEstahLimpa(){
 		 	var dataInicial = document.forms[0].dataInicial.value;
@@ -52,7 +86,9 @@
 	function limparUsuario() {		
 		var form = document.ConsultarAuditoriaTransferenciaDebitosActionForm;	
 		form.idUsuarioOrigem.value = "";
+		form.nomeUsuarioOrigem.value = "";
 		form.idUsuarioDestino.value = "";
+		form.nomeUsuarioDestino.value = "";
 		desabilitarIdFuncionario();
 	}
 	
@@ -142,7 +178,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td>&nbsp;</td>
+					<td><input type="hidden" name="tipoPesquisa" value=""/></td>
 					<td>&nbsp;</td>
 					<td>&nbsp;</td>
 				</tr>
@@ -150,12 +186,29 @@
                   <td>
 	                  <strong>Usuário Origem:</strong>
                   </td>
-                  <td>
-                  	<html:text property="idUsuarioOrigem" size="10" tabindex="2" maxlength="8" 
-                  		onkeypress="return isCampoNumerico(event);" 
-                  		onkeyup="desabilitarIdFuncionario();" 
-                  		onblur="desabilitarIdFuncionario();"/>
+                 <td>
+					<html:text property="idUsuarioOrigem" maxlength="9" size="9"
+						onkeypress="validaEnterComMensagem(event, 'exibirConsultarAuditoriaServicosACobrarAction.do', 'idUsuarioOrigem', 'Matrícula do Usuário Origem')" />
+                  	<a href="javascript:chamarPopup('exibirUsuarioPesquisar.do', 'origem', 'null', null, 275, 480, '',document.forms[0].idUsuarioOrigem);">
+									<img width="23" 
+										height="21" 
+										border="0" 
+										style="cursor:hand;"
+										src="<bean:message key="caminho.imagens"/>pesquisa.gif"
+										title="Pesquisar Usuário Origem" /></a>
+                  
+                    
+                    <logic:present name="usuarioNaoEncontradoOrigem">
+						<html:text property="nomeUsuarioOrigem" size="25" maxlength="40"
+							readonly="true"
+							style="background-color:#EFEFEF; border:0; color: #ff0000" />
+					</logic:present> <logic:notPresent name="usuarioNaoEncontradoOrigem">
+						<html:text property="nomeUsuarioOrigem" size="25" maxlength="40"
+							readonly="true"
+							style="background-color:#EFEFEF; border:0; color: #000000" />
+					</logic:notPresent>
                   	<a href="javascript:limparUsuario();"> <img src="<bean:message key="caminho.imagens"/>limparcampo.gif" border="0" title="Apagar" /></a>	
+                  	
                   </td>
                   <td>&nbsp;</td>
 				</tr>
@@ -166,12 +219,29 @@
                   <td>
 	                  <strong>Usuário Destino:</strong>
                   </td>
-                  <td>
-                  	<html:text property="idUsuarioDestino" size="10" tabindex="2" maxlength="8" 
-                  		onkeypress="return isCampoNumerico(event);" 
-                  		onkeyup="desabilitarIdFuncionario();" 
-                  		onblur="desabilitarIdFuncionario();"/>
+                 <td>
+					<html:text property="idUsuarioDestino" maxlength="9" size="9"
+						onkeypress="validaEnterComMensagem(event, 'exibirConsultarAuditoriaServicosACobrarAction.do', 'idUsuarioDestino', 'Matrícula do Usuário Destino')" />
+						<a href="javascript:chamarPopup('exibirUsuarioPesquisar.do', 'destino', 'null', null, 275, 480, '',document.forms[0].idUsuarioDestino);">
+															<img width="23" 
+																height="21" 
+																border="0" 
+																style="cursor:hand;"
+																src="<bean:message key="caminho.imagens"/>pesquisa.gif"
+																title="Pesquisar Usuário Destino" /></a>               		
+
+
+                    <logic:present name="usuarioNaoEncontradoDestino">
+						<html:text property="nomeUsuarioDestino" size="25" maxlength="40"
+							readonly="true"
+							style="background-color:#EFEFEF; border:0; color: #ff0000" />
+					</logic:present> <logic:notPresent name="usuarioNaoEncontradoDestino">
+						<html:text property="nomeUsuarioDestino" size="25" maxlength="40"
+							readonly="true"
+							style="background-color:#EFEFEF; border:0; color: #000000" />
+					</logic:notPresent>
                   	<a href="javascript:limparUsuario();"> <img src="<bean:message key="caminho.imagens"/>limparcampo.gif" border="0" title="Apagar" /></a>	
+                  	
                   </td>
                   <td>&nbsp;</td>
 				</tr>

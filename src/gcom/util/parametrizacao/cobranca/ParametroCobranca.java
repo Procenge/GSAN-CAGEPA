@@ -77,6 +77,9 @@ public class ParametroCobranca
 	public static final Parametro P_FATOR_MULTIPLICACAO_VALOR_DEBITO_AVISO_CORTE = new ParametroCobranca(
 					"P_FATOR_MULTIPLICACAO_VALOR_DEBITO_AVISO_CORTE");
 
+	public static final Parametro P_FATOR_MULTIPLICACAO_VALOR_DEBITO_NOTIFICACAO_AMIGAVEL = new ParametroCobranca(
+					"P_FATOR_MULTIPLICACAO_VALOR_DEBITO_NOTIFICACAO_AMIGAVEL");
+
 	public static final Parametro P_COBRAR_MULTA_POR_IMPONTUALIDADE = new ParametroCobranca("P_COBRAR_MULTA_POR_IMPONTUALIDADE");
 
 	public static final Parametro P_COBRAR_JUROS_POR_IMPONTUALIDADE = new ParametroCobranca("P_COBRAR_JUROS_POR_IMPONTUALIDADE");
@@ -88,6 +91,9 @@ public class ParametroCobranca
 
 	public static final Parametro P_ID_CRITERIO_COBRANCA_AVISO_CORTE_FATURAMENTO = new ParametroCobranca(
 					"P_ID_CRITERIO_COBRANCA_AVISO_CORTE_FATURAMENTO");
+
+	public static final Parametro P_ID_CRITERIO_COBRANCA_NOTIFICACAO_AMIGAVEL = new ParametroCobranca(
+					"P_ID_CRITERIO_COBRANCA_NOTIFICACAO_AMIGAVEL");
 
 	public static final Parametro P_SERVICO_PARCELAMENTO_COBRANCA_ADMINISTRATIVA = new ParametroCobranca(
 					"P_SERVICO_PARCELAMENTO_COBRANCA_ADMINISTRATIVA");
@@ -185,6 +191,21 @@ public class ParametroCobranca
 
 	public static final Parametro P_INDICADOR_EXIBIR_DEBITO_PRESCRITO_CONSULTA_DEBITO = new ParametroCobranca(
 					"P_INDICADOR_EXIBIR_DEBITO_PRESCRITO_CONSULTA_DEBITO");
+
+	public static final Parametro P_MODELO_CERTIDAO_POSITIVA_DEBITOS = new ParametroCobranca("P_MODELO_CERTIDAO_POSITIVA_DEBITOS");
+
+	public static final Parametro P_EMITE_CERTIDAO_NEGATIVA_EFEITO_POSITIVA = new ParametroCobranca(
+					"P_EMITE_CERTIDAO_NEGATIVA_EFEITO_POSITIVA");
+
+	public static Parametro P_MODULO_DIVIDA_ATIVA_ENDERECO = new ParametroCobranca("P_MODULO_DIVIDA_ATIVA_ENDERECO");
+
+	public static final Parametro P_INDICADOR_RETIRADA_COBRANCA_ADMNISTRATIVA_PARCELAMENTO_COM_QUITACAO = new ParametroCobranca(
+					"P_INDICADOR_RETIRADA_COBRANCA_ADMNISTRATIVA_PARCELAMENTO_COM_QUITACAO");
+
+
+	public static final Parametro P_GERAR_CARTA_COBRANCA = new ParametroCobranca("P_GERAR_CARTA_COBRANCA");
+
+	public static final Parametro P_INDICADOR_POSSUI_DIVIDA_ATIVA = new ParametroCobranca("P_INDICADOR_POSSUI_DIVIDA_ATIVA");
 
 	/**
 	 * @param codigo

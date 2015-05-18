@@ -125,6 +125,20 @@ public class RelatorioArquivoDeclaracaoAnualQuitacaoDebitos
 								+ "faturas de " + anoBaseDeclaracaoQuitacaoDebitoAnual + ".";
 
 				dataPorExtenso = sistemaParametro.getCep().getMunicipio()+", " + diaStr + " DE " + Util.retornaDescricaoMes(mes).toUpperCase() + " DE " + ano + ".";
+			}else if(modeloRelatorio.equals(ConstantesRelatorios.RELATORIO_ARQUIVO_DECLARACAO_ANUAL_QUITACAO_DEBITOS_MODELO_3)){
+
+				msg = "Em atendimento a Lei 12.007/09, declaramos que as tarifas fornecimento de água coleta de esgoto sanitário lançados no período de janeiro a dezembro de "
+								+ anoBaseDeclaracaoQuitacaoDebitoAnual
+								+ " referentes a esse CDC, foram devidamente quitadas."
+								+ "Esta quitação não abrange débitos com vencimento posterior a dezembro de  "
+								+ anoBaseDeclaracaoQuitacaoDebitoAnual
+								+ " decorrentes de parcelamentos efetuados anteriormente e débitos objeto de impugnação em análise, bem como débitos pendentes de apuração em virtude de "
+								+ "impossibilidade de se calcular o volume consumido em determinado período por avaria no hidrômetro, ou outro motivo que impeça a leitura, nos termos do parágrafo primeiro do art. 35 do Decreto Municipal nº 14.644/05."
+								+ "Caso quaisquer das faturas acima relacionadas tenha sido paga por meio de cheque, a sua quitação somente ocorrerá após a compensação do referido cheque."
+								+ "Em não havendo compensação, ficará sem efeitos a quitação mencionada no presente termo quanto aquelas faturas, podendo o SAAE - Sorocaba adotar as medidas previstas no regulamento e legislação para cobrança de  débitos, "
+								+ "  sem prejuízo das sanções previstas nos artigos 49 e seguintes do Decreto Municipal nº 14.644/200."
+								+ "Esta declaração não abrange faturas objeto de litigio judicial.";
+
 			}
 
 			parametros.put("dataPorExtenso", dataPorExtenso);

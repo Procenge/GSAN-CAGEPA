@@ -76,14 +76,7 @@
 
 package gcom.gui.cobranca;
 
-import gcom.cobranca.CobrancaAcao;
-import gcom.cobranca.CobrancaAcaoAtividadeCronograma;
-import gcom.cobranca.CobrancaAcaoCronograma;
-import gcom.cobranca.CobrancaAtividade;
-import gcom.cobranca.CobrancaGrupo;
-import gcom.cobranca.CobrancaGrupoCronogramaMes;
-import gcom.cobranca.FiltroCobrancaGrupo;
-import gcom.cobranca.FiltroCobrancaGrupoCronogramaMes;
+import gcom.cobranca.*;
 import gcom.cobranca.bean.CobrancaCronogramaHelper;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
@@ -271,9 +264,10 @@ public class InserirCobrancaCronogramaAction
 					if(!dataPrevista.trim().equals("")
 									|| cobrancaAtividade.getIndicadorObrigatoriedade().equals(
 													CobrancaAtividade.INDICADOR_OBRIGATORIEDADE_ATIVO)){
-						verificaDataPreenchida += 1;
 
 						if(!dataPrevista.trim().equals("")){
+							verificaDataPreenchida += 1;
+
 							// --------pega o valor de comandar.Ex: comandar2
 							idAcaoCobranca = (String) httpServletRequest.getParameter("comandar" + cobrancaAcao.getId().toString()
 											+ "atividade" + cobrancaAtividade.getId());
@@ -303,8 +297,8 @@ public class InserirCobrancaCronogramaAction
 				 * atividades da acao, exibir a mensagem "É necessário informar
 				 * a data prevista para todas as atividades da ação."
 				 */
-				if((verificaDataPreenchida > 0) && (verificaDataPreenchida < atividadesCobrancaObrigatoriedadeAtivo.size())){
-					throw new ActionServletException("atencao.cobranca.data_prevista_algumas_atividades");
+				if((verificaDataPreenchida < atividadesCobrancaObrigatoriedadeAtivo.size())){
+					throw new ActionServletException("atencao.cobranca.data_prevista_obrigatoria_atividades");
 				}
 			}
 
@@ -333,6 +327,11 @@ public class InserirCobrancaCronogramaAction
 
 		Collection colecaoCobrancaGrupoCronogramaMes = fachada.pesquisar(filtroCobrancaGrupoCronogramaMes, CobrancaGrupoCronogramaMes.class
 						.getName());
+
+		if(colecaoCobrancaGrupoCronogramaMes.size() == 0){
+			throw new ActionServletException("atencao.cobranca.data_prevista_nao_informada");
+		}
+
 		CobrancaGrupoCronogramaMes cobrancaGrupoCronogramaMesAtualizacao = null;
 		cobrancaGrupoCronogramaMesAtualizacao = (CobrancaGrupoCronogramaMes) colecaoCobrancaGrupoCronogramaMes.iterator().next();
 

@@ -115,6 +115,10 @@ public class ObterDadosAtividadeOSHelper {
 
 	private Equipe equipe = null;
 
+	private BigDecimal valorMaterial = null;
+
+	private BigDecimal valorAtividadePeriodo = null;
+
 	public ObterDadosAtividadeOSHelper() {
 
 	}
@@ -208,4 +212,25 @@ public class ObterDadosAtividadeOSHelper {
 
 		this.isPeriodo = isPeriodo;
 	}
+
+	public BigDecimal getValorMaterial(){
+
+		return valorMaterial;
+	}
+
+	public void setValorMaterial(BigDecimal valorMaterial){
+
+		this.valorMaterial = valorMaterial;
+	}
+
+	public BigDecimal getValorAtividadePeriodo(){
+
+		return valorAtividadePeriodo;
+	}
+
+	public void setValorAtividadePeriodo(BigDecimal valorAtividadePeriodo){
+
+		this.valorAtividadePeriodo = valorAtividadePeriodo;
+	}
+
 }

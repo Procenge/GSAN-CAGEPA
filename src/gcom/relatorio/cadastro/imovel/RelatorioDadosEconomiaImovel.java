@@ -199,6 +199,13 @@ public class RelatorioDadosEconomiaImovel
 		String consumoMinimoFixadoEsgotoInicial = (String) getParametro("consumoMinimoFixadoEsgotoInicial");
 		// consumo Minimo Fixado Esgoto Final
 		String consumoMinimoFixadoEsgotoFinal = (String) getParametro("consumoMinimoFixadoEsgotoFinal");
+
+		// consumo Fixado Esgoto do Poço Inicial
+		String consumoFixadoEsgotoPocoInicial = (String) getParametro("consumoFixadoEsgotoPocoInicial");
+
+		// consumo Fixado Esgoto do Poço Final
+		String consumoFixadoEsgotoPocoFinal = (String) getParametro("consumoFixadoEsgotoPocoFinal");
+
 		// intervalo Percentual Esgoto Inicial
 		String intervaloPercentualEsgotoInicial = (String) getParametro("intervaloPercentualEsgotoInicial");
 		// intervalor Percentual Esgoto Final
@@ -279,7 +286,8 @@ public class RelatorioDadosEconomiaImovel
 						quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimentoAlternativo, clienteID, clienteTipoID,
 						clienteRelacaoTipoID, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 						areaConstruidaFaixa, idUnidadeNegocio, segmentoInicial, segmentoFinal, rotaInicial, rotaFinal,
-						sequencialRotaInicial, sequencialRotaFinal, subloteInicial, subloteFinal);
+						sequencialRotaInicial, sequencialRotaFinal, subloteInicial, subloteFinal, consumoFixadoEsgotoPocoInicial,
+						consumoFixadoEsgotoPocoFinal);
 
 		// valor de retorno
 		byte[] retorno = null;
@@ -881,6 +889,13 @@ public class RelatorioDadosEconomiaImovel
 		String consumoMinimoFixadoEsgotoInicial = (String) getParametro("consumoMinimoFixadoEsgotoInicial");
 		// consumo Minimo Fixado Esgoto Final
 		String consumoMinimoFixadoEsgotoFinal = (String) getParametro("consumoMinimoFixadoEsgotoFinal");
+
+		// consumo Fixado Esgoto do Poço Inicial
+		String consumoFixadoEsgotoPocoInicial = (String) getParametro("consumoFixadoEsgotoPocoInicial");
+
+		// consumo Fixado Esgoto do Poço Final
+		String consumoFixadoEsgotoPocoFinal = (String) getParametro("consumoFixadoEsgotoPocoFinal");
+
 		// intervalo Percentual Esgoto Inicial
 		String intervaloPercentualEsgotoInicial = (String) getParametro("intervaloPercentualEsgotoInicial");
 		// intervalor Percentual Esgoto Final
@@ -961,7 +976,8 @@ public class RelatorioDadosEconomiaImovel
 						quantidadeEconomiasFinal, diaVencimentoAlternativo, clienteID, clienteTipoID, clienteRelacaoTipoID,
 						numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal, areaConstruidaFaixa,
 						idUnidadeNegocio, ConstantesSistema.GERAR_RELATORIO_DADOS_ECONOMIA_IMOVEL, rotaInicial, rotaFinal,
-						sequencialRotaInicial, sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+						sequencialRotaInicial, sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
+						consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 		return quantidade.intValue();
 	}

@@ -769,7 +769,7 @@
 				<tr>
 					<td width="11"><img border="0"
 						src="<bean:message key="caminho.imagens"/>parahead_left.gif" /></td>
-					<td class="parabg">Filtrar Imóvel Cobrança Administrativa</td>
+					<td class="parabg">Filtrar Imóvel Cobrança Administrativa </td>
 					<td width="11"><img border="0"
 						src="<bean:message key="caminho.imagens"/>parahead_right.gif" /></td>
 				</tr>

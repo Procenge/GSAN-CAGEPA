@@ -27,6 +27,7 @@
 	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="mesAno" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_NM_ESTADO" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NOME_EMPRESA_RELATORIO" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="getGrupo" class="java.lang.String"/>
 	<field name="getEmpresa" class="java.lang.String"/>
@@ -761,7 +762,7 @@ c/ Leit. e Anorm.]]></text>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Courier New" pdfFontName="Courier-Bold" size="9" isBold="true"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["COMPANHIA DE SANEAMENTO DE  "  + $P{P_NM_ESTADO}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NOME_EMPRESA_RELATORIO} +" " + $P{P_NM_ESTADO}]]></textFieldExpression>
 				</textField>
 			</band>
 		</pageHeader>

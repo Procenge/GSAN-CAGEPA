@@ -55,7 +55,19 @@ public class InserirEntidadeBeneficenteActionForm
 
 	private String descricaoDebitoTipo;
 
+	private String idEmpresa;
+
 	private static final long serialVersionUID = 1L;
+
+	public String getIdEmpresa(){
+
+		return idEmpresa;
+	}
+
+	public void setIdEmpresa(String idEmpresa){
+
+		this.idEmpresa = idEmpresa;
+	}
 
 	public String getIdCliente(){
 

@@ -45,6 +45,14 @@
         column="dcst_tmultimaalteracao"
         length="8"
     />
+    
+      <property
+        name="indicadorValido"
+        type="short"
+        column="DCST_ICVALIDO"
+        not-null="true"
+        length="2"
+    />
 
     <!-- Associations -->
   

@@ -439,7 +439,7 @@ public interface ControladorClienteLocal
 	public Collection filtrarCliente(String codigo, String cpf, String rg, String cnpj, String nome, String nomeMae, String cep,
 					String idMunicipio, String idBairro, String idLogradouro, String indicadorUso, String tipoPesquisa,
 					String tipoPesquisaNomeMae, String clienteTipo, Integer numeroPagina, String inscricaoEstadual,
-					String indicadorContaBraille)
+					String indicadorContaBraille, String documentoValidado, String numeroBeneficio)
 					throws ControladorException;
 
 	/**
@@ -457,7 +457,8 @@ public interface ControladorClienteLocal
 	 */
 	public Object filtrarQuantidadeCliente(String codigo, String cpf, String rg, String cnpj, String nome, String nomeMae, String cep,
 					String idMunicipio, String idBairro, String idLogradouro, String indicadorUso, String tipoPesquisa,
-					String tipoPesquisaNomeMae, String clienteTipo, String inscricaoEstadual, String indicadorContaBraille)
+					String tipoPesquisaNomeMae, String clienteTipo, String inscricaoEstadual, String indicadorContaBraille,
+					String documentoValidado, String numeroBeneficio)
 					throws ControladorException;
 
 	/**
@@ -697,4 +698,30 @@ public interface ControladorClienteLocal
 	 */
 
 	public void inserirCliente(ClienteJSONHelper clienteJSONHelper) throws ControladorException;
+
+	/**
+	 * [UC3149] Inserir Atividade Econômica
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/06/2014
+	 */
+	public Object inserirAtividadeEconomica(AtividadeEconomica atividadeEconomica, Usuario usuario) throws ControladorException;
+
+	/**
+	 * [UC3150] Manter Atividade Econômica
+	 * [SB0001] - Atualizar Atividade Econômica
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/06/2014
+	 */
+	public void atualizarAtividadeEconomica(AtividadeEconomica atividadeEconomica, Usuario usuario) throws ControladorException;
+
+	/**
+	 * [UC3150] Manter Atividade Econômica
+	 * [SB0002] - Excluir Atividade Econômica
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/06/2014
+	 */
+	public void removerAtividadeEconomica(String[] ids, Usuario usuarioLogado) throws ControladorException;
 }

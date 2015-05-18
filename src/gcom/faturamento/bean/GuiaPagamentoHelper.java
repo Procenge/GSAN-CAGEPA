@@ -35,8 +35,20 @@ public class GuiaPagamentoHelper {
 
 	private String dataPagamento;
 
+	private Integer numeroRA;
+
 	public GuiaPagamentoHelper() {
 
+	}
+
+	public Integer getNumeroRA(){
+
+		return numeroRA;
+	}
+
+	public void setNumeroRA(Integer numeroRA){
+
+		this.numeroRA = numeroRA;
 	}
 
 	public Integer getNumeroGuia(){

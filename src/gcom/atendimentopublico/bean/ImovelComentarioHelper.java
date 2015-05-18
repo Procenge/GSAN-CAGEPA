@@ -55,7 +55,11 @@ public class ImovelComentarioHelper {
 
 	private String usuario;
 
-	private String ultimaAlteracao;
+	private String dataInclusao;
+
+	private String usuarioPossuiPermissaoAlteracao;
+
+	private String sequencialInclusao;
 
 	public String getId(){
 
@@ -87,14 +91,34 @@ public class ImovelComentarioHelper {
 		this.usuario = usuario;
 	}
 
-	public String getUltimaAlteracao(){
+	public String getDataInclusao(){
 
-		return ultimaAlteracao;
+		return dataInclusao;
 	}
 
-	public void setUltimaAlteracao(String ultimaAlteracao){
+	public void setDataInclusao(String dataInclusao){
 
-		this.ultimaAlteracao = ultimaAlteracao;
+		this.dataInclusao = dataInclusao;
+	}
+
+	public String getUsuarioPossuiPermissaoAlteracao(){
+
+		return usuarioPossuiPermissaoAlteracao;
+	}
+
+	public void setUsuarioPossuiPermissaoAlteracao(String usuarioPossuiPermissaoAlteracao){
+
+		this.usuarioPossuiPermissaoAlteracao = usuarioPossuiPermissaoAlteracao;
+	}
+
+	public String getSequencialInclusao(){
+
+		return sequencialInclusao;
+	}
+
+	public void setSequencialInclusao(String sequencialInclusao){
+
+		this.sequencialInclusao = sequencialInclusao;
 	}
 
 }

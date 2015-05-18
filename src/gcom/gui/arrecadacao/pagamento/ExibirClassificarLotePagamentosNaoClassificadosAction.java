@@ -42,6 +42,7 @@ import gcom.cadastro.localidade.Localidade;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
@@ -50,6 +51,7 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -82,6 +84,11 @@ public class ExibirClassificarLotePagamentosNaoClassificadosAction
 
 		Fachada fachada = Fachada.getInstancia();
 
+		HttpSession sessao = httpServletRequest.getSession(false);
+
+		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
+
+
 		// Flag indicando que o usuário fez uma consulta a partir da tecla Enter
 		String objetoConsulta = httpServletRequest.getParameter("objetoConsulta");
 
@@ -104,8 +111,9 @@ public class ExibirClassificarLotePagamentosNaoClassificadosAction
 		// 2.6. Situação do Pagamento
 		this.pesquisarSituacaoPagamento(httpServletRequest, fachada);
 
+
 		// Seta os request´s encontrados
-		this.setaRequest(httpServletRequest, actionForm);
+		this.setaRequest(httpServletRequest, actionForm, fachada, usuario);
 
 		return retorno;
 
@@ -186,10 +194,12 @@ public class ExibirClassificarLotePagamentosNaoClassificadosAction
 
 	}
 
-	private void setaRequest(HttpServletRequest httpServletRequest, ActionForm actionForm){
+	private void setaRequest(HttpServletRequest httpServletRequest, ActionForm actionForm, Fachada fachada, Usuario usuario){
 
 		// Pega o formulário
 		ClassificarLotePagamentosNaoClassificadosActionForm form = (ClassificarLotePagamentosNaoClassificadosActionForm) actionForm;
+
+		form.setIndicadorCorancaDiferencaPagtoAMenor(ConstantesSistema.SIM.toString());
 
 		// Localidade Inicial
 		if(form.getLocalidadeInicial() != null && !form.getLocalidadeInicial().equals("") && form.getNomeLocalidadeInicial() != null
@@ -207,6 +217,12 @@ public class ExibirClassificarLotePagamentosNaoClassificadosAction
 
 			}
 		}
+		
+		if(form.getOpcaoGeracao() == '\0'){
+			form.setOpcaoGeracao('C');
+		}
+
+
 
 	}
 

@@ -639,4 +639,16 @@ public interface ControladorEnderecoLocal
 	 */
 	public List<Object[]> pesquisarCepPorLogradouroEBairro(Integer idLogradouro, Integer idBairro) throws ControladorException;
 
+	/**
+	 * [UC0083] Gerar Dados para Leitura
+	 * [SB0001] - Gerar Arquivo Convencional
+	 * [SB0010] - Gerar Arquivo - Modelo 2
+	 * <<Inclui>> [UC3148 - Obter Endereço de Entrega]
+	 * 
+	 * @author Anderson Italo
+	 * @throws ControladorException
+	 * @date 27/05/2014
+	 */
+	public Object[] obterEnderecoEntrega(Integer idImovel, Integer idImovelContaEnvio) throws ControladorException;
+
 }

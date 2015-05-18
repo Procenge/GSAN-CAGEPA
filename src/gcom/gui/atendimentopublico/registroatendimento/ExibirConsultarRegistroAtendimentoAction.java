@@ -76,11 +76,15 @@
 
 package gcom.gui.atendimentopublico.registroatendimento;
 
+import gcom.arrecadacao.pagamento.FiltroGuiaPagamentoPrestacao;
+import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao;
 import gcom.atendimentopublico.registroatendimento.*;
 import gcom.atendimentopublico.registroatendimento.bean.ObterDadosRegistroAtendimentoHelper;
 import gcom.atendimentopublico.registroatendimento.bean.ObterDescricaoSituacaoRAHelper;
 import gcom.atendimentopublico.registroatendimento.bean.ObterRAAssociadoHelper;
 import gcom.cadastro.cliente.Cliente;
+import gcom.cadastro.cliente.ClienteFone;
+import gcom.cadastro.cliente.FiltroClienteFone;
 import gcom.cadastro.funcionario.Funcionario;
 import gcom.cadastro.geografico.BairroArea;
 import gcom.cadastro.imovel.Imovel;
@@ -100,6 +104,7 @@ import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -522,7 +527,7 @@ public class ExibirConsultarRegistroAtendimentoAction
 			consultarRegistroAtendimentoActionForm.setEnderecoSolicitante(enderecoSolicitante);
 			consultarRegistroAtendimentoActionForm.setPontoReferenciaSolicitante(registroAtendimentoSolicitante.getPontoReferencia());
 
-			SolicitanteFone solicitanteFone = consultarSolicitanteFone(registroAtendimentoSolicitante.getID());
+			SolicitanteFone solicitanteFone = consultarSolicitanteFone(registroAtendimentoSolicitante);
 
 			if(solicitanteFone != null){
 				consultarRegistroAtendimentoActionForm.setFoneDDD(String.valueOf(solicitanteFone.getDdd()));
@@ -690,7 +695,7 @@ public class ExibirConsultarRegistroAtendimentoAction
 				consultarRegistroAtendimentoActionForm.setIdUnidadeEncerramento(String.valueOf(unidadeEncerramento.getId()));
 				consultarRegistroAtendimentoActionForm.setUnidadeEncerramento(unidadeEncerramento.getDescricao());
 
-				RegistroAtendimentoUnidade registroAtendimentoUnidade = this.consultarRegistroAtendimentoUnidadeEncerramento(
+				RegistroAtendimentoUnidade registroAtendimentoUnidade = fachada.consultarRegistroAtendimentoUnidadeEncerramento(
 								registroAtendimento.getId(), unidadeEncerramento.getId());
 
 				Usuario usuario = registroAtendimentoUnidade.getUsuario();
@@ -711,7 +716,27 @@ public class ExibirConsultarRegistroAtendimentoAction
 
 			consultarRegistroAtendimentoActionForm.setParecerEncerramento(registroAtendimento.getParecerEncerramento());
 
+
 		}
+
+		// Pendencias Financeiras
+		FiltroGuiaPagamentoPrestacao filtroGuiaPagamentoPrestacao = new FiltroGuiaPagamentoPrestacao();
+		filtroGuiaPagamentoPrestacao.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoPrestacao.GUIA_PAGAMENTO);
+		filtroGuiaPagamentoPrestacao.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoPrestacao.DEBITO_CREDITO_SITUACAO_ATUAL);
+
+		filtroGuiaPagamentoPrestacao.adicionarParametro(new ParametroSimples(FiltroGuiaPagamentoPrestacao.REGISTRO_ATENDIMENTO_ID,
+						registroAtendimento.getId()));
+
+		Collection<GuiaPagamentoPrestacao> colecaoGuiaPagamentoPrestacao = fachada.pesquisar(filtroGuiaPagamentoPrestacao,
+						GuiaPagamentoPrestacao.class.getName());
+		sessao.setAttribute("colecaoGuiaPagamentoPrestacao", colecaoGuiaPagamentoPrestacao);
+
+		BigDecimal valorGuiaPagamento = BigDecimal.ZERO;
+		for(GuiaPagamentoPrestacao guiaPagamentoPrestacao : colecaoGuiaPagamentoPrestacao){
+			valorGuiaPagamento = valorGuiaPagamento.add(guiaPagamentoPrestacao.getValorPrestacao());
+		}
+
+		sessao.setAttribute("valorGuiaPagamento", Util.formatarMoedaReal(valorGuiaPagamento));
 
 		// Colocado por Raphael Rossiter em 26/10/2006
 		consultarRegistroAtendimentoActionForm.setNumeroRA("");
@@ -764,7 +789,7 @@ public class ExibirConsultarRegistroAtendimentoAction
 	 * @author Rafael Pinto
 	 * @created 09/08/2006
 	 */
-	private SolicitanteFone consultarSolicitanteFone(Integer idRegistroAtendimentoSolicitante){
+	private SolicitanteFone consultarSolicitanteFone(RegistroAtendimentoSolicitante registroAtendimentoSolicitante){
 
 		SolicitanteFone retorno = null;
 
@@ -775,12 +800,34 @@ public class ExibirConsultarRegistroAtendimentoAction
 		FiltroSolicitanteFone filtroSolicitanteFone = new FiltroSolicitanteFone();
 
 		filtroSolicitanteFone.adicionarParametro(new ParametroSimples(FiltroSolicitanteFone.REGISTRO_ATENDIMENTO_SOLICITANTE_ID,
-						idRegistroAtendimentoSolicitante));
+						registroAtendimentoSolicitante.getID()));
 
 		colecaoSolicitanteFone = fachada.pesquisar(filtroSolicitanteFone, SolicitanteFone.class.getName());
 
 		if(colecaoSolicitanteFone != null && !colecaoSolicitanteFone.isEmpty()){
 			retorno = (SolicitanteFone) Util.retonarObjetoDeColecao(colecaoSolicitanteFone);
+
+		}
+
+		if(retorno == null && (registroAtendimentoSolicitante != null && registroAtendimentoSolicitante.getCliente() != null)){
+
+			FiltroClienteFone filtroClienteFone = new FiltroClienteFone();
+			filtroClienteFone.adicionarParametro(new ParametroSimples(FiltroClienteFone.CLIENTE_ID, registroAtendimentoSolicitante
+							.getCliente().getId()));
+
+			Collection clienteFones = fachada.pesquisar(filtroClienteFone, ClienteFone.class.getName());
+
+			ClienteFone clienteFone = (ClienteFone) Util.retonarObjetoDeColecao(clienteFones);
+
+			if(clienteFone == null){
+				return null;
+			}
+
+			retorno = new SolicitanteFone();
+			retorno.setDdd(Short.valueOf(clienteFone.getDdd()));
+			retorno.setFone(clienteFone.getTelefone());
+			retorno.setRamal(clienteFone.getRamal());
+			retorno.setRegistroAtendimentoSolicitante(registroAtendimentoSolicitante);
 
 		}
 
@@ -827,35 +874,6 @@ public class ExibirConsultarRegistroAtendimentoAction
 	 * @author Carlos Chrystian
 	 * @created 12/04/2012
 	 */
-	private RegistroAtendimentoUnidade consultarRegistroAtendimentoUnidadeEncerramento(Integer idRA, Integer idUnidade){
-
-		RegistroAtendimentoUnidade retorno = null;
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection colecaoRegistroAtendimentoUnidade = null;
-
-		FiltroRegistroAtendimentoUnidade filtroRegistroAtendimentoUnidade = new FiltroRegistroAtendimentoUnidade();
-
-		filtroRegistroAtendimentoUnidade.adicionarParametro(new ParametroSimples(FiltroRegistroAtendimentoUnidade.REGISTRO_ATENDIMENTO_ID,
-						idRA));
-
-		filtroRegistroAtendimentoUnidade.adicionarParametro(new ParametroSimples(
-						FiltroRegistroAtendimentoUnidade.UNIDADE_ORGANIZACIONAL_ID, idUnidade));
-		filtroRegistroAtendimentoUnidade.adicionarParametro(new ParametroSimples(
-						FiltroRegistroAtendimentoUnidade.ATENDIMENTO_RELACAO_TIPO_ID, AtendimentoRelacaoTipo.ENCERRAR));
-
-		filtroRegistroAtendimentoUnidade.adicionarCaminhoParaCarregamentoEntidade(FiltroRegistroAtendimentoUnidade.USUARIO);
-
-		colecaoRegistroAtendimentoUnidade = fachada.pesquisar(filtroRegistroAtendimentoUnidade, RegistroAtendimentoUnidade.class.getName());
-
-		if(colecaoRegistroAtendimentoUnidade != null && !colecaoRegistroAtendimentoUnidade.isEmpty()){
-			retorno = (RegistroAtendimentoUnidade) Util.retonarObjetoDeColecao(colecaoRegistroAtendimentoUnidade);
-
-		}
-
-		return retorno;
-	}
 
 	private Integer obterIndexRAColecao(Collection colecaoRAHelper, Integer idRA){
 

@@ -80,6 +80,8 @@ import gcom.atendimentopublico.registroatendimento.FiltroMeioSolicitacao;
 import gcom.atendimentopublico.registroatendimento.MeioSolicitacao;
 import gcom.cadastro.empresa.Empresa;
 import gcom.cadastro.empresa.FiltroEmpresa;
+import gcom.cadastro.geografico.FiltroMunicipio;
+import gcom.cadastro.geografico.Municipio;
 import gcom.cadastro.localidade.FiltroGerenciaRegional;
 import gcom.cadastro.localidade.GerenciaRegional;
 import gcom.cadastro.localidade.Localidade;
@@ -227,6 +229,35 @@ public class AtualizarUnidadeOrganizacionalAction
 							GerenciaRegional.class.getName()));
 			unidadeNova.setGerenciaRegional(gerenciaRegional);
 
+		}
+
+		if(!Util.isVazioOuBranco(form.getTelefone())){
+			unidadeNova.setTelefone(form.getTelefone());
+		}
+		if(!Util.isVazioOuBranco(form.getRamal())){
+			unidadeNova.setRamal(form.getRamal());
+		}
+		if(!Util.isVazioOuBranco(form.getFax())){
+			unidadeNova.setFax(form.getFax());
+		}
+		if(!Util.isVazioOuBranco(form.getDdd())){
+
+			FiltroMunicipio filtroMunicipio = new FiltroMunicipio();
+
+			filtroMunicipio.adicionarParametro(new ParametroSimples(FiltroMunicipio.DDD, form.getDdd()));
+
+			Collection municipiosComDDDValido = fachada.pesquisar(filtroMunicipio, Municipio.class.getName());
+
+			if(municipiosComDDDValido.isEmpty()){
+				// O DDD não existe no sistema
+				throw new ActionServletException("atencao.telefone.ddd.nao_existente");
+			}
+
+			unidadeNova.setDdd(form.getDdd());
+		}
+
+		if(!Util.isVazioOuBranco(form.getObservacao())){
+			unidadeNova.setObservacao(form.getObservacao());
 		}
 
 		fachada.atualizarUnidadeOrganizacional(unidadeNova, this.getUsuarioLogado(httpServletRequest));

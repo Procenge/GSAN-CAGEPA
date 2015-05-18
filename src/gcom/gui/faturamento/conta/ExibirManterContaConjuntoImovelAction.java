@@ -242,15 +242,37 @@ public class ExibirManterContaConjuntoImovelAction
 			manterContaConjuntoImovelActionForm.setInscricaoFinal("");
 		}
 
-		String idGrupoFaturamentoSessao = (String) sessao.getAttribute("grupoFaturamento");
-		Integer idGrupoFaturamento = null;
+		// Faturamento Grupo
+		Collection colecaoFaturamentoGrupoSessao = (Collection) sessao.getAttribute("colecaoFaturamentoGrupo");
 
-		if(idGrupoFaturamentoSessao != null && !idGrupoFaturamentoSessao.equals("")){
-			manterContaConjuntoImovelActionForm.setIdGrupoFaturamento(idGrupoFaturamentoSessao);
-			idGrupoFaturamento = new Integer(idGrupoFaturamentoSessao);
+
+		if(colecaoFaturamentoGrupoSessao != null && !colecaoFaturamentoGrupoSessao.equals("")){
+
+			String faturamentoGrupo = "";
+			Iterator it = colecaoFaturamentoGrupoSessao.iterator();
+			int qtd = 0;
+
+			// if(sessao.getAttribute("codigoCliente") == null){
+
+			while(it.hasNext()){
+				Integer idFaturamentoGrupo = (Integer) it.next();
+				if(qtd == 0){
+					faturamentoGrupo = idFaturamentoGrupo.toString();
+				}else{
+					faturamentoGrupo = faturamentoGrupo + ";" + idFaturamentoGrupo;
+				}
+				qtd++;
+			}
+			// }
+
+			manterContaConjuntoImovelActionForm.setIdGrupoFaturamento(faturamentoGrupo);
+
 		}else{
 			manterContaConjuntoImovelActionForm.setIdGrupoFaturamento("");
 		}
+
+
+
 
 		Integer quantidadeConta = 0;
 		Integer codigoCliente = null;
@@ -296,7 +318,6 @@ public class ExibirManterContaConjuntoImovelAction
 		}
 		
 
-
 		if(httpServletRequest.getParameter("quantidadeConta") != null){
 
 
@@ -323,7 +344,7 @@ public class ExibirManterContaConjuntoImovelAction
 			// Chama o método obter contas conjunto de imóveis
 			// e adiciona a quantidade de contas ao form
 			quantidadeConta = fachada.obterContasConjuntoImoveis(anoMes, colecaoImovel, codigoCliente, relacaoTipo,
-							dataVencimentoContaInicio, dataVencimentoContaFim, idGrupoFaturamento, anoMesFinal, inContasRevisao,
+							dataVencimentoContaInicio, dataVencimentoContaFim, colecaoFaturamentoGrupoSessao, anoMesFinal, inContasRevisao,
 							motivosRevisaoDisponiveis);
 
 			// Se o parâmetro de sistema informa um limite para a quantidade de imóveis, o sistema
@@ -344,7 +365,7 @@ public class ExibirManterContaConjuntoImovelAction
 
 			// Envia a coleção de contas a serem exibidas no grid
 			Collection<Conta> colecaoContaImovel = fachada.recuperarContasConjuntoImoveis(anoMes, colecaoImovel, codigoCliente,
-							relacaoTipo, dataVencimentoContaInicio, dataVencimentoContaFim, idGrupoFaturamento, anoMesFinal,
+							relacaoTipo, dataVencimentoContaInicio, dataVencimentoContaFim, colecaoFaturamentoGrupoSessao, anoMesFinal,
 							inContasRevisao, motivosRevisaoDisponiveis);
 
 			// Acumuladores dos valores
@@ -467,8 +488,16 @@ public class ExibirManterContaConjuntoImovelAction
 			manterContaConjuntoImovelActionForm.setQuatidadeConta("");
 		}
 
+		if(fachada.existeProcessoExecucaoFiscal().equals(ConstantesSistema.SIM)){
+			sessao.setAttribute("exibirDividaAtivaColuna", "S");
+		}else{
+			sessao.removeAttribute("exibirDividaAtivaColuna");
+		}
+
 		return retorno;
 	}
+
+
 
 	/**
 	 * Pesquisa Conta Motivo Revisão

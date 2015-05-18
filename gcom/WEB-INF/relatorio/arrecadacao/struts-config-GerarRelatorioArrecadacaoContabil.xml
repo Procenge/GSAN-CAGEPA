@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="GerarRelatorioArrecadacaoContabilActionForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="pnCDAgenteInicial"
+				type="java.lang.String" />
+			<form-property
+				name="pnDSAgenteInicial"
+				type="java.lang.String" />
+
+			<form-property
+				name="pnCDAgenteFinal"
+				type="java.lang.String" />
+			<form-property
+				name="pnDSAgenteFinal"
+				type="java.lang.String" />
+
+			<form-property
+				name="pdInicial"
+				type="java.lang.String" />
+			<form-property
+				name="pdFinal"
+				type="java.lang.String" />
+				
+			<form-property
+				name="psClasseContabil"
+				type="java.lang.String" />
+
+		</form-bean>			
+	</form-beans>
+	
+
+
+	<!--******************* P?GINAS GLOBAIS *******************-->
+	<global-exceptions />	
+	<global-forwards />
+	<action-mappings>
+		
+		<action name="GerarRelatorioArrecadacaoContabilActionForm"
+			    type="gcom.gui.relatorio.arrecadacao.ExibirGerarRelatorioArrecadacaoContabilAction"
+			    validate="true" 
+			    path="/exibirGerarRelatorioArrecadacaoContabilAction">
+			<forward name="exibirGerarRelatorioArrecadacaoContabil" path="/jsp/relatorio/arrecadacao/relatorio_arrecadacao_contabil_filtrar.jsp" />
+		</action>
+
+		<action name="GerarRelatorioArrecadacaoContabilActionForm"
+				type="br.com.procenge.geradorrelatorio.gui.GeradorRelatorioAction"
+				path="/gerarRelatorioArrecadacaoContabilAction"				
+				scope="request" 
+				parameter="acao">
+				
+			<exception
+				handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO"
+				type="br.com.procenge.comum.exception.PCGException"
+				path="/telaPrincipal.do" />
+
+			<forward name="paginaPrincipal" path="/telaPrincipal.do" />				
+				
+		</action>
+		
+	</action-mappings>
+
+	
+</struts-config>

@@ -144,4 +144,6 @@ public class FiltroHidrometroInstalacaoHistorico
 
 	public final static String HIDROMETRO_SITUACAO = "hidrometro.hidrometroSituacao";
 
+	public final static String DATA_RETIRADA = "dataRetirada";
+
 }

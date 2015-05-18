@@ -87,6 +87,7 @@ import gcom.cadastro.cliente.FiltroClienteImovel;
 import gcom.cadastro.funcionario.FiltroFuncionario;
 import gcom.cadastro.funcionario.Funcionario;
 import gcom.cadastro.imovel.Imovel;
+import gcom.cadastro.imovel.PocoTipo;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
@@ -231,6 +232,18 @@ public class ExibirAtualizarLigacaoEsgotoAction
 					/*-------------------- Ligação de Esgoto -------------------------------*/
 					// Seta no form informações da ligação de esgoto
 					setLigacaoEsgotoForm(ligacaoEsgotoActionForm, imovel, fachada);
+					
+					if(imovel.getPocoTipo() != null && imovel.getPocoTipo().getId() != null
+									&& !imovel.getPocoTipo().getId().equals(PocoTipo.SEM_POCO)){
+
+						if(imovel.getLigacaoEsgoto() != null && imovel.getLigacaoEsgoto().getNumeroConsumoFixoPoco() != null){
+
+							ligacaoEsgotoActionForm.setConsumoFixoPoco(imovel.getLigacaoEsgoto().getNumeroConsumoFixoPoco().toString());
+						}
+
+						sessao.setAttribute("imovelPossuiPoco", "true");
+					}
+					
 					/*-------------------- Fim Dados da Ligação ----------------------------*/
 					sessao.setAttribute("osEncontrada", "true");
 				}else{

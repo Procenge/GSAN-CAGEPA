@@ -46,6 +46,11 @@
 		var formRed = "/gsan/manterCategoriaFaixaConsumoTarifaAction.do";
 			redirecionarSubmit(formRed);
 		}
+	
+	function exitbirManterCategoriaConsumoTarifaAction(){
+		var formRed = "/gsan/exibirManterCategoriaConsumoTarifaAction.do";
+			redirecionarSubmit(formRed);
+		}	
 </script>
 </head>
 <logic:equal name="testeInserir" value="false" scope="request">
@@ -92,15 +97,33 @@
 				</tr>
 				<tr>
 					<td height="24"><strong>Valor do M3 da Faixa<font color="#FF0000">*</font>:</strong></td>
-					<td colspan="3"><html:text  property="valorM3Faixa" style="text-align:right;" maxlength="18" onkeyup="formataValorMonetarioQuatroDecimais(this, 18)"
-						size="18" />
+					
+					<logic:equal name="pQuantidadeDecimaisValorTarifa" value="4">
+						<td colspan="3"><html:text  property="valorM3Faixa" style="text-align:right;" maxlength="18" onkeyup="formataValorMonetarioQuatroDecimais(this, 18)"
+							size="18" />
+						</td>
+					</logic:equal>
+					<logic:equal name="pQuantidadeDecimaisValorTarifa" value="2">
+						<td colspan="3"><html:text  property="valorM3Faixa" style="text-align:right;" maxlength="18" onkeyup="formataValorMonetario(this, 18)"
+							size="18" />
+						</td>
+					</logic:equal>
 				</tr>
 				
 				<logic:present name="indicadorTarifaEsgotoPropria" scope="session">
 					<tr>
 						<td height="24"><strong>Valor do M3 da Faixa para Esgoto<font color="#FF0000">*</font>:</strong></td>
-						<td colspan="3"><html:text  property="valorM3FaixaEsgoto" style="text-align:right;" maxlength="18" onkeyup="formataValorMonetarioQuatroDecimais(this, 18)"
-							size="18" />
+						
+						<logic:equal name="pQuantidadeDecimaisValorTarifa" value="4">
+							<td colspan="3"><html:text  property="valorM3FaixaEsgoto" style="text-align:right;" maxlength="18" onkeyup="formataValorMonetarioQuatroDecimais(this, 18)"
+								size="18" />
+							</td>
+						</logic:equal>
+						<logic:equal name="pQuantidadeDecimaisValorTarifa" value="2">
+							<td colspan="3"><html:text  property="valorM3FaixaEsgoto" style="text-align:right;" maxlength="18" onkeyup="formataValorMonetario(this, 18)"
+								size="18" />
+							</td>
+						</logic:equal>
 					</tr>
 				</logic:present>
 				
@@ -117,7 +140,7 @@
 					<div align="right"><input name="Button" type="button"
 						class="bottonRightCol" value="Inserir" onClick="javascript:if(validateInserirCategoriaFaixaConsumoTarifaActionForm(document.forms[0])){document.forms[0].submit();}""> <input
 						name="Button2" type="button" class="bottonRightCol" value="Fechar"
-						onClick="javascript:window.location.href='/gsan/exibirManterCategoriaConsumoTarifaAction.do';"></div>
+						onClick="javascript:exitbirManterCategoriaConsumoTarifaAction();"></div>
 					</td>
 				</tr>
 			</table>

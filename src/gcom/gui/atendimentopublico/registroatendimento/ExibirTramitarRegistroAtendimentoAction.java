@@ -76,11 +76,7 @@
 
 package gcom.gui.atendimentopublico.registroatendimento;
 
-import gcom.atendimentopublico.registroatendimento.AtendimentoMotivoEncerramento;
-import gcom.atendimentopublico.registroatendimento.MotivoTramite;
-import gcom.atendimentopublico.registroatendimento.RegistroAtendimento;
-import gcom.atendimentopublico.registroatendimento.RegistroAtendimentoSolicitante;
-import gcom.atendimentopublico.registroatendimento.SolicitacaoTipoEspecificacao;
+import gcom.atendimentopublico.registroatendimento.*;
 import gcom.atendimentopublico.registroatendimento.bean.ObterDadosRegistroAtendimentoHelper;
 import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.geografico.BairroArea;
@@ -151,13 +147,15 @@ public class ExibirTramitarRegistroAtendimentoAction
 
 		// Verifica se a tramitacao será feita também para OS
 		try{
-			if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().equals(ConstantesSistema.SIM.toString())){
+			if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().toString().equals(ConstantesSistema.SIM.toString())){
 				sessao.setAttribute("indicadorParametroTramite", true);
 			}
 		}catch(ControladorException e){
 			throw new ActionServletException(e.getMessage(), e);
 
 		}
+
+
 
 		FiltroTabelaAuxiliarAbreviada filtro = new FiltroTabelaAuxiliarAbreviada();
 

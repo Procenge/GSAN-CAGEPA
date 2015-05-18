@@ -190,6 +190,27 @@
 					</td>
 				</tr>
 				<tr>
+					<td class="style1"><strong>Débito em Dívida Ativa:</strong></td>
+					<td colspan="3" class="style1">
+					<logic:equal name="cobrancaCriterio"
+						property="indicadorDividaAtiva" value="1">
+						<input type="radio"
+							name="indicadorDivida" value="rádio" enabled checked>
+						<strong>Sim <input type="radio"
+							name="indicadorDivida" value="rádio" disabled>
+						N&atilde;o</strong>
+					</logic:equal>
+					<logic:notEqual name="cobrancaCriterio"
+						property="indicadorDividaAtiva" value="1">
+						<input type="radio"
+							name="indicadorDivida" value="rádio" disabled>
+						<strong>Sim <input type="radio"
+							name="indicadorDivida" value="rádio" enabled checked>
+						N&atilde;o</strong>
+					</logic:notEqual>
+					</td>
+				</tr>
+				<tr>
 					<td class="style1"><strong>Im&oacute;vel com D&eacute;bito
 					s&oacute; na Conta do M&ecirc;s:</strong></td>
 					<td colspan="3" class="style1">

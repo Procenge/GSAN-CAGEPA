@@ -41,7 +41,12 @@
 
 package gcom.gui.cadastro.entidadebeneficente;
 
+import gcom.cadastro.empresa.Empresa;
+import gcom.cadastro.empresa.FiltroEmpresa;
+import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
+
+import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -60,16 +65,25 @@ public class ExibirFiltrarEntidadeBeneficenteAction
 		ActionForward retorno = actionMapping.findForward("filtrarEntidadeBeneficente");
 
 		DynaActionForm form = (DynaActionForm) actionForm;
+		Fachada fachada = Fachada.getInstancia();
 
 		// Se não tiver nada setado em atualizar, o check começa marcado.
 		if(form.get("checkAtualizar") == null){
 			form.set("checkAtualizar", "1");
 		}
 
+		FiltroEmpresa filtroEmpresa = new FiltroEmpresa();
+		filtroEmpresa.setCampoOrderBy(FiltroEmpresa.DESCRICAO);
+
+		Collection<Empresa> colecaoEmpresa = fachada.pesquisar(filtroEmpresa, Empresa.class.getName());
+
+		httpServletRequest.setAttribute("colecaoEmpresa", colecaoEmpresa);
+
 		// Caso o usuário tenha clicado no botão limpar.
 		if(httpServletRequest.getParameter("desfazer") != null && httpServletRequest.getParameter("desfazer").equalsIgnoreCase("S")){
 
 			form.set("idCliente", "");
+			form.set("idEmpresa", "");
 			form.set("idDebitoTipo", "");
 			form.set("nomeCliente", "");
 			form.set("descricaoDebitoTipo", "");

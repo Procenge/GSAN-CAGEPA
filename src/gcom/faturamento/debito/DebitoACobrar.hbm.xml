@@ -139,6 +139,13 @@
         not-null="true"
     />
 
+    <property
+        name="numeroProcessoAdministrativoExecucaoFiscal"
+        type="java.lang.Integer"
+        column="DBAC_NNPROCESADMEXECUCAOFISCAL"
+        length="14"
+    />
+
     <!-- associations -->
     <!-- bi-directional one-to-many association to DebitoACobrarCategoria -->
     
@@ -324,6 +331,20 @@
         column="dbac_amrefultimacobranca"
         length="6"
     />
+    
+    <!-- bi-directional one-to-many association to ClienteDebitoACobrar -->
+    <set
+        name="clientesDebitoACobrar"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="dbac_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.cliente.ClienteDebitoACobrar"
+        />
+    </set>    
     
 </class>
 </hibernate-mapping>

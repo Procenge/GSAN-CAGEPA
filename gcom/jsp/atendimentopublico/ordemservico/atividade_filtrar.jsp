@@ -26,6 +26,7 @@ function limpar(){
 	var form = document.forms[0];
 	form.descricao.value = '';
 	form.descricaoAbreviada.value = '';
+	form.valorHora.value = '';
 	form.indicadorAtividadeUnica[1].checked = true;
 	form.indicadorUso[0].checked = true;
 }
@@ -89,6 +90,16 @@ function limpar(){
 					<font color="red"><html:errors property="descricaoAbreviada" /></font>
 					</td>
 				</tr>
+				<logic:equal name="permiteCobrarHora" value="1" scope="session">
+				<tr>
+					<td width="19%"><strong>Valor hora:</strong></td>
+					<td width="81%">
+						<html:text property="valorHora" maxlength="5" size="8" />
+					<br>
+					<font color="red"><html:errors property="valorHora" /></font>
+					</td>
+				</tr>
+				</logic:equal>
 				
 				<tr>
 					<td><strong>Indicador Uso:<font color="#FF0000">*</font></strong></td>

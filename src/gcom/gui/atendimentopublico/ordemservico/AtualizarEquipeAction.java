@@ -76,9 +76,7 @@
 
 package gcom.gui.atendimentopublico.ordemservico;
 
-import gcom.atendimentopublico.ordemservico.Equipe;
-import gcom.atendimentopublico.ordemservico.FiltroServicoPerfilTipo;
-import gcom.atendimentopublico.ordemservico.ServicoPerfilTipo;
+import gcom.atendimentopublico.ordemservico.*;
 import gcom.cadastro.unidade.FiltroUnidadeOrganizacional;
 import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.fachada.Fachada;
@@ -140,6 +138,27 @@ public class AtualizarEquipeAction
 		String idUnidade = atualizarEquipeActionForm.getIdUnidade();
 		String idPerfilServico = atualizarEquipeActionForm.getIdServicoPerfilTipo();
 		String indicadorUso = atualizarEquipeActionForm.getIndicadorUso();
+
+		Integer idEquipeTipo = atualizarEquipeActionForm.getIdEquipeTipo();
+
+		EquipeTipo equipeTipo = null;
+
+		// Verifica se a unidade organizacional existe e em caso afirmativo
+		// seta-a no filtro
+		if(idEquipeTipo != null && idEquipeTipo != ConstantesSistema.NUMERO_NAO_INFORMADO){
+
+			FiltroEquipeTipo filtroEquipeTipo = new FiltroEquipeTipo();
+			filtroEquipeTipo.adicionarParametro(new ParametroSimples(FiltroEquipeTipo.ID, idEquipeTipo));
+
+			Collection colecaoEquipeTipo = fachada.pesquisar(filtroEquipeTipo, EquipeTipo.class.getName());
+
+			if(colecaoEquipeTipo == null || colecaoEquipeTipo.isEmpty()){
+				throw new ActionServletException("atencao.pesquisa_inexistente", null, "Unidade Organizacional");
+			}else{
+				equipeTipo = (EquipeTipo) Util.retonarObjetoDeColecao(colecaoEquipeTipo);
+			}
+
+		}
 
 		UnidadeOrganizacional unidade = null;
 
@@ -205,6 +224,7 @@ public class AtualizarEquipeAction
 
 			equipe.setUnidadeOrganizacional(unidade);
 			equipe.setServicoPerfilTipo(servicoPerfilTipo);
+			equipe.setEquipeTipo(equipeTipo);
 
 			// Coleção de Componentes
 			Collection colecaoEquipeComponentes = (Collection) sessao.getAttribute("colecaoEquipeComponentes");

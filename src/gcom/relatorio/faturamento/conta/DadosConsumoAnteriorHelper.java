@@ -16,6 +16,8 @@ public class DadosConsumoAnteriorHelper
 
 	private String descricaoAbreviadaConsumAnormalidade;
 
+	private Integer consumoMedido;
+
 	private Integer consumoFaturado;
 
 	public DadosConsumoAnteriorHelper() {
@@ -62,6 +64,16 @@ public class DadosConsumoAnteriorHelper
 		this.descricaoAbreviadaConsumAnormalidade = descricaoAbreviadaConsumAnormalidade;
 	}
 
+	public Integer getConsumoMedido(){
+
+		return consumoMedido;
+	}
+
+	public void setConsumoMedido(Integer consumoMedido){
+
+		this.consumoMedido = consumoMedido;
+	}
+
 	public Integer getConsumoFaturado(){
 
 		return consumoFaturado;
@@ -71,5 +83,6 @@ public class DadosConsumoAnteriorHelper
 
 		this.consumoFaturado = consumoFaturado;
 	}
+
 
 }

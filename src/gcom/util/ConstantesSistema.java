@@ -91,6 +91,14 @@ public interface ConstantesSistema {
 
 	Short UM = Short.valueOf("1");
 
+	Short DOIS = Short.valueOf("2");
+
+	Short TRES = Short.valueOf("3");
+
+	Short QUATRO = Short.valueOf("4");
+
+	Short CINCO = Short.valueOf("5");
+
 	Integer INVALIDO_ID = -1;
 
 	int NUMERO_NAO_INFORMADO = -1;
@@ -207,6 +215,8 @@ public interface ConstantesSistema {
 	Short NAO = Short.valueOf("2");
 
 	Short TODOS = Short.valueOf("3");
+
+	Integer NUMERO_PROCESSO_ADM_EXEC_FISCAL_ZERO = Integer.valueOf(0);
 
 	// -- TIPO DE ANORMALIDADE
 	String ANORMALIDADE_LEITURA_INFORMADA = "1";
@@ -408,6 +418,8 @@ public interface ConstantesSistema {
 	Integer NUMERO_MAXIMO_REGISTROS_CONTAS_DEBITO = 6;
 
 	Integer NUMERO_MAXIMO_REGISTROS_GUIA_PAGAMENTO = 4;
+
+	Integer NUMERO_MAXIMO_REGISTROS_DEBITO_A_COBRAR = 4;
 
 	Integer NUMERO_MAXIMO_REGISTROS_OPCAO_PARCELAMENTO = 4;
 
@@ -772,6 +784,8 @@ public interface ConstantesSistema {
 	// Constantes usadas no caso de uso [UC1000] Inserir Empresa
 	String CODIGO_EMPRESA_JA_CADASTRADO = "CÓDIGO DA EMPRESA JÁ CADASTRADO";
 
+	String CODIGO_NORMA_PROCEDIMENTAL_JA_CADASTRADO = "CÓDIGO DA NORMA PROCEDIMENTAL JÁ CADASTRADO";
+
 	// Constantes usadas para Nomear Wizards que tem chamadas a partir de outros (ex. Atendimento
 	// chama Manter Imóvel)
 	String NOME_WIZARD_ALTERAR_IMOVEL = "statusWizardAlterarImovel";
@@ -806,6 +820,12 @@ public interface ConstantesSistema {
 	int PARCELAMENTO_VALOR_GUIA_MULTA = 4;
 
 	int PARCELAMENTO_VALOR_GUIA_ACRESCIMO_IMPONTUALIDADE = 5;
+
+	int PARCELAMENTO_VALOR_GUIA_JUROS_MORA_SUCUMBENCIA = 6;
+
+	int PARCELAMENTO_VALOR_GUIA_ATUALIZACAO_MONETARIA_SUCUMBENCIA = 7;
+
+	int PARCELAMENTO_VALOR_GUIA_SUCUMBENCIA = 8;
 
 	// Constantes usadas no caso de uso [UC0677] Informar Dados para Consulta da Negativação
 	// Author: Thiago Vieira
@@ -982,8 +1002,8 @@ public interface ConstantesSistema {
 
 	// Tipo do arquivo gerado em OS Seletiva.
 	String PDF = "1";
-
 	String TXT = "2";
+	String XLS = "3";
 
 	// Indicador critério.
 	String INDICADOR_CRITERIO_ACAO = "1";
@@ -1160,4 +1180,32 @@ public interface ConstantesSistema {
 	String ACAO_ATUALIZAR = "ATUALIZAR";
 
 	Integer QUANTIDADE_LIMITE_REGISTROS_SIMULACAO_FATURAMENTO = 530000;
+
+	String VINCULO_CONDOMINIO_CRITERIO_QUADRA = "1";
+
+	String VINCULO_CONDOMINIO_CRITERIO_ROTA = "2";
+
+	String INDICADOR_ENDERECO_ENTREGA_CONTA_IMOVEL = "1";
+
+	String INDICADOR_ENDERECO_ENTREGA_CONTA_CLIENTE = "2";
+
+	String INDICADOR_CLIENTE_RETIRA_CONTA_NAO_ENTREGAR = "4";
+
+	Integer NUMERO_MAXIMO_REGISTROS_IMOVEL_COM_DEBITOS_PRESCRITOS = 1000;
+
+	Short CONTAS_NORMAIS = Short.valueOf("1");
+
+	Short CONTAS_EM_REVISAO = Short.valueOf("2");
+
+	Integer CODIGO_MOTIVO_DEBITO_AUTOMATICO = 4;
+
+	Integer CODIGO_EMPRESA_FEBRABAN_SOROCABA = 91;
+
+
+	// Formato do Relatório
+
+	String ANALITICO = "1";
+
+	String SINTETICO = "2";
+
 }

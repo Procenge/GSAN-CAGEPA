@@ -43,4 +43,10 @@ public class FiltroServicoTipoTramite
 
 	public final static String UNIDADE_ORGANIZACIONAL_DESTINO_ID = "unidadeOrganizacionalDestino.id";
 
+	public final static String BAIRRO = "bairro";
+
+	public final static String BAIRRO_ID = "bairro.id";
+
+	public final static String MUNICIPIO = "bairro.municipio";
+
 }

@@ -76,11 +76,15 @@
 
 package gcom.gui.arrecadacao.aviso;
 
+import gcom.arrecadacao.FiltroAvisoBancario;
 import gcom.arrecadacao.aviso.AvisoBancario;
 import gcom.arrecadacao.aviso.bean.AvisoBancarioHelper;
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
 import gcom.util.Util;
+import gcom.util.filtro.ParametroSimples;
+
+import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -145,6 +149,12 @@ public class ExibirApresentarAnaliseAvisoBancarioAction
 		// O sistema apresenta os dados do aviso bancário recebido
 		AvisoBancario avisoBancario = new AvisoBancario();
 		avisoBancario.setId(Integer.valueOf(idAvisoBancario));
+
+		FiltroAvisoBancario filtroAvisoBancario = new FiltroAvisoBancario();
+		filtroAvisoBancario.adicionarParametro(new ParametroSimples(FiltroAvisoBancario.ID, idAvisoBancario));
+		Collection colecaoAvisoBancario = fachada.pesquisar(filtroAvisoBancario, AvisoBancario.class.getName());
+
+		avisoBancario = (AvisoBancario) Util.retonarObjetoDeColecao(colecaoAvisoBancario);
 
 		AvisoBancarioHelper avisoBancarioHelper = fachada.apresentarAnaliseAvisoBancario(avisoBancario);
 

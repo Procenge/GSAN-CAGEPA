@@ -167,6 +167,15 @@
         column="ossc_nnareaconstruidafinal"
         length="8"
     />
+    
+    <property
+        name="referenciaUltimaAfericaoHidrometro"
+        type="java.lang.Integer"
+        column="ossc_amultimaafericao"
+        length="4"
+    />
+    
+    
     <!-- 
     <property
         name="codigoSetorComercialInicial"

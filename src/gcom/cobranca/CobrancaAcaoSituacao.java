@@ -134,6 +134,11 @@ public class CobrancaAcaoSituacao
 
 	}
 
+	public CobrancaAcaoSituacao(Integer id) {
+
+		this.id = id;
+	}
+
 	public String toString(){
 
 		return new ToStringBuilder(this).append("castId", getId()).toString();

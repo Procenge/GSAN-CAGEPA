@@ -252,6 +252,9 @@ public class RegistrarNegativadorMovimentoRetornoAction
 						}else if(Negativador.NEGATIVADOR_SERASA.intValue() == negativador.getId().intValue()){
 							// H.09
 							numeroSequencialArquivo = registro.substring(120, 125);
+						}else if(Negativador.NEGATIVADOR_SPC_BOA_VISTA.intValue() == negativador.getId().intValue()){
+							// H.07 88 94 NUM(7) Número de Sequência do Arquivo
+							numeroSequencialArquivo = registro.substring(88, 95);
 						}
 					}
 				}

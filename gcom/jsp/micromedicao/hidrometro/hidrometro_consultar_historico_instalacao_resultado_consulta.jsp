@@ -5,9 +5,12 @@
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@page isELIgnored="false"%>
 
+<%@ page import="gcom.micromedicao.bean.OrdemServicoManutencaoHidrometroHelper"%>
+<%@ page import="gcom.micromedicao.hidrometro.HidrometroHistoricoAfericao"%>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<head>
 <html:html>
+<head>
 <%@ include file="/jsp/util/titulo.jsp"%>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet"
@@ -16,6 +19,16 @@
 
 <script language="JavaScript"
 	src="<bean:message key="caminho.js"/>util.js"></script>
+	
+<script language="JavaScript">
+	
+	function consultarOs(idOs){
+		
+		var url = 'exibirConsultarDadosOrdemServicoPopupAction.do?numeroOS='+idOs;
+		abrirPopup(url);
+	}
+</script>
+
 </head>
 
 
@@ -105,7 +118,7 @@
 						<div align="center" class="style9"><strong> Ano Fabr.</strong></div>
 						</td>
 						<td width="11%">
-						<div align="center" class="style9"><strong>Dt.Ult.Rev.</strong></div>
+						<div align="center" class="style9"><strong>Dt.Ult.Afe.</strong></div>
 						</td>
 						<td width="11%">
 						<div align="center"><strong>Data Baixa</strong></div>
@@ -214,6 +227,49 @@
 				</table>
 				</td>
 			</tr>
+			<tr>
+				<td height="22" class="style1">
+				<table width="100%" cellpadding="0" cellspacing="0">
+					<tr>
+						<td height="37">
+						<table width="100%" bgcolor="#90c7fc">
+							<tr bgcolor="#90c7fc">
+								<td width="40%">
+								<div align="center" class="style9"><strong>Número da Nota Fiscal.</strong></div>
+								</td>
+								<td width="60%">
+								<div align="left" class="style9"><strong>Empresa Responsável pela Última Aferição</strong></div>
+								</td>
+							</tr>
+							<tr bgcolor="#FFFFFF">
+								<td>
+									<div align="center">
+										<logic:notEmpty scope="request" name="hidrometro" property="numeroNotaFiscal">
+											${requestScope.hidrometro.numeroNotaFiscal}
+										</logic:notEmpty>
+										&nbsp;
+									</div>
+								</td>
+								<td>
+									<div align="left">
+										<logic:notEmpty scope="request" name="hidrometro" property="empresaUltimaAfericao">
+											${requestScope.hidrometro.empresaUltimaAfericao.descricao}
+										</logic:notEmpty>
+										&nbsp;
+									</div>
+								</td>
+							</tr>
+						</table>
+						</td>
+					</tr>
+					<tr>
+						<td>
+						<div style="width: 100%; height: 100%; overflow: auto;"></div>
+						</td>
+					</tr>
+				</table>
+				</td>
+			</tr>
 		</table>
 		<c:if test="${!empty requestScope.hidrometrosInstalacaoHistorico}">
 			<table width="100%" border="0">
@@ -306,6 +362,168 @@
 				</tr>
 			</table>
 		</c:if>
+		
+		<logic:present name="colecaoOrdemServicoManutencaoHidrometroHelper">
+			<table width="100%" border="0">
+				<tr>
+					<td>
+						<table width="100%" bgcolor="#90c7fc">
+							<tr>
+								<td bgcolor="#79bbfd" colspan="4">
+								<div align="center" ><strong>Dados das Ordens de Serviço</strong></div>
+								</td>
+							</tr>
+							<tr bordercolor="#FFFFFF" bgcolor="#90c7fc">
+								<td>
+									<div align="center" class="style9"><strong>Ordem de Serviço</strong></div>
+								</td>
+								<td>
+									<div align="left" class="style9"><strong>Tipo de Serviço</strong></div>
+								</td>
+								<td>
+									<div align="center" class="style9"><strong>Data da Geração</strong></div>
+								</td>
+								<td>
+									<div align="left" class="style9"><strong>Situação</strong></div>
+								</td>
+							</tr>
+							
+							<%int cont3 = 0;%>
+							<logic:iterate name="colecaoOrdemServicoManutencaoHidrometroHelper" id="ordemServicoManutencaoHidrometroHelper">
+			
+								<%cont3 = cont3 + 1;
+									if (cont3 % 2 == 0) {%>
+								<tr bgcolor="#cbe5fe">
+									<%} else {
+			
+									%>
+								<tr bgcolor="#FFFFFF">
+									<%}%>
+									
+									<td>
+										<div align="center">
+											<a  title="Consultar Dados da Ordem de Serviço" href="javascript:consultarOs('<bean:write name="ordemServicoManutencaoHidrometroHelper" property="numeroOS"/>');">
+												<bean:write name="ordemServicoManutencaoHidrometroHelper" property="numeroOS" />
+											</a>
+										</div>
+									</td>
+									
+									<td>
+										<div align="left">
+											<bean:write name="ordemServicoManutencaoHidrometroHelper" property="descricaoTipoServico"/>
+										</div>
+									</td>
+			
+									<td>
+										<div align="center"><bean:write name="ordemServicoManutencaoHidrometroHelper"
+										property="dataGeracaoOS"/></div>
+									</td>
+									
+									<td>
+										<div align="left"><bean:write name="ordemServicoManutencaoHidrometroHelper"
+										property="descricaoSituacaoOS" /></div>
+									</td>
+			
+								</tr>
+								
+							</logic:iterate>
+							
+						</table>
+					</td>
+				</tr>
+			</table>
+		</logic:present>
+		
+		<logic:present name="colecaoHidrometroHistoricoAfericao">
+			<table width="100%" border="0">
+				<tr>
+					<td>
+						<table width="100%" bgcolor="#90c7fc">
+							<tr>
+								<td bgcolor="#79bbfd" colspan="6">
+								<div align="center" ><strong>Histórico de Aferições</strong></div>
+								</td>
+							</tr>
+							<tr bordercolor="#FFFFFF" bgcolor="#90c7fc">
+								<td>
+									<div align="center" class="style9"><strong>Ordem de Serviço</strong></div>
+								</td>
+								<td>
+									<div align="center" class="style9"><strong>Data da Aferição</strong></div>
+								</td>
+								<td>
+									<div align="left" class="style9"><strong>Condição do Hidrômetro</strong></div>
+								</td>
+								<td>
+									<div align="left" class="style9"><strong>Resultado</strong></div>
+								</td>
+								<td>
+									<div align="left" class="style9"><strong>Cliente Acompanhou</strong></div>
+								</td>
+								<td>
+									<div align="left" class="style9"><strong>Funcionário</strong></div>
+								</td>
+							</tr>
+							
+							<%int cont3 = 0;%>
+							<logic:iterate name="colecaoHidrometroHistoricoAfericao" id="hidrometroHistoricoAfericao">
+			
+								<%cont3 = cont3 + 1;
+									if (cont3 % 2 == 0) {%>
+								<tr bgcolor="#cbe5fe">
+									<%} else {
+			
+									%>
+								<tr bgcolor="#FFFFFF">
+									<%}%>
+									
+									<td>
+										<div align="center">
+											<a  title="Consultar Dados da Ordem de Serviço" href="javascript:consultarOs('<bean:write name="hidrometroHistoricoAfericao" property="ordemServico.id"/>');">
+												<bean:write name="hidrometroHistoricoAfericao" property="ordemServico.id" />
+											</a>
+										</div>
+									</td>
+									
+									<td>
+										<div align="center">
+											<bean:write name="hidrometroHistoricoAfericao" property="dataAfericao" formatKey="date.format"/>
+										</div>
+									</td>
+			
+									<td>
+										<div align="left">
+											<bean:write name="hidrometroHistoricoAfericao" property="hidrometroCondicao.descricao"/>
+										</div>
+									</td>
+									
+									<td>
+										<div align="left">
+											<bean:write name="hidrometroHistoricoAfericao" property="indicadorResultadoFormatado"/>
+										</div>
+									</td>
+									
+									<td>
+										<div align="left">
+											<bean:write name="hidrometroHistoricoAfericao" property="indicadorClienteAcompanhouFormatado"/>
+										</div>
+									</td>
+									
+									<td>
+										<div align="left">
+											<bean:write name="hidrometroHistoricoAfericao" property="funcionario.nome"/>
+										</div>
+									</td>
+			
+								</tr>
+								
+							</logic:iterate>
+							
+						</table>
+					</td>
+				</tr>
+			</table>
+		</logic:present>
 
 		<table width="100%" border="0" cellpadding="1" cellspacing="0">
 			<tr>

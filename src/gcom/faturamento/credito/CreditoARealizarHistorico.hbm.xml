@@ -244,5 +244,24 @@
             class="gcom.faturamento.credito.CreditoARealizarCategoriaHistorico"
         />
     </set>
+    
+    
+      <!-- bi-directional one-to-many association to ClienteCreditoARealizarHistorico -->
+    <set
+        name="clientesCreditoARealizarHistorico"
+        lazy="true"
+        inverse="true"
+        cascade="delete"
+    >
+        <key>
+            <column name="crar_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.cliente.ClienteCreditoARealizarHistorico"
+        />
+    </set>
+    
+    
+    
 </class>
 </hibernate-mapping>

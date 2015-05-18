@@ -145,6 +145,7 @@ public class ExibirRotasNaoHabilitadasAction
 		String atividadeFaturamentoJSP = httpServletRequest.getParameter("atividade");
 
 		FaturamentoGrupo faturamentoGrupo = obterFaturamentoGrupoSelecionado(grupoFaturamentoJSP, colecaoFaturamentoGrupo);
+		faturamentoGrupo = (FaturamentoGrupo) fachada.pesquisar(faturamentoGrupo.getId(), FaturamentoGrupo.class);
 
 		// Lista as rotas "não habilitadas" do grupo
 
@@ -165,7 +166,8 @@ public class ExibirRotasNaoHabilitadasAction
 		// --------------------------------------------------------------------
 
 		// [SB0002] - Verificar Situação da Atividade para a Rota
-		Collection colecaoRotasSituacao = fachada.verificarSituacaoAtividadeRota(colecaoRotasGrupo, faturamentoAtividade, faturamentoGrupo,
+		Collection colecaoRotasSituacao = fachada.verificarSituacaoAtividadeRota(colecaoRotasGrupo, faturamentoAtividade,
+						faturamentoGrupo.getAnoMesReferencia(),
 						false);
 
 		// [FS0007] - Verificar seleção de pelo menos uma rota habilitada

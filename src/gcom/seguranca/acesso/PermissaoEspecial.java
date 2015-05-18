@@ -158,43 +158,41 @@ public class PermissaoEspecial
 
 	public static final int GERAR_OS_SELETIVA_HIDROMETRO = 50;
 
-	public static final int CANCELAR_CONTA_SEM_RA = 51;
+	// public static final int CANCELAR_CONTA_SEM_RA = 51;
 
 	public static final int INCLUIR_GUIA_DE_PAGAMENTO_SEM_NUMERO_PARCELAS_MAXIMO = 51;
 
-	public static final int ATUALIZAR_DADOS_FISCALIZACAO = 52;
+	// public static final int ATUALIZAR_DADOS_FISCALIZACAO = 52;
 
 	public static final int INSERIR_CREDITO_A_REALIZAR_IMOVEL_COM_DEBITO = 52;
 
-	public static final int DESFAZER_FISCALIZACAO_BOLETIM_OS_CONCLUIDA = 53;
+	// public static final int DESFAZER_FISCALIZACAO_BOLETIM_OS_CONCLUIDA = 53;
 
 	public static final int CANCELAR_CREDITO_A_REALIZAR_IMOVEL_COM_DEBITO = 53;
 
-	public static final int VISUALIZAR_DIA_VENCIMENTO_CLIENTE = 54;
+	// public static final int VISUALIZAR_DIA_VENCIMENTO_CLIENTE = 54;
 
 	public static final int CANCELAR_CREDITO_A_REALIZAR_VALOR_SUPERIOR = 54;
 
-	public static final int INSERIR_IMOVEL_COM_PERFIL_CORPORATIVO = 55;
-
-	public static final int CANCELAR_CREDITO_A_REALIZAR_PARCELAS_SUPERIOR = 55;
+	// public static final int INSERIR_IMOVEL_COM_PERFIL_CORPORATIVO = 55;
 
 	public static final int PARCELAMENTO_COBRANCA_BANCARIA = 55;
 
-	public static final int ALTERAR_PERFIL_CORPORATIVO_IMOVEL = 56;
+	// public static final int ALTERAR_PERFIL_CORPORATIVO_IMOVEL = 56;
 
 	public static final int ALTERAR_DEBITO_A_COBRAR_VALOR_SERVICO = 56;
 
 	public static final int INFORMAR_DATA_ENC_OS_ANTERIOR_DATA_CORRENTE = 57;
 
-	public static final int RETIFICAR_PARA_MENOR_CONTA_RETIFICADA = 58;
+	// public static final int RETIFICAR_PARA_MENOR_CONTA_RETIFICADA = 58;
 
 	public static final int ALTERAR_DATA_LEITURA_MANTER_HIDROMETRO = 58;
 
-	public static final int RETIFICAR_DATA_VENCIMENTO_ALEM_PRAZO_PADRAO = 59;
+	// public static final int RETIFICAR_DATA_VENCIMENTO_ALEM_PRAZO_PADRAO = 59;
 
 	public static final int RETIFICAR_CONTA_EM_COBRANCA_JUDICIAL_OU_SUBJUDICE = 59;
 
-	public static final int ALTERAR_VENCIMENTO_JA_ALTERADO = 60;
+	// public static final int ALTERAR_VENCIMENTO_JA_ALTERADO = 60;
 
 	public static final int ALTERAR_TAXA_DE_JUROS_DE_FINANCIAMENTO = 60;
 
@@ -322,11 +320,43 @@ public class PermissaoEspecial
 
 	public static final int ALTERAR_INDICADOR_PROCESSO_ADMINISTRATVIVO_JUDICIARIO = 124;
 
-	public static final int ALTERAR_UNIDADE_ORGANIZACIONAL_INDEPENDENTE_DE_TIPO_UNIDADE = 128;
-
 	public static final int COMANDAR_PRESCRICAO_DEBITO = 126;
 
 	public static final int EMITIR_DOCUMENTO_PAGAVEL_PARA_DEBITO_PRESCRITO = 127;
+
+	public static final int ALTERAR_UNIDADE_ORGANIZACIONAL_INDEPENDENTE_DE_TIPO_UNIDADE = 128;
+
+	public static final int PARCELAR_IMOVEL_EM_EXECUCAO_FISCAL = 129;
+
+	public static final int ESTORNAR_PAGAMENTO_DIVIDA_ATIVA = 130;
+
+	public static final int ESTORNAR_PAGAMENTO_DIVIDA_ATIVA_NUM_MAX_DIAS = 131;
+
+	public static final int ESTORNAR_PAGAMENTO_DIVIDA_ATIVA_VALOR_MAX = 132;
+
+	public static final int EFETIVAR_PARCELAMENTO = 133;
+
+	public static final int ALTERAR_TERMO_PARCELAMENTO = 134;
+
+	public static final int ALTERAR_VALORES_PADROES_SUCUMBENCIA_EXECUCAO_FISCAL = 135;
+
+	public static final int EFETUAR_REPARCELAMENTO_QTDE_SUPERIOR_QTDE_MAX_PERMITIDA = 136;
+
+	public static final int INFORMAR_VL_DILIGENCIAS_PARCELAMENTO_EXECUCAO_FISCAL = 137;
+
+	public static final int ATUALIZAR_DEBITOS_EXECUCAO_FISCAL = 138;
+
+	public static final int PARCELAR_IMOVEL_EM_EXECUCAO_FISCAL_COM_COBRANCA_EM_CONTA = 139;
+
+	public static final int SELECIONAR_DEBITO_PARCELAMENTO_DE_IMOVEL_EM_EXECUCAO_FISCAL = 140;
+
+	public static final int SELECIONAR_DEBITO_COMPOSICAO_BASE_DE_CALCULO_DA_SUCUMBENCIA = 141;
+
+	public static final int ALTERAR_QUANTIDADE_ECONOMIAS_IMOVEL = 142;
+
+	public static final int CANCELAR_CREDITO_A_REALIZAR_PARCELAS_SUPERIOR = 143;
+
+	public static final int PERMITIR_NAO_COBRAR_DIFERENCA_PGTO_A_MENOR = 146;
 
 	/** identifier field */
 	private Integer id;

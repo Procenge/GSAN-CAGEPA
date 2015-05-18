@@ -24,6 +24,21 @@ public class DebitoJSONHelper {
 
 	private Boolean emRevisao;
 
+	private Integer idGuiaPagamento;
+
+	private BigDecimal valorGuiaPagamento;
+
+
+	private Short numeroPrestacao;
+
+	private BigDecimal valorMulta;
+
+	private BigDecimal valorJuros;
+
+	private BigDecimal valorCorrecaoMonetaria;
+
+	private BigDecimal valorJurosSucumbencia;
+
 	public Integer getIdConta(){
 
 		return idConta;
@@ -117,6 +132,77 @@ public class DebitoJSONHelper {
 	public boolean isEmRevisao(){
 
 		return emRevisao == null ? false : emRevisao.booleanValue();
+	}
+
+
+	public Integer getIdGuiaPagamento(){
+
+		return idGuiaPagamento;
+	}
+
+	public void setIdGuiaPagamento(Integer idGuiaPagamento){
+
+		this.idGuiaPagamento = idGuiaPagamento;
+	}
+
+	public BigDecimal getValorGuiaPagamento(){
+
+		return valorGuiaPagamento;
+	}
+
+	public void setValorGuiaPagamento(BigDecimal valorGuiaPagamento){
+
+		this.valorGuiaPagamento = valorGuiaPagamento;
+	}
+
+	public Short getNumeroPrestacao(){
+
+		return numeroPrestacao;
+	}
+
+	public void setNumeroPrestacao(Short numeroPrestacao){
+
+		this.numeroPrestacao = numeroPrestacao;
+	}
+
+	public BigDecimal getValorMulta(){
+
+		return valorMulta;
+	}
+
+	public void setValorMulta(BigDecimal valorMulta){
+
+		this.valorMulta = valorMulta;
+	}
+
+	public BigDecimal getValorJuros(){
+
+		return valorJuros;
+	}
+
+	public void setValorJuros(BigDecimal valorJuros){
+
+		this.valorJuros = valorJuros;
+	}
+
+	public BigDecimal getValorCorrecaoMonetaria(){
+
+		return valorCorrecaoMonetaria;
+	}
+
+	public void setValorCorrecaoMonetaria(BigDecimal valorCorrecaoMonetaria){
+
+		this.valorCorrecaoMonetaria = valorCorrecaoMonetaria;
+	}
+
+	public BigDecimal getValorJurosSucumbencia(){
+
+		return valorJurosSucumbencia;
+	}
+
+	public void setValorJurosSucumbencia(BigDecimal valorJurosSucumbencia){
+
+		this.valorJurosSucumbencia = valorJurosSucumbencia;
 	}
 
 }

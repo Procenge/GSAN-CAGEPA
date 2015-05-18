@@ -145,6 +145,8 @@ public class InserirUsuarioDadosGeraisActionForm
 
 	private String unidadeNegocio = "";
 
+	private String indicadorHorarioAcessoRestrito = "";
+
 	/**
 	 * @return Retorna o campo usuarioTipoFuncionario.
 	 */
@@ -523,4 +525,13 @@ public class InserirUsuarioDadosGeraisActionForm
 		this.confirmacaoEmail = confirmacaoEmail;
 	}
 
+	public String getIndicadorHorarioAcessoRestrito(){
+
+		return indicadorHorarioAcessoRestrito;
+	}
+
+	public void setIndicadorHorarioAcessoRestrito(String indicadorHorarioAcessoRestrito){
+
+		this.indicadorHorarioAcessoRestrito = indicadorHorarioAcessoRestrito;
+	}
 }

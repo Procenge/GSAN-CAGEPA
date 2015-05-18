@@ -112,30 +112,6 @@ public class ExibirInserirCategoriaFaixaConsumoTarifaAction
 		// Mudar isso quando tiver esquema de segurança
 		HttpSession sessao = httpServletRequest.getSession(false);
 
-		if((httpServletRequest.getParameter("parametro2") != null) && (!httpServletRequest.getParameter("parametro2").equals(""))){
-			String consumoMinimo = (String) httpServletRequest.getParameter("parametro2");
-			sessao.setAttribute("consumoMinimo", consumoMinimo);
-		}
-
-		if((httpServletRequest.getParameter("parametro1") != null) && (!httpServletRequest.getParameter("parametro1").equals(""))){
-			String categoriaSelected = (String) httpServletRequest.getParameter("parametro1");
-			sessao.setAttribute("categoriaSelected", categoriaSelected);
-		}
-
-		if((httpServletRequest.getParameter("parametro3") != null) && (!httpServletRequest.getParameter("parametro3").equals(""))){
-			String valorMinimo = (String) httpServletRequest.getParameter("parametro3");
-			sessao.setAttribute("valorMinimo", valorMinimo);
-		}
-
-		if((httpServletRequest.getParameter("parametro4") != null) && (!httpServletRequest.getParameter("parametro4").equals(""))){
-			String valorMinimoEsgoto = (String) httpServletRequest.getParameter("parametro4");
-			sessao.setAttribute("valorMinimoEsgoto", valorMinimoEsgoto);
-		}
-
-		if((httpServletRequest.getParameter("limpaFaixa") != null) && (httpServletRequest.getParameter("limpaFaixa").equals("1"))){
-			sessao.removeAttribute("InserirCategoriaFaixaConsumoTarifaActionForm");
-		}
-
 		Collection colecaoFaixa = (Collection) sessao.getAttribute("colecaoFaixa");
 
 		if((colecaoFaixa != null) && (!colecaoFaixa.isEmpty())){

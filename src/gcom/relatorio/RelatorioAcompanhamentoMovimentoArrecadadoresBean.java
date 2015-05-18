@@ -107,13 +107,52 @@ public class RelatorioAcompanhamentoMovimentoArrecadadoresBean
 
 	private String concessionaria;
 
+	private String valorDividaInscrita;
+
+	private String valorDividaExecutada;
+
+	/**
+	 * @return Retorna o campo valorDividaInscrita.
+	 */
+	public String getValorDividaInscrita(){
+
+		return valorDividaInscrita;
+	}
+
+	/**
+	 * @param valorDividaInscrita
+	 *            O valorDividaInscrita a ser setado.
+	 */
+	public void setValorDividaInscrita(String valorDividaInscrita){
+
+		this.valorDividaInscrita = valorDividaInscrita;
+	}
+
+	/**
+	 * @return Retorna o campo valorDividaExecutada.
+	 */
+	public String getValorDividaExecutada(){
+
+		return valorDividaExecutada;
+	}
+
+	/**
+	 * @param valorPagamento
+	 *            O valorDividaExecutada a ser setado.
+	 */
+	public void setValorDividaExecutada(String valorDividaExecutada){
+
+		this.valorDividaExecutada = valorDividaExecutada;
+	}
+
 	/**
 	 * Construtor da classe RelatorioAcompanhamentoMovimentoArrecadadoresBean
 	 */
 	public RelatorioAcompanhamentoMovimentoArrecadadoresBean(String banco, String formaArrecadacao, String dia, String valorDia,
 																String qtdePagamentos, String qtdeDocumentos, String valorAteDia,
 																String qtdePagamentosAteDia, String qtdeDocumentosAteDia,
-																String concessionaria) {
+																String concessionaria, String valorDividaInscrita,
+																String valorDividaExecutada) {
 
 		this.banco = banco;
 		this.formaArrecadacao = formaArrecadacao;
@@ -125,6 +164,8 @@ public class RelatorioAcompanhamentoMovimentoArrecadadoresBean
 		this.qtdePagamentosAteDia = qtdePagamentosAteDia;
 		this.qtdeDocumentosAteDia = qtdeDocumentosAteDia;
 		this.concessionaria = concessionaria;
+		this.valorDividaInscrita = valorDividaInscrita;
+		this.valorDividaExecutada = valorDividaExecutada;
 
 	}
 

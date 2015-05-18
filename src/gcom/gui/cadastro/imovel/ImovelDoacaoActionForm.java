@@ -96,7 +96,7 @@ public class ImovelDoacaoActionForm
 
 	private String idImovel;
 
-	private String idEntidadeBeneficente;
+	private String idEntidadeBeneficenteContrato;
 
 	private String valorDoacao;
 
@@ -111,6 +111,44 @@ public class ImovelDoacaoActionForm
 	private String dataHoraUltimaAlteracao;
 
 	private String inscricaoImovel;
+
+	private String referenciaInicial;
+
+	private String referenciaFinal;
+
+	/**
+	 * @return Returns the idImovelDoacao.
+	 */
+	public String getReferenciaInicial(){
+
+		return referenciaInicial;
+	}
+
+	/**
+	 * @param consumoAlto
+	 *            the idImovelDoacao to set.
+	 */
+	public void setReferenciaInicial(String referenciaInicial){
+
+		this.referenciaInicial = referenciaInicial;
+	}
+
+	/**
+	 * @return Returns the idImovelDoacao.
+	 */
+	public String getReferenciaFinal(){
+
+		return referenciaFinal;
+	}
+
+	/**
+	 * @param consumoAlto
+	 *            the idImovelDoacao to set.
+	 */
+	public void setReferenciaFinal(String referenciaFinal){
+
+		this.referenciaFinal = referenciaFinal;
+	}
 
 	/**
 	 * @return Returns the idImovelDoacao.
@@ -149,18 +187,18 @@ public class ImovelDoacaoActionForm
 	/**
 	 * @return Returns the idEntidadeBeneficente.
 	 */
-	public String getIdEntidadeBeneficente(){
+	public String getIdEntidadeBeneficenteContrato(){
 
-		return idEntidadeBeneficente;
+		return idEntidadeBeneficenteContrato;
 	}
 
 	/**
 	 * @param consumoMinimo
 	 *            the idEntidadeBeneficente to set.
 	 */
-	public void setIdEntidadeBeneficente(String idEntidadeBeneficente){
+	public void setIdEntidadeBeneficenteContrato(String idEntidadeBeneficenteContrato){
 
-		this.idEntidadeBeneficente = idEntidadeBeneficente;
+		this.idEntidadeBeneficenteContrato = idEntidadeBeneficenteContrato;
 	}
 
 	/**
@@ -287,7 +325,7 @@ public class ImovelDoacaoActionForm
 
 		idImovelDoacao = null;
 		idImovel = null;
-		idEntidadeBeneficente = null;
+		idEntidadeBeneficenteContrato = null;
 		valorDoacao = null;
 		dataAdesao = null;
 		dataCancelamento = null;
@@ -295,6 +333,8 @@ public class ImovelDoacaoActionForm
 		idUsuarioCancelamento = null;
 		dataHoraUltimaAlteracao = null;
 		inscricaoImovel = null;
+		referenciaInicial = null;
+		referenciaFinal = null;
 	}
 
 }

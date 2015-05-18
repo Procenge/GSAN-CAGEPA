@@ -23,7 +23,7 @@
 <script language="JavaScript"
 	src="<bean:message key="caminho.js"/>Calendario.js"></script>
 
-<script>
+<script language="JavaScript">
 	function redirecionaForm(){
 		var formRed = "/gsan/inserirConsumoTarifaAction.do";
 			redirecionarSubmit(formRed);
@@ -31,21 +31,41 @@
 	function validarForm(form){
 		form.submit();          
 	}
-	
+</script>	
 
-	
-	
-	
+
+<logic:notPresent name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+	<script language="JavaScript">	
 	  function required () {
 	     	this.aa = new Array("consumoMinimo", "Informe Consumo Mínimo.", new Function ("varName", " return this[varName];"));
 	    	this.ab = new Array("valorTarifaMinima", "Informe Valor da Tarifa Mínima.", new Function ("varName", " return this[varName];"));
+	    	
 	    	this.ah = new Array("slcCategoria", "Informe Categoria.", new Function ("varName", " return this[varName];"));
 	    	
 	    	if(document.forms[0].valorTarifaMinimaEsgoto != null){
 	    		this.ai = new Array("valorTarifaMinimaEsgoto", "Informe Valor da Tarifa Mínima Esgoto.", new Function ("varName", " return this[varName];"));
 	    	}
 	    }
-	    
+	</script>	
+</logic:notPresent>
+
+<logic:present name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+	<script>	
+	  function required () {
+	     	this.aa = new Array("consumoMinimo", "Informe Consumo Mínimo.", new Function ("varName", " return this[varName];"));
+	    	this.ab = new Array("valorTarifaMinima", "Informe Valor da Tarifa Mínima.", new Function ("varName", " return this[varName];"));
+	    	
+	    	this.ah = new Array("slcCategoria", "Informe Categoria.", new Function ("varName", " return this[varName];"));
+	    	this.fa = new Array("slcSubCategoria", "Informe SubCategoria.", new Function ("varName", " return this[varName];"));
+	    	
+	    	if(document.forms[0].valorTarifaMinimaEsgoto != null){
+	    		this.ai = new Array("valorTarifaMinimaEsgoto", "Informe Valor da Tarifa Mínima Esgoto.", new Function ("varName", " return this[varName];"));
+	    	}
+	    }
+	</script>	
+</logic:present>		  
+	
+<script language="JavaScript">	    
 	    function caracteresespeciais () {
 	     	this.ac = new Array("consumoMinimo", "Consumo Mínimo deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
 	     	this.ad = new Array("valorTarifaMinima", "Valor da Tarifa Mínima deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
@@ -63,27 +83,31 @@
 		}
 		
 		function validaForm(){
-			var form = document.InserirCategoriaConsumoTarifaActionForm;
+			var form = document.forms[0];
+			var stringLocation = "";
+			
 			if(validateCaracterEspecial(form) && validateRequired(form) && testarCampoValorInteiroComZero(form.consumoMinimo, 'Consumo Mínimo') && validateDecimal(form)){
-				if(document.forms[0].valorTarifaMinimaEsgoto != null){
-					//window.location.href='/gsan/exibirManterCategoriaFaixaConsumoTarifaAction.do?limpaFaixa=1&parametro1='+document.forms[0].slcCategoria.value+'&parametro2='+document.forms[0].consumoMinimo.value+'&parametro3='+document.forms[0].valorTarifaMinima.value+'&parametro4='+document.forms[0].valorTarifaMinimaEsgoto.value;
-				
-					window.location.href='/gsan/exibirInserirCategoriaFaixaConsumoTarifaAction.do?limpaFaixa=1&parametro1='+document.forms[0].slcCategoria.value+'&parametro2='+document.forms[0].consumoMinimo.value+'&parametro3='+document.forms[0].valorTarifaMinima.value+'&parametro4='+document.forms[0].valorTarifaMinimaEsgoto.value;
-				
-				} else {
+
+				var formRed ='exibirInserirCategoriaConsumoTarifaAction.do?form=exibirInserirCategoriaFaixaConsumoTarifaAction';
+				redirecionarSubmit(formRed);
 					
-					window.location.href='/gsan/exibirInserirCategoriaFaixaConsumoTarifaAction.do?limpaFaixa=1&parametro1='+document.forms[0].slcCategoria.value+'&parametro2='+document.forms[0].consumoMinimo.value+'&parametro3='+document.forms[0].valorTarifaMinima.value;
-					
-					//window.location.href='/gsan/exibirManterCategoriaFaixaConsumoTarifaAction.do?limpaFaixa=1&parametro1='+document.forms[0].slcCategoria.value+'&parametro2='+document.forms[0].consumoMinimo.value+'&parametro3='+document.forms[0].valorTarifaMinima.value;
-				}
 			}
 		}
 	
 	
+		function modificarSubCategoria() {
+			var form = document.forms[0];
+
+			form.action = "/gsan/exibirInserirCategoriaConsumoTarifaAction.do"
+			form.submit();			
+		}
 	
-	
-	
-	
+		
+		function inserirCategoriaConsumoTarifa() {
+			var form = document.forms[0];
+
+			form.submit();			
+		}		
 
 </script>
 </head>
@@ -104,7 +128,7 @@
 	onsubmit="return validateInserirCategoriaConsumoTarifaActionForm(this);"
 	type="gcom.gui.faturamento.consumotarifa.InserirCategoriaConsumoTarifaActionForm"
 	method="post">
-
+	
 	<table width="600" border="0" cellpadding="0" cellspacing="5">
 		<tr>
 			<td width="600" valign="top" class="centercoltext">
@@ -134,14 +158,39 @@
 			<table width="100%" border="0">	
 				<tr>
 					<td width="27%" height="24"><strong>Categoria:<font color="#FF0000">*</font></strong></td>
-					<td colspan="3"><html:select property="slcCategoria"
-						value="${sessionScope.categoriaSelected}" style="width: 230px;">
-						<html:option
-							value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-						<html:options collection="colecaoCategoria"
-							labelProperty="descricao" property="id" />
-					</html:select></td>
+					<td colspan="3">
+					
+						<logic:notPresent name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+							<html:select property="slcCategoria" style="width: 230px;">
+								<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+								<html:options collection="colecaoCategoria"
+									labelProperty="descricao" property="id" />
+							</html:select>
+						</logic:notPresent>
+						
+						<logic:present name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+							<html:select property="slcCategoria" onchange="javascript:modificarSubCategoria()" >
+								<html:option
+									value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+								<html:options collection="colecaoCategoria"
+									labelProperty="descricao" property="id" />
+							</html:select>
+						</logic:present>						
+							
+					</td>
 				</tr>
+				
+				<logic:present name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+					<tr>
+						<td width="27%" height="24"><strong>SubCategoria:<font color="#FF0000">*</font></strong></td>
+						<td colspan="3">
+							<html:select property="slcSubCategoria">
+							<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+							<html:options collection="colecaoSubCategoria"	labelProperty="descricao" property="id" />
+						</html:select></td>
+					</tr>	
+				</logic:present>			
+				
 				<tr>
 					<td height="24"><strong>Consumo M&iacute;nimo:<font color="#FF0000">*</font></strong></td>
 					<td colspan="3"><html:text maxlength="6" property="consumoMinimo" onkeypress="return isCampoNumerico(event);"
@@ -150,18 +199,36 @@
 				<tr>
 					<td height="24"><strong>Valor da Tarifa M&iacute;nima:<font
 						color="#FF0000">*</font></strong></td>
-					<td colspan="3"><html:text style="text-align:right;" maxlength="18"
-						property="valorTarifaMinima" size="18"
-						onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" /></td>
+					
+					<logic:equal name="pQuantidadeDecimaisValorTarifa" value="4">
+						<td colspan="3"><html:text style="text-align:right;" maxlength="18"
+							property="valorTarifaMinima" size="18"
+							onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" /></td>
+					</logic:equal>
+					<logic:equal name="pQuantidadeDecimaisValorTarifa" value="2">
+						<td colspan="3"><html:text style="text-align:right;" maxlength="18"
+							property="valorTarifaMinima" size="18"
+							onkeyup="formataValorMonetario(this, 18)"/></td>
+					</logic:equal>
 				</tr>				
 				
 				<logic:present name="indicadorTarifaEsgotoPropria" scope="session">
 					<tr>
 						<td height="24"><strong>Valor da Tarifa Mínima de Esgoto:<font
-						color="#FF0000">*</font></strong></td>
-							<td colspan="3"><html:text style="text-align:right;" maxlength="18"
-								property="valorTarifaMinimaEsgoto" size="18"
-								onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" /></td>										
+							color="#FF0000">*</font></strong></td>
+						<logic:equal name="pQuantidadeDecimaisValorTarifa" value="4">
+								<td colspan="3"><html:text style="text-align:right;" maxlength="18"
+									property="valorTarifaMinimaEsgoto" size="18"
+									onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" />
+								</td>
+						</logic:equal>
+						
+						<logic:equal name="pQuantidadeDecimaisValorTarifa" value="2">
+								<td colspan="3"><html:text style="text-align:right;" maxlength="18"
+									property="valorTarifaMinimaEsgoto" size="18"
+									onkeyup="formataValorMonetario(this, 18)" />
+								</td>
+						</logic:equal>										
 					</tr>
 				</logic:present>
 				
@@ -209,11 +276,20 @@
 										property="numeroConsumoFaixaIFim" /></div>
 									</td>
 									<td>
-									<div align="center" class="style9"><input type="text"
-										style="text-align:right;" maxlength="17" size="17"
-										name="valorConsumoTarifa<bean:write name="faixa" property="ultimaAlteracao.time" />"
-										value="<bean:write name="faixa" property="valorConsumoTarifa" formatKey="money.quatrodecimais.format"/>"
-										onkeyup="formataValorMonetarioQuatroDecimais(this, 18)"></div>
+										<logic:equal name="pQuantidadeDecimaisValorTarifa" value="4">
+											<div align="center" class="style9"><input type="text"
+												style="text-align:right;" maxlength="17" size="17"
+												name="valorConsumoTarifa<bean:write name="faixa" property="ultimaAlteracao.time" />"
+												value="<bean:write name="faixa" property="valorConsumoTarifa" formatKey="money.quatrodecimais.format"/>"
+												onkeyup="formataValorMonetarioQuatroDecimais(this, 18)"></div>
+										</logic:equal>
+										<logic:equal name="pQuantidadeDecimaisValorTarifa" value="2">
+											<div align="center" class="style9"><input type="text"
+												style="text-align:right;" maxlength="17" size="17"
+												name="valorConsumoTarifa<bean:write name="faixa" property="ultimaAlteracao.time" />"
+												value="<bean:write name="faixa" property="valorConsumoTarifa" formatKey="money.format"/>"
+												onkeyup="formataValorMonetario(this, 18)"></div>
+										</logic:equal>
 									</td>
 								</tr>
 							</logic:iterate>
@@ -233,7 +309,7 @@
 					<td height="27" colspan="4">
 					<div align="right"><input type="hidden" name="testeInserir"> <input
 						name="Button" type="submit" class="bottonRightCol" value="Inserir"
-						onClick="document.forms[0].testeInserir.value='true';validarForm();">
+						onClick="document.forms[0].testeInserir.value='true';inserirCategoriaConsumoTarifa();">
 					<input name="Button2" type="button" class="bottonRightCol"
 						value="Fechar" onClick="javascript:window.close();"></div>
 					</td>

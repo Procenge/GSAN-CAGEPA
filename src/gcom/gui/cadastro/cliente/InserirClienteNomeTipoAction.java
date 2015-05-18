@@ -169,6 +169,32 @@ public class InserirClienteNomeTipoAction
 				session.setAttribute("statusWizard", statusWizard);
 			}
 
+			if(tipoPessoaForm != null){
+
+				if(tipoPessoaForm.equals(ClienteTipo.APOSENTADO_PENSIONISTA.toString())){
+
+					String numeroBeneficio = (String) clienteActionForm.get("numeroBeneficio");
+					if(Util.isVazioOuBranco(numeroBeneficio)){
+
+						throw new ActionServletException("atencao.required", null, "Número do Benefício");
+					}
+
+					// Validar Cliente com Número do Benefício Já Existente
+					FiltroCliente filtroCliente = new FiltroCliente();
+					filtroCliente.adicionarParametro(new ParametroSimples(FiltroCliente.NUMERO_BENEFICIO, numeroBeneficio));
+
+					Collection<Cliente> colecaoClienteBeneficioExistente = fachada.pesquisar(filtroCliente, Cliente.class.getName());
+
+					if(!Util.isVazioOrNulo(colecaoClienteBeneficioExistente)){
+
+						throw new ActionServletException(
+										"atencao.numero_beneficio_cliente_ja_cadastrado",
+										null,
+										new String[] {colecaoClienteBeneficioExistente.iterator().next().getId().toString(), numeroBeneficio});
+					}
+				}
+			}
+
 			if(tipoPessoa != null){
 				if(tipoPessoa.equals(ClienteTipo.INDICADOR_PESSOA_JURIDICA)){
 
@@ -247,11 +273,9 @@ public class InserirClienteNomeTipoAction
 				}
 			}
 		}
-		if(tipoPessoa != null){
+		if(tipoPessoa != null && clienteActionForm.get("idPessoaSexo") == null){
 			if(tipoPessoa.equals(ClienteTipo.INDICADOR_PESSOA_JURIDICA)){
 				clienteActionForm.set("idPessoaSexo", -1);
-			}else if(tipoPessoa.equals(ClienteTipo.INDICADOR_PESSOA_FISICA)){
-				clienteActionForm.set("idPessoaSexo", null);
 			}
 		}
 		return retorno;

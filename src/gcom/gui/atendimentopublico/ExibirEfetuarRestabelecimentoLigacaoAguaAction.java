@@ -209,6 +209,12 @@ public class ExibirEfetuarRestabelecimentoLigacaoAguaAction
 			}
 		}
 
+		if(httpServletRequest.getParameter("submitAutomatico2") != null
+						&& httpServletRequest.getParameter("submitAutomatico2").equals("ok")){
+			httpServletRequest.setAttribute("submitAutomatico2", "ok");
+		}
+
+
 		HttpSession sessao = httpServletRequest.getSession(false);
 
 		Usuario usuarioLogado = (Usuario) sessao.getAttribute("usuarioLogado");

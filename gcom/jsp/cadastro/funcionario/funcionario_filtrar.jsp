@@ -206,6 +206,15 @@
 						src="<bean:message key="caminho.imagens"/>limparcampo.gif"
 						border="0" title="Apagar" /></a></td>
 				</tr>
+				
+				<tr>
+					<td width="162"><strong>Tipo da Equipe:</strong></td>
+					<td><html:select property="idEquipeTipo">
+						<option value=""></option>
+						<html:options name="request" collection="colecaoEquipeTipo"
+							labelProperty="descricao" property="id" />
+					</html:select></td>
+				</tr>
 				<!-- <tr>
 					<td height="19"><strong> <font color="#FF0000"></font></strong></td>
 					<td align="right">

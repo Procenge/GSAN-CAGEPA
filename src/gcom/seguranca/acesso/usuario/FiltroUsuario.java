@@ -140,6 +140,8 @@ public class FiltroUsuario
 
 	public final static String EMPRESA = "empresa";
 
+	public final static String ID_EMPRESA = "empresa.id";
+
 	public final static String GERENCIA_REGIONAL = "gerenciaRegional";
 
 	public final static String LOCALIDADE_ELO = "localidadeElo";

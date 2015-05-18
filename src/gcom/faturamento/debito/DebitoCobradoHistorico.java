@@ -169,6 +169,8 @@ public class DebitoCobradoHistorico
 
 	private Short indicadorRemuneraCobrancaAdministrativa = 2;
 
+	private Integer numeroProcessoAdministrativoExecucaoFiscal;
+
 	/** full constructor */
 	public DebitoCobradoHistorico(Date debitoCobrado, Integer codigoSetorComercial, Integer numeroQuadra, Short numeroLote,
 									Short numeroSubLote, Integer anoMesReferenciaDebito, Integer anoMesCobrancaDebito,
@@ -471,6 +473,16 @@ public class DebitoCobradoHistorico
 	public void setIndicadorRemuneraCobrancaAdministrativa(Short indicadorRemuneraCobrancaAdministrativa){
 
 		this.indicadorRemuneraCobrancaAdministrativa = indicadorRemuneraCobrancaAdministrativa;
+	}
+
+	public Integer getNumeroProcessoAdministrativoExecucaoFiscal(){
+
+		return numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public void setNumeroProcessoAdministrativoExecucaoFiscal(Integer numeroProcessoAdministrativoExecucaoFiscal){
+
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
 	}
 
 }

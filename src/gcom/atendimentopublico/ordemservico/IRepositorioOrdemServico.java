@@ -84,6 +84,7 @@ import gcom.atendimentopublico.registroatendimento.AtendimentoMotivoEncerramento
 import gcom.atendimentopublico.registroatendimento.LocalOcorrencia;
 import gcom.atendimentopublico.registroatendimento.Tramite;
 import gcom.cadastro.empresa.Empresa;
+import gcom.cadastro.geografico.Bairro;
 import gcom.cadastro.imovel.PavimentoCalcada;
 import gcom.cadastro.imovel.PavimentoRua;
 import gcom.cadastro.localidade.Localidade;
@@ -122,7 +123,7 @@ public interface IRepositorioOrdemServico {
 	 * @return Collection<OrdemServico>
 	 * @throws ControladorException
 	 */
-	public Collection<OrdemServico> pesquisarOrdemServico(PesquisarOrdemServicoHelper filtro, Integer permiteTramiteIndependente)
+	public Collection<OrdemServico> pesquisarOrdemServico(PesquisarOrdemServicoHelper filtro, Short permiteTramiteIndependente)
 					throws ErroRepositorioException;
 
 	/**
@@ -396,7 +397,7 @@ public interface IRepositorioOrdemServico {
 	 * @author Rafael Pinto
 	 * @date 04/09/2006
 	 */
-	public Collection<ServicoTipo> pesquisarServicoTipoPorRA(Integer unidadeDestino, Integer permiteTramiteIndependente)
+	public Collection<ServicoTipo> pesquisarServicoTipoPorRA(Integer unidadeDestino, Short permiteTramiteIndependente)
 					throws ErroRepositorioException;
 
 	/**
@@ -406,7 +407,7 @@ public interface IRepositorioOrdemServico {
 	 * @date 04/09/2006
 	 */
 	public Collection<ServicoPerfilTipo> pesquisarServicoPerfilTipoPorUnidade(Integer unidadeLotacao, Integer origemServico,
-					Integer permiteTramiteIndependente) throws ErroRepositorioException;
+					Short permiteTramiteIndependente) throws ErroRepositorioException;
 
 	/**
 	 * [UC0456] Elaborar Roteiro de Programação de Ordens de Serviço
@@ -433,7 +434,7 @@ public interface IRepositorioOrdemServico {
 	 * @date 26/02/2009
 	 *       Mudança para chamar o método criarQueryRegistroAtendimentoPorMaiorTramiteUnidadeDestino
 	 */
-	public Collection<SetorComercial> pesquisarSetorComercialPorRA(Integer idUnidadeDestino, Integer permiteTramiteIndependente)
+	public Collection<SetorComercial> pesquisarSetorComercialPorRA(Integer idUnidadeDestino, Short permiteTramiteIndependente)
 					throws ErroRepositorioException;
 
 	/**
@@ -445,7 +446,7 @@ public interface IRepositorioOrdemServico {
 	 * @date 26/02/2009
 	 *       Mudança para chamar o método criarQueryRegistroAtendimentoPorMaiorTramiteUnidadeDestino
 	 */
-	public Collection<DistritoOperacional> pesquisarDistritoOperacionalPorRA(Integer idUnidadeDestino, Integer permiteTramiteIndependente)
+	public Collection<DistritoOperacional> pesquisarDistritoOperacionalPorRA(Integer idUnidadeDestino, Short permiteTramiteIndependente)
 					throws ErroRepositorioException;
 
 	/**
@@ -458,7 +459,8 @@ public interface IRepositorioOrdemServico {
 	 *       Mudança para chamar o método criarQueryRegistroAtendimentoPorMaiorTramiteUnidadeDestino
 	 */
 	public Collection<UnidadeOrganizacional> pesquisarUnidadeOrganizacionalPorRA(Integer idUnidadeDestino,
-					Integer permiteTramiteIndependente) throws ErroRepositorioException;
+ Short permiteTramiteIndependente)
+					throws ErroRepositorioException;
 
 	/**
 	 * [UC0456] Elaborar Roteiro de Programação de Ordens de Serviço
@@ -470,7 +472,7 @@ public interface IRepositorioOrdemServico {
 	 * @return String
 	 *         Query utilizada como subquery em outras consultas
 	 */
-	public String criarQueryRegistroAtendimentoPorMaiorTramiteUnidadeDestino(Integer idUnidadeDestino, Integer permiteTramiteIndependente)
+	public String criarQueryRegistroAtendimentoPorMaiorTramiteUnidadeDestino(Integer idUnidadeDestino, Short permiteTramiteIndependente)
 					throws ErroRepositorioException;
 
 	/**
@@ -490,7 +492,7 @@ public interface IRepositorioOrdemServico {
 	 * @date 26/02/2009
 	 *       Mudança para chamar o método criarQueryRegistroAtendimentoPorMaiorTramiteUnidadeDestino
 	 */
-	public Collection<Localidade> pesquisarLocalidadePorRA(Integer idUnidadeDestino, Integer permiteTramiteIndependente)
+	public Collection<Localidade> pesquisarLocalidadePorRA(Integer idUnidadeDestino, Short permiteTramiteIndependente)
 					throws ErroRepositorioException;
 
 	/**
@@ -516,7 +518,7 @@ public interface IRepositorioOrdemServico {
 	 * @throws ControladorException
 	 */
 	public Collection<OrdemServico> pesquisarOrdemServicoElaborarProgramacao(PesquisarOrdemServicoHelper filtro,
-					Integer permiteTramiteIndependente) throws ErroRepositorioException;
+					Short permiteTramiteIndependente) throws ErroRepositorioException;
 
 	/**
 	 * [UC0465] Filtrar Ordem Serviço
@@ -1277,7 +1279,7 @@ public interface IRepositorioOrdemServico {
 	 * @return Collection
 	 */
 	public Collection pesquisarEquipes(String idEquipe, String nome, String placa, String cargaTrabalho, String idUnidade,
-					String idFuncionario, String idPerfilServico, String indicadorUso, Integer numeroPagina)
+					String idFuncionario, String idPerfilServico, String indicadorUso, Integer idTipoEquipe, Integer numeroPagina)
 					throws ErroRepositorioException;
 
 	/**
@@ -1297,7 +1299,8 @@ public interface IRepositorioOrdemServico {
 	 * @return int
 	 */
 	public int pesquisarEquipesCount(String idEquipe, String nome, String placa, String cargaTrabalho, String idUnidade,
-					String idFuncionario, String idPerfilServico, String indicadorUso) throws ErroRepositorioException;
+					String idFuncionario, String idPerfilServico, String indicadorUso, Integer idTipoEquipe)
+					throws ErroRepositorioException;
 
 	/**
 	 * Verifica se o serviço associado á ordem de serviço não corresponde a um serviço de
@@ -1449,7 +1452,7 @@ public interface IRepositorioOrdemServico {
 	 * @return Integer
 	 * @throws ControladorException
 	 */
-	public Integer pesquisarOrdemServicoTamanho(PesquisarOrdemServicoHelper filtro, Integer permiteTramiteIndependente)
+	public Integer pesquisarOrdemServicoTamanho(PesquisarOrdemServicoHelper filtro, Short permiteTramiteIndependente)
 					throws ErroRepositorioException;
 
 	/**
@@ -1611,7 +1614,8 @@ public interface IRepositorioOrdemServico {
 	 * @throws ControladorException
 	 */
 	public List filtrarImovelEmissaoOrdensSeletivas(OrdemServicoSeletivaHelper ordemSeletivaHelper, String anormalidadeHidrometro,
-					Boolean substituicaoHidrometro, Integer anoMesFaturamentoAtual, String situacaLigacaoAguaPermitidaManutencao)
+					Boolean substituicaoHidrometro, Boolean corte, Integer anoMesFaturamentoAtual,
+					String situacaLigacaoAguaPermitidaManutencao, String situacaLigacaoAguaPermitidaCorte)
 					throws ErroRepositorioException;
 
 	/**
@@ -1994,10 +1998,6 @@ public interface IRepositorioOrdemServico {
 	public Collection verificarOrdemServicoInstalacaoSubstituicaoImovel(Integer idImovel, String dataVencimento, Integer idServicoTipo)
 					throws ErroRepositorioException;
 
-	public List filtrarEmissaoOrdensSeletivasImovel(OrdemServicoSeletivaHelper ordemSeletivaHelper, String anormalidadeHidrometro,
-					Date dataInstalacaoHidrometro, Boolean substituicaoHidrometro, Integer anoMesFaturamentoAtual)
-					throws ErroRepositorioException;
-
 	public Collection verificarImoveisSemOrdemPendentePorTipoServico(Collection colecaoImoveis, Integer idServicoTipo)
 					throws ErroRepositorioException;
 
@@ -2009,7 +2009,8 @@ public interface IRepositorioOrdemServico {
 	 *       Pesquisar o total de registros a serem processados
 	 */
 	public Integer filtrarImovelEmissaoOrdensSeletivasCount(OrdemServicoSeletivaHelper ordemSeletivaHelper, String anormalidadeHidrometro,
-					Boolean substituicaoHidrometro, Integer anoMesFaturamentoAtual, String situacaLigacaoAguaPermitidaManutencao)
+					Boolean substituicaoHidrometro, Boolean corte, Integer anoMesFaturamentoAtual,
+					String situacaLigacaoAguaPermitidaManutencao, String situacaLigacaoAguaPermitidaCorte)
 					throws ErroRepositorioException;
 
 	/**
@@ -2358,7 +2359,7 @@ public interface IRepositorioOrdemServico {
 	 * @throws ErroRepositorioException
 	 */
 	public Integer pesquisarUnidadeTramiteOS(Integer idServicoTipoTramite, Integer idLocalidade, Integer idSetorComercial,
-					Integer idBairro, Integer idUnidadeOrigem) throws ErroRepositorioException;
+					Integer idBairro, Integer idUnidadeOrigem, Short indicadorPrimeiroTramite) throws ErroRepositorioException;
 
 	/**
 	 * Consultar Id de Serviço Tipo com Geração Automática filtrando pelo Id da Solicitação Tipo
@@ -2470,5 +2471,70 @@ public interface IRepositorioOrdemServico {
 	 */
 	Collection pesquisarServicoTipoTramite(Integer idServicoTipoTramite, Integer idLocalidade, Integer idSetorComercial, Integer idBairro,
 					Integer idUnidadeOrigem) throws ErroRepositorioException;
+
+
+	/**
+	 * Recupera uma coleção de Entulho Medida.
+	 * 
+	 * @author Genival Barbosa
+	 * @date 20/09/2014
+	 * @return Coleção de EntulhoMedida
+	 */
+	public Collection<EntulhoMedida> pesquisarEntulhoMedida() throws ErroRepositorioException;
+
+	/**
+	 * Recupera um Entulho Medida.
+	 * 
+	 * @author Genival Barbosa
+	 * @date 20/09/2014
+	 * @return Entulho Medida
+	 */
+	public EntulhoMedida pesquisarEntulhoMedida(Integer idEntulhoMedida) throws ErroRepositorioException;
+
+	/**
+	 * Pesquisar ordem de serviço.
+	 * 
+	 * @author Genival Barbosa
+	 * @date 30/09/2014
+	 * @return Ordem Servico
+	 */
+	public OrdemServico pesquisarOrdemServicoPrincipal(Integer idOrdemServico) throws ErroRepositorioException;
+
+	/**
+	 * [UC0456] Elaborar Roteiro de Programação de Ordens de Serviço
+	 * 
+	 * @author Anderson Italo
+	 * @date 09/10/2014
+	 */
+	public Collection<Bairro> pesquisarBairroPorRA(Integer idUnidadeDestino, Short permiteTramiteIndependente)
+					throws ErroRepositorioException;
+
+	/**
+	 * [UC0456] Elaborar Roteiro de Programação de Ordens de Serviço
+	 * 
+	 * @author Anderson Italo
+	 * @date 09/10/2014
+	 */
+	public Collection<Bairro> pesquisarBairroPorUnidade(Integer idUnidade) throws ErroRepositorioException;
+
+	/**
+	 * [UC0456] Elaborar Roteiro de Programação de Ordens de Serviço
+	 * 
+	 * @author Anderson Italo
+	 * @date 09/10/2014
+	 */
+	public Collection<ServicoTipoPrioridade> pesquisarServicoTipoPrioridadePorRA(Integer idUnidadeDestino,
+ Short permiteTramiteIndependente)
+					throws ErroRepositorioException;
+
+	/**
+	 * [UC0456] Elaborar Roteiro de Programação de Ordens de Serviço
+	 * 
+	 * @author Anderson Italo
+	 * @date 09/10/2014
+	 */
+	public Collection<ServicoTipoPrioridade> pesquisarServicoTipoPrioridadePorUnidade(Integer idUnidade) throws ErroRepositorioException;
+
+	public Integer recuperaQuantidadeDiasUnidade(Integer idOS, Short permiteTramiteIndependente) throws ErroRepositorioException;
 
 }

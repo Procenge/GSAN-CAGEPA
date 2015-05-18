@@ -98,6 +98,8 @@ public class FiltrarMaterialActionForm
 
 	private String indicadorUso;
 
+	private String materialValor;
+
 	public String getAbrevMaterial(){
 
 		return abrevMaterial;
@@ -136,6 +138,16 @@ public class FiltrarMaterialActionForm
 	public void setUnidadeMaterial(String unidadeMaterial){
 
 		this.unidadeMaterial = unidadeMaterial;
+	}
+
+	public String getMaterialValor(){
+
+		return materialValor;
+	}
+
+	public void setMaterialValor(String materialValor){
+
+		this.materialValor = materialValor;
 	}
 
 }

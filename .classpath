@@ -5,7 +5,6 @@
 	<classpathentry kind="src" output="deploy/gcom.ear/gcom.war" path="gcom"/>
 	<classpathentry kind="src" output="deploy/gcom.ear/META-INF" path="META-INF"/>
 	<classpathentry kind="src" output="deploy/gcom.ear/ejb" path="ejb"/>
-	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.generic.runtimeTarget/JBoss v4.2"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/brazilutils"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/CodigosBarras"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/commons-beanutils-1.8.3"/>
@@ -14,15 +13,16 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/commons-jexl-1.1"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Displaytag"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/dwr"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JasperReports 1.2.2"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JasperReports-3.7.3"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaHelp"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jxls-0.9.9"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/PagerTagLib"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/POI"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Spring"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Struts 1.1"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/CrystalReports"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JasperReports 1.2.2"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.generic.runtimeTarget/JBoss v4.2"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/poi-3.11"/>
 	<classpathentry kind="output" path="deploy/gcom.ear/lib"/>
 </classpath>

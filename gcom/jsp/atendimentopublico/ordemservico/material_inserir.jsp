@@ -135,6 +135,13 @@ function limparForm(form) {
 					<td><strong> <html:text property="descricaoAbreviada" size="7"
 						maxlength="5" /> </strong></td>
 				</tr>
+				<logic:equal name="permiteCobrarMaterial" value="1" scope="session">
+				<tr>
+					<td><strong>Valor:</strong></td>
+					<td><strong> <html:text property="materialValor" size="5"
+						maxlength="11" onkeyup="javascript:formataValorMonetario(this, 11)" /> </strong></td>
+				</tr>
+				</logic:equal>
 				<tr>
 					<td><strong>Unidade do Material:<font color="#FF0000">*</font></strong></td>
 					<td><html:select property="unidadeMaterial">

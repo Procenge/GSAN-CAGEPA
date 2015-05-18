@@ -62,4 +62,8 @@ public interface IControladorCobrancaAvisoDebito {
 	public void gerarRelatorioAvisoDebitoModelo2(CobrancaAcaoAtividadeCronograma cobrancaAcaoAtividadeCronograma,
 					CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComando, Usuario usuario) throws ControladorException;
 
+	public void gerarRelatorioAvisoDebitoModelo3(CobrancaAcaoAtividadeCronograma cobrancaAcaoAtividadeCronograma,
+					CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComando, Date dataAtualPesquisa, CobrancaAcao acaoCobranca,
+					CobrancaGrupo grupoCobranca, CobrancaCriterio cobrancaCriterio, Usuario usuario) throws ControladorException;
+
 }

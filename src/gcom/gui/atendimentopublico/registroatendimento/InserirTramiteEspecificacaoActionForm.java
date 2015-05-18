@@ -113,21 +113,6 @@ public class InserirTramiteEspecificacaoActionForm
 
 	private String nomeBairro;
 
-	private String sistemaAbastecimento;
-
-	private String distritoOperacional;
-
-	private String zonaAbastecimento;
-
-	private String setorAbastecimento;
-
-	private String sistemaEsgoto;
-
-	private String subsistemaEsgoto;
-
-	private String bacia;
-
-	private String subBacia;
 
 	private String unidadeOrganizacionalOrigem;
 
@@ -136,6 +121,8 @@ public class InserirTramiteEspecificacaoActionForm
 	private String unidadeOrganizacionalDestino;
 
 	private String nomeUnidadeOrganizacionalDestino;
+
+	private String indicadorPrimeiroTramite;
 
 	public String getTipoSolicitacao(){
 
@@ -257,85 +244,7 @@ public class InserirTramiteEspecificacaoActionForm
 		this.nomeBairro = nomeBairro;
 	}
 
-	public String getSistemaAbastecimento(){
 
-		return sistemaAbastecimento;
-	}
-
-	public void setSistemaAbastecimento(String sistemaAbastecimento){
-
-		this.sistemaAbastecimento = sistemaAbastecimento;
-	}
-
-	public String getDistritoOperacional(){
-
-		return distritoOperacional;
-	}
-
-	public void setDistritoOperacional(String distritoOperacional){
-
-		this.distritoOperacional = distritoOperacional;
-	}
-
-	public String getZonaAbastecimento(){
-
-		return zonaAbastecimento;
-	}
-
-	public void setZonaAbastecimento(String zonaAbastecimento){
-
-		this.zonaAbastecimento = zonaAbastecimento;
-	}
-
-	public String getSetorAbastecimento(){
-
-		return setorAbastecimento;
-	}
-
-	public void setSetorAbastecimento(String setorAbastecimento){
-
-		this.setorAbastecimento = setorAbastecimento;
-	}
-
-	public String getSistemaEsgoto(){
-
-		return sistemaEsgoto;
-	}
-
-	public void setSistemaEsgoto(String sistemaEsgoto){
-
-		this.sistemaEsgoto = sistemaEsgoto;
-	}
-
-	public String getSubsistemaEsgoto(){
-
-		return subsistemaEsgoto;
-	}
-
-	public void setSubsistemaEsgoto(String subsistemaEsgoto){
-
-		this.subsistemaEsgoto = subsistemaEsgoto;
-	}
-
-	public String getBacia(){
-
-		return bacia;
-	}
-
-	public void setBacia(String bacia){
-
-		this.bacia = bacia;
-	}
-
-	public String getSubBacia(){
-
-		return subBacia;
-	}
-
-	public void setSubBacia(String subBacia){
-
-		this.subBacia = subBacia;
-	}
 
 	public String getUnidadeOrganizacionalOrigem(){
 
@@ -376,4 +285,15 @@ public class InserirTramiteEspecificacaoActionForm
 
 		this.nomeUnidadeOrganizacionalDestino = nomeUnidadeOrganizacionalDestino;
 	}
+
+	public String getIndicadorPrimeiroTramite(){
+
+		return indicadorPrimeiroTramite;
+	}
+
+	public void setIndicadorPrimeiroTramite(String indicadorPrimeiroTramite){
+
+		this.indicadorPrimeiroTramite = indicadorPrimeiroTramite;
+	}
+
 }

@@ -3002,7 +3002,7 @@ public class RepositorioGerencialCobrancaHBM
 							helper.getValorPendenteDebito() + ", " + // 31
 							helper.getValorPendenteCredito() + ", " + // 32
 							helper.getValorPendenteImposto() + ", " + // 33
-							"  sysdate, " + // 34
+							"  current_date, " + // 34
 							helper.getIdTipoTarifaConsumo() + " ) "; // 35
 
 			stmt.executeUpdate(insert);
@@ -3262,7 +3262,7 @@ public class RepositorioGerencialCobrancaHBM
 							helper.getQuantidadeLigacoes() + ", " + // 27
 							helper.getQuantidadeDocumentos() + ", " + // 28
 							helper.getValorPendenteDebito() + ", " + // 31
-							"  sysdate, " + // 32
+							"  current_date, " + // 32
 							helper.getIdTipoTarifaConsumo() + ", " + // 33
 							helper.getIdTipoFinanciamento() + ", " + // 34
 							helper.getIdValorCurtoPrazo() + " ) "; // 35
@@ -3521,7 +3521,7 @@ public class RepositorioGerencialCobrancaHBM
 							helper.getQuantidadeLigacoes() + ", " + // 27
 							helper.getQuantidadeDocumentos() + ", " + // 28
 							helper.getValorPendenteDebito() + ", " + // 29
-							"  sysdate, " + // 30
+							"  current_date, " + // 30
 							helper.getIdTipoTarifaConsumo() + ", " + // 31
 							" 2, " + // 32
 							helper.getIdValorCurtoPrazo() + " ) "; // 33
@@ -3744,7 +3744,7 @@ public class RepositorioGerencialCobrancaHBM
 							helper.getQuantidadeLigacoes() + ", " + // 26
 							helper.getQuantidadeDocumentos() + ", " + // 27
 							helper.getValorPendenteCredito() + ", " + // 28
-							" sysdate, " + // 29
+							" current_date, " + // 29
 							helper.getIdTipoTarifaConsumo() + ", " + // 30
 							" 2 , " + // 31
 							helper.getIdValorCurtoPrazo() + " ) "; // 32

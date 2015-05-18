@@ -87,6 +87,7 @@ var form = document.forms[0];
 function caracteresespeciais () {
 	this.aa = new Array("nome", "Nome possui caracteres especiais.", new Function ("varName", " return this[varName];"));
 	this.ab = new Array("nomeAbreviado", "Nome Abreviado possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+	this.ab = new Array("numeroBeneficio", "Número do Benefício possui caracteres especiais.", new Function ("varName", " return this[varName];"));
 }
 
 function required () {
@@ -230,6 +231,12 @@ function redirecionarSubmitAtualizar(id) {
 	                   	</html:select>
 	                </td>
                 </tr>
+                
+                <tr>
+					<td><strong> Número do Benefício:</strong></td>
+					<td ><html:text property="numeroBeneficio" size="10" maxlength="10" onkeypress="return isCampoNumerico(event);"/>
+				</tr>
+				
                 <% if (((String)session.getAttribute("parametroEmpresa")).equals(SistemaParametro.INDICADOR_EMPRESA_DESO.toString())) { %>
                 <tr>
 					<td>

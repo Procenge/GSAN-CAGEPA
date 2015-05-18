@@ -80,6 +80,7 @@ import gcom.atendimentopublico.ordemservico.OrdemServico;
 import gcom.atendimentopublico.ordemservico.ServicoTipo;
 import gcom.atendimentopublico.registroatendimento.bean.FiltrarRegistroAtendimentoHelper;
 import gcom.atendimentopublico.registroatendimento.bean.FiltrarRegistroAtendimentoIncompletoHelper;
+import gcom.atendimentopublico.registroatendimento.bean.ServicoAssociadoValorHelper;
 import gcom.cadastro.endereco.LogradouroBairro;
 import gcom.cadastro.endereco.LogradouroCep;
 import gcom.cadastro.unidade.UnidadeOrganizacional;
@@ -1361,15 +1362,6 @@ public interface IRepositorioRegistroAtendimento {
 	public Integer pesquisaUnidadeEncerradaRa(Integer idRa) throws ErroRepositorioException;
 
 	/**
-	 * Método responsável por consultar os comentários do imóvel.
-	 * 
-	 * @param idImovel
-	 *            - id do imóvel.
-	 * @return Coleção contendo os dados dos comentários do imóvel.
-	 */
-	public Collection consultarImovelComentario(Integer idImovel) throws ErroRepositorioException;
-
-	/**
 	 * Pesquisa um Registro de Atendimento Solicitante
 	 * 
 	 * @author Virgínia Melo
@@ -1507,7 +1499,8 @@ public interface IRepositorioRegistroAtendimento {
 	 * @return
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarUnidadeDestinoPorEspecificacao(EspecificacaoTramite especificacaoTramite) throws ErroRepositorioException;
+	public Collection pesquisarUnidadeDestinoPorEspecificacao(EspecificacaoTramite especificacaoTramite,
+					boolean checarIndicadorPrimeiroTramite) throws ErroRepositorioException;
 
 	/**
 	 * Pesquisa as Dependências da SolicitacaoTipo (SolicitacaoTipoEspecificacao,
@@ -1593,6 +1586,15 @@ public interface IRepositorioRegistroAtendimento {
 
 	public List<RelatorioEstatisticoAtendimentoPorRacaCorBean> pesquisarDadosRelatorioEstatisticoAtendimentoPorRacaCor(
 					GerarRelatorioEstatisticoAtendimentoPorRacaCorActionForm form)
+					throws ErroRepositorioException;
+
+	/**
+	 * @param idSolicitacaoTipoEspecificacao
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+
+	public List<ServicoAssociadoValorHelper> pesquisarServicoAssociado(Integer idSolicitacaoTipoEspecificacao)
 					throws ErroRepositorioException;
 
 }

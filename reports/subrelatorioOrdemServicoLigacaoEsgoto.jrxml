@@ -1,0 +1,2668 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="subrelatorioOrdemServicoLigacaoAgua"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="555"
+		 pageHeight="802"
+		 columnWidth="555"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="NoPages"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.zoom" value="2.14358881000002" />
+	<property name="ireport.x" value="0" />
+	<property name="ireport.y" value="0" />
+	<property name="ireport.scriptlethandling" value="0" />
+	<property name="ireport.encoding" value="UTF-8" />
+	<import value="java.util.*" />
+	<import value="net.sf.jasperreports.engine.*" />
+	<import value="net.sf.jasperreports.engine.data.*" />
+
+
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="389"  isSplitAllowed="true" >
+				<staticText>
+					<reportElement
+						x="132"
+						y="14"
+						width="34"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Calçada]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="14"
+						width="34"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Rede]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="51"
+						y="14"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="64"
+						y="14"
+						width="34"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Rua]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="6"
+						y="0"
+						width="54"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-28"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="11" isBold="true" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Serviços]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="119"
+						y="14"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="204"
+						y="14"
+						width="42"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Dimensão]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="250"
+						y="14"
+						width="143"
+						height="11"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Profundidade _______________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="396"
+						y="14"
+						width="143"
+						height="11"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Comprimento _______________]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="4"
+						y="90"
+						width="548"
+						height="1"
+						key="line-30"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="6"
+						y="26"
+						width="50"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Data Início]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="56"
+						y="26"
+						width="146"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[____/____/______ ás ____:____]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="257"
+						y="26"
+						width="149"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[____/____/______ ás ____:____]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="204"
+						y="26"
+						width="53"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Data Término]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="38"
+						width="58"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Funcionários]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="49"
+						width="87"
+						height="11"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Qtde. _________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="94"
+						y="49"
+						width="278"
+						height="11"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Nomes _________________________________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="374"
+						y="49"
+						width="162"
+						height="11"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Função _________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="62"
+						width="87"
+						height="11"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Qtde. _________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="374"
+						y="62"
+						width="162"
+						height="11"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Função _________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="94"
+						y="62"
+						width="278"
+						height="11"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Nomes _________________________________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="75"
+						width="87"
+						height="11"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Qtde. _________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="94"
+						y="75"
+						width="278"
+						height="11"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Nomes _________________________________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="374"
+						y="75"
+						width="162"
+						height="11"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Função _________________________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="91"
+						width="87"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-28"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="11" isBold="true" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Equipamentos]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="107"
+						width="57"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Retro]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="63"
+						y="107"
+						width="179"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[nº_________ de _______h ás _______h]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="63"
+						y="120"
+						width="179"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[nº_________ de _______h ás _______h]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="120"
+						width="57"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[PC]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="63"
+						y="133"
+						width="179"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[nº_________ de _______h ás _______h]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="133"
+						width="57"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Basculante]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="343"
+						y="120"
+						width="179"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[nº_________ de _______h ás _______h]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="343"
+						y="133"
+						width="179"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[nº_________ de _______h ás _______h]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="286"
+						y="133"
+						width="57"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[_____________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="286"
+						y="120"
+						width="57"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Moto Abrasivo]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="343"
+						y="107"
+						width="179"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[nº_________ de _______h ás _______h]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="286"
+						y="107"
+						width="57"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Compressor]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="4"
+						y="145"
+						width="548"
+						height="1"
+						key="line-30"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<rectangle>
+					<reportElement
+						x="32"
+						y="163"
+						width="235"
+						height="70"
+						key="rectangle"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="146"
+						width="73"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-28"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="11" isBold="true" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Materiais]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="4"
+						y="240"
+						width="548"
+						height="1"
+						key="line-30"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="241"
+						width="73"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-28"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="11" isBold="true" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Reparos]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="59"
+						y="247"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="72"
+						y="247"
+						width="34"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[ATERRO]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="116"
+						y="247"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="129"
+						y="247"
+						width="47"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[LIMPEZA]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="59"
+						y="262"
+						width="51"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Dimensões]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="59"
+						y="277"
+						width="51"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Dimensões]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="177"
+						y="293"
+						width="67"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[________ m]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="364"
+						width="34"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Motivo]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="265"
+						y="247"
+						width="43"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Quantidade]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="372"
+						y="247"
+						width="47"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Carrinho]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="360"
+						y="247"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="437"
+						y="247"
+						width="47"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Concha]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="425"
+						y="247"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="501"
+						y="247"
+						width="47"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Viagem]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="489"
+						y="247"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="265"
+						y="262"
+						width="55"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Pavimento]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="326"
+						y="262"
+						width="20"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[ASF]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="314"
+						y="262"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="360"
+						y="262"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="372"
+						y="262"
+						width="20"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[LJ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="425"
+						y="262"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="437"
+						y="262"
+						width="20"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[PAR]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="501"
+						y="262"
+						width="20"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[T]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="489"
+						y="262"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="265"
+						y="277"
+						width="55"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Calçada]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="344"
+						y="277"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="356"
+						y="277"
+						width="20"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[CP]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="387"
+						y="277"
+						width="20"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[CM]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="406"
+						y="277"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="418"
+						y="277"
+						width="20"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[CT]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="314"
+						y="277"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="325"
+						y="277"
+						width="20"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[CC]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="375"
+						y="277"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="437"
+						y="277"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="449"
+						y="277"
+						width="20"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[PC]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="513"
+						y="277"
+						width="41"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Cx. Reg.]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="468"
+						y="277"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="480"
+						y="277"
+						width="20"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[G/SJ]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="502"
+						y="277"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="265"
+						y="293"
+						width="10"
+						height="11"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[ø]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="306"
+						y="247"
+						width="46"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[_________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="277"
+						y="293"
+						width="46"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[_________]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="4"
+						y="306"
+						width="548"
+						height="1"
+						key="line-30"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="6"
+						y="307"
+						width="87"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-28"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="11" isBold="true" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Sinalização Realizada]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="21"
+						y="322"
+						width="96"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[___________ Cone]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="119"
+						y="322"
+						width="106"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[___________ Ricardão]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="233"
+						y="322"
+						width="105"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[___________ Placa]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="331"
+						y="322"
+						width="96"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[___________ Pino]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="427"
+						y="322"
+						width="112"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[___________ Cavalete Plástico]]></text>
+				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="4"
+						y="335"
+						width="548"
+						height="1"
+						key="line-30"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="6"
+						y="337"
+						width="110"
+						height="13"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-28"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="11" isBold="true" isItalic="true" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Visita Técnica]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="376"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="18"
+						y="376"
+						width="76"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Sem caixa inspeção]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="6"
+						y="352"
+						width="26"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Data]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="55"
+						y="352"
+						width="147"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[____/____/______ ás ____:____]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="93"
+						y="376"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="105"
+						y="376"
+						width="86"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Sem válvula retenção]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="192"
+						y="376"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="204"
+						y="376"
+						width="43"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Sem rede]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="248"
+						y="376"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="402"
+						y="376"
+						width="67"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Imóvel fechado]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="461"
+						y="376"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="347"
+						y="376"
+						width="43"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Obstruído]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="391"
+						y="376"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="260"
+						y="376"
+						width="74"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Não localizado]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="335"
+						y="376"
+						width="10"
+						height="10"
+						key="staticText"/>
+					<box>					<pen lineWidth="0.5"/>
+					<topPen lineWidth="0.5"/>
+					<leftPen lineWidth="0.5"/>
+					<bottomPen lineWidth="0.5"/>
+					<rightPen lineWidth="0.5"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="472"
+						y="376"
+						width="82"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Cliente não permitiu]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="113"
+						y="339"
+						width="45"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Histórico]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="163"
+						y="339"
+						width="87"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[____/____/______]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="257"
+						y="339"
+						width="35"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Motivo]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="32"
+						y="163"
+						width="160"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Descrição]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="192"
+						y="163"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Un]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="217"
+						y="163"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[ø]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="242"
+						y="163"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Qtd]]></text>
+				</staticText>
+				<elementGroup><!--  Start: 1 !-->
+				<staticText>
+					<reportElement
+						x="242"
+						y="193"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="32"
+						y="213"
+						width="160"
+						height="10"
+						key="staticText"/>
+					<box leftPadding="2">					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Tubo PVC 90º]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="242"
+						y="223"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="192"
+						y="173"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[m]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="192"
+						y="203"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[pç]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="192"
+						y="223"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[pç]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="32"
+						y="203"
+						width="160"
+						height="10"
+						key="staticText"/>
+					<box leftPadding="2">					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Tubo PVC 45º]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="32"
+						y="173"
+						width="160"
+						height="10"
+						key="staticText"/>
+					<box leftPadding="2">					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Tubo Cerâmico]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="192"
+						y="193"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[m]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="32"
+						y="183"
+						width="160"
+						height="10"
+						key="staticText"/>
+					<box leftPadding="2">					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Tubo PVC Branco]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="217"
+						y="213"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[100]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="217"
+						y="193"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[100]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="242"
+						y="183"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="32"
+						y="193"
+						width="160"
+						height="10"
+						key="staticText"/>
+					<box leftPadding="2">					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Tubo PVC Ôcre]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="217"
+						y="173"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[100]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="242"
+						y="213"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="192"
+						y="183"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[m]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="192"
+						y="213"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[pç]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="242"
+						y="203"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="217"
+						y="223"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[150]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="242"
+						y="173"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="217"
+						y="203"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[100]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="32"
+						y="223"
+						width="160"
+						height="10"
+						key="staticText"/>
+					<box leftPadding="2">					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Selim Cerâmico 100 x 150]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="217"
+						y="183"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[100]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="472"
+						y="173"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[100]]></text>
+				</staticText>
+				</elementGroup><!-- End 1 !-->
+				<staticText>
+					<reportElement
+						x="447"
+						y="203"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="287"
+						y="213"
+						width="160"
+						height="10"
+						key="staticText"/>
+					<box leftPadding="2">					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Cimento]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="447"
+						y="183"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[pç]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="497"
+						y="163"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Qtd]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="287"
+						y="163"
+						width="160"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Descrição]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="287"
+						y="183"
+						width="160"
+						height="10"
+						key="staticText"/>
+					<box leftPadding="2">					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Adaptador PVC]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="497"
+						y="173"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="287"
+						y="203"
+						width="160"
+						height="10"
+						key="staticText"/>
+					<box leftPadding="2">					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Areia]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="287"
+						y="223"
+						width="160"
+						height="10"
+						key="staticText"/>
+					<box leftPadding="2">					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="287"
+						y="173"
+						width="160"
+						height="10"
+						key="staticText"/>
+					<box leftPadding="2">					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[Selim PVC]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="472"
+						y="163"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[ø]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="447"
+						y="193"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[pç]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="497"
+						y="203"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="497"
+						y="183"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="472"
+						y="203"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="497"
+						y="223"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="287"
+						y="193"
+						width="160"
+						height="10"
+						key="staticText"/>
+					<box leftPadding="2">					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Left" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[TE PVC Branco]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="447"
+						y="213"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="497"
+						y="213"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="447"
+						y="163"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Un]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="447"
+						y="173"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[pç]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="472"
+						y="213"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="472"
+						y="183"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[100]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="447"
+						y="223"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="472"
+						y="223"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="497"
+						y="193"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="true"/>
+					</textElement>
+				<text><![CDATA[]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="472"
+						y="193"
+						width="25"
+						height="10"
+						key="staticText"/>
+					<box>					<topPen lineWidth="0.25" lineStyle="Solid"/>
+					<leftPen lineWidth="0.25" lineStyle="Solid"/>
+					<bottomPen lineWidth="0.25" lineStyle="Solid"/>
+					<rightPen lineWidth="0.25" lineStyle="Solid"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" size="7" isBold="false"/>
+					</textElement>
+				<text><![CDATA[100]]></text>
+				</staticText>
+				<rectangle>
+					<reportElement
+						mode="Transparent"
+						x="287"
+						y="163"
+						width="235"
+						height="70"
+						key="rectangle"/>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
+				<staticText>
+					<reportElement
+						x="110"
+						y="277"
+						width="147"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[ ___________ x __________ m]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="110"
+						y="262"
+						width="147"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" size="8" isBold="false"/>
+					</textElement>
+				<text><![CDATA[ ___________ x __________ m]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="58"
+						y="293"
+						width="130"
+						height="10"
+						key="staticText"/>
+					<box></box>
+					<textElement verticalAlignment="Bottom">
+						<font fontName="Courier New" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Tubulação de Águas Pluviais]]></text>
+				</staticText>
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

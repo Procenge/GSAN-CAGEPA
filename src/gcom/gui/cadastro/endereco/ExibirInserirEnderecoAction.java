@@ -79,17 +79,7 @@ package gcom.gui.cadastro.endereco;
 import gcom.arrecadacao.banco.Agencia;
 import gcom.cadastro.cliente.ClienteEndereco;
 import gcom.cadastro.cliente.ClienteTipo;
-import gcom.cadastro.endereco.Cep;
-import gcom.cadastro.endereco.CepTipo;
-import gcom.cadastro.endereco.EnderecoReferencia;
-import gcom.cadastro.endereco.EnderecoTipo;
-import gcom.cadastro.endereco.FiltroCep;
-import gcom.cadastro.endereco.FiltroEnderecoReferencia;
-import gcom.cadastro.endereco.FiltroEnderecoTipo;
-import gcom.cadastro.endereco.FiltroLogradouro;
-import gcom.cadastro.endereco.Logradouro;
-import gcom.cadastro.endereco.LogradouroBairro;
-import gcom.cadastro.endereco.LogradouroCep;
+import gcom.cadastro.endereco.*;
 import gcom.cadastro.geografico.Bairro;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.localidade.GerenciaRegional;
@@ -106,12 +96,7 @@ import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -146,8 +131,13 @@ public class ExibirInserirEnderecoAction
 
 		String limparLogradouro = httpServletRequest.getParameter("limparLogradouro");
 		String tipoRetorno = (String) httpServletRequest.getParameter("tipoPesquisaEndereco");
+		String exibirMatriculaImovel = (String) httpServletRequest.getParameter("exibirMatriculaImovel");
 		String tipoOperacao = (String) httpServletRequest.getParameter("operacao");
 		String caminhoRetornoTelaAdicionarSolicitante = (String) httpServletRequest.getParameter("caminhoRetornoTelaAdicionarSolicitante");
+
+		if(exibirMatriculaImovel != null && !exibirMatriculaImovel.equalsIgnoreCase("")){
+			sessao.setAttribute("exibirMatriculaImovel", exibirMatriculaImovel);
+		}
 
 		if(tipoRetorno != null && !tipoRetorno.trim().equalsIgnoreCase("")){
 			sessao.setAttribute("tipoPesquisaRetorno", tipoRetorno);
@@ -189,7 +179,8 @@ public class ExibirInserirEnderecoAction
 			inserirEnderecoActionForm.setTipo(String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO));
 			inserirEnderecoActionForm.setAssociacaoExistente("");
 			inserirEnderecoActionForm.setTipoAcao("");
-
+			inserirEnderecoActionForm.setIdMatriculaImovel("");
+			inserirEnderecoActionForm.setImovelDescricao("");
 			sessao.removeAttribute("colecaoCepSelecionadosUsuario");
 			sessao.removeAttribute("objetoCep");
 
@@ -560,19 +551,43 @@ public class ExibirInserirEnderecoAction
 			String pesquisarLogradouro = httpServletRequest.getParameter("pesquisarLogradouro");
 			String logradouroJSP = inserirEnderecoActionForm.getLogradouro();
 			String numeroJSP = inserirEnderecoActionForm.getNumero();
+			String pesquisarImovel = httpServletRequest.getParameter("pesquisarImovel");
 
 			/*
 			 * Caso o usuário confirme
 			 */
+			if(pesquisarImovel != null
+							|| (httpServletRequest.getParameter("idCampoEnviarDados") != null && httpServletRequest
+											.getParameter("tipoConsulta").toString().equals("imovel"))){
+
+				String idMatricula = "";
+				if(pesquisarImovel != null && pesquisarImovel.equals("OK")){
+					idMatricula = inserirEnderecoActionForm.getIdMatriculaImovel();
+				}else{
+
+					 idMatricula = (String) httpServletRequest.getParameter("idCampoEnviarDados");
+				}
+
+				Imovel imovel = fachada.pesquisarImovel(Util.obterInteger(idMatricula));
+				inserirEnderecoActionForm.setIdMatriculaImovel(idMatricula);
+				inserirEnderecoActionForm.setNumero(imovel.getNumeroImovel());
+				inserirEnderecoActionForm.setCep(imovel.getLogradouroCep().getCep().getCodigo().toString());
+
+				inserirEnderecoActionForm.setImovelDescricao(imovel.getInscricaoFormatada());
+				pesquisarCep = "OK";
+				pesquisarLogradouro = "OK";
+				cepJSP = (String) imovel.getLogradouroCep().getCep().getCodigo().toString();
+			}
+
 			if(httpServletRequest.getParameter("confirmado") != null){
 				sessao.removeAttribute("objetoCep");
 				sessao.removeAttribute("colecaoCepSelecionadosUsuario");
-
 				pesquisarLogradouro = "OK";
 			}
 
 			Cep chamarConfirmacao = carregarValidarEndereco(pesquisarCep, pesquisarLogradouro, fachada, sessao, httpServletRequest, cepJSP,
 							null, logradouroJSP, inserirEnderecoActionForm, limparLogradouro, actionMapping, numeroJSP);
+
 
 			if(chamarConfirmacao != null){
 
@@ -595,6 +610,8 @@ public class ExibirInserirEnderecoAction
 					inserirEnderecoActionForm.setTipo(EnderecoTipo.ENDERECO_TIPO_RESIDENCIAL + "");
 				}
 			}
+
+
 
 		}
 
@@ -666,7 +683,7 @@ public class ExibirInserirEnderecoAction
 			/*
 			 * Recebendo os parâmetros a partir de uma consulta realizada via popup (Cep)
 			 */
-			if(httpServletRequest.getParameter("idCampoEnviarDados") != null){
+			if(httpServletRequest.getParameter("idCampoEnviarDados") != null && httpServletRequest.getParameter("tipoConsulta") =="cep"){
 				cepJSP = httpServletRequest.getParameter("idCampoEnviarDados");
 			}
 
@@ -777,6 +794,8 @@ public class ExibirInserirEnderecoAction
 												.toString());
 							}
 						}
+
+						
 
 					}else if(!fachada.verificarCepUnicoMunicipio(objetoCep) && !fachada.verificarCepInicialMunicipio(objetoCep)){
 

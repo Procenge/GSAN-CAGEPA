@@ -96,6 +96,8 @@ public class FiltrarConsumoTarifaActionForm
 
 	private String atualizarFiltro;
 
+	private String descricaoAtoAdministrativo;
+
 	public String getDataVigencia(){
 
 		return dataVigencia;
@@ -142,4 +144,15 @@ public class FiltrarConsumoTarifaActionForm
 
 		this.atualizarFiltro = atualizarFiltro;
 	}
+
+	public String getDescricaoAtoAdministrativo(){
+
+		return descricaoAtoAdministrativo;
+	}
+
+	public void setDescricaoAtoAdministrativo(String descricaoAtoAdministrativo){
+
+		this.descricaoAtoAdministrativo = descricaoAtoAdministrativo;
+	}
+
 }

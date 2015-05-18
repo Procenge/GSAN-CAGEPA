@@ -4,6 +4,8 @@ import gcom.cadastro.funcionario.FiltroFuncionario;
 import gcom.cadastro.funcionario.Funcionario;
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
+import gcom.seguranca.acesso.usuario.FiltroUsuario;
+import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
@@ -32,6 +34,44 @@ public class ExibirConsultarAuditoriaTransferenciaDebitosAction
 		// Recupera os valores do funcionário do form
 		String idFuncionario = form.getIdFuncionario();
 		String nomeFuncionario = form.getNomeFuncionario();
+		String idUsuarioDestino = form.getNomeUsuarioDestino();
+		String idUsuarioOrigem = form.getNomeUsuarioOrigem();
+
+		// Filtro Usuario Destino
+		if(!Util.isVazioOuBranco(idUsuarioDestino)){
+
+			FiltroUsuario filtroUsuario = new FiltroUsuario();
+			filtroUsuario.adicionarParametro(new ParametroSimples(FiltroUsuario.ID, idUsuarioDestino));
+			Usuario usuario = (Usuario) Util.retonarObjetoDeColecao(fachada.pesquisar(filtroUsuario, Usuario.class.getName()));
+			if(!Util.isVazioOuBranco(usuario)){
+				form.setIdUsuarioDestino(usuario.getId().toString());
+				form.setNomeUsuarioDestino(usuario.getNomeUsuario());
+			}else{
+				form.setIdUsuarioDestino("");
+				form.setNomeUsuarioDestino("Usuário inexistente");
+				httpServletRequest.setAttribute("usuarioNaoEncontradoDestino", true);
+				httpServletRequest.setAttribute("nomeCampo", "idUsuarioDestino");
+			}
+
+		}
+
+		// Filtro Usuario Origem
+		if(!Util.isVazioOuBranco(idUsuarioOrigem)){
+
+			FiltroUsuario filtroUsuario = new FiltroUsuario();
+			filtroUsuario.adicionarParametro(new ParametroSimples(FiltroUsuario.ID, idUsuarioOrigem));
+			Usuario usuario = (Usuario) Util.retonarObjetoDeColecao(fachada.pesquisar(filtroUsuario, Usuario.class.getName()));
+			if(!Util.isVazioOuBranco(usuario)){
+				form.setIdUsuarioOrigem(usuario.getId().toString());
+				form.setNomeUsuarioOrigem(usuario.getNomeUsuario());
+			}else{
+				form.setIdUsuarioOrigem("");
+				form.setNomeUsuarioOrigem("Usuário inexistente");
+				httpServletRequest.setAttribute("usuarioNaoEncontradoOrigem", true);
+				httpServletRequest.setAttribute("nomeCampo", "idUsuarioOrigem");
+			}
+
+		}
 
 		// ---Parte que trata o código quando o usuário tecla enter
 		String objetoConsulta = httpServletRequest.getParameter("objetoConsulta");

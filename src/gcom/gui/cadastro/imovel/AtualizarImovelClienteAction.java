@@ -76,10 +76,19 @@
 
 package gcom.gui.cadastro.imovel;
 
+import gcom.cadastro.cliente.ClienteImovel;
+import gcom.fachada.Fachada;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
+import gcom.util.parametrizacao.cadastro.ParametroCadastro;
+
+import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -90,6 +99,28 @@ public class AtualizarImovelClienteAction
 
 	public ActionForward execute(ActionMapping actionMapping, ActionForm actionForm, HttpServletRequest httpServletRequest,
 					HttpServletResponse httpServletResponse){
+
+		// Obtém a instância da Fachada
+		Fachada fachada = Fachada.getInstancia();
+
+		HttpSession sessao = httpServletRequest.getSession(false);
+
+		Boolean indicadorInserirDataRelacaoFim = false;
+		try{
+			if(ParametroCadastro.P_INDICADOR_INFORMAR_DATA_RELACAO_FIM_INSERIR_CLIENTE_IMOVEL.executar().equals(
+							ConstantesSistema.SIM.toString())){
+				indicadorInserirDataRelacaoFim = true;
+			}
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+
+		if(indicadorInserirDataRelacaoFim){
+			if(!fachada.verificarTipoRelacaoUsuariaAtivo(((Collection<ClienteImovel>) sessao.getAttribute("imovelClientesNovos")))){
+				throw new ActionServletException("atencao.data_fim_relacao_valida.cliente_imovel_usuario");
+			}
+		}
 
 		ActionForward retorno = actionMapping.findForward("gerenciadorProcesso");
 

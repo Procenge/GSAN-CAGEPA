@@ -145,6 +145,8 @@ public class FiltroRegistroAtendimento
 
 	public final static String SOLICITACAO_TIPO = "solicitacaoTipoEspecificacao.solicitacaoTipo";
 
+	public final static String SOLICITACAO_TIPO_DEBITO = "solicitacaoTipoEspecificacao.solicitacaoTipo.debitoTipo";
+
 	public final static String IMOVEL_LOCALIDADE = "imovel.localidade";
 
 	public final static String IMOVEL_LOCALIDADE_ID = "imovel.localidade.id";

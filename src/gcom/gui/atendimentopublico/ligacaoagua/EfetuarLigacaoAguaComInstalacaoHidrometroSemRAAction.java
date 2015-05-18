@@ -76,25 +76,14 @@
 
 package gcom.gui.atendimentopublico.ligacaoagua;
 
-import gcom.atendimentopublico.ligacaoagua.CorteRegistroTipo;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAgua;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAguaDiametro;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAguaMaterial;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAguaPerfil;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao;
-import gcom.atendimentopublico.ligacaoagua.RamalLocalInstalacao;
+import gcom.atendimentopublico.ligacaoagua.*;
 import gcom.cadastro.funcionario.Funcionario;
 import gcom.cadastro.imovel.Imovel;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.gui.atendimentopublico.EfetuarLigacaoAguaComInstalacaoHidrometroSemRAActionForm;
-import gcom.micromedicao.RateioTipo;
-import gcom.micromedicao.hidrometro.Hidrometro;
-import gcom.micromedicao.hidrometro.HidrometroInstalacaoHistorico;
-import gcom.micromedicao.hidrometro.HidrometroLocalInstalacao;
-import gcom.micromedicao.hidrometro.HidrometroProtecao;
-import gcom.micromedicao.hidrometro.HidrometroSituacao;
+import gcom.micromedicao.hidrometro.*;
 import gcom.micromedicao.medicao.MedicaoTipo;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
@@ -338,8 +327,7 @@ public class EfetuarLigacaoAguaComInstalacaoHidrometroSemRAAction
 		}else{
 			hidrometroInstalacaoHistorico.setNumeroSelo(null);
 		}
-		// tipo de rateio
-		hidrometroInstalacaoHistorico.setRateioTipo(new RateioTipo(RateioTipo.RATEIO_POR_IMOVEL));
+
 		hidrometroInstalacaoHistorico.setDataImplantacaoSistema(new Date());
 
 		// indicador instalação substituição

@@ -7,6 +7,7 @@
 <%@ page import="gcom.faturamento.FaturamentoSituacaoHistorico"%>
 <%@ page import="gcom.util.Util"%>
 <%@ page import="gcom.arrecadacao.ContratoDemandaConsumo" %>
+<%@ page import="gcom.cadastro.imovel.ImovelDoacao" %>
 
 <head>
 <html:html>
@@ -37,7 +38,21 @@
 		form.action = 'consultarImovelWizardAction.do?action=exibirConsultarImovelDadosComplementaresAction&limparForm=OK'
 		form.submit();
 	}
-	
+	function limparImovelTecla() {
+
+		var form = document.forms[0];
+		
+		form.matriculaImovelDadosComplementares.value = "";
+
+		if (form.digitoVerificadorImovelDadosComplementares != undefined) {
+			form.digitoVerificadorImovelDadosComplementares.value = "";
+		}
+			
+		form.situacaoAguaDadosComplementares.value = "";
+		form.situacaoEsgotoDadosComplementares.value = "";
+		form.tipoLigacao.value = "";
+
+	}
 </script>
 </head>
 
@@ -145,7 +160,8 @@
 										color="#FF0000">*</font></strong></td>
 									<td width="75%" colspan="3"><html:text
 										property="idImovelDadosComplementares" maxlength="9" size="9"
-										onkeypress="validaEnterComMensagem(event, 'consultarImovelWizardAction.do?action=exibirConsultarImovelDadosComplementaresAction&indicadorNovo=OK','idImovelDadosComplementares','Im&oacute;vel');"/> 
+										onkeypress="validaEnterComMensagem(event, 'consultarImovelWizardAction.do?action=exibirConsultarImovelDadosComplementaresAction&indicadorNovo=OK','idImovelDadosComplementares','Im&oacute;vel');"
+										onkeyup="limparImovelTecla();"/> 
 									<a
 										href="javascript:abrirPopup('exibirPesquisarImovelAction.do', 400, 800);">
 									<img width="23" height="21"
@@ -153,24 +169,66 @@
 										border="0" /></a> <logic:present
 										name="idImovelDadosComplementaresNaoEncontrado"
 										scope="request">
-										<html:text property="matriculaImovelDadosComplementares"
-											size="40" readonly="true"
-											style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+											<html:text property="matriculaImovelDadosComplementares"
+												size="40" readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										</logic:equal>
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+											<html:text property="digitoVerificadorImovelDadosComplementares"
+												size="2" readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+																						
+											<html:text property="matriculaImovelDadosComplementares"
+												size="31" readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										</logic:equal>										
+										
 									</logic:present> <logic:notPresent
 										name="idImovelDadosComplementaresNaoEncontrado"
 										scope="request">
 										<logic:present name="valorMatriculaImovelDadosComplementares"
 											scope="request">
-											<html:text property="matriculaImovelDadosComplementares"
-												size="40" readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+												<html:text property="matriculaImovelDadosComplementares"
+													size="40" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelDadosComplementares"
+													size="2" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+																								
+												<html:text property="matriculaImovelDadosComplementares"
+													size="31" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>											
+											
 										</logic:present>
 										<logic:notPresent
 											name="valorMatriculaImovelDadosComplementares"
 											scope="request">
-											<html:text property="matriculaImovelDadosComplementares"
-												size="40" readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+												<html:text property="matriculaImovelDadosComplementares"
+													size="40" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelDadosComplementares"
+													size="2" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+																								
+												<html:text property="matriculaImovelDadosComplementares"
+													size="31" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>											
+											
 										</logic:notPresent>
 									</logic:notPresent> <a href="javascript:limparForm();"> <img
 										src="<bean:message key="caminho.imagens"/>limparcampo.gif"
@@ -193,6 +251,20 @@
 										size="15" maxlength="15" /></td>
 
 								</tr>
+								
+								<td height="10">
+									<div class="style9"><strong>Tipo de Ligação:</strong></div>
+									</td>
+									<td><html:text property="tipoLigacao"
+										readonly="true"
+										style="background-color:#EFEFEF; border:0; color: #000000"
+										size="15" maxlength="15" /></td>
+							
+									<td width="90"></td>
+									<td width="120"></td>
+								</tr>
+								
+								
 							</table>
 							</td>
 						</tr>
@@ -364,31 +436,31 @@
 					<td colspan="7" align="left">
 				    <table bgcolor="#90c7fc" width="100%" border="0">
 					    	<tr>	
-								<td colspan="7" align="center" bgcolor="#79bbfd"><strong>Situa&ccedil;&otilde;es de Cobran&ccedil;a</strong></td>
+								<td colspan="8" align="center" bgcolor="#79bbfd"><strong>Situa&ccedil;&otilde;es de Cobran&ccedil;a</strong></td>
 							</tr>
 							<tr bgcolor="#90c7fc" bordercolor="#000000">
 	
-								<td align="center" bgcolor="#90c7fc" width="27%">
+								<td align="center" bgcolor="#90c7fc" width="20%">
 								<div class="style9"><font style="font-size: 9px;" color="#000000"
 									face="Verdana, Arial, Helvetica, sans-serif"> <strong>Situa&ccedil;&atilde;o</strong></font></div>
 								</td>
 	
-								<td align="center" bgcolor="#90c7fc" width="15%">
+								<td align="center" bgcolor="#90c7fc" width="10%">
 								<div class="style9"><font style="font-size: 9px;" color="#000000"
 									face="Verdana, Arial, Helvetica, sans-serif"> <strong>Per&iacute;odo Refr&ecirc;ncia</strong> </font></div>
 								</td>
 	
-								<td align="center" bgcolor="#90c7fc" width="15%">
+								<td align="center" bgcolor="#90c7fc" width="14%">
 								<div class="style9"><font style="font-size: 9px;" color="#000000"
 									face="Verdana, Arial, Helvetica, sans-serif"> <strong>Data Implantação</strong></font></div>
 								</td>
 								
-								<td align="center" bgcolor="#90c7fc" width="15%">
+								<td align="center" bgcolor="#90c7fc" width="14%">
 								<div class="style9"><font style="font-size: 9px;" color="#000000"
 									face="Verdana, Arial, Helvetica, sans-serif"> <strong>Data Retirada</strong></font></div>
 								</td>
 								
-								<td align="center" bgcolor="#90c7fc" width="10%">
+								<td align="center" bgcolor="#90c7fc" width="8%">
 								<div class="style9"><font style="font-size: 9px;" color="#000000"
 									face="Verdana, Arial, Helvetica, sans-serif"> <strong>Cliente Alvo</strong></font></div>
 								</td>
@@ -403,12 +475,19 @@
 									face="Verdana, Arial, Helvetica, sans-serif"> <strong>Advogado Responsável</strong></font></div>
 								</td>
 	
+								<td width="14%">
+									<div align="center" class="style9">
+										<font style="font-size: 9px;" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">
+											<strong>Processo<br>Administrativo</strong>
+										</font>
+									</div>
+								</td>										
 							</tr>							
 							
 							
 							
 							<tr>						
-								<td colspan="7">
+								<td colspan="8">
 								<div style="height: 100%; overflow: auto; width : 100%;"><!--corpo da segunda tabela-->
 								<%int cont = 0;%>
 								<logic:notEmpty name="colecaoSituacoesCobranca" scope="session">
@@ -422,14 +501,14 @@
 											<%} else {%>
 										<tr bgcolor="#FFFFFF">
 											<%}%>
-											<td align="center" width="25%">
+											<td align="center" width="20%">
 											<div class="style9"><font style="font-size: 9px;"
 												color="#000000" face="Verdana, Arial, Helvetica, sans-serif">
 											<bean:write name="situacoesCobranca"
 												property="cobrancaSituacao.descricao" /></font></div>
 											</td>
 
-											<td align="center" width="15%">
+											<td align="center" width="10%">
 											<div class="style9">
 												<font style="font-size: 9px;" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">
 													<bean:write name="situacoesCobranca" property="anoMesReferenciaInicio"/>
@@ -439,7 +518,7 @@
 											</div>
 											</td>
 
-											<td align="center" width="15%">
+											<td align="center" width="14%">
 											<div class="style9"><font style="font-size: 9px;"
 												color="#000000" face="Verdana, Arial, Helvetica, sans-serif">
 											<bean:write name="situacoesCobranca"
@@ -447,7 +526,7 @@
 											</td>
 											
 											
-											<td align="center" width="15%">
+											<td align="center" width="14%">
 											<div class="style9"><font style="font-size: 9px;"
 												color="#000000" face="Verdana, Arial, Helvetica, sans-serif">
 											<bean:write name="situacoesCobranca"
@@ -455,7 +534,7 @@
 											</td>
 											
 											
-											<td align="center" width="10%">
+											<td align="center" width="8%">
 											<div class="style9">
 												<font style="font-size: 9px;" color="#000000" face="Verdana, Arial, Helvetica, sans-serif">
 													<a href="javascript:abrirPopup('exibirConsultarClienteAction.do?desabilitarPesquisaCliente=SIM&codigoCliente='+<bean:write name="situacoesCobranca" property="cliente.id" />, 500, 800);">
@@ -484,6 +563,17 @@
 													</logic:notEmpty>												
 												</font>
 											</div>
+											</td>
+											
+											<td width="14%">
+											<div align="center" class="style9"><font color="#000000"
+												style="font-size:9px"
+												face="Verdana, Arial, Helvetica, sans-serif"> <logic:notEmpty
+												name="situacoesCobranca" property="numeroProcessoAdministrativoExecucaoFiscal">
+												<bean:write name="situacoesCobranca" property="numeroProcessoAdministrativoExecucaoFiscal"
+													 />
+											</logic:notEmpty> </font></div>
+											</td>												
 										</tr>
 									</logic:iterate>
 								</table>								
@@ -990,18 +1080,18 @@
 					<table bgcolor="#90c7fc" width="100%"
 						border="0">
 						<tr>
-							<td colspan="10" align="center" bgcolor="#79bbfd"><strong>Situa&ccedil;&otilde;es
+							<td colspan="12" align="center" bgcolor="#79bbfd"><strong>Situa&ccedil;&otilde;es
 							Especiais de Cobran&ccedil;a </strong></td>
 						</tr>
 						<tr bordercolor="#000000" bgcolor="#90c7fc">
-							<td align="center" bgcolor="#90c7fc" width="10%">
+							<td align="center" bgcolor="#90c7fc" width="8%">
 							<div class="style9"><font style="font-size: 9px;" color="#000000"
 								face="Verdana, Arial, Helvetica, sans-serif"> <strong>Tipo</strong></font></div>
 							</td>
 							<td align="center" bgcolor="#90c7fc" width="13%"><font
 								style="font-size: 9px;" color="#000000"
 								face="Verdana, Arial, Helvetica, sans-serif"><strong>Motivo</strong></font></td>
-							<td align="center" bgcolor="#90c7fc" width="10%">
+							<td align="center" bgcolor="#90c7fc" width="8%">
 							<div class="style9"><font style="font-size: 9px;" color="#000000"
 								face="Verdana, Arial, Helvetica, sans-serif"> <strong>M&ecirc;s/Ano
 							In&iacute;cio&nbsp;</strong> </font></div>
@@ -1014,28 +1104,38 @@
 								style="font-size: 9px;" color="#000000"
 								face="Verdana, Arial, Helvetica, sans-serif"><strong>M&ecirc;s/Ano
 							Retirada</strong></font></td>
-							<td align="center" bgcolor="#90c7fc" width="15%">
+							<td align="center" bgcolor="#90c7fc" width="10%">
 							<div class="style9"><font style="font-size: 9px;" color="#000000"
 								face="Verdana, Arial, Helvetica, sans-serif"> <strong>Usu&aacute;rio Inclusão</strong></font></div>
 							</td>
-							<td align="center" bgcolor="#90c7fc" width="15%">
+							<td align="center" bgcolor="#90c7fc" width="10%">
 							<div class="style9"><font style="font-size: 9px;" color="#000000"
 								face="Verdana, Arial, Helvetica, sans-serif"> <strong>Data/Hora Inclusão</strong></font></div>
 							</td>
-							<td align="center" bgcolor="#90c7fc" width="15%">
+							<td align="center" bgcolor="#90c7fc" width="10%">
 							<div class="style9"><font style="font-size: 9px;" color="#000000"
 								face="Verdana, Arial, Helvetica, sans-serif"> <strong>Usu&aacute;rio Exclusão</strong></font></div>
 							</td>
-							<td align="center" bgcolor="#90c7fc" width="15%">
+							<td align="center" bgcolor="#90c7fc" width="10%">
 							<div class="style9"><font style="font-size: 9px;" color="#000000"
 								face="Verdana, Arial, Helvetica, sans-serif"> <strong>Data/Hora Exclusão</strong></font></div>
 							</td>
+							
+							<td align="center" bgcolor="#90c7fc" width="10%">
+							<div class="style9"><font style="font-size: 9px;" color="#000000"
+								face="Verdana, Arial, Helvetica, sans-serif"> <strong>Orgão<br>Externo</strong></font></div>
+							</td>
+							
+							<td align="center" bgcolor="#90c7fc" width="10%">
+							<div class="style9"><font style="font-size: 9px;" color="#000000"
+								face="Verdana, Arial, Helvetica, sans-serif"> <strong>Número<br>Processo</strong></font></div>
+							</td>							
 						</tr>
 
 
 
 						<tr>
-							<td colspan="10">
+							<td colspan="12">
 							<!-- <div style="width: 100%; height: 100%; overflow: auto;">  -->
 							<table width="100%" align="left" bgcolor="#99CCFF">
 								<!--corpo da segunda tabela-->
@@ -1126,7 +1226,7 @@
 											<%}%> </font></td>
 
 
-											<td align="center" width="15%" style="height:50px;">
+											<td align="center" width="10%" style="height:50px;">
 											<div class="style9"><font style="font-size: 9px;"
 												color="#000000" face="Verdana, Arial, Helvetica, sans-serif">
 											<logic:present name="cobrancasSituacaoHistorico"
@@ -1136,14 +1236,14 @@
 											</logic:present></font></div>
 											</td>
 
-											<td align="center" width="15%" style="height:50px;"><font style="font-size: 9px;"
+											<td align="center" width="10%" style="height:50px;"><font style="font-size: 9px;"
 												color="#000000" face="Verdana, Arial, Helvetica, sans-serif">
 											<%if (cobrancasSituacaoHistorico.getDataHoraInclusao() != null) {%>
 											<%="" + Util.formatarDataComHora(cobrancasSituacaoHistorico
 												.getDataHoraInclusao())%>
 											<%}%> </font></td>
 											
-											<td align="center" width="15%" style="height:50px;">
+											<td align="center" width="10%" style="height:50px;">
 											<div class="style9"><font style="font-size: 9px;"
 												color="#000000" face="Verdana, Arial, Helvetica, sans-serif">
 											<logic:present name="cobrancasSituacaoHistorico"
@@ -1153,12 +1253,30 @@
 											</logic:present></font></div>
 											</td>
 											
-											<td align="center" width="15%" style="height:50px;"><font style="font-size: 9px;"
+											<td align="center" width="10%" style="height:50px;"><font style="font-size: 9px;"
 												color="#000000" face="Verdana, Arial, Helvetica, sans-serif">
 											<%if (cobrancasSituacaoHistorico.getDataHoraExclusao() != null) {%>
 											<%="" + Util.formatarDataComHora(cobrancasSituacaoHistorico
 												.getDataHoraExclusao())%>
 											<%}%> </font></td>
+											
+											<td align="center" width="10%" style="height:50px;">
+											<div class="style9"><font style="font-size: 9px;"
+												color="#000000" face="Verdana, Arial, Helvetica, sans-serif">
+											<logic:present name="cobrancasSituacaoHistorico"
+												property="orgaoExterno">
+												<bean:write name="cobrancasSituacaoHistorico"
+													property="orgaoExterno.descricao" />
+											</logic:present></font></div>
+											</td>	
+											
+											<td align="center" width="10%" style="height:50px;">
+											<div class="style9"><font style="font-size: 9px;"
+												color="#000000" face="Verdana, Arial, Helvetica, sans-serif">
+												<bean:write name="cobrancasSituacaoHistorico"
+													property="numeroProcesso" />
+												</font></div>
+											</td>												
 										</tr>
 									</logic:iterate>
 								</logic:notEmpty>
@@ -1278,7 +1396,84 @@
 											</table>
 										</div>
 										</td>
+									</tr>																		
+								</table>
+							</td>
+						</tr>
+					</table>
+					<br>
+					<table  bgcolor="#90c7fc" width="100%"
+						border="0">
+						<tr>
+							<td colspan="5">
+								<table width="100%" align="center" bgcolor="#90c7fc" border="0">
+									<tr bordercolor="#79bbfd">
+										<td colspan="10" align="center" bgcolor="#79bbfd"><strong>Imovel Doações</strong></td>
 									</tr>
+									<tr bordercolor="#000000">										
+										<td align="center" bgcolor="#90c7fc" width="12%">
+											<div class="style9"><font style="font-size: 9px;" color="#000000"
+										face="Verdana, Arial, Helvetica, sans-serif"> <strong>Data Adesão</strong></font></div>
+										</td>
+										<td align="center" bgcolor="#90c7fc" width="10%">
+											<div class="style9"><font style="font-size: 9px;" color="#000000"
+										face="Verdana, Arial, Helvetica, sans-serif"> <strong>Data Cancelamento</strong></font></div>
+										</td>
+										<td align="center" bgcolor="#90c7fc" width="10%">
+											<div class="style9"><font style="font-size: 9px;" color="#000000"
+										face="Verdana, Arial, Helvetica, sans-serif"> <strong>Valor Doação</strong></font></div>
+										</td>										
+									</tr>
+									<tr>
+										<td width="100%" colspan="6">
+										<div style="width: 100%; height: 100%; overflow: auto;">
+											<table width="100%" align="center" bgcolor="#99CCFF">
+												<!--corpo da segunda tabela-->
+												<%int conttt = 0;%>
+										<logic:notEmpty name="colecaoImovelDoacao">
+											<logic:iterate name="colecaoImovelDoacao" id="imovelDoacao"
+												type="ImovelDoacao">
+												<%conttt = conttt + 1;
+			if (conttt % 2 == 0) {%>					
+												<tr bgcolor="#cbe5fe">
+													<%} else {%>
+												<tr bgcolor="#FFFFFF">
+													<%}%>
+													
+													<td width="15%" align="center">
+														<div class="style9"><font color="#000000"
+														style="font-size:9px"
+														face="Verdana, Arial, Helvetica, sans-serif"> <logic:present
+														name="imovelDoacao" property="dataAdesaoAsString">
+														<bean:write name="imovelDoacao"
+															property="dataAdesaoAsString" />
+													</logic:present> </font></div>
+													</td>
+													<td width="15%" align="center">
+														<div class="style9"><font color="#000000"
+														style="font-size:9px"
+														face="Verdana, Arial, Helvetica, sans-serif"> <logic:present
+														name="imovelDoacao" property="dataCancelamentoAsString">
+														<bean:write name="imovelDoacao"
+															property="dataCancelamentoAsString" />
+													</logic:present> </font></div>
+													</td>
+													<td width="15%" align="center">
+														<div class="style9"><font color="#000000"
+														style="font-size:9px"
+														face="Verdana, Arial, Helvetica, sans-serif"> <logic:present
+														name="imovelDoacao" property="valorDoacaoAsString">
+														<bean:write name="imovelDoacao"
+															property="valorDoacaoAsString" />
+													</logic:present> </font></div>
+													</td>													
+												</tr>
+											</logic:iterate>
+										</logic:notEmpty>
+											</table>
+										</div>
+										</td>
+									</tr>																		
 								</table>
 							</td>
 						</tr>

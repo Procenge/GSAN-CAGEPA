@@ -120,9 +120,10 @@
 										</strong>
 									</div>
 								</td>
-								<td align="center" width="33%"><font color="#000000"><strong>Especificação</strong></font></td>
-								<td align="center" width="33%"><font color="#000000"><strong>Localidade</strong></font></td>
-								<td align="center" width="34%"><font color="#000000"><strong>Unidade Destino</strong></font></td>
+								<td align="center" width="25%"><font color="#000000"><strong>Especificação</strong></font></td>
+								<td align="center" width="25%"><font color="#000000"><strong>Localidade</strong></font></td>
+								<td align="center" width="25%"><font color="#000000"><strong>Unidade Destino</strong></font></td>
+								<td align="center" width="25%"><font color="#000000"><strong>Primeiro Trâmite?</strong></font></td>
 							</tr>
 							<pg:pager isOffset="true" index="half-full" maxIndexPages="10"
 								export="currentPageNumber=pageNumber;pageOffset"
@@ -146,14 +147,14 @@
 											<td>
 												<div align="center">
 												<html:link href="/gsan/exibirAtualizarTramiteEspecificacaoAction.do" paramId="idEspecificacaoTramite" paramProperty="id" paramName="especificacaoTramite">
-														<bean:write name="especificacaoTramite" property="solicitacaoTipoEspecificacao.descricaoComId" />
+														<bean:write name="especificacaoTramite" property="solicitacaoTipoEspecificacao.descricao" />
 													</html:link>
 												</div>
 											</td>
 											<td>
 												<div align="center">
 													<logic:notEmpty name="especificacaoTramite" property="localidade">
-														<bean:write name="especificacaoTramite" property="localidade.descricaoComId" />
+														<bean:write name="especificacaoTramite" property="localidade.descricao" />
 													</logic:notEmpty>
 												</div>
 											</td>
@@ -164,6 +165,26 @@
 													</logic:notEmpty>
 												</div>
 											</td>
+											
+												<td>
+												<div align="center">
+													
+														
+														    <logic:equal name="especificacaoTramite" property="indicadorPrimeiroTramite" value="1">
+													 		 SIM
+												  			</logic:equal>
+												  			<logic:equal name="especificacaoTramite" property="indicadorPrimeiroTramite" value="2">	
+												             NÃO
+												  			</logic:equal>
+													
+														
+														
+												
+												
+												</div>
+											</td>
+											
+											
 										</tr>
 									</pg:item>
 								</logic:iterate>

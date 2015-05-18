@@ -237,6 +237,20 @@ function limpar(){
 								title="Apagar" /></a>
 					</td>
 				</tr>
+				
+				<tr>
+					<td height="29"><strong>Tipo de Cliente:<font color="#FF0000">*</font></strong></td>
+					<td>
+					  <html:select property="tipoCliente" multiple="true" style="width: 230px;" tabindex="13">
+					 	<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+						<html:options collection="colecaoClienteTipo" 
+						              labelProperty="descricao" 
+						              property="id" />
+					  </html:select>
+					</td>
+					
+				</tr>
+				
 				<tr>
 					<td><strong>Quantidade máxima de registros:<font color="#FF0000">*</font></strong></td>
 					<td>

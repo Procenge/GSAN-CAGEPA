@@ -81,13 +81,22 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
+
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 
 public class InformarDadosConsultaNegativacaoActionForm
 				extends ActionForm {
 
+	public static final String NEGATIVACAO_TODAS = "TODAS";
+
+	public static final String NEGATIVACAO_CONFIRMADA = "CONFIRMADA";
+
+	public static final String NEGATIVACAO_NAO_CONFIRMADA = "NAO_CONFIRMADA";
+
 	private String idNegativador;
+
+	private String negativacao = NEGATIVACAO_TODAS;
 
 	private String nomeNegativador;
 
@@ -1089,6 +1098,16 @@ public class InformarDadosConsultaNegativacaoActionForm
 	public void setIdNegativadorExclusaoMotivo(String idNegativadorExclusaoMotivo){
 
 		this.idNegativadorExclusaoMotivo = idNegativadorExclusaoMotivo;
+	}
+
+	public String getNegativacao(){
+
+		return negativacao;
+	}
+
+	public void setNegativacao(String negativacao){
+
+		this.negativacao = negativacao;
 	}
 
 }

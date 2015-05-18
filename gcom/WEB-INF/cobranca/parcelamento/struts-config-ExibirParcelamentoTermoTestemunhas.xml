@@ -20,6 +20,11 @@
 				path="/jsp/cobranca/parcelamento/parcelamento_termo_testemunhas.jsp" />
 			<forward name="atualizarParcelamentoTermoTestemunhasAction"
 				path="/gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction.do" />
+			<forward name="exibirParcelamentoEditarResolucaoDiretoriaAction"
+				path="/exibirParcelamentoEditarResolucaoDiretoriaAction.do" />
+			<forward
+				name="exibirConcluirParcelamentoDebitosAction"
+				path="/efetuarParcelamentoDebitosWizardAction.do?action=concluirProcessoAction" />							
 		</action>
 
 	</action-mappings>

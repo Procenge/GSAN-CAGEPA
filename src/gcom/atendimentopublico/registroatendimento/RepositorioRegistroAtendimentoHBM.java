@@ -82,6 +82,7 @@ import gcom.atendimentopublico.ordemservico.ServicoTipo;
 import gcom.atendimentopublico.ordemservico.ServicoTipoReferencia;
 import gcom.atendimentopublico.registroatendimento.bean.FiltrarRegistroAtendimentoHelper;
 import gcom.atendimentopublico.registroatendimento.bean.FiltrarRegistroAtendimentoIncompletoHelper;
+import gcom.atendimentopublico.registroatendimento.bean.ServicoAssociadoValorHelper;
 import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.cliente.OrgaoExpedidorRg;
 import gcom.cadastro.endereco.LogradouroBairro;
@@ -103,6 +104,9 @@ import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.*;
 import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.hibernate.*;
@@ -741,7 +745,8 @@ public class RepositorioRegistroAtendimentoHBM
 							+ "ra.rgat_cdsituacao as codigoSituacaoRA, loca.loca_nmlocalidade as descricaoLocalidade, "
 							+ "ra.rgat_dtprevistaatual as dataPrevistaRA, ra.rgat_idreativacao as idReativacao, "
 							+ "usuario.usur_nmlogin as nomeUsuario, usuario.usur_id as idUsuario, "
-							+ "ra.rgat_qtreiteracoes as qtReiteracoes, ra.rgat_tmultimareiteracao as dtReiteracao "
+							+ "ra.rgat_qtreiteracoes as qtReiteracoes, ra.rgat_tmultimareiteracao as dtReiteracao, "
+							+ "(select count(*) from guia_pagamento gp  where gp.rgat_id = ra.rgat_id) as qtd_guias_pendentes "
 							+ "FROM registro_atendimento ra " + "LEFT JOIN localidade loca on ra.loca_id = loca.loca_id "
 							+ "LEFT JOIN imovel im on ra.imov_id = im.imov_id "
 							+ "LEFT JOIN logradouro_bairro lb on im.lgbr_id = lb.lgbr_id "
@@ -1039,6 +1044,53 @@ public class RepositorioRegistroAtendimentoHBM
 				parameters.put("cnpj", filtroRA.getCnpj());
 			}
 
+			if(filtroRA.getIndicadorRaVencidas() != null && !filtroRA.getIndicadorRaVencidas().equals(ConstantesSistema.TODOS.toString())){
+				if(filtroRA.getIndicadorRaVencidas().equals(ConstantesSistema.SIM.toString())){
+					consulta += " AND (exists (select * from guia_pagamento gp , guia_pagamento_prestacao gpp where gp.gpag_id = gpp.gpag_id and gp.rgat_id = ra.rgat_id and gppr_dtvencimento < :dataAtual)";
+					consulta += "  OR  exists (select * from guia_pagamento_historico gph , guia_pagamento_prestacao_hist gpph where gph.gpag_id = gpph.gpag_id and gph.rgat_id = ra.rgat_id and gpph_dtvencimento < :dataAtual))";
+				}else{
+					consulta += " AND (exists (select * from guia_pagamento gp , guia_pagamento_prestacao gpp where gp.gpag_id = gpp.gpag_id and gp.rgat_id = ra.rgat_id and gppr_dtvencimento >= :dataAtual)";
+					consulta += "  OR  exists (select * from guia_pagamento_historico gph , guia_pagamento_prestacao_hist gpph where gph.gpag_id = gpph.gpag_id and gph.rgat_id = ra.rgat_id and gpph_dtvencimento >= :dataAtual))";
+				}
+
+				SimpleDateFormat formatData = new SimpleDateFormat("dd-MM-yyyy");
+				String strDate = formatData.format(new Date());
+				Date dataAtual;
+				try{
+					dataAtual = formatData.parse(strDate);
+				}catch(ParseException e){
+					throw new ErroRepositorioException(e);
+				}
+
+				parameters.put("dataAtual", dataAtual);
+			}
+
+			if(filtroRA.getIndicadorRaPagamento() != null && !filtroRA.getIndicadorRaPagamento().equals(ConstantesSistema.TODOS.toString())){
+				if(filtroRA.getIndicadorRaPagamento().equals(ConstantesSistema.SIM.toString())){
+					consulta += " AND (exists (select * from guia_pagamento gp , pagamento pg where gp.gpag_id = pg.gpag_id and gp.rgat_id = ra.rgat_id)";
+					consulta += "  OR  exists (select * from guia_pagamento gp , pagamento_historico pgh where gp.gpag_id = pgh.gpag_id and gp.rgat_id = ra.rgat_id)";
+					consulta += "  OR  exists (select * from guia_pagamento_historico gph , pagamento pg where gph.gpag_id = pg.gpag_id and gph.rgat_id = ra.rgat_id)";
+					consulta += "  OR  exists (select * from guia_pagamento_historico gph , pagamento_historico pgh where gph.gpag_id = pgh.gpag_id and gph.rgat_id = ra.rgat_id))";
+				}else{
+					consulta += " AND (not exists (select * from guia_pagamento gp , pagamento pg where gp.gpag_id = pg.gpag_id and gp.rgat_id = ra.rgat_id)";
+					consulta += "  AND not exists (select * from guia_pagamento gp , pagamento_historico pgh where gp.gpag_id = pgh.gpag_id and gp.rgat_id = ra.rgat_id)";
+					consulta += "  AND not exists (select * from guia_pagamento_historico gph , pagamento pg where gph.gpag_id = pg.gpag_id and gph.rgat_id = ra.rgat_id)";
+					consulta += "  AND not exists (select * from guia_pagamento_historico gph , pagamento_historico pgh where gph.gpag_id = pgh.gpag_id and gph.rgat_id = ra.rgat_id))";
+				}
+			}
+
+			if(filtroRA.getIndicadorRaDevolucao() != null && !filtroRA.getIndicadorRaDevolucao().equals(ConstantesSistema.TODOS.toString())){
+				if(filtroRA.getIndicadorRaDevolucao().equals(ConstantesSistema.SIM.toString())){
+					consulta += " AND (exists (select * from credito_a_realizar cr where cr.rgat_id = ra.rgat_id)";
+					consulta += "  OR  exists (select * from credito_a_realizar_historico crh where crh.rgat_id = ra.rgat_id)";
+					consulta += "  OR  exists (select * from guia_devolucao gdv where gdv.rgat_id = ra.rgat_id))";
+				}else{
+					consulta += " AND (not exists (select * from credito_a_realizar cr where cr.rgat_id = ra.rgat_id)";
+					consulta += "  AND not exists (select * from credito_a_realizar_historico crh where crh.rgat_id = ra.rgat_id)";
+					consulta += "  AND not exists (select * from guia_devolucao gdv where gdv.rgat_id = ra.rgat_id))";
+				}
+			}
+
 			consulta += " ORDER BY ra.rgat_id ";
 
 			query = session.createSQLQuery(consulta).addScalar("idRA", Hibernate.INTEGER).addScalar("idEspecificacao", Hibernate.INTEGER)
@@ -1047,7 +1099,7 @@ public class RepositorioRegistroAtendimentoHBM
 							.addScalar("descricaoLocalidade", Hibernate.STRING).addScalar("dataPrevistaRA", Hibernate.TIMESTAMP)
 							.addScalar("idReativacao", Hibernate.INTEGER).addScalar("nomeUsuario", Hibernate.STRING)
 							.addScalar("idUsuario", Hibernate.INTEGER).addScalar("qtReiteracoes", Hibernate.SHORT)
-							.addScalar("dtReiteracao", Hibernate.TIMESTAMP);
+							.addScalar("dtReiteracao", Hibernate.TIMESTAMP).addScalar("qtd_guias_pendentes", Hibernate.INTEGER);
 
 			Set set = parameters.keySet();
 			Iterator iterMap = set.iterator();
@@ -1113,6 +1165,7 @@ public class RepositorioRegistroAtendimentoHBM
 					ra.setRegistroAtendimentoUnidade(raUnidade);
 					ra.setQuantidadeReiteracao((Short) element[11]);
 					ra.setUltimaReiteracao((Date) element[12]);
+					ra.setQuantidadeGuiasPendentes((Integer) element[13]);
 					retorno.add(ra);
 				}
 			}
@@ -2581,9 +2634,9 @@ public class RepositorioRegistroAtendimentoHBM
 							+ " from Imovel imov"
 							+ " inner join imov.ligacaoAguaSituacao last"
 							+ " inner join imov.ligacaoEsgotoSituacao lest"
-							+ " left join imov.hidrometroInstalacaoHistorico hidi"
+							+ " left join imov.hidrometroInstalacaoHistorico hidi with (hidi.dataRetirada is null) "
 							+ " left join imov.ligacaoAgua lagu"
-							+ " left join lagu.hidrometroInstalacaoHistorico hilg"
+							+ " left join lagu.hidrometroInstalacaoHistorico hilg with (hilg.dataRetirada is null) "
 							+ " where imov.id = :idImovel";
 
 			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel).setMaxResults(1).uniqueResult();
@@ -5960,47 +6013,6 @@ public class RepositorioRegistroAtendimentoHBM
 	}
 
 	/**
-	 * Consultar os comentários do imóvel
-	 * 
-	 * @author Virgínia Melo
-	 * @date 01/02/2009
-	 * @param idImovel
-	 * @return Collection
-	 * @throws ControladorException
-	 */
-	public Collection consultarImovelComentario(Integer idImovel) throws ErroRepositorioException{
-
-		Collection retorno = null;
-		Session session = HibernateUtil.getSession();
-		String consulta = null;
-
-		try{
-			consulta = "SELECT imovelComentario.id, "
-							+ // 0
-							" imovelComentario.sequencial, " // 1
-							+ " imovelComentario.descricao, " // 2
-							+ " imovelComentario.ultimaAlteracao, " // 3
-							+ " usuario.nomeUsuario " // 4
-							+ "from ImovelComentario imovelComentario " + "left join imovelComentario.usuario usuario "
-							+ "where imovelComentario.imovel.id = :idImovel " + "order by imovelComentario.ultimaAlteracao desc";
-
-			Query query = session.createQuery(consulta);
-
-			query.setInteger("idImovel", idImovel.intValue());
-
-			retorno = query.list();
-
-		}catch(HibernateException e){
-			// levanta a exceção para a próxima camada
-			throw new ErroRepositorioException(e, "Erro no Hibernate");
-		}finally{
-			// fecha a sessão
-			HibernateUtil.closeSession(session);
-		}
-		return retorno;
-	}
-
-	/**
 	 * Obter Dados RegistroAtendimentoSolicitante.
 	 * 
 	 * @author Virgínia Melo
@@ -7536,7 +7548,8 @@ public class RepositorioRegistroAtendimentoHBM
 	 * @author isilva
 	 * @date 13/04/2011
 	 */
-	public Collection pesquisarUnidadeDestinoPorEspecificacao(EspecificacaoTramite especificacaoTramite) throws ErroRepositorioException{
+	public Collection pesquisarUnidadeDestinoPorEspecificacao(EspecificacaoTramite especificacaoTramite,
+					boolean checarIndicadorPrimeiroTramite) throws ErroRepositorioException{
 
 		Collection retorno = null;
 		Session session = HibernateUtil.getSession();
@@ -7546,19 +7559,24 @@ public class RepositorioRegistroAtendimentoHBM
 
 		try{
 
+			String sCriterio = "";
+
 			consulta.append("select especTramite.unidadeOrganizacionalDestino ");
-
 			consulta.append("from EspecificacaoTramite especTramite ");
-
+			consulta.append(" left join especTramite.unidadeOrganizacionalDestino unidadeOrganizacionalDestino ");
+			consulta.append(" left join especTramite.unidadeOrganizacionalOrigem unidadeOrganizacionalOrigem ");
+			consulta.append(" left join especTramite.solicitacaoTipoEspecificacao solicitacaoTipoEspecificacao ");
 			consulta.append("where ");
 
 			if(especificacaoTramite.getSolicitacaoTipoEspecificacao() != null
 							&& especificacaoTramite.getSolicitacaoTipoEspecificacao().getId() != null
 							&& especificacaoTramite.getSolicitacaoTipoEspecificacao().getId() != ConstantesSistema.NUMERO_NAO_INFORMADO){
-				consulta.append("especTramite.solicitacaoTipoEspecificacao.id = :idSolicitacaoTipoEspecificacao and ");
+				consulta.append("solicitacaoTipoEspecificacao.id = :idSolicitacaoTipoEspecificacao");
+				sCriterio = " and ";
 				parameters.put("idSolicitacaoTipoEspecificacao", especificacaoTramite.getSolicitacaoTipoEspecificacao().getId());
 			}else{
-				consulta.append("especTramite.solicitacaoTipoEspecificacao is null and ");
+				consulta.append("solicitacaoTipoEspecificacao is null ");
+				sCriterio = " and ";
 			}
 
 			if((especificacaoTramite.getLocalidade() != null && especificacaoTramite.getLocalidade().getId() != null && especificacaoTramite
@@ -7569,20 +7587,24 @@ public class RepositorioRegistroAtendimentoHBM
 
 				// Informou Localidade e Setor Comercial
 
-				consulta.append("(especTramite.localidade.id = :idLocalidade or especTramite.localidade.id is null) and ");
+				consulta.append(sCriterio).append("(especTramite.localidade.id = :idLocalidade or especTramite.localidade.id is null) ");
 				parameters.put("idLocalidade", especificacaoTramite.getLocalidade().getId());
+				sCriterio = " and ";
 
-				consulta.append("(especTramite.setorComercial.id = :idSetorComercial or especTramite.setorComercial.id is null) and ");
+				consulta.append(sCriterio).append(
+								"(especTramite.setorComercial.id = :idSetorComercial or especTramite.setorComercial.id is null) ");
 				parameters.put("idSetorComercial", especificacaoTramite.getSetorComercial().getId());
+
 			}else if(especificacaoTramite.getLocalidade() != null && especificacaoTramite.getLocalidade().getId() != null
 							&& especificacaoTramite.getLocalidade().getId() != ConstantesSistema.NUMERO_NAO_INFORMADO){
 
 				// Informou só Localidade
 
-				consulta.append("(especTramite.localidade.id = :idLocalidade or especTramite.localidade.id is null) and ");
+				consulta.append(sCriterio).append("(especTramite.localidade.id = :idLocalidade or especTramite.localidade.id is null) ");
 				parameters.put("idLocalidade", especificacaoTramite.getLocalidade().getId());
+				sCriterio = " and ";
 
-				consulta.append("especTramite.setorComercial is null and ");
+				consulta.append(sCriterio).append("especTramite.setorComercial is null ").append(sCriterio);
 
 			}
 
@@ -7594,92 +7616,54 @@ public class RepositorioRegistroAtendimentoHBM
 
 				// Só considera pra pesquisa se informado Bairro e Município
 
-				consulta.append("(especTramite.bairro.id = :idBairro or especTramite.bairro.id is null) and ");
+				consulta.append(sCriterio).append("(especTramite.bairro.id = :idBairro or especTramite.bairro.id is null) ");
 				parameters.put("idBairro", especificacaoTramite.getBairro().getId());
+				sCriterio = " and ";
 
-				consulta.append("(especTramite.bairro.municipio.id = :idMunicipio or especTramite.bairro.municipio.id is null) and ");
+				consulta.append(sCriterio).append(
+								"(especTramite.bairro.municipio.id = :idMunicipio or especTramite.bairro.municipio.id is null) ");
 				parameters.put("idMunicipio", especificacaoTramite.getBairro().getMunicipio().getId());
 			}
-
-			if(especificacaoTramite.getSistemaAbastecimento() != null && especificacaoTramite.getSistemaAbastecimento().getId() != null
-							&& especificacaoTramite.getSistemaAbastecimento().getId() != ConstantesSistema.NUMERO_NAO_INFORMADO){
-				consulta.append("(especTramite.sistemaAbastecimento.id = :idSistemaAbastecimento or especTramite.sistemaAbastecimento.id is null) and ");
-				parameters.put("idSistemaAbastecimento", especificacaoTramite.getSistemaAbastecimento().getId());
-			}
-
-
-			if(especificacaoTramite.getDistritoOperacional() != null && especificacaoTramite.getDistritoOperacional().getId() != null
-							&& especificacaoTramite.getDistritoOperacional().getId() != ConstantesSistema.NUMERO_NAO_INFORMADO){
-				consulta.append("(especTramite.distritoOperacional.id = :idDistritoOperacional or especTramite.distritoOperacional.id is null) and ");
-				parameters.put("idDistritoOperacional", especificacaoTramite.getDistritoOperacional().getId());
-			}
-
-			if(especificacaoTramite.getZonaAbastecimento() != null && especificacaoTramite.getZonaAbastecimento().getId() != null
-							&& especificacaoTramite.getZonaAbastecimento().getId() != ConstantesSistema.NUMERO_NAO_INFORMADO){
-				consulta.append("(especTramite.zonaAbastecimento.id = :idZonaAbastecimento or especTramite.zonaAbastecimento.id is null) and ");
-				parameters.put("idZonaAbastecimento", especificacaoTramite.getZonaAbastecimento().getId());
-			}
-
-
-			if(especificacaoTramite.getSetorAbastecimento() != null && especificacaoTramite.getSetorAbastecimento().getId() != null
-							&& especificacaoTramite.getSetorAbastecimento().getId() != ConstantesSistema.NUMERO_NAO_INFORMADO){
-				consulta.append("(especTramite.setorAbastecimento.id = :idSetorAbastecimento or especTramite.setorAbastecimento.id is null) and ");
-				parameters.put("idSetorAbastecimento", especificacaoTramite.getSetorAbastecimento().getId());
-			}
-
-
-			if(especificacaoTramite.getSistemaEsgoto() != null && especificacaoTramite.getSistemaEsgoto().getId() != null
-							&& especificacaoTramite.getSistemaEsgoto().getId() != ConstantesSistema.NUMERO_NAO_INFORMADO){
-				consulta.append("(especTramite.sistemaEsgoto.id = :idSistemaEsgoto or especTramite.sistemaEsgoto.id is null) and ");
-				parameters.put("idSistemaEsgoto", especificacaoTramite.getSistemaEsgoto().getId());
-			}
-
-
-			if(especificacaoTramite.getSubsistemaEsgoto() != null && especificacaoTramite.getSubsistemaEsgoto().getId() != null
-							&& especificacaoTramite.getSubsistemaEsgoto().getId() != ConstantesSistema.NUMERO_NAO_INFORMADO){
-				consulta.append("(especTramite.subsistemaEsgoto.id = :idSubsistemaEsgoto or especTramite.subsistemaEsgoto.id is null) and ");
-				parameters.put("idSubsistemaEsgoto", especificacaoTramite.getSubsistemaEsgoto().getId());
-			}
-
-
-			if(especificacaoTramite.getBacia() != null && especificacaoTramite.getBacia().getId() != null
-							&& especificacaoTramite.getBacia().getId() != ConstantesSistema.NUMERO_NAO_INFORMADO){
-				consulta.append("(especTramite.bacia.id = :idBacia or especTramite.bacia.id is null) and ");
-				parameters.put("idBacia", especificacaoTramite.getBacia().getId());
-			}
-
-
-			if(especificacaoTramite.getSubBacia() != null && especificacaoTramite.getSubBacia().getId() != null
-							&& especificacaoTramite.getSubBacia().getId() != ConstantesSistema.NUMERO_NAO_INFORMADO){
-				consulta.append("(especTramite.subBacia.id = :idSubBacia or especTramite.subBacia.id is null) and ");
-				parameters.put("idSubBacia", especificacaoTramite.getSubBacia().getId());
-			}
-
 
 			if(especificacaoTramite.getUnidadeOrganizacionalOrigem() != null
 							&& especificacaoTramite.getUnidadeOrganizacionalOrigem().getId() != null
 							&& especificacaoTramite.getUnidadeOrganizacionalOrigem().getId() != ConstantesSistema.NUMERO_NAO_INFORMADO){
-				consulta.append("(especTramite.unidadeOrganizacionalOrigem.id = :idUnidadeOrganizacionalOrigem or especTramite.unidadeOrganizacionalOrigem.id is null) and ");
+				consulta.append(sCriterio)
+								.append("(unidadeOrganizacionalOrigem.id = :idUnidadeOrganizacionalOrigem or especTramite.unidadeOrganizacionalOrigem.id is null) ");
 				parameters.put("idUnidadeOrganizacionalOrigem", especificacaoTramite.getUnidadeOrganizacionalOrigem().getId());
+				sCriterio = " and ";
 			}
 
-
-			consulta.append("especTramite.unidadeOrganizacionalDestino.indicadorUso = :indicadorUsoUunidadeOrganizacionalDestino and ");
+			consulta.append(sCriterio).append("unidadeOrganizacionalDestino.indicadorUso = :indicadorUsoUunidadeOrganizacionalDestino ");
 			parameters.put("indicadorUsoUunidadeOrganizacionalDestino", ConstantesSistema.INDICADOR_USO_ATIVO);
+			sCriterio = " and ";
 
-			consulta.append("especTramite.unidadeOrganizacionalDestino.indicadorTramite = :indicadorTramiteUunidadeOrganizacionalDestino and ");
+			consulta.append(sCriterio).append(
+							"unidadeOrganizacionalDestino.indicadorTramite = :indicadorTramiteUunidadeOrganizacionalDestino ");
 			parameters.put("indicadorTramiteUunidadeOrganizacionalDestino", ConstantesSistema.SIM);
+			sCriterio = " and ";
 
 			if(especificacaoTramite.getIndicadorUso() != null
 							&& (especificacaoTramite.getIndicadorUso().intValue() == ConstantesSistema.INDICADOR_USO_DESATIVO.intValue() || especificacaoTramite
 											.getIndicadorUso().intValue() == ConstantesSistema.INDICADOR_USO_ATIVO.intValue())){
-				consulta.append("especTramite.indicadorUso = :indicadorUso   ");
+				consulta.append(sCriterio).append("especTramite.indicadorUso = :indicadorUso   ");
 				parameters.put("indicadorUso", especificacaoTramite.getIndicadorUso());
+				sCriterio = " and ";
 			}
 
-			// retira o " and " q fica sobrando no final da query
-			// StringBuffer queryString = new StringBuffer(consulta.substring(0, consulta.length() -
-			// 4));
+			if(checarIndicadorPrimeiroTramite){
+				consulta.append(sCriterio).append(" especTramite.indicadorPrimeiroTramite = :indicadorPrimeiroTramite   ");
+				parameters.put("indicadorPrimeiroTramite", ConstantesSistema.SIM);
+				sCriterio = " and ";
+			}
+
+			if(especificacaoTramite.getUnidadeOrganizacionalDestino() != null
+							&& especificacaoTramite.getUnidadeOrganizacionalDestino().getId() != null
+							&& especificacaoTramite.getUnidadeOrganizacionalDestino().getId() != ConstantesSistema.NUMERO_NAO_INFORMADO){
+				consulta.append(sCriterio).append(" unidadeOrganizacionalDestino.id = :idUnidadeOrganizacionalDestino ");
+				parameters.put("idUnidadeOrganizacionalDestino", especificacaoTramite.getUnidadeOrganizacionalDestino().getId());
+				sCriterio = " and ";
+			}
 
 			StringBuffer queryString = new StringBuffer(consulta);
 
@@ -7687,15 +7671,7 @@ public class RepositorioRegistroAtendimentoHBM
 			queryString.append("especTramite.localidade.id, ");
 			queryString.append("especTramite.setorComercial.id, ");
 			queryString.append("especTramite.bairro.id, ");
-			queryString.append("especTramite.sistemaAbastecimento.id, ");
-			queryString.append("especTramite.distritoOperacional.id, ");
-			queryString.append("especTramite.zonaAbastecimento.id, ");
-			queryString.append("especTramite.setorAbastecimento.id, ");
-			queryString.append("especTramite.sistemaEsgoto.id, ");
-			queryString.append("especTramite.subsistemaEsgoto.id, ");
-			queryString.append("especTramite.bacia.id, ");
-			queryString.append("especTramite.subBacia.id, ");
-			queryString.append("especTramite.unidadeOrganizacionalOrigem.id desc ");
+			queryString.append("especTramite.unidadeOrganizacionalOrigem.id ");
 
 			query = session.createQuery(queryString.toString());
 
@@ -7722,6 +7698,7 @@ public class RepositorioRegistroAtendimentoHBM
 			retorno = query.list();
 
 		}catch(HibernateException e){
+			e.printStackTrace();
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
 		}finally{
 			HibernateUtil.closeSession(session);
@@ -7859,7 +7836,7 @@ public class RepositorioRegistroAtendimentoHBM
 		builder.append("	COUNT (RA.RGAT_ID) qtd_ra ");
 		builder.append(" FROM ");
 		builder.append("	REGISTRO_ATENDIMENTO RA ");
-
+		builder.append("	INNER JOIN REGISTRO_ATENDIMENTO_UNIDADE RA_UND ON RA.RGAT_ID = RA_UND.RGAT_ID ");
 		builder.append("	INNER JOIN SOLICITACAO_TIPO_ESPECIFICACAO SOL_TIP_ESPC ON SOL_TIP_ESPC.STEP_ID = RA.STEP_ID ");
 		builder.append("	INNER JOIN SOLICITACAO_TIPO SOL_TIP ON SOL_TIP_ESPC.SOTP_ID = SOL_TIP.SOTP_ID ");
 		builder.append("	LEFT JOIN (SELECT TR.TRAM_ID, TR.RGAT_ID, TR.UNID_IDDESTINO FROM TRAMITE TR INNER JOIN (SELECT t.RGAT_ID,MAX(t.TRAM_TMTRAMITE) TRAM_TMTRAMITE FROM TRAMITE t GROUP BY t.RGAT_ID) t ON (tr.RGAT_ID = t.RGAT_ID AND tr.TRAM_TMTRAMITE = t.TRAM_TMTRAMITE)) TRMT ON RA.RGAT_ID = TRMT.RGAT_ID ");
@@ -8362,6 +8339,74 @@ public class RepositorioRegistroAtendimentoHBM
 		}
 
 		return retorno;
+	}
+
+
+	/**
+	 * [UC0366] Inserir Registro de Atendimento
+	 * [UC0408] Atualizar Registro de Atendimento
+	 * 
+	 * @author Yara Souza
+	 * @date 08/08/2014
+	 */
+	public List<ServicoAssociadoValorHelper> pesquisarServicoAssociado(Integer idSolicitacaoTipoEspecificacao)
+					throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+		List<ServicoAssociadoValorHelper> colecaoRetorno = new ArrayList();
+
+		try{
+			StringBuffer sql = new StringBuffer();
+
+			sql.append("select tab1.svtp_id,tab1.svtp_dsservicotipo,tab1.svtp_vlservico ");
+			sql.append("from ");
+			sql.append("( ");
+			sql.append("select a.* ");
+			sql.append("FROM SERVICO_TIPO A ");
+			sql.append("join especificacao_servico_tipo b on a.svtp_id=b.svtp_id and b.step_id = :idSolicitacaoTipoEspecificacao ");
+			sql.append("where a.svtp_icuso=1 ");
+			sql.append("union all ");
+			sql.append("select d.* ");
+			sql.append("  from servico_tipo d ");
+			sql.append(" JOIN SERVICO_ASSOCIADO E ON E.SVAS_IDASSOCIADO=D.SVTP_ID ");
+			sql.append(" join especificacao_servico_tipo g on g.svtp_id=e.svtp_id and g.step_id = :idSolicitacaoTipoEspecificacao ");
+			sql.append(" where  d.svtp_icuso=1 ");
+			sql.append(") tab1 ");
+			sql.append("ORDER BY TAB1.SVTP_ID ");
+
+			SQLQuery query = session.createSQLQuery(sql.toString());
+			query.addScalar("svtp_id", Hibernate.INTEGER);
+			query.addScalar("svtp_dsservicotipo", Hibernate.STRING);
+			query.addScalar("svtp_vlservico", Hibernate.BIG_DECIMAL);
+			query.setInteger("idSolicitacaoTipoEspecificacao", idSolicitacaoTipoEspecificacao);
+
+			Collection colecaoConsulta = query.list();
+			ServicoAssociadoValorHelper servicoAssociadoValorHelper = null;
+			Iterator it = colecaoConsulta.iterator();
+			while(it.hasNext()){
+
+				Object[] objConsulta = (Object[]) it.next();
+				servicoAssociadoValorHelper = new ServicoAssociadoValorHelper();
+
+				servicoAssociadoValorHelper.setIdServicoTipo((Integer) objConsulta[0]);
+				servicoAssociadoValorHelper.setDescricaoServicoTipo((String) objConsulta[1]);
+				servicoAssociadoValorHelper.setValorServico((BigDecimal) objConsulta[2]);
+
+				colecaoRetorno.add(servicoAssociadoValorHelper);
+
+			}
+
+
+		}catch(Exception e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro durante a consulta");
+		}finally{
+
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return colecaoRetorno;
 	}
 
 }

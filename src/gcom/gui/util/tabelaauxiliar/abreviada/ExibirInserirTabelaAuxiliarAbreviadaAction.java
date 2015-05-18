@@ -197,8 +197,15 @@ public class ExibirInserirTabelaAuxiliarAbreviadaAction
 
 		// Adiciona o objeto no request
 		httpServletRequest.setAttribute("tamMaxCampoDescricao", new Integer(tamMaxCampoDescricao));
-		httpServletRequest.setAttribute("tamMaxCampoDescricaoAbreviada", new Integer(tamMaxCampoDescricaoAbreviada));
+
 		httpServletRequest.setAttribute("descricao", descricao);
+
+		if(tela.equals("hidrometroProtecao") || tela.equals("leituraSituacao")){
+			tamMaxCampoDescricaoAbreviada = 6;
+		}
+
+		httpServletRequest.setAttribute("tamMaxCampoDescricaoAbreviada", new Integer(tamMaxCampoDescricaoAbreviada));
+
 		httpServletRequest.setAttribute("descricaoAbreviada", descricaoAbreviada);
 
 		return retorno;

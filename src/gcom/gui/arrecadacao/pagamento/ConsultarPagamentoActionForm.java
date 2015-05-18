@@ -196,6 +196,8 @@ public class ConsultarPagamentoActionForm
 
 	private String indicadorTotalizarPorDataPagamento;
 
+	private String totalizadorMes;
+
 	private String[] categoria;
 
 	public String getCpfCnpj(){
@@ -847,6 +849,16 @@ public class ConsultarPagamentoActionForm
 	public void setCategoria(String[] categoria){
 
 		this.categoria = categoria;
+	}
+
+	public String getTotalizadorMes(){
+
+		return totalizadorMes;
+	}
+
+	public void setTotalizadorMes(String totalizadorMes){
+
+		this.totalizadorMes = totalizadorMes;
 	}
 
 }

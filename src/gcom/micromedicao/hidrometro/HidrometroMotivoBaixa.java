@@ -102,6 +102,8 @@ public class HidrometroMotivoBaixa
 	/** nullable persistent field */
 	private String descricao;
 
+	private String descricaoAbreviada;
+
 	/** nullable persistent field */
 	private Short indicadorUso;
 
@@ -159,6 +161,16 @@ public class HidrometroMotivoBaixa
 	public void setUltimaAlteracao(Date ultimaAlteracao){
 
 		this.ultimaAlteracao = ultimaAlteracao;
+	}
+
+	public String getDescricaoAbreviada(){
+
+		return descricaoAbreviada;
+	}
+
+	public void setDescricaoAbreviada(String descricaoAbreviada){
+
+		this.descricaoAbreviada = descricaoAbreviada;
 	}
 
 	public String toString(){

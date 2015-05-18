@@ -42,6 +42,8 @@
 package gcom.gui.cadastro.entidadebeneficente;
 
 import gcom.cadastro.cliente.Cliente;
+import gcom.cadastro.empresa.Empresa;
+import gcom.cadastro.empresa.FiltroEmpresa;
 import gcom.cadastro.imovel.EntidadeBeneficente;
 import gcom.cadastro.imovel.FiltroEntidadeBeneficente;
 import gcom.fachada.Fachada;
@@ -79,6 +81,12 @@ public class ExibirAtualizarEntidadeBeneficenteAction
 			sessao.removeAttribute("manter");
 		}
 
+		FiltroEmpresa filtroEmpresa = new FiltroEmpresa();
+		filtroEmpresa.setCampoOrderBy(FiltroEmpresa.DESCRICAO);
+		Collection<Empresa> colecaoEmpresa = fachada.pesquisar(filtroEmpresa, Empresa.class.getName());
+
+		httpServletRequest.setAttribute("colecaoEmpresa", colecaoEmpresa);
+
 		// Se a tecla Enter foi pressionada para pesquisar o cliente ou o tipo de débito
 		if(this.pesquisaEnter(httpServletRequest, form, fachada)){
 			// Se veio da tela de filtrar
@@ -92,12 +100,10 @@ public class ExibirAtualizarEntidadeBeneficenteAction
 
 		if(idEntidadeBeneficente != null && !idEntidadeBeneficente.equals("")){
 			sessao.setAttribute("idEntidadeBeneficente", idEntidadeBeneficente);
-
 		}else{
 			if(sessao.getAttribute("objetoEntidadeBeneficente") != null){
 				EntidadeBeneficente entidadeBeneficente = (EntidadeBeneficente) sessao.getAttribute("objetoEntidadeBeneficente");
 				idEntidadeBeneficente = entidadeBeneficente.getId().toString();
-				// codigoEmpresa = (String) sessao.getAttribute("codigoEmpresa");
 			}
 		}
 
@@ -106,6 +112,7 @@ public class ExibirAtualizarEntidadeBeneficenteAction
 
 		FiltroEntidadeBeneficente filtroEntidadeBeneficente = new FiltroEntidadeBeneficente();
 		filtroEntidadeBeneficente.adicionarCaminhoParaCarregamentoEntidade(FiltroEntidadeBeneficente.CLIENTE);
+		filtroEntidadeBeneficente.adicionarCaminhoParaCarregamentoEntidade(FiltroEntidadeBeneficente.DEBITO_TIPO);
 		filtroEntidadeBeneficente.adicionarParametro(new ParametroSimples(FiltroEntidadeBeneficente.ID, idEntidadeBeneficente));
 
 		// Pesquisando a empresa que foi escolhida
@@ -121,8 +128,16 @@ public class ExibirAtualizarEntidadeBeneficenteAction
 		EntidadeBeneficente entidadeBeneficente = (EntidadeBeneficente) colecaoEntidadeBeneficente.iterator().next();
 
 		// Setando valores no form para ser exibido na tela de alualizar.
+		if(entidadeBeneficente.getEmpresa() != null){
+			form.set("idEmpresa", entidadeBeneficente.getEmpresa().getId().toString());
+		}else{
+			form.set("idEmpresa", "");
+		}
+
 		form.set("idCliente", entidadeBeneficente.getCliente().getId().toString());
+		form.set("nomeCliente", entidadeBeneficente.getCliente().getNome());
 		form.set("idDebitoTipo", entidadeBeneficente.getDebitoTipo().getId().toString());
+		form.set("descricaoDebitoTipo", entidadeBeneficente.getDebitoTipo().getDescricao());
 		form.set("indicadorUso", entidadeBeneficente.getIndicadorUso() + "");
 
 		sessao.setAttribute("entidadeBeneficenteAtualizar", entidadeBeneficente);
@@ -146,9 +161,6 @@ public class ExibirAtualizarEntidadeBeneficenteAction
 				}else{
 					form.set("nomeCliente", "CLIENTE INEXISTENTE");
 					request.setAttribute("corFonteCliente", "#ff0000");
-					// throw new ActionServletException("atencao.pesquisa.cliente.inexistente",
-					// null,
-					// idCliente);
 				}
 			}
 			retorno = true;
@@ -164,9 +176,6 @@ public class ExibirAtualizarEntidadeBeneficenteAction
 				}else{
 					form.set("descricaoDebitoTipo", "TIPO DE DEBITO INEXISTENTE");
 					request.setAttribute("corFonteCliente", "#ff0000");
-					// throw new ActionServletException("atencao.pesquisa.cliente.inexistente",
-					// null,
-					// idCliente);
 				}
 			}
 			retorno = true;

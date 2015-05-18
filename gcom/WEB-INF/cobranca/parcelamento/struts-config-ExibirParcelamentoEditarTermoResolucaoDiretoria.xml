@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="ParcelamentoEditarTermoResolucaoDiretoriaActionForm"
+			type="gcom.gui.cobranca.parcelamento.ParcelamentoEditarTermoResolucaoDiretoriaActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	
+	<action-mappings>
+
+		<action name="ParcelamentoEditarTermoResolucaoDiretoriaActionForm"
+			type="gcom.gui.cobranca.parcelamento.ExibirParcelamentoEditarResolucaoDiretoriaAction"
+			validate="false" scope="session"
+			path="/exibirParcelamentoEditarResolucaoDiretoriaAction">
+			<forward name="exibirParcelamentoEditarResolucaoDiretoriaAction"
+				path="/jsp/cobranca/parcelamento/parcelamento_editar_termo_resolucao_diretoria.jsp" />
+			<forward name="atualizarParcelamentoEditarTermoParcelamento"
+				path="/gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction.do" />
+			<forward name="exibirConsultarListaParcelamentoDebitoAction"
+				path="/exibirConsultarListaParcelamentoDebitoAction.do" />	
+			<forward name="exibirConsultarListaParcelamentoDebitoAction"
+				path="/exibirConsultarListaParcelamentoDebitoAction.do" />											
+		</action>
+
+	</action-mappings>
+
+</struts-config>

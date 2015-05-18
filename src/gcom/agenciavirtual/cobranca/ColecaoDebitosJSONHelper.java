@@ -12,7 +12,12 @@ public class ColecaoDebitosJSONHelper {
 
 	private BigDecimal valorTotalDebitosEmAnalise;
 
+	private Boolean indicadorExecucaoFiscal;
+
 	private Collection<DebitoJSONHelper> debitos;
+
+	private Collection<ImovelDebitoJSONHelper> imovelDebitos;
+
 
 	public Integer getTotalContas(){
 
@@ -54,4 +59,23 @@ public class ColecaoDebitosJSONHelper {
 		this.valorTotalDebitosEmAnalise = valorTotalDebitosEmAnalise;
 	}
 
+	public Collection<ImovelDebitoJSONHelper> getImovelDebitos(){
+
+		return imovelDebitos;
+	}
+
+	public void setImovelDebitos(Collection<ImovelDebitoJSONHelper> imovelDebitos){
+
+		this.imovelDebitos = imovelDebitos;
+	}
+
+	public Boolean getIndicadorExecucaoFiscal(){
+
+		return indicadorExecucaoFiscal;
+	}
+
+	public void setIndicadorExecucaoFiscal(Boolean indicadorExecucaoFiscal){
+
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+	}
 }

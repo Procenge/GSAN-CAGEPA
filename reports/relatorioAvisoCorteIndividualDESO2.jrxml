@@ -24,6 +24,7 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 
 	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="usuario" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="getInscricao" class="java.lang.String"/>
 	<field name="getMatricula" class="java.lang.String"/>
@@ -132,7 +133,7 @@ Desconsiderar este aviso, caso o débito já tenha sido quitado.]]></text>
 						key="textField-1"/>
 					<box></box>
 					<textElement textAlignment="Left">
-						<font pdfFontName="Helvetica-Oblique" size="8" isItalic="true"/>
+						<font pdfFontName="Helvetica-Oblique" size="9" isItalic="true"/>
 					</textElement>
 				<textFieldExpression   class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
 						<anchorNameExpression><![CDATA["ok"]]></anchorNameExpression>
@@ -444,7 +445,7 @@ Desconsiderar este aviso, caso o débito já tenha sido quitado.]]></text>
 						key="staticText-43"/>
 					<box></box>
 					<textElement verticalAlignment="Top">
-						<font pdfFontName="Helvetica-Oblique" size="8" isItalic="true"/>
+						<font pdfFontName="Helvetica-Oblique" size="9" isItalic="true"/>
 					</textElement>
 				<text><![CDATA[Data de Emissão:]]></text>
 				</staticText>
@@ -848,6 +849,32 @@ Desconsiderar este aviso, caso o débito já tenha sido quitado.]]></text>
 						<font pdfFontName="Helvetica" size="8" isBold="false"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA["TOTAL A PAGAR R$: " + $F{getValorTotalDebito}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						x="464"
+						y="19"
+						width="41"
+						height="14"
+						key="staticText-98"/>
+					<box></box>
+					<textElement verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Oblique" size="9" isItalic="true"/>
+					</textElement>
+				<text><![CDATA[Usuário:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="505"
+						y="19"
+						width="53"
+						height="18"
+						key="textField-60"/>
+					<box></box>
+					<textElement>
+						<font size="9"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{usuario}]]></textFieldExpression>
 				</textField>
 			</band>
 		</detail>

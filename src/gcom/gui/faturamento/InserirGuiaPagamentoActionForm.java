@@ -143,6 +143,18 @@ public class InserirGuiaPagamentoActionForm
 
 	private String duploClique;
 
+	private String numeroProcessoAdministrativoExecucaoFiscal;
+
+	public String getNumeroProcessoAdministrativoExecucaoFiscal(){
+
+		return numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public void setNumeroProcessoAdministrativoExecucaoFiscal(String numeroProcessoAdministrativoExecucaoFiscal){
+
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
 	public String getHabilitaTipoDebito(){
 
 		return habilitaTipoDebito;

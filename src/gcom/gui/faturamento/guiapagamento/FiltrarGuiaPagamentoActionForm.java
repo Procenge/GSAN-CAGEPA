@@ -58,6 +58,30 @@ public class FiltrarGuiaPagamentoActionForm
 
 	private String[] idTipoDebitoSelecionados;
 
+	private String numeroRA;
+
+	private String descricaoRA;
+
+	public String getDescricaoRA(){
+
+		return descricaoRA;
+	}
+
+	public void setDescricaoRA(String descricaoRA){
+
+		this.descricaoRA = descricaoRA;
+	}
+
+	public String getNumeroRA(){
+
+		return numeroRA;
+	}
+
+	public void setNumeroRA(String numeroRA){
+
+		this.numeroRA = numeroRA;
+	}
+
 	public String getNumeroGuia(){
 
 		return numeroGuia;

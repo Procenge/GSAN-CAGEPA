@@ -2035,9 +2035,9 @@
 				</staticText>
 				<staticText>
 					<reportElement
-						x="1021"
+						x="1011"
 						y="22"
-						width="80"
+						width="90"
 						height="12"
 						key="staticText-204">
 							<printWhenExpression><![CDATA[new Boolean($F{matriculaImovel_1} != null)]]></printWhenExpression>
@@ -2050,10 +2050,10 @@
 				</staticText>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="1021"
+						x="1011"
 						y="35"
-						width="80"
-						height="12"
+						width="90"
+						height="15"
 						key="textField-32">
 							<printWhenExpression><![CDATA[new Boolean($F{matriculaImovel_1} != null)]]></printWhenExpression>
 						</reportElement>
@@ -2061,13 +2061,13 @@
 					<textElement textAlignment="Center">
 						<font size="10"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{idOrdemServico}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{idOrdemServico_1}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
-						x="1021"
-						y="55"
-						width="80"
+						x="1011"
+						y="57"
+						width="90"
 						height="12"
 						key="staticText-205">
 							<printWhenExpression><![CDATA[new Boolean($F{matriculaImovel_1} != null)]]></printWhenExpression>
@@ -2080,9 +2080,9 @@
 				</staticText>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="1021"
-						y="68"
-						width="80"
+						x="1011"
+						y="70"
+						width="90"
 						height="12"
 						key="textField-33">
 							<printWhenExpression><![CDATA[new Boolean($F{matriculaImovel_1} != null)]]></printWhenExpression>
@@ -2091,7 +2091,7 @@
 					<textElement textAlignment="Center">
 						<font size="10"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{dataGeracao}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{dataGeracao_1}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement

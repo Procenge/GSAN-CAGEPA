@@ -96,8 +96,10 @@ function verificarVoltar(){
 }
 
 function urlVoltar(){
-
-	window.location.href = document.getElementById("url").value;
+	var form = document.forms[0];
+	
+	form.action = document.getElementById("url").value;
+	form.submit();	
 	
 }
 
@@ -107,6 +109,11 @@ function urlVoltar(){
 </head>
 
 <body leftmargin="5" topmargin="5" onload="verificarVoltar();toggleBox('demodiv',1);">
+
+<html:form action="/exibirErroAction.do"
+	   name="ExibirErroActionForm"
+	   type="gcom.gui.util.erro.ExibirErroActionForm"
+	   method="post" >	
 
 <%if (exception instanceof ActionServletException) {
 	ActionServletException actionServletException = (ActionServletException) exception; 
@@ -244,6 +251,8 @@ out.print(baos); %>
 	</table>
 <% } %>
 </div>		
+
+</html:form>
 
 </body>
 

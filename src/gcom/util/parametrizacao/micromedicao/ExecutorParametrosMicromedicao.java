@@ -36,7 +36,6 @@ import gcom.micromedicao.hidrometro.Hidrometro;
 import gcom.micromedicao.hidrometro.HidrometroLocalInstalacao;
 import gcom.micromedicao.leitura.LeituraAnormalidade;
 import gcom.micromedicao.leitura.LeituraSituacao;
-import gcom.micromedicao.medicao.FiltroMedicaoHistorico;
 import gcom.micromedicao.medicao.FiltroMedicaoTipo;
 import gcom.micromedicao.medicao.MedicaoHistorico;
 import gcom.micromedicao.medicao.MedicaoTipo;
@@ -3411,8 +3410,12 @@ public class ExecutorParametrosMicromedicao
 			}
 
 			// <<Inclui>> [UC0085 – Obter Endereço] do imóvel
-			endereco = getControladorEndereco().pesquisarEnderecoSemReferencia(movimentoRoteiroEmpresa.getImovel().getId());
-
+			// [OC1369269]
+			endereco = getControladorEndereco().pesquisarEnderecoFormatadoDividido(movimentoRoteiroEmpresa.getImovel().getId())[0];
+			System.out.println("\n\n============================================================================");
+			System.out.println(endereco);
+			System.out.println("============================================================================\n\n");
+			
 			if(endereco.length() <= 45){
 
 				// Endereço1
@@ -6038,6 +6041,8 @@ public class ExecutorParametrosMicromedicao
 		String matriculaFuncionario = null;
 		String valorRateio = null;
 		String indicadorFatResiduoRateio = null;
+		String idCategoriaAtuCadastral = null;
+		String idSubCategoriaAtuCadastral = null;
 		Map<String, Integer> mapaIndicadorEmissao = montarMapaIndicadorEmissaoValidosFormato2();
 		BigDecimal valorConta = null;
 		
@@ -6281,6 +6286,33 @@ public class ExecutorParametrosMicromedicao
 				throw new ControladorException("atencao.arquivo_linha_invalido", null, i.toString());
 			}
 
+			String pAtualizacaoCadastral = (String) ParametroFaturamento.P_ATUALIZACAO_CADASTRAL_LEITURA.executar();
+
+			if(pAtualizacaoCadastral.equals(ConstantesSistema.SIM.toString())){
+
+				// Id categoria para atualização cadastral
+				idCategoriaAtuCadastral = recuperarValorLinha(linha, 258, 2);
+				if(!Util.isVazioOuBranco(idCategoriaAtuCadastral)){
+					registro.append(Util.completarStringZeroEsquerda(idCategoriaAtuCadastral, 2));
+				}else{
+					registro.append(Util.completarStringZeroEsquerda("0", 2));
+				}
+
+				// Id subCategoria para atualização cadastral
+				idSubCategoriaAtuCadastral = recuperarValorLinha(linha, 260, 2);
+				if(!Util.isVazioOuBranco(idSubCategoriaAtuCadastral)){
+					registro.append(Util.completarStringZeroEsquerda(idSubCategoriaAtuCadastral, 2));
+				}else{
+					registro.append(Util.completarStringZeroEsquerda("0", 2));
+				}
+
+			}else{
+				registro.append(Util.completarStringZeroEsquerda("0", 2));
+				registro.append(Util.completarStringZeroEsquerda("0", 2));
+
+			}
+
+
 			i++;
 			pw.println(registro.toString());
 		}
@@ -6500,7 +6532,7 @@ public class ExecutorParametrosMicromedicao
 			try{
 				locator = ServiceLocator.getInstancia();
 
-				localHome = (ControladorCobrancaLocalHome) locator.getLocalHomePorEmpresa(ConstantesJNDI.CONTROLADOR_COBRANCA_SEJB);
+				localHome = (ControladorCobrancaLocalHome) locator.getLocalHome(ConstantesJNDI.CONTROLADOR_COBRANCA_SEJB);
 				controladorCobranca = localHome.create();
 
 				return controladorCobranca;
@@ -8631,8 +8663,28 @@ public class ExecutorParametrosMicromedicao
 			indicadorQuitacaoDebito = "N";
 		}
 
+		String indicadorVencimentoAlternativo = "0";
+
+		if(mre.getImovel().getDiaVencimento() != null){
+			FiltroSetorComercialVencimento filtroSetorComercialVencimento = new FiltroSetorComercialVencimento();
+			filtroSetorComercialVencimento.adicionarParametro(new ParametroSimples(FiltroSetorComercialVencimento.SETOR_COMERCIAL_ID, mre
+							.getImovel().getSetorComercial().getId()));
+			filtroSetorComercialVencimento.adicionarParametro(new ParametroSimples(FiltroSetorComercialVencimento.INDICADOR_USO,
+							ConstantesSistema.ATIVO));
+			filtroSetorComercialVencimento.adicionarParametro(new ParametroSimples(FiltroSetorComercialVencimento.DIA_VENCIMENTO, mre
+							.getImovel().getDiaVencimento().toString()));
+
+			Collection<SetorComercialVencimento> colecaoSetorComercialVencimentos = getControladorUtil().pesquisar(
+							filtroSetorComercialVencimento, SetorComercialVencimento.class.getName());
+
+			if(Util.isVazioOrNulo(colecaoSetorComercialVencimentos)){
+
+				indicadorVencimentoAlternativo = "1";
+			}
+		}
+
 		arquivoHelper.addRagistroTipo4(mre, clienteResponsavel, debitoAutomatico, endereco, ligacaoAgua, ligacaoEsgoto,
-						String.valueOf(consumoMinimoLigacao), indicadorQuitacaoDebito);
+						String.valueOf(consumoMinimoLigacao), indicadorQuitacaoDebito, indicadorVencimentoAlternativo);
 	}
 
 	private void preencherRegistroTipo03(Integer anoMesReferenciaFaturamento, Integer idFaturamentoGrupo, Integer idEmpresa,
@@ -10274,16 +10326,6 @@ public class ExecutorParametrosMicromedicao
 
 			medicaoHistorico.setLeituraAtualFaturamento(leituraAtualFaturamento - resto);
 		}
-
-		if(medicaoHistorico != null){
-
-			// Atualizando o crédito anterior
-			Integer creditoAnterior = Integer.valueOf(0);
-			if(medicaoHistorico.getConsumoCreditoAnterior() != null){
-				creditoAnterior = medicaoHistorico.getConsumoCreditoAnterior();
-			}
-			medicaoHistorico.setConsumoCreditoAnterior(creditoAnterior.intValue() + resto);
-		}
 	}
 
 	/**
@@ -10338,16 +10380,6 @@ public class ExecutorParametrosMicromedicao
 				resto = consumoFaturado % quantidadeEconomias;
 			}
 
-			if(medicaoHistorico != null){
-
-				// Atualizando o crédito anterior
-				Integer creditoAnterior = Integer.valueOf(0);
-				if(medicaoHistorico.getConsumoCreditoAnterior() != null){
-					creditoAnterior = medicaoHistorico.getConsumoCreditoAnterior();
-				}
-				medicaoHistorico.setConsumoCreditoAnterior(creditoAnterior.intValue() + resto);
-			}
-
 		}else if(parametroAcaoAjusteConsumoMultiplaQuantidadeEconomias.equals(AcaoAjusteConsumoMultiploQtdeEconomias.QUATRO.getValor())){
 			// Se o valor de P_ACAO_AJUSTE_CONSUMO_MULTIPLO_QTDE_ECONOMIAS for igual a 4
 
@@ -10399,28 +10431,11 @@ public class ExecutorParametrosMicromedicao
 			// Quantidade de economias)
 			consumoHistorico.setNumeroConsumoFaturadoMes(consumoPorEconomiaAjustado * quantidadeEconomias);
 
-			// Obtém o ano e mês de referência anterior
-			Integer anoMesReferenciaAtual = Integer.valueOf(consumoHistorico.getReferenciaFaturamento());
-			Integer anoMesReferenciaAnterior = Util.subtrairData(anoMesReferenciaAtual);
-
-			// Pesquisa a medição histórico do mês anterior
-			FiltroMedicaoHistorico filtroMedicaoHistorico = new FiltroMedicaoHistorico();
-			filtroMedicaoHistorico.adicionarParametro(new ParametroSimples(FiltroMedicaoHistorico.IMOVEL_ID, imovel.getId()));
-			filtroMedicaoHistorico.adicionarParametro(new ParametroSimples(FiltroMedicaoHistorico.ANO_MES_REFERENCIA_FATURAMENTO,
-							anoMesReferenciaAnterior));
-			filtroMedicaoHistorico.adicionarParametro(new ParametroSimples(FiltroMedicaoHistorico.MEDICAO_TIPO_ID, medicaoHistorico
-							.getMedicaoTipo().getId()));
-			filtroMedicaoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroMedicaoHistorico.LEITURA_ANORMALIDADE_FATURADA);
-
-			MedicaoHistorico medicaoHistoricoMesAnterior = (MedicaoHistorico) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(
-							filtroMedicaoHistorico, MedicaoHistorico.class.getName()));
-
 			// Leitura Atual de Faturamento será igual a soma da Leitura Anterior com o Consumo a
 			// Ser Cobrado no Mês.
-			if(medicaoHistoricoMesAnterior != null && medicaoHistoricoMesAnterior.getLeituraAtualFaturamento() != null){
-				medicaoHistorico.setLeituraAtualFaturamento(medicaoHistoricoMesAnterior.getLeituraAtualFaturamento()
+			medicaoHistorico.setLeituraAtualFaturamento(medicaoHistorico.getLeituraAnteriorFaturamento()
 								+ consumoHistorico.getNumeroConsumoFaturadoMes());
-			}
+
 		}
 
 		// ############# Alterado por Luciano - OC1034808 ############# - Fim
@@ -10455,4 +10470,441 @@ public class ExecutorParametrosMicromedicao
 
 		return mapaIndicadorEmissao;
 	}
+
+	/**
+	 * [UC0948] Informar Dados de Leituras e Anormalidades
+	 * [SB0104] – Converter Arquivo Leitura Formato 5
+	 * 
+	 * @author Anderson Italo
+	 * @date 12/06/2014
+	 */
+	public File execParamConverterArquivoLeituraFormato5(ParametroSistema parametroSistema, File arquivoLeitura,
+					FaturamentoGrupo faturamentoGrupo) throws FileNotFoundException, ControladorException, IOException, ParseException{
+
+		Collection<String> linhas = new ArrayList<String>();
+		FileReader fileReader = new FileReader(arquivoLeitura);
+		BufferedReader br = new BufferedReader(fileReader);
+		String nomeArquivo = arquivoLeitura.getName();
+
+		this.validarNomeArquivoFormato5(nomeArquivo);
+
+		String header = br.readLine();
+
+		this.validarHeaderFormato5(faturamentoGrupo, header, nomeArquivo);
+		this.validarTipoRegistroFormato5(linhas, br);
+
+		File arquivoDefinitivo = new File(arquivoLeitura.getName() + "-DEFINITIVO.txt");
+		FileOutputStream fout = new FileOutputStream(arquivoDefinitivo);
+
+		PrintWriter pw = new PrintWriter(fout);
+
+		this.gerarHeaderArquivoDefinitivoFormato5(linhas, nomeArquivo, header, pw);
+		this.gerarRegistrosArquivoDefinitivoFormato5(linhas, header, pw);
+		this.gerarTraillerArquivoDefinitivoFormato5(linhas, pw);
+
+		pw.flush();
+		pw.close();
+
+		return arquivoDefinitivo;
+	}
+
+	/**
+	 * [UC0948] Informar Dados de Leituras e Anormalidades
+	 * 
+	 * @author Anderson Italo
+	 * @date 12/06/2014
+	 */
+	private void validarNomeArquivoFormato5(String nomeArquivo) throws ControladorException{
+
+		if(!"R".equalsIgnoreCase(recuperarValorLinha(nomeArquivo, 0, 1))){
+
+			throw new ControladorException("atencao.nome_arquivo_conversao_invalido", null, nomeArquivo);
+		}
+
+		String anoReferencia = recuperarValorLinha(nomeArquivo, 1, 4);
+
+		if(!Util.isInteger(anoReferencia)){
+
+			throw new ControladorException("atencao.nome_arquivo_conversao_invalido", null, nomeArquivo);
+		}
+
+		String idFaturamentoGrupo = recuperarValorLinha(nomeArquivo, 5, 3);
+
+		FaturamentoGrupo faturamentoGrupoNomeArquivo = (FaturamentoGrupo) getControladorUtil().pesquisar(
+						Util.obterInteger(idFaturamentoGrupo), FaturamentoGrupo.class, false);
+
+		if(faturamentoGrupoNomeArquivo == null){
+
+			throw new ControladorException("atencao.nome_arquivo_conversao_invalido", null, nomeArquivo);
+		}
+
+		String mesReferencia = recuperarValorLinha(nomeArquivo, 10, 2);
+
+		if(!Util.isInteger(mesReferencia) || Util.validarAnoMesSemBarra(anoReferencia + mesReferencia)){
+
+			throw new ControladorException("atencao.nome_arquivo_conversao_invalido", null, nomeArquivo);
+		}
+
+	}
+
+	/**
+	 * [UC0948] Informar Dados de Leituras e Anormalidades
+	 * [SB0104] – Converter Arquivo Leitura Formato 5
+	 * 
+	 * @author Anderson Italo
+	 * @date 15/06/2014
+	 */
+	private void gerarHeaderArquivoDefinitivoFormato5(Collection<String> linhas, String nomeArquivo, String header, PrintWriter pw)
+					throws ControladorException{
+
+		StringBuilder headerArquivoDefinitivo = new StringBuilder();
+
+		// 0
+		headerArquivoDefinitivo.append("0");
+
+		// empresa
+		headerArquivoDefinitivo.append(Util.completaStringComEspacoAEsquerda("", 6));
+
+		// Indicador de transmissão ou recepção
+		headerArquivoDefinitivo.append("R");
+
+		// Grupo Faturamento - HE3
+		String grupoFaturamentoHeader = recuperarValorLinha(header, 6, 3);
+		headerArquivoDefinitivo.append(Util.completarStringZeroEsquerda(Util.obterInteger(grupoFaturamentoHeader).toString(), 2));
+
+		// Ano e mês ref. faturamento HE1 concatenado com HE2
+		String anoMesReferenciaHeader = recuperarValorLinha(header, 0, 6);
+		headerArquivoDefinitivo.append(Util.completarStringZeroEsquerda(anoMesReferenciaHeader, 6));
+
+		// Data geração arquivo
+		String dataGeracaoArquivo = recuperarDataCorrente();
+		headerArquivoDefinitivo.append(Util.completarStringZeroEsquerda(dataGeracaoArquivo, 8));
+
+		// Quantidade de registros
+		headerArquivoDefinitivo.append(Util.completarStringZeroEsquerda(String.valueOf(linhas.size() + 2), 6));
+
+		pw.println(headerArquivoDefinitivo.toString());
+	}
+
+	/**
+	 * [UC0948] Informar Dados de Leituras e Anormalidades
+	 * [SB0104A] – Validar Header do Arquivo Leitura Formato 5
+	 * 
+	 * @author Anderson Italo
+	 * @date 14/06/2014
+	 */
+	private void validarHeaderFormato5(FaturamentoGrupo faturamentoGrupo, String header, String nomeArquivo) throws ControladorException{
+
+		String primeiroRegistro = recuperarValorLinha(header, 0, 83);
+		if(primeiroRegistro.length() < 83){
+
+			throw new ControladorException("atencao.arquivo_sem_header", null, nomeArquivo);
+		}
+
+		String anoReferenciaFaturamentoString = recuperarValorLinha(header, 0, 4);
+
+		if(Util.obterInteger(anoReferenciaFaturamentoString) == null){
+
+			throw new ControladorException("atencao.arquivo_header_ano_nao_numerico", null, anoReferenciaFaturamentoString);
+		}
+
+		String mesReferenciaFaturamentoString = recuperarValorLinha(header, 4, 2);
+
+		if(Util.obterInteger(mesReferenciaFaturamentoString) == null){
+
+			throw new ControladorException("atencao.arquivo_header_mes_nao_numerico", null, mesReferenciaFaturamentoString);
+		}
+
+		Integer referenciaFaturamento = Util.obterInteger(anoReferenciaFaturamentoString + mesReferenciaFaturamentoString);
+
+		if(Util.validarAnoMesSemBarra(referenciaFaturamento.toString())){
+
+			throw new ControladorException("atencao.arquivo_header_ano_mes_invalido", null, referenciaFaturamento.toString());
+		}
+
+		if(!faturamentoGrupo.getAnoMesReferencia().equals(referenciaFaturamento)){
+
+			throw new ControladorException("atencao.arquivo_header_ano_mes_diferente_ano_mes_faturamento_grupo", null,
+							referenciaFaturamento.toString(), faturamentoGrupo.getAnoMesReferencia().toString());
+		}
+
+		String grupoFaturamentoString = recuperarValorLinha(header, 6, 3);
+		Integer idGrupoFaturamento = Util.obterInteger(grupoFaturamentoString);
+
+		if(idGrupoFaturamento == null){
+
+			throw new ControladorException("atencao.arquivo_header_grupo_faturamento_nao_numerico", null, grupoFaturamentoString);
+		}
+
+		if(!faturamentoGrupo.getId().equals(idGrupoFaturamento)){
+
+			throw new ControladorException("atencao.arquivo_header_faturamento_grupo_arquivo_diferente_faturamento_grupo_tela", null,
+							grupoFaturamentoString, faturamentoGrupo.getId().toString());
+		}
+	}
+
+	/**
+	 * [UC0948] Informar Dados de Leituras e Anormalidades
+	 * [SB0104] – Converter Arquivo Leitura Formato 5
+	 * [FS0024 - Verificar a existência de registros com tipo inválido]
+	 * 
+	 * @author Anderson Italo
+	 * @date 15/06/2014
+	 */
+	private void validarTipoRegistroFormato5(Collection<String> linhas, BufferedReader br) throws IOException, ControladorException{
+
+		String linha;
+		String tipoRegistro;
+		while((linha = br.readLine()) != null){
+
+			tipoRegistro = linha.substring(0, 1);
+
+			if("1".equals(tipoRegistro)){
+
+				linhas.add(linha);
+			}else if("2".equals(tipoRegistro)){
+
+				linhas.add(linha);
+			}else if("3".equals(tipoRegistro)){
+
+				linhas.add(linha);
+			}else{
+
+				throw new ControladorException("atencao.arquivo_retorno_registro_tipo_invalido");
+			}
+		}
+	}
+
+	/**
+	 * [UC0948] Informar Dados de Leituras e Anormalidades
+	 * [SB0104] – Converter Arquivo Leitura Formato 5
+	 * 
+	 * @author Anderson Italo
+	 * @date 15/06/2014
+	 */
+	private void gerarRegistrosArquivoDefinitivoFormato5(Collection<String> linhas, String header, PrintWriter pw)
+					throws ControladorException, ParseException{
+
+		StringBuilder registro = null;
+
+		String matriculaImovel = null;
+		String leituraAtualReal = null;
+		String leituraFaturada = null;
+		String indicadorConfirmacaoLeitura = null;
+		String codigoAnormalidadeLeitura = null;
+		String dataLeituraMes = null;
+		String indicadorEmissaoCampo = null;
+		String codigoTipoRegistro = null;
+
+		FiltroMedicaoTipo filtroMedicaoTipo = new FiltroMedicaoTipo();
+		filtroMedicaoTipo.adicionarParametro(new ParametroSimples(FiltroMedicaoTipo.DESCRICAO, MedicaoTipo.DESC_LIGACAO_AGUA));
+		MedicaoTipo medicaoTipo = (MedicaoTipo) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(filtroMedicaoTipo,
+						MedicaoTipo.class.getName()));
+		Map<String, Integer> mapaIndicadorEmissaoCampo = this.montarMapaIndicadorEmissaoValidosFormato5();
+
+		Integer i = 1;
+
+		for(String linha : linhas){
+
+			registro = new StringBuilder();
+
+			// Tipo do Registro
+			codigoTipoRegistro = recuperarValorLinha(linha, 0, 1);
+
+			// Caso tenha sido Leitura ou Leitura e Emissão
+			if(codigoTipoRegistro.equals("1") || codigoTipoRegistro.equals("2")){
+
+				registro.append("1");
+			}else{
+
+				// Caso contrário, foi apenas Emissão
+				registro.append("2");
+			}
+
+			// Identificação do Agente Comercial - D7
+			registro.append(Util.completarStringZeroEsquerda(recuperarValorLinha(linha, 34, 4), 6));
+
+			// Data de Leitura (DDMMAAAA) - D6
+			dataLeituraMes = recuperarValorLinha(linha, 26, 8);
+			SimpleDateFormat sdf1 = new SimpleDateFormat("ddMMyyyy");
+			SimpleDateFormat sdf2 = new SimpleDateFormat("ddMMyyyy");
+			dataLeituraMes = sdf2.format(sdf1.parse(dataLeituraMes));
+
+			if(Util.validarDataDDMMYYYY(dataLeituraMes)){
+
+				registro.append(Util.completarStringZeroEsquerda(dataLeituraMes, 8));
+			}else{
+
+				throw new ControladorException("atencao.arquivo_linha_invalido", null, i.toString(), linha);
+			}
+
+			// Matrícula do Imóvel - DE2
+			matriculaImovel = recuperarValorLinha(linha, 1, 9);
+			if(Util.isInteger(matriculaImovel)){
+				
+				registro.append(Util.completarStringZeroEsquerda(recuperarValorLinha(matriculaImovel, 1, 8), 8));
+			}else{
+				throw new ControladorException("atencao.arquivo_linha_invalido", null, i.toString(), linha);
+			}
+
+			// Código da Localidade
+			registro.append(Util.completarStringZeroEsquerda("0", 3));
+
+			// Código da Setor
+			registro.append(Util.completarStringZeroEsquerda("0", 3));
+
+			// Número da Quadra
+			registro.append(Util.completarStringZeroEsquerda("0", 4));
+
+			// Número do Lote
+			registro.append(Util.completarStringZeroEsquerda("0", 4));
+
+			// Número do Sublote
+			registro.append(Util.completarStringZeroEsquerda("0", 3));
+
+			// Tipo de Medição
+			registro.append(medicaoTipo.getId().toString());
+
+			// Leitura do Hidrômetro - D3
+			leituraAtualReal = recuperarValorLinha(linha, 10, 7);
+			if(Util.isInteger(leituraAtualReal)){
+
+				registro.append(Util.completarStringZeroEsquerda(Util.obterInteger(recuperarValorLinha(leituraAtualReal, 1, 6)).toString(),
+								6));
+			}else{
+
+				throw new ControladorException("atencao.arquivo_linha_invalido", null, i.toString(), linha);
+			}
+
+			// Leitura Faturada - D3
+			leituraFaturada = recuperarValorLinha(linha, 10, 7);
+
+			if(Util.isInteger(leituraFaturada)){
+
+				registro.append(Util.completarStringZeroEsquerda(Util.obterInteger(recuperarValorLinha(leituraFaturada, 1, 6)).toString(),
+								6));
+			}else{
+
+				throw new ControladorException("atencao.arquivo_linha_invalido", null, i.toString(), linha);
+			}
+
+			// Consumo Faturado
+			registro.append(Util.completarStringZeroEsquerda("0", 6));
+
+			// Código da Anormalidade de Leitura - D4
+			codigoAnormalidadeLeitura = recuperarValorLinha(linha, 17, 3);
+
+			if(Util.isInteger(codigoAnormalidadeLeitura)){
+
+				registro.append(Util.completarStringZeroEsquerda(codigoAnormalidadeLeitura, 3));
+			}else{
+
+				throw new ControladorException("atencao.arquivo_linha_invalido", null, i.toString(), linha);
+			}
+
+			// Código da Anormalidade de Consumo
+			registro.append(Util.completarStringZeroEsquerda("0", 3));
+
+			// Tipo do Consumo
+			registro.append(Util.completarStringZeroEsquerda("0", 2));
+
+			// Dias de Consumo
+			registro.append(Util.completarStringZeroEsquerda("0", 2));
+
+			// Valor de Água
+			registro.append(Util.completarStringZeroEsquerda("0", 11));
+
+			// Valor de Esgoto
+			registro.append(Util.completarStringZeroEsquerda("0", 11));
+
+			// Valor Débitos
+			registro.append(Util.completarStringZeroEsquerda("0", 11));
+
+			// Valor Créditos
+			registro.append(Util.completarStringZeroEsquerda("0", 11));
+
+			// Indicador de Grande Consumidor
+			registro.append(Util.completarStringZeroEsquerda("0", 1));
+
+			// Indicador Emissão Em Campo - D15
+			indicadorEmissaoCampo = recuperarValorLinha(linha, 59, 2);
+			registro.append(mapaIndicadorEmissaoCampo.get(indicadorEmissaoCampo));
+
+			// Indicador de Confirmação de Leitura - D10
+			indicadorConfirmacaoLeitura = recuperarValorLinha(linha, 42, 1);
+
+			if(indicadorConfirmacaoLeitura != null && Util.isInteger(indicadorConfirmacaoLeitura)){
+
+				if(indicadorConfirmacaoLeitura.equals("0")){
+
+					registro.append(Util.completarStringZeroEsquerda(LeituraSituacao.NAO_REALIZADA.toString(), 1));
+				}else if(indicadorConfirmacaoLeitura.equals("1")){
+
+					registro.append(Util.completarStringZeroEsquerda(LeituraSituacao.REALIZADA.toString(), 1));
+				}
+
+			}else{
+
+				throw new ControladorException("atencao.arquivo_linha_invalido", null, i.toString(), linha);
+			}
+
+			i++;
+			pw.println(registro.toString());
+		}
+	}
+
+	/**
+	 * [UC0948] Informar Dados de Leituras e Anormalidades
+	 * [SB0104B] - Converter Tipo de Entrega (D15) para Indicador de Emissão em Campo padrão GSAN
+	 * Formato 5
+	 * 
+	 * @author Anderson Italo
+	 * @date 17/06/2014
+	 */
+	private Map<String, Integer> montarMapaIndicadorEmissaoValidosFormato5(){
+
+		Map<String, Integer> mapaIndicadorEmissao = new HashMap<String, Integer>();
+		mapaIndicadorEmissao.put("00", 2); // 00=Não entregue 
+		mapaIndicadorEmissao.put("01", 1); // 01=Em mãos
+		mapaIndicadorEmissao.put("02", 1); // 02=Caixa correio 
+		mapaIndicadorEmissao.put("03", 1); // 03=Vizinho 
+		mapaIndicadorEmissao.put("04", 1); // 04=Embx da porta 
+		mapaIndicadorEmissao.put("05", 1); // 05=No portão
+		mapaIndicadorEmissao.put("06", 1); // 06=Especial
+		mapaIndicadorEmissao.put("07", 2); // 07=Recalculada
+		mapaIndicadorEmissao.put("08", 2); // 08=Sendo entregue
+		mapaIndicadorEmissao.put("09", 2); // 09=Entrega posterior
+		mapaIndicadorEmissao.put("10", 2); // 10=Vago
+		mapaIndicadorEmissao.put("11", 1); // 11=Lançada 
+		mapaIndicadorEmissao.put("21", 2); // 21=Terreno
+		mapaIndicadorEmissao.put("22", 2); // 22=Não localizado
+		mapaIndicadorEmissao.put("23", 2); // 23=Cx. sem acesso
+		mapaIndicadorEmissao.put("24", 2); // 24=Vago sem acesso
+
+		return mapaIndicadorEmissao;
+	}
+
+	/**
+	 * [UC0948] Informar Dados de Leituras e Anormalidades
+	 * [SB0104] – Converter Arquivo Leitura Formato 5
+	 * 
+	 * @author Anderson Italo
+	 * @date 15/06/2014
+	 */
+	private void gerarTraillerArquivoDefinitivoFormato5(Collection<String> linhas, PrintWriter pw){
+
+		StringBuilder traillerArquivoDefinitivo = new StringBuilder();
+
+		// Tipo do Registro
+		traillerArquivoDefinitivo.append("9");
+
+		// Quantidade total de registros gravados inclusive o header e o trailler
+		traillerArquivoDefinitivo.append(Util.completarStringZeroEsquerda(String.valueOf(linhas.size() + 2), 6));
+
+		// Quantidade de Registros Tipo Detalhe excluindo o header e o trailler
+		traillerArquivoDefinitivo.append(Util.completarStringZeroEsquerda(String.valueOf(linhas.size()), 6));
+
+		pw.println(traillerArquivoDefinitivo.toString());
+	}
+
 }

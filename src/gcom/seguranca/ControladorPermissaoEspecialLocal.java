@@ -674,4 +674,36 @@ public interface ControladorPermissaoEspecialLocal
 	 */
 	public boolean verificarPermissaoEmitirDocumentoPagavelDebitoPrescrito(Usuario usuario) throws ControladorException;
 
+
+	/**
+	 * Verifica permissão especial para estornar em dívida ativa
+	 * 
+	 * @author Yara Souza
+	 * @date 17/02/2014
+	 * @param usuario
+	 */
+
+	public boolean verificarPermissaoEstonoDividaAtiva(Usuario usuario) throws ControladorException;
+
+	/**
+	 * Verifica permissão especial para estornar em dívida ativa
+	 * 
+	 * @author Yara Souza
+	 * @date 17/02/2014
+	 * @param usuario
+	 */
+
+	public boolean verificarPermissaoEstonoDividaAtivaNumMaxDias(Usuario usuario) throws ControladorException;
+
+	/**
+	 * Verifica permissão especial para estornar em dívida ativa
+	 * 
+	 * @author Yara Souza
+	 * @date 17/02/2014
+	 * @param usuario
+	 */
+
+	public boolean verificarPermissaoEstonoDividaAtivaValorMaximo(Usuario usuario) throws ControladorException;
+
+
 }

@@ -80,23 +80,16 @@ import gcom.fachada.Fachada;
 import gcom.faturamento.FaturamentoAtividade;
 import gcom.faturamento.FaturamentoAtividadeCronograma;
 import gcom.faturamento.FiltroFaturamentoAtividadeCronograma;
-import gcom.faturamento.consumotarifa.ConsumoTarifaCategoria;
-import gcom.faturamento.consumotarifa.ConsumoTarifaFaixa;
-import gcom.faturamento.consumotarifa.ConsumoTarifaVigencia;
-import gcom.faturamento.consumotarifa.FiltroCalculoTipo;
-import gcom.faturamento.consumotarifa.FiltroConsumoTarifaCategoria;
-import gcom.faturamento.consumotarifa.FiltroConsumoTarifaFaixa;
-import gcom.faturamento.consumotarifa.FiltroConsumoTarifaVigencia;
+import gcom.faturamento.consumotarifa.*;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.gui.faturamento.consumotarifa.bean.CategoriaFaixaConsumoTarifaHelper;
 import gcom.micromedicao.consumo.CalculoTipo;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
-import gcom.util.filtro.ConectorOr;
-import gcom.util.filtro.MaiorQue;
-import gcom.util.filtro.ParametroNaoNulo;
-import gcom.util.filtro.ParametroSimples;
-import gcom.util.filtro.ParametroSimplesColecao;
+import gcom.util.filtro.*;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -150,6 +143,18 @@ public class ExibirManterConsumoTarifaExistenteAction
 		String limparForm = (String) httpServletRequest.getParameter("limparForm");
 
 		InserirConsumoTarifaActionForm inserirConsumoTarifaActionForm = (InserirConsumoTarifaActionForm) actionForm;
+		
+		String pQuantidadeDecimaisValorTarifa = null;
+
+		try{
+
+			pQuantidadeDecimaisValorTarifa = (String) ParametroFaturamento.P_QUANTIDADE_DECIMAIS_VALOR_TARIFA.executar();
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
+
+		sessao.setAttribute("pQuantidadeDecimaisValorTarifa", pQuantidadeDecimaisValorTarifa);
 
 		String idVigencia = null;
 
@@ -285,8 +290,6 @@ public class ExibirManterConsumoTarifaExistenteAction
 			filtroConsumoTarifaCategoria.adicionarParametro(new ParametroSimples(FiltroConsumoTarifaCategoria.CONSUMO_VIGENCIA_ID,
 							idVigencia));
 
-			filtroConsumoTarifaCategoria.adicionarParametro(new ParametroSimples(FiltroConsumoTarifaCategoria.SUBCATEGORIA_ID, "0"));
-
 			filtroConsumoTarifaCategoria.adicionarCaminhoParaCarregamentoEntidade("consumoTarifaVigencia");
 			filtroConsumoTarifaCategoria.adicionarCaminhoParaCarregamentoEntidade("subCategoria");
 			filtroConsumoTarifaCategoria.adicionarCaminhoParaCarregamentoEntidade("categoria");
@@ -315,6 +318,19 @@ public class ExibirManterConsumoTarifaExistenteAction
 		}
 		if(limparForm != null && !limparForm.trim().equalsIgnoreCase("")){
 			inserirConsumoTarifaActionForm.reset(actionMapping, httpServletRequest);
+		}
+
+		try{
+			String indicadorTarifaCosumoPorSubCategoria = (String) ParametroFaturamento.P_INDICADOR_TARIFA_CONSUMO_SUBCATEGORIA.executar();
+			if(indicadorTarifaCosumoPorSubCategoria.equals(ConstantesSistema.SIM.toString())){
+				sessao.setAttribute("indicadorTarifaCosumoPorSubCategoria", "S");
+			}else{
+				sessao.removeAttribute("indicadorTarifaCosumoPorSubCategoria");
+			}
+
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
 		}
 
 		return retorno;

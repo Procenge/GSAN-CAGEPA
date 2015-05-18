@@ -78,10 +78,7 @@ package gcom.gui.faturamento.conta;
 
 import gcom.atendimentopublico.ligacaoagua.FiltroLigacaoAguaSituacao;
 import gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao;
-import gcom.atendimentopublico.ligacaoesgoto.FiltroLigacaoEsgotoPerfil;
-import gcom.atendimentopublico.ligacaoesgoto.FiltroLigacaoEsgotoSituacao;
-import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoPerfil;
-import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao;
+import gcom.atendimentopublico.ligacaoesgoto.*;
 import gcom.cadastro.cliente.ClienteImovel;
 import gcom.cadastro.cliente.ClienteRelacaoTipo;
 import gcom.cadastro.cliente.FiltroClienteImovel;
@@ -104,6 +101,7 @@ import gcom.util.filtro.ParametroNulo;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.filtro.ParametroSimplesDiferenteDe;
 import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
+import gcom.util.parametrizacao.micromedicao.ParametroMicromedicao;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -473,6 +471,45 @@ public class ExibirInserirContaAction
 				sessao.removeAttribute("existeColecao");
 			}
 		}
+
+		String pAcumularConsumoEsgotoPoco = null;
+		try{
+
+			pAcumularConsumoEsgotoPoco = ParametroMicromedicao.P_ACUMULA_CONSUMO_ESGOTO_POCO.executar();
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
+
+		// Caso a empresa não acumule o volume do poço com o volume da ligação de água para cálculo
+		// do valor de esgoto
+		if(pAcumularConsumoEsgotoPoco.equals(ConstantesSistema.NAO.toString())){
+
+			if(!Util.isVazioOuBranco(inserirContaActionForm.getIdImovel()) && Util.isInteger(inserirContaActionForm.getIdImovel())){
+
+				LigacaoEsgoto ligacaoEsgoto = (LigacaoEsgoto) fachada.pesquisar(Util.obterInteger(inserirContaActionForm.getIdImovel()),
+								LigacaoEsgoto.class);
+
+				// Caso o imóvel possua volume fixo para poço
+				if(ligacaoEsgoto != null && ligacaoEsgoto.getNumeroConsumoFixoPoco() != null){
+
+					inserirContaActionForm.setHabilitarConsumoFixoPoco(ConstantesSistema.SIM.toString());
+				}else{
+
+					inserirContaActionForm.setHabilitarConsumoFixoPoco(ConstantesSistema.NAO.toString());
+					inserirContaActionForm.setConsumoFixoPoco(null);
+				}
+			}else{
+
+				inserirContaActionForm.setHabilitarConsumoFixoPoco(ConstantesSistema.NAO.toString());
+				inserirContaActionForm.setConsumoFixoPoco(null);
+			}
+		}else{
+
+			inserirContaActionForm.setHabilitarConsumoFixoPoco(ConstantesSistema.NAO.toString());
+			inserirContaActionForm.setConsumoFixoPoco(null);
+		}
+
 		if(sessao.getAttribute("colecaoDebitoCobrado") != null){
 			Collection colecaoDebito = (Collection) sessao.getAttribute("colecaoDebitoCobrado");
 			Iterator iteratorColecaoDebito = colecaoDebito.iterator();

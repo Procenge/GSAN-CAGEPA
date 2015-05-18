@@ -241,8 +241,7 @@ public class ExibirAtualizarTipoDebitoAction
 				filtroValorLocalidade.adicionarCaminhoParaCarregamentoEntidade("localidade");
 				filtroValorLocalidade.adicionarCaminhoParaCarregamentoEntidade("debitoTipo");
 
-				filtroValorLocalidade
-.adicionarParametro(new ParametroSimples(FiltroDebitoTipoValorLocalidade.DEBITO_TIPO_ID, id));
+				filtroValorLocalidade.adicionarParametro(new ParametroSimples(FiltroDebitoTipoValorLocalidade.DEBITO_TIPO_ID, id));
 				filtroValorLocalidade.adicionarParametro(new ParametroSimples(FiltroDebitoTipoValorLocalidade.INDICADOR_USO,
 								ConstantesSistema.SIM));
 
@@ -306,6 +305,26 @@ public class ExibirAtualizarTipoDebitoAction
 					form.setValorPadrao(Util.formatarMoedaReal(debitoTipo.getValorPadrao()));
 				}
 
+				// filtra a localidade e joga numa coleção para carregar o grid na pesquisa a partir
+				// da tela manter tipo debito
+				// [OC1325396]
+				if(httpServletRequest.getParameter("manter") != null){
+					FiltroDebitoTipoValorLocalidade filtroValorLocalidade = new FiltroDebitoTipoValorLocalidade();
+
+					filtroValorLocalidade.adicionarCaminhoParaCarregamentoEntidade("localidade");
+					filtroValorLocalidade.adicionarCaminhoParaCarregamentoEntidade("debitoTipo");
+
+					filtroValorLocalidade.adicionarParametro(new ParametroSimples(FiltroDebitoTipoValorLocalidade.DEBITO_TIPO_ID, id));
+					filtroValorLocalidade.adicionarParametro(new ParametroSimples(FiltroDebitoTipoValorLocalidade.INDICADOR_USO,
+									ConstantesSistema.SIM));
+
+					Collection colecaoDebitoTipoValorLocalidade = fachada.pesquisar(filtroValorLocalidade,
+									DebitoTipoValorLocalidade.class.getName());
+
+					sessao.setAttribute("colecaoServicoTipoValorLocalidade", colecaoDebitoTipoValorLocalidade);
+
+					form.setDebitoTipoValorLocalidade(colecaoDebitoTipoValorLocalidade);
+				}
 			}
 		}
 
@@ -317,10 +336,10 @@ public class ExibirAtualizarTipoDebitoAction
 		if("removeDebitoTipoValorLocalidade".equalsIgnoreCase(form.getMethod())){
 			form.removeDebitoTipoValorLocalidade();
 		}
-
+		
 		String atualizarIdLocalidade = (String) httpServletRequest.getParameter("atualizarIdLocalidade");
 		String debitoTipoValorLocalidade = (String) httpServletRequest.getParameter("debitoTipoValorLocalidade");
-
+			
 		if(atualizarIdLocalidade != null && !atualizarIdLocalidade.equals("") && debitoTipoValorLocalidade != null
 						&& !debitoTipoValorLocalidade.equals("")){
 
@@ -434,21 +453,24 @@ public class ExibirAtualizarTipoDebitoAction
 				form.setIndicadorIncidenciaJurosMora(debitoTipo.getIndicadorIncidenciaJurosMora().toString());
 				form.setIndicadorIncidenciaMulta(debitoTipo.getIndicadorIncidenciaMulta().toString());
 
-				FiltroDebitoTipoValorLocalidade filtroValorLocalidade = new FiltroDebitoTipoValorLocalidade();
-
-				filtroValorLocalidade
-								.adicionarParametro(new ParametroSimples(FiltroDebitoTipoValorLocalidade.DEBITO_TIPO_ID, idDebitoTipo));
-				filtroValorLocalidade.adicionarParametro(new ParametroSimples(FiltroDebitoTipoValorLocalidade.INDICADOR_USO,
-								ConstantesSistema.SIM));
-
-				filtroValorLocalidade.adicionarCaminhoParaCarregamentoEntidade("localidade");
-				filtroValorLocalidade.adicionarCaminhoParaCarregamentoEntidade("debitoTipo");
-
-				Collection colecaoDebitoTipoValorLocalidade = fachada.pesquisar(filtroValorLocalidade,
-								DebitoTipoValorLocalidade.class.getName());
-
-				sessao.setAttribute("colecaoServicoTipoValorLocalidade", colecaoDebitoTipoValorLocalidade);
-				form.setDebitoTipoValorLocalidade(colecaoDebitoTipoValorLocalidade);
+				/*
+				 * FiltroDebitoTipoValorLocalidade filtroValorLocalidade = new
+				 * FiltroDebitoTipoValorLocalidade();
+				 * filtroValorLocalidade
+				 * .adicionarParametro(new
+				 * ParametroSimples(FiltroDebitoTipoValorLocalidade.DEBITO_TIPO_ID, idDebitoTipo));
+				 * filtroValorLocalidade.adicionarParametro(new
+				 * ParametroSimples(FiltroDebitoTipoValorLocalidade.INDICADOR_USO,
+				 * ConstantesSistema.SIM));
+				 * filtroValorLocalidade.adicionarCaminhoParaCarregamentoEntidade("localidade");
+				 * filtroValorLocalidade.adicionarCaminhoParaCarregamentoEntidade("debitoTipo");
+				 * Collection colecaoDebitoTipoValorLocalidade =
+				 * fachada.pesquisar(filtroValorLocalidade,
+				 * DebitoTipoValorLocalidade.class.getName());
+				 * sessao.setAttribute("colecaoServicoTipoValorLocalidade",
+				 * colecaoDebitoTipoValorLocalidade);
+				 * form.setDebitoTipoValorLocalidade(colecaoDebitoTipoValorLocalidade);
+				 */
 			}
 
 

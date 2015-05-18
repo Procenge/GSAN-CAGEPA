@@ -172,7 +172,8 @@ public class ExibirEstornarPagamentoAction
 		if(colecaoPagamentosHistoricoMovimentoArrecadador2 != null) pagamentosHistorico
 						.addAll(colecaoPagamentosHistoricoMovimentoArrecadador2);
 		if(colecaoPagamentosHistoricoClientes2 != null) pagamentosHistorico.addAll(colecaoPagamentosHistoricoClientes2);
-		if(colecaoPagamentosHistoricoClientes2 != null) pagamentosHistorico.addAll(colecaoPagamentosHistoricoClientes2);
+		// if(colecaoPagamentosHistoricoClientes2 != null)
+		// pagamentosHistorico.addAll(colecaoPagamentosHistoricoClientes2);
 
 		sessao.setAttribute("colecaoPagamentosHistorico",
 						this.verificaCreditoARealizarHistoricoCreditoARealizar(fachada, pagamentosHistorico));

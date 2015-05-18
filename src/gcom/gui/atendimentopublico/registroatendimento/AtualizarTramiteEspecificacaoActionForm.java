@@ -12,14 +12,6 @@ import gcom.cadastro.localidade.Localidade;
 import gcom.cadastro.localidade.SetorComercial;
 import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.fachada.Fachada;
-import gcom.operacional.Bacia;
-import gcom.operacional.DistritoOperacional;
-import gcom.operacional.SetorAbastecimento;
-import gcom.operacional.SistemaAbastecimento;
-import gcom.operacional.SistemaEsgoto;
-import gcom.operacional.SubBacia;
-import gcom.operacional.SubsistemaEsgoto;
-import gcom.operacional.ZonaAbastecimento;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
@@ -65,21 +57,7 @@ public class AtualizarTramiteEspecificacaoActionForm
 
 	private String nomeBairro;
 
-	private String idSistemaAbastecimento;
 
-	private String idDistritoOperacional;
-
-	private String idZonaAbastecimento;
-
-	private String idSetorAbastecimento;
-
-	private String idSistemaEsgoto;
-
-	private String idSubsistemaEsgoto;
-
-	private String idBacia;
-
-	private String idSubBacia;
 
 	private String idUnidadeOrganizacionalOrigem;
 
@@ -90,6 +68,8 @@ public class AtualizarTramiteEspecificacaoActionForm
 	private String descricaoUnidadeOrganizacionalDestino;
 
 	private String indicadorUso;
+
+	private String indicadorPrimeiroTramite;
 
 	/**
 	 * @return the id
@@ -278,141 +258,7 @@ public class AtualizarTramiteEspecificacaoActionForm
 		this.nomeBairro = nomeBairro;
 	}
 
-	/**
-	 * @return the idSistemaAbastecimento
-	 */
-	public String getIdSistemaAbastecimento(){
 
-		return idSistemaAbastecimento;
-	}
-
-	/**
-	 * @param idSistemaAbastecimento
-	 *            the idSistemaAbastecimento to set
-	 */
-	public void setIdSistemaAbastecimento(String idSistemaAbastecimento){
-
-		this.idSistemaAbastecimento = idSistemaAbastecimento;
-	}
-
-	/**
-	 * @return the idDistritoOperacional
-	 */
-	public String getIdDistritoOperacional(){
-
-		return idDistritoOperacional;
-	}
-
-	/**
-	 * @param idDistritoOperacional
-	 *            the idDistritoOperacional to set
-	 */
-	public void setIdDistritoOperacional(String idDistritoOperacional){
-
-		this.idDistritoOperacional = idDistritoOperacional;
-	}
-
-	/**
-	 * @return the idZonaAbastecimento
-	 */
-	public String getIdZonaAbastecimento(){
-
-		return idZonaAbastecimento;
-	}
-
-	/**
-	 * @param idZonaAbastecimento
-	 *            the idZonaAbastecimento to set
-	 */
-	public void setIdZonaAbastecimento(String idZonaAbastecimento){
-
-		this.idZonaAbastecimento = idZonaAbastecimento;
-	}
-
-	/**
-	 * @return the idSetorAbastecimento
-	 */
-	public String getIdSetorAbastecimento(){
-
-		return idSetorAbastecimento;
-	}
-
-	/**
-	 * @param idSetorAbastecimento
-	 *            the idSetorAbastecimento to set
-	 */
-	public void setIdSetorAbastecimento(String idSetorAbastecimento){
-
-		this.idSetorAbastecimento = idSetorAbastecimento;
-	}
-
-	/**
-	 * @return the idSistemaEsgoto
-	 */
-	public String getIdSistemaEsgoto(){
-
-		return idSistemaEsgoto;
-	}
-
-	/**
-	 * @param idSistemaEsgoto
-	 *            the idSistemaEsgoto to set
-	 */
-	public void setIdSistemaEsgoto(String idSistemaEsgoto){
-
-		this.idSistemaEsgoto = idSistemaEsgoto;
-	}
-
-	/**
-	 * @return the idSubsistemaEsgoto
-	 */
-	public String getIdSubsistemaEsgoto(){
-
-		return idSubsistemaEsgoto;
-	}
-
-	/**
-	 * @param idSubsistemaEsgoto
-	 *            the idSubsistemaEsgoto to set
-	 */
-	public void setIdSubsistemaEsgoto(String idSubsistemaEsgoto){
-
-		this.idSubsistemaEsgoto = idSubsistemaEsgoto;
-	}
-
-	/**
-	 * @return the idBacia
-	 */
-	public String getIdBacia(){
-
-		return idBacia;
-	}
-
-	/**
-	 * @param idBacia
-	 *            the idBacia to set
-	 */
-	public void setIdBacia(String idBacia){
-
-		this.idBacia = idBacia;
-	}
-
-	/**
-	 * @return the idSubBacia
-	 */
-	public String getIdSubBacia(){
-
-		return idSubBacia;
-	}
-
-	/**
-	 * @param idSubBacia
-	 *            the idSubBacia to set
-	 */
-	public void setIdSubBacia(String idSubBacia){
-
-		this.idSubBacia = idSubBacia;
-	}
 
 	/**
 	 * @return the idUnidadeOrganizacionalOrigem
@@ -643,101 +489,6 @@ public class AtualizarTramiteEspecificacaoActionForm
 		this.setCodigoBairro(codigoBairroStr);
 		this.setNomeBairro(nomeBairro);
 
-		// Sistema de Abastecimento
-		String idSistemaAbastecimentoStr = numeroNaoInformadoStr;
-
-		SistemaAbastecimento sistemaAbastecimento = especificacaoTramite.getSistemaAbastecimento();
-
-		if(sistemaAbastecimento != null){
-			Integer idSistemaAbastecimento = sistemaAbastecimento.getId();
-			idSistemaAbastecimentoStr = Integer.toString(idSistemaAbastecimento);
-		}
-
-		this.setIdSistemaAbastecimento(idSistemaAbastecimentoStr);
-
-		// Distrito Operacional
-		String idDistritoOperacionalStr = numeroNaoInformadoStr;
-
-		DistritoOperacional distritoOperacional = especificacaoTramite.getDistritoOperacional();
-
-		if(distritoOperacional != null){
-			Integer idDistritoOperacional = distritoOperacional.getId();
-			idDistritoOperacionalStr = Integer.toString(idDistritoOperacional);
-		}
-
-		this.setIdDistritoOperacional(idDistritoOperacionalStr);
-
-		// Zona de Abastecimento
-		String idZonaAbastecimentoStr = numeroNaoInformadoStr;
-
-		ZonaAbastecimento zonaAbastecimento = especificacaoTramite.getZonaAbastecimento();
-
-		if(zonaAbastecimento != null){
-			Integer idZonaAbastecimento = zonaAbastecimento.getId();
-			idZonaAbastecimentoStr = Integer.toString(idZonaAbastecimento);
-		}
-
-		this.setIdZonaAbastecimento(idZonaAbastecimentoStr);
-
-		// Setor de Abastecimento
-		String idSetorAbastecimentoStr = numeroNaoInformadoStr;
-
-		SetorAbastecimento setorAbastecimento = especificacaoTramite.getSetorAbastecimento();
-
-		if(setorAbastecimento != null){
-			Integer idSetorAbastecimento = setorAbastecimento.getId();
-			idSetorAbastecimentoStr = Integer.toString(idSetorAbastecimento);
-		}
-
-		this.setIdSetorAbastecimento(idSetorAbastecimentoStr);
-
-		// Sistema de Esgoto
-		String idSistemaEsgotoStr = numeroNaoInformadoStr;
-
-		SistemaEsgoto sistemaEsgoto = especificacaoTramite.getSistemaEsgoto();
-
-		if(sistemaEsgoto != null){
-			Integer idSistemaEsgoto = sistemaEsgoto.getId();
-			idSistemaEsgotoStr = Integer.toString(idSistemaEsgoto);
-		}
-
-		this.setIdSistemaEsgoto(idSistemaEsgotoStr);
-
-		// Subsistema de Esgoto
-		String idSubsistemaEsgotoStr = numeroNaoInformadoStr;
-
-		SubsistemaEsgoto subsistemaEsgoto = especificacaoTramite.getSubsistemaEsgoto();
-
-		if(subsistemaEsgoto != null){
-			Integer idSubsistemaEsgoto = subsistemaEsgoto.getId();
-			idSubsistemaEsgotoStr = Integer.toString(idSubsistemaEsgoto);
-		}
-
-		this.setIdSubsistemaEsgoto(idSubsistemaEsgotoStr);
-
-		// Bacia
-		String idBaciaStr = numeroNaoInformadoStr;
-
-		Bacia bacia = especificacaoTramite.getBacia();
-
-		if(bacia != null){
-			Integer idBacia = bacia.getId();
-			idBaciaStr = Integer.toString(idBacia);
-		}
-
-		this.setIdBacia(idBaciaStr);
-
-		// SubBacia
-		String idSubBaciaStr = numeroNaoInformadoStr;
-
-		SubBacia subBacia = especificacaoTramite.getSubBacia();
-
-		if(subBacia != null){
-			Integer idSubBacia = subBacia.getId();
-			idSubBaciaStr = Integer.toString(idSubBacia);
-		}
-
-		this.setIdSubBacia(idSubBaciaStr);
 
 		// Unidade Organizacional de Origem
 		String idUnidadeOrganizacionalOrigemStr = "";
@@ -781,6 +532,17 @@ public class AtualizarTramiteEspecificacaoActionForm
 		}
 
 		this.setIndicadorUso(indicadorUsoStr);
+
+		// Indicador de primeiro tramite
+		String indicadorPrimeiroTramiteStr = ConstantesSistema.NAO.toString();
+
+		Short indicadorPrimeiroTramite = especificacaoTramite.getIndicadorUso();
+
+		if(indicadorPrimeiroTramite != null){
+			indicadorPrimeiroTramiteStr = Short.toString(indicadorPrimeiroTramite);
+		}
+
+		this.setIndicadorPrimeiroTramite(indicadorPrimeiroTramiteStr);
 
 	}
 
@@ -842,117 +604,7 @@ public class AtualizarTramiteEspecificacaoActionForm
 
 		especificacaoTramite.setBairro(bairro);
 
-		// Sistema de Abastecimento
-		SistemaAbastecimento sistemaAbastecimento = null;
 
-		String idSistemaAbastecimentoStr = this.getIdSistemaAbastecimento();
-
-		if(idSistemaAbastecimentoStr != null && !idSistemaAbastecimentoStr.equals(numeroNaoInformadoStr)){
-			Integer id = Integer.parseInt(idSistemaAbastecimentoStr);
-
-			sistemaAbastecimento = new SistemaAbastecimento();
-			sistemaAbastecimento.setId(id);
-		}
-
-		especificacaoTramite.setSistemaAbastecimento(sistemaAbastecimento);
-
-		// Distrito Operacional
-		DistritoOperacional distritoOperacional = null;
-
-		String idDistritoOperacionalStr = this.getIdDistritoOperacional();
-
-		if(idDistritoOperacionalStr != null && !idDistritoOperacionalStr.equals(numeroNaoInformadoStr)){
-			Integer id = Integer.parseInt(idDistritoOperacionalStr);
-
-			distritoOperacional = new DistritoOperacional();
-			distritoOperacional.setId(id);
-		}
-
-		especificacaoTramite.setDistritoOperacional(distritoOperacional);
-
-		// Zona de Abastecimento
-		ZonaAbastecimento zonaAbastecimento = null;
-
-		String idZonaAbastecimentoStr = this.getIdZonaAbastecimento();
-
-		if(idZonaAbastecimentoStr != null && !idZonaAbastecimentoStr.equals(numeroNaoInformadoStr)){
-			Integer id = Integer.parseInt(idZonaAbastecimentoStr);
-
-			zonaAbastecimento = new ZonaAbastecimento();
-			zonaAbastecimento.setId(id);
-		}
-
-		especificacaoTramite.setZonaAbastecimento(zonaAbastecimento);
-
-		// Setor de Abastecimento
-		SetorAbastecimento setorAbastecimento = null;
-
-		String idSetorAbastecimentoStr = this.getIdSetorAbastecimento();
-
-		if(idSetorAbastecimentoStr != null && !idSetorAbastecimentoStr.equals(numeroNaoInformadoStr)){
-			Integer id = Integer.parseInt(idSetorAbastecimentoStr);
-
-			setorAbastecimento = new SetorAbastecimento();
-			setorAbastecimento.setId(id);
-		}
-
-		especificacaoTramite.setSetorAbastecimento(setorAbastecimento);
-
-		// Sistema de Esgoto
-		SistemaEsgoto sistemaEsgoto = null;
-
-		String idSistemaEsgotoStr = this.getIdSistemaEsgoto();
-
-		if(idSistemaEsgotoStr != null && !idSistemaEsgotoStr.equals(numeroNaoInformadoStr)){
-			Integer id = Integer.parseInt(idSistemaEsgotoStr);
-
-			sistemaEsgoto = new SistemaEsgoto();
-			sistemaEsgoto.setId(id);
-		}
-
-		especificacaoTramite.setSistemaEsgoto(sistemaEsgoto);
-
-		// Subsistema de Esgoto
-		SubsistemaEsgoto subsistemaEsgoto = null;
-
-		String idSubsubsistemaEsgotoStr = this.getIdSubsistemaEsgoto();
-
-		if(idSubsubsistemaEsgotoStr != null && !idSubsubsistemaEsgotoStr.equals(numeroNaoInformadoStr)){
-			Integer id = Integer.parseInt(idSubsubsistemaEsgotoStr);
-
-			subsistemaEsgoto = new SubsistemaEsgoto();
-			subsistemaEsgoto.setId(id);
-		}
-
-		especificacaoTramite.setSubsistemaEsgoto(subsistemaEsgoto);
-
-		// Bacia
-		Bacia bacia = null;
-
-		String idBaciaStr = this.getIdBacia();
-
-		if(idBaciaStr != null && !idBaciaStr.equals(numeroNaoInformadoStr)){
-			Integer id = Integer.parseInt(idBaciaStr);
-
-			bacia = new Bacia();
-			bacia.setId(id);
-		}
-
-		especificacaoTramite.setBacia(bacia);
-
-		// SubBacia
-		SubBacia subBacia = null;
-
-		String idSubBaciaStr = this.getIdSubBacia();
-
-		if(idSubBaciaStr != null && !idSubBaciaStr.equals(numeroNaoInformadoStr)){
-			Integer id = Integer.parseInt(idSubBaciaStr);
-
-			subBacia = new SubBacia();
-			subBacia.setId(id);
-		}
-
-		especificacaoTramite.setSubBacia(subBacia);
 
 		// Unidade Organizacional de Origem
 		UnidadeOrganizacional unidadeOrganizacionalOrigem = null;
@@ -992,6 +644,29 @@ public class AtualizarTramiteEspecificacaoActionForm
 		}
 
 		especificacaoTramite.setIndicadorUso(indicadorUso);
+		
+		
+		// Indicador de primeiro tramite
+		Short indicadorPrimeiroTramite = null;
+
+		String indicadorPrimeiroTramiteStr = this.getIndicadorPrimeiroTramite();
+
+		if(indicadorPrimeiroTramiteStr != null && !indicadorPrimeiroTramiteStr.equals(numeroNaoInformadoStr)){
+			indicadorPrimeiroTramite = Short.parseShort(indicadorPrimeiroTramiteStr);
+		}
+
+		especificacaoTramite.setIndicadorPrimeiroTramite(indicadorPrimeiroTramite);
+
+	}
+
+	public String getIndicadorPrimeiroTramite(){
+
+		return indicadorPrimeiroTramite;
+	}
+
+	public void setIndicadorPrimeiroTramite(String indicadorPrimeiroTramite){
+
+		this.indicadorPrimeiroTramite = indicadorPrimeiroTramite;
 	}
 
 }

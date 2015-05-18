@@ -54,6 +54,13 @@ function proximoImovel(){
  form.action = "exibirDadosAnaliseMedicaoConsumoAction.do?proximoImovel=1";
  submeterFormPadrao(form);
 }
+
+function consistirLeituraCalcularConsumo(idImovel){
+	
+	 var form = document.forms[0];
+	 form.action = "exibirDadosAnaliseMedicaoConsumoAction.do?idImovelConsistir=" + idImovel;
+	 submeterFormPadrao(form);
+}
 </script>
 </head>
 
@@ -447,7 +454,7 @@ function proximoImovel(){
 
 					<table width="100%" bgcolor="#99CCFF">
 						<tr>
-							<td colspan="4" class="styleFonteTabelaPrincipal" align="center">
+							<td colspan="5" class="styleFonteTabelaPrincipal" align="center">
 
 							Dados da Ligação de Esgoto</td>
 
@@ -457,7 +464,7 @@ function proximoImovel(){
 							<td width="19%" align="center">Data da Ligação</td>
 							<td align="center" width="27%">Diametro</td>
 							<td align="center" width="27%">Material</td>
-							<td align="center" width="27%">Perfil de Ligação</td>
+							<td align="center" width="27%" colspan="2">Perfil de Ligação</td>
 						</tr>
 
 						<tr bgcolor="#FFFFFF" class="styleFontePequena">
@@ -467,14 +474,15 @@ function proximoImovel(){
 							&nbsp;</td>
 							<td align="center">${sessionScope.leituraConsumoActionForm.descricaoLigacaoEsgotoMaterial}
 							&nbsp;</td>
-							<td align="center">${sessionScope.leituraConsumoActionForm.descricaoligacaoEsgotoPerfil}
+							<td align="center" colspan="2">${sessionScope.leituraConsumoActionForm.descricaoligacaoEsgotoPerfil}
 							&nbsp;</td>
 						</tr>
 						<tr bgcolor="#99CCFF" class="styleFontePeqNegrito">
 							<td align="center" width="20%">Consumo Minimo</td>
 							<td align="center" width="15%">Percentual de Esgoto</td>
 							<td align="center" width="15%">Percentual de Coleta</td>
-							<td align="center" width="50%">Indicador de Poço</td>
+							<td align="center" width="25%">Indicador de Poço</td>
+							<td align="center" width="25%">Consumo Fixo de Poço</td>
 
 						</tr>
 						<tr bgcolor="#FFFFFF" class="styleFontePequena">
@@ -484,6 +492,7 @@ function proximoImovel(){
 							&nbsp;</td>
 							<td align="center">${sessionScope.leituraConsumoActionForm.percentualAguaConsumidaColetada}&nbsp;</td>
 							<td align="center">${sessionScope.leituraConsumoActionForm.descricaoPocoTipo}&nbsp;</td>
+							<td align="center">${sessionScope.leituraConsumoActionForm.consumoFixoPoco}&nbsp;</td>
 						</tr>
 
 					</table>
@@ -720,7 +729,7 @@ function proximoImovel(){
 							<table width="100%" border="0" cellpadding="0" cellspacing="0">
 	
 								<tr>
-									<td colspan="6" class="styleFonteTabelaPrincipal" align="center">
+									<td colspan="7" class="styleFonteTabelaPrincipal" align="center">
 									Hist&oacute;rico de Consumo</td>
 	
 								</tr>
@@ -730,12 +739,13 @@ function proximoImovel(){
 	
 									<td width="15%" align="center">Consumo Medido</td>
 									<td width="17%" align="center">Consumo Faturado</td>
+									<td width="14%" align="center">Consumo Poço</td>
 									<td width="13%" align="center">Anormalidade Consumo</td>
 									<td width="10%" align="center">Dias de Consumo</td>
-									<td width="29%" align="center">Tipo de Consumo</td>
+									<td width="15%" align="center">Tipo de Consumo</td>
 								</tr>
 								<tr bordercolor="#90c7fc">
-									<td colspan="6">
+									<td colspan="7">
 									<div style="width: 100%; height: 50; overflow: auto;">
 									<table width="100%" align="left" bgcolor="#90c7fc">
 										<!--corpo da segunda tabela-->
@@ -766,6 +776,11 @@ function proximoImovel(){
 														face="Verdana, Arial, Helvetica, sans-serif">
 													${imovelMicromedicao.consumoHistorico.numeroConsumoFaturadoMes}
 													&nbsp;</font></td>
+													<td width="14%" align="center"><font color="#000000"
+														style="font-size:9px"
+														face="Verdana, Arial, Helvetica, sans-serif">
+													${imovelMicromedicao.consumoHistorico.consumoPoco}
+													&nbsp;</font></td>
 													<td width="13%" align="center"><font color="#000000"
 														style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif">
@@ -775,7 +790,7 @@ function proximoImovel(){
 														style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif">
 													${imovelMicromedicao.qtdDias}&nbsp;</font></td>
-													<td width="29%"><font color="#000000" style="font-size:9px"
+													<td width="15%"><font color="#000000" style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif">
 													${imovelMicromedicao.consumoHistorico.consumoTipo.descricao}
 													&nbsp;</font></td>
@@ -884,6 +899,9 @@ function proximoImovel(){
 							<input style="width: 180px" type="button" name="Button"
 								class="bottonRightCol" value="Alterar Dados Faturamento"
 								onClick="javascript:redirecionarSubmit('/gsan/exibirDadosFaturamentoAction.do?idImovel=${sessionScope.leituraConsumoActionForm.imovel}&idTipoMedicao=${sessionScope.leituraConsumoActionForm.idTipoMedicao}&voltar=S&bloquearCampos=S&telaMedicaoConsumoDadosAnt=1');" />
+							<input type="button"
+								name="Button" style="width: 230px" class="bottonRightCol" value="Consistir Leitura e Calcular Consumo"
+								onclick="consistirLeituraCalcularConsumo('${sessionScope.leituraConsumoActionForm.imovel}', '${sessionScope.leituraConsumoActionForm.idTipoMedicao}');" />
 							</td>
 						</tr>
 					</table>

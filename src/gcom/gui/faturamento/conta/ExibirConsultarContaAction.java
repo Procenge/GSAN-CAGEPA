@@ -140,11 +140,12 @@ public class ExibirConsultarContaAction
 		sessao.removeAttribute("idContaHistorico");
 		sessao.removeAttribute("idConta");
 
-		String nomeFuncionario = null;
+		String nomeFuncionario = "";
 		Date dataInclusao = null;
 		Date dataRetificacao = null;
 		Date dataCancelamento = null;
 		Date dataRevisao = null;
+		Conta conta = null;
 
 		if(tipoConsulta.equalsIgnoreCase("conta")){
 
@@ -157,7 +158,6 @@ public class ExibirConsultarContaAction
 			 * Pesquisando a conta a partir do id recebido
 			 * =====================================================================
 			 */
-			Conta conta = null;
 
 			if(idConta != null && !idConta.equalsIgnoreCase("")){
 
@@ -227,7 +227,6 @@ public class ExibirConsultarContaAction
 
 					httpServletRequest.removeAttribute("emitirSegundaVia");
 				}
-
 
 			}else if(sessao.getAttribute("conta") != null){
 				conta = (Conta) sessao.getAttribute("conta");
@@ -299,8 +298,10 @@ public class ExibirConsultarContaAction
 			}
 			// ====================================================================
 
-			sessao.setAttribute("consultarImovelActionForm", pesquisarMedicaoConsumoHistExcecoesApresentaDadosConsultarImovel(conta
-							.getReferencia(), Integer.valueOf(idImovelDadosCadastrais), Boolean.TRUE, fachada, actionForm));
+			sessao.setAttribute(
+							"consultarImovelActionForm",
+							pesquisarMedicaoConsumoHistExcecoesApresentaDadosConsultarImovel(conta.getReferencia(),
+											Integer.valueOf(idImovelDadosCadastrais), Boolean.TRUE, fachada, actionForm));
 
 			if(conta.getIndicadorDebitoConta() == 1){
 				DebitoAutomatico debitoAutomatico = fachada.obterObjetoDebitoAutomatico(Integer.valueOf(idImovelDadosCadastrais));
@@ -310,6 +311,17 @@ public class ExibirConsultarContaAction
 					sessao.setAttribute("debitoAutomatico", fachada.obterObjetoDebitoAutomatico(Integer.valueOf(idImovelDadosCadastrais)));
 				}
 			}
+
+			if(conta.getIndicadorExecucaoFiscal().equals(ConstantesSistema.SIM)){
+				sessao.setAttribute("statusDividaAtivaConta", "E");
+			}else if(conta.getIndicadorDividaAtiva().equals(ConstantesSistema.SIM)){
+				sessao.setAttribute("statusDividaAtivaConta", "A");
+			}else{
+				sessao.setAttribute("statusDividaAtivaConta", "N");
+			}
+
+			Usuario usuario = conta.getUsuario();
+			nomeFuncionario = obterNomeUsuario(nomeFuncionario, usuario);
 
 		}else if(tipoConsulta.equalsIgnoreCase("contaHistorico")){
 
@@ -388,13 +400,18 @@ public class ExibirConsultarContaAction
 			dataCancelamento = contaHistorico.getDataCancelamento();
 			dataRevisao = contaHistorico.getDataRevisao();
 
-			sessao.setAttribute("consultarImovelActionForm", pesquisarMedicaoConsumoHistExcecoesApresentaDadosConsultarImovel(
-							contaHistorico.getAnoMesReferenciaContabil(), Integer.valueOf(idImovelDadosCadastrais), Boolean.TRUE, fachada,
-							actionForm));
+			sessao.setAttribute(
+							"consultarImovelActionForm",
+							pesquisarMedicaoConsumoHistExcecoesApresentaDadosConsultarImovel(contaHistorico.getAnoMesReferenciaContabil(),
+											Integer.valueOf(idImovelDadosCadastrais), Boolean.TRUE, fachada, actionForm));
 
 			if(contaHistorico.getIndicadorDebitoConta() == 1){
 				sessao.setAttribute("debitoAutomatico", fachada.obterObjetoDebitoAutomatico(Integer.valueOf(idImovelDadosCadastrais)));
 			}
+
+			Usuario usuario = contaHistorico.getUsuario();
+
+			nomeFuncionario = obterNomeUsuario(nomeFuncionario, usuario);
 
 		}
 
@@ -452,6 +469,7 @@ public class ExibirConsultarContaAction
 				if(funcionario != null){
 					nomeFuncionario = funcionario.getId() + " - " + funcionario.getNome();
 				}
+
 			}
 
 			// Clientes
@@ -465,13 +483,29 @@ public class ExibirConsultarContaAction
 			sessao.setAttribute("clientesConta", clientesConta);
 		}
 
+
 		FuncionarioContaHelp funcionarioContaHelp = new FuncionarioContaHelp();
 		funcionarioContaHelp.verificarFuncionarioUltimaOperacao(nomeFuncionario, dataInclusao, dataRetificacao, dataCancelamento,
 						dataRevisao);
+
 		httpServletRequest.setAttribute("funcionarioContaHelp", funcionarioContaHelp);
+
+		if(fachada.existeProcessoExecucaoFiscal().equals(ConstantesSistema.SIM)){
+			sessao.setAttribute("exibirDividaAtivaColuna", "S");
+		}else{
+			sessao.removeAttribute("exibirDividaAtivaColuna");
+		}
 
 		return retorno;
 
+	}
+
+	private String obterNomeUsuario(String nomeFuncionario, Usuario usuario){
+
+		if(usuario != null){
+			nomeFuncionario = usuario.getId() + " - " + usuario.getNomeUsuario();
+		}
+		return nomeFuncionario;
 	}
 
 	private ConsultarImovelActionForm pesquisarMedicaoConsumoHistExcecoesApresentaDadosConsultarImovel(Integer anoMesReferencia,
@@ -567,7 +601,7 @@ public class ExibirConsultarContaAction
 	}
 
 	/**
-	 * [SB0001] – Validar autorização de acesso ao imóvel pelos usuários das empresas de cobrança
+	 * [SB0001] ? Validar autorização de acesso ao imóvel pelos usuários das empresas de cobrança
 	 * administrativa
 	 * 
 	 * @author Hugo Lima
@@ -586,13 +620,13 @@ public class ExibirConsultarContaAction
 
 			sessao.removeAttribute("emitirSegundaVia");
 		}else{
-			// 1.2.2.2.1. Liberar o botão “Emitir 2ª. Via de Conta”.
+			// 1.2.2.2.1. Liberar o botão ?Emitir 2ª. Via de Conta?.
 			sessao.setAttribute("emitirSegundaVia", ConstantesSistema.SIM);
 		}
 	}
 
 	/**
-	 * [SB0003] – Verificar Débito em Cobrança Administrativa
+	 * [SB0003] ? Verificar Débito em Cobrança Administrativa
 	 * 
 	 * @author Hugo Lima
 	 * @date 15/08/2012

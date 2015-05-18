@@ -129,6 +129,10 @@ public class InserirContaActionForm
 
 	private String indicadorAguaFaturavel;
 
+	private String consumoFixoPoco;
+
+	private String habilitarConsumoFixoPoco;
+
 	public String getValorDebito(){
 
 		return valorDebito;
@@ -348,5 +352,34 @@ public class InserirContaActionForm
 
 		this.indicadorAguaFaturavel = indicadorAguaFaturavel;
 	}
+
+	public String getConsumoFixoPoco(){
+
+		return consumoFixoPoco;
+	}
+
+	public void setConsumoFixoPoco(String consumoFixoPoco){
+
+		this.consumoFixoPoco = consumoFixoPoco;
+	}
+
+	/**
+	 * @return the habilitarConsumoFixoPoco
+	 */
+	public String getHabilitarConsumoFixoPoco(){
+
+		return habilitarConsumoFixoPoco;
+	}
+
+	/**
+	 * @param habilitarConsumoFixoPoco
+	 *            the habilitarConsumoFixoPoco to set
+	 */
+	public void setHabilitarConsumoFixoPoco(String habilitarConsumoFixoPoco){
+
+		this.habilitarConsumoFixoPoco = habilitarConsumoFixoPoco;
+	}
+
+
 
 }

@@ -141,7 +141,6 @@ public class EmissaoExtratoDebitoAction
 		Collection<DebitoACobrar> colecaoDebitosACobrar = null;
 		Collection<CreditoARealizar> colecaoCreditoARealizar = null;
 		Collection<DebitoACobrar> colecaoDebitosACobrarParcelamento = null;
-		Collection<CreditoARealizar> colecaoCreditoARealizarParcelamento = null;
 		BigDecimal valorAcrescimosImpontualidade = BigDecimal.ZERO;
 		BigDecimal valorDocumento = BigDecimal.ZERO;
 		BigDecimal valorIncluirAcrescimoComoDesconto = BigDecimal.ZERO;
@@ -162,6 +161,7 @@ public class EmissaoExtratoDebitoAction
 		Object[] parcelamentos = this.obterParcelamentosSelecionados(idsParcelamentos, sessao, fachada);
 		BigDecimal valorDebitosParcelamento = BigDecimal.ZERO;
 		BigDecimal valorDebitosNaoParcelamento = BigDecimal.ZERO;
+		BigDecimal valorTotalImpostos = BigDecimal.ZERO;
 
 		if(contas != null){
 
@@ -170,7 +170,13 @@ public class EmissaoExtratoDebitoAction
 			if(contas[2] != null && !indicadorIncluirAcrescimosImpontualidade.equals(CobrancaDocumento.NAO_INCLUIR_ACRESCIMOS)){
 
 				valorAcrescimosImpontualidade = (BigDecimal) contas[2];
+
 			}
+
+			if(contas[3] != null){
+				valorTotalImpostos = (BigDecimal) contas[3];
+			}
+
 		}
 
 		if(debitos != null){
@@ -205,18 +211,6 @@ public class EmissaoExtratoDebitoAction
 				}
 
 				colecaoDebitosACobrar.addAll(colecaoDebitosACobrarParcelamento);
-			}
-
-			colecaoCreditoARealizarParcelamento = (Collection) parcelamentos[2];
-
-			if(colecaoCreditoARealizarParcelamento != null){
-
-				if(colecaoCreditoARealizar == null){
-
-					colecaoCreditoARealizar = new ArrayList();
-				}
-
-				colecaoCreditoARealizar.addAll(colecaoCreditoARealizarParcelamento);
 			}
 
 			valorDescontoAntecipacao = (BigDecimal) parcelamentos[5];
@@ -305,6 +299,8 @@ public class EmissaoExtratoDebitoAction
 
 			fachada.inserir(debitoACobrar);
 
+			fachada.inserirClienteDebitoACobrar(debitoACobrar);
+
 			// [UC0108] Obter Quantidade de Economias por Categoria
 			Collection<Categoria> colecaoCategoriasImovel = fachada.obterQuantidadeEconomiasCategoria(imovel);
 
@@ -345,6 +341,8 @@ public class EmissaoExtratoDebitoAction
 			colecaoDebitosACobrar.add(debitoACobrar);
 		}
 
+
+
 		sessao.setAttribute("colecaoContasExtrato", colecaoContas);
 		sessao.setAttribute("colecaoGuiasPagamentoExtrato", colecaoGuiasPagamento);
 		sessao.setAttribute("colecaoDebitosACobrarExtratoSelecao", colecaoDebitosACobrar);
@@ -355,6 +353,7 @@ public class EmissaoExtratoDebitoAction
 		sessao.setAttribute("nomeClienteExtrato", form.getNomeClienteUsuarioImovel());
 		sessao.setAttribute("valorDebitosExtratoSelecao",
 						valorDebitosParcelamento.add(valorDebitosNaoParcelamento).add(valorDescontoAntecipacao));
+		sessao.setAttribute("valorTotalImpostos", valorTotalImpostos);
 
 		if(idsDebitos != null){
 
@@ -405,9 +404,10 @@ public class EmissaoExtratoDebitoAction
 		Collection<ContaValoresHelper> colecaoContas = null;
 		BigDecimal valorTotalConta = BigDecimal.ZERO;
 		BigDecimal valorTotalAcrescimoImpontualidade = BigDecimal.ZERO;
+		BigDecimal valorTotalImpostos = BigDecimal.ZERO;
 
 		if(idsContas != null && !idsContas.equals("")){
-			retorno = new Object[3];
+			retorno = new Object[4];
 			colecaoContas = new ArrayList();
 
 			Collection colecaoContasSessao = (Collection) sessao.getAttribute("colecaoContaExtrato");
@@ -427,7 +427,7 @@ public class EmissaoExtratoDebitoAction
 						valorTotalConta = valorTotalConta.add(contaValoresHelper.getValorTotalConta());
 						valorTotalAcrescimoImpontualidade = valorTotalAcrescimoImpontualidade.add(contaValoresHelper
 										.getValorTotalContaValoresParcelamento());
-
+						valorTotalImpostos = valorTotalImpostos.add(contaValoresHelper.getConta().getValorImposto());
 						if(contaValoresHelper.getConta().getValorImposto() != null){
 							valorTotalConta = valorTotalConta.subtract(contaValoresHelper.getConta().getValorImposto());
 						}
@@ -438,6 +438,7 @@ public class EmissaoExtratoDebitoAction
 			retorno[0] = colecaoContas;
 			retorno[1] = valorTotalConta;
 			retorno[2] = valorTotalAcrescimoImpontualidade;
+			retorno[3] = valorTotalImpostos;
 		}
 
 		return retorno;
@@ -631,9 +632,9 @@ public class EmissaoExtratoDebitoAction
 
 					Integer totalParcelas = debitoACobrarTMP.getNumeroPrestacaoDebito() - debitoACobrarTMP.getNumeroPrestacaoCobradas();
 						
-					quantidadeParcelasAntecipadas = totalParcelas;
-
-
+					if(quantidadeParcelasAntecipadas < totalParcelas){
+						quantidadeParcelasAntecipadas = totalParcelas;
+					}
 				}
 			}
 		}
@@ -736,7 +737,15 @@ public class EmissaoExtratoDebitoAction
 
 								if(debitoACobrar.getParcelamento().getId().equals(Integer.valueOf(ItemIdsParcelamentoArray[0]))){
 
-									debitoACobrar.setQuantidadeParcelasAntecipadas(totalParcelasAntecipadas);
+									if(debitoACobrar.getParcelasRestante() < totalParcelasAntecipadas){
+
+										debitoACobrar.setQuantidadeParcelasAntecipadas(Integer.valueOf(debitoACobrar.getParcelasRestante()));
+
+									}else{
+
+										debitoACobrar.setQuantidadeParcelasAntecipadas(totalParcelasAntecipadas);
+
+									}
 									debitoACobrar.setDataAntecipacao(new Date());
 
 

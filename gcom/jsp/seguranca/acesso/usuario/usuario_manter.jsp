@@ -38,6 +38,22 @@ function remover(){
  }
 }
 
+	function inativar(){
+		var form = document.forms[0];
+		if(CheckboxNaoVazio(form.ids) && confirm('Confirma INATIVAR usuários selecionados?')){
+			form.action = "removerUsuarioAction.do?inativar=ok";
+			submeterFormPadrao(form);
+		}
+	}
+	
+	function ativar(){
+		var form = document.forms[0];
+		if(CheckboxNaoVazio(form.ids) && confirm('Confirma ATIVAR usuários selecionados?')){
+			form.action = "removerUsuarioAction.do?ativar=ok";
+			submeterFormPadrao(form);
+		}
+	}
+
 function controlarAcessos(){
    var achou = false;
    var erro = false;
@@ -155,6 +171,10 @@ function controlarAcessos(){
 							<div align="center"><strong>Todos</strong></div>
 							</td>
 							<td width="20%" bgcolor="#90c7fc">
+							<div align="center"><strong>ID do Usu&aacute;rio</strong></div>
+							</td>
+							
+							<td width="20%" bgcolor="#90c7fc">
 							<div align="center"><strong>Nome do Usu&aacute;rio</strong></div>
 							</td>
 
@@ -204,6 +224,11 @@ function controlarAcessos(){
 												name="ids"
 												value="<bean:write name="usuarioGrupo" property="id"/>" /> </strong></div>
 											</td>
+											<td width="10%">
+											<div align="center"><bean:write name="usuarioGrupo"
+												property="id" /></div>
+											</td>
+											
 											<td width="20%">
 											<div align="center"><html:link
 												page="/exibirAtualizarUsuarioAction.do" paramName="usuarioGrupo"
@@ -257,23 +282,24 @@ function controlarAcessos(){
 					<table width="100%" border="0">
 						<tr>
 							<td valign="top">
-							<gcom:controleAcessoBotao name="Botao" value="Remover" onclick="remover();" url="removerUsuarioAction.do"/>
-							&nbsp;
-							<%--<input name="button" type="button"
-								class="bottonRightCol" value="Remover" onclick="remover();" />
-							 <input name="button" type="button" class="bottonRightCol"
-								value="Controlar Acessos" onclick="controlarAcessos();" />--%>
+								<gcom:controleAcessoBotao name="Botao" value="Remover" onclick="remover();" url="removerUsuarioAction.do"/>
+								<gcom:controleAcessoBotao name="Botao" value="Inativar" onclick="inativar();" url="removerUsuarioAction.do"/>
+								<gcom:controleAcessoBotao name="Botao" value="Ativar" onclick="ativar();" url="removerUsuarioAction.do"/>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 								<gcom:controleAcessoBotao name="Botao" value="Controlar Acessos" onclick="controlarAcessos();" url="concluirControlarAcessosUsuarioAction.do"/> &nbsp;
-							<input name="button" type="button" class="bottonRightCol"
-								value="Voltar Filtro"
-								onclick="window.location.href='/gsan/exibirFiltrarUsuarioAction.do'"
-								align="left" style="width: 80px;"></td>
+								<input name="button" type="button" class="bottonRightCol"
+									value="Voltar Filtro"
+									onclick="window.location.href='/gsan/exibirFiltrarUsuarioAction.do'"
+									align="left" style="width: 80px;">
+							</td>
 							<td valign="top">
-							<div align="right"><a
-								href="javascript:toggleBox('demodiv',1);/*javascript:abrirPopupRelatorio('gerarRelatorioManterUsuarioAction.do');*/">
-							<img border="0"
-								src="<bean:message key="caminho.imagens"/>print.gif"
-								title="Imprimir Usuarios" /> </a></div>
+								<div align="right">
+									<a href="javascript:toggleBox('demodiv',1);/*javascript:abrirPopupRelatorio('gerarRelatorioManterUsuarioAction.do');*/">
+										<img border="0"
+											src="<bean:message key="caminho.imagens"/>print.gif"
+											title="Imprimir Usuarios" />
+									</a>
+								</div>
 							</td>
 						</tr>
 					</table>

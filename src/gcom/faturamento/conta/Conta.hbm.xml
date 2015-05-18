@@ -267,6 +267,53 @@
         length="1"
         not-null="true"
     />
+    
+     <property
+        name="indicadorDividaAtiva"
+        type="java.lang.Short"
+        column="CNTA_ICDIVIDAATIVA"
+        length="1"
+        not-null="true"
+    />
+    
+      <property
+        name="dataDividaAtiva"
+             type="java.sql.Date"
+        column="CNTA_DTDIVIDAATIVA"       
+        length="4"
+    />
+    
+      <property
+        name="indicadorExecucaoFiscal"
+        type="java.lang.Short"
+        column="CNTA_ICEXECUCAOFISCAL"
+        length="1"
+        not-null="true"
+    />
+    
+      <property
+        name="dataExecucaoFiscal"
+             type="java.sql.Date"
+        column="CNTA_DTEXECUCAOFISCAL"   
+        length="4"
+    />
+    
+    <property
+        name="consumoPoco"
+        type="java.lang.Integer"
+        column="cnta_nnconsumopoco"   
+        length="9"
+    />
+    <property
+        name="numeroProcessoAdministrativoExecucaoFiscal"
+        type="java.lang.Integer"
+        column="CNTA_NNPROCESADMEXECUCAOFISCAL"
+    />
+	<!-- length="14"-->
+    
+   
+    
+    
 
     <!-- associations -->
     
@@ -616,7 +663,7 @@
     <many-to-one
         name="usuario"
         class="gcom.seguranca.acesso.usuario.Usuario"
-        not-null="false"
+        not-null="false" lazy="false"
     >
         <column name="usur_id" />
     </many-to-one>

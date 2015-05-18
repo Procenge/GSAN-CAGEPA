@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.parcelamento.ParcelamentoAcordoTipo" 
+    table="parcelamento_acordo_tipo"
+    dynamic-insert="true" dynamic-update="true"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="PATP_ID"
+    >
+	    <generator class="sequence">
+	       <param name="sequence">SQ_PARCELAMENTO_ACORDO_TIPO</param>
+	    </generator>
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="PATP_DSACORDOPARCELAMENTOTIPO"
+        length="60"
+        not-null="true"  
+    />
+    <property
+        name="descricaoLayoutProcurador"
+        type="java.lang.String"
+        column="PATP_DSLAYOUTPROCURADOR"
+        length="60"
+        not-null="false"  
+    />    
+    <property
+        name="nomeRelatorioProcurador"
+        type="java.lang.String"
+        column="PATP_NMRELATORIOPROCURADOR"
+        length="60"
+        not-null="false"  
+    />
+    <property
+        name="nomeClasseProcurador"
+        type="java.lang.String"
+        column="PATP_NMCLASSEPROCURADOR"
+        length="100"
+        not-null="false"  
+    />
+    <property
+        name="indicadorParcelamentoNormal"
+        type="java.lang.Integer"
+        column="PATP_ICPARCELAMENTONORMAL"
+        not-null="true"   
+    />
+     <property
+        name="indicadorUso"
+        type="java.lang.Integer"
+        column="PATP_ICUSO"
+        not-null="true"  
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="PATP_TMULTIMAALTERACAO"
+        length="6"
+        not-null="true"
+    />
+</class>
+</hibernate-mapping>

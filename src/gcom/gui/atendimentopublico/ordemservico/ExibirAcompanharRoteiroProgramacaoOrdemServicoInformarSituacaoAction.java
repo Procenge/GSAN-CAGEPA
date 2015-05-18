@@ -76,15 +76,14 @@
 
 package gcom.gui.atendimentopublico.ordemservico;
 
-import gcom.atendimentopublico.ordemservico.FiltroOsProgramNaoEncerMotivo;
-import gcom.atendimentopublico.ordemservico.OrdemServico;
-import gcom.atendimentopublico.ordemservico.OrigemEncerramentoOrdemServico;
-import gcom.atendimentopublico.ordemservico.OsProgramNaoEncerMotivo;
+import gcom.atendimentopublico.ordemservico.*;
 import gcom.atendimentopublico.ordemservico.bean.ObterDescricaoSituacaoOSHelper;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
 import gcom.util.Util;
+import gcom.util.filtro.ParametroSimples;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -117,6 +116,64 @@ public class ExibirAcompanharRoteiroProgramacaoOrdemServicoInformarSituacaoActio
 		// Form
 		AcompanharRoteiroProgramacaoOrdemServicoActionForm acompanharActionForm = (AcompanharRoteiroProgramacaoOrdemServicoActionForm) actionForm;
 
+		if(httpServletRequest.getParameter("modificarMotivoEncerramento") != null
+						&& httpServletRequest.getParameter("modificarMotivoEncerramento").equals("S")){
+			FiltroOsProgramNaoEncerMotivo filtroOsProgramNaoEncerMotivo = new FiltroOsProgramNaoEncerMotivo();
+			filtroOsProgramNaoEncerMotivo.adicionarParametro(new ParametroSimples(FiltroOsProgramNaoEncerMotivo.ID, acompanharActionForm
+							.getMotivoNaoEncerramento()));
+
+			OsProgramNaoEncerMotivo osProgramNaoEncerMotivo = (OsProgramNaoEncerMotivo) Util.retonarObjetoDeColecao(fachada.pesquisar(
+							filtroOsProgramNaoEncerMotivo, OsProgramNaoEncerMotivo.class.getName()));
+
+			acompanharActionForm.setMotivoCobrarVisitaImprodutiva("2");
+			acompanharActionForm.setMotivoVisitaImprodutiva("2");
+
+			if(osProgramNaoEncerMotivo != null
+							&& acompanharActionForm.getSituacaoOrdemServico().equals(OrdemServico.SITUACAO_PENDENTE.toString())
+							&& osProgramNaoEncerMotivo.getIndicadorCobraVisitaImprodutiva().equals(ConstantesSistema.SIM)){
+				FiltroOrdemServico filtroOrdemServico = new FiltroOrdemServico();
+				filtroOrdemServico.adicionarCaminhoParaCarregamentoEntidade(FiltroOrdemServico.SERVICO_TIPO);
+				filtroOrdemServico
+								.adicionarParametro(new ParametroSimples(FiltroOrdemServico.ID, acompanharActionForm.getIdOrdemServico()));
+				
+				OrdemServico ordemServicoPesquisado = (OrdemServico) Util.retonarObjetoDeColecao(fachada.pesquisar(filtroOrdemServico,
+								OrdemServico.class.getName()));
+				Integer qtdMaximaVisitaImprodutivas = ordemServicoPesquisado.getServicoTipo()
+								.getNumeroMaximoVisitasImprodutivasPermitidas();
+
+				FiltroOrdemServicoProgramacao filtroOrdemServicoProgramacao = new FiltroOrdemServicoProgramacao();
+				filtroOrdemServicoProgramacao.adicionarCaminhoParaCarregamentoEntidade(FiltroOrdemServicoProgramacao.ORDEM_SERVICO);
+				filtroOrdemServicoProgramacao.adicionarCaminhoParaCarregamentoEntidade("osProgramNaoEncerMotivo");
+
+				filtroOrdemServicoProgramacao.adicionarParametro(new ParametroSimples(FiltroOrdemServicoProgramacao.ORDEM_SERVICO_ID,
+								acompanharActionForm.getIdOrdemServico()));
+				filtroOrdemServicoProgramacao.adicionarParametro(new ParametroSimples("osProgramNaoEncerMotivo.id", osProgramNaoEncerMotivo
+								.getId()));
+				
+				Collection<OrdemServicoProgramacao> colecaoOrdemServicoProgramacao = fachada.pesquisar(
+								filtroOrdemServicoProgramacao, OrdemServicoProgramacao.class.getName());
+
+				if(qtdMaximaVisitaImprodutivas == null || colecaoOrdemServicoProgramacao.size() < qtdMaximaVisitaImprodutivas){
+					acompanharActionForm.setMotivoCobrarVisitaImprodutiva(osProgramNaoEncerMotivo.getIndicadorCobraVisitaImprodutiva()
+									.toString());
+					acompanharActionForm.setMotivoVisitaImprodutiva(osProgramNaoEncerMotivo.getIndicadorVisitaImprodutiva().toString());
+				}else{
+					String[] parametros = new String[2];
+					parametros[0] = acompanharActionForm.getIdOrdemServico().toString();
+					parametros[1] = qtdMaximaVisitaImprodutivas.toString();
+					
+					throw new ActionServletException("atencao.ordem_servico_limite_maximo", null, parametros);
+				}
+				
+				this.pesquisarOsProgramNaoEncerMotivo(httpServletRequest);
+
+				return retorno;
+			}
+		}else{
+			acompanharActionForm.setMotivoCobrarVisitaImprodutiva("2");
+			acompanharActionForm.setMotivoVisitaImprodutiva("2");
+		}
+
 		if(httpServletRequest.getParameter("submitAutomatico") != null && httpServletRequest.getParameter("submitAutomatico").equals("ok")){
 			httpServletRequest.setAttribute("submitAutomatico", "ok");
 		}
@@ -125,6 +182,7 @@ public class ExibirAcompanharRoteiroProgramacaoOrdemServicoInformarSituacaoActio
 		String chaveEquipe = httpServletRequest.getParameter("chaveEquipe");
 		String idOrdemServicoProgramacao = httpServletRequest.getParameter("idOrdemServicoProgramacao");
 		String dataRoteiroParametro = httpServletRequest.getParameter("dataRoteiro");
+
 		if(dataRoteiroParametro != null && !"".equals(dataRoteiroParametro)){
 			sessao.setAttribute("dataRoteiro", dataRoteiroParametro);
 		}

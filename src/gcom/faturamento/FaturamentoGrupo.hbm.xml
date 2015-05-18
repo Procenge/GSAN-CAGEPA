@@ -69,6 +69,20 @@
         not-null="true"
         length="2"
     />
+    
+    <property
+        name="diaVencimentoDebitoAutomatico"
+        type="java.lang.Short"
+        column="ftgr_nndiavencdebitoaut"
+        length="2"
+    />
+    
+    <property
+        name="diaVencimentoEntregaAlternativa"
+        type="java.lang.Short"
+        column="ftgr_nndiavencentregaalter"
+        length="2"
+    />
 
    <!-- associations -->
     <!-- bi-directional one-to-many association to FaturamentoGrupoCronogramaMensal

@@ -78,13 +78,7 @@ package gcom.gui.faturamento;
 
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
-import gcom.faturamento.FaturamentoAtivCronRota;
-import gcom.faturamento.FaturamentoAtividade;
-import gcom.faturamento.FaturamentoAtividadeCronograma;
-import gcom.faturamento.FaturamentoGrupo;
-import gcom.faturamento.FaturamentoGrupoCronogramaMensal;
-import gcom.faturamento.FiltroFaturamentoAtivCronRota;
-import gcom.faturamento.FiltroFaturamentoAtividadeCronograma;
+import gcom.faturamento.*;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
@@ -266,7 +260,8 @@ public class ExibirAtualizarComandoAtividadeFaturamentoDadosAction
 					dataVencimento = faturamentoAtivCronRota.getDataContaVencimento();
 				}else if(faturamentoGrupo.getDiaVencimento() != null){
 					// [UC0618] Obter Data de Vencimento do Grupo
-					dataVencimento = fachada.obterDataVencimentoGrupo(faturamentoGrupo.getId());
+					dataVencimento = fachada.obterDataVencimentoGrupo(faturamentoGrupo.getId(),
+									faturamentoGrupoCronogramaMensal.getAnoMesReferencia());
 				}
 
 				if(dataVencimento != null){

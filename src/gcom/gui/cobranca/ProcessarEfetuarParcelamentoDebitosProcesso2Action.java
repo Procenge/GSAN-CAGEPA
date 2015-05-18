@@ -88,6 +88,7 @@ import gcom.cobranca.bean.IndicadoresParcelamentoHelper;
 import gcom.cobranca.bean.NegociacaoOpcoesParcelamentoHelper;
 import gcom.cobranca.parcelamento.Parcelamento;
 import gcom.fachada.Fachada;
+import gcom.faturamento.debito.DebitoACobrar;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.usuario.Usuario;
@@ -140,6 +141,16 @@ public class ProcessarEfetuarParcelamentoDebitosProcesso2Action
 							"request");
 		// }
 
+		Collection<ContaValoresHelper> colecaoContaValores = (Collection<ContaValoresHelper>) sessao.getAttribute("colecaoContaValores");
+
+		Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoHelper = (Collection<GuiaPagamentoValoresHelper>) sessao
+						.getAttribute("colecaoGuiaPagamentoValores");
+
+		// Collection<DebitoACobrarValoresHelper> colecaoDebitoACobrarValores =
+		// (Collection<DebitoACobrarValoresHelper>)
+		// sessao.getAttribute("colecaoDebitoACobrarValores");
+		Collection<DebitoACobrar> colecaoDebitoACobrar = (Collection<DebitoACobrar>) sessao.getAttribute("colecaoDebitoACobrar");
+
 		boolean marcadaEP = false;
 		if(sessao.getAttribute("marcadaEP") != null){
 			marcadaEP = sessao.getAttribute("marcadaEP").equals("true");
@@ -163,8 +174,6 @@ public class ProcessarEfetuarParcelamentoDebitosProcesso2Action
 			String indicadorParcelamentoCobrancaBancaria = (String) efetuarParcelamentoDebitosActionForm
 							.get("indicadorParcelamentoCobrancaBancaria");
 
-			Collection<ContaValoresHelper> colecaoContaValores = (Collection<ContaValoresHelper>) sessao
-							.getAttribute("colecaoContaValores");
 			Integer inicioIntervaloParcelamentoFormatado = null;
 			if(inicioIntervaloParcelamento != null && !inicioIntervaloParcelamento.trim().equals("")){
 				inicioIntervaloParcelamentoFormatado = Util.formatarMesAnoComBarraParaAnoMes(inicioIntervaloParcelamento);
@@ -214,9 +223,6 @@ public class ProcessarEfetuarParcelamentoDebitosProcesso2Action
 			BigDecimal valorTotalJurosMora = BigDecimal.ZERO;
 			BigDecimal valorTotalAtualizacoesMonetarias = BigDecimal.ZERO;
 
-			Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoHelper = (Collection<GuiaPagamentoValoresHelper>) sessao
-							.getAttribute("colecaoGuiaPagamentoValores");
-
 			if(colecaoContaValores != null && !colecaoContaValores.isEmpty()){
 				Iterator<ContaValoresHelper> contaValores = colecaoContaValores.iterator();
 				while(contaValores.hasNext()){
@@ -261,6 +267,29 @@ public class ProcessarEfetuarParcelamentoDebitosProcesso2Action
 				dataVencimentoEntradaParcelamento = (String) efetuarParcelamentoDebitosActionForm.get("dataVencimentoEntradaParcelamento");
 			}
 
+			BigDecimal valorSucumbenciaTotal = BigDecimal.ZERO;
+			String valorAcrescimosSucumbenciaImovelStr = (String) efetuarParcelamentoDebitosActionForm
+							.get("valorAcrescimosSucumbenciaImovel");
+			if(!Util.isVazioOuBranco(valorAcrescimosSucumbenciaImovelStr)){
+				valorSucumbenciaTotal = valorSucumbenciaTotal
+								.add(Util.formatarMoedaRealparaBigDecimal(valorAcrescimosSucumbenciaImovelStr));
+			}
+			String valorTotalSucumbenciaImovelStr = (String) efetuarParcelamentoDebitosActionForm.get("valorTotalSucumbenciaImovel");
+			if(!Util.isVazioOuBranco(valorTotalSucumbenciaImovelStr)){
+				valorSucumbenciaTotal = valorSucumbenciaTotal.add(Util.formatarMoedaRealparaBigDecimal(valorTotalSucumbenciaImovelStr));
+			}
+			String valorSucumbenciaAtualStr = (String) efetuarParcelamentoDebitosActionForm.get("valorSucumbenciaAtual");
+			if(!Util.isVazioOuBranco(valorSucumbenciaAtualStr)){
+				valorSucumbenciaTotal = valorSucumbenciaTotal.add(Util.formatarMoedaRealparaBigDecimal(valorSucumbenciaAtualStr));
+			}
+
+			String quantidadeParcelasSucumbenciaStr = (String) efetuarParcelamentoDebitosActionForm.get("quantidadeParcelasSucumbencia");
+			if(Util.isVazioOuBranco(quantidadeParcelasSucumbenciaStr)){
+				quantidadeParcelasSucumbenciaStr = "1";
+			}
+			Integer quantidadeParcelasSucumbencia = Integer.valueOf(quantidadeParcelasSucumbenciaStr);
+			efetuarParcelamentoDebitosActionForm.set("quantidadeParcelasSucumbencia", quantidadeParcelasSucumbenciaStr);
+
 			// [SB0002] - Obter Opções de Parcelamento de acordo com a entrada informada
 			NegociacaoOpcoesParcelamentoHelper opcoesParcelamento = fachada.obterOpcoesDeParcelamento(Integer.valueOf(resolucaoDiretoria),
 							Integer.valueOf(codigoImovel), BigDecimal.ZERO, situacaoAguaId, situacaoEsgotoId, perfilImovel,
@@ -268,7 +297,8 @@ public class ProcessarEfetuarParcelamentoDebitosProcesso2Action
 							valorTotalMultas, valorTotalJurosMora, valorTotalAtualizacoesMonetarias, numeroReparcelamentoConsecutivos,
 							colecaoGuiaPagamentoHelper, usuario, valorDebitoACobrarParcelamentoImovelBigDecimal,
 							inicioIntervaloParcelamentoFormatado, fimIntervaloParcelamentoFormatado, indicadoresParcelamentoHelper,
-							dataVencimentoEntradaParcelamento);
+							dataVencimentoEntradaParcelamento, BigDecimal.ZERO, quantidadeParcelasSucumbencia, BigDecimal.ZERO,
+							BigDecimal.ZERO);
 
 			BigDecimal valorEntradaMinima = opcoesParcelamento.getValorEntrada();
 
@@ -301,6 +331,15 @@ public class ProcessarEfetuarParcelamentoDebitosProcesso2Action
 			sessao.setAttribute("valorEntradaMinima", valorEntradaMinima);
 		}else{
 			sessao.setAttribute("valorEntradaMinima", BigDecimal.ZERO);
+		}
+
+		boolean indicadorParcelamentoExecucaoFiscal = fachada.verificarExecucaoFiscal(colecaoContaValores, colecaoGuiaPagamentoHelper,
+						colecaoDebitoACobrar);
+
+		if(indicadorParcelamentoExecucaoFiscal){
+			sessao.setAttribute("indicadorParcelamentoExecucaoFiscal", 'S');
+		}else{
+			sessao.removeAttribute("indicadorParcelamentoExecucaoFiscal");
 		}
 
 		return retorno;

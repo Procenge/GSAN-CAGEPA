@@ -37,19 +37,25 @@ function limpar(tipo){
 function validarForm(form){
 
 	var objMunicipio = returnObject(form, "nomeMunicipio");
+	var objLogradouro = returnObject(form, "nomeLogradouro");
 	
 	if (objMunicipio.disabled){
 		objMunicipio.disabled = false;
 		voltarSituacao = true;
 	}
 	
-	if (validateSelecionarCepActionForm(form)){
+	if (validateSelecionarCepActionForm(form) && objLogradouro.value != ''){
 	
 		redirecionarSubmit('pesquisarSelecionarCepAction.do');
 		 
 	}
 	else if (voltarSituacao){
 		objMunicipio.disabled = true;
+		
+		if (objLogradouro.value == '') {
+			alert('Por favor informar o Logradouro');
+		}
+		
 	}
 }
 
@@ -138,7 +144,7 @@ function cepPadrao(){
 
 <logic:notPresent name="retornarUseCase">
 	<BODY TOPMARGIN="5" LEFTMARGIN="5"
-		onload="resizePageSemLink(700, 450); setarFoco('${requestScope.nomeCampo}');">
+		onload="resizePageSemLink(700, 650); setarFoco('${requestScope.nomeCampo}');">
 </logic:notPresent>
 
 <html:form action="/exibirSelecionarCepAction" method="post">
@@ -199,7 +205,7 @@ function cepPadrao(){
 					</logic:notEmpty></td>
 				</tr>
 				<tr>
-					<td width="15%"><strong>Logradouro:<font color="#FF0000"></font></strong></td>
+					<td width="15%"><strong>Logradouro:<font color="#FF0000">*</font></strong></td>
 					<td width="85%" colspan="2"><html:text maxlength="30"
 						property="nomeLogradouro" size="30" tabindex="2" /></td>
 				</tr>
@@ -243,7 +249,7 @@ function cepPadrao(){
 						</tr>
 					</table>
 
-					<div style="width: 100%; height: 100; overflow: auto;">
+					<div style="width: 100%; height: 300; overflow: auto;">
 
 					<table width="100%" cellpadding="0" cellspacing="0">
 						<tr>

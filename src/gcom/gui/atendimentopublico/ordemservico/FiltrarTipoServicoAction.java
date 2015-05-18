@@ -84,12 +84,7 @@ import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.Util;
-import gcom.util.filtro.ComparacaoTexto;
-import gcom.util.filtro.Intervalo;
-import gcom.util.filtro.MaiorQue;
-import gcom.util.filtro.MenorQue;
-import gcom.util.filtro.ParametroSimples;
-import gcom.util.filtro.ParametroSimplesColecao;
+import gcom.util.filtro.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -152,6 +147,8 @@ public class FiltrarTipoServicoAction
 		String servicoTerceirizado = form.getServicoTerceirizado();
 		String indicadorFiscalizacaoInfracao = form.getIndicadorFiscalizacaoInfracao();
 		String indicadorVistoria = form.getIndicadorVistoria();
+		String indicadorAfericaoHidrometro = form.getIndicadorAfericaoHidrometro();
+		String indicadorPagamentoAntecipado = form.getIndicadorPagamentoAntecipado();
 		String codigoServico = form.getCodigoServico();
 		String tempoMedioIncial = form.getTempoMedioIncial();
 		String tempoMedioFinal = form.getTempoMedioFinal();
@@ -233,6 +230,23 @@ public class FiltrarTipoServicoAction
 			peloMenosUmParametroInformado = true;
 			filtroTipoServico.adicionarParametro(new ParametroSimples(FiltroTipoServico.INDICADOR_VISTORIA, indicadorVistoria));
 		}
+
+		// Indicativo de Aferição de Hidrômetro
+		if(indicadorAfericaoHidrometro != null && !indicadorAfericaoHidrometro.trim().equals("")){
+
+			peloMenosUmParametroInformado = true;
+			filtroTipoServico.adicionarParametro(new ParametroSimples(FiltroTipoServico.INDICADOR_AFERICAO_HIDROMETRO,
+							indicadorAfericaoHidrometro));
+		}
+
+		// Indicativo de Pagamento Antecipado
+		if(indicadorPagamentoAntecipado != null && !indicadorPagamentoAntecipado.trim().equals("")){
+
+			peloMenosUmParametroInformado = true;
+			filtroTipoServico.adicionarParametro(new ParametroSimples(FiltroTipoServico.INDICADOR_PAGAMENTO_ANTECIPADO,
+							indicadorPagamentoAntecipado));
+		}
+
 		// codigoServico
 		if(codigoServico != null && !codigoServico.trim().equals("")){
 			peloMenosUmParametroInformado = true;

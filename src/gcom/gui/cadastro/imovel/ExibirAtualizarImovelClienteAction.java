@@ -76,11 +76,7 @@
 
 package gcom.gui.cadastro.imovel;
 
-import gcom.cadastro.cliente.Cliente;
-import gcom.cadastro.cliente.ClienteImovel;
-import gcom.cadastro.cliente.ClienteRelacaoTipo;
-import gcom.cadastro.cliente.FiltroCliente;
-import gcom.cadastro.cliente.FiltroClienteRelacaoTipo;
+import gcom.cadastro.cliente.*;
 import gcom.cadastro.imovel.FiltroImovelContaEnvio;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.imovel.ImovelContaEnvio;
@@ -89,7 +85,9 @@ import gcom.faturamento.conta.FiltroNomeConta;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -182,6 +180,8 @@ public class ExibirAtualizarImovelClienteAction
 		String dataAtual = dataFormatoAtual.format(new Date());
 
 		inserirImovelClienteActionForm.set("dataInicioClienteImovelRelacao", dataAtual);
+		inserirImovelClienteActionForm.set("dataFimClienteImovelRelacao", "");
+		inserirImovelClienteActionForm.set("idMotivoFimClienteImovelRelacao", String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO));
 
 		if(imovel != null && imovel.getImovelPerfil() != null
 						&& imovel.getImovelPerfil().getId().equals(ConstantesSistema.INDICADOR_TARIFA_SOCIAL)){
@@ -275,6 +275,31 @@ public class ExibirAtualizarImovelClienteAction
 				}
 			}
 		}
+
+		FiltroClienteImovelFimRelacaoMotivo filtroClienteImovelFimRelacaoMotivo = new FiltroClienteImovelFimRelacaoMotivo();
+
+		filtroClienteImovelFimRelacaoMotivo.adicionarParametro(new ParametroSimples(FiltroClienteImovelFimRelacaoMotivo.INDICADOR_USO,
+						ConstantesSistema.INDICADOR_USO_ATIVO));
+		Collection clienteImoveisFimRelacaoMotivo = fachada.pesquisar(filtroClienteImovelFimRelacaoMotivo,
+						ClienteImovelFimRelacaoMotivo.class.getName());
+
+		sessao.setAttribute("clienteImoveisFimRelacaoMotivo", clienteImoveisFimRelacaoMotivo);
+
+		try{
+			if(ParametroCadastro.P_INDICADOR_INFORMAR_DATA_RELACAO_FIM_INSERIR_CLIENTE_IMOVEL.executar().equals(
+							ConstantesSistema.SIM.toString())){
+				sessao.setAttribute("indicadorDataRelacaoFimInserir", "S");
+			}else{
+				sessao.removeAttribute("indicadorDataRelacaoFimInserir");
+			}
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM/yyyy");
+
+		inserirImovelClienteActionForm.set("dataCorrenteServidor", formatDate.format(new Date()).toString());
 
 		// Collection clientesImoveis = (Collection) sessao.getAttribute("imovelClientesNovos");
 		// if (!clientesImoveis.isEmpty()) {

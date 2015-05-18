@@ -290,6 +290,19 @@
 		}
 	}
 	
+   function consultarServicosAssociados(){
+		
+		var form = document.forms[0];
+		var especificacao = form.especificacao.value;
+		
+		if (!isNaN(especificacao) && especificacao.length > 0 && especificacao.indexOf(',') == -1 &&
+				especificacao.indexOf('.') == -1 && ((especificacao * 1) > 0)){
+			
+			abrirPopup("/gsan/exibirConsultarServicoAssociadoAction.do?idSolicitacaoTipoEspecificacao=" + especificacao, 400, 690);
+		}
+	}
+	
+	
 </SCRIPT>
 <script type='text/javascript' src='<c:out value='${pageContext.request.contextPath}'/>/dwr/engine.js'> </script>
 <script type='text/javascript' src='<c:out value='${pageContext.request.contextPath}'/>/dwr/util.js'> </script>
@@ -543,7 +556,39 @@
 				<html:options collection="colecaoSolicitacaoTipoEspecificacao" labelProperty="descricao" property="id"/>
 			</html:select>
 		</td>
+		<td>
+		
+		  <logic:present name="exibirBotaoServicoAssociado">
+	        <tr>
+	           <td colspan="3" HEIGHT="10" align="right">
+	         	<input type="button" class="bottonRightCol" value="Consultar Serviços Associados à Especificação" id="botaoRecuperarDados" align="right" onclick="consultarServicosAssociados();">	
+	         </td>
+	       </tr>
+           </logic:present>
+		
+		</td>
+		
       </tr>
+      
+      <tr>
+        <td><strong>Quantidade de Prestações da Guia de Pagamento :</strong></td>
+		  <td colspan="3">
+		  
+		  	<logic:present name="habilitarPrestacaoGuia" scope="session">
+		  		<html:text
+						property="quantidadePrestacoesGuiaPagamento" size="10" maxlength="3" 
+						onkeyup="javascript:verificaNumeroInteiro(this);"/>
+			</logic:present>
+			
+		  	<logic:notPresent name="habilitarPrestacaoGuia" scope="session">
+		  		<html:text
+						property="quantidadePrestacoesGuiaPagamento" size="10" maxlength="3" readonly="true"
+						onkeyup="javascript:verificaNumeroInteiro(this);"/>
+			</logic:notPresent>									
+	
+        </td>
+      </tr>      
+      
       <tr>
 		<td><strong>RA a reiterar:</strong></td>
 		<td>

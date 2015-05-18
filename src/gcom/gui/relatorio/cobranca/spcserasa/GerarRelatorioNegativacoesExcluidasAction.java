@@ -84,21 +84,8 @@ import gcom.cadastro.imovel.Categoria;
 import gcom.cadastro.imovel.FiltroCategoria;
 import gcom.cadastro.imovel.FiltroImovelPerfil;
 import gcom.cadastro.imovel.ImovelPerfil;
-import gcom.cadastro.localidade.FiltroGerenciaRegional;
-import gcom.cadastro.localidade.FiltroLocalidade;
-import gcom.cadastro.localidade.FiltroQuadra;
-import gcom.cadastro.localidade.FiltroSetorComercial;
-import gcom.cadastro.localidade.FiltroUnidadeNegocio;
-import gcom.cadastro.localidade.GerenciaRegional;
-import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.localidade.Quadra;
-import gcom.cadastro.localidade.SetorComercial;
-import gcom.cadastro.localidade.UnidadeNegocio;
-import gcom.cobranca.CobrancaGrupo;
-import gcom.cobranca.FiltroCobrancaGrupo;
-import gcom.cobranca.FiltroNegativadorExclusaoMotivo;
-import gcom.cobranca.Negativador;
-import gcom.cobranca.NegativadorExclusaoMotivo;
+import gcom.cadastro.localidade.*;
+import gcom.cobranca.*;
 import gcom.cobranca.bean.DadosConsultaNegativacaoHelper;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
@@ -162,12 +149,14 @@ public class GerarRelatorioNegativacoesExcluidasAction
 		if(!Util.isVazioOuBranco(form.getIdNegativador())){
 			idNegativador = (String) form.getIdNegativador();
 			// idNegativador = (String) sessao.getAttribute("idNegativador");
+
 		}
 		sessao.setAttribute("idNegativador", idNegativador);
 
 		Date periodoEnvioNegativacaoInicio = null;
 		if(!Util.isVazioOuBranco(form.getPeriodoEnvioNegativacaoInicio())){
-			Date periodoInicio = Util.converteStringParaDate(form.getPeriodoEnvioNegativacaoInicio());
+			Date periodoInicio = Util.converterStringParaDate(form.getPeriodoEnvioNegativacaoInicio(),
+							"atencao.data_inicial_periodo_negativacao.invalida");
 			periodoEnvioNegativacaoInicio = Util.getSQLDate(periodoInicio);
 		}
 		// if (periodoEnvioNegativacaoInicio == null){
@@ -179,7 +168,8 @@ public class GerarRelatorioNegativacoesExcluidasAction
 		Date periodoEnvioNegativacaoFim = null;
 
 		if(!Util.isVazioOuBranco(form.getPeriodoEnvioNegativacaoFim())){
-			Date periodoFim = Util.converteStringParaDate(form.getPeriodoEnvioNegativacaoFim());
+			Date periodoFim = Util.converterStringParaDate(form.getPeriodoEnvioNegativacaoFim(),
+							"atencao.data_final_periodo_negativacao.invalida");
 			periodoEnvioNegativacaoFim = Util.getSQLDate(periodoFim);
 		}
 
@@ -191,7 +181,8 @@ public class GerarRelatorioNegativacoesExcluidasAction
 		Date periodoExclusaoNegativacaoInicio = null;
 
 		if(!Util.isVazioOuBranco(form.getPeriodoExclusaoNegativacaoInicio())){
-			Date periodoInicio = Util.converteStringParaDate(form.getPeriodoExclusaoNegativacaoInicio());
+			Date periodoInicio = Util.converterStringParaDate(form.getPeriodoExclusaoNegativacaoInicio(),
+							"atencao.data_inicial_periodo_exclusao.invalida");
 			periodoExclusaoNegativacaoInicio = Util.getSQLDate(periodoInicio);
 		}
 
@@ -203,7 +194,8 @@ public class GerarRelatorioNegativacoesExcluidasAction
 
 		Date periodoExclusaoNegativacaoFim = null;
 		if(!Util.isVazioOuBranco(form.getPeriodoExclusaoNegativacaoFim())){
-			Date periodoFim = Util.converteStringParaDate(form.getPeriodoExclusaoNegativacaoFim());
+			Date periodoFim = Util.converterStringParaDate(form.getPeriodoExclusaoNegativacaoFim(),
+							"atencao.data_final_periodo_exclusao.invalida");
 			periodoExclusaoNegativacaoFim = Util.getSQLDate(periodoFim);
 		}
 		// if (periodoExclusaoNegativacaoFim == null){
@@ -730,8 +722,8 @@ public class GerarRelatorioNegativacoesExcluidasAction
 		}
 
 		// cria uma instância da classe do relatório
-		RelatorioNegativacoesExcluidas relatorio = new RelatorioNegativacoesExcluidas((Usuario) (httpServletRequest.getSession(false))
-						.getAttribute("usuarioLogado"));
+		RelatorioNegativacoesExcluidas relatorio = new RelatorioNegativacoesExcluidas(
+						(Usuario) (httpServletRequest.getSession(false)).getAttribute("usuarioLogado"));
 
 		// seta os parametros que serão mostrados no relatório
 		parametros = validarGeracaoRelatorio(idNegativador, periodoEnvioNegativacaoInicio, periodoEnvioNegativacaoFim,
@@ -790,8 +782,8 @@ public class GerarRelatorioNegativacoesExcluidasAction
 			FiltroNegativadorExclusaoMotivo filtroNegativadorExclusaoMotivo = new FiltroNegativadorExclusaoMotivo();
 			filtroNegativadorExclusaoMotivo.adicionarParametro(new ParametroSimples(FiltroNegativadorExclusaoMotivo.ID,
 							idNegativadorExclusaoMotivo));
-			Collection collNegativadorExclusaoMotivo = fachada.pesquisar(filtroNegativadorExclusaoMotivo, NegativadorExclusaoMotivo.class
-							.getName());
+			Collection collNegativadorExclusaoMotivo = fachada.pesquisar(filtroNegativadorExclusaoMotivo,
+							NegativadorExclusaoMotivo.class.getName());
 
 			if(Util.isVazioOrNulo(collNegativadorExclusaoMotivo)){
 				throw new ActionServletException("atencao.pesquisa_inexistente", null, "Negativador Exclusão Motivo");

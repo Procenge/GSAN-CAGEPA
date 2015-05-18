@@ -5,7 +5,6 @@ import gcom.arrecadacao.ControladorArrecadacaoLocalHome;
 import gcom.arrecadacao.PagamentoTipo;
 import gcom.batch.ControladorBatchLocal;
 import gcom.batch.ControladorBatchLocalHome;
-import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.endereco.ControladorEnderecoLocal;
 import gcom.cadastro.endereco.ControladorEnderecoLocalHome;
 import gcom.cadastro.imovel.ControladorImovelLocal;
@@ -18,6 +17,7 @@ import gcom.faturamento.ControladorFaturamentoLocalHome;
 import gcom.faturamento.conta.Conta;
 import gcom.relatorio.cobranca.RelatorioAvisoDebito;
 import gcom.relatorio.cobranca.RelatorioAvisoDebitoModelo2;
+import gcom.relatorio.cobranca.RelatorioAvisoDebitoModelo3;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaRelatorio;
 import gcom.util.*;
@@ -248,23 +248,8 @@ public class ControladorCobrancaAvisoDebito
 			idAcaoCobranca = acaoCobranca.getId();
 		}
 
-		// long ini = 0, dif = 0;
-
-		// ini = System.currentTimeMillis();
-
 		colecaoCobrancaDocumento = getControladorCobranca().pesquisarTodosCobrancaDocumentoParaEmitir(idCronogramaAtividadeAcaoCobranca,
 						idComandoAtividadeAcaoCobranca, dataAtualPesquisa, idAcaoCobranca);
-
-		// try {
-		//
-		// } catch (ErroRepositorioException ex) {
-		// ex.printStackTrace();
-		// throw new ControladorException("erro.sistema", ex);
-		// }
-
-		// dif = System.currentTimeMillis() - ini;
-		// LOGGER.info("0 - ############################## -> " + dif);
-		// ini = System.currentTimeMillis();
 
 		if(colecaoCobrancaDocumento != null && !colecaoCobrancaDocumento.isEmpty()){
 
@@ -311,38 +296,18 @@ public class ControladorCobrancaAvisoDebito
 				if(cobrancaDocumento != null){
 					try{
 
-						// ini = System.currentTimeMillis();
-
 						// pesquisa todas as contas, debitos e guias
 						colecaoCobrancaDocumentoItemConta = this.repositorioCobranca
 										.selecionarCobrancaDocumentoItemReferenteConta(cobrancaDocumento);
 
-						// dif = System.currentTimeMillis() - ini;
-						// LOGGER.info("1 - ############################## -> " + dif);
-						// ini = System.currentTimeMillis();
-
 						if(colecaoCobrancaDocumentoItemConta == null){
-
-							// ini = System.currentTimeMillis();
-
 							colecaoCobrancaDocumentoItemGuiaPagamento = this.repositorioCobranca
 											.selecionarDadosCobrancaDocumentoItemReferenteGuiaPagamento(cobrancaDocumento);
-
-							// dif = System.currentTimeMillis() - ini;
-							// LOGGER.info("2 - ############################## -> " + dif);
-							// ini = System.currentTimeMillis();
 						}
 
 						if(colecaoCobrancaDocumentoItemConta == null && colecaoCobrancaDocumentoItemGuiaPagamento == null){
-
-							// ini = System.currentTimeMillis();
-
 							colecaoCobrancaDocumentoDebitoACobrar = this.repositorioCobranca
 											.selecionarCobrancaDocumentoItemReferenteDebitoACobrar(cobrancaDocumento);
-
-							// dif = System.currentTimeMillis() - ini;
-							// LOGGER.info("3 - ############################## -> " + dif);
-							// ini = System.currentTimeMillis();
 						}
 
 					}catch(ErroRepositorioException ex){
@@ -353,19 +318,8 @@ public class ControladorCobrancaAvisoDebito
 					// carregando os dados no helper do relatorio de aviso de debito
 					emitirAvisoCobrancaHelper.setMatricula(cobrancaDocumento.getImovel().getIdParametrizado());
 
-					// // ini = System.currentTimeMillis();
-
-					// nomeCliente =
-					// repositorioClienteImovel.retornaNomeCliente(cobrancaDocumento.getImovel().getId(),
-					// ClienteRelacaoTipo.USUARIO);
-					Cliente cliente = getControladorImovel().pesquisarClienteUsuarioImovel(cobrancaDocumento.getImovel().getId());
-
-					// dif = System.currentTimeMillis() - ini;
-					// LOGGER.info("4 - ############################## -> " + dif);
-					// ini = System.currentTimeMillis();
-
-					if(cliente != null){
-						emitirAvisoCobrancaHelper.setNomeCliente(cliente.getNome());
+					if(cobrancaDocumento.getCliente() != null && cobrancaDocumento.getCliente().getNome() != null){
+						emitirAvisoCobrancaHelper.setNomeCliente(cobrancaDocumento.getCliente().getNome());
 					}else{
 						emitirAvisoCobrancaHelper.setNomeCliente("");
 					}
@@ -627,6 +581,268 @@ public class ControladorCobrancaAvisoDebito
 			throw new ControladorException("erro.sistema", ex);
 		}
 
+	}
+
+	// OC1420030
+	// AVISO DE DEBITO (SAAE)
+	public void gerarRelatorioAvisoDebitoModelo3(CobrancaAcaoAtividadeCronograma cobrancaAcaoAtividadeCronograma,
+					CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComando, Date dataAtualPesquisa, CobrancaAcao acaoCobranca,
+					CobrancaGrupo grupoCobranca, CobrancaCriterio cobrancaCriterio, Usuario usuario) throws ControladorException{
+
+		List<Object> colecaoEmitirAvisoCobrancaHelper = new ArrayList<Object>();
+		Collection colecaoCobrancaDocumento = null;
+		Integer idCronogramaAtividadeAcaoCobranca = null;
+		Integer idComandoAtividadeAcaoCobranca = null;
+		Integer idAcaoCobranca = null;
+
+		if(cobrancaAcaoAtividadeCronograma != null && cobrancaAcaoAtividadeCronograma.getId() != null){
+			idCronogramaAtividadeAcaoCobranca = cobrancaAcaoAtividadeCronograma.getId();
+		}
+		if(cobrancaAcaoAtividadeComando != null && cobrancaAcaoAtividadeComando.getId() != null){
+			idComandoAtividadeAcaoCobranca = cobrancaAcaoAtividadeComando.getId();
+		}
+		if(acaoCobranca != null && acaoCobranca.getId() != null){
+			idAcaoCobranca = acaoCobranca.getId();
+		}
+
+		colecaoCobrancaDocumento = getControladorCobranca().pesquisarTodosCobrancaDocumentoParaEmitir(idCronogramaAtividadeAcaoCobranca,
+						idComandoAtividadeAcaoCobranca, dataAtualPesquisa, idAcaoCobranca);
+
+		if(colecaoCobrancaDocumento != null && !colecaoCobrancaDocumento.isEmpty()){
+
+			LOGGER.info("QUANTIDADE DOC COBRANCA PRA EMITIR = " + colecaoCobrancaDocumento.size());
+
+			int sequencialImpressao = 0;
+
+			Iterator iteratorCobrancaDocumento = colecaoCobrancaDocumento.iterator();
+			while(iteratorCobrancaDocumento.hasNext()){
+
+				CobrancaDocumento cobrancaDocumento = (CobrancaDocumento) iteratorCobrancaDocumento.next();
+
+				EmitirAvisoCobrancaHelper emitirAvisoCobrancaHelper = new EmitirAvisoCobrancaHelper();
+				Collection colecaoCobrancaDocumentoItemConta = null;
+				Collection colecaoCobrancaDocumentoItemGuiaPagamento = null;
+				Collection<CobrancaDocumentoItem> colecaoCobrancaDocumentoDebitoACobrar = null;
+
+				BigDecimal valorTotal = BigDecimal.ZERO;
+				BigDecimal debitosAnteriores = BigDecimal.ZERO;
+
+				// ------------------------------------------------------------------------------------
+				// gera o numero sequencial da impressao
+				int situacao = 0;
+				sequencialImpressao++;
+				int metadeColecao = 0;
+				if(colecaoCobrancaDocumento.size() % 2 == 0){
+					metadeColecao = colecaoCobrancaDocumento.size() / 2;
+				}else{
+					metadeColecao = (colecaoCobrancaDocumento.size() / 2) + 1;
+				}
+				while(situacao < 2){
+					if(situacao == 0){
+						situacao = 1;
+						cobrancaDocumento.setSequencialImpressao(getControladorCobranca().atualizaSequencial(sequencialImpressao, situacao,
+										metadeColecao));
+					}else{
+						situacao = 2;
+						cobrancaDocumento.setSequencialImpressao(getControladorCobranca().atualizaSequencial(sequencialImpressao, situacao,
+										metadeColecao));
+					}
+				}
+				// ------------------------------------------------------------------------------------
+
+				if(cobrancaDocumento != null){
+					try{
+
+						// pesquisa todas as contas, debitos e guias
+						colecaoCobrancaDocumentoItemConta = this.repositorioCobranca
+										.selecionarCobrancaDocumentoItemReferenteConta(cobrancaDocumento);
+
+						if(colecaoCobrancaDocumentoItemConta == null){
+							colecaoCobrancaDocumentoItemGuiaPagamento = this.repositorioCobranca
+											.selecionarDadosCobrancaDocumentoItemReferenteGuiaPagamento(cobrancaDocumento);
+						}
+
+						if(colecaoCobrancaDocumentoItemConta == null && colecaoCobrancaDocumentoItemGuiaPagamento == null){
+							colecaoCobrancaDocumentoDebitoACobrar = this.repositorioCobranca
+											.selecionarCobrancaDocumentoItemReferenteDebitoACobrar(cobrancaDocumento);
+						}
+
+					}catch(ErroRepositorioException ex){
+						ex.printStackTrace();
+						throw new ControladorException("erro.sistema", ex);
+					}
+
+					// carregando os dados no helper do relatorio de aviso de debito
+					emitirAvisoCobrancaHelper.setMatricula(cobrancaDocumento.getImovel().getIdParametrizado());
+
+					if(cobrancaDocumento.getCliente() != null && cobrancaDocumento.getCliente().getNome() != null){
+						emitirAvisoCobrancaHelper.setNomeCliente(cobrancaDocumento.getCliente().getNome());
+					}else{
+						emitirAvisoCobrancaHelper.setNomeCliente("");
+					}
+
+					emitirAvisoCobrancaHelper.setEndereco(cobrancaDocumento.getImovel().getEnderecoFormatadoAbreviadoSemBairro());
+					emitirAvisoCobrancaHelper.setBairro(cobrancaDocumento.getImovel().getLogradouroBairro().getBairro().getNome());
+					emitirAvisoCobrancaHelper.setCep(cobrancaDocumento.getImovel().getLogradouroCep().getCep().getCepFormatado());
+					if(cobrancaDocumento.getImovel().getLigacaoAgua() != null
+									&& cobrancaDocumento.getImovel().getLigacaoAgua().getHidrometroInstalacaoHistorico() != null){
+						emitirAvisoCobrancaHelper.setHidrometro(cobrancaDocumento.getImovel().getLigacaoAgua()
+										.getHidrometroInstalacaoHistorico().getNumeroHidrometro());
+					}else{
+						emitirAvisoCobrancaHelper.setHidrometro("");
+					}
+
+					emitirAvisoCobrancaHelper.setAcaoCobranca(acaoCobranca.getId().toString());
+
+					String roteiro = cobrancaDocumento.getImovel().getSetorComercial().getId() + "-"
+									+ cobrancaDocumento.getImovel().getRota().getId();
+
+					if(cobrancaDocumento.getImovel().getNumeroSequencialRota() != null){
+						roteiro = roteiro + "-" + cobrancaDocumento.getImovel().getNumeroSequencialRota();
+					}
+
+					emitirAvisoCobrancaHelper.setRoteiro(roteiro);
+
+					emitirAvisoCobrancaHelper.setInscricao(cobrancaDocumento.getImovel().getInscricaoFormatada());
+
+					Calendar dataAtual = Calendar.getInstance();
+					Integer horas = dataAtual.get(Calendar.HOUR_OF_DAY);
+					Integer minutos = dataAtual.get(Calendar.MINUTE);
+					Integer segundos = dataAtual.get(Calendar.SECOND);
+					emitirAvisoCobrancaHelper.setHoraImpressao("" + horas + ":" + minutos + ":" + segundos);
+					emitirAvisoCobrancaHelper.setDataImpressao(Util.formatarData(dataAtual.getTime()));
+
+					Util.adicionarNumeroDiasDeUmaData(dataAtual.getTime(), Integer.valueOf(acaoCobranca.getNumeroDiasValidade()).intValue());
+					emitirAvisoCobrancaHelper.setDataComparecimento(Util.formatarData(dataAtual.getTime()));
+
+					if(colecaoCobrancaDocumentoItemConta != null){
+						// contas
+						int limitador15Itens = 1;
+						Collection<String> mesAno = new ArrayList<String>();
+						Collection<String> vencimento = new ArrayList<String>();
+						Collection<BigDecimal> valor = new ArrayList<BigDecimal>();
+
+						Iterator<CobrancaDocumentoItem> itContas = colecaoCobrancaDocumentoItemConta.iterator();
+						Integer mesAnoMaisAnterior = 300012;
+						boolean teveConta = false;
+						while(itContas.hasNext()){
+							CobrancaDocumentoItem cobrancaDocumentoItem = itContas.next();
+							teveConta = true;
+							if(limitador15Itens <= 15){
+								mesAno.add(Util.formatarAnoMesSemBarraParaMesAnoComBarra(cobrancaDocumentoItem.getContaGeral().getConta()
+												.getReferencia()));
+								vencimento.add(Util.formatarData(cobrancaDocumentoItem.getContaGeral().getConta().getDataVencimentoConta()));
+								valor.add(cobrancaDocumentoItem.getContaGeral().getConta().getValorTotal());
+							}else{
+								debitosAnteriores = debitosAnteriores.add(cobrancaDocumentoItem.getContaGeral().getConta().getValorTotal());
+							}
+							if(Util.compararAnoMesReferencia(cobrancaDocumentoItem.getContaGeral().getConta().getReferencia(),
+											mesAnoMaisAnterior, "<")){
+								mesAnoMaisAnterior = cobrancaDocumentoItem.getContaGeral().getConta().getReferencia();
+							}
+							valorTotal = valorTotal.add(cobrancaDocumentoItem.getContaGeral().getConta().getValorTotal());
+							limitador15Itens++;
+						}
+
+						if(teveConta){
+							emitirAvisoCobrancaHelper.setDataDebitoAnterior(Util
+											.formatarAnoMesSemBarraParaMesAnoComBarra(mesAnoMaisAnterior));
+						}
+						emitirAvisoCobrancaHelper.setMesAno(mesAno);
+						emitirAvisoCobrancaHelper.setVencimento(vencimento);
+						emitirAvisoCobrancaHelper.setValor(valor);
+
+					}else if(colecaoCobrancaDocumentoItemGuiaPagamento != null){
+						// guias
+						Iterator<CobrancaDocumentoItem> itGuias = colecaoCobrancaDocumentoItemGuiaPagamento.iterator();
+						while(itGuias.hasNext()){
+							CobrancaDocumentoItem cobrancaDocumentoItem = itGuias.next();
+							valorTotal = valorTotal.add(cobrancaDocumentoItem.getValorItemCobrado());
+							debitosAnteriores = debitosAnteriores.add(cobrancaDocumentoItem.getValorItemCobrado());
+						}
+					}else if(colecaoCobrancaDocumentoDebitoACobrar != null){
+						// debitos a cobrar
+						Iterator<CobrancaDocumentoItem> itDebACob = colecaoCobrancaDocumentoDebitoACobrar.iterator();
+						while(itDebACob.hasNext()){
+							CobrancaDocumentoItem cobrancaDocumentoItem = itDebACob.next();
+							valorTotal = valorTotal.add(cobrancaDocumentoItem.getDebitoACobrarGeral().getDebitoACobrar().getValorTotal());
+							debitosAnteriores = debitosAnteriores.add(cobrancaDocumentoItem.getDebitoACobrarGeral().getDebitoACobrar()
+											.getValorTotal());
+						}
+					}
+
+				}
+
+				emitirAvisoCobrancaHelper.setValorDebitosAnteriores(debitosAnteriores);
+				emitirAvisoCobrancaHelper.setValorTotal(valorTotal);
+
+				// ini = System.currentTimeMillis();
+
+				// ------------------------------------------------------------------------------------------------------------
+				// obtendo o codigo de barras
+				String representacaoNumericaCodBarra = getControladorArrecadacao().obterRepresentacaoNumericaCodigoBarra(
+								Integer.valueOf(PagamentoTipo.PAGAMENTO_TIPO_COBANCA_MATRICULA_IMOVEL), valorTotal,
+								cobrancaDocumento.getImovel().getLocalidade().getId(), cobrancaDocumento.getImovel().getId(), null, null,
+								null, null, cobrancaDocumento.getNumeroSequenciaDocumento() + "",
+								cobrancaDocumento.getDocumentoTipo().getId(), null, null, null, null, null, null);
+
+				// dif = System.currentTimeMillis() - ini;
+				// LOGGER.info("5 - ############################## -> " + dif);
+				// ini = System.currentTimeMillis();
+
+				String representacaoNumericaCodBarraFormatada = representacaoNumericaCodBarra.substring(0, 11) + "-"
+								+ representacaoNumericaCodBarra.substring(11, 12) + " " + representacaoNumericaCodBarra.substring(12, 23)
+								+ "-" + representacaoNumericaCodBarra.substring(23, 24) + " "
+								+ representacaoNumericaCodBarra.substring(24, 35) + "-" + representacaoNumericaCodBarra.substring(35, 36)
+								+ " " + representacaoNumericaCodBarra.substring(36, 47) + "-"
+								+ representacaoNumericaCodBarra.substring(47, 48);
+				emitirAvisoCobrancaHelper.setRepresentacaoNumericaCodBarraFormatada(representacaoNumericaCodBarraFormatada);
+
+				String representacaoNumericaCodBarraSemDigito = representacaoNumericaCodBarra.substring(0, 11)
+								+ representacaoNumericaCodBarra.substring(12, 23) + representacaoNumericaCodBarra.substring(24, 35)
+								+ representacaoNumericaCodBarra.substring(36, 47);
+				emitirAvisoCobrancaHelper.setRepresentacaoNumericaCodBarraSemDigito(representacaoNumericaCodBarraSemDigito);
+
+				colecaoEmitirAvisoCobrancaHelper.add(emitirAvisoCobrancaHelper);
+				emitirAvisoCobrancaHelper = null;
+			}
+
+			// ------------------------------------------------------------------------------------------------------------------------------
+
+			// Monta os relatorios em blocos de 1000
+			if(colecaoEmitirAvisoCobrancaHelper != null && !colecaoEmitirAvisoCobrancaHelper.isEmpty()){
+
+				LOGGER.info("QUANTIDADE TOTAL = " + colecaoEmitirAvisoCobrancaHelper.size());
+
+				Collection<Collection<Object>> colecaoParcialEmitirAvisoCobrancaHelper = getControladorCobranca().dividirColecaoEmBlocos(
+								colecaoEmitirAvisoCobrancaHelper, ConstantesSistema.QUANTIDADE_LIMITE_RELATORIOS_POR_ARQUIVO);
+
+				int contadorBlocoContasAEmitir = 1;
+				int totalBlocosContasAEmitir = (Util.dividirArredondarResultado(colecaoEmitirAvisoCobrancaHelper.size(),
+								ConstantesSistema.QUANTIDADE_BLOCO_IMPRESSOES_EMISSAO_CONTA_FATURAMENTO, BigDecimal.ROUND_CEILING));
+
+				if(totalBlocosContasAEmitir == 0){
+					totalBlocosContasAEmitir = 1;
+				}
+
+				LOGGER.info("QUANTIDADE BLOCOS = " + colecaoParcialEmitirAvisoCobrancaHelper.size());
+
+				for(Collection bloco : colecaoParcialEmitirAvisoCobrancaHelper){
+
+					Collection<EmitirAvisoCobrancaHelper> tmp = bloco;
+
+					String mensagemArquivo = "PARTE: " + contadorBlocoContasAEmitir + "/" + totalBlocosContasAEmitir;
+					RelatorioAvisoDebitoModelo3 relatorioAvisoDebito = new RelatorioAvisoDebitoModelo3(usuario);
+					relatorioAvisoDebito.addParametro("colecaoEmitirAvisoCobrancaHelper", tmp);
+					relatorioAvisoDebito.addParametro("tipoFormatoRelatorio", TarefaRelatorio.TIPO_PDF);
+					relatorioAvisoDebito.addParametro("descricaoArquivo", mensagemArquivo);
+
+					this.getControladorBatch().iniciarProcessoRelatorio(relatorioAvisoDebito);
+					LOGGER.info("FIM: GERANDO PDF RELATÓRIO AVISO DE DÉBITO MODELO 3.");
+					contadorBlocoContasAEmitir++;
+				}
+			}
+		}
 	}
 
 	private void completarEmitirDocumentoAvisoDebitoModelo2Helper(

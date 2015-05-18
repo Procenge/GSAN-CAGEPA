@@ -68,11 +68,30 @@ public class DadosPrestacaoGuiaHelper
 
 	private String[] valorDebitoNaPrestacao;
 
+	private Integer[] numeroProcessoAdministrativoExecucaoFiscalArray;
+
 	/**
 	 * Construtor padrão
 	 */
 	public DadosPrestacaoGuiaHelper() {
 
+	}
+
+	/**
+	 * @return the numeroProcessoAdministrativoExecucaoFiscalArray
+	 */
+	public Integer[] getNumeroProcessoAdministrativoExecucaoFiscalArray(){
+
+		return numeroProcessoAdministrativoExecucaoFiscalArray;
+	}
+
+	/**
+	 * @param numeroProcessoAdministrativoExecucaoFiscalArray
+	 *            the numeroProcessoAdministrativoExecucaoFiscalArray to set
+	 */
+	public void setNumeroProcessoAdministrativoExecucaoFiscalArray(Integer[] numeroProcessoAdministrativoExecucaoFiscalArray){
+
+		this.numeroProcessoAdministrativoExecucaoFiscalArray = numeroProcessoAdministrativoExecucaoFiscalArray;
 	}
 
 	/**

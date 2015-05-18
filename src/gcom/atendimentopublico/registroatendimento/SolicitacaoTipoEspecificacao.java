@@ -178,6 +178,8 @@ public class SolicitacaoTipoEspecificacao
 
 	private ClienteRelacaoTipo clienteRelacaoTipo;
 
+
+
 	/**
 	 * Description of the Field
 	 */
@@ -223,6 +225,7 @@ public class SolicitacaoTipoEspecificacao
 	public final static Integer INDICADOR_DEBITOS_IMOVEIS = 2;
 
 	public final static Integer INDICADOR_DEBITOS_AMBOS = 3;
+
 
 	/** full constructor */
 	public SolicitacaoTipoEspecificacao(String descricao, Integer diasPrazo, Integer horasPrazo, short indicadorPavimentoCalcada,

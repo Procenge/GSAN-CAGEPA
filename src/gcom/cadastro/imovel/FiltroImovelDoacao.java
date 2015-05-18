@@ -77,6 +77,7 @@
 package gcom.cadastro.imovel;
 
 import gcom.util.filtro.Filtro;
+
 import java.io.Serializable;
 
 /**
@@ -134,9 +135,26 @@ public class FiltroImovelDoacao
 	 */
 	public final static String ID_IMOVEL = "imovel.id";
 
+	public final static String IMOVEL = "imovel";
+
 	/**
 	 * Description of the Field
 	 */
-	public final static String ID_ENTIDADE_BENEFICENTE = "entidadeBeneficente.id";
+	public final static String ID_ENTIDADE_BENEFICENTE_CONTRATO = "entidadeBeneficenteContrato.id";
+
+	public final static String ENTIDADE_BENEFICENTE_CONTRATO = "entidadeBeneficenteContrato";
+
+	public final static String ID_ENTIDADE_BENEFICENTE = "entidadeBeneficenteContrato.entidadeBeneficente.id";
+
+	public final static String ENTIDADE_BENEFICENTE = "entidadeBeneficenteContrato.entidadeBeneficente";
+
+	public final static String ENTIDADE_BENEFICENTE_EMPRESA = "entidadeBeneficenteContrato.entidadeBeneficente.empresa";
+
+	public final static String ENTIDADE_BENEFICENTE_CLIENTE = "entidadeBeneficenteContrato.entidadeBeneficente.cliente";
+
+	public final static String USUARIO_ADESAO = "usuarioAdesao";
+
+	public final static String USUARIO_CANCELAMENTO = "usuarioCancelamento";
+
 
 }

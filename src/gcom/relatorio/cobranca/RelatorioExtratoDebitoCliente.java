@@ -77,12 +77,12 @@
 package gcom.relatorio.cobranca;
 
 import gcom.batch.Relatorio;
+import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.cobranca.bean.ContaValoresHelper;
 import gcom.fachada.Fachada;
 import gcom.relatorio.ConstantesRelatorios;
 import gcom.relatorio.RelatorioDataSource;
-import gcom.relatorio.RelatorioVazioException;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaException;
 import gcom.tarefa.TarefaRelatorio;
@@ -90,6 +90,7 @@ import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.agendadortarefas.AgendadorTarefas;
 import gcom.util.parametrizacao.ParametroGeral;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.util.*;
 
@@ -135,16 +136,17 @@ public class RelatorioExtratoDebitoCliente
 					Collection<ContaValoresHelper> colecaoContas){
 
 		Collection<RelatorioExtratoDebitoClienteBean> retorno = new ArrayList();
+
+		Collection<RelatorioExtratoDebitoClienteDetailBean> colecaoDetail = new ArrayList<RelatorioExtratoDebitoClienteDetailBean>();
+		Collection<RelatorioExtratoDebitoClienteDetailBean> colecaoDetailTemp = new ArrayList<RelatorioExtratoDebitoClienteDetailBean>();
+		Collection<RelatorioExtratoDebitoClienteDetailBean> sobraColecao = new ArrayList<RelatorioExtratoDebitoClienteDetailBean>();
+
 		/*
 		 * Selecionar os itens do documento de cobrança
 		 * correspondentes a conta e ordenar por ano/mês de
 		 * referência da conta
 		 */
 		if(colecaoContas != null && !colecaoContas.isEmpty()){
-
-			Collection<RelatorioExtratoDebitoClienteDetailBean> colecaoDetail = new ArrayList<RelatorioExtratoDebitoClienteDetailBean>();
-			Collection<RelatorioExtratoDebitoClienteDetailBean> colecaoDetailTemp = new ArrayList<RelatorioExtratoDebitoClienteDetailBean>();
-			Collection<RelatorioExtratoDebitoClienteDetailBean> sobraColecao = new ArrayList<RelatorioExtratoDebitoClienteDetailBean>();
 			Iterator colecaoContasIterator = colecaoContas.iterator();
 
 			int totalPaginasRelatorio = (colecaoContas.size() / NUMERO_MAX_REGISTROS_DETAIL_OUTRAS_PAGINAS) + 2;
@@ -167,7 +169,21 @@ public class RelatorioExtratoDebitoCliente
 				mesAno = Util.completaString(Util.formatarAnoMesParaMesAno(contaHelper.getConta().getReferencia()), 9);
 
 				// Matricula
-				matricula = Util.retornaMatriculaImovelFormatadaParametrizada(contaHelper.getConta().getImovel().getId());
+				String pLabelMatriculaDocumentosPagaveis = null;
+
+				try{
+
+					pLabelMatriculaDocumentosPagaveis = (String) ParametroFaturamento.P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS.executar();
+				}catch(ControladorException e){
+
+					throw new TarefaException(e.getMessage(), e);
+				}
+
+				if(pLabelMatriculaDocumentosPagaveis.toUpperCase().equals("CDC-DV")){
+					matricula = Imovel.getMatriculaComDigitoVerificadorFormatada(contaHelper.getConta().getImovel().getId().toString());
+				}else{
+					matricula = Util.retornaMatriculaImovelFormatadaParametrizada(contaHelper.getConta().getImovel().getId());
+				}
 
 				// Data de vencimento da conta
 				vencimentoFatura = Util.formatarData(contaHelper.getConta().getDataVencimentoConta());
@@ -216,6 +232,16 @@ public class RelatorioExtratoDebitoCliente
 
 			RelatorioExtratoDebitoClienteBean relatorioExtratoDebitoClienteBean = new RelatorioExtratoDebitoClienteBean("1", sobraColecao);
 			retorno.add(relatorioExtratoDebitoClienteBean);
+		}else{
+			int totalPaginasRelatorio = 1;
+			String indicadorPrimeiraPagina = "" + totalPaginasRelatorio;
+
+			RelatorioExtratoDebitoClienteBean relatorioExtratoDebitoClienteBean = new RelatorioExtratoDebitoClienteBean(
+							indicadorPrimeiraPagina, colecaoDetail);
+			retorno.add(relatorioExtratoDebitoClienteBean);
+			colecaoDetail = new ArrayList<RelatorioExtratoDebitoClienteDetailBean>();
+			totalPaginasRelatorio--;
+
 		}
 
 		return retorno;
@@ -325,6 +351,8 @@ public class RelatorioExtratoDebitoCliente
 		String dataValidade = (String) getParametro("dataValidade");
 		String valorContas = (String) getParametro("valorContas");
 		String debitosACobrar = (String) getParametro("debitosACobrar");
+		String guiaPagamento = (String) getParametro("guiaPagamento");
+		String totalDebitoACobrarGuiaPagamento = (String) getParametro("totalDebitoACobrarGuiaPagamento");
 		String acrescimoImpontualidade = (String) getParametro("acrescimoImpontualidade");
 		String valorTotalContas = (String) getParametro("valorTotalContas");
 
@@ -351,11 +379,6 @@ public class RelatorioExtratoDebitoCliente
 			colecaoBean = this.inicializarBeanRelatorio(colecaoContas);
 		}
 
-		if(colecaoBean == null || colecaoBean.isEmpty()){
-			// Não existem dados para a exibição do relatório.
-			throw new RelatorioVazioException("atencao.relatorio.vazio");
-		}
-
 		// Linha 2
 		parametros.put("nomeCliente", nomeCliente);
 		parametros.put("codigoClienteResponsavel", codigoClienteResponsavel);
@@ -372,6 +395,8 @@ public class RelatorioExtratoDebitoCliente
 		parametros.put("dataEmissao", dataEmissao);
 		parametros.put("valorContas", valorContas);
 		parametros.put("debitosACobrar", debitosACobrar);
+		parametros.put("guiaPagamento", guiaPagamento);
+		parametros.put("totalDebitoACobrarGuiaPagamento", totalDebitoACobrarGuiaPagamento);
 		parametros.put("acrescimoImpontualidade", acrescimoImpontualidade);
 		parametros.put("valorTotalContas", valorTotalContas);
 
@@ -390,6 +415,19 @@ public class RelatorioExtratoDebitoCliente
 		parametros.put("nomeEmpresa", sistemaParametro.getNomeAbreviadoEmpresa());
 
 		parametros.put("P_NM_EMPRESA", sistemaParametro.getNomeEmpresa());
+
+		String pLabelMatriculaDocumentosPagaveis = null;
+
+		try{
+
+			pLabelMatriculaDocumentosPagaveis = (String) ParametroFaturamento.P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS.executar();
+		}catch(ControladorException e){
+
+			throw new TarefaException(e.getMessage(), e);
+		}
+
+		parametros.put("P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS", pLabelMatriculaDocumentosPagaveis.toUpperCase());
+
 		try{
 			parametros.put("P_ENDERECO", fachada.pesquisarEnderecoFormatadoEmpresa());
 		}catch(ControladorException e1){

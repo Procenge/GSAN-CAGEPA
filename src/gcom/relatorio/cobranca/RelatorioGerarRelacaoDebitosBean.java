@@ -78,7 +78,6 @@ package gcom.relatorio.cobranca;
 
 import gcom.relatorio.RelatorioBean;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -153,21 +152,24 @@ public class RelatorioGerarRelacaoDebitosBean
 
 	private String totalDebitosTotal;
 
+	// contas
 	private JRBeanCollectionDataSource jrColecaoRelatorioGerarRelacaoDebitosContasBean;
 
-	private ArrayList arrayRelatorioGerarRelacaoDebitosContasBean;
+	private ArrayList<RelatorioGerarRelacaoDebitosContasBean> arrayRelatorioGerarRelacaoDebitosContasBean;
 
+	// debitos a cobrar
 	private JRBeanCollectionDataSource jrColecaoRelatorioGerarRelacaoDebitosTipoDebitoCreditoBean;
 
-	private ArrayList arrayRelatorioGerarRelacaoDebitosTipoDebitoCreditoBean;
+	private ArrayList<RelatorioGerarRelacaoDebitosTipoDebitoCreditoBean> arrayRelatorioGerarRelacaoDebitosTipoDebitoCreditoBean;
 
+	// totais das contas do imoveis
 	private JRBeanCollectionDataSource jrColecaoRelatorioGerarRelacaoDebitosTotaisImovelBean;
 
-	private ArrayList arrayRelatorioGerarRelacaoDebitosTotaisImovelBean;
+	private ArrayList<RelatorioGerarRelacaoDebitosTotaisImovelBean> arrayRelatorioGerarRelacaoDebitosTotaisImovelBean;
 
 	private JRBeanCollectionDataSource jrColecaoRelatorioGerarRelacaoDebitosGuiasBean;
 
-	private ArrayList arrayRelatorioGerarRelacaoDebitosGuiasBean;
+	private ArrayList<RelatorioGerarRelacaoDebitosGuiasPagamentoBean> arrayRelatorioGerarRelacaoDebitosGuiasBean;
 
 	/**
 	 * Construtor de RelatorioGerarRelacaoDebitosBean
@@ -324,7 +326,7 @@ public class RelatorioGerarRelacaoDebitosBean
 		this.totalDebitosGerencia = totalDebitosGerencia;
 		this.totalDebitosTotal = totalDebitosTotal;
 
-		this.arrayRelatorioGerarRelacaoDebitosContasBean = new ArrayList();
+		this.arrayRelatorioGerarRelacaoDebitosContasBean = new ArrayList<RelatorioGerarRelacaoDebitosContasBean>();
 		this.arrayRelatorioGerarRelacaoDebitosContasBean.addAll(colecaoRelatorioGerarRelacaoDebitosContasBean);
 		this.jrColecaoRelatorioGerarRelacaoDebitosContasBean = new JRBeanCollectionDataSource(
 						this.arrayRelatorioGerarRelacaoDebitosContasBean);
@@ -348,7 +350,7 @@ public class RelatorioGerarRelacaoDebitosBean
 	/**
 	 * @return Retorna o campo colecaoRelatorioGerarRelacaoDebitosContasBean.
 	 */
-	public ArrayList getArrayRelatorioGerarRelacaoDebitosContasBean(){
+	public ArrayList<RelatorioGerarRelacaoDebitosContasBean> getArrayRelatorioGerarRelacaoDebitosContasBean(){
 
 		return arrayRelatorioGerarRelacaoDebitosContasBean;
 	}
@@ -357,7 +359,8 @@ public class RelatorioGerarRelacaoDebitosBean
 	 * @param colecaoRelatorioGerarRelacaoDebitosContasBean
 	 *            O colecaoRelatorioGerarRelacaoDebitosContasBean a ser setado.
 	 */
-	public void setArrayRelatorioGerarRelacaoDebitosContasBean(ArrayList colecaoRelatorioGerarRelacaoDebitosContasBean){
+	public void setArrayRelatorioGerarRelacaoDebitosContasBean(
+					ArrayList<RelatorioGerarRelacaoDebitosContasBean> colecaoRelatorioGerarRelacaoDebitosContasBean){
 
 		this.arrayRelatorioGerarRelacaoDebitosContasBean = colecaoRelatorioGerarRelacaoDebitosContasBean;
 	}

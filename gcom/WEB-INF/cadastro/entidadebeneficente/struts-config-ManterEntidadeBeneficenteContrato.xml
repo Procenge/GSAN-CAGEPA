@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="ManutencaoRegistroActionForm" type="gcom.gui.ManutencaoRegistroActionForm" />
+		
+		<form-bean name="InserirEntidadeBeneficenteContratoActionForm" 
+			type="gcom.gui.cadastro.entidadebeneficente.InserirEntidadeBeneficenteContratoActionForm" />
+
+		<form-bean name="AtualizarEntidadeBeneficenteContratoActionForm" 
+			type="gcom.gui.cadastro.entidadebeneficente.AtualizarEntidadeBeneficenteContratoActionForm" />
+			
+		<form-bean name="FiltrarEntidadeBeneficenteContratoActionForm" 
+			type="gcom.gui.cadastro.entidadebeneficente.FiltrarEntidadeBeneficenteContratoActionForm" />
+						
+	</form-beans>
+	
+	<global-forwards />
+	<action-mappings>
+	
+	<!-- INSERIR -->
+	<action name="InserirEntidadeBeneficenteContratoActionForm"
+				type="gcom.gui.cadastro.entidadebeneficente.ExibirInserirEntidadeBeneficenteContratoAction"
+				validate="true" 
+				scope="session"
+				path="/exibirInserirEntidadeBeneficenteContratoAction">
+			<forward name="inserirEntidadeBeneficenteContrato"	
+				path="/jsp/cadastro/entidadebeneficente/entidadebeneficentecontrato_inserir.jsp" />
+	</action>
+	
+	<action name="InserirEntidadeBeneficenteContratoActionForm"
+				type="gcom.gui.cadastro.entidadebeneficente.InserirEntidadeBeneficenteContratoAction"
+				validate="true" 
+				scope="session"
+				path="/inserirEntidadeBeneficenteContratoAction">
+		</action>
+		
+	<!-- FILTRAR -->
+	<action name="FiltrarEntidadeBeneficenteContratoActionForm"
+				type="gcom.gui.cadastro.entidadebeneficente.ExibirFiltrarEntidadeBeneficenteContratoAction"
+				validate="true" scope="session"
+				path="/exibirFiltrarEntidadeBeneficenteContratoAction">
+			<forward name="filtrarEntidadeBeneficenteContrato"	
+				path="/jsp/cadastro/entidadebeneficente/entidadebeneficentecontrato_filtrar.jsp" />
+	</action>
+	
+	<action name="FiltrarEntidadeBeneficenteContratoActionForm"
+				type="gcom.gui.cadastro.entidadebeneficente.FiltrarEntidadeBeneficenteContratoAction"
+				validate="true" 
+				scope="session"
+				path="/filtrarEntidadeBeneficenteContratoAction">
+			<forward name="exibirManterEntidadeBeneficenteContrato" 
+				path="/exibirManterEntidadeBeneficenteContratoAction.do" />
+
+	</action>	
+	
+	<!-- MANTER -->
+	<action name="FiltrarEntidadeBeneficenteContratoActionForm" 
+		type="gcom.gui.cadastro.entidadebeneficente.ExibirManterEntidadeBeneficenteContratoAction" 
+		scope="session" validate="false"
+		path="/exibirManterEntidadeBeneficenteContratoAction">
+		<forward name="exibirManterEntidadeBeneficenteContrato" 
+			path="/jsp/cadastro/entidadebeneficente/entidadebeneficentecontrato_manter.jsp" />
+		<forward name="atualizarEntidadeBeneficenteContrato" 
+			path="/exibirAtualizarEntidadeBeneficenteContratoAction.do?filtrar=sim" />
+	</action>	
+
+	<action name="ManutencaoRegistroActionForm"
+		type="gcom.gui.cadastro.entidadebeneficente.RemoverEntidadeBeneficenteContratoAction"
+		validate="false" input="/exibirManterEntidadeBeneficenteContratoAction.do"
+		scope="request" path="/removerEntidadeBeneficenteContratoAction">
+	</action>
+	
+	
+	<action name="AtualizarEntidadeBeneficenteContratoActionForm"
+      	type="gcom.gui.cadastro.entidadebeneficente.ExibirAtualizarEntidadeBeneficenteContratoAction"
+      	validate="false" scope="session"
+      	path="/exibirAtualizarEntidadeBeneficenteContratoAction">
+		<forward name="atualizarEntidadeBeneficenteContrato" 
+			path="/jsp/cadastro/entidadebeneficente/entidadebeneficentecontrato_atualizar.jsp" />
+		<forward name="filtrarEntidadeBeneficenteContrato"	
+			path="/jsp/cadastro/entidadebeneficente/entidadebeneficentecontrato_filtrar.jsp" />
+	</action>
+	
+
+	<action name="AtualizarEntidadeBeneficenteContratoActionForm" 
+			type="gcom.gui.cadastro.entidadebeneficente.AtualizarEntidadeBeneficenteContratoAction" 
+			scope="request" path="/atualizarEntidadeBeneficenteContratoAction"/>
+			
+	</action-mappings>
+	<message-resources null="false" parameter="gcom.properties.application" />
+</struts-config>

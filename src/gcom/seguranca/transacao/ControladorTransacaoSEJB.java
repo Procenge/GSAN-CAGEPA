@@ -550,21 +550,25 @@ public class ControladorTransacaoSEJB
 		}
 
 		final Map mapOrdem = new HashMap();
-		Iterator iterOrdem = ordem.iterator();
-		// final Map ordemTabelas = new HashMap();
-		while(iterOrdem.hasNext()){
-			OperacaoOrdemExibicao opOrdem = (OperacaoOrdemExibicao) iterOrdem.next();
-			mapOrdem.put(opOrdem.getTabelaColuna().getId(), opOrdem.getNumeroOrdem()); // idTabcoluna
-			// e ordem
 
-			// Object itemOrdemTab =
-			// ordemTabelas.get(opOrdem.getTabelaColuna().getTabela().getId());
-			// if (itemOrdemTab == null){
-			// ordemTabelas.put(opOrdem.getTabelaColuna().getTabela().getId(),
-			// opOrdem.getNumeroOrdem());
-			// }
+		if(!Util.isVazioOrNulo(ordem)){
+			Iterator iterOrdem = ordem.iterator();
+			// final Map ordemTabelas = new HashMap();
+			while(iterOrdem.hasNext()){
+				OperacaoOrdemExibicao opOrdem = (OperacaoOrdemExibicao) iterOrdem.next();
+				mapOrdem.put(opOrdem.getTabelaColuna().getId(), opOrdem.getNumeroOrdem()); // idTabcoluna
+				// e ordem
 
+				// Object itemOrdemTab =
+				// ordemTabelas.get(opOrdem.getTabelaColuna().getTabela().getId());
+				// if (itemOrdemTab == null){
+				// ordemTabelas.put(opOrdem.getTabelaColuna().getTabela().getId(),
+				// opOrdem.getNumeroOrdem());
+				// }
+
+			}
 		}
+
 
 		// Ordenador pelo Id da tabela para agrupar os itens atualizados
 		class ComparadorTLCA

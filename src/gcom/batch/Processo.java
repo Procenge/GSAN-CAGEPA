@@ -288,9 +288,9 @@ public class Processo
 
 	public static final int GERAR_RELATORIO_ACOMPANHAMENTO_RELIGACOES_ESPECIAIS = 174;
 
-	public static final int GERAR_RELATORIO_NEGATIVACOES_EXCLUIDAS = 176;
+	public static final int GERAR_RELATORIO_NEGATIVACOES_EXCLUIDAS = 90041;
 
-	public static final int GERAR_RELATORIO_ACOMPANHAMENTO_CLIENTES_NEGATIVADOS = 175;
+	public static final int GERAR_RELATORIO_ACOMPANHAMENTO_CLIENTES_NEGATIVADOS = 90040;
 
 	public static final int GERAR_REL_EXC_NEGATIVACAO_SPC_SERASA = 177;
 
@@ -378,6 +378,8 @@ public class Processo
 
 	public static final int REGISTRA_MOVIMENTO_ARRECADADORES = 266;
 
+	public static final int REGISTRA_LEITURAS_ANORMALIDADES = 388;
+
 	public static final int GERAR_ENVIAR_RELATORIO_RESUMO_MOVIMENTO_ARRECADACAO = 267;
 
 	public static final int GERAR_RELATORIO_RESUMO_MOVIMENTO_ARRECADACAO = 268;
@@ -450,6 +452,8 @@ public class Processo
 
 	public static final int RELATORIO_RELACAO_IMOVEIS_EM_COBRANCA_ADMINISTRATIVA = 330;
 
+	public static final int RELATORIO_ANALITICO_RELACAO_IMOVEIS_EM_COBRANCA_ADMINISTRATIVA = 330;
+
 	public static final int GERAR_RELATORIO_OCORRENCIAS_PROCESSO_DIARIO_COBRANCA_BANCARIA = 332;
 
 	public static final int GERAR_RELATORIO_HISTOGRAMA_AGUA_ESGOTO_ECONOMIA_TXT = 338;
@@ -483,7 +487,7 @@ public class Processo
 	public static final int GERAR_RELATORIO_COMPROVANTES_DA_ARRECADACAO_POR_RECEBEDOR_ANALITICO = 354;
 
 	public static final int GERAR_RELATORIO_FATURAMENTO_CONSUMO_DIRETO_INDIRETO_ESTADUAL = 355;
-	
+
 	public static final int SORTEIO_CAMPANHA_PREMIACAO = 356;
 
 	public static final int GERAR_RELATORIO_SITUACAO_DOS_AVISOS_BANCARIOS = 357;
@@ -500,7 +504,6 @@ public class Processo
 
 	public static final int RELATORIO_ACOMP_MOV_ARRECADADORES = 368;
 
-
 	public static final int RELATORIO_MAIORES_CONSUMIDORES = 366;
 
 	public static final int RELATORIO_MAIORES_DEVEDORES = 367;
@@ -510,7 +513,7 @@ public class Processo
 	public static final int GERAR_RELATORIO_QUADRO_HIDROMETROS_ANO_INSTALACAO = 370;
 
 	public static final int GERAR_RELATORIO_QUADRO_HIDROMETROS_SITUACAO = 371;
-	
+
 	public static final int GERAR_RELATORIO_OS_ENCERRADA_DENTRO_FORA_PRAZO = 375;
 
 	public static final int GERAR_RELATORIO_MANTER_USUARIO = 376;
@@ -532,6 +535,26 @@ public class Processo
 	public static final int RELATORIO_DEBITOS_PRESCRITOS = 382;
 
 	public static final int RELATORIO_ACOMPANHAMENTO_DEBITOS_PRESCRITOS = 385;
+
+	public static final int RELATORIO_REGISTRAR_LEITURAS_ANORMALIDADES = 389;
+
+	public static final int AJUSTAR_LANCAMENTOS_CONTABEIS_SINTETICOS = 90027;
+
+	public static final int RELATORIO_ANALITICO_CONTAS = 90029;
+
+	public static final int RELATORIO_MANTER_ATIVIDADE_ECONOMICA = 390;
+
+	public static final int RELATORIO_CONTAS_RECALCULADAS = 392;
+
+	public static final int RELATORIO_RESUMO_ORDENS_SERVICO_DOC_COB = 392;
+
+	public static final int IMPORTAR_DADOS_DIVIDA_ATIVA = 90031;
+
+	public static final int RELATORIO_MANTER_ORDEM_SERVICO = 90034;
+
+	public static final int RELATORIO_CONTAS_RECEBER_VALORES_CORRIGIDOS = 90035;
+
+	public static final int RELATORIO_TOTAL_CONTAS_EMITIDAS_LOCALIDADE = 90037;
 
 	/** identifier field */
 	private Integer id;

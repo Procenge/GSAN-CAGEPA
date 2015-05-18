@@ -134,7 +134,7 @@ public class RelatorioParcelamentoResolucaoDiretoriaLayoutBean
 	private String colecaoAnoMesReferencia;
 
 	private String colecaoAnoMesReferenciaSobra;
-
+	
 	private String detalhamentoGuiasPrestacoes;
 
 	private String detalhamentoGuiasPrestacoesSobra;
@@ -237,6 +237,140 @@ public class RelatorioParcelamentoResolucaoDiretoriaLayoutBean
 
 	private String totalNegociadoExtenso;
 
+	private String nacionaliadeProprietarioImovel;
+
+	private String enderecoProprietarioImovel;
+
+	private String descricaoCategoriaImovel;
+
+	private String enderecoImovel;
+
+	private String inscricaoImovel;
+
+	private String nomeReponsavelParcelamento;
+
+	private String descricaoNacionalidadeReponsavelParcelamento;
+
+	private String numeroRgReponsavelParcelamento;
+
+	private String numeroCpfReponsavelParcelamento;
+
+	private String enderecoReponsavelParcelamento;
+
+	private String valorParcelaDiferenca;
+
+	private String valorParcelaDiferencaExtenso;
+
+	private String tituloPosseParcelamento;
+
+	private String nomeExecutadoParcelamento;
+
+	private String numeroVaraParcelamento;
+
+	private String numeroProcessoParcelamento;
+
+	private String descricaoProfissaoReponsavelParcelamento;
+
+	private String descricaoEstadoCivilReponsavelParcelamento;
+
+	private String indicadorEnderecoCorrespondenciaReponsavelParcelamento;
+
+	private String descricaoTipoEnderecoReponsavelParcelamento;
+
+	private String indicadorPossuiProcurador;
+
+	private String descricaoOrgaoExpedidorReponsavelParcelamento;
+
+	private String descricaoUnidadeFederacaoReponsavelParcelamento;
+
+	private String nomeEmpresaReponsavelParcelamento;
+
+	private String descricaoRamoAtividadeEmpresaReponsavelParcelamento;
+
+	private String numeroCnpjEmpresaReponsavelParcelamento;
+
+	private String indicadorEnderecoCorrespondenciaEmpresaReponsavelParcelamento;
+
+	private String descricaoEnderecoEmpresaReponsavelParcelamento;
+
+	private String descricaoEnderecoProcuradorParcelamento;
+
+	private String descricaoEstadoCivilProcuradorParcelamento;
+
+	private String descricaoProfissaoProcuradorParcelamento;
+
+	private String descricaoNacionalidadeProcuradorParcelamento;
+
+	private String descricaoOrgaoExpedidorProcuradorParcelamento;
+
+	private String descricaoUnidadeFederacaoProcuradorParcelamento;
+
+	private String numeroCpfProcuradorParcelamento;
+
+	private String nomeProcuradorParcelamento;
+
+	private String numeroRgProcuradorParcelamento;
+
+	private String numeroParcelasCustasJudiciais;
+
+	private String numeroParcelasCustasJudiciaisExtenso;
+
+	private String valorParcelaCustasJudiciais;
+
+	private String valorParcelaCustasJudiciaisExtenso;
+
+	private String tabulacao = "     ";
+
+	private String colecaoDatasParcelamento;
+
+	private String colecaoDatasParcelamentoSobra;
+
+	private String colecaoServicosDebitoACobrar;
+
+	private String colecaoServicosParcelamento;
+
+	private String colecaoServicosDebitoACobrarSobra;
+
+	private String colecaoServicosParcelamentoSobra;
+
+	private String valorTotalSucumbencia;
+
+	private String valorTotalSucumbenciaExtenso;
+
+	private String quantidadeParcelasSucumbencia;
+
+	private String numeroProcessosExecucao;
+
+	private String indicadorCobrancaBancaria;
+
+	private String indicadorCobrancaParcelamento;
+
+	private String indicadorValorEntradaGuia;
+
+	private String valorEntradaMenosGuiaSucumbencia;
+
+	private String valorEntradaMenosGuiaSucumbenciaExtenso;
+
+	private String dataVecimentoPrimeiraGuiaPagamento;
+	
+	private String valorEntradaSucumbencia;
+
+	private String valorEntradaSucumbenciaExtenso;
+
+	private String valorPrestacaoSucumbencia;
+
+	private String valorPrestacaoSucumbenciaExtenso;
+
+	private String dataVecimentoSegundaGuiaPagamento;
+
+	private String dataVecimentoPrimeiraGuiaPagamentoSucumbencia;
+
+	private String textoHtml;
+
+	private String valorParcelado;
+
+	private String valorParceladoExtenso;
+
 	/**
 	 * Construtor de RelatorioGerarRelacaoDebitosBean
 	 */
@@ -267,7 +401,8 @@ public class RelatorioParcelamentoResolucaoDiretoriaLayoutBean
 																String cpfTestemunha2, String profissaoCliente,
 																String juntaComercialEmpresa, String inscricaoEstadualEmpresa,
 																String cidadeImovelCadastrado, String totalNegociado,
-																String totalNegociadoExtenso) {
+																String totalNegociadoExtenso, String valorParcelado,
+																String valorParceladoExtenso) {
 
 		super();
 		this.matriculaImovel = matriculaImovel;
@@ -339,9 +474,655 @@ public class RelatorioParcelamentoResolucaoDiretoriaLayoutBean
 		this.cidadeImovelCadastrado = cidadeImovelCadastrado;
 		this.totalNegociado = totalNegociado;
 		this.totalNegociadoExtenso = totalNegociadoExtenso;
+		this.valorParcelado = valorParcelado;
+		this.valorParceladoExtenso = valorParceladoExtenso;
+	}
+	
+	public String getTextoHtml(){
 
+		return textoHtml;
 	}
 
+	public void setTextoHtml(String textoHtml){
+
+		this.textoHtml = textoHtml;
+	}
+
+	public String getDataVecimentoPrimeiraGuiaPagamentoSucumbencia(){
+
+		return dataVecimentoPrimeiraGuiaPagamentoSucumbencia;
+	}
+
+	public void setDataVecimentoPrimeiraGuiaPagamentoSucumbencia(String dataVecimentoPrimeiraGuiaPagamentoSucumbencia){
+
+		this.dataVecimentoPrimeiraGuiaPagamentoSucumbencia = dataVecimentoPrimeiraGuiaPagamentoSucumbencia;
+	}
+
+	public String getDataVecimentoSegundaGuiaPagamento(){
+
+		return dataVecimentoSegundaGuiaPagamento;
+	}
+
+	public void setDataVecimentoSegundaGuiaPagamento(String dataVecimentoSegundaGuiaPagamento){
+
+		this.dataVecimentoSegundaGuiaPagamento = dataVecimentoSegundaGuiaPagamento;
+	}	
+
+	public String getValorPrestacaoSucumbencia(){
+
+		return valorPrestacaoSucumbencia;
+	}
+
+	public void setValorPrestacaoSucumbencia(String valorPrestacaoSucumbencia){
+
+		this.valorPrestacaoSucumbencia = valorPrestacaoSucumbencia;
+	}
+	
+	public String getValorPrestacaoSucumbenciaExtenso(){
+
+		return valorPrestacaoSucumbenciaExtenso;
+	}
+
+	public void setValorPrestacaoSucumbenciaExtenso(String valorPrestacaoSucumbenciaExtenso){
+
+		this.valorPrestacaoSucumbenciaExtenso = valorPrestacaoSucumbenciaExtenso;
+	}
+	
+	public String getDataVecimentoPrimeiraGuiaPagamento(){
+
+		return dataVecimentoPrimeiraGuiaPagamento;
+	}
+
+	public void setDataVecimentoPrimeiraGuiaPagamento(String dataVecimentoPrimeiraGuiaPagamento){
+
+		this.dataVecimentoPrimeiraGuiaPagamento = dataVecimentoPrimeiraGuiaPagamento;
+	}
+	
+	public String getValorEntradaSucumbencia(){
+
+		return valorEntradaSucumbencia;
+	}
+
+	public void setValorEntradaSucumbencia(String valorEntradaSucumbencia){
+
+		this.valorEntradaSucumbencia = valorEntradaSucumbencia;
+	}	
+	
+	public String getValorEntradaSucumbenciaExtenso(){
+
+		return valorEntradaSucumbenciaExtenso;
+	}
+
+	public void setValorEntradaSucumbenciaExtenso(String valorEntradaSucumbenciaExtenso){
+
+		this.valorEntradaSucumbenciaExtenso = valorEntradaSucumbenciaExtenso;
+	}
+
+	public String getValorEntradaMenosGuiaSucumbencia(){
+
+		return valorEntradaMenosGuiaSucumbencia;
+	}
+
+	public void setValorEntradaMenosGuiaSucumbencia(String valorEntradaMenosGuiaSucumbencia){
+
+		this.valorEntradaMenosGuiaSucumbencia = valorEntradaMenosGuiaSucumbencia;
+	}
+
+	public String getValorEntradaMenosGuiaSucumbenciaExtenso(){
+
+		return valorEntradaMenosGuiaSucumbenciaExtenso;
+	}
+
+	public void setValorEntradaMenosGuiaSucumbenciaExtenso(String valorEntradaMenosGuiaSucumbenciaExtenso){
+
+		this.valorEntradaMenosGuiaSucumbenciaExtenso = valorEntradaMenosGuiaSucumbenciaExtenso;
+	}
+
+	public String getIndicadorValorEntradaGuia(){
+
+		return indicadorValorEntradaGuia;
+	}
+
+	public void setIndicadorValorEntradaGuia(String indicadorValorEntradaGuia){
+
+		this.indicadorValorEntradaGuia = indicadorValorEntradaGuia;
+	}
+
+	public String getIndicadorCobrancaBancaria(){
+
+		return indicadorCobrancaBancaria;
+	}
+
+	public void setIndicadorCobrancaBancaria(String indicadorCobrancaBancaria){
+
+		this.indicadorCobrancaBancaria = indicadorCobrancaBancaria;
+	}
+
+	public String getIndicadorCobrancaParcelamento(){
+
+		return indicadorCobrancaParcelamento;
+	}
+
+	public void setIndicadorCobrancaParcelamento(String indicadorCobrancaParcelamento){
+
+		this.indicadorCobrancaParcelamento = indicadorCobrancaParcelamento;
+	}
+
+	public String getNumeroProcessosExecucao(){
+
+		return numeroProcessosExecucao;
+	}
+
+	public void setNumeroProcessosExecucao(String numeroProcessosExecucao){
+
+		this.numeroProcessosExecucao = numeroProcessosExecucao;
+	}
+
+	public String getValorTotalSucumbenciaExtenso(){
+
+		return valorTotalSucumbenciaExtenso;
+	}
+
+	public void setValorTotalSucumbenciaExtenso(String valorTotalSucumbenciaExtenso){
+
+		this.valorTotalSucumbenciaExtenso = valorTotalSucumbenciaExtenso;
+	}
+
+	public String getValorTotalSucumbencia(){
+
+		return valorTotalSucumbencia;
+	}
+
+	public void setValorTotalSucumbencia(String valorTotalSucumbencia){
+
+		this.valorTotalSucumbencia = valorTotalSucumbencia;
+	}
+
+	public String getQuantidadeParcelasSucumbencia(){
+
+		return quantidadeParcelasSucumbencia;
+	}
+
+	public void setQuantidadeParcelasSucumbencia(String quantidadeParcelasSucumbencia){
+
+		this.quantidadeParcelasSucumbencia = quantidadeParcelasSucumbencia;
+	}
+
+	public String getColecaoDatasParcelamento(){
+
+		return colecaoDatasParcelamento;
+	}
+
+	public void setColecaoDatasParcelamento(String colecaoDatasParcelamento){
+
+		this.colecaoDatasParcelamento = colecaoDatasParcelamento;
+	}
+
+	public String getColecaoDatasParcelamentoSobra(){
+
+		return colecaoDatasParcelamentoSobra;
+	}
+
+	public void setColecaoDatasParcelamentoSobra(String colecaoDatasParcelamentoSobra){
+
+		this.colecaoDatasParcelamentoSobra = colecaoDatasParcelamentoSobra;
+	}
+
+	public String getColecaoServicosDebitoACobrar(){
+
+		return colecaoServicosDebitoACobrar;
+	}
+
+	public void setColecaoServicosDebitoACobrar(String colecaoServicosDebitoACobrar){
+
+		this.colecaoServicosDebitoACobrar = colecaoServicosDebitoACobrar;
+	}
+
+	public String getColecaoServicosDebitoACobrarSobra(){
+
+		return colecaoServicosDebitoACobrarSobra;
+	}
+
+	public void setColecaoServicosDebitoACobrarSobra(String colecaoServicosDebitoACobrarSobra){
+
+		this.colecaoServicosDebitoACobrarSobra = colecaoServicosDebitoACobrarSobra;
+	}
+
+	public String getColecaoServicosParcelamentoSobra(){
+
+		return colecaoServicosParcelamentoSobra;
+	}
+
+	public void setColecaoServicosParcelamentoSobra(String colecaoServicosParcelamentoSobra){
+
+		this.colecaoServicosParcelamentoSobra = colecaoServicosParcelamentoSobra;
+	}
+
+	public String getColecaoServicosParcelamento(){
+
+		return colecaoServicosParcelamento;
+	}
+
+	public void setColecaoServicosParcelamento(String colecaoServicosParcelamento){
+
+		this.colecaoServicosParcelamento = colecaoServicosParcelamento;
+	}
+
+	public String getTabulacao(){
+
+		return tabulacao;
+	}
+
+	public String getValorParcelaCustasJudiciaisExtenso(){
+
+		return valorParcelaCustasJudiciaisExtenso;
+	}
+
+	public void setValorParcelaCustasJudiciaisExtenso(String valorParcelaCustasJudiciaisExtenso){
+
+		this.valorParcelaCustasJudiciaisExtenso = valorParcelaCustasJudiciaisExtenso;
+	}
+
+	public String getValorParcelaCustasJudiciais(){
+
+		return valorParcelaCustasJudiciais;
+	}
+
+	public void setValorParcelaCustasJudiciais(String valorParcelaCustasJudiciais){
+
+		this.valorParcelaCustasJudiciais = valorParcelaCustasJudiciais;
+	}
+
+	public String getNumeroParcelasCustasJudiciaisExtenso(){
+
+		return numeroParcelasCustasJudiciaisExtenso;
+	}
+
+	public void setNumeroParcelasCustasJudiciaisExtenso(String numeroParcelasCustasJudiciaisExtenso){
+
+		this.numeroParcelasCustasJudiciaisExtenso = numeroParcelasCustasJudiciaisExtenso;
+	}
+
+	public String getNumeroParcelasCustasJudiciais(){
+
+		return numeroParcelasCustasJudiciais;
+	}
+
+	public void setNumeroParcelasCustasJudiciais(String numeroParcelasCustasJudiciais){
+
+		this.numeroParcelasCustasJudiciais = numeroParcelasCustasJudiciais;
+	}
+
+	public String getNomeProcuradorParcelamento(){
+
+		return nomeProcuradorParcelamento;
+	}
+
+	public void setNomeProcuradorParcelamento(String nomeProcuradorParcelamento){
+
+		this.nomeProcuradorParcelamento = nomeProcuradorParcelamento;
+	}
+
+	public String getNumeroRgProcuradorParcelamento(){
+
+		return numeroRgProcuradorParcelamento;
+	}
+
+	public void setNumeroRgProcuradorParcelamento(String numeroRgProcuradorParcelamento){
+
+		this.numeroRgProcuradorParcelamento = numeroRgProcuradorParcelamento;
+	}
+
+	public String getDescricaoOrgaoExpedidorProcuradorParcelamento(){
+
+		return descricaoOrgaoExpedidorProcuradorParcelamento;
+	}
+
+	public void setDescricaoOrgaoExpedidorProcuradorParcelamento(String descricaoOrgaoExpedidorProcuradorParcelamento){
+
+		this.descricaoOrgaoExpedidorProcuradorParcelamento = descricaoOrgaoExpedidorProcuradorParcelamento;
+	}
+
+	public String getDescricaoUnidadeFederacaoProcuradorParcelamento(){
+
+		return descricaoUnidadeFederacaoProcuradorParcelamento;
+	}
+
+	public void setDescricaoUnidadeFederacaoProcuradorParcelamento(String descricaoUnidadeFederacaoProcuradorParcelamento){
+
+		this.descricaoUnidadeFederacaoProcuradorParcelamento = descricaoUnidadeFederacaoProcuradorParcelamento;
+	}
+
+	public String getNumeroCpfProcuradorParcelamento(){
+
+		return numeroCpfProcuradorParcelamento;
+	}
+
+	public void setNumeroCpfProcuradorParcelamento(String numeroCpfProcuradorParcelamento){
+
+		this.numeroCpfProcuradorParcelamento = numeroCpfProcuradorParcelamento;
+	}
+
+	public String getDescricaoEnderecoProcuradorParcelamento(){
+
+		return descricaoEnderecoProcuradorParcelamento;
+	}
+
+	public void setDescricaoEnderecoProcuradorParcelamento(String descricaoEnderecoProcuradorParcelamento){
+
+		this.descricaoEnderecoProcuradorParcelamento = descricaoEnderecoProcuradorParcelamento;
+	}
+
+	public String getDescricaoEstadoCivilProcuradorParcelamento(){
+
+		return descricaoEstadoCivilProcuradorParcelamento;
+	}
+
+	public void setDescricaoEstadoCivilProcuradorParcelamento(String descricaoEstadoCivilProcuradorParcelamento){
+
+		this.descricaoEstadoCivilProcuradorParcelamento = descricaoEstadoCivilProcuradorParcelamento;
+	}
+
+	public String getDescricaoProfissaoProcuradorParcelamento(){
+
+		return descricaoProfissaoProcuradorParcelamento;
+	}
+
+	public void setDescricaoProfissaoProcuradorParcelamento(String descricaoProfissaoProcuradorParcelamento){
+
+		this.descricaoProfissaoProcuradorParcelamento = descricaoProfissaoProcuradorParcelamento;
+	}
+
+	public String getDescricaoNacionalidadeProcuradorParcelamento(){
+
+		return descricaoNacionalidadeProcuradorParcelamento;
+	}
+
+	public void setDescricaoNacionalidadeProcuradorParcelamento(String descricaoNacionalidadeProcuradorParcelamento){
+
+		this.descricaoNacionalidadeProcuradorParcelamento = descricaoNacionalidadeProcuradorParcelamento;
+	}
+
+	public String getNomeEmpresaReponsavelParcelamento(){
+
+		return nomeEmpresaReponsavelParcelamento;
+	}
+
+	public void setNomeEmpresaReponsavelParcelamento(String nomeEmpresaReponsavelParcelamento){
+
+		this.nomeEmpresaReponsavelParcelamento = nomeEmpresaReponsavelParcelamento;
+	}
+
+	public String getDescricaoRamoAtividadeEmpresaReponsavelParcelamento(){
+
+		return descricaoRamoAtividadeEmpresaReponsavelParcelamento;
+	}
+
+	public void setDescricaoRamoAtividadeEmpresaReponsavelParcelamento(String descricaoRamoAtividadeEmpresaReponsavelParcelamento){
+
+		this.descricaoRamoAtividadeEmpresaReponsavelParcelamento = descricaoRamoAtividadeEmpresaReponsavelParcelamento;
+	}
+
+	public String getNumeroCnpjEmpresaReponsavelParcelamento(){
+
+		return numeroCnpjEmpresaReponsavelParcelamento;
+	}
+
+	public void setNumeroCnpjEmpresaReponsavelParcelamento(String numeroCnpjEmpresaReponsavelParcelamento){
+
+		this.numeroCnpjEmpresaReponsavelParcelamento = numeroCnpjEmpresaReponsavelParcelamento;
+	}
+
+	public String getIndicadorEnderecoCorrespondenciaEmpresaReponsavelParcelamento(){
+
+		return indicadorEnderecoCorrespondenciaEmpresaReponsavelParcelamento;
+	}
+
+	public void setIndicadorEnderecoCorrespondenciaEmpresaReponsavelParcelamento(
+					String indicadorEnderecoCorrespondenciaEmpresaReponsavelParcelamento){
+
+		this.indicadorEnderecoCorrespondenciaEmpresaReponsavelParcelamento = indicadorEnderecoCorrespondenciaEmpresaReponsavelParcelamento;
+	}
+
+	public String getDescricaoEnderecoEmpresaReponsavelParcelamento(){
+
+		return descricaoEnderecoEmpresaReponsavelParcelamento;
+	}
+
+	public void setDescricaoEnderecoEmpresaReponsavelParcelamento(String descricaoEnderecoEmpresaReponsavelParcelamento){
+
+		this.descricaoEnderecoEmpresaReponsavelParcelamento = descricaoEnderecoEmpresaReponsavelParcelamento;
+	}
+
+	public String getIndicadorPossuiProcurador(){
+
+		return indicadorPossuiProcurador;
+	}
+
+	public void setIndicadorPossuiProcurador(String indicadorPossuiProcurador){
+
+		this.indicadorPossuiProcurador = indicadorPossuiProcurador;
+	}
+
+	public String getDescricaoOrgaoExpedidorReponsavelParcelamento(){
+
+		return descricaoOrgaoExpedidorReponsavelParcelamento;
+	}
+
+	public void setDescricaoOrgaoExpedidorReponsavelParcelamento(String descricaoOrgaoExpedidorReponsavelParcelamento){
+
+		this.descricaoOrgaoExpedidorReponsavelParcelamento = descricaoOrgaoExpedidorReponsavelParcelamento;
+	}
+
+	public String getDescricaoUnidadeFederacaoReponsavelParcelamento(){
+
+		return descricaoUnidadeFederacaoReponsavelParcelamento;
+	}
+
+	public void setDescricaoUnidadeFederacaoReponsavelParcelamento(String descricaoUnidadeFederacaoReponsavelParcelamento){
+
+		this.descricaoUnidadeFederacaoReponsavelParcelamento = descricaoUnidadeFederacaoReponsavelParcelamento;
+	}
+
+	public String getDescricaoTipoEnderecoReponsavelParcelamento(){
+
+		return descricaoTipoEnderecoReponsavelParcelamento;
+	}
+
+	public void setDescricaoTipoEnderecoReponsavelParcelamento(String descricaoTipoEnderecoReponsavelParcelamento){
+
+		this.descricaoTipoEnderecoReponsavelParcelamento = descricaoTipoEnderecoReponsavelParcelamento;
+	}
+
+	public String getIndicadorEnderecoCorrespondenciaReponsavelParcelamento(){
+
+		return indicadorEnderecoCorrespondenciaReponsavelParcelamento;
+	}
+
+	public void setIndicadorEnderecoCorrespondenciaReponsavelParcelamento(String indicadorEnderecoCorrespondenciaReponsavelParcelamento){
+
+		this.indicadorEnderecoCorrespondenciaReponsavelParcelamento = indicadorEnderecoCorrespondenciaReponsavelParcelamento;
+	}
+
+	public String getDescricaoEstadoCivilReponsavelParcelamento(){
+
+		return descricaoEstadoCivilReponsavelParcelamento;
+	}
+
+	public void setDescricaoEstadoCivilReponsavelParcelamento(String descricaoEstadoCivilReponsavelParcelamento){
+
+		this.descricaoEstadoCivilReponsavelParcelamento = descricaoEstadoCivilReponsavelParcelamento;
+	}
+
+	public String getDescricaoProfissaoReponsavelParcelamento(){
+
+		return descricaoProfissaoReponsavelParcelamento;
+	}
+
+	public void setDescricaoProfissaoReponsavelParcelamento(String descricaoProfissaoReponsavelParcelamento){
+
+		this.descricaoProfissaoReponsavelParcelamento = descricaoProfissaoReponsavelParcelamento;
+	}
+
+	public String getNumeroProcessoParcelamento(){
+
+		return numeroProcessoParcelamento;
+	}
+
+	public void setNumeroProcessoParcelamento(String numeroProcessoParcelamento){
+
+		this.numeroProcessoParcelamento = numeroProcessoParcelamento;
+	}
+
+	public String getNumeroVaraParcelamento(){
+
+		return numeroVaraParcelamento;
+	}
+
+	public void setNumeroVaraParcelamento(String numeroVaraParcelamento){
+
+		this.numeroVaraParcelamento = numeroVaraParcelamento;
+	}
+
+	public String getNomeExecutadoParcelamento(){
+
+		return nomeExecutadoParcelamento;
+	}
+
+	public void setNomeExecutadoParcelamento(String nomeExecutadoParcelamento){
+
+		this.nomeExecutadoParcelamento = nomeExecutadoParcelamento;
+	}
+
+	public String getTituloPosseParcelamento(){
+
+		return tituloPosseParcelamento;
+	}
+
+	public void setTituloPosseParcelamento(String tituloPosseParcelamento){
+
+		this.tituloPosseParcelamento = tituloPosseParcelamento;
+	}
+
+	public String getValorParcelaDiferenca(){
+
+		return valorParcelaDiferenca;
+	}
+
+	public void setValorParcelaDiferenca(String valorParcelaDiferenca){
+
+		this.valorParcelaDiferenca = valorParcelaDiferenca;
+	}
+
+	public String getValorParcelaDiferencaExtenso(){
+
+		return valorParcelaDiferencaExtenso;
+	}
+
+	public void setValorParcelaDiferencaExtenso(String valorParcelaDiferencaExtenso){
+
+		this.valorParcelaDiferencaExtenso = valorParcelaDiferencaExtenso;
+	}
+
+	public String getEnderecoReponsavelParcelamento(){
+
+		return enderecoReponsavelParcelamento;
+	}
+
+	public void setEnderecoReponsavelParcelamento(String enderecoReponsavelParcelamento){
+
+		this.enderecoReponsavelParcelamento = enderecoReponsavelParcelamento;
+	}
+
+	public String getNumeroCpfReponsavelParcelamento(){
+
+		return numeroCpfReponsavelParcelamento;
+	}
+
+	public void setNumeroCpfReponsavelParcelamento(String numeroCpfReponsavelParcelamento){
+
+		this.numeroCpfReponsavelParcelamento = numeroCpfReponsavelParcelamento;
+	}
+
+	public String getNumeroRgReponsavelParcelamento(){
+
+		return numeroRgReponsavelParcelamento;
+	}
+
+	public void setNumeroRgReponsavelParcelamento(String numeroRgReponsavelParcelamento){
+
+		this.numeroRgReponsavelParcelamento = numeroRgReponsavelParcelamento;
+	}
+
+	public String getDescricaoNacionalidadeReponsavelParcelamento(){
+
+		return descricaoNacionalidadeReponsavelParcelamento;
+	}
+
+	public void setDescricaoNacionalidadeReponsavelParcelamento(String descricaoNacionalidadeReponsavelParcelamento){
+
+		this.descricaoNacionalidadeReponsavelParcelamento = descricaoNacionalidadeReponsavelParcelamento;
+	}
+
+	public String getNomeReponsavelParcelamento(){
+
+		return nomeReponsavelParcelamento;
+	}
+
+	public void setNomeReponsavelParcelamento(String nomeReponsavelParcelamento){
+
+		this.nomeReponsavelParcelamento = nomeReponsavelParcelamento;
+	}
+
+	public String getInscricaoImovel(){
+
+		return inscricaoImovel;
+	}
+
+	public void setInscricaoImovel(String inscricaoImovel){
+
+		this.inscricaoImovel = inscricaoImovel;
+	}
+
+	public String getEnderecoImovel(){
+
+		return enderecoImovel;
+	}
+
+	public void setEnderecoImovel(String enderecoImovel){
+
+		this.enderecoImovel = enderecoImovel;
+	}
+
+	public String getDescricaoCategoriaImovel(){
+
+		return descricaoCategoriaImovel;
+	}
+
+	public void setDescricaoCategoriaImovel(String descricaoCategoriaImovel){
+
+		this.descricaoCategoriaImovel = descricaoCategoriaImovel;
+	}
+
+	public String getNacionaliadeProprietarioImovel(){
+
+		return nacionaliadeProprietarioImovel;
+	}
+
+	public void setNacionaliadeProprietarioImovel(String nacionaliadeProprietarioImovel){
+
+		this.nacionaliadeProprietarioImovel = nacionaliadeProprietarioImovel;
+	}
+
+	public String getEnderecoProprietarioImovel(){
+
+		return enderecoProprietarioImovel;
+	}
+
+	public void setEnderecoProprietarioImovel(String enderecoProprietarioImovel){
+
+		this.enderecoProprietarioImovel = enderecoProprietarioImovel;
+	}
 
 	public String getCpfCnpj(){
 
@@ -1091,6 +1872,26 @@ public class RelatorioParcelamentoResolucaoDiretoriaLayoutBean
 	public void setTotalNegociadoExtenso(String totalNegociadoExtenso){
 
 		this.totalNegociadoExtenso = totalNegociadoExtenso;
+	}
+
+	public String getValorParcelado(){
+
+		return valorParcelado;
+	}
+
+	public void setValorParcelado(String valorParcelado){
+
+		this.valorParcelado = valorParcelado;
+	}
+
+	public String getValorParceladoExtenso(){
+
+		return valorParceladoExtenso;
+	}
+
+	public void setValorParceladoExtenso(String valorParceladoExtenso){
+
+		this.valorParceladoExtenso = valorParceladoExtenso;
 	}
 
 }

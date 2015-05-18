@@ -78,6 +78,7 @@ package gcom.atendimentopublico.ordemservico;
 
 import gcom.acquagis.atendimento.OrdemServicoDetalhesJSONHelper;
 import gcom.acquagis.atendimento.OrdemServicoJSONHelper;
+import gcom.arrecadacao.pagamento.GuiaPagamento;
 import gcom.atendimentopublico.ordemservico.bean.*;
 import gcom.atendimentopublico.registroatendimento.AtendimentoMotivoEncerramento;
 import gcom.atendimentopublico.registroatendimento.LocalOcorrencia;
@@ -158,6 +159,15 @@ public interface ControladorOrdemServicoLocal
 	 * @throws ControladorException
 	 */
 	public Collection<OrdemServico> pesquisarOrdemServico(PesquisarOrdemServicoHelper filtro) throws ControladorException;
+
+	/**
+	 * Pesquisar ordem de serviço.
+	 * 
+	 * @author Genival Barbosa
+	 * @date 30/09/2014
+	 * @return Ordem Servico
+	 */
+	public OrdemServico pesquisarOrdemServicoPrincipal(Integer idOrdemServico) throws ControladorException;
 
 	/**
 	 * [UC413]- Pesquisar Tipo de Serviço
@@ -280,7 +290,11 @@ public interface ControladorOrdemServicoLocal
 	 */
 	public Integer gerarOrdemServico(OrdemServico ordemServico, Usuario usuario,
 					Map<Integer, ServicoAssociadoAutorizacaoHelper> autorizacoesServicos, Integer idLocalidade, Integer idSetorComercial,
-					Integer idBairro, Integer idUnidadeOrigem, Integer idUnidadeDestino, String parecerUnidadeDestino)
+					Integer idBairro, Integer idUnidadeOrigem, Integer idUnidadeDestino, String parecerUnidadeDestino,
+					String idOSPrincipal, Boolean forcarGerarOS, Short qtdPrestacaoGuiaPagamento)
+					throws ControladorException;
+
+	public Collection<Integer> gerarOrdemServicoAPartirGuiaPagamento(Collection<GuiaPagamento> colecaoGuiaPagamento)
 					throws ControladorException;
 
 	/**
@@ -379,7 +393,7 @@ public interface ControladorOrdemServicoLocal
 	 * @param equipeComponentes
 	 * @throws ControladorException
 	 */
-	public void validarInsercaoEquipeComponentes(Collection colecaoEquipeComponentes) throws ControladorException;
+	public void validarInsercaoEquipeComponentes(Collection colecaoEquipeComponentes, Equipe equipe) throws ControladorException;
 
 	/**
 	 * [UC0462] Obter Dados das Atividades da OS
@@ -755,7 +769,7 @@ public interface ControladorOrdemServicoLocal
 	 * @throws ControladorException
 	 */
 	public void atualizarOrdemServicoProgramacaoSituacaoOs(Integer numeroOS, Date dataRoteiro, short situacaoFechamento,
-					Integer idOsProgramNaoEncerMotivo) throws ControladorException;
+					Integer idOsProgramNaoEncerMotivo, Date dataHoraVisita, Usuario usuario) throws ControladorException;
 
 	/**
 	 * [UC0457] Encerra Ordem de Serviço
@@ -832,7 +846,9 @@ public interface ControladorOrdemServicoLocal
 	public void validarCamposEncerrarOS(String indicadorExecucao, String numeroOS, String motivoEncerramento, String dataEncerramento,
 					String tipoServicoReferenciaId, String indicadorPavimento, String pavimento, String idTipoRetornoOSReferida,
 					String indicadorDeferimento, String indicadorTrocaServicoTipo, String idServicoTipo, String dataRoteiro, String idRA,
-					String indicadorVistoriaServicoTipo, String codigoRetornoVistoriaOs, String horaEncerramento, Usuario usuarioLogado)
+					String indicadorVistoriaServicoTipo, String codigoRetornoVistoriaOs, String horaEncerramento, Usuario usuarioLogado,
+					String indicadorAfericaoHidrometro, String idHidrometroCondicao, String indicadorResultado, String idFuncionario,
+					String indicadorClienteAcompanhou)
 					throws ControladorException;
 
 	public void verificarOrdemServicoControleConcorrencia(OrdemServico ordemServico) throws ControladorException;
@@ -1168,7 +1184,8 @@ public interface ControladorOrdemServicoLocal
 	 * @return Collection
 	 */
 	public Collection pesquisarEquipes(String idEquipe, String nome, String placa, String cargaTrabalho, String idUnidade,
-					String idFuncionario, String idPerfilServico, String indicadorUso, Integer numeroPagina) throws ControladorException;
+					String idFuncionario, String idPerfilServico, String indicadorUso, Integer idEquipeTipo, Integer numeroPagina)
+					throws ControladorException;
 
 	/**
 	 * Verifica a quantidade de registros retornados da pesquisa de equipe
@@ -1187,7 +1204,7 @@ public interface ControladorOrdemServicoLocal
 	 * @return int
 	 */
 	public int pesquisarEquipesCount(String idEquipe, String nome, String placa, String cargaTrabalho, String idUnidade,
-					String idFuncionario, String idPerfilServico, String indicadorUso) throws ControladorException;
+					String idFuncionario, String idPerfilServico, String indicadorUso, Integer idEquipeTipo) throws ControladorException;
 
 	/**
 	 * Remove as equipes selecionadas pelo usuário e as equipes componentes
@@ -2235,4 +2252,38 @@ public interface ControladorOrdemServicoLocal
 					String idUnidadeAtendimento, String idUnidadeAtual, String idUnidadeEncerramento, Date periodoAtendimentoInicial,
 					Date periodoAtendimentoFinal, Date periodoEncerramentoInicial, Date periodoEncerramentoFinal, String idLocalidade)
 					throws ControladorException;
+
+	/**
+	 * @param imovelEmissaoOrdensSeletivaHelper
+	 * @param usuarioLogado
+	 * @return
+	 */
+
+	public Object[] gerarRelatorioOrdemSeletiva(ImovelEmissaoOrdensSeletivaHelper imovelEmissaoOrdensSeletivaHelper, Usuario usuarioLogado)
+					throws ControladorException;
+
+
+	/**
+	 * Recupera a coleção Entulho Medida.
+	 * 
+	 * @author Genival Barbosa
+	 * @date 20/09/2014
+	 * @return Coleção de EntuhoMedida
+	 */
+	public Collection<EntulhoMedida> pesquisarEntulhoMedida() throws ControladorException;
+
+	/**
+	 * Recupera um Entulho Medida.
+	 * 
+	 * @author Genival Barbosa
+	 * @date 20/09/2014
+	 * @return Entulho Medida
+	 */
+	public EntulhoMedida pesquisarEntulhoMedida(Integer idEntulhoMedida) throws ControladorException;
+
+	public Boolean validarGerarGuiaPagamentoOS(Integer idServicoTipo, Integer idRegistroAtendimento) throws ControladorException;
+
+	public OrdemServicoProgramacao pesquisarOSProgramacaoAtivaPorOS(Integer idOS) throws ControladorException;
+
+	public Integer recuperaQuantidadeDiasUnidade(Integer idOS, Short permiteTramiteIndependente) throws ControladorException;
 }

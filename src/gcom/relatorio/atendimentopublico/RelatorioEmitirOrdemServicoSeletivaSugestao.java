@@ -129,6 +129,20 @@ public class RelatorioEmitirOrdemServicoSeletivaSugestao
 		super(null, "");
 	}
 
+	public boolean existeDados(){
+
+		OrdemServicoSeletivaHelper helper = obterHelper();
+
+		Fachada fachada = Fachada.getInstancia();
+
+		Collection<Integer> colecaoDadosRelatorio = helper.getColecaoImoveis();
+		if(colecaoDadosRelatorio == null || colecaoDadosRelatorio.isEmpty()){
+			colecaoDadosRelatorio = fachada.filtrarImovelEmissaoOrdensSeletivas(helper);
+		}
+
+		return colecaoDadosRelatorio != null && !colecaoDadosRelatorio.isEmpty();
+	}
+
 	/**
 	 * <Breve descrição sobre o caso de uso>
 	 * <Identificador e nome do caso de uso>
@@ -188,8 +202,8 @@ public class RelatorioEmitirOrdemServicoSeletivaSugestao
 			// Recupera o AnoMesFaturamento de Sistema Parametro
 			String anoMesFaturamento = "";
 			FiltroSistemaParametro filtroSistemaParametro = new FiltroSistemaParametro();
-			Collection<SistemaParametro> colecaoSistemaParametro = fachada.pesquisar(filtroSistemaParametro, SistemaParametro.class
-							.getName());
+			Collection<SistemaParametro> colecaoSistemaParametro = fachada.pesquisar(filtroSistemaParametro,
+							SistemaParametro.class.getName());
 			Iterator iColecaoSistemaParametro = colecaoSistemaParametro.iterator();
 			SistemaParametro sistemaParametro = (SistemaParametro) iColecaoSistemaParametro.next();
 			anoMesFaturamento = sistemaParametro.getAnoMesFaturamento().toString();
@@ -209,7 +223,7 @@ public class RelatorioEmitirOrdemServicoSeletivaSugestao
 
 			while(iColecaoDadosRelatorio.hasNext()){
 				idImovel = iColecaoDadosRelatorio.next();
-				
+
 				if(!ServicoTipo.INSTALACAO_HIDROMETRO.isEmpty() && !(ServicoTipo.INSTALACAO_HIDROMETRO == null)){
 					// Atenção! Implementado em caso de urgência para homologação DESO.
 					// O sistema não deve emitir OS de Instalação de Hidrômetros para Imóveis
@@ -273,8 +287,8 @@ public class RelatorioEmitirOrdemServicoSeletivaSugestao
 			RelatorioDataSource ds = new RelatorioDataSource(relatorioBeans);
 
 			// exporta o relatório em pdf e retorna o array de bytes
-			retorno = gerarRelatorio(ConstantesRelatorios.RELATORIO_EMITIR_ORDEM_SERVICO_SELETIVA_SUGESTAO, parametros, ds, helper
-							.getTipoFormatoRelatorio());
+			retorno = gerarRelatorio(ConstantesRelatorios.RELATORIO_EMITIR_ORDEM_SERVICO_SELETIVA_SUGESTAO, parametros, ds,
+							helper.getTipoFormatoRelatorio());
 
 			// ------------------------------------
 			// Grava o relatório no sistema
@@ -355,6 +369,7 @@ public class RelatorioEmitirOrdemServicoSeletivaSugestao
 		helper.setMarca((String[]) getParametro("marca"));
 		helper.setAnormalidadeHidrometro((String[]) getParametro("anormalidadeHidrometro"));
 		helper.setNumeroOcorrenciasConsecutivas((String) getParametro("numeroOcorrenciasConsecutivas"));
+		helper.setReferenciaUltimaAfericaoAnterior((String) getParametro("referenciaUltimaAfericaoAnterior"));
 		helper.setIdUsuario((String) getParametro("idUsuario"));
 		helper.setTipoFormatoRelatorio((Integer) getParametro("tipoFormatoRelatorio"));
 		helper.setHidrometroClasseMetrologica((String[]) getParametro("hidrometroClasseMetrologica"));

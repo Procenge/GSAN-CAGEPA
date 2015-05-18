@@ -79,12 +79,20 @@ package gcom.gui.cobranca;
 import gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao;
 import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao;
 import gcom.cadastro.cliente.Cliente;
+import gcom.cadastro.cliente.ClienteTipo;
+import gcom.cadastro.cliente.FiltroCliente;
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
+import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
+
+import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -103,12 +111,40 @@ public class ExibirTransferenciaDebitoCreditoDadosImovelAction
 	public ActionForward execute(ActionMapping actionMapping, ActionForm actionForm, HttpServletRequest httpServletRequest,
 					HttpServletResponse httpServletResponse){
 
+		HttpSession sessao = httpServletRequest.getSession(false);
+		
 		ActionForward retorno = actionMapping.findForward("transferenciaDebitoCreditoDadosImovel");
 
 		TransferenciaDebitoCreditoDadosImovelActionForm form = (TransferenciaDebitoCreditoDadosImovelActionForm) actionForm;
 
 		Fachada fachada = Fachada.getInstancia();
+		sessao.setAttribute("colecaoRelacaoImovel", null);
+		form.setIdClienteImovelSelecionado(null);
+		form.setIdsContasSelecionadas(null);
+		form.setIdsDebitosSelecionadas(null);
+		form.setIdsCreditosSelecionadas(null);
+		form.setIdsGuiasSelecionadas(null);
+		form.setIdClienteOrigemSelecionado(null);
+		form.setIdClienteRelacaoOrigemSelecionado(null);
+		form.setIdRelacaoClienteOrigem(null);
 
+		form.getIdClienteOrigem().clear();
+		form.getIdClienteRelacaoOrigem().clear();
+
+		form.getIdsContas().clear();
+		form.getIdsDebitos().clear();
+		form.getIdsGuias().clear();
+		form.getIdsCreditos().clear();
+		
+		Boolean indicadorFaturamentoTitularDebito = false;
+		try{
+			if(ParametroFaturamento.P_INDICADOR_FATURAMENTO_ATUAL_TITULAR_DEBITO_IMOVEL.executar().equals("1")){
+				indicadorFaturamentoTitularDebito = true;
+			}
+		}catch(ControladorException e){
+			e.printStackTrace();
+		}		
+		
 		// REGISTRO ATENDIMENTO
 		String pesquisarRA = httpServletRequest.getParameter("pesquisarRA");
 		if(pesquisarRA != null && !pesquisarRA.equals("")){
@@ -186,6 +222,71 @@ public class ExibirTransferenciaDebitoCreditoDadosImovelAction
 				httpServletRequest.setAttribute("nomeCampo", "idImovelDestino");
 
 			}
+		}
+
+		// IMOVEL DESTINO
+		String pesquisarClienteDestino = httpServletRequest.getParameter("pesquisarClienteDestino");
+		if(pesquisarClienteDestino != null && !pesquisarClienteDestino.equals("")){
+			if(form.getIdClienteDestino() != null && !form.getIdClienteDestino().equals("")){
+				Integer idCliente = Integer.valueOf(form.getIdClienteDestino());
+
+				preencherDadosClienteDestino(actionMapping, form, httpServletRequest, idCliente);
+			}
+		}
+
+		if(indicadorFaturamentoTitularDebito){
+			httpServletRequest.setAttribute("indicadorFaturamentoTitularDebito", "S");
+		}else{
+			httpServletRequest.removeAttribute("indicadorFaturamentoTitularDebito");
+		}
+		
+		return retorno;
+	}
+
+	private boolean preencherDadosClienteDestino(ActionMapping actionMapping, TransferenciaDebitoCreditoDadosImovelActionForm form,
+					HttpServletRequest httpServletRequest, Integer idCliente){
+
+		Fachada fachada = Fachada.getInstancia();
+
+		boolean retorno = false;
+
+		if(idCliente != null){
+			FiltroCliente filtroCliente = new FiltroCliente();
+			filtroCliente.adicionarParametro(new ParametroSimples(FiltroCliente.ID, idCliente));
+			filtroCliente.adicionarCaminhoParaCarregamentoEntidade(FiltroCliente.CLIENTE_TIPO);
+			Collection<Cliente> clientes = fachada.pesquisar(filtroCliente, Cliente.class.getName());
+
+			Cliente cliente = null;
+			if(clientes != null && !clientes.isEmpty()){
+				cliente = clientes.iterator().next();
+
+				if(cliente.getNome() != null){
+					form.setNomeClienteDestino(cliente.getNome());
+				}
+
+				String cpfCnpjCliente = "";
+				ClienteTipo clienteTipo = cliente.getClienteTipo();
+
+				if(clienteTipo != null){
+					Short indicadorPessoaFisicaJuridica = clienteTipo.getIndicadorPessoaFisicaJuridica();
+
+					if(ClienteTipo.INDICADOR_PESSOA_FISICA.equals(indicadorPessoaFisicaJuridica)){
+						cpfCnpjCliente = cliente.getCpfFormatado();
+					}else{
+						cpfCnpjCliente = cliente.getCnpjFormatado();
+					}
+				}
+
+				form.setCpfCnpjClienteDestino(cpfCnpjCliente);
+			}
+
+
+
+		}else{
+			httpServletRequest.setAttribute("clienteInexistente", "true");
+
+			form.setNomeClienteDestino("CLIENTE INEXISTENTE");
+			form.setCpfCnpjClienteDestino("");
 		}
 
 		return retorno;

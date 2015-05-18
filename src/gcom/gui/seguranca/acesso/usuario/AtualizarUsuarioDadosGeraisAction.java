@@ -86,12 +86,7 @@ import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.Grupo;
-import gcom.seguranca.acesso.usuario.FiltroUsuario;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioGrupo;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioTipo;
-import gcom.seguranca.acesso.usuario.Usuario;
-import gcom.seguranca.acesso.usuario.UsuarioGrupo;
-import gcom.seguranca.acesso.usuario.UsuarioTipo;
+import gcom.seguranca.acesso.usuario.*;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.filtro.ParametroSimplesDiferenteDe;
@@ -207,8 +202,8 @@ public class AtualizarUsuarioDadosGeraisAction
 			}
 			Collection coll = Fachada.getInstancia().pesquisar(filtroUsuario, Usuario.class.getName());
 			if(coll != null && !coll.isEmpty()){
-				throw new ActionServletException("atencao.usuario.login.ja.existe", null, ((Usuario) Util.retonarObjetoDeColecao(coll))
-								.getLogin());
+				throw new ActionServletException("atencao.usuario.login.ja.existe", null,
+								((Usuario) Util.retonarObjetoDeColecao(coll)).getLogin());
 			}
 		}
 
@@ -395,8 +390,8 @@ public class AtualizarUsuarioDadosGeraisAction
 														unidadeEmpresa.getDescricao());
 									}
 								}else{
-									throw new ActionServletException("atencao.usuario.sem.permissao", usuario.getLogin(), unidadeEmpresa
-													.getDescricao());
+									throw new ActionServletException("atencao.usuario.sem.permissao", usuario.getLogin(),
+													unidadeEmpresa.getDescricao());
 								}
 
 								// ou a unidade superior da unidade de
@@ -497,6 +492,7 @@ public class AtualizarUsuarioDadosGeraisAction
 		if(!"".equals(form.getLogin())) usuarioParaAtualizar.setLogin(form.getLogin());
 		if(!"".equals(form.getEmail())) usuarioParaAtualizar.setDescricaoEmail(form.getEmail());
 
+		form.setIdUsuario(usuarioParaAtualizar.getId().toString());
 		sessao.setAttribute("usuarioParaAtualizar", usuarioParaAtualizar);
 
 		sessao.setAttribute("usuario", usuario);

@@ -479,7 +479,6 @@ public class ExibirConsultarRegistroAtendimentoPopupAction
 				consultarRegistroAtendimentoPopupActionForm.setUnidadeReativacao(unidadeReativacao.getDescricao());
 			}
 
-
 			// Caso de Uso [UC0418]
 			UnidadeOrganizacional unidadeRAAtual = fachada.obterUnidadeAtualRA(registroAtendimentoAssociado.getId());
 			if(unidadeRAAtual != null){
@@ -515,7 +514,10 @@ public class ExibirConsultarRegistroAtendimentoPopupAction
 				consultarRegistroAtendimentoPopupActionForm.setIdUnidadeEncerramento("" + unidadeEncerramento.getId());
 				consultarRegistroAtendimentoPopupActionForm.setUnidadeEncerramento(unidadeEncerramento.getDescricao());
 
-				Usuario usuario = registroAtendimentoUnidade.getUsuario();
+				RegistroAtendimentoUnidade registroAtendimentoUnidadeEncerramento = fachada
+								.consultarRegistroAtendimentoUnidadeEncerramento(registroAtendimento.getId(), unidadeEncerramento.getId());
+
+				Usuario usuario = registroAtendimentoUnidadeEncerramento.getUsuario();
 				if(usuario != null){
 
 					consultarRegistroAtendimentoPopupActionForm.setIdUsuarioEncerramento("" + usuario.getId());
@@ -529,8 +531,7 @@ public class ExibirConsultarRegistroAtendimentoPopupAction
 			consultarRegistroAtendimentoPopupActionForm.setHoraEncerramento(Util.formatarHoraSemSegundos(dataEncerramento));
 
 			consultarRegistroAtendimentoPopupActionForm.setDataPrevistaEncerramento(Util.formatarData(registroAtendimento
-							.getDataPrevistaAtual())
-							+ " " + Util.formatarHoraSemSegundos(registroAtendimento.getDataPrevistaAtual()));
+							.getDataPrevistaAtual()) + " " + Util.formatarHoraSemSegundos(registroAtendimento.getDataPrevistaAtual()));
 
 			consultarRegistroAtendimentoPopupActionForm.setParecerEncerramento(registroAtendimento.getParecerEncerramento());
 

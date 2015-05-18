@@ -188,7 +188,15 @@
 		type="gcom.agenciavirtual.micromedicao.CalcularConsumoEstimadoWebService" />
 		
 		<action path="/agenciavirtual/emitirCertidaoNegativaDeDebitosWebService" 
-		type="gcom.agenciavirtual.cobranca.EmitirCertidaoNegativaDeDebitosWebService" />
+		type="gcom.agenciavirtual.cobranca.EmitirCertidaoNegativaDeDebitosWebService" />		
+		
+		<action path="/agenciavirtual/gerarOsSeletivaWebservice" 
+			type="gcom.agenciavirtual.atendimento.GerarOsSeletivaWebservice" />
+		
+		
+		
+		
+		
 				
 	</action-mappings>
 

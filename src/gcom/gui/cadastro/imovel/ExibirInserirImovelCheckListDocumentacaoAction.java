@@ -174,7 +174,10 @@ public class ExibirInserirImovelCheckListDocumentacaoAction
 				imovelCheckListDocumentacaoForm.setCodigoSituacaoEsgoto(imovel.getLigacaoEsgotoSituacao().getId().toString());
 				imovelCheckListDocumentacaoForm.setDescricaoSituacaoEsgoto(imovel.getLigacaoEsgotoSituacao().getDescricao());
 				imovelCheckListDocumentacaoForm.setNumeroRota(imovel.getRota().getCodigo().toString());
-				imovelCheckListDocumentacaoForm.setNumeroSegmento(imovel.getNumeroSegmento().toString());
+
+				if(imovel.getNumeroSegmento() != null){
+					imovelCheckListDocumentacaoForm.setNumeroSegmento(imovel.getNumeroSegmento().toString());
+				}
 
 				String endereco = fachada.pesquisarEndereco(imovel.getId());
 				imovelCheckListDocumentacaoForm.setEndereco(endereco);

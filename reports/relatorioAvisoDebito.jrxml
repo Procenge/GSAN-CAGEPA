@@ -26,6 +26,7 @@
 	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="getDataDebitoAnterior1" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_NM_ESTADO" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="descricaoMensagemDocumento" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="getInscricao1" class="java.lang.String"/>
 	<field name="getMatricula1" class="java.lang.String"/>
@@ -171,7 +172,7 @@
 						key="staticText-8"/>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Cliente:]]></text>
 				</staticText>
@@ -197,7 +198,7 @@
 						key="staticText-9"/>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Endereço:]]></text>
 				</staticText>
@@ -223,7 +224,7 @@
 						key="staticText-10"/>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false" isItalic="false"/>
 					</textElement>
 				<text><![CDATA[Bairro:]]></text>
 				</staticText>
@@ -432,15 +433,15 @@
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="2"
-						y="270"
+						y="275"
 						width="364"
-						height="60"
+						height="55"
 						key="textField-51"/>
 					<box></box>
-					<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<textElement textAlignment="Justified" verticalAlignment="Top">
 						<font size="7"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["º          A fim de regularizar sua situação de débito, evitando o corte de seu fornecimento, bem como regularizar sua situação junto aos órgão de proteção ao crédito SPC/SERASA, realize o pagamento utilizando o código de barras abaixo nos bancos credenciados ou casas lotericas. Caso necessário ainda disponibilizamos nossos postos de atendimento ao cliente. Os valores acima não estão acrescidos de Multa (2% sobre o débito) os quais serão cobrados em sua próxima fatura."]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA["º          " + $P{descricaoMensagemDocumento}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
@@ -620,7 +621,7 @@
 						key="staticText-28"/>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Matrícula:]]></text>
 				</staticText>
@@ -646,7 +647,7 @@
 						key="staticText-29"/>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Inscrição:]]></text>
 				</staticText>
@@ -672,7 +673,7 @@
 						key="staticText-31"/>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Cliente:]]></text>
 				</staticText>
@@ -751,7 +752,7 @@
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Cliente:]]></text>
 				</staticText>
@@ -781,7 +782,7 @@
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Endereço:]]></text>
 				</staticText>
@@ -811,7 +812,7 @@
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Bairro:]]></text>
 				</staticText>
@@ -848,17 +849,17 @@
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="417"
-						y="270"
+						y="275"
 						width="364"
-						height="60"
+						height="55"
 						key="textField-52">
 							<printWhenExpression><![CDATA[new Boolean($F{getNumero2} != null)]]></printWhenExpression>
 						</reportElement>
 					<box></box>
-					<textElement textAlignment="Justified" verticalAlignment="Middle">
+					<textElement textAlignment="Justified" verticalAlignment="Top">
 						<font size="7"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["º          A fim de regularizar sua situação de débito, evitando o corte de seu fornecimento, bem como regularizar sua situação junto aos órgão de proteção ao crédito SPC/SERASA, realize o pagamento utilizando o código de barras abaixo nos bancos credenciados ou casas lotericas. Caso necessário ainda disponibilizamos nossos postos de atendimento ao cliente. Os valores acima não estão acrescidos de Multa (2% sobre o débito) os quais serão cobrados em sua próxima fatura."]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA["º          " + $P{descricaoMensagemDocumento}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
@@ -1073,7 +1074,7 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Cliente:]]></text>
 				</staticText>
@@ -1259,7 +1260,7 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Matrícula:]]></text>
 				</staticText>
@@ -1289,7 +1290,7 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Inscrição:]]></text>
 				</staticText>
@@ -1739,7 +1740,7 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Matrícula:]]></text>
 				</staticText>
@@ -1769,7 +1770,7 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Inscrição:]]></text>
 				</staticText>
@@ -1799,7 +1800,7 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Roteiro:]]></text>
 				</staticText>
@@ -1829,7 +1830,7 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Hm:]]></text>
 				</staticText>
@@ -1859,7 +1860,7 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Matrícula:]]></text>
 				</staticText>
@@ -1889,7 +1890,7 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Inscrição:]]></text>
 				</staticText>
@@ -1919,7 +1920,7 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Roteiro:]]></text>
 				</staticText>
@@ -1949,7 +1950,7 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Hm:]]></text>
 				</staticText>
@@ -2189,7 +2190,7 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Hm:]]></text>
 				</staticText>
@@ -2219,7 +2220,7 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+						<font pdfFontName="Helvetica" size="7" isBold="false"/>
 					</textElement>
 				<text><![CDATA[Hm:]]></text>
 				</staticText>

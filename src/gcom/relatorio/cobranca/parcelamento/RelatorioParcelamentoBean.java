@@ -276,7 +276,7 @@ public class RelatorioParcelamentoBean implements RelatorioBean {
 			String valorDescontoSancoesRegulamentares,
             String valorDescontoTarifaSocial,
             String dataEntradaParcelamento,
-            String rg) {
+ String rg) {
 		this.matriculaImovel = matriculaImovel;
 		this.nomeCliente = nomeCliente;
 		this.endereco = endereco;

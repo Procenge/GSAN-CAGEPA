@@ -3,12 +3,7 @@ package gcom.gui.relatorio.faturamento;
 
 import gcom.cadastro.imovel.FiltroImovelPerfil;
 import gcom.cadastro.imovel.ImovelPerfil;
-import gcom.cadastro.localidade.FiltroGerenciaRegional;
-import gcom.cadastro.localidade.FiltroLocalidade;
-import gcom.cadastro.localidade.FiltroUnidadeNegocio;
-import gcom.cadastro.localidade.GerenciaRegional;
-import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.localidade.UnidadeNegocio;
+import gcom.cadastro.localidade.*;
 import gcom.fachada.Fachada;
 import gcom.faturamento.conta.ContaMotivoRevisao;
 import gcom.faturamento.conta.FiltroContaMotivoRevisao;

@@ -76,10 +76,16 @@
 
 package gcom.gui.cadastro.imovel;
 
+import gcom.atendimentopublico.registroatendimento.bean.ObterIndicadorExistenciaHidrometroHelper;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cobranca.parcelamento.Parcelamento;
 import gcom.fachada.Fachada;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
+import gcom.util.Util;
+import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
 import java.util.Collection;
 
@@ -152,8 +158,10 @@ public class ExibirConsultarImovelParcelamentosDebitosAction
 
 			consultarImovelActionForm.setIdImovelParcelamentosDebitos(null);
 			consultarImovelActionForm.setMatriculaImovelParcelamentosDebitos(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelParcelamentosDebitos(null);
 			consultarImovelActionForm.setSituacaoAguaParcelamentosDebitos(null);
 			consultarImovelActionForm.setSituacaoEsgotoParcelamentosDebitos(null);
+			consultarImovelActionForm.setTipoLigacao(null);
 			consultarImovelActionForm.setParcelamento(null);
 			consultarImovelActionForm.setReparcelamento(null);
 			consultarImovelActionForm.setReparcelamentoConsecutivo(null);
@@ -213,6 +221,20 @@ public class ExibirConsultarImovelParcelamentosDebitosAction
 					consultarImovelActionForm.setMatriculaImovelParcelamentosDebitos(fachada.pesquisarInscricaoImovel(new Integer(
 									idImovelParcelamentosDebitos.trim()), true));
 
+					try{
+						if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString()
+										.equals(ConstantesSistema.NAO.toString())){
+							if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+								consultarImovelActionForm.setDigitoVerificadorImovelParcelamentosDebitos(Imovel
+												.getDigitoVerificadorMatricula(idImovelParcelamentosDebitos.trim()));
+							}
+						}
+					}catch(ControladorException e1){
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						throw new ActionServletException(e1.getMessage(), e1);
+					}
+
 					// seta a situação de agua
 					if(imovel.getLigacaoAguaSituacao() != null){
 						consultarImovelActionForm.setSituacaoAguaParcelamentosDebitos(imovel.getLigacaoAguaSituacao().getDescricao());
@@ -221,7 +243,20 @@ public class ExibirConsultarImovelParcelamentosDebitosAction
 					if(imovel.getLigacaoEsgotoSituacao() != null){
 						consultarImovelActionForm.setSituacaoEsgotoParcelamentosDebitos(imovel.getLigacaoEsgotoSituacao().getDescricao());
 					}
+					// seta o tipo de ligação
+					if(idImovelParcelamentosDebitos != null || idImovelParcelamentosDebitos != ""){
+						boolean tipoLigacaoBoolean = false;
+						ObterIndicadorExistenciaHidrometroHelper obterIndicadorExistenciaHidrometroHelper = fachada
+										.obterIndicadorExistenciaHidrometroLigacaoAguaPoco(Util.obterInteger(idImovelParcelamentosDebitos),
+														tipoLigacaoBoolean);
+						if(obterIndicadorExistenciaHidrometroHelper.getIndicadorLigacaoAgua().intValue() == 1
+										|| obterIndicadorExistenciaHidrometroHelper.getIndicadorPoco().intValue() == 1){
+							consultarImovelActionForm.setTipoLigacao("Hidrometrado");
+						}else{
+							consultarImovelActionForm.setTipoLigacao("Consumo Fixo");
+						}
 
+					}
 					// numero de parcelamentos
 					if(imovel.getNumeroParcelamento() != null){
 						consultarImovelActionForm.setParcelamento("" + imovel.getNumeroParcelamento());
@@ -279,9 +314,12 @@ public class ExibirConsultarImovelParcelamentosDebitosAction
 				// limpar os dados pesquisados
 				sessao.removeAttribute("imovelParcelamentosDebitos");
 				sessao.removeAttribute("colecaoParcelamento");
+
+				consultarImovelActionForm.setDigitoVerificadorImovelParcelamentosDebitos(null);
 				consultarImovelActionForm.setIdImovelParcelamentosDebitos(null);
 				consultarImovelActionForm.setSituacaoAguaParcelamentosDebitos(null);
 				consultarImovelActionForm.setSituacaoEsgotoParcelamentosDebitos(null);
+				consultarImovelActionForm.setTipoLigacao(null);
 				consultarImovelActionForm.setParcelamento(null);
 				consultarImovelActionForm.setReparcelamento(null);
 				consultarImovelActionForm.setReparcelamentoConsecutivo(null);
@@ -296,12 +334,31 @@ public class ExibirConsultarImovelParcelamentosDebitosAction
 			sessao.removeAttribute("idImovelPrincipalAba");
 
 			consultarImovelActionForm.setMatriculaImovelParcelamentosDebitos(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelParcelamentosDebitos(null);
 			consultarImovelActionForm.setSituacaoAguaParcelamentosDebitos(null);
 			consultarImovelActionForm.setSituacaoEsgotoParcelamentosDebitos(null);
+			consultarImovelActionForm.setTipoLigacao(null);
 			consultarImovelActionForm.setParcelamento(null);
 			consultarImovelActionForm.setReparcelamento(null);
 			consultarImovelActionForm.setReparcelamentoConsecutivo(null);
 
+		}
+
+		try{
+			if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+				if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+					httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '1');
+				}else{
+					throw new ControladorException("erro.parametro.nao.informado", null, "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+				}
+
+			}else{
+				httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '0');
+			}
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new ActionServletException(e.getMessage(), e);
 		}
 
 		return retorno;

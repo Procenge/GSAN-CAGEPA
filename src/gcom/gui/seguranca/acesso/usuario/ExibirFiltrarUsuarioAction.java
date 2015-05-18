@@ -80,12 +80,7 @@ import gcom.cadastro.empresa.Empresa;
 import gcom.cadastro.empresa.FiltroEmpresa;
 import gcom.cadastro.funcionario.FiltroFuncionario;
 import gcom.cadastro.funcionario.Funcionario;
-import gcom.cadastro.localidade.FiltroGerenciaRegional;
-import gcom.cadastro.localidade.FiltroLocalidade;
-import gcom.cadastro.localidade.FiltroUnidadeNegocio;
-import gcom.cadastro.localidade.GerenciaRegional;
-import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.localidade.UnidadeNegocio;
+import gcom.cadastro.localidade.*;
 import gcom.cadastro.unidade.FiltroUnidadeOrganizacional;
 import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.fachada.Fachada;
@@ -93,12 +88,7 @@ import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.FiltroGrupo;
 import gcom.seguranca.acesso.Grupo;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioAbrangencia;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioSituacao;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioTipo;
-import gcom.seguranca.acesso.usuario.UsuarioAbrangencia;
-import gcom.seguranca.acesso.usuario.UsuarioSituacao;
-import gcom.seguranca.acesso.usuario.UsuarioTipo;
+import gcom.seguranca.acesso.usuario.*;
 import gcom.util.ConstantesSistema;
 import gcom.util.filtro.ParametroSimples;
 
@@ -177,6 +167,8 @@ public class ExibirFiltrarUsuarioAction
 			httpServletRequest.setAttribute("nomeCampo", "usuarioTipo");
 			form.setUsuarioSituacao("" + ConstantesSistema.NUMERO_NAO_INFORMADO);
 			form.setLoginUsuario("");
+
+			form.setIdUsuario("");
 
 		}
 		String primeiraVez = httpServletRequest.getParameter("menu");

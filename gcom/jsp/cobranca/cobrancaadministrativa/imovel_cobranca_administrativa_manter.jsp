@@ -35,13 +35,20 @@ function facilitador(objeto){
 	}
 }
 
-function validarForm() {
+function validarForm(removerApenasSelecionados) {
 
 	var form = document.forms[0];
-	if (CheckboxNaoVazioMensagemGenerico('É necessário selecionar pelo menos um imóvel para o sistema efetuar a retirada da cobrança administrativa', form.idRegistrosRetirada)) {
-		abrirPopupComSubmit('exibirInformarMotivoRetiradaCobrancaAdministrativaAction.do',230,487,'RetirarImovelCobrancaAdministrativa');
+	
+	if (removerApenasSelecionados && CheckboxNaoVazioMensagemGenerico('É necessário selecionar pelo menos um imóvel para o sistema efetuar a retirada da cobrança administrativa', form.idRegistrosRetirada)) {
+		abrirPopupComSubmit('exibirInformarMotivoRetiradaCobrancaAdministrativaAction.do?todos=0', 240, 497,'RetirarImovelCobrancaAdministrativa');
+	} else {
+		abrirPopupComSubmit('exibirInformarMotivoRetiradaCobrancaAdministrativaAction.do?todos=1', 240, 497, 'RetirarImovelCobrancaAdministrativa');
 	}
+
 }
+
+
+
 
 </script>
 </head>
@@ -215,9 +222,13 @@ function validarForm() {
 								<tr>
 									<td>
 										<font color="#FF0000">
-										
-										<input type="button" name="Submit24" class="bottonRightCol" value="Retirar" onClick="validarForm();">
+											<input type="button" name="Submit24" class="bottonRightCol" value="Retirar Selecionados" onClick="validarForm(true);">
 										</font> 
+										<logic:notEmpty name="idsImoveisArquivo" scope="session">
+											<font color="#FF0000">
+												<input type="button" name="Submit24" class="bottonRightCol" value="Retirar Todos" onClick="validarForm(false);">
+											</font>
+										</logic:notEmpty> 
 										<input name="button" 
 											type="button"
 											class="bottonRightCol" 
@@ -226,7 +237,10 @@ function validarForm() {
 											align="left" 
 											style="width: 80px;">
 									</td>
-																		<td align="right" valign="top">
+									<td align="right" valign="top">
+									<strong>Tipo de Relatório: </strong>
+										<html:radio property="formatoRelatorio" value="1" tabindex="5"/><strong> Sintético </strong>
+										<html:radio property="formatoRelatorio" value="2" tabindex="5"/><strong> Analítico </strong>
 			                     		<a href="javascript:toggleBox('demodiv',1);">
 			                             	<img align="right" border="0" src="<bean:message key='caminho.imagens'/>print.gif" title="Imprimir Relação de Imóveis em Cobrança Administrativa"/>
 			                             </a>

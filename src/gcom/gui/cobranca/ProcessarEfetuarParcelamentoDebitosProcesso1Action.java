@@ -95,6 +95,7 @@ import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.micromedicao.consumo.LigacaoTipo;
 import gcom.micromedicao.hidrometro.HidrometroCapacidade;
+import gcom.seguranca.acesso.PermissaoEspecial;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
@@ -167,6 +168,7 @@ public class ProcessarEfetuarParcelamentoDebitosProcesso1Action
 		String indicadorRestabelecimento = (String) efetuarParcelamentoDebitosActionForm.get("indicadorRestabelecimento");
 		String indicadorParcelamentoCobrancaBancaria = (String) efetuarParcelamentoDebitosActionForm
 						.get("indicadorParcelamentoCobrancaBancaria");
+		int indicadorCalcularAcrescimosSucumbenciaAnterior = 2;
 
 		String idClienteParcelamento = (String) efetuarParcelamentoDebitosActionForm.get("idClienteParcelamento");
 		String cpfClienteParcelamentoDigitado = (String) efetuarParcelamentoDebitosActionForm.get("cpfClienteParcelamentoDigitado");
@@ -316,6 +318,20 @@ public class ProcessarEfetuarParcelamentoDebitosProcesso1Action
 			if(fimIntervaloParcelamentoFormatado < inicioIntervaloParcelamentoFormatado){
 				throw new ActionServletException("atencao.mes.ano.referencia.final.anterior.referencia.inicial");
 			}
+
+			String idClienteDebito = null;
+			Integer idRelacaoClienteDebito = null;
+			int indicadorDebito = 1;
+			if(efetuarParcelamentoDebitosActionForm.get("idClienteRelacaoImovelSelecionado") != null
+							&& !((String) efetuarParcelamentoDebitosActionForm.get("idClienteRelacaoImovelSelecionado")).equals("")){
+				String[] dados = ((String) efetuarParcelamentoDebitosActionForm.get("idClienteRelacaoImovelSelecionado")).split("\\.");
+
+				idClienteDebito = (dados[1]).toString();
+				idRelacaoClienteDebito = Integer.valueOf(dados[0]);
+
+				indicadorDebito = 2;
+			}
+
 			if((!inicioIntervaloParcelamento.equals(inicioIntervaloParcelamentoOriginal))
 							|| (!fimIntervaloParcelamento.equals(fimIntervaloParcelamentoOriginal))){
 
@@ -323,11 +339,13 @@ public class ProcessarEfetuarParcelamentoDebitosProcesso1Action
 
 				// Obter todo o débito do imóvel para exibição
 				ObterDebitoImovelOuClienteHelper colecaoDebitoCliente = fachada
-								.obterDebitoImovelOuCliente(1, // Indicador
+								.obterDebitoImovelOuCliente(
+												indicadorDebito, // Indicador
 												// de débito do imóvel
 												codigoImovel, // Matrícula do imóvel
-												null, // Código do cliente
-												null, // Tipo de relação cliente imóvel
+												idClienteDebito, // Código do cliente
+												idRelacaoClienteDebito, // Tipo de relação cliente
+																		// imóvel
 												Util
 																.formatarMesAnoParaAnoMesSemBarra((inicioIntervaloParcelamentoOriginal
 																				.length() != 0 && !inicioIntervaloParcelamentoOriginal
@@ -359,7 +377,8 @@ public class ProcessarEfetuarParcelamentoDebitosProcesso1Action
 												Integer.valueOf(indicadorAcrescimosImpotualidade), // acréscimos
 												// impontualidade
 												true, null, null, null, indicadorNaoConsiderarPagamentoNaoClassificado,
-												ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM);
+												ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM,
+												indicadorCalcularAcrescimosSucumbenciaAnterior, null);
 
 				// [FS0049] - Verificar retirada de débitos prescritos do débito do parcelamento
 				Short pIndicadorConsiderarDebitoPrescrito = ConstantesSistema.NUMERO_NAO_INFORMADO;
@@ -645,9 +664,17 @@ public class ProcessarEfetuarParcelamentoDebitosProcesso1Action
 
 		Collection<ContaValoresHelper> colecaoContaValores = (Collection<ContaValoresHelper>) sessao
 						.getAttribute("colecaoContaValoresImovel");
-		Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores = (Collection<GuiaPagamentoValoresHelper>) sessao
-						.getAttribute("colecaoGuiaPagamentoValoresImovel");
-		Collection<DebitoACobrar> colecaoDebitoACobrar = (Collection<DebitoACobrar>) sessao.getAttribute("xxx");
+
+		Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores = null;
+		if(indicadorGuiasPagamento.equals(ConstantesSistema.SIM.toString())){
+			colecaoGuiaPagamentoValores = (Collection<GuiaPagamentoValoresHelper>) sessao.getAttribute("colecaoGuiaPagamentoValoresImovel");
+		}
+
+		Collection<DebitoACobrar> colecaoDebitoACobrar = null;
+		if(indicadorDebitosACobrar.equals(ConstantesSistema.SIM.toString())){
+			colecaoDebitoACobrar = (Collection<DebitoACobrar>) sessao.getAttribute("colecaoDebitoACobrarImovel");
+		}
+
 
 		ObterDebitoImovelOuClienteHelper colecaoDebitoImovel = new ObterDebitoImovelOuClienteHelper(colecaoContaValores,
 						colecaoDebitoACobrar, null, colecaoGuiaPagamentoValores);
@@ -669,6 +696,18 @@ public class ProcessarEfetuarParcelamentoDebitosProcesso1Action
 
 		fachada.verificarRetirarContaOuGuiaPrescrita(Util.obterInteger(codigoImovel), pIndicadorConsiderarDebitoPrescrito,
 						colecaoDebitoImovel);
+
+		// [FS0050] Verificar imóvel em execução fiscal
+		Short indicadorImovelEmExecucaoFiscal = fachada.verificarImovelEmExecucaoFiscal(Integer.valueOf(codigoImovel));
+		boolean temPermissaoParcelarEmExecucaoFiscal = fachada.verificarPermissaoEspecial(
+						PermissaoEspecial.PARCELAR_IMOVEL_EM_EXECUCAO_FISCAL, usuario);
+
+		if(indicadorImovelEmExecucaoFiscal.equals(Short.valueOf("1")) && !temPermissaoParcelarEmExecucaoFiscal){
+			throw new ActionServletException("atencao.usuario_sem_permissao_parcelar_em_execucao_fiscal", codigoImovel,
+							usuario.getLogin());
+		}
+
+		efetuarParcelamentoDebitosActionForm.set("indicadorImovelEmExecucaoFiscal", Short.toString(indicadorImovelEmExecucaoFiscal));
 
 		// [SB0024] – Validar autorização de acesso ao imóvel pelos usuários das empresas de
 		// cobrança administrativa

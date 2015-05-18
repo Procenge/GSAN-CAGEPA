@@ -48,6 +48,14 @@
         length="8"
     />
 
+	 <property
+        name="responsavelEntrega"
+        type="java.lang.String"
+        column="DONE_DSRESPENTREGA"
+        length="30"
+    />
+
+
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to Cliente -->

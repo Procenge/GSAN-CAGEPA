@@ -12,11 +12,14 @@ import gcom.tarefa.TarefaException;
 import gcom.tarefa.TarefaRelatorio;
 import gcom.util.ControladorException;
 import gcom.util.agendadortarefas.AgendadorTarefas;
+import gcom.util.parametrizacao.ParametroGeral;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import br.com.procenge.comum.exception.NegocioException;
 
 /**
  * @author André Lopes
@@ -41,12 +44,14 @@ public class RelatorioOrdemCorteModelo5
 
 		byte[] retorno = null;
 
+		Fachada fachada = Fachada.getInstancia();
+
 		// ------------------------------------
 		Integer idFuncionalidadeIniciada = this.getIdFuncionalidadeIniciada();
 		// ------------------------------------
 
 		int tipoFormatoRelatorio = (Integer) getParametro("tipoFormatoRelatorio");
-		String descricaoArquivo = "";// (String) getParametro("descricaoArquivo");
+		String descricaoArquivo = getParametro("descricaoArquivo").toString();
 
 		List<EmitirDocumentoOrdemCorteModelo4e5Helper> colecaoOrdenada = (ArrayList) getParametro("colecaoHelperOrdenada");
 
@@ -93,6 +98,18 @@ public class RelatorioOrdemCorteModelo5
 		SistemaParametro sistemaParametro = Fachada.getInstancia().pesquisarParametrosDoSistema();
 
 		parametros.put("imagem", sistemaParametro.getImagemRelatorio());
+		parametros.put("P_NM_EMPRESA", sistemaParametro.getNomeEmpresa());
+		parametros.put("P_CNPJ", gcom.util.Util.formatarCnpj(sistemaParametro.getCnpjEmpresa()));
+		parametros.put("P_NN_FONE", sistemaParametro.getNumeroTelefone());
+
+		try{
+			parametros.put("P_INSC_EST",
+							(String) fachada.obterValorDoParametroPorCodigo(ParametroGeral.P_INSCRICAO_ESTADUAL_EMPRESA.getCodigo()));
+			parametros.put("P_JUCOR", (String) fachada.obterValorDoParametroPorCodigo(ParametroGeral.P_JUNTA_COMERCIAL_EMPRESA.getCodigo()));
+		}catch(NegocioException e1){
+			e1.printStackTrace();
+			throw new TarefaException("Erro ao gerar dados para o relatorio");
+		}
 
 		RelatorioDataSource ds = new RelatorioDataSource(collRelatorioBean);
 

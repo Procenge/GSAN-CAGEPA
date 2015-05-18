@@ -194,6 +194,20 @@
         column="orse_tmexecucao"
         length="8"
     />
+    
+    <property
+        name="valorHorasTrabalhadas"
+        type="java.math.BigDecimal"
+        column="orse_vlhoras"
+        length="6"
+    />
+    
+    <property
+        name="valorMateriais"
+        type="java.math.BigDecimal"
+        column="orse_vlmateriais"
+        length="6"
+    />
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to AtendimentoMotivoEncerramento -->
@@ -588,6 +602,13 @@
         not-null="true"
     >
         <column name="mcva_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="ordemServicoReparo"
+        class="gcom.atendimentopublico.ordemservico.OrdemServico"
+     >
+        <column name="orse_idreparo" />
     </many-to-one>
     
     <set

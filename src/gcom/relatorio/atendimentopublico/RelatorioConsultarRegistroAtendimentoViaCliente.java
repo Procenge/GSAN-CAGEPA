@@ -301,9 +301,18 @@ public class RelatorioConsultarRegistroAtendimentoViaCliente
 		// Recuperando o tamanho a ser considerado para o número da quadra
 		int tamanhoNumeroQuadra = 3;
 		try{
-			String paramNumeroQuadra = ParametroCadastro.P_NUMERO_QUADRA_COM_4_DIGITOS.executar();
-			if(!Util.isVazioOuBranco(paramNumeroQuadra) && paramNumeroQuadra.equals(ConstantesSistema.SIM.toString())){
+			String paramNumeroQuadra4 = ParametroCadastro.P_NUMERO_QUADRA_COM_4_DIGITOS.executar();
+			if(!Util.isVazioOuBranco(paramNumeroQuadra4) && paramNumeroQuadra4.equals(ConstantesSistema.SIM.toString())){
 				tamanhoNumeroQuadra = 4;
+			}
+		}catch(ControladorException ex){
+			throw new RuntimeException("erro.parametro.sistema.inscricao.imovel", ex);
+		}
+
+		try{
+			String paramNumeroQuadra5 = ParametroCadastro.P_NUMERO_QUADRA_COM_5_DIGITOS.executar();
+			if(!Util.isVazioOuBranco(paramNumeroQuadra5) && paramNumeroQuadra5.equals(ConstantesSistema.SIM.toString())){
+				tamanhoNumeroQuadra = 5;
 			}
 		}catch(ControladorException ex){
 			throw new RuntimeException("erro.parametro.sistema.inscricao.imovel", ex);

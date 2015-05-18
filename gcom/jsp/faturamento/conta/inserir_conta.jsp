@@ -160,9 +160,16 @@ function validarForm(form, inserir){
 		}
 		else if (form.consumoAgua.value.length > 0 && form.consumoEsgoto.value.length > 0 &&
 				(form.consumoAgua.value * 1) > (form.consumoEsgoto.value * 1)){
+				
 				alert("Consumo de Esgoto não deve ser menor que Consumo de Água.");
 				form.consumoEsgoto.value = form.consumoAgua.value;
 				form.consumoEsgoto.focus();
+		}
+		else if (form.habilitarConsumoFixoPoco.value == 1 && (form.consumoFixoPoco.value.length == 0 || form.consumoFixoPoco.value == '' || form.consumoFixoPoco.value == '0')
+				&& indicadorEsgotoFaturavel.value == 1){
+			
+			alert("Informe Consumo de Poço.");
+			form.consumoFixoPoco.focus();
 		}
 		else if (validarCamposDinamicos(form)){
 			converteVirgula(form.percentualEsgoto);
@@ -308,6 +315,12 @@ function validarForm(form, inserir){
 			form.consumoEsgoto.disabled = false;
 			form.percentualEsgoto.disabled = false;
 			form.ligacaoEsgotoPerfilId.disabled = false;
+			
+			if (form.habilitarConsumoFixoPoco.value == 1){
+				
+				form.consumoFixoPoco.disabled = false;
+			}
+			
 	 	}else{
 
 			form.consumoEsgoto.value = "";
@@ -318,6 +331,12 @@ function validarForm(form, inserir){
 			
 			form.ligacaoEsgotoPerfilId.disabled = true;
 			form.ligacaoEsgotoPerfilId.value = 0;
+			
+			if (form.habilitarConsumoFixoPoco.value == 1){
+				
+				form.consumoFixoPoco.value = "";
+				form.consumoFixoPoco.disabled = true;
+			}
 	  	}
 	}
 
@@ -406,6 +425,7 @@ function validarForm(form, inserir){
 		
 	<html:hidden property="indicadorEsgotoFaturavel"/>
 	<html:hidden property="indicadorAguaFaturavel"/>
+	<html:hidden property="habilitarConsumoFixoPoco"/>
 
 
 	<%@ include file="/jsp/util/cabecalho.jsp"%>
@@ -720,6 +740,17 @@ function validarForm(form, inserir){
 									</td>
 								</tr>
 								<tr>
+									<td height="10"><strong>Consumo de Poço:</strong></td>
+									<logic:equal name="InserirContaActionForm" property="habilitarConsumoFixoPoco" value="1">
+										<td><html:text property="consumoFixoPoco" size="10" maxlength="10"
+											style="text-align: right;" /></td>
+									</logic:equal>
+									<logic:equal name="InserirContaActionForm" property="habilitarConsumoFixoPoco" value="2">
+										<td><html:text property="consumoFixoPoco" size="10" maxlength="10"
+											readonly="true" disabled="true"
+											style="text-align: right;" /></td>
+									</logic:equal>
+										
 									<td height="10"><strong>Percentual de Esgoto:</strong></td>
 									<td><input name="percentualEsgoto" type="text" size="10" maxlength="6" readonly="true" value="${requestScope.percentualEsgoto}" onKeyup="formataValorMonetario(this, 5);" style="text-align: right;">
 									</td>

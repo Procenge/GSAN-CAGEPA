@@ -65,8 +65,8 @@ function removerEndereco(url){
 <%@ include file="/jsp/util/cabecalho.jsp"%>
 <%@ include file="/jsp/util/menu.jsp" %>
 
-<table width="770" border="0" cellspacing="4" cellpadding="0">
 <input type="hidden" name="numeroPagina" value="2"/>
+<table width="770" border="0" cellspacing="4" cellpadding="0">
 <html:hidden property="url" value="2" />
   <tr>
     <td width="149" valign="top" class="leftcoltext">
@@ -100,7 +100,7 @@ function removerEndereco(url){
         <%--<p align="left">&nbsp;</p>--%>
         <%--<p align="left">&nbsp;</p>--%>
       </div></td>
-    <td width="612" valign="top" class="centercoltext">
+      <td width="612" valign="top" class="centercoltext">
       <table height="100%">
         <tr>
           <td></td>
@@ -114,128 +114,191 @@ function removerEndereco(url){
         </tr>
       </table>
       <p>&nbsp;</p>
-            <table width="100%" border="0" >
-              <tr>
-                <td colspan="2"><p>Clique em adicionar para informar o endere&ccedil;o
-                    abaixo:</p>
-                    <td align="right"></td>
-                  <p>&nbsp;</p></td>
-              </tr>
-              </table>
-            <table width="100%" border="0" >
-              <tr>
-                <td width="183">
-                	<strong>Endere&ccedil;o do Imóvel<font color="#FF0000">*</font></strong>
-                </td>
-                <td width="432" align="right">
-		 			<logic:present name="colecaoEnderecos">
+      <table width="100%" border="0" >
+        <tr>
+          <td colspan="2"><p>Clique em adicionar para informar o endere&ccedil;o
+              abaixo:</p>
+              <td align="right">
+            		<p>&nbsp;</p>
+            	</td>
+        </tr>
+        </table>
+            
+        <table width="100%" border="0" >
+        	<tr>
+          		<td width="183">
+          			<strong>Endere&ccedil;o do Imóvel<font color="#FF0000">*</font></strong>
+          		</td>
+          		<td width="432" align="right">
+					<logic:present name="colecaoEnderecos">
 						<logic:empty name="colecaoEnderecos">
-							<input type="button" class="bottonRightCol" value="Adicionar" id="botaoEndereco" onclick="javascript:abrirPopup('exibirInserirEnderecoAction.do?tipoPesquisaEndereco=imovel&operacao=2', 570, 700);">
-							<INPUT TYPE="hidden" id="validarEndereco" value="0">
+							<logic:present name="permitirInserirEndereco" scope="session">
+								<input type="button" class="bottonRightCol" value="Adicionar" id="botaoEndereco" onclick="javascript:abrirPopup('exibirInserirEnderecoAction.do?tipoPesquisaEndereco=imovel&operacao=2', 570, 700);">
+								<INPUT TYPE="hidden" id="validarEndereco" value="0">
+							</logic:present>								
+			
+							<logic:notPresent name="permitirInserirEndereco" scope="session"> 
+								<input type="button" class="bottonRightCol" value="Adicionar" id="botaoEndereco" onclick="javascript:abrirPopup('exibirInserirEnderecoAction.do?tipoPesquisaEndereco=imovel&operacao=2', 570, 700);" disabled>
+								<INPUT TYPE="hidden" id="validarEndereco" value="0">
+							</logic:notPresent>							
 						</logic:empty>
+	
 						<logic:notEmpty name="colecaoEnderecos">
 							<input type="button" class="bottonRightCol" value="Adicionar" id="botaoEndereco" onclick="javascript:abrirPopup('exibirInserirEnderecoAction.do?tipoPesquisaEndereco=imovel&operacao=2', 570, 700);" disabled>
 							<INPUT TYPE="hidden" id="validarEndereco" value="1">
 						</logic:notEmpty>
-		 			</logic:present>
+					</logic:present>
 
-		 			<logic:notPresent name="colecaoEnderecos">
-						<input type="button" class="bottonRightCol" value="Adicionar" id="botaoEndereco" onclick="javascript:abrirPopup('exibirInserirEnderecoAction.do?tipoPesquisaEndereco=imovel&operacao=2', 570, 700);">
-						<INPUT TYPE="hidden" id="validarEndereco" value="0">
-		 			</logic:notPresent>
-           		</td>
-          	</tr>
-            <tr>
-                <table width="100%" cellpadding="0" cellspacing="0">
-			<tr>
-				<td colspan="2">
-					<table width="100%"  border="0" cellpadding="1" cellspacing="0" bgcolor="#99CCFF" bordercolor="#99CCFF">
-					<!--header da tabela interna -->
-					<tr>
-						<td width="50" align="center"><strong>Remover</strong></td>
-						<td align="center"><strong>Endere&ccedil;o</strong></td>
-					</tr>
-					</table>
-				</td>
-			</tr>
+					<logic:notPresent name="colecaoEnderecos">
+						<logic:present name="permitirInserirEndereco" scope="session">
+							<input type="button" class="bottonRightCol" value="Adicionar" id="botaoEndereco" onclick="javascript:abrirPopup('exibirInserirEnderecoAction.do?tipoPesquisaEndereco=imovel&operacao=2', 570, 700);">
+							<INPUT TYPE="hidden" id="validarEndereco" value="0">
+						</logic:present>								
+	
+						<logic:notPresent name="permitirInserirEndereco" scope="session"> 
+							<input type="button" class="bottonRightCol" value="Adicionar" id="botaoEndereco" onclick="javascript:abrirPopup('exibirInserirEnderecoAction.do?tipoPesquisaEndereco=imovel&operacao=2', 570, 700);" disabled>
+							<INPUT TYPE="hidden" id="validarEndereco" value="0">						
+						</logic:notPresent>							
+					</logic:notPresent>
+     			</td>
+    		</tr>
+    	</table>
+		<table width="100%" border="0" >    		
+      		<tr>
+		      	<td>
+		            <table width="100%" cellpadding="0" cellspacing="0">
+						<tr>
+							<td colspan="2">
+								<table width="100%"  border="0" cellpadding="1" cellspacing="0" bgcolor="#99CCFF" bordercolor="#99CCFF">
+									<!--header da tabela interna -->
+									<tr>
+										<td width="50" align="center"><strong>Remover</strong></td>
+										<td align="center"><strong>Endere&ccedil;o</strong></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
 
-			<logic:present name="colecaoEnderecos">
-
-				<tr>
-					<td height="40" colspan="2">
-						<div style="width: 100%; height: 100%; overflow: auto;">
-							<table width="100%" align="center" bgcolor="#99CCFF">
-							<!--corpo da segunda tabela-->
-
-								<% String cor = "#cbe5fe";%>
-
-								<logic:iterate name="colecaoEnderecos" id="endereco" type="Imovel">
-
-									<%	if (cor.equalsIgnoreCase("#cbe5fe")){
-											cor = "#cbe5fe";%>
-										<tr bgcolor="FFFFFF">
-									<%} else{
-											cor = "#FFFFFF";%>
-										<tr bgcolor="#cbe5fe">
-									<%}%>
-
-								<td align="center">
-								 <a href="javascript:removerEndereco('removerAtualizarImovelColecaoEnderecoAction.do?enderecoRemoverSelecao=<%=""+endereco.getUltimaAlteracao().getTime()%>');"><img border="0" src="/gsan/imagens/Error.gif"/></a>
+						<logic:present name="colecaoEnderecos">
+							<tr>
+								<td height="40" colspan="2">
+									<div style="width: 100%; height: 100%; overflow: auto;">
+										<table width="100%" align="center" bgcolor="#99CCFF">
+											<!--corpo da segunda tabela-->
+											<tr>
+												<% String cor = "#cbe5fe";%>
+						
+												<logic:iterate name="colecaoEnderecos" id="endereco" type="Imovel">
+						
+													<%	if (cor.equalsIgnoreCase("#cbe5fe")){
+															cor = "#cbe5fe";%>
+														<tr bgcolor="FFFFFF">
+													<%} else{
+															cor = "#FFFFFF";%>
+														<tr bgcolor="#cbe5fe">
+													<%}%>
+						
+													<td align="center">
+														<logic:present name="permitirRemoverEndereco" scope="session">
+													 		<a href="javascript:removerEndereco('removerAtualizarImovelColecaoEnderecoAction.do?enderecoRemoverSelecao=<%=""+endereco.getUltimaAlteracao().getTime()%>');">
+													 			<img border="0" src="/gsan/imagens/Error.gif"/>
+													 		</a>
+													 	</logic:present>
+													 	
+													 	<logic:notPresent name="permitirRemoverEndereco" scope="session">
+													 		<img border="0" src="/gsan/imagens/Error.gif"/>
+													 	</logic:notPresent>
+													</td>
+													<td width="540px">
+														<logic:present name="permitirAtualizarEndereco" scope="session">
+						                                   	<a href="javascript:abrirPopup('exibirInserirEnderecoAction.do?exibirEndereco=OK&tipoPesquisaEndereco=imovel&operacao=2', 570, 700)">
+						                                   		<bean:write name="endereco" property="enderecoFormatado"/>
+						                                   	</a>
+														</logic:present>
+														
+														<logic:notPresent name="permitirAtualizarEndereco" scope="session">
+						                                  		<bean:write name="endereco" property="enderecoFormatado"/>
+														</logic:notPresent>
+													</td>
+												
+												</logic:iterate>
+											</tr>
+										</table>
+									</div>
 								</td>
-								<td width="540px">
-                                    <a href="javascript:abrirPopup('exibirInserirEnderecoAction.do?exibirEndereco=OK&tipoPesquisaEndereco=imovel&operacao=2', 570, 700)">
-                                    <bean:write name="endereco" property="enderecoFormatado"/></a>
-								</td>
-
-						</logic:iterate>
-
 							</tr>
-						</table>
-					</div>
-				</td>
-			</tr>
+						</logic:present>
 
-			</logic:present>
+		               <tr>
+							<td height="24" height="24" width="180px">
+								<strong>Envio da Conta:</strong>
+							</td>
+							<td align="right">
+								<logic:present name="permitirAtualizarImovel" scope="session">
+									<html:select property="imovelContaEnvio" style="width: 430px" onmousemove="setTituloSelect(this);">
+										<html:option value="-1">&nbsp;</html:option>
+						                  		<html:options collection="colecaoImovelEnnvioConta" labelProperty="descricao" property="id"/>
+									</html:select>
+								</logic:present>
+										
+								<logic:notPresent name="permitirAtualizarImovel" scope="session">
+									<html:select property="imovelContaEnvio" style="width: 430px" disabled="true" onmousemove="setTituloSelect(this);">
+										<html:option value="-1">&nbsp;</html:option>
+						                  		<html:options collection="colecaoImovelEnnvioConta" labelProperty="descricao" property="id"/>
+									</html:select>							
+								</logic:notPresent>								
+							</td>
+						</tr>
+						<tr>
+							<td height="24"><strong>Extrato para Respons&aacute;vel:</strong></td>
+							<td>
+							<p>
+								<logic:present name="permitirAtualizarImovel" scope="session">
+									<label> 
+										<html:radio value="1" property="extratoResponsavel" />Emitir
+									</label> 
+									<label> 
+										<html:radio value="2" property="extratoResponsavel" /> Não Emitir
+									</label> <br>
+									<label> 
+									</label>
+								</logic:present>
+										
+								<logic:notPresent name="permitirAtualizarImovel" scope="session">	
+									<label> 
+										<html:radio value="1" property="extratoResponsavel" disabled="true" />Emitir
+									</label> 
+									<label> 
+										<html:radio value="2" property="extratoResponsavel" disabled="true" /> Não Emitir
+									</label> <br>
+									<label> 
+									</label>
+								</logic:notPresent>														
+							</p>
+							</td>
+						</tr>
+						
+						<tr>
+		                     <td width="10%"><strong>Envio Correio </strong></td>
+		                     <td width="56%">
+		                       <html:radio property="indicadorEnvioCorreio" value="1">Sim</html:radio>
+		                       <html:radio property="indicadorEnvioCorreio" value="2">Não</html:radio>
+		                      </td>
+		                </tr>							
 
-                  </div></td>
-                    </tr>
-                    <tr>
-						<td height="24" height="24" width="180px">
-							<strong>Envio da Conta:</strong>
-						</td>
-						<td align="right">
-							<html:select property="imovelContaEnvio" style="width: 430px" onmousemove="setTituloSelect(this);">
-								<html:option value="-1">&nbsp;</html:option>
- 		                   		<html:options collection="colecaoImovelEnnvioConta" labelProperty="descricao" property="id"/>
-							</html:select>
-						</td>
-					</tr>
-					<tr>
-						<td height="24"><strong>Extrato para Respons&aacute;vel:</strong></td>
-						<td>
-						<p><label> <html:radio value="1" property="extratoResponsavel" />
-						Emitir</label> <label> <html:radio value="2"
-							property="extratoResponsavel" /> Não Emitir</label> <br>
-						<label> </label></p>
-						</td>
-					</tr>
-                     <tr>
-                       <td colspan="2">
-						<div align="right">
-							<jsp:include page="/jsp/util/wizard/navegacao_botoes_wizard_valida_avancar.jsp?numeroPagina=2"/>
-						</div>
-					  </td>
-                     </tr>
-                  </table>
-                  </td>
-              </tr>
-
-
-            </table>
-	   </table>
-    </td>
-  </tr>
+		               <tr>
+		                  <td colspan="2">
+							<div align="right">
+								<jsp:include page="/jsp/util/wizard/navegacao_botoes_wizard_valida_avancar.jsp?numeroPagina=2"/>
+							</div>
+						  </td>
+		               </tr>
+             		</table>
+     			</td>
+        	</tr>
+      </table>
 </table>
+
 
 <%@ include file="/jsp/util/rodape.jsp"%>
 <%@ include file="/jsp/util/tooltip.jsp" %>

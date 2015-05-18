@@ -76,37 +76,46 @@
 
 package gcom.faturamento.consumotarifa;
 
-import java.io.Serializable;
+import gcom.interceptor.ControleAlteracao;
+import gcom.interceptor.ObjetoTransacao;
+import gcom.util.filtro.Filtro;
+import gcom.util.filtro.ParametroSimples;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-/** @author Hibernate CodeGenerator */
+@ControleAlteracao()
 public class ConsumoTarifaFaixa
-				implements Serializable {
+				extends ObjetoTransacao {
 
 	private static final long serialVersionUID = 1L;
+
+	public static final int ATRIBUTOS_INSERIR_CONSUMO_TARIFA = 367;
+
+	public static final int ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA = 382;
 
 	/** identifier field */
 	private Integer id;
 
-	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
 	private Integer numeroConsumoFaixaInicio;
 
-	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
 	private Integer numeroConsumoFaixaIFim;
 
-	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
 	private BigDecimal valorConsumoTarifa;
 
 	/** nullable persistent field */
 	private Date ultimaAlteracao;
 
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
 	private BigDecimal valorUsoEsgotoTarifa;
 
-	/** persistent field */
-	private gcom.faturamento.consumotarifa.ConsumoTarifaCategoria consumoTarifaCategoria;
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
+	private ConsumoTarifaCategoria consumoTarifaCategoria;
 
 	/** full constructor */
 	public ConsumoTarifaFaixa(Integer numeroConsumoFaixaInicio, Integer numeroConsumoFaixaIFim, BigDecimal valorConsumoTarifa,
@@ -205,4 +214,42 @@ public class ConsumoTarifaFaixa
 		this.valorUsoEsgotoTarifa = valorUsoEsgotoTarifa;
 	}
 
+	@Override
+	public Filtro retornaFiltro(){
+
+		FiltroConsumoTarifaFaixa filtro = new FiltroConsumoTarifaFaixa();
+
+		filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroConsumoTarifaFaixa.CONSUMO_TARIFA_CATEGORIA);
+		filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroConsumoTarifaFaixa.CONSUMO_TARIFA_CATEGORIA_CONSUMO_TARIFA_VIGENCIA);
+		filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroConsumoTarifaFaixa.CONSUMO_TARIFA_CATEGORIA_CONSUMO_TARIFA_VIGENCIA_CONSUMO_TARIFA);
+
+		filtro.adicionarParametro(new ParametroSimples(FiltroConsumoTarifaFaixa.ID, this.getId()));
+		return filtro;
+	}
+
+	@Override
+	public String[] retornaCamposChavePrimaria(){
+
+		String[] retorno = new String[1];
+		retorno[0] = "id";
+		return retorno;
+	}
+
+	@Override
+	public String getDescricaoParaRegistroTransacao(){
+
+		return getId() + "";
+	}
+
+	public String[] retornarAtributosInformacoesOperacaoEfetuada(){
+
+		String[] atributos = {"consumoTarifaCategoria.consumoTarifaVigencia.consumoTarifa.descricao", "consumoTarifaCategoria.categoria.id", "consumoTarifaCategoria.consumoTarifaVigencia.dataVigenciaFormatada", "numeroConsumoFaixaInicio", "numeroConsumoFaixaFim"};
+		return atributos;
+	}
+
+	public String[] retornarLabelsInformacoesOperacaoEfetuada(){
+
+		String[] labels = {"Tarifa", "Categoria", "Data de Vigencia", "Faixa Inicial", "Faixa Final"};
+		return labels;
+	}
 }

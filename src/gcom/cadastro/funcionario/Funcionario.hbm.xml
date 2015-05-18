@@ -51,6 +51,19 @@
         length="8"
     />
 
+	<property
+        name="nomeResumido"
+        type="java.lang.String"
+        column="func_nmresumido"
+        length="20"
+    />
+
+	<property
+        name="jornadaTipo"
+        type="java.lang.Integer"
+        column="func_cdjornadatipo"
+    />	
+
     <!-- associations -->
     <!-- bi-directional many-to-one association to Empresa -->
     <many-to-one
@@ -67,6 +80,13 @@
         not-null="true"
     >
         <column name="unid_id" />
+    </many-to-one>        
+    
+    <many-to-one
+        name="equipeTipo"
+        class="gcom.atendimentopublico.ordemservico.EquipeTipo"        
+    >
+        <column name="eqtp_id" />
     </many-to-one>
     
     <!-- bi-directional one-to-many association to HidrometroMovimentacao -->

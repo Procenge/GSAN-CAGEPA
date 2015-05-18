@@ -27,6 +27,7 @@
 	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="getNomeRelatorio" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_NM_ESTADO" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NOME_EMPRESA_RELATORIO" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="getEmpresa" class="java.lang.String"/>
 	<field name="getAgenteComercial" class="java.lang.String"/>
@@ -458,7 +459,7 @@
 					<textElement textAlignment="Center">
 						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="10" isBold="true"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["COMPANHIA DE SANEAMENTO DE  "  + $P{P_NM_ESTADO}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NOME_EMPRESA_RELATORIO}+" "  + $P{P_NM_ESTADO}]]></textFieldExpression>
 				</textField>
 			</band>
 		</pageHeader>

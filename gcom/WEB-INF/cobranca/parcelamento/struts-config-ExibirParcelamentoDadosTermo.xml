@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="ParcelamentoDadosTermoActionForm"
+			type="gcom.gui.cobranca.parcelamento.ParcelamentoDadosTermoActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	
+	<action-mappings>
+
+		<action name="ParcelamentoDadosTermoActionForm"
+			type="gcom.gui.cobranca.parcelamento.ExibirParcelamentoDadosTermoAction"
+			validate="false" scope="session"
+			path="/exibirParcelamentoDadosTermoAction">
+			<forward name="informarParcelamentoDadosTermo"
+				path="/jsp/cobranca/parcelamento/parcelamento_dados_termo_normal.jsp" />
+			<forward name="atualizarParcelamentoDadosTermoAction"
+				path="/gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction.do" />
+			<forward name="exibirParcelamentoEditarResolucaoDiretoriaAction"
+				path="/exibirParcelamentoEditarResolucaoDiretoriaAction.do" />	
+			<forward
+				name="exibirConcluirParcelamentoDebitosAction"
+				path="/efetuarParcelamentoDebitosWizardAction.do?action=concluirProcessoAction" />		
+			<forward name="exibirConsultarListaParcelamentoDebitoAction"
+				path="/exibirConsultarListaParcelamentoDebitoAction.do" />										
+		</action>
+		
+		<action name="ParcelamentoDadosTermoActionForm"
+			type="gcom.gui.cobranca.parcelamento.ExibirParcelamentoDadosTermoExecFiscalAction"
+			validate="false" scope="session"
+			path="/exibirParcelamentoDadosTermoExecFiscalAction">
+			<forward name="informarParcelamentoDadosTermoExecFiscal"
+				path="/jsp/cobranca/parcelamento/parcelamento_dados_termo_exec_fiscal.jsp" />
+			<forward name="atualizarParcelamentoDadosTermoExecFiscalAction"
+				path="/gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction.do" />
+			<forward name="exibirParcelamentoEditarResolucaoDiretoriaAction"
+				path="/exibirParcelamentoEditarResolucaoDiretoriaAction.do" />
+			<forward
+				name="exibirConcluirParcelamentoDebitosAction"
+				path="/efetuarParcelamentoDebitosWizardAction.do?action=concluirProcessoAction" />		
+			<forward name="exibirConsultarListaParcelamentoDebitoAction"
+				path="/exibirConsultarListaParcelamentoDebitoAction.do" />									
+		</action>
+		
+	</action-mappings>
+
+</struts-config>

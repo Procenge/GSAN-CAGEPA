@@ -128,6 +128,18 @@ public class GuiaPagamentoPrescricaoHistorico
 	@ControleAlteracao(funcionalidade = {ATRIBUTOS_DESMARCAR_PRESCRICAO_DEBITOS})
 	private Usuario usuario;
 
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_DESMARCAR_PRESCRICAO_DEBITOS})
+	private Short indicadorDividaAtiva = 2;
+
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_DESMARCAR_PRESCRICAO_DEBITOS})
+	private Date dataDividaAtiva;
+
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_DESMARCAR_PRESCRICAO_DEBITOS})
+	private Short indicadorExecucaoFiscal = 2;
+
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_DESMARCAR_PRESCRICAO_DEBITOS})
+	private Date dataExecucaoFiscal;
+
 	public GuiaPagamentoPrescricaoHistorico() {
 
 	}
@@ -230,6 +242,46 @@ public class GuiaPagamentoPrescricaoHistorico
 	public void setGuiaPagamentoGeral(GuiaPagamentoGeral guiaPagamentoGeral){
 
 		this.guiaPagamentoGeral = guiaPagamentoGeral;
+	}
+
+	public Short getIndicadorDividaAtiva(){
+
+		return indicadorDividaAtiva;
+	}
+
+	public void setIndicadorDividaAtiva(Short indicadorDividaAtiva){
+
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+	}
+
+	public Date getDataDividaAtiva(){
+
+		return dataDividaAtiva;
+	}
+
+	public void setDataDividaAtiva(Date dataDividaAtiva){
+
+		this.dataDividaAtiva = dataDividaAtiva;
+	}
+
+	public Short getIndicadorExecucaoFiscal(){
+
+		return indicadorExecucaoFiscal;
+	}
+
+	public void setIndicadorExecucaoFiscal(Short indicadorExecucaoFiscal){
+
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+	}
+
+	public Date getDataExecucaoFiscal(){
+
+		return dataExecucaoFiscal;
+	}
+
+	public void setDataExecucaoFiscal(Date dataExecucaoFiscal){
+
+		this.dataExecucaoFiscal = dataExecucaoFiscal;
 	}
 
 	@Override

@@ -2,6 +2,7 @@
 <%@ taglib uri="/WEB-INF/struts-template.tld" prefix="template"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
+<%@ page import="gcom.util.ConstantesSistema"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
@@ -167,6 +168,10 @@
 						style="text-transform: none;" /> </strong></td>
 				</tr>
 				<tr>
+					<td width="162"><strong>Nome Resumido:</strong></td>
+					<td><strong> <html:text property="nomeResumido" size="20" maxlength= "20" /> </strong></td>
+				</tr>				
+				<tr>
 					<td><strong>Descrição do Cargo:<font color="#FF0000">*</font></strong></td>
 					<td><strong> <html:text property="descricaoCargo" size="60"
 						maxlength="70" style="text-transform: none;" /> </strong></td>
@@ -203,6 +208,21 @@
 					</logic:notPresent> <a href="javascript:limparUnidade();"> <img
 						src="<bean:message key="caminho.imagens"/>limparcampo.gif"
 						border="0" title="Apagar" /></a></td>
+				</tr>
+				<tr>
+					<td width="162"><strong>Tipo da Equipe:</strong></td>
+					<td><html:select property="idEquipeTipo">
+						<option value=""></option>
+						<html:options name="request" collection="colecaoEquipeTipo"
+							labelProperty="descricao" property="id" />
+					</html:select></td>
+				</tr>
+				<tr>
+					<td width="162"><strong>Tipo de Jornada:</strong></td>
+					<td>														
+							<html:radio property="jornadaTipo" value="<%=ConstantesSistema.SIM.toString()%>" disabled="false" /><strong>Normal</strong>
+							<html:radio property="jornadaTipo" value="<%=ConstantesSistema.NAO.toString()%>" disabled="false" /><strong>Plantão</strong>
+					</td>
 				</tr>
 				<tr>
 					<td height="19"><strong> <font color="#FF0000"></font></strong></td>

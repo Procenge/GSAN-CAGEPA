@@ -24,6 +24,20 @@
 
 <script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/regras_validator.js"></script><html:javascript staticJavascript="false"  formName="EfetuarParcelamentoDebitosActionForm" dynamicJavascript="false" />
 
+<script language="JavaScript">
+function extendeTabela(tabela,display){
+	var form = document.forms[0];
+
+	if(display){
+		eval('layerHide'+tabela).style.display = 'none';
+		eval('layerShow'+tabela).style.display = 'block';
+	}else{
+		eval('layerHide'+tabela).style.display = 'block';
+		eval('layerShow'+tabela).style.display = 'none';
+	}
+}
+</script>
+
 <script language="JavaScript"><!--
 
 var bCancel = false; 
@@ -406,11 +420,17 @@ function removerOpcoesParcelamentoConfiguravel(identificador){
 									<strong>Valor Total dos Impostos</strong>
 								</td>
 								
+								<logic:equal name="pIndicadorPossuiDividaAtiva" value="<%="" + ConstantesSistema.SIM%>" scope="session">
+									<td align="center">
+										<strong>Valor Sucumbência Atual</strong>
+									</td>								
+								</logic:equal>
+								
 								<td align="center">
-									<strong>Valor do Desconto para Pagamento à Vista</strong>
+									<strong>Valor do Desconto Pag. à Vista</strong>
 								</td>
 								<td align="center">
-									<strong>Valor do Pagamento à Vista</strong>
+									<strong>Valor do Pag. à Vista</strong>
 								</td>
 							</tr>
 							<tr bgcolor="#cbe5fe"> 
@@ -424,6 +444,14 @@ function removerOpcoesParcelamentoConfiguravel(identificador){
 									<bean:write name="EfetuarParcelamentoDebitosActionForm" 
 											property="valorTotalImpostos"/>
 								</td>
+								
+								<logic:equal name="pIndicadorPossuiDividaAtiva" value="<%="" + ConstantesSistema.SIM%>" scope="session">
+									<td align="right" bgcolor="#FFFFFF">
+										<bean:write name="EfetuarParcelamentoDebitosActionForm" 
+												property="valorSucumbenciaAtual"/>
+									</td>
+								</logic:equal>
+								
 								<td align="right" bgcolor="#FFFFFF">
 									<bean:write name="EfetuarParcelamentoDebitosActionForm" 
 											property="valorDescontoPagamentoAVista"/>
@@ -444,6 +472,12 @@ function removerOpcoesParcelamentoConfiguravel(identificador){
 								<td align="right" bgcolor="#FFFFFF">
 									&nbsp;
 								</td>
+								<td align="right" bgcolor="#FFFFFF">
+									&nbsp;
+								</td>
+								<td align="right" bgcolor="#FFFFFF">
+									&nbsp;
+								</td>
 							</logic:notEqual>
 							
 								
@@ -452,14 +486,249 @@ function removerOpcoesParcelamentoConfiguravel(identificador){
 					</td>
 				</tr>
 				
-			
 				
+				<logic:equal name="pIndicadorPossuiDividaAtiva" value="<%="" + ConstantesSistema.SIM%>" scope="session">
+					<tr><td colspan="2"><hr></td></tr>
+					
+					<tr>
+						<td colspan="2">
+							<table width="100%" bgcolor="#99CCFF">
+								<tr bgcolor="#90c7fc">  
+									<td align="center" colspan="4">
+										<strong>Sucumbência</strong>
+									</td>
+								</tr>
+								<tr bgcolor="#90c7fc">  
+									<td width="25%" align="center" >
+										<strong>Anterior</strong>
+									</td>
+									<td width="25%" align="center">
+										<strong>Acréscimos Anterior</strong>
+									</td>
+									<td width="25%" align="center">
+										<strong>Atual</strong>
+									</td>
+									<td width="25%" align="center">
+										<strong>Qtd. Parcelas</strong>
+									</td>		
+								</tr>
+								<tr bgcolor="#cbe5fe"> 
+									<td align="right" bgcolor="#FFFFFF">
+										<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorTotalSucumbenciaImovel"/>
+									</td>
+									<td align="right" bgcolor="#FFFFFF">
+										<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorAcrescimosSucumbenciaImovel"/>
+									</td>
+									<td align="center" bgcolor="#FFFFFF">
+										<logic:present name="permitirAlterarValoresSucumbenciaExecucaoFiscal" scope="session">
+											<html:text property="valorSucumbenciaAtual" maxlength="10" size="10" onkeyup="formataValorMonetario(this,10)" style="text-align: right;"/>
+										</logic:present>
+										<logic:notPresent name="permitirAlterarValoresSucumbenciaExecucaoFiscal" scope="session">
+											<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorSucumbenciaAtual"/>
+										</logic:notPresent>
+									</td>
+									<td align="center" bgcolor="#FFFFFF">
+										<html:text property="quantidadeParcelasSucumbencia" maxlength="3" size="3" style="text-align: right;"/>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</logic:equal>
 				
+				<tr><td><br></td></tr>
+				<tr>
+					<td colspan="2" >
+						<strong>Valor Diligências: </strong>
+						<logic:present name="permitirInformarValorDiligenciasExecucaoFiscal" scope="session">
+							<html:text property="valorDiligencias" maxlength="10" size="10" onkeyup="formataValorMonetario(this,10)" style="text-align: right;"/>
+						</logic:present>
+						<logic:notPresent name="permitirInformarValorDiligenciasExecucaoFiscal" scope="session">
+							<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorDiligencias"/>
+						</logic:notPresent>
+					</td>
+				</tr>
+				
+				<logic:present name="exibirDebitosSituacaoDividaAtivaParc" scope="request" >
+					<tr>
+						<td colspan="2" width="100%">
+							<br>
+							<div id="layerHideDebitosSituacaoDividaAtiva" style="display:block">
+								<table width="100%" border="0" bgcolor="#99CCFF">
+									<tr bgcolor="#99CCFF">
+										<td height="18" colspan="4" align="center">
+											<span class="style2"> 
+												<a href="javascript:extendeTabela('DebitosSituacaoDividaAtiva',true);"> 
+													<b>Valores dos Débitos do Imóvel por Situação de Dívida Ativa</b>
+												</a>
+											</span>
+										</td>
+									</tr>
+								</table>
+							</div>
+							<div id="layerShowDebitosSituacaoDividaAtiva" style="display:none">
+								<table width="100%" border="0" bgcolor="#99CCFF">
+									<tr bgcolor="#90c7fc">
+										<td height="18" colspan="4" align="center">
+											<span class="style2"> 
+												<a href="javascript:extendeTabela('DebitosSituacaoDividaAtiva',false);"> 
+													<b>Valores dos Débitos do Imóvel por Situação de Dívida Ativa</b>
+												</a>
+											</span>
+										</td>
+									</tr>
+								</table>	
+								<table width="100%" border="0" bgcolor="#99CCFF">
+									<tr bgcolor="#90c7fc">
+										<td><div align="center"><strong>Débitos Normais</strong></div></td>
+									</tr>
+								</table>
+								<table width="100%" border="0" bgcolor="#99CCFF">
+									<tr bgcolor="#90c7fc"> 
+		                  				<td width="32%"><div align="center"><strong>Contas</strong></div></td>
+		                  				<td width="32%"><div align="center"><strong>Guias de Pagamento</strong></div></td>
+		                  				<td width="36%"><div align="center"><strong>Débitos a Cobrar </strong></div></td>
+									</tr>
+								</table>
+								<table width="100%" border="0" bgcolor="#99CCFF">	
+		                			<tr bgcolor="#90c7fc"> 
+		                  				<td width="16%"><div align="center"><strong>Valor</strong></div></td>
+		                  				<td width="16%"><div align="center"><strong>Acréscimos</strong></div></td>
+		                  				<td width="16%"><div align="center"><strong>Valor</strong></div></td>
+		                  				<td width="16%"><div align="center"><strong>Acréscimos</strong></div></td>
+		                  				<td width="18%"><div align="center"><strong>Serviços</strong></div></td>
+		                  				<td width="18%"><div align="center"><strong>Parcelamento</strong></div></td>	 
+		                			</tr>
+		                			
+		                			<tr  bgcolor="#cbe5fe"> 
+		                  				<td width="16%" bgcolor="#FFFFFF">
+		                  					<div align="right">
+		                  						<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorTotalContaNormal"/>
+		                  					</div>
+		                  				</td>
+		                  				<td width="16%" bgcolor="#FFFFFF">
+		                  					<div align="right">
+		                  						<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorTotalContaAcresNormal"/>
+		                  					</div>
+		                  				</td>
+		                  				<td width="16%" bgcolor="#FFFFFF">
+		                  					<div align="right">
+		                  						<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorTotalGuiaNormal"/>
+		                  					</div>
+		                  				</td>
+		                  				<td width="16%" bgcolor="#FFFFFF">
+		                  					<div align="right">
+		                  						<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorTotalGuiaAcresNormal"/>
+		                  					</div>
+		                  				</td>
+		                  				<td width="18%" bgcolor="#FFFFFF">
+		                  					<div align="right">
+		                  						<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorTotalDebitoACobrarServicoNormal"/>
+		                  					</div>
+		                  				</td>
+		                  				<td width="18%" bgcolor="#FFFFFF">
+		                  					<div align="right">
+		                  						<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorTotalDebitoACobrarParcelamentoNormal"/>
+		                  					</div>
+		                  				</td>	 
+		                			</tr>								
+								</table>
+								<br>							
+								<table width="100%" border="0" bgcolor="#99CCFF">
+									<tr bgcolor="#90c7fc">
+										<td><div align="center"><strong>Débitos de Dívida Ativa</strong></div></td>
+									</tr>
+								</table>
+								<table width="100%" border="0" bgcolor="#99CCFF">
+									<tr bgcolor="#90c7fc"> 
+		                  				<td width="50%"><div align="center"><strong>Contas</strong></div></td>
+		                  				<td width="50%"><div align="center"><strong>Guias de Pagamento</strong></div></td>
+									</tr>
+								</table>
+								<table width="100%" border="0" bgcolor="#99CCFF">	
+		                			<tr bgcolor="#90c7fc"> 
+		                  				<td width="25%"><div align="center"><strong>Valor</strong></div></td>
+		                  				<td width="25%"><div align="center"><strong>Acréscimos</strong></div></td>
+		                  				<td width="25%"><div align="center"><strong>Valor</strong></div></td>
+		                  				<td width="25%"><div align="center"><strong>Acréscimos</strong></div></td>
+		                			</tr>
+		                			
+		                			<tr  bgcolor="#cbe5fe"> 
+		                  				<td width="16%" bgcolor="#FFFFFF">
+		                  					<div align="right">
+		                  						<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorTotalContaDividaAtiva"/>
+		                  					</div>
+		                  				</td>
+		                  				<td width="16%" bgcolor="#FFFFFF">
+		                  					<div align="right">
+		                  						<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorTotalContaAcresDividaAtiva"/>
+		                  					</div>
+		                  				</td>
+		                  				<td width="16%" bgcolor="#FFFFFF">
+		                  					<div align="right">
+		                  						<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorTotalGuiaDividaAtiva"/>
+		                  					</div>
+		                  				</td>
+		                  				<td width="16%" bgcolor="#FFFFFF">
+		                  					<div align="right">
+		                  						<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorTotalGuiaAcresDividaAtiva"/>
+		                  					</div>
+		                  				</td>
+		                			</tr>								
+								</table>
+								<br>	
+								<table width="100%" border="0" bgcolor="#99CCFF">
+									<tr bgcolor="#90c7fc">
+										<td><div align="center"><strong>Débitos de Execução Fiscal</strong></div></td>
+									</tr>
+								</table>
+								<table width="100%" border="0" bgcolor="#99CCFF">
+									<tr bgcolor="#90c7fc"> 
+		                  				<td width="32%"><div align="center"><strong>Contas</strong></div></td>
+		                  				<td width="32%"><div align="center"><strong>Guias de Pagamento</strong></div></td>
+									</tr>
+								</table>
+								<table width="100%" border="0" bgcolor="#99CCFF">	
+		                			<tr bgcolor="#90c7fc"> 
+		                  				<td width="16%"><div align="center"><strong>Valor</strong></div></td>
+		                  				<td width="16%"><div align="center"><strong>Acréscimos</strong></div></td>
+		                  				<td width="16%"><div align="center"><strong>Valor</strong></div></td>
+		                  				<td width="16%"><div align="center"><strong>Acréscimos</strong></div></td>
+		                			</tr>
+		                			
+		                			<tr  bgcolor="#cbe5fe"> 
+		                  				<td width="16%" bgcolor="#FFFFFF">
+		                  					<div align="right">
+		                  						<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorTotalContaExecFiscal"/>
+		                  					</div>
+		                  				</td>
+		                  				<td width="16%" bgcolor="#FFFFFF">
+		                  					<div align="right">
+		                  						<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorTotalContaAcresExecFiscal"/>
+		                  					</div>
+		                  				</td>
+		                  				<td width="16%" bgcolor="#FFFFFF">
+		                  					<div align="right">
+		                  						<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorTotalGuiaExecFiscal"/>
+		                  					</div>
+		                  				</td>
+		                  				<td width="16%" bgcolor="#FFFFFF">
+		                  					<div align="right">
+		                  						<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorTotalGuiaAcresExecFiscal"/>
+		                  					</div>
+		                  				</td>
+		                			</tr>								
+								</table>
+							</div>				
+						</td>
+					</tr>
+				</logic:present>				
+
 				<tr><td colspan="2"><hr></td></tr>
 				<tr>
 					<td colspan="2" height="23">
 						<table width="100%">
-							<tr>  
+							<tr>
 								<td><strong>Opção de Pagamento Parcelado:</strong></td>
 							</tr>
 						</table>
@@ -510,38 +779,52 @@ function removerOpcoesParcelamentoConfiguravel(identificador){
 								<td align="center" width="5%">
 									&nbsp;
 								</td>
-								<td align="center" width="12%">
-									<strong>Parcelas</strong>
+								<td align="center" width="8%">
+									<strong>Qtd. Parc.</strong>
 								</td>
 
 								<logic:notEqual name="existeDescontoPorPrestacao" value="1">
-									<td align="center" width="30%">
+									<td align="center" width="25%">
 										<strong>Valor da Entrada</strong>
 									</td>
-									<td align="center" width="30%">
+									
+									<logic:equal name="pIndicadorPossuiDividaAtiva" value="<%="" + ConstantesSistema.SIM%>" scope="session">
+										<td align="center" width="25%">
+											<strong>Suc. Cob. Entrada</strong>
+										</td>
+									</logic:equal>
+									
+									<td align="center" width="27%">
 										<strong>Valor da Parcela</strong>
 									</td>
 								</logic:notEqual>
 
 								<logic:equal name="existeDescontoPorPrestacao" value="1">
-									<td align="center" width="10%">
+									<td align="center" width="11%">
 										<strong>Valor da Entrada</strong>
 									</td>
-									<td align="center" width="15%">
-										<strong>Valor do Débito Atualizado</strong>
+									<td align="center" width="17%">
+										<strong>Valor Débito Atualizado</strong>
 									</td>
-									<td align="center" width="15%">
+									<td align="center" width="11%">
 										<strong>Valor do Desconto</strong>
 									</td>
-									<td align="center" width="15%">
+									
+									<logic:equal name="pIndicadorPossuiDividaAtiva" value="<%="" + ConstantesSistema.SIM%>" scope="session">
+										<td align="center" width="11%">
+											<strong>Suc. Cob. Entrada</strong>
+										</td>
+									</logic:equal>
+									
+									<td align="center" width="16%">
 										<strong>Valor Negociado</strong>
 									</td>
-									<td align="center" width="14%">
+									<td align="center" width="11%">
 										<strong>Valor da Parcela</strong>
 									</td>
 								</logic:equal>
 
-								<td align="center">
+								<td align="center" width="10%">
 									<strong>Taxa de Juros (%)</strong>
 								</td>
 							</tr>
@@ -552,38 +835,52 @@ function removerOpcoesParcelamentoConfiguravel(identificador){
 								<td align="center" width="5%">
 									&nbsp;
 								</td>
-								<td align="center" width="12%">
-									<strong>Parcelas</strong>
+								<td align="center" width="8%">
+									<strong>Qtd. Parc.</strong>
 								</td>
 
 								<logic:notEqual name="existeDescontoPorPrestacao" value="1">
-									<td align="center" width="30%">
+									<td align="center" width="25%">
 										<strong>Valor da Entrada</strong>
 									</td>
-									<td align="center" width="30%">
+									
+									<logic:equal name="pIndicadorPossuiDividaAtiva" value="<%="" + ConstantesSistema.SIM%>" scope="session">
+										<td align="center" width="25%">
+											<strong>Suc. Cob. Entrada</strong>
+										</td>
+									</logic:equal>
+									
+									<td align="center" width="27%">
 										<strong>Valor da Parcela</strong>
 									</td>
 								</logic:notEqual>
 
 								<logic:equal name="existeDescontoPorPrestacao" value="1">
-									<td align="center" width="10%">
+									<td align="center" width="11%">
 										<strong>Valor da Entrada</strong>
 									</td>
-									<td align="center" width="15%">
-										<strong>Valor do Débito Atualizado</strong>
+									<td align="center" width="17%">
+										<strong>Valor Débito Atualizado</strong>
 									</td>
-									<td align="center" width="15%">
+									<td align="center" width="11%">
 										<strong>Valor do Desconto</strong>
 									</td>
-									<td align="center" width="15%">
+									
+									<logic:equal name="pIndicadorPossuiDividaAtiva" value="<%="" + ConstantesSistema.SIM%>" scope="session">
+										<td align="center" width="11%">
+											<strong>Suc. Cob. Entrada</strong>
+										</td>
+									</logic:equal>
+									
+									<td align="center" width="16%">
 										<strong>Valor Negociado</strong>
 									</td>
-									<td align="center" width="14%">
+									<td align="center" width="11%">
 										<strong>Valor da Parcela</strong>
 									</td>
 								</logic:equal>
 
-								<td align="center">
+								<td align="center" width="10%">
 									<strong>Taxa de Juros (%)</strong>
 								</td>
 							</tr>
@@ -603,15 +900,22 @@ function removerOpcoesParcelamentoConfiguravel(identificador){
 										<input type="radio" name="indicadorQuantidadeParcelas" value="${opcoesParcelamento.quantidadePrestacao}"/>
 									<% } %>
 								</td>
-								<td align="center" width="12%">
+								<td align="center" width="8%">
 									<bean:write name="opcoesParcelamento" property="quantidadePrestacao"/>
 								</td>
 
 								<logic:notEqual name="existeDescontoPorPrestacao" value="1">
-									<td align="right" width="30%">
+									<td align="right" width="25%">
 										<bean:write name="opcoesParcelamento" property="valorEntradaMinima" formatKey="money.format"/>
 									</td>
-									<td align="right" width="30%">
+									
+									<logic:equal name="pIndicadorPossuiDividaAtiva" value="<%="" + ConstantesSistema.SIM%>" scope="session">									
+										<td align="center" width="25%">
+											<bean:write name="opcoesParcelamento" property="valorSucumbenciaAtualCobradoEntradaParc" formatKey="money.format"/>
+										</td>
+									</logic:equal>
+									
+									<td align="right" width="27%">
 										<bean:write name="opcoesParcelamento" property="valorPrestacao" formatKey="money.format"/>	
 									</td>
 								</logic:notEqual>
@@ -620,21 +924,28 @@ function removerOpcoesParcelamentoConfiguravel(identificador){
 									<td align="right" width="11%">
 										<bean:write name="opcoesParcelamento" property="valorEntradaMinima" formatKey="money.format"/>
 									</td>
-									<td align="right" width="15%">
+									<td align="right" width="17%">
 										<bean:write name="opcoesParcelamento" property="valorDebitoAtualizado" formatKey="money.format"/>	
 									</td>
-									<td align="right" width="15%">
+									<td align="right" width="11%">
 										<bean:write name="opcoesParcelamento" property="valorDescontoAcrescimosImpontualidadeNaPrestacao" formatKey="money.format"/>	
 									</td>
-									<td align="right" width="15%">
+									
+									<logic:equal name="pIndicadorPossuiDividaAtiva" value="<%="" + ConstantesSistema.SIM%>" scope="session">
+										<td align="right" width="11%">
+											<bean:write name="opcoesParcelamento" property="valorSucumbenciaAtualCobradoEntradaParc" formatKey="money.format"/>
+										</td>
+									</logic:equal>
+									
+									<td align="right" width="16%">
 										<bean:write name="opcoesParcelamento" property="valorDebitoComDescontoNaPrestacao" formatKey="money.format"/>	
 									</td>
-									<td align="right" width="15%">
+									<td align="right" width="11%">
 										<bean:write name="opcoesParcelamento" property="valorPrestacao" formatKey="money.format"/>	
 									</td>
 								</logic:equal>
 
-								<td align="right">
+								<td align="right" width="10%">
 									<bean:write name="opcoesParcelamento" property="taxaJuros" formatKey="money.format"/>
 								</td>
 							</tr>
@@ -644,43 +955,57 @@ function removerOpcoesParcelamentoConfiguravel(identificador){
 								<td align="center" width="5%">
 									&nbsp;
 								</td>
-								<td align="center" width="12%">
-									<strong>Parcelas</strong>
+								<td align="center" width="8%">
+									<strong>Qtd. Parc.</strong>
 								</td>
 
 								<logic:notEqual name="existeDescontoPorPrestacao" value="1">
-									<td align="center" width="30%">
+									<td align="center" width="25%">
 										<strong>Valor da Entrada</strong>
 									</td>
-									<td align="center" width="30%">
+									
+									<logic:equal name="pIndicadorPossuiDividaAtiva" value="<%="" + ConstantesSistema.SIM%>" scope="session">
+										<td align="center" width="25%">
+											<strong>Suc. Cob. Entrada</strong>
+										</td>
+									</logic:equal>
+									
+									<td align="center" width="27%">
 										<strong>Valor da Parcela</strong>
 									</td>
 								</logic:notEqual>
 
 								<logic:equal name="existeDescontoPorPrestacao" value="1">
-									<td align="center" width="10%">
+									<td align="center" width="11%">
 										<strong>Valor da Entrada</strong>
 									</td>
-									<td align="center" width="15%">
-										<strong>Valor do Débito Atualizado</strong>
+									<td align="center" width="17%">
+										<strong>Valor Débito Atualizado</strong>
 									</td>
-									<td align="center" width="15%">
+									<td align="center" width="11%">
 										<strong>Valor do Desconto</strong>
 									</td>
-									<td align="center" width="15%">
+									
+									<logic:equal name="pIndicadorPossuiDividaAtiva" value="<%="" + ConstantesSistema.SIM%>" scope="session">
+										<td align="center" width="11%">
+											<strong>Suc. Cob. Entrada</strong>
+										</td>
+									</logic:equal>
+									
+									<td align="center" width="16%">
 										<strong>Valor Negociado</strong>
 									</td>
-									<td align="center" width="14%">
+									<td align="center" width="11%">
 										<strong>Valor da Parcela</strong>
 									</td>
 								</logic:equal>
 
-								<td align="center">
+								<td align="center" width="10%">
 									<strong>Taxa de Juros (%)</strong>
 								</td>
 							</tr>
 							<tr>
-								<td height="100" colspan="8">
+								<td height="100" colspan="9">
 									<div style="width: 100%; height: 100%; overflow: auto;">
 										<table width="100%">
 											<logic:iterate name="colecaoOpcoesParcelamento" type="OpcoesParcelamentoHelper" id="opcoesParcelamento">
@@ -702,15 +1027,22 @@ function removerOpcoesParcelamentoConfiguravel(identificador){
 															value="${opcoesParcelamento.quantidadePrestacao}"/>
 													<% } %>
 												</td>
-												<td align="center" width="12%">
+												<td align="center" width="8%">
 													<bean:write name="opcoesParcelamento" property="quantidadePrestacao"/>
 												</td>
 												
 												<logic:notEqual name="existeDescontoPorPrestacao" value="1">
-													<td align="right" width="30%">
+													<td align="right" width="25%">
 														<bean:write name="opcoesParcelamento" property="valorEntradaMinima" formatKey="money.format"/>
 													</td>
-													<td align="right" width="30%">
+													
+													<logic:equal name="pIndicadorPossuiDividaAtiva" value="<%="" + ConstantesSistema.SIM%>" scope="session">
+														<td align="right" width="25%">
+															<bean:write name="opcoesParcelamento" property="valorSucumbenciaAtualCobradoEntradaParc" formatKey="money.format"/>
+														</td>
+													</logic:equal>
+													
+													<td align="right" width="27%">
 														<bean:write name="opcoesParcelamento" property="valorPrestacao" formatKey="money.format"/>	
 													</td>
 												</logic:notEqual>
@@ -719,16 +1051,23 @@ function removerOpcoesParcelamentoConfiguravel(identificador){
 													<td align="right" width="11%">
 														<bean:write name="opcoesParcelamento" property="valorEntradaMinima" formatKey="money.format"/>
 													</td>
-													<td align="right" width="15%">
+													<td align="right" width="17%">
 														<bean:write name="opcoesParcelamento" property="valorDebitoAtualizado" formatKey="money.format"/>	
 													</td>
-													<td align="right" width="15%">
+													<td align="right" width="11%">
 														<bean:write name="opcoesParcelamento" property="valorDescontoAcrescimosImpontualidadeNaPrestacao" formatKey="money.format"/>	
 													</td>
-													<td align="right" width="15%">
+													
+													<logic:equal name="pIndicadorPossuiDividaAtiva" value="<%="" + ConstantesSistema.SIM%>" scope="session">
+														<td align="right" width="11%">
+															<bean:write name="opcoesParcelamento" property="valorSucumbenciaAtualCobradoEntradaParc" formatKey="money.format"/>
+														</td>
+													</logic:equal>
+													
+													<td align="right" width="16%">
 														<bean:write name="opcoesParcelamento" property="valorDebitoComDescontoNaPrestacao" formatKey="money.format"/>	
 													</td>
-													<td align="right" width="15%">
+													<td align="right" width="11%">
 														<bean:write name="opcoesParcelamento" property="valorPrestacao" formatKey="money.format"/>	
 													</td>
 												</logic:equal>
@@ -753,19 +1092,28 @@ function removerOpcoesParcelamentoConfiguravel(identificador){
 															value="${opcoesParcelamento.quantidadePrestacao}"/>
 													<% } %>
 												</td>
-												<td align="center" width="12%">
+												<td align="center" width="8%">
 													<font color="#ff0000"> 
 														<bean:write name="opcoesParcelamento" property="quantidadePrestacao"/>
 													</font>
 												</td>
 												
 												<logic:notEqual name="existeDescontoPorPrestacao" value="1">
-													<td align="right" width="30%">
+													<td align="right" width="25%">
 														<font color="#ff0000"> 
 															<bean:write name="opcoesParcelamento" property="valorEntradaMinima" formatKey="money.format"/>
 														</font>
 													</td>
-													<td align="right" width="30%">
+													
+													<logic:equal name="pIndicadorPossuiDividaAtiva" value="<%="" + ConstantesSistema.SIM%>" scope="session">
+														<td align="right" width="25%">
+															<font color="#ff0000"> 
+																<bean:write name="opcoesParcelamento" property="valorSucumbenciaAtualCobradoEntradaParc" formatKey="money.format"/>
+															</font>
+														</td>
+													</logic:equal>
+													
+													<td align="right" width="27%">
 														<font color="#ff0000"> 
 															<bean:write name="opcoesParcelamento" property="valorPrestacao" formatKey="money.format"/>	
 														</font>
@@ -778,22 +1126,31 @@ function removerOpcoesParcelamentoConfiguravel(identificador){
 															<bean:write name="opcoesParcelamento" property="valorEntradaMinima" formatKey="money.format"/>
 														</font>
 													</td>
-													<td align="right" width="15%">
+													<td align="right" width="17%">
 														<font color="#ff0000"> 
 															<bean:write name="opcoesParcelamento" property="valorDebitoAtualizado" formatKey="money.format"/>
 														</font>
 													</td>
-													<td align="right" width="15%">
+													<td align="right" width="11%">
 														<font color="#ff0000"> 
 															<bean:write name="opcoesParcelamento" property="valorDescontoAcrescimosImpontualidadeNaPrestacao" formatKey="money.format"/>
 														</font>	
 													</td>
-													<td align="right" width="15%">
+													
+													<logic:equal name="pIndicadorPossuiDividaAtiva" value="<%="" + ConstantesSistema.SIM%>" scope="session">
+														<td align="right" width="11%">
+															<font color="#ff0000"> 
+																<bean:write name="opcoesParcelamento" property="valorSucumbenciaAtualCobradoEntradaParc" formatKey="money.format"/>
+															</font>
+														</td>
+													</logic:equal>
+													
+													<td align="right" width="16%">
 														<font color="#ff0000"> 
 															<bean:write name="opcoesParcelamento" property="valorDebitoComDescontoNaPrestacao" formatKey="money.format"/>
 														</font>	
 													</td>
-													<td align="right" width="15%">
+													<td align="right" width="11%">
 														<font color="#ff0000"> 
 															<bean:write name="opcoesParcelamento" property="valorPrestacao" formatKey="money.format"/>	
 														</font>
@@ -959,6 +1316,19 @@ function removerOpcoesParcelamentoConfiguravel(identificador){
 <%@ include file="/jsp/util/rodape.jsp"%>
 
 </html:form>
+
+<logic:present name="bloquearEfetivarParcelamento" scope="session">
+	<script>
+		document.getElementById('botaoConcluir').disabled='true';
+	</script>
+</logic:present>
+
+<logic:equal name="HabilitarEmissaoTermoParcelamento" scope="request" value="sim">
+	<script>
+		document.getElementById('botaoConcluir').style.visibility='hidden';
+	</script>
+</logic:equal>
+
 </body>
 <!-- parcelamento_debito_efetuar_processo3.jsp -->
 </html:html>

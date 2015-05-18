@@ -1291,7 +1291,7 @@ public class ControladorTarifaSocialSEJB
 
 		// O sistema calcula o digito verificar do cartão
 		// [UC0261 – Obter Dígito Verificador Módulo 11]
-		Integer digitoModulo11 = Util.obterDigitoVerificadorModulo11(numeroCartaoSocial);
+		Integer digitoModulo11 = Util.obterDigitoVerificadorModulo11(numeroCartaoSocial.substring(0, numeroCartaoSocial.length() - 1));
 
 		// Caso o dígito verificador encontrado seja diferente do dígito verificador informado,
 		// exibir a mensagem “Número de Cartão do Programa Social inválido”
@@ -2036,7 +2036,7 @@ public class ControladorTarifaSocialSEJB
 		ObterDebitoImovelOuClienteHelper obterDebitoImovelOuClienteHelper = getControladorCobranca().obterDebitoImovelOuCliente(2, null,
 						idCliente.toString(), null, "000101", "999912", dataInicioVencimentoDebito.getTime(),
 						dataFimVencimentoDebito.getTime(), 1, 2, 2, 2, 1, 1, 2, null, null, null, null, null, ConstantesSistema.SIM,
-						ConstantesSistema.SIM, ConstantesSistema.SIM);
+						ConstantesSistema.SIM, ConstantesSistema.SIM, 2, null);
 
 		boolean existeDebito = false;
 
@@ -4776,6 +4776,7 @@ public class ControladorTarifaSocialSEJB
 						int indicadorNotasPromissorias = 2;
 						int indicadorGuiasPagamento = 2;
 						int indicadorCalcularAcrescimoImpontualidade = 2;
+						int indicadorCalcularAcrescimosSucumbenciaAnterior = 2;
 						Boolean indicadorContas = Boolean.TRUE;
 						SistemaParametro sistemaParametro = null;
 
@@ -4786,7 +4787,8 @@ public class ControladorTarifaSocialSEJB
 										anoMesFinalVencimentoDebito, indicadorPagamento, indicadorConta, indicadorDebitoACobrar,
 										indicadorCreditoARealizar, indicadorNotasPromissorias, indicadorGuiasPagamento,
 										indicadorCalcularAcrescimoImpontualidade, indicadorContas, sistemaParametro, null, null, null,
-										ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM);
+										ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM,
+										indicadorCalcularAcrescimosSucumbenciaAnterior, null);
 
 						// 2.4. Inadimplência: possui mais de dois (2) débitos
 						boolean possuiMaisDoisDebitos = false;

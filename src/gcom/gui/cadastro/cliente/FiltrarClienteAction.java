@@ -147,7 +147,9 @@ public class FiltrarClienteAction
 		String tipoPesquisaNomeMae = (String) filtrarClienteActionForm.getTipoPesquisaNomeMae();
 		String inscricaoEstadual = (String) filtrarClienteActionForm.getInscricaoEstadualClienteFiltro();
 		String indicadorContaBraille = (String) filtrarClienteActionForm.getIndicadorContaBraille();
+		String documentoValidado = (String) filtrarClienteActionForm.getDocumentoValidado();
 		String atualizar = (String) httpServletRequest.getParameter("atualizarFiltro");
+		String numeroBeneficio = filtrarClienteActionForm.getNumeroBeneficioFiltro();
 
 		if(sessao.getAttribute("idClienteAtualizacaoCpfCnpj") != null){
 			id = (String) sessao.getAttribute("idClienteAtualizacaoCpfCnpj");
@@ -213,6 +215,7 @@ public class FiltrarClienteAction
 			}
 
 		}
+
 		// Nome da Mãe
 		if(nomeMae != null && !nomeMae.trim().equalsIgnoreCase("")){
 			peloMenosUmParametroInformado = true;
@@ -222,6 +225,21 @@ public class FiltrarClienteAction
 				filtroCliente.adicionarParametro(new ComparacaoTexto(FiltroCliente.NOME_MAE, nomeMae));
 			}
 
+		}
+
+		// Documento Validado
+		if(documentoValidado != null && !documentoValidado.trim().equalsIgnoreCase("")){
+
+			peloMenosUmParametroInformado = true;
+			filtroCliente.adicionarParametro(new ParametroSimples(FiltroCliente.DOCUMENTO_VALIDADO, documentoValidado));
+		}
+
+
+		// Número do Benefício
+		if(numeroBeneficio != null && !numeroBeneficio.trim().equalsIgnoreCase("")){
+
+			peloMenosUmParametroInformado = true;
+			filtroCliente.adicionarParametro(new ParametroSimples(FiltroCliente.NUMERO_BENEFICIO, numeroBeneficio));
 		}
 
 		if(codigoBairroCliente != null && !codigoBairroCliente.trim().equalsIgnoreCase("")){
@@ -236,6 +254,7 @@ public class FiltrarClienteAction
 			peloMenosUmParametroInformado = true;
 			filtroCliente.adicionarParametro(new ParametroSimples(FiltroCliente.INDICADOR_USO, indicadorUso));
 		}
+
 		if(cep != null && !cep.trim().equalsIgnoreCase("")){
 			peloMenosUmParametroInformado = true;
 			filtroCliente.adicionarParametro(new ParametroSimplesColecao(FiltroCliente.CEP, cep));
@@ -272,6 +291,8 @@ public class FiltrarClienteAction
 		sessao.setAttribute("tipoPesquisaNomeMae", (String) filtrarClienteActionForm.getTipoPesquisaNomeMae());
 		sessao.setAttribute("inscricaoEstadual", (String) filtrarClienteActionForm.getInscricaoEstadualClienteFiltro());
 		sessao.setAttribute("indicadorContaBraille", (String) filtrarClienteActionForm.getIndicadorContaBraille());
+		sessao.setAttribute("documentoValidado", (String) filtrarClienteActionForm.getDocumentoValidado());
+		sessao.setAttribute("numeroBeneficio", (String) filtrarClienteActionForm.getNumeroBeneficioFiltro());
 
 		// Devolve o mapeamento de retorno
 		return retorno;

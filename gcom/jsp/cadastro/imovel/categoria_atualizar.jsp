@@ -218,6 +218,16 @@ function validarForm(form){
 						<div align="left"><html:text property="consumoMedioEconomiaMes" size="6" maxlength="7"/></div>
 					</td>
 				</tr>
+				
+				<tr>
+					<td>
+						<strong>Quantidade Máxima de Economias:<font color="#FF0000">*</font></strong>
+					</td>
+					<td align="right">
+						<div align="left"><html:text property="quantidadeMaximoEconomiasValidacao" size="6" maxlength="7"/></div>
+					</td>
+				</tr>
+								
 				<tr>
 					<td colspan="2"><br>
 						<table width="100%" align="center" bgcolor="#99CCFF" border="0">
@@ -308,6 +318,48 @@ function validarForm(form){
 						</table>
 					</td>
 				</tr>
+				
+				<tr>
+					<td colspan="2"><br>
+						<table width="100%" align="center" bgcolor="#99CCFF" border="0">
+							<tr>
+								<td align="center"><strong>Dados para Determina&ccedil;&atilde;o da Virada do Hidrometro</strong></td>
+							</tr>
+							<tr bgcolor="#cbe5fe">
+								<td width="100%" align="center">
+									<table width="100%" border="0">
+										<tr> 
+											<td>
+												<strong>Consumo de Virada do Hidrometro:</strong>
+											</td>
+											<td>
+												<input name="consumoViradaHidrometro" type="text" size="4" maxlength="9"  value="<bean:write name="CategoriaActionForm" property="consumoViradaHidrometro"/>" >&nbsp;m<sup>3</sup>
+											</td>
+										</tr>
+										<tr> 
+											<td><strong>Numero de Vezes Media de Virada do Hidrometro:</strong></td>
+											<td>
+												<input name="numeroVezesMediaViradaHidrometro" type="text" size="4" maxlength="3" value="<bean:write name="CategoriaActionForm" property="numeroVezesMediaViradaHidrometro"/>" >>&nbsp;m<sup>3</sup>
+											</td>
+										</tr>
+										<tr> 
+											<td><strong>Indicador Validar a VIrada do Hidrometro:</strong></td>
+											<td>
+												<input name="indicadorValidarViradaHidrometro" type="text" size="4" maxlength="1" value="<bean:write name="CategoriaActionForm" property="indicadorValidarViradaHidrometro"/>">&nbsp;m<sup>3</sup>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+				
+				
+						</table>
+					</td>
+				</tr>
+				
+				
+				
+			
                 <tr>
                 	<td><br><strong>Indicador de Uso:</strong></td>
                  	<td align="right"><br>

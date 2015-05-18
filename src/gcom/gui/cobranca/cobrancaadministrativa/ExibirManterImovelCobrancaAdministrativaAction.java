@@ -33,6 +33,12 @@ public class ExibirManterImovelCobrancaAdministrativaAction
 		ActionForward retorno = actionMapping.findForward("manterImovelCobrancaAdministrativa");
 		HttpSession sessao = httpServletRequest.getSession(false);
 		String action = httpServletRequest.getParameter("action");
+		RetirarImovelCobrancaAdministrativaActionForm form = (RetirarImovelCobrancaAdministrativaActionForm) actionForm;
+
+		// Formato do Relatório
+		if(Util.isVazioOuBranco(form.getFormatoRelatorio())){
+			form.setFormatoRelatorio("1");
+		}
 
 		if(!Util.isVazioOuBranco(action)){
 
@@ -77,6 +83,13 @@ public class ExibirManterImovelCobrancaAdministrativaAction
 
 				// Paginação
 				retorno = this.controlarPaginacao(httpServletRequest, retorno, totalRegistros);
+
+				if(sessao.getAttribute("idsImoveisArquivo") != null){
+					Collection<ImovelCobrancaSituacao> colecaoImovelCobrancaSituacaoTodos = fachada.pesquisarImovelCobrancaAdministrativa(
+									filtroImovelCobrancaAdministrativaHelper, -1);
+					sessao.removeAttribute("colecaoImovelCobrancaSituacaoTodos");
+					sessao.setAttribute("colecaoImovelCobrancaSituacaoTodos", colecaoImovelCobrancaSituacaoTodos);
+				}
 
 				// <<Inclui>> [UC3070 - Filtrar Imóvel Cobrança Administrativa]
 				colecaoImovelCobrancaSituacao = fachada.pesquisarImovelCobrancaAdministrativa(filtroImovelCobrancaAdministrativaHelper,

@@ -120,6 +120,19 @@ public class OSEncerramentoHelper {
 
 	private Date dataExecucao;
 
+	// Indicador de Aferição Obrigatório
+	private Short indicadorAfericaoServicoTipo;
+
+	private Integer idHidrometroCondicao;
+
+	private Short indicadorResultado;
+
+	private Integer idFuncionario;
+
+	private Short indicadorClienteAcompanhou;
+
+	private String indicadorCobrarHorasMateriais;
+
 	public Integer getNumeroOS(){
 
 		return numeroOS;
@@ -418,6 +431,66 @@ public class OSEncerramentoHelper {
 	public void setDataExecucao(Date dataExecucao){
 
 		this.dataExecucao = dataExecucao;
+	}
+
+	public Short getIndicadorAfericaoServicoTipo(){
+
+		return indicadorAfericaoServicoTipo;
+	}
+
+	public void setIndicadorAfericaoServicoTipo(Short indicadorAfericaoServicoTipo){
+
+		this.indicadorAfericaoServicoTipo = indicadorAfericaoServicoTipo;
+	}
+
+	public Integer getIdHidrometroCondicao(){
+
+		return idHidrometroCondicao;
+	}
+
+	public void setIdHidrometroCondicao(Integer idHidrometroCondicao){
+
+		this.idHidrometroCondicao = idHidrometroCondicao;
+	}
+
+	public Short getIndicadorResultado(){
+
+		return indicadorResultado;
+	}
+
+	public void setIndicadorResultado(Short indicadorResultado){
+
+		this.indicadorResultado = indicadorResultado;
+	}
+
+	public Short getIndicadorClienteAcompanhou(){
+
+		return indicadorClienteAcompanhou;
+	}
+
+	public void setIndicadorClienteAcompanhou(Short indicadorClienteAcompanhou){
+
+		this.indicadorClienteAcompanhou = indicadorClienteAcompanhou;
+	}
+
+	public Integer getIdFuncionario(){
+
+		return idFuncionario;
+	}
+
+	public void setIdFuncionario(Integer idFuncionario){
+
+		this.idFuncionario = idFuncionario;
+	}
+
+	public String getIndicadorCobrarHorasMateriais(){
+
+		return indicadorCobrarHorasMateriais;
+	}
+
+	public void setIndicadorCobrarHorasMateriais(String indicadorCobrarHorasMateriais){
+
+		this.indicadorCobrarHorasMateriais = indicadorCobrarHorasMateriais;
 	}
 
 }

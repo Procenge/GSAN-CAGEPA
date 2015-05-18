@@ -196,6 +196,12 @@ public class ExibirConsultarClienteAction
 					consultarClienteActionForm.setTipoCliente(cliente.getClienteTipo().getDescricao());
 				}
 
+				// Número do Benefício
+				if(cliente.getNumeroBeneficio() != null){
+
+					consultarClienteActionForm.setNumeroBeneficio(cliente.getNumeroBeneficio());
+				}
+
 				// indicador de cobranca
 				if(cliente.getIndicadorAcaoCobranca() != null){
 					if(cliente.getIndicadorAcaoCobranca().shortValue() == 1){
@@ -285,6 +291,15 @@ public class ExibirConsultarClienteAction
 							consultarClienteActionForm.setRamoAtividadeCliente(cliente.getRamoAtividade().getDescricao());
 						}else{
 							consultarClienteActionForm.setRamoAtividadeCliente("NAO INFORMADO");
+						}
+
+						// Atividade Ecônomica
+						if(cliente.getAtividadeEconomica() != null){
+
+							consultarClienteActionForm
+											.setAtividadeEconomicaCliente(cliente.getAtividadeEconomica().getDescricaoComCodigo());
+						}else{
+							consultarClienteActionForm.setAtividadeEconomicaCliente("NAO INFORMADO");
 						}
 
 						// Inscrição Estadual e Estado

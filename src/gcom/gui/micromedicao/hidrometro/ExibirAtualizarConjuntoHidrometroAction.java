@@ -80,29 +80,13 @@ import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.micromedicao.hidrometro.FiltroHidrometroCapacidade;
-import gcom.micromedicao.hidrometro.FiltroHidrometroClasseMetrologica;
-import gcom.micromedicao.hidrometro.FiltroHidrometroDiametro;
-import gcom.micromedicao.hidrometro.FiltroHidrometroMarca;
-import gcom.micromedicao.hidrometro.FiltroHidrometroTipo;
-import gcom.micromedicao.hidrometro.FiltroHidrometroTipoTurbina;
-import gcom.micromedicao.hidrometro.Hidrometro;
-import gcom.micromedicao.hidrometro.HidrometroCapacidade;
-import gcom.micromedicao.hidrometro.HidrometroClasseMetrologica;
-import gcom.micromedicao.hidrometro.HidrometroDiametro;
-import gcom.micromedicao.hidrometro.HidrometroMarca;
-import gcom.micromedicao.hidrometro.HidrometroTipo;
-import gcom.micromedicao.hidrometro.HidrometroTipoTurbina;
+import gcom.micromedicao.hidrometro.*;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -203,6 +187,11 @@ public class ExibirAtualizarConjuntoHidrometroAction
 						// joga em dataInicial a parte da data
 						String dataAquisicao = dataFormatoAtual.format(primeiroHidrometro.getDataAquisicao());
 
+						if(primeiroHidrometro.getNumeroNotaFiscal() != null){
+
+							hidrometroActionForm.setNumeroNotaFiscal(primeiroHidrometro.getNumeroNotaFiscal().toString());
+						}
+
 						hidrometroActionForm.setDataAquisicao(formatarResultado(dataAquisicao));
 						hidrometroActionForm.setIdHidrometroCapacidade(formatarResultado(""
 										+ primeiroHidrometro.getHidrometroCapacidade().getId()));
@@ -222,15 +211,6 @@ public class ExibirAtualizarConjuntoHidrometroAction
 								hidrometroActionForm.setIndicadorHidrometroComposto(true);
 							}else{
 								hidrometroActionForm.setIndicadorHidrometroComposto(false);
-							}
-
-							if(primeiroHidrometro.getDataUltimaRevisao() != null){
-								dataFormatoAtual = new SimpleDateFormat("dd/MM/yyyy");
-								String dataUltimaRevisao = dataFormatoAtual.format(primeiroHidrometro.getDataUltimaRevisao());
-								hidrometroActionForm.setDataUltimaRevisao(dataUltimaRevisao);
-
-							}else{
-								hidrometroActionForm.setDataUltimaRevisao("");
 							}
 
 							if(primeiroHidrometro.getFatorConversao() != null){

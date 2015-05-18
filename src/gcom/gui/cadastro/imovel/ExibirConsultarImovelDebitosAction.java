@@ -83,7 +83,11 @@
 
 package gcom.gui.cadastro.imovel;
 
+import gcom.atendimentopublico.registroatendimento.bean.ObterIndicadorExistenciaHidrometroHelper;
+import gcom.cadastro.cliente.ClienteImovel;
+import gcom.cadastro.imovel.FiltroImovelCobrancaSituacao;
 import gcom.cadastro.imovel.Imovel;
+import gcom.cadastro.imovel.ImovelCobrancaSituacao;
 import gcom.cobranca.bean.ContaValoresHelper;
 import gcom.cobranca.bean.GuiaPagamentoValoresHelper;
 import gcom.cobranca.bean.ObterDebitoImovelOuClienteHelper;
@@ -99,9 +103,12 @@ import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
 import gcom.util.Util;
+import gcom.util.filtro.ParametroNulo;
+import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.ExecutorParametro;
 import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -147,6 +154,17 @@ public class ExibirConsultarImovelDebitosAction
 
 		ConsultarImovelActionForm consultarImovelActionForm = (ConsultarImovelActionForm) actionForm;
 
+		Boolean indicadorFauramentoTitularDebito = false;
+		try{
+			if(ParametroFaturamento.P_INDICADOR_FATURAMENTO_ATUAL_TITULAR_DEBITO_IMOVEL.executar().equals("1")){
+				indicadorFauramentoTitularDebito = true;
+			}
+		}catch(ControladorException e){
+			e.printStackTrace();
+		}
+
+		Collection<ClienteImovel> colecaoRelacaoImovel = new ArrayList<ClienteImovel>();
+
 		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
 		// Limpa os indicadores de bloqueio
 		sessao.removeAttribute("indicadorEmitirExtratoDebitos");
@@ -169,6 +187,8 @@ public class ExibirConsultarImovelDebitosAction
 
 		int quantidadeContasRevisao = 0;
 		Collection<ContaValoresHelper> colecaoContaValores = new ArrayList();
+		Collection<ImovelCobrancaSituacao> colecaoImovelCobrancaSituacaoAberto = new ArrayList();
+		
 		BigDecimal valorTotalSemAcrescimo = BigDecimal.ZERO;
 
 		BigDecimal valorConta = BigDecimal.ZERO;
@@ -188,6 +208,7 @@ public class ExibirConsultarImovelDebitosAction
 
 			sessao.removeAttribute("imovelDebitos");
 			sessao.removeAttribute("colecaoContaValores");
+			sessao.removeAttribute("colecaoImovelCobrancaSituacaoAberto");
 			sessao.removeAttribute("idImovelPrincipalAba");
 			sessao.removeAttribute("imovelClientes");
 
@@ -234,7 +255,9 @@ public class ExibirConsultarImovelDebitosAction
 
 			consultarImovelActionForm.setIdImovelDebitos(null);
 			consultarImovelActionForm.setMatriculaImovelDebitos(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelDebitos(null);
 			consultarImovelActionForm.setSituacaoEsgotoDebitos(null);
+			consultarImovelActionForm.setTipoLigacao(null);
 			consultarImovelActionForm.setSituacaoAguaDebitos(null);
 			consultarImovelActionForm.setCodigoImovel(null);
 			consultarImovelActionForm.setTipoRelacao(null);
@@ -310,6 +333,17 @@ public class ExibirConsultarImovelDebitosAction
 			}
 
 			if(imovel != null){
+
+				if(sessao.getAttribute("idImovelDebitoAnterior") == null){
+					consultarImovelActionForm.setIndicadorPrimeiroAcessoImovelDebito("1");
+					sessao.setAttribute("idImovelDebitoAnterior", imovel.getId().toString());
+				}else{
+					if(sessao.getAttribute("idImovelDebitoAnterior").toString().compareTo(imovel.getId().toString()) != 0){
+						consultarImovelActionForm.setIndicadorPrimeiroAcessoImovelDebito("1");
+						sessao.setAttribute("idImovelDebitoAnterior", imovel.getId().toString());
+					}
+				}
+
 				sessao.setAttribute("imovelDebitos", imovel);
 				sessao.setAttribute("idImovelPrincipalAba", imovel.getId().toString());
 				consultarImovelActionForm.setIdImovelDebitos(imovel.getId().toString());
@@ -319,6 +353,9 @@ public class ExibirConsultarImovelDebitosAction
 				httpServletRequest.setAttribute("msgSituacaoImovelCampanhaPremiacao",
 								fachada.obterMsgSituacaoImovelCampanhaPremiacao(imovel.getId()));
 
+				consultarImovelActionForm.setIndicadorImovelEmExecucaoFiscal(fachada.verificarImovelEmExecucaoFiscal(imovel.getId())
+								.toString());
+
 				// cobranca situacao
 				if(imovel.getCobrancaSituacao() != null){
 					consultarImovelActionForm.setSituacaoCobrancaDadosComplementares(imovel.getCobrancaSituacao().getDescricao());
@@ -327,18 +364,47 @@ public class ExibirConsultarImovelDebitosAction
 				// caso o imovel pesquisado seja diferente do pesquisado
 				// anterior ou seja a primeira vez que se esteja pesquisando
 				if(imovelNovoPesquisado){
-
 					// seta na tela a inscrição do imovel
 					httpServletRequest.setAttribute("idImovelDebitosNaoEncontrado", null);
 
 					consultarImovelActionForm.setMatriculaImovelDebitos(fachada.pesquisarInscricaoImovel(Integer.valueOf(idImovelDebitos
 									.trim()), true));
 
+					try{
+						if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString()
+										.equals(ConstantesSistema.NAO.toString())){
+							if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+								consultarImovelActionForm.setDigitoVerificadorImovelDebitos(Imovel
+												.getDigitoVerificadorMatricula(idImovelDebitos
+												.trim()));
+							}
+						}
+					}catch(ControladorException e1){
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						throw new ActionServletException(e1.getMessage(), e1);
+					}
+
 					// seta a situação de agua
 					consultarImovelActionForm.setSituacaoAguaDebitos(imovel.getLigacaoAguaSituacao().getDescricao());
 
 					// seta a situação de esgoto
 					consultarImovelActionForm.setSituacaoEsgotoDebitos(imovel.getLigacaoEsgotoSituacao().getDescricao());
+
+					// seta o tipo de ligação
+					if(idImovelDebitos != null || idImovelDebitos != ""){
+						boolean tipoLigacaoBoolean = false;
+						ObterIndicadorExistenciaHidrometroHelper obterIndicadorExistenciaHidrometroHelper = fachada
+										.obterIndicadorExistenciaHidrometroLigacaoAguaPoco(Util.obterInteger(idImovelDebitos),
+														tipoLigacaoBoolean);
+						if(obterIndicadorExistenciaHidrometroHelper.getIndicadorLigacaoAgua().intValue() == 1
+										|| obterIndicadorExistenciaHidrometroHelper.getIndicadorPoco().intValue() == 1){
+							consultarImovelActionForm.setTipoLigacao("Hidrometrado");
+						}else{
+							consultarImovelActionForm.setTipoLigacao("Consumo Fixo");
+						}
+
+					}
 
 					String referenciaInicial = "01/0001";
 					String referenciaFinal = "12/9999";
@@ -370,6 +436,7 @@ public class ExibirConsultarImovelDebitosAction
 
 					// seta valores constantes para chamar o metodo que consulta debitos do imovel
 					Integer tipoImovel = Integer.valueOf(1);
+					Integer tipoCliente = Integer.valueOf(2);
 					Integer indicadorPagamento = Integer.valueOf(1);
 					Integer indicadorConta = Integer.valueOf(1);
 					Integer indicadorDebito = Integer.valueOf(1);
@@ -378,18 +445,58 @@ public class ExibirConsultarImovelDebitosAction
 					Integer indicadorGuias = Integer.valueOf(1);
 					Integer indicadorAtualizar = Integer.valueOf(1);
 					Short indicadorConsiderarPagamentoNaoClassificado = 1;
+					int indicadorCalcularAcrescimosSucumbenciaAnterior = 2;
+					
+					Integer idClienteDebito = null;
+					Integer idRelacaoClienteDebito = null;
+
+					if(consultarImovelActionForm.getIdClienteRelacaoImovelSelecionado() != null
+									&& !consultarImovelActionForm.getIdClienteRelacaoImovelSelecionado().equals("")){
+						String[] dados = consultarImovelActionForm.getIdClienteRelacaoImovelSelecionado().split("\\.");
+
+						idClienteDebito = Integer.valueOf(dados[1]);
+						idRelacaoClienteDebito = Integer.valueOf(dados[0]);
+					}
+					
+					colecaoRelacaoImovel = fachada.obterListaClientesRelacaoDevedor(Integer.valueOf(idImovelDebitos.trim()),
+									Integer.valueOf("000101"), Integer.valueOf("999912"), indicadorPagamento, indicadorConta,
+									indicadorDebito, indicadorCredito, indicadorNotas, indicadorGuias, indicadorAtualizar,
+									indicadorConsiderarPagamentoNaoClassificado, ConstantesSistema.SIM, ConstantesSistema.SIM,
+									ConstantesSistema.SIM, indicadorCalcularAcrescimosSucumbenciaAnterior, ConstantesSistema.SIM, null);
 
 					// Obtendo os débitos do imovel
-					ObterDebitoImovelOuClienteHelper colecaoDebitoImovel = fachada.obterDebitoImovelOuCliente(tipoImovel.intValue(),
-									idImovelDebitos.trim(), null, null, anoMesInicial, anoMesFinal, dataVencimentoDebitoI,
-									dataVencimentoDebitoF, indicadorPagamento.intValue(), indicadorConta.intValue(), indicadorDebito
-													.intValue(), indicadorCredito.intValue(), indicadorNotas.intValue(), indicadorGuias
-													.intValue(), indicadorAtualizar.intValue(), null, null, new Date(),
-									ConstantesSistema.SIM, indicadorConsiderarPagamentoNaoClassificado, ConstantesSistema.SIM,
-									ConstantesSistema.SIM, ConstantesSistema.SIM);
+					ObterDebitoImovelOuClienteHelper colecaoDebitoImovel = new ObterDebitoImovelOuClienteHelper();
+					if(idClienteDebito != null && idRelacaoClienteDebito != null){
+						colecaoDebitoImovel = fachada.obterDebitoImovelOuCliente(tipoCliente.intValue(), idImovelDebitos.trim(),
+										idClienteDebito.toString(), idRelacaoClienteDebito, anoMesInicial, anoMesFinal,
+										dataVencimentoDebitoI, dataVencimentoDebitoF, indicadorPagamento.intValue(),
+										indicadorConta.intValue(), indicadorDebito.intValue(), indicadorCredito.intValue(),
+										indicadorNotas.intValue(), indicadorGuias.intValue(), indicadorAtualizar.intValue(), null, null,
+										new Date(), ConstantesSistema.SIM, indicadorConsiderarPagamentoNaoClassificado,
+										ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM,
+										indicadorCalcularAcrescimosSucumbenciaAnterior, null);
+					}else{
+						colecaoDebitoImovel = fachada.obterDebitoImovelOuCliente(tipoImovel.intValue(), idImovelDebitos.trim(), null, null,
+										anoMesInicial, anoMesFinal, dataVencimentoDebitoI, dataVencimentoDebitoF,
+										indicadorPagamento.intValue(), indicadorConta.intValue(), indicadorDebito.intValue(),
+										indicadorCredito.intValue(), indicadorNotas.intValue(), indicadorGuias.intValue(),
+										indicadorAtualizar.intValue(), null, null, new Date(), ConstantesSistema.SIM,
+										indicadorConsiderarPagamentoNaoClassificado, ConstantesSistema.SIM, ConstantesSistema.SIM,
+										ConstantesSistema.SIM, indicadorCalcularAcrescimosSucumbenciaAnterior, null);
+					}
 
 					colecaoContaValores = colecaoDebitoImovel.getColecaoContasValores();
 
+					// 9.	O sistema apresenta a lista das 'Situações de Cobrança em Aberto' para o imóvel, caso existam 
+					FiltroImovelCobrancaSituacao filtroImovelCobrancaSituacao = new FiltroImovelCobrancaSituacao();
+					filtroImovelCobrancaSituacao.adicionarParametro(new ParametroSimples(FiltroImovelCobrancaSituacao.IMOVEL_ID, Integer.valueOf(idImovelDebitos.trim()) ));
+					filtroImovelCobrancaSituacao.adicionarParametro(new ParametroNulo(FiltroImovelCobrancaSituacao.DATA_RETIRADA_COBRANCA));
+					filtroImovelCobrancaSituacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelCobrancaSituacao.COBRANCA_SITUACAO);
+					filtroImovelCobrancaSituacao.setCampoOrderByDesc(FiltroImovelCobrancaSituacao.DATA_IMPLANTACAO_COBRANCA);
+
+					colecaoImovelCobrancaSituacaoAberto = fachada.pesquisar(filtroImovelCobrancaSituacao,
+									ImovelCobrancaSituacao.class.getName());
+					
 					ContaValoresHelper dadosConta = null;
 
 					valorConta = BigDecimal.ZERO;
@@ -517,7 +624,7 @@ public class ExibirConsultarImovelDebitosAction
 						sortConta.addComparator(new BeanComparator("conta.referencia"), true);
 						Collections.sort((List) colecaoContaValores, sortConta);
 					}
-
+					
 					// [SB0005 – Validar autorização de acesso ao imóvel pelos usuários das empresas
 					// de cobrança administrativa]
 					this.validarAcessoImovelUsuarioEmpresaCobrancaAdministrativa(usuario, sessao, idImovelDebitos.trim(),
@@ -593,6 +700,7 @@ public class ExibirConsultarImovelDebitosAction
 					}
 
 					sessao.setAttribute("colecaoContaValores", colecaoContaValores);
+					sessao.setAttribute("colecaoImovelCobrancaSituacaoAberto", colecaoImovelCobrancaSituacaoAberto);
 
 					// Manda a coleção e os valores total de conta pelo request
 					sessao.setAttribute("colecaoDebitoACobrar", colecaoDebitoACobrar);
@@ -640,7 +748,6 @@ public class ExibirConsultarImovelDebitosAction
 					sessao.setAttribute("valorToralSemAcrescimoESemJurosParcelamento", Util
 									.formatarMoedaReal(valorToralSemAcrescimoESemJurosParcelamento));
 
-
 				}
 
 			}else{
@@ -651,7 +758,8 @@ public class ExibirConsultarImovelDebitosAction
 				consultarImovelActionForm.setMatriculaImovelDebitos("IMÓVEL INEXISTENTE");
 				sessao.removeAttribute("imovelDebitos");
 				sessao.removeAttribute("colecaoContaValores");
-
+				sessao.removeAttribute("colecaoImovelCobrancaSituacaoAberto");
+				
 				// Manda a colecao e os valores total de conta pelo request
 				sessao.removeAttribute("colecaoDebitoACobrar");
 				sessao.removeAttribute("valorConta");
@@ -680,8 +788,10 @@ public class ExibirConsultarImovelDebitosAction
 				sessao.removeAttribute("valorTotalComAcrescimo");
 				sessao.removeAttribute("valorToralSemAcrescimoESemJurosParcelamento");
 
+				consultarImovelActionForm.setDigitoVerificadorImovelDebitos(null);
 				consultarImovelActionForm.setIdImovelDebitos(null);
 				consultarImovelActionForm.setSituacaoEsgotoDebitos(null);
+				consultarImovelActionForm.setTipoLigacao(null);
 				consultarImovelActionForm.setSituacaoAguaDebitos(null);
 				consultarImovelActionForm.setCodigoImovel(null);
 				consultarImovelActionForm.setTipoRelacao(null);
@@ -710,6 +820,7 @@ public class ExibirConsultarImovelDebitosAction
 			httpServletRequest.setAttribute("idImovelDebitosNaoEncontrado", null);
 			sessao.removeAttribute("imovelDebitos");
 			sessao.removeAttribute("colecaoContaValores");
+			sessao.removeAttribute("colecaoImovelCobrancaSituacaoAberto");
 			sessao.removeAttribute("idImovelPrincipalAba");
 
 			// Manda a colecao e os valores total de conta pelo request
@@ -740,7 +851,9 @@ public class ExibirConsultarImovelDebitosAction
 			sessao.removeAttribute("valorTotalComAcrescimo");
 
 			consultarImovelActionForm.setMatriculaImovelDebitos(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelDebitos(null);
 			consultarImovelActionForm.setSituacaoEsgotoDebitos(null);
+			consultarImovelActionForm.setTipoLigacao(null);
 			consultarImovelActionForm.setSituacaoAguaDebitos(null);
 			consultarImovelActionForm.setCodigoImovel(null);
 			consultarImovelActionForm.setTipoRelacao(null);
@@ -784,12 +897,41 @@ public class ExibirConsultarImovelDebitosAction
 				sessao.setAttribute("exibirPopUpTaxaDebitoACobrar", ConstantesSistema.SIM);
 			}
 
-
+			if(fachada.existeProcessoExecucaoFiscal().equals(ConstantesSistema.SIM)){
+				sessao.setAttribute("exibirDividaAtivaColuna", "S");
+			}else{
+				sessao.removeAttribute("exibirDividaAtivaColuna");
+			}
 
 
 		}catch(ControladorException e){
 			throw new ActionServletException(e.getMessage(), e);
 		}
+
+		if(indicadorFauramentoTitularDebito){
+			httpServletRequest.setAttribute("indicadorFauramentoTitularDebito", "S");
+		}else{
+			httpServletRequest.removeAttribute("indicadorFauramentoTitularDebito");
+		}
+
+		try{
+			if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+				if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+					httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '1');
+				}else{
+					throw new ControladorException("erro.parametro.nao.informado", null, "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+				}
+
+			}else{
+				httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '0');
+			}
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new ActionServletException(e.getMessage(), e);
+		}
+
+		sessao.setAttribute("colecaoRelacaoImovel", colecaoRelacaoImovel);
 
 		// retorna o mapeamento contido na variável retorno
 		return retorno;

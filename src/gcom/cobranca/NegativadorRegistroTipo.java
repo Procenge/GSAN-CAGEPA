@@ -134,6 +134,18 @@ public class NegativadorRegistroTipo
 
 	public static final Integer ID_SERASA_DETALHE = new Integer(7);
 
+	// BOA VISTA
+
+	public static final Integer ID_BOA_VISTA_HEADER = new Integer(15);
+
+	public static final Integer ID_BOA_VISTA_TRAILLER = new Integer(16);
+
+	public static final Integer ID_SPC_DETALHE_CONSUMIDOR_NOME_BOA_VISTA = new Integer(17);
+
+	public static final Integer ID_SPC_DETALHE_CONSUMIDOR_ENDERECO_BOA_VISTA = new Integer(18);
+
+	public static final Integer ID_SPC_DETALHE_OCORRENCIA_SPC_BOA_VISTA = new Integer(19);
+
 	private static final long serialVersionUID = 1L;
 
 	/** identifier field */

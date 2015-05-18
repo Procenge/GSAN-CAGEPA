@@ -255,7 +255,7 @@ public abstract class ObjetoTransacao
 				e.printStackTrace();
 			}catch(NoSuchMethodException e){
 				// casos em que foi colocado um cmainho de atributos inexistente
-				LOGGER.warn("Não existem o caminho de atributos: " + atributo);
+				// LOGGER.warn("Não existem o caminho de atributos: " + atributo);
 				return null;
 			}catch(IllegalAccessException e){
 				// TODO Auto-generated catch block
@@ -293,7 +293,7 @@ public abstract class ObjetoTransacao
 				e.printStackTrace();
 			}catch(NoSuchMethodException e){
 				// casos em que foi colocado um cmainho de atributos inexistente
-				LOGGER.warn("Não existem o caminho de atributos: " + atributo);
+				// LOGGER.warn("Não existem o caminho de atributos: " + atributo);
 				atual = "";
 				e.printStackTrace();
 			}catch(IllegalAccessException e){

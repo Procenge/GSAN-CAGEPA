@@ -76,18 +76,9 @@
 
 package gcom.gui.atendimentopublico.registroatendimento;
 
-import gcom.atendimentopublico.registroatendimento.FiltroMeioSolicitacao;
-import gcom.atendimentopublico.registroatendimento.FiltroSolicitacaoTipoEspecificacao;
-import gcom.atendimentopublico.registroatendimento.MeioSolicitacao;
-import gcom.atendimentopublico.registroatendimento.RegistroAtendimentoSolicitante;
-import gcom.atendimentopublico.registroatendimento.SolicitacaoTipoEspecificacao;
+import gcom.atendimentopublico.registroatendimento.*;
 import gcom.atendimentopublico.registroatendimento.bean.ObterDadosRegistroAtendimentoHelper;
-import gcom.cadastro.cliente.Cliente;
-import gcom.cadastro.cliente.ClienteEndereco;
-import gcom.cadastro.cliente.ClienteFone;
-import gcom.cadastro.cliente.FiltroCliente;
-import gcom.cadastro.cliente.FiltroOrgaoExpedidorRg;
-import gcom.cadastro.cliente.OrgaoExpedidorRg;
+import gcom.cadastro.cliente.*;
 import gcom.cadastro.endereco.LogradouroBairro;
 import gcom.cadastro.endereco.LogradouroCep;
 import gcom.cadastro.funcionario.FiltroFuncionario;
@@ -549,9 +540,27 @@ public class ExibirAdicionarSolicitanteRegistroAtendimentoAction
 					idImovel = inserirRegistroAtendimentoActionForm.getIdImovel();
 				}
 
+				SolicitacaoTipoEspecificacao solicitacaoTipoEspecificacao = null;
+				if(!Util.isVazioOuBranco(form.getEspecificacao())){
+					FiltroSolicitacaoTipoEspecificacao filtroSolicitacaoTipoEspecificacao = new FiltroSolicitacaoTipoEspecificacao();
+					filtroSolicitacaoTipoEspecificacao.adicionarParametro(new ParametroSimples(FiltroSolicitacaoTipoEspecificacao.ID,
+									Integer.valueOf(form.getEspecificacao())));
+
+					solicitacaoTipoEspecificacao = (SolicitacaoTipoEspecificacao) Util.retonarObjetoDeColecao(fachada.pesquisar(
+									filtroSolicitacaoTipoEspecificacao, SolicitacaoTipoEspecificacao.class.getName()));
+
+				}
+
 				// [FS0027] – Verificar informação do imóvel
-				Cliente cliente = fachada.verificarInformacaoImovel(Util.converterStringParaInteger(form.getIdCliente()), Util
-								.converterStringParaInteger(idImovel), false);
+				Cliente cliente = null;
+				if(solicitacaoTipoEspecificacao == null || solicitacaoTipoEspecificacao.getIndicadorCliente().equals(ConstantesSistema.SIM)){
+					cliente = fachada.verificarInformacaoImovel(Util.converterStringParaInteger(form.getIdCliente()),
+									Util.converterStringParaInteger(idImovel), false);
+				}else{
+					if(form.getIdCliente() != null){
+						cliente = fachada.pesquisarClienteDigitado(Integer.valueOf(form.getIdCliente()));
+					}
+				}
 
 				if(cliente == null){
 

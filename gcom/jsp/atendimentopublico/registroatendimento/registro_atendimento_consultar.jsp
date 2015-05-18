@@ -4,6 +4,9 @@
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@ page import="gcom.cadastro.sistemaparametro.SistemaParametro"%>
+<%@ page import="gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao"%>
+<%@ page import="gcom.util.Util"%>
+<%@ page import="java.util.Collection" isELIgnored="false"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
@@ -86,6 +89,22 @@
 		
 		abrirPopup('consultarDebitoAction.do?ehPopup=true&codigoImovel='+form.matriculaImovel.value, 550, 735);
 	}
+	
+	function inserirCreditoARealizar() {
+		var form = document.forms[0];
+		
+		form.action = 'exibirInserirCreditoARealizarAction.do?menuprincipal=sim&menu=sim&objetoConsulta=2&clearGrid=y&numeroRA='+form.numeroRAPesquisado.value;
+		form.submit();
+	}
+	
+	
+	function inserirGuiaDevolucao() {
+		var form = document.forms[0];
+		
+		form.action = 'exibirInserirGuiaDevolucaoAction.do?menuprincipal=sim&menu=sim&numeroRA='+form.numeroRAPesquisado.value;
+		form.submit();
+	}
+		
 	
 	function consultarOS() {
 		var form = document.forms[0];
@@ -1703,6 +1722,194 @@
 			   						
 			  					</td>
 			      			</tr>
+			      			
+							<!-- Pendência Financeira -->
+							
+							<tr>
+								<td>
+			           				<div id="layerHidePendenciaFinanceira" style="display:block">
+			               				<table width="100%" border="0" bgcolor="#99CCFF">
+					    					<tr bgcolor="#99CCFF">
+			                      				<td align="center">
+			                     					<span class="style2">
+			                      					<a href="javascript:extendeTabela('PendenciaFinanceira',true);"/>
+			                      						<b>Pendência Financeira</b>
+			                      					</a>
+			                     					</span>
+			                      				</td>
+			                     			</tr>
+			                    		</table>
+			           				</div>
+                   				                        		
+			                        <div id="layerShowPendenciaFinanceira" style="display:none">
+			
+				                    	<table width="100%" border="0" bgcolor="#99CCFF">
+			
+											<tr bgcolor="#99CCFF">
+					                    		<td align="center">
+			                       					<span class="style2">
+			                         					<a href="javascript:extendeTabela('PendenciaFinanceira',false);"/>
+			                         						<b>Pendência Financeira</b>
+			                         					</a>
+			                       					</span>
+			                         			</td>
+			                        		</tr>
+			                        		
+			                        		<tr bgcolor="#cbe5fe">
+												<%
+													String pctQtdColunasGuias="6";
+											
+													String pctNumeroGuia    = "15%";
+													String pctNumeroParcela = "15%";
+													String pctDataEmissao   = "18%";
+													String pctDataVencimento = "18%";
+													String pctValorParcela   = "20%";
+													String pctSituacaoGuia 	 = "14%";
+											
+											%>
+															
+										<td colspan="5">
+										<logic:notEmpty name="colecaoGuiaPagamentoPrestacao">
+											<table width="100%" align="center" bgcolor="#90c7fc" border="0">
+												<tr>
+													<td bgcolor="#cbe5fe" align="center">
+														<input name="ButtonDebitos" 
+									                			type="button" 
+									                			class="bottonRightCol"  
+									                			value="Inserir Crédito a Realizar" 
+									                			onClick="javascript:inserirCreditoARealizar();">
+									                	&nbsp&nbsp
+									                	<input name="ButtonDebitos" 
+									                			type="button" 
+									                			class="bottonRightCol"  
+									                			value="Inserir Guia de Devolução" 
+									                			onClick="javascript:inserirGuiaDevolucao();">	
+													
+													</td>
+												</tr>										
+											</table>										
+										</logic:notEmpty>
+
+										<table width="100%" align="center" bgcolor="#90c7fc" border="0">
+											<tr bordercolor="#79bbfd">
+												<td colspan="<%= pctQtdColunasGuias%>" bgcolor="#79bbfd" align="center"><strong>Guias de Pagamento</strong></td>
+											</tr>
+											<tr bordercolor="#000000">
+												<td width="<%= pctNumeroGuia%>" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Número da Guia</strong> </font></div></td>							
+												<td width="<%= pctNumeroParcela%>" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Número Parcela</strong> </font></div></td>
+												<td width="<%= pctDataEmissao%>" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Data de Emiss&atilde;o</strong> </font></div></td>
+												<td width="<%= pctDataVencimento%>" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Data de Vencimento</strong> </font></div></td>
+												<td width="<%= pctValorParcela%>" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Valor da Parcela</strong> </font></div></td>
+												<td width="<%= pctSituacaoGuia%>" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Situação Guia</strong> </font></div></td>
+											</tr>
+											<%String cor = "#cbe5fe";%>
+											<%cor = "#cbe5fe";%>
+											
+											<logic:present name="colecaoGuiaPagamentoPrestacao">
+												<logic:iterate name="colecaoGuiaPagamentoPrestacao" id="guiaPagamentoPrestacao">
+
+													<%if (cor.equalsIgnoreCase("#cbe5fe")) {
+														cor = "#FFFFFF";%>
+														<tr bgcolor="#FFFFFF">
+													<%} else {
+														cor = "#cbe5fe";%>
+														<tr bgcolor="#cbe5fe">
+													<%}%>
+														<td>
+															<div align="right" class="style9">
+																<font style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
+																	<a href="javascript:abrirPopup('exibirConsultarGuiaPagamentoAction.do?guiaPagamentoId=<bean:define name="guiaPagamentoPrestacao" property="guiaPagamento.id" id="idGuiaPagamento" /><bean:write name="guiaPagamentoPrestacao" property="guiaPagamento.id" />', 600, 900);">
+		
+																	<font style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
+																			<bean:write name="guiaPagamentoPrestacao" property="guiaPagamento.id" />
+																	</font>
+																</font>
+															</div>
+														</td>
+					
+														<td>
+															<div align="center" class="style9">
+																<font style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
+																		<bean:write name="guiaPagamentoPrestacao" property="comp_id.numeroPrestacao" />
+																</font>
+															</div>
+														</td>
+					
+														<td>
+															<div align="center" class="style9">
+																<font style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
+																	<bean:write name="guiaPagamentoPrestacao" property="dataEmissao" formatKey="date.format" />  
+																</font>
+															</div>
+														</td>
+					
+														<td>
+															<div align="center" class="style9">
+																<font style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
+																	<bean:write name="guiaPagamentoPrestacao" property="dataVencimento" formatKey="date.format" />  
+																</font>
+															</div>
+														</td>
+					
+														<td>
+															<div align="right" class="style9">
+																<font style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
+																	<bean:write name="guiaPagamentoPrestacao" property="valorPrestacao" formatKey="money.format" />
+																</font>
+															</div>
+														</td>
+														
+														<td>
+															<div align="center" class="style9">
+																<font style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
+																		<bean:write name="guiaPagamentoPrestacao" property="debitoCreditoSituacao.descricaoAbreviada" />
+																</font>
+															</div>
+														</td>
+													</tr>
+												</logic:iterate>
+												
+												<logic:notEmpty name="colecaoGuiaPagamentoPrestacao">
+													<%if (cor.equalsIgnoreCase("#cbe5fe")) {
+														cor = "#FFFFFF";%>
+														<tr bgcolor="#FFFFFF">
+													<%} else {
+														cor = "#cbe5fe";%>
+														<tr bgcolor="#cbe5fe">
+													<%}%>
+														<td bgcolor="#90c7fc">
+															<div align="center" class="style9">
+																<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
+																	<strong>Total</strong>
+																</font>
+															</div>
+														</td>
+														<td><%=((Collection) session.getAttribute("colecaoGuiaPagamentoPrestacao")).size()%> &nbsp; doc(s)</td>
+														<td>&nbsp;</td>
+														<td>&nbsp;</td>
+														<td>
+															<div align="right" class="style9">
+																<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
+																	<%=session.getAttribute("valorGuiaPagamento")%> 
+																</font>
+															</div>
+														</td>
+													</tr>
+						                										                																
+												</logic:notEmpty>
+											</logic:present>
+		
+										</table>
+										</td>											
+	     						
+			                        	</tr>
+			                        		
+										</table>
+			   						</div>
+			   						
+			  					</td>
+			      			</tr>			      			
+			      			
 							<tr>
 								<td>
 								<bean:define name="ConsultarRegistroAtendimentoActionForm" property="numeroRAPesquisado" id="ra"/>

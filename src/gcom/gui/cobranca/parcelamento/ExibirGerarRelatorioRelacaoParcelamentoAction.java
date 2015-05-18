@@ -76,14 +76,7 @@
 
 package gcom.gui.cobranca.parcelamento;
 
-import gcom.cadastro.localidade.FiltroGerenciaRegional;
-import gcom.cadastro.localidade.FiltroLocalidade;
-import gcom.cadastro.localidade.FiltroSetorComercial;
-import gcom.cadastro.localidade.FiltroUnidadeNegocio;
-import gcom.cadastro.localidade.GerenciaRegional;
-import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.localidade.SetorComercial;
-import gcom.cadastro.localidade.UnidadeNegocio;
+import gcom.cadastro.localidade.*;
 import gcom.cobranca.parcelamento.FiltroParcelamentoMotivoDesfazer;
 import gcom.cobranca.parcelamento.FiltroParcelamentoSituacao;
 import gcom.cobranca.parcelamento.ParcelamentoMotivoDesfazer;
@@ -153,6 +146,7 @@ public class ExibirGerarRelatorioRelacaoParcelamentoAction
 			}
 		}
 
+		// Situação Parcelamento
 		if(sessao.getAttribute("colecaoSituacaoParcelamento") == null){
 			// Pesquisando Situação do parcelamento
 			FiltroParcelamentoSituacao filtroParcelamentoSituacao = new FiltroParcelamentoSituacao();
@@ -190,6 +184,7 @@ public class ExibirGerarRelatorioRelacaoParcelamentoAction
 			 */
 		}
 
+		// Localidade
 		String idLocalidade = form.getIdLocalidade();
 
 		if(idLocalidade != null && !idLocalidade.trim().equals("")){
@@ -213,6 +208,7 @@ public class ExibirGerarRelatorioRelacaoParcelamentoAction
 			form.setDescricaoLocalidade("");
 		}
 
+		// Setor Comercial
 		String codigoSetorComercial = form.getIdSetorComercial();
 
 		if(codigoSetorComercial != null && !codigoSetorComercial.trim().equals("")){
@@ -238,6 +234,8 @@ public class ExibirGerarRelatorioRelacaoParcelamentoAction
 		}else{
 			form.setDescricaoSetorComercial("");
 		}
+
+
 
 		return retorno;
 

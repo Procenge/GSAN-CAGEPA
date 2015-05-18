@@ -76,14 +76,17 @@
 
 package gcom.gui.cadastro.imovel;
 
-import gcom.cadastro.imovel.EntidadeBeneficente;
-import gcom.cadastro.imovel.FiltroEntidadeBeneficente;
+import gcom.cadastro.imovel.EntidadeBeneficenteContrato;
+import gcom.cadastro.imovel.FiltroEntidadeBeneficenteContrato;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
-import gcom.util.filtro.ParametroSimples;
+import gcom.util.filtro.ConectorOr;
+import gcom.util.filtro.MaiorQue;
+import gcom.util.filtro.ParametroNulo;
 
+import java.util.Calendar;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
@@ -125,7 +128,7 @@ public class ExibirInserirImovelDoacaoAction
 		Fachada fachada = null;
 		HttpSession sessao = null;
 		ImovelDoacaoActionForm imovelDoacaoActionForm = null;
-		FiltroEntidadeBeneficente filtroEntidadeBeneficente = null;
+
 
 		/*** Procedimentos básicos para execução do método ***/
 		retorno = actionMapping.findForward("inserirImovelDoacao");
@@ -134,20 +137,26 @@ public class ExibirInserirImovelDoacaoAction
 		sessao = httpServletRequest.getSession(false);
 
 		/*** Define filtro pra pesquisar e alimenta a colecao de entidade beneficente ***/
-		filtroEntidadeBeneficente = new FiltroEntidadeBeneficente(FiltroEntidadeBeneficente.CLIENTE_NOME);
-		filtroEntidadeBeneficente.adicionarCaminhoParaCarregamentoEntidade("cliente");
-		filtroEntidadeBeneficente
-						.adicionarParametro(new ParametroSimples(FiltroEntidadeBeneficente.INDICADOR_USO, ConstantesSistema.ATIVO));
-		Collection<EntidadeBeneficente> colecaoEntidadeBeneficente = fachada.pesquisar(filtroEntidadeBeneficente, EntidadeBeneficente.class
+		FiltroEntidadeBeneficenteContrato filtroEntidadeBeneficenteContrato = new FiltroEntidadeBeneficenteContrato(
+						FiltroEntidadeBeneficenteContrato.NOME_CLIENTE_ENTIDADE_BENEFICIENTE);
+		filtroEntidadeBeneficenteContrato.adicionarCaminhoParaCarregamentoEntidade(FiltroEntidadeBeneficenteContrato.ENTIDADE_BENEFICIENTE);
+		filtroEntidadeBeneficenteContrato
+						.adicionarCaminhoParaCarregamentoEntidade(FiltroEntidadeBeneficenteContrato.CLIENTE_ENTIDADE_BENEFICIENTE);
+
+		filtroEntidadeBeneficenteContrato.adicionarParametro(new MaiorQue(FiltroEntidadeBeneficenteContrato.DATA_FIM_CONTRATO, Calendar
+						.getInstance().getTime(), ConectorOr.CONECTOR_OR));
+		filtroEntidadeBeneficenteContrato.adicionarParametro(new ParametroNulo(FiltroEntidadeBeneficenteContrato.DATA_FIM_CONTRATO));
+		Collection<EntidadeBeneficenteContrato> colecaoEntidadeBeneficenteContrato = fachada.pesquisar(filtroEntidadeBeneficenteContrato,
+						EntidadeBeneficenteContrato.class
 						.getName());
 
 		/*** Valida se a coleção está preenchida ***/
-		if(colecaoEntidadeBeneficente != null && colecaoEntidadeBeneficente.size() == 0){
-			throw new ActionServletException("atencao.naocadastrado", null, "Entidade Beneficente");
+		if(colecaoEntidadeBeneficenteContrato != null && colecaoEntidadeBeneficenteContrato.size() == 0){
+			throw new ActionServletException("atencao.naocadastrado", null, "Contrato de Entidade Beneficente");
 		}
 
 		/*** Seta colecao de entidade beneficente na sessão ***/
-		sessao.setAttribute("colecaoEntidadeBeneficente", colecaoEntidadeBeneficente);
+		sessao.setAttribute("colecaoEntidadeBeneficenteContrato", colecaoEntidadeBeneficenteContrato);
 
 		/*** Avalia se o código do imóvel digitado na página é válido ***/
 		String idImovel = (String) imovelDoacaoActionForm.getIdImovel();

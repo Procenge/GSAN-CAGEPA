@@ -88,6 +88,8 @@ import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.PermissaoEspecial;
 import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
+import gcom.util.Util;
+import gcom.util.filtro.ComparacaoTexto;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
@@ -175,6 +177,53 @@ public class ExibirInserirClientePessoaAction
 			clienteActionForm.set("idPessoaSexo", new Integer(ConstantesSistema.NUMERO_NAO_INFORMADO));
 			clienteActionForm.set("nomeMae", "");
 			clienteActionForm.set("idNacionalidade", ConstantesSistema.NUMERO_NAO_INFORMADO);
+			String pIndicadorAtividadeEconomicaObrigatorio = null;
+
+			try{
+
+				pIndicadorAtividadeEconomicaObrigatorio = (String) ParametroCadastro.P_CNAE_OBRIGATORIO.executar();
+			}catch(ControladorException e){
+
+				throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(
+								new String[e.getParametroMensagem().size()]));
+			}
+
+			// Atividade Econômica (CNAE)
+			if(pIndicadorAtividadeEconomicaObrigatorio.equals(ConstantesSistema.SIM.toString())){
+
+				httpServletRequest.setAttribute("obrigatorioAtividadeEconomica", "true");
+				String codigoAtividadeEconomica = (String) clienteActionForm.get("codigoAtividadeEconomica");
+
+				if(!Util.isVazioOuBranco(codigoAtividadeEconomica)
+								|| (httpServletRequest.getParameter("pesquisaAtividadeEconomica") != null && !httpServletRequest
+												.getParameter("pesquisaAtividadeEconomica").equals(""))){
+
+					if(httpServletRequest.getParameter("pesquisaAtividadeEconomica") != null
+									&& !httpServletRequest.getParameter("pesquisaAtividadeEconomica").equals("")){
+
+						codigoAtividadeEconomica = httpServletRequest.getParameter("pesquisaAtividadeEconomica");
+					}
+
+					FiltroAtividadeEconomica filtroAtividadeEconomica = new FiltroAtividadeEconomica();
+					filtroAtividadeEconomica.adicionarParametro(new ComparacaoTexto(FiltroAtividadeEconomica.CODIGO,
+									codigoAtividadeEconomica));
+					filtroAtividadeEconomica.adicionarParametro(new ParametroSimples(FiltroAtividadeEconomica.INDICADOR_USO,
+									ConstantesSistema.INDICADOR_USO_ATIVO));
+
+					Collection<AtividadeEconomica> colecaoAtividadeEconomica = fachada.pesquisar(filtroAtividadeEconomica,
+									AtividadeEconomica.class.getName());
+
+					// [FS0001 - Verificar existência de dados]
+					if(!Util.isVazioOrNulo(colecaoAtividadeEconomica)){
+
+						AtividadeEconomica atividadeEconomica = (AtividadeEconomica) Util.retonarObjetoDeColecao(colecaoAtividadeEconomica);
+						clienteActionForm.set("codigoAtividadeEconomica", atividadeEconomica.getCodigo());
+					}else{
+
+						throw new ActionServletException("atencao.pesquisa_inexistente");
+					}
+				}
+			}
 
 			// clienteActionForm.set("idUnidadeFederacao", new
 			// Integer(ConstantesSistema.NUMERO_NAO_INFORMADO));
@@ -275,8 +324,7 @@ public class ExibirInserirClientePessoaAction
 			filtroOrgaoExpedidor.adicionarParametro(new ParametroSimples(FiltroOrgaoExpedidorRg.INDICADOR_USO,
 							ConstantesSistema.INDICADOR_USO_ATIVO));
 			filtroProfissao.adicionarParametro(new ParametroSimples(FiltroProfissao.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
-			filtroPessoaSexo
-							.adicionarParametro(new ParametroSimples(FiltroPessoaSexo.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
+			filtroPessoaSexo.adicionarParametro(new ParametroSimples(FiltroPessoaSexo.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
 
 			// Faz a pesquisa das coleções
 			Collection orgaosExpedidores = fachada.pesquisar(filtroOrgaoExpedidor, OrgaoExpedidorRg.class.getName());
@@ -326,6 +374,10 @@ public class ExibirInserirClientePessoaAction
 		// Estado Civil
 		FiltroEstadoCivil filtroEstadoCivil = new FiltroEstadoCivil();
 		filtroEstadoCivil.adicionarParametro(new ParametroSimples(FiltroEstadoCivil.INDICADOR_USO, ConstantesSistema.SIM));
+
+		// Documento Validado
+		String documentoValidado = (String) clienteActionForm.get("documentoValidado");
+		httpServletRequest.setAttribute("documentoValidado", documentoValidado);
 
 		Collection<EstadoCivil> colecaoEstadoCivil = new ArrayList<EstadoCivil>();
 		colecaoEstadoCivil.addAll(fachada.pesquisar(filtroEstadoCivil, EstadoCivil.class.getName()));

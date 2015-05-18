@@ -133,6 +133,11 @@ public class FiltroEntidadeBeneficente
 	/**
 	 * Description of the Field
 	 */
+	public final static String ID_EMPRESA = "empresa.id";
+
+	/**
+	 * Description of the Field
+	 */
 	public final static String CLIENTE_NOME = "cliente.nome";
 
 	/**
@@ -149,5 +154,10 @@ public class FiltroEntidadeBeneficente
 	 * Description of the Field
 	 */
 	public final static String DEBITO_TIPO = "debitoTipo";
+
+	/**
+	 * Description of the Field
+	 */
+	public final static String EMPRESA = "empresa";
 
 }

@@ -119,6 +119,8 @@ public class InserirReajusteConsumoTarifaAction
 
 		Date dataNovaVigencia = Util.converteStringParaDate(httpServletRequest.getParameter("dataVigencia"));
 
+		String descricaoAtoAdministrativoNova = httpServletRequest.getParameter("descricaoAtoAdministrativo");
+
 		Map listaParametrosValoresCategoria = new HashMap();
 
 		while(parametros.hasMoreElements()){
@@ -138,7 +140,8 @@ public class InserirReajusteConsumoTarifaAction
 		}
 
 		// inicializa o processo de reajustar e logo apos chama o metodo para reajustar as tarifas
-		fachada.iniciarProcessoReajustarTarifaConsumo(listaParametrosValoresCategoria, dataNovaVigencia, idsRecuperados);
+		fachada.iniciarProcessoReajustarTarifaConsumo(listaParametrosValoresCategoria, dataNovaVigencia, idsRecuperados,
+						this.getUsuarioLogado(httpServletRequest), descricaoAtoAdministrativoNova);
 
 		montarPaginaSucesso(httpServletRequest, "Tarifa(s) de Consumo Reajustada(s) com sucesso.", "", "");
 

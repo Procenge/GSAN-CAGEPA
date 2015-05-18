@@ -145,6 +145,35 @@ function abrirCategoria(){
   }
   
 </script>
+
+<script language="JavaScript">
+function reload() {
+	var form = document.InserirConsumoTarifaActionForm;	
+	
+	// Exibir/Ocultar Tarifa Mínima Esgoto
+	if(form.inTarifaEsgotoPropria[0].checked){		
+		document.getElementById('hidInTarifaEsgotoPropria').value = "1";
+		
+		document.getElementById('colunaDescricao').style.display="block";
+		
+		<%for (int i=0; i<count; i++) {%>
+			document.getElementById('<%="coluna" + i%>').style.display="block";
+		<% } %>
+		
+	} else {
+		document.getElementById('hidInTarifaEsgotoPropria').value = "2";
+		
+		document.getElementById('colunaDescricao').style.display="none";
+		
+		<%for (int i=0; i<count; i++) {%>
+			document.getElementById('<%="coluna" + i%>').style.display="none";
+			document.getElementById('<%="ValorTarMinEsgoto." + i%>').value = "";
+		<% } %>
+	}
+      
+ }
+</script>
+
 </head>
 <script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/regras_validator.js"></script>
 <html:javascript staticJavascript="false"  formName="InserirConsumoTarifaActionForm" />
@@ -223,7 +252,7 @@ function abrirCategoria(){
 				</table>
 				<table width="100%">
 				<tr>
-					<td width="184" class="style1">Descri&ccedil;&atilde;o da Tarifa:<strong><font
+					<td width="184" class="style1"><strong>Descri&ccedil;&atilde;o da Tarifa:<font
 						color="#FF0000">*</font></strong></td>
 					<td width="210" class="style1"><logic:present
 						name="colecaoVigencia">
@@ -237,7 +266,7 @@ function abrirCategoria(){
 					<td></td>
 				</tr>
 				<tr>
-					<td class="style1">Data de Vig&ecirc;ncia:<strong><font
+					<td class="style1"><strong>Data de Vig&ecirc;ncia:<font
 						color="#FF0000">*</font></strong></td>
 					<td colspan="2" class="style1"><logic:present
 						name="colecaoVigencia">
@@ -253,12 +282,25 @@ function abrirCategoria(){
 								href="javascript:abrirCalendario('InserirConsumoTarifaActionForm', 'dataVigencia')">
 								<img border="0"
 						src="<bean:message key="caminho.imagens"/>calendario.gif"
-						width="20" border="0" align="absmiddle" alt="Exibir Calendï¿½rio" /></a>&nbsp; dd/mm/aaaa
+						width="20" border="0" align="middle"  alt="Exibir Calendï¿½rio" /></a>&nbsp; dd/mm/aaaa
 					</td>
 				</tr>
 				
 				<tr>
-					<td width="184" class="style1">Tarifa de Esgoto Própria:<strong><font
+					<td width="184" class="style1"><strong>Ato Administrativo:</strong></td>
+					
+					<td width="210" class="style1">
+						<logic:iterate indexId="posicao" name="colecaoVigencia"
+							id="vigencia">
+							<input type="text" name="descricaoAtoAdministrativo" id="descricaoAtoAdministrativo" size="30" maxlength="30"
+								value="<bean:write name="vigencia" property="descricaoAtoAdministrativo"/>">
+
+						</logic:iterate>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="184" class="style1"><strong>Tarifa de Esgoto Própria:<font
 						color="#FF0000">*</font></strong></td>
 					<td width="210" class="style1"><logic:present
 						name="colecaoVigencia">
@@ -292,7 +334,7 @@ function abrirCategoria(){
 				
 				
 				<tr>
-					<td class="style1">Categorias e Economias:<strong><font
+					<td class="style1"><strong>Categorias e Economias:<font
 						color="#FF0000">*</font></strong></td>
 					<td colspan="2" class="style1">
 					<div align="right"><input type="button" name="adicionar2"
@@ -301,24 +343,56 @@ function abrirCategoria(){
 					</td>
 				</tr>
 				<tr>
-					<td height="31" colspan="3">
+				
+				<%
+					String qtdColunaCategoriaEconomica = "5";
+					
+					String larguraColunaRemover = "9%"; 
+					String larguraColunaCategoria = "34%";
+					String larguraColunaConsumoMinimo = "19%";
+					String larguraColunaTarifaMinina = "23%";
+					String larguraQtdFaixa = "15%";
+					String larguraColunaSubCategoria = "0%";
+					
+					if (session.getAttribute("indicadorTarifaCosumoPorSubCategoria") != null) {
+						larguraColunaRemover = "9%"; 
+						larguraColunaCategoria = "20%";
+						larguraColunaConsumoMinimo = "19%";
+						larguraColunaTarifaMinina = "20%";
+						larguraQtdFaixa = "12%";
+						larguraColunaSubCategoria = "20%";
+						
+						qtdColunaCategoriaEconomica = "6";
+					}
+					
+				%>				
+					<td height="31" colspan="<%= qtdColunaCategoriaEconomica%>">
 					<table width="100%" bgcolor="#99CCFF">
 						<!--header da tabela interna -->
 						<tr bordercolor="#FFFFFF" bgcolor="#99CCFF">
-							<td width="9%">
+							<td width="<%= larguraColunaRemover%>">
 							<div align="center" class="style9"><strong>Remover</strong></div>
 							</td>
-							<td width="34%">
+							<td width="<%= larguraColunaCategoria%>">
 							<div align="center" class="style9"><strong>Categoria</strong></div>
 							</td>
-							<td width="19%">
+							
+							<logic:present name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+								<td width="<%= larguraColunaSubCategoria%>" >
+									<div align="center" >
+										<strong>SubCategoria</strong>
+									</div>
+								</td>				
+							</logic:present>								
+							
+							<td width="<%= larguraColunaConsumoMinimo%>">
 							<div align="center" class="style9"><strong>Consumo M&iacute;nimo
 							</strong></div>
 							</td>
-							<td width="23%">
+							<td width="<%= larguraColunaTarifaMinina%>">
 							<div align="center"><strong>Tarifa M&iacute;nima</strong></div>
 							</td>							
-								<td width="23%" id="colunaDescricao" style="display:none;">
+								<td width="<%= larguraQtdFaixa%>" id="colunaDescricao" style="display:none;">
 								<div align="center"><strong>Tarifa Mínima Esgoto</strong></div>
 								</td>
 						</tr>
@@ -344,9 +418,6 @@ function abrirCategoria(){
 										onclick="javascript:excluirCategoriaEconomia('<%=""+GcomAction.obterTimestampIdObjeto(helper)%>');">
 									</div>
 
-
-
-
 									</td>
 									<td>
 									<div align="left" class="style9"><u><a
@@ -354,34 +425,136 @@ function abrirCategoria(){
 									<bean:write name="helper"
 										property="consumoTarifaCategoria.categoria.descricao" /></a></u></div>
 									</td>
+									
+									<logic:present name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+										<td>
+											<div align="center" class="style9">
+												<bean:write	name="helper" property="consumoTarifaCategoria.subCategoria.descricao" /></div>
+										</td>				
+									</logic:present>										
 
 									<td>
-									<div align="center" class="style9"><INPUT type="text" id="ValorConMinimo."
-										
-										maxlength="6" size="6" name="ValorConMinimo.<bean:write
-										name="helper" property="consumoTarifaCategoria.categoria.descricao" />"
-										value="<bean:write
-										name="helper" property="consumoTarifaCategoria.numeroConsumoMinimo" />"></div>
+									<div align="center" class="style9">
+										<logic:present name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+											<INPUT type="text" id="ValorConMinimo."
+												
+												maxlength="6" size="6" name="ValorConMinimo.<bean:write
+												name="helper" property="consumoTarifaCategoria.categoria.descricao" />.<bean:write	name="helper" property="consumoTarifaCategoria.subCategoria.descricao" />"
+												value="<bean:write
+												name="helper" property="consumoTarifaCategoria.numeroConsumoMinimo" />">
+											</logic:present>
+											
+											<logic:notPresent name="indicadorTarifaCosumoPorSubCategoria" scope="session">	
+												<INPUT type="text" id="ValorConMinimo."
+													
+													maxlength="6" size="6" name="ValorConMinimo.<bean:write
+													name="helper" property="consumoTarifaCategoria.categoria.descricao" />"
+													value="<bean:write
+													name="helper" property="consumoTarifaCategoria.numeroConsumoMinimo" />">																				
+											</logic:notPresent>	
+										</div>
 									</td>
 									<td>
-									<div align="center" class="style9"><INPUT type="text" onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" style="text-align:right;" size="18"
-										maxlength="18" id="ValorTarMin."
-										
-										name="ValorTarMin.<bean:write
-										name="helper" property="consumoTarifaCategoria.categoria.descricao" />"
-										value="<bean:write
-										name="helper" property="consumoTarifaCategoria.valorTarifaMinima" formatKey="money.quatrodecimais.format"/>"></div>
+										<logic:equal name="pQuantidadeDecimaisValorTarifa" value="4">
+											<div align="center" class="style9">
+											
+											<logic:present name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+												<INPUT type="text" onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" style="text-align:right;" size="18"
+													maxlength="18" id="ValorTarMin."
+													name="ValorTarMin.<bean:write
+													name="helper" property="consumoTarifaCategoria.categoria.descricao" />.<bean:write	name="helper" property="consumoTarifaCategoria.subCategoria.descricao" />"
+													value="<bean:write
+													name="helper" property="consumoTarifaCategoria.valorTarifaMinima" formatKey="money.quatrodecimais.format"/>">
+											</logic:present>
+											
+											<logic:notPresent name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+												<INPUT type="text" onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" style="text-align:right;" size="18"
+													maxlength="18" id="ValorTarMin."
+													name="ValorTarMin.<bean:write
+													name="helper" property="consumoTarifaCategoria.categoria.descricao" />"
+													value="<bean:write
+													name="helper" property="consumoTarifaCategoria.valorTarifaMinima" formatKey="money.quatrodecimais.format"/>">
+											</logic:notPresent>												
+													
+											</div>
+										</logic:equal>
+										<logic:equal name="pQuantidadeDecimaisValorTarifa" value="2">
+											<div align="center" class="style9">
+											
+											<logic:present name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+												<INPUT type="text" onkeyup="formataValorMonetario(this, 18)" style="text-align:right;" size="18"
+													maxlength="18" id="ValorTarMin."
+													
+													name="ValorTarMin.<bean:write
+													name="helper" property="consumoTarifaCategoria.categoria.descricao" />.<bean:write	name="helper" property="consumoTarifaCategoria.subCategoria.descricao" />"
+													value="<bean:write
+													name="helper" property="consumoTarifaCategoria.valorTarifaMinima" formatKey="money.format"/>">
+											</logic:present>
+											
+											<logic:notPresent name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+												<INPUT type="text" onkeyup="formataValorMonetario(this, 18)" style="text-align:right;" size="18"
+													maxlength="18" id="ValorTarMin."
+													
+													name="ValorTarMin.<bean:write
+													name="helper" property="consumoTarifaCategoria.categoria.descricao" />"
+													value="<bean:write
+													name="helper" property="consumoTarifaCategoria.valorTarifaMinima" formatKey="money.format"/>">											
+											</logic:notPresent>	
+											
+																							
+											</div>
+										</logic:equal>
 									</td>
-									
 
 									<td id="<%="coluna" + count%>" style="display:none;">
-									<div align="center" class="style9"><INPUT type="text" onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" style="text-align:right;" size="18"
-										maxlength="18" id="<%="ValorTarMinEsgoto." + count%>"
-										
-										name="ValorTarMinEsgoto.<bean:write
-										name="helper" property="consumoTarifaCategoria.categoria.descricao" />"
-										value="<bean:write
-										name="helper" property="consumoTarifaCategoria.valorTarifaMinimaEsgoto" formatKey="money.quatrodecimais.format"/>"></div>
+										<logic:equal name="pQuantidadeDecimaisValorTarifa" value="4">
+											<div align="center" class="style9">
+											
+											<logic:present name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+												<INPUT type="text" onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" style="text-align:right;" size="18"
+													maxlength="18" id="<%="ValorTarMinEsgoto." + count%>"
+													
+													name="ValorTarMinEsgoto.<bean:write
+													name="helper" property="consumoTarifaCategoria.categoria.descricao" />.<bean:write	name="helper" property="consumoTarifaCategoria.subCategoria.descricao" />"
+													value="<bean:write
+													name="helper" property="consumoTarifaCategoria.valorTarifaMinimaEsgoto" formatKey="money.quatrodecimais.format"/>">
+											</logic:present>
+											
+											<logic:notPresent name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+												<INPUT type="text" onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" style="text-align:right;" size="18"
+													maxlength="18" id="<%="ValorTarMinEsgoto." + count%>"
+													
+													name="ValorTarMinEsgoto.<bean:write
+													name="helper" property="consumoTarifaCategoria.categoria.descricao" />" 
+													value="<bean:write
+													name="helper" property="consumoTarifaCategoria.valorTarifaMinimaEsgoto" formatKey="money.quatrodecimais.format"/>">										
+											</logic:notPresent>	
+																							
+											</div>
+										</logic:equal>
+										<logic:equal name="pQuantidadeDecimaisValorTarifa" value="2">
+											<div align="center" class="style9">
+											
+											<logic:present name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+												<INPUT type="text" onkeyup="formataValorMonetario(this, 18)" style="text-align:right;" size="18"
+													maxlength="18" id="<%="ValorTarMinEsgoto." + count%>"
+													name="ValorTarMinEsgoto.<bean:write
+													name="helper" property="consumoTarifaCategoria.categoria.descricao" />.<bean:write	name="helper" property="consumoTarifaCategoria.subCategoria.descricao" />"
+													value="<bean:write
+													name="helper" property="consumoTarifaCategoria.valorTarifaMinimaEsgoto" formatKey="money.format"/>" >
+											</logic:present>
+											
+											<logic:notPresent name="indicadorTarifaCosumoPorSubCategoria" scope="session">	
+												<INPUT type="text" onkeyup="formataValorMonetario(this, 18)" style="text-align:right;" size="18"
+													maxlength="18" id="<%="ValorTarMinEsgoto." + count%>"
+													name="ValorTarMinEsgoto.<bean:write
+													name="helper" property="consumoTarifaCategoria.categoria.descricao" />"
+													value="<bean:write
+													name="helper" property="consumoTarifaCategoria.valorTarifaMinimaEsgoto" formatKey="money.format"/>" >									
+											</logic:notPresent>													
+												
+											</div>
+										</logic:equal>
 									</td>
 								</tr>
 								<%count++;%>
@@ -438,33 +611,5 @@ function abrirCategoria(){
 	</table>
 	<%@ include file="/jsp/util/rodape.jsp"%>
 </html:form>
-<script language="JavaScript">
-function reload() {
-	var form = document.InserirConsumoTarifaActionForm;	
-	
-	// Exibir/Ocultar Tarifa Mínima Esgoto
-	if(form.inTarifaEsgotoPropria[0].checked){		
-		document.getElementById('hidInTarifaEsgotoPropria').value = "1";
-		
-		document.getElementById('colunaDescricao').style.display="block";
-		
-		<%for (int i=0; i<count; i++) {%>
-			document.getElementById('<%="coluna" + i%>').style.display="block";
-		<% } %>
-		
-	} else {
-		document.getElementById('hidInTarifaEsgotoPropria').value = "2";
-		
-		document.getElementById('colunaDescricao').style.display="none";
-		
-		<%for (int i=0; i<count; i++) {%>
-			document.getElementById('<%="coluna" + i%>').style.display="none";
-			document.getElementById('<%="ValorTarMinEsgoto." + i%>').value = "";
-		<% } %>
-	}
-      
- }
-</script>
-
 </body>
 </html:html>

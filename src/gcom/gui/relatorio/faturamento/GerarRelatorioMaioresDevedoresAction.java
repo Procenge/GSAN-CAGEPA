@@ -80,6 +80,8 @@ import gcom.relatorio.ExibidorProcessamentoTarefaRelatorio;
 import gcom.relatorio.faturamento.RelatorioMaioresDevedores;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaRelatorio;
+import gcom.util.ConstantesSistema;
+import gcom.util.Util;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -121,7 +123,26 @@ public class GerarRelatorioMaioresDevedoresAction
 		// Valida os parâmetro passados como consulta
 
 		String localidade = gerarRelatorioMaioresDevedoresActionForm.getLocalidade();
-		Integer registros = Integer.parseInt(gerarRelatorioMaioresDevedoresActionForm.getQntRegistros());
+
+		Integer registros = ConstantesSistema.QUANTIDADE_LIMITE_RELATORIOS_POR_ARQUIVO;
+		if(!Util.isVazioOuBranco(gerarRelatorioMaioresDevedoresActionForm.getQntRegistros())){
+			registros = Integer.parseInt(gerarRelatorioMaioresDevedoresActionForm.getQntRegistros());
+		}
+
+		String[] idsTipoCliente = null;
+		Integer[] idsTipoClienteInteger = null;
+
+		// Tipo do Cliente
+		if(!Util.isVazioOrNulo(gerarRelatorioMaioresDevedoresActionForm.getTipoCliente())
+						&& !(Util.obterInteger(gerarRelatorioMaioresDevedoresActionForm.getTipoCliente()[0]).intValue() == ConstantesSistema.NUMERO_NAO_INFORMADO)){
+
+			idsTipoCliente = gerarRelatorioMaioresDevedoresActionForm.getTipoCliente();
+			idsTipoClienteInteger = new Integer[idsTipoCliente.length];
+		    for(int i=0; i<idsTipoCliente.length ; i++ ){
+				idsTipoClienteInteger[i] = Util.converterStringParaInteger(idsTipoCliente[i]);
+		    }
+
+		}
 
 		// seta os parametros que serão mostrados no relatório
 
@@ -132,6 +153,8 @@ public class GerarRelatorioMaioresDevedoresAction
 						(Usuario) (httpServletRequest.getSession(false)).getAttribute("usuarioLogado"));
 		relatorioMaioresDevedores.addParametro("localidade", localidade);
 		relatorioMaioresDevedores.addParametro("registros", registros);
+		relatorioMaioresDevedores.addParametro("idsTipoCliente", idsTipoClienteInteger);
+
 		if(tipoRelatorio == null){
 			tipoRelatorio = TarefaRelatorio.TIPO_PDF + "";
 		}

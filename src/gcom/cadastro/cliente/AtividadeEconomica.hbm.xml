@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.cadastro.cliente.AtividadeEconomica"
+    table="atividade_economica"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="atec_id"
+    >
+
+    <generator class="sequence">
+       <param name="sequence">sq_atividade_economica</param>
+    </generator>
+
+    </id>
+
+    <property
+        name="codigo"
+        type="java.lang.String"
+        column="atec_cdatividadeeconomica"
+        length="10"
+        not-null="true"
+    />
+    
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="atec_dsatividadeeconomica"
+        length="200"
+        not-null="true"
+    />
+
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="atec_icuso"
+        length="2"
+        not-null="true"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="atec_tmultimaalteracao"
+        length="8"
+        not-null="true"
+    />
+
+    <!-- associations -->
+    <!-- bi-directional many-to-one association to LigacaoEsgotoPerfil -->
+    <many-to-one
+        name="ligacaoEsgotoPerfil"
+        class="gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoPerfil"
+    >
+        <column name="lepf_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

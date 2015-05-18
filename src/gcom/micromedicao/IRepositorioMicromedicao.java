@@ -87,8 +87,12 @@ import gcom.faturamento.FaturamentoGrupo;
 import gcom.faturamento.FaturamentoSituacaoTipo;
 import gcom.faturamento.consumotarifa.ConsumoTarifa;
 import gcom.faturamento.consumotarifa.ConsumoTarifaVigencia;
+import gcom.faturamento.credito.CreditoRealizado;
+import gcom.faturamento.debito.DebitoCobrado;
+import gcom.faturamento.debito.DebitoTipo;
 import gcom.gerencial.cadastro.bean.ResumoLigacaoEconomiaHelper;
 import gcom.gui.micromedicao.DadosMovimentacao;
+import gcom.micromedicao.bean.FiltroHidrometroHelper;
 import gcom.micromedicao.bean.LigacaoMedicaoIndividualizadaHelper;
 import gcom.micromedicao.consumo.ConsumoAnormalidade;
 import gcom.micromedicao.consumo.ConsumoAnormalidadeFaixa;
@@ -100,6 +104,7 @@ import gcom.micromedicao.leitura.LeituraAnormalidade;
 import gcom.micromedicao.medicao.FiltroMedicaoHistoricoSql;
 import gcom.micromedicao.medicao.MedicaoHistorico;
 import gcom.micromedicao.medicao.MedicaoTipo;
+import gcom.relatorio.faturamento.conta.DadosConsumoAnteriorHelper;
 import gcom.seguranca.acesso.OperacaoEfetuada;
 import gcom.seguranca.acesso.usuario.UsuarioAcaoUsuarioHelper;
 import gcom.util.ControladorException;
@@ -490,7 +495,7 @@ public interface IRepositorioMicromedicao {
 	 * Autor: Leonardo Vieira Data: 20/02/2006
 	 */
 
-	public Object pesquisarObterDadosMaiorHistoricoMedicao(Imovel imovel, MedicaoTipo medicaoTipo, SistemaParametro sistemaParametro)
+	public Object pesquisarObterDadosMaiorHistoricoMedicaoAnterior(Imovel imovel, MedicaoTipo medicaoTipo, SistemaParametro sistemaParametro)
 					throws ErroRepositorioException;
 
 	/**
@@ -1174,7 +1179,7 @@ public interface IRepositorioMicromedicao {
 	 * @date 13/03/2007
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarImoveisPorRotaOrdenadoPorInscricao(Collection colecaoRota) throws ErroRepositorioException;
+	public Collection pesquisarImoveisPorRotaOrdenadoPorMatricula(Collection colecaoRota) throws ErroRepositorioException;
 
 	/**
 	 * Pesquisa todas as rotas do sistema.
@@ -1512,7 +1517,7 @@ public interface IRepositorioMicromedicao {
 	 * @date 17/09/2007
 	 * @exception ErroRepositorioException
 	 */
-	public Collection pesquisarImoveisParaFaturamento(Rota rota, int anoMesReferencia) throws ErroRepositorioException;
+	public Collection pesquisarImoveisParaFaturamento(Rota rota, int anoMesReferencia, Integer idImovel) throws ErroRepositorioException;
 
 	/**
 	 * [FS005] - Verificar existência do arquivo texto roteiro empresa.
@@ -2391,10 +2396,8 @@ public interface IRepositorioMicromedicao {
 	 * @author Victon Malcolm
 	 * @since 08/10/2013
 	 */
-	public Collection pesquisarAtualizacaoCadastralColetorDados(Integer referenciaInicial,
- Integer referenciaFinal, Integer matricula,
-					Integer localidade, Integer setorComercial, Integer rota, Boolean relatorio)
-					throws ErroRepositorioException;
+	public Collection pesquisarAtualizacaoCadastralColetorDados(Integer referenciaInicial, Integer referenciaFinal, Integer matricula,
+					Integer localidade, Integer setorComercial, Integer rota, Boolean relatorio) throws ErroRepositorioException;
 
 	/**
 	 * [UC3113] Atualizacao Cadastral Coletor de Dados
@@ -2434,7 +2437,8 @@ public interface IRepositorioMicromedicao {
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Collection pesquisarQuadroHidrometros(Date dataReferencia) throws ErroRepositorioException;
+	public Collection pesquisarQuadroHidrometros(Date dataReferencia, Integer idLocalidade, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio) throws ErroRepositorioException;
 
 	/**
 	 * [OC0791503] - Count Relatório Quadro de Hidrômetros
@@ -2444,7 +2448,8 @@ public interface IRepositorioMicromedicao {
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Integer pesquisarQuadroHidrometrosCount(Date dataReferencia) throws ErroRepositorioException;
+	public Integer pesquisarQuadroHidrometrosCount(Date dataReferencia, Integer idLocalidade, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio) throws ErroRepositorioException;
 
 	/**
 	 * [OC0791503] - Relatório Quadro de Hidrômetros por Ano Instalação
@@ -2474,7 +2479,9 @@ public interface IRepositorioMicromedicao {
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Integer pesquisarQuadroHidrometrosSituacaoCount(Date dataInicial, Date dataFinal) throws ErroRepositorioException;
+	public Integer pesquisarQuadroHidrometrosSituacaoCount(Date dataInicial, Date dataFinal, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio, Integer idUnidadeFederacao, Integer idLocalidade, Integer idHidrometroCapacidade,
+					Integer idHidrometroMarca, Integer idHidrometroDiametro) throws ErroRepositorioException;
 
 	/**
 	 * [OC0791503] - Relatório Quadro de Hidrômetros Situação
@@ -2484,7 +2491,9 @@ public interface IRepositorioMicromedicao {
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Collection pesquisarQuadroHidrometrosSituacao(Date dataInicial, Date dataFinal) throws ErroRepositorioException;
+	public Collection pesquisarQuadroHidrometrosSituacao(Date dataInicial, Date dataFinal, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio, Integer idUnidadeFederacao, Integer idLocalidade, Integer idHidrometroCapacidade,
+					Integer idHidrometroMarca, Integer idHidrometroDiametro) throws ErroRepositorioException;
 
 	/**
 	 * [UC0113] Faturar Grupo de Faturamento
@@ -2511,5 +2520,117 @@ public interface IRepositorioMicromedicao {
 	 */
 	public Collection<Object[]> obterImovelParaAjusteContaComValorAMenor(Integer referencia, String idsGrupos)
 					throws ErroRepositorioException;
+
+	/**
+	 * [UC0083] Gerar Dados para Leitura
+	 * [SB0001] - Gerar Arquivo Convencional
+	 * [SB0010] - Gerar Arquivo - Modelo 2
+	 * Obtém os débitos cobrados de parcelamento
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/05/2014
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<DebitoCobrado> pesquisarDebitosCobradosParcelamentoArquivoMicroColetor(Integer idConta, DebitoTipo debitoTipoParcelamento)
+					throws ErroRepositorioException;
+
+	/**
+	 * [UC0083] Gerar Dados para Leitura
+	 * [SB0001] - Gerar Arquivo Convencional
+	 * [SB0010] - Gerar Arquivo - Modelo 2
+	 * Obtém os débitos cobrados de financiamentos
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/05/2014
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<DebitoCobrado> pesquisarDebitosCobradosFinanciamentosArquivoMicroColetor(Integer idConta)
+					throws ErroRepositorioException;
+
+	/**
+	 * [UC0083] Gerar Dados para Leitura
+	 * [SB0001] - Gerar Arquivo Convencional
+	 * [SB0010] - Gerar Arquivo - Modelo 2
+	 * Obtém os créditos realizados
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/05/2014
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<CreditoRealizado> pesquisarCreditosRealizadosArquivoMicroletor(Integer idConta) throws ErroRepositorioException;
+
+	/**
+	 * @author Anderson Italo
+	 * @date 13/06/2014
+	 * @param idImovel
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Object[] obterDadosHidrometroArquivoLeituraMicrocoletorModelo2(Integer idImovel, Integer idMedicaoTipo)
+					throws ErroRepositorioException;
+
+	/**
+	 * [UC0083] Gerar Dados para Leitura
+	 * [SB0001] - Gerar Arquivo Convencional
+	 * [SB0010] - Gerar Arquivo - Modelo 2
+	 * Obtém os consumos anteriores
+	 * 
+	 * @author Anderson Italo
+	 * @date 14/06/2014
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<DadosConsumoAnteriorHelper> pesquisarDadosConsumosAnterioresArquivoMicrocoletorModelo2(Integer idImovel,
+					Integer anoMes, int qtdMeses, Integer idTipoLigacao) throws ErroRepositorioException;
+
+	/**
+	 * [UC0083] Gerar Dados para Leitura
+	 * [SB0001] - Gerar Arquivo Convencional
+	 * [SB0010] - Gerar Arquivo - Modelo 2
+	 * Verificar se existe conta em débito
+	 * 
+	 * @author Anderson Italo
+	 * @date 14/06/2014
+	 * @throws ErroRepositorioException
+	 */
+	public boolean vericarExistenciaContaEmDebitoAnterior(Integer idImovel, Integer anoMesReferencia) throws ErroRepositorioException;
+
+	/**
+	 * [UC0078] Filtrar Hidrômetro
+	 * 
+	 * @author Anderson Italo
+	 * @date 04/09/2014
+	 */
+	public Collection pesquisarHidrometroFiltro(FiltroHidrometroHelper filtroHidrometroHelper, Integer numeroPagina)
+					throws ErroRepositorioException;
+
+	/**
+	 * [UC0078] Filtrar Hidrômetro
+	 * 
+	 * @author Anderson Italo
+	 * @date 04/09/2014
+	 */
+	public Integer pesquisarHidrometroFiltroTotalRegistros(FiltroHidrometroHelper filtroHidrometroHelper) throws ErroRepositorioException;
+
+	public Object[] pesquisarMedicaoHistoricoAnterior(Integer idImovel, Integer anoMes, Integer idMedicaoTipo)
+					throws ErroRepositorioException;
+
+	public Collection pesquisarConsumoHistoricoAguaEsgotoAnterior(Integer idImovel, int anoMesGrupoFaturamento)
+					throws ErroRepositorioException;
+
+	/**
+	 * @param referenciaFaturamento
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public List<Object[]> pesquisarRotasComAlteracaoNasLigacoesEconomiasComReferencia() throws ErroRepositorioException;
+
+	/**
+	 * @param referencia
+	 * @param idsGrupos
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+
+	public Collection<Object[]> obterImoveisParaCreditoARealizarConta(Integer referencia, String idsGrupos) throws ErroRepositorioException;
 
 }

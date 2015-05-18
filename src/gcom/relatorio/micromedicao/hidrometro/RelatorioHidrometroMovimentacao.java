@@ -159,6 +159,8 @@ public class RelatorioHidrometroMovimentacao
 
 		parametros.put("imagem", sistemaParametro.getImagemRelatorio());
 
+		parametros.put("P_NM_ESTADO", sistemaParametro.getNomeEstado());
+
 		// cria uma instância do dataSource do relatório
 		RelatorioDataSource ds = new RelatorioDataSource(relatorioBeans);
 

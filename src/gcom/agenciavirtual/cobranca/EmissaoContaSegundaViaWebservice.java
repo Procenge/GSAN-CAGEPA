@@ -6,11 +6,13 @@ import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
 import gcom.faturamento.conta.Conta;
 import gcom.faturamento.conta.FiltroConta;
+import gcom.gui.ActionServletException;
 import gcom.relatorio.faturamento.conta.Relatorio2ViaConta;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaRelatorio;
 import gcom.util.*;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 import gcom.util.parametrizacao.webservice.ParametrosAgenciaVirtual;
 
 import java.util.ArrayList;
@@ -51,28 +53,71 @@ public class EmissaoContaSegundaViaWebservice
 
 		Integer matriculaImovel = recuperarParametroInteiroObrigatorio("matricula", LABEL_CAMPO_MATRICULA_DO_IMOVEL, false, request);
 
-		for(Integer idConta : idsConta){
-			Fachada.getInstancia().verificarPermissaoImovelConta(idConta, matriculaImovel);
-		}
-
 		SistemaParametro sistemaParametro = Fachada.getInstancia().pesquisarParametrosDoSistema();
 		String nomeEmpresa = sistemaParametro.getNomeAbreviadoEmpresa();
 
 		// Parte que vai mandar o relatório para a tela
 		// cria uma instância da classe do relatório
 		Relatorio2ViaConta relatorio2ViaConta = new Relatorio2ViaConta(Usuario.USUARIO_BATCH);
+		Short contaSemCodigoBarras = ConstantesSistema.NAO;
+		for(Integer idConta : idsConta){
+			Fachada.getInstancia().verificarPermissaoImovelConta(idConta, matriculaImovel);
 
-		relatorio2ViaConta.addParametro("idsConta", idsConta);
-		relatorio2ViaConta.addParametro("cobrarTaxaEmissaoConta", false);
-		relatorio2ViaConta.addParametro("contaSemCodigoBarras", ConstantesSistema.NAO);
+			FiltroConta filtroConta = new FiltroConta();
+			filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.ID, idConta));
+			Collection<Conta> colecaoConta = getControladorUtil().pesquisar(filtroConta, Conta.class.getName());
 
-		relatorio2ViaConta.addParametro("qtdeContas", 1);
-		String tipoRelatorio = TarefaRelatorio.TIPO_PDF + "";
+			Conta conta = null;
+			if(colecaoConta != null && !colecaoConta.isEmpty()){
+				conta = (Conta) Util.retonarObjetoDeColecao(colecaoConta);
 
-		relatorio2ViaConta.addParametro("tipoFormatoRelatorio", Integer.parseInt(tipoRelatorio));
-		relatorio2ViaConta.addParametro("nomeEmpresa", nomeEmpresa);
-		relatorio2ViaConta.addParametro("nomeRelatorio", "2ª VIA");
-		relatorio2ViaConta.addParametro("idContaHistorico", idContaHistorico);
+				// Obs.: Esse trecho de código está duplicado, aqui e na emissão de 2ª Via do GSAN.
+				// Essa não é uma boa prática, porém devido ao tempo e a urgência essa ação foi
+				// tomada.
+				// YSouza 09/09/2014
+		relatorio2ViaConta.addParametro("indicadorEmitido2ViaAgenciaVirtual", "S");
+
+				// [FS0013] – Verificar se conta em débito automático
+				// . Caso a conta cadastrada para débito automático (CNTA_ICCONTADEBITO = 1) e o
+				// indicador
+				// de Emissão de 2ª. Via de Conta Conta com código de barras para clientes com
+				// débito
+				// automático com valor igual a NÃO (PASI_VLPARAMETRO = 2 na da tabela
+				// PARAMETRO_SISTEMA
+				// com
+				// PASI_CDPARAMETRO=“ P_EMITE_2VIA_COM_CDBARRAS_CTA_DEB_AUTOM”), gerar linha em
+				// branco.
+			
+				if(conta != null && conta.getIndicadorDebitoConta().equals(ConstantesSistema.SIM)){
+
+					String pEmite2ViaCodBarrasContaDebAut = null;
+					try{
+						pEmite2ViaCodBarrasContaDebAut = ParametroFaturamento.P_EMITE_2VIA_COM_CDBARRAS_CTA_DEB_AUTOM.executar();
+						if(!Util.isVazioOuBrancoOuZero(pEmite2ViaCodBarrasContaDebAut)
+										&& pEmite2ViaCodBarrasContaDebAut.equals(ConstantesSistema.NAO.toString())){
+							contaSemCodigoBarras = ConstantesSistema.SIM;
+						}
+
+					}catch(ControladorException e){
+						throw new ActionServletException("atencao.sistemaparametro_inexistente", "P_EMITE_2VIA_COM_CDBARRAS_CTA_DEB_AUTOM");
+					}
+
+				}
+
+			}
+
+			relatorio2ViaConta.addParametro("idsConta", idsConta);
+			relatorio2ViaConta.addParametro("cobrarTaxaEmissaoConta", false);
+			relatorio2ViaConta.addParametro("contaSemCodigoBarras", contaSemCodigoBarras);
+
+			relatorio2ViaConta.addParametro("qtdeContas", 1);
+			String tipoRelatorio = TarefaRelatorio.TIPO_PDF + "";
+
+			relatorio2ViaConta.addParametro("tipoFormatoRelatorio", Integer.parseInt(tipoRelatorio));
+			relatorio2ViaConta.addParametro("nomeEmpresa", nomeEmpresa);
+			relatorio2ViaConta.addParametro("nomeRelatorio", "2ª VIA");
+			relatorio2ViaConta.addParametro("idContaHistorico", idContaHistorico);
+		}
 
 		processarExibicaoRelatorio(relatorio2ViaConta, TarefaRelatorio.TIPO_PDF, request, response, mapping);
 	}

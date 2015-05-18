@@ -99,13 +99,7 @@ import gcom.util.agendadortarefas.AgendadorTarefas;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class RelatorioDebitoPorResponsavelAnalitico
 				extends TarefaRelatorio {
@@ -260,10 +254,11 @@ public class RelatorioDebitoPorResponsavelAnalitico
 				dataVencimentoString = Util.formatarData(dados[16].toString().replace("-", ""));
 
 				// [UC0216] Calcular Acrescimo por Impontualidade
-				calcularAcrescimoPorImpontualidade = fachada.calcularAcrescimoPorImpontualidade(Util.obterInteger(dados[15].toString()),
-								dataVencimentoDate, null, bean.getValorNominalConsumidor(), valorMultasCobradas, Util.obterShort(dados[13]
-												.toString()), sistemaParametros.getAnoMesArrecadacao().toString(), Util
-.obterInteger(dados[0].toString()), ConstantesSistema.SIM, ConstantesSistema.SIM,
+				calcularAcrescimoPorImpontualidade = fachada
+								.calcularAcrescimoPorImpontualidade(Util.obterInteger(dados[15].toString()), dataVencimentoDate, null,
+												bean.getValorNominalConsumidor(), valorMultasCobradas,
+												Util.obterShort(dados[13].toString()), sistemaParametros.getAnoMesArrecadacao().toString(),
+												Util.obterInteger(dados[0].toString()), ConstantesSistema.SIM, ConstantesSistema.SIM,
 												ConstantesSistema.SIM);
 
 				if(calcularAcrescimoPorImpontualidade != null){
@@ -314,8 +309,8 @@ public class RelatorioDebitoPorResponsavelAnalitico
 			}
 
 			// Valor Total Consumidor
-			bean.setValorTotalConsumidor(bean.getValorNominalConsumidor().add(bean.getValorCorrecaoConsumidor()).add(
-							bean.getValorJurosConsumidor()).add(bean.getValorMultaConsumidor()));
+			bean.setValorTotalConsumidor(bean.getValorNominalConsumidor().add(bean.getValorCorrecaoConsumidor())
+							.add(bean.getValorJurosConsumidor()).add(bean.getValorMultaConsumidor()));
 
 			if(bean.getValorTotalConsumidor() == null){
 

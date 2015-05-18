@@ -31,6 +31,12 @@
             type="java.lang.Integer"
             length="4"
         />
+	    <key-property
+	        name="numeroProcessoAdministrativoExecucaoFiscal"
+	        column="GPPR_NNPROCESADMEXECUCAOFISCAL"
+	        type="java.lang.Integer"
+	        length="14"
+	    />
     </composite-id>
 
 	<property
@@ -101,6 +107,36 @@
         column="gppr_icremuneracobrancaadm"
         length="1"
         not-null="true"
+    />
+    
+      <property
+        name="indicadorDividaAtiva"
+        type="java.lang.Short"
+        column="GPPR_ICDIVIDAATIVA"
+        length="1"
+        not-null="true"
+    />
+    
+      <property
+        name="dataDividaAtiva"
+             type="java.sql.Date"
+        column="GPPR_DTDIVIDAATIVA"       
+        length="4"
+    />
+    
+      <property
+        name="indicadorExecucaoFiscal"
+        type="java.lang.Short"
+        column="GPPR_ICEXECUCAOFISCAL"
+        length="1"
+        not-null="true"
+    />
+    
+      <property
+        name="dataExecucaoFiscal"
+             type="java.sql.Date"
+        column="GPPR_DTEXECUCAOFISCAL"   
+        length="4"
     />
 
     <!-- Associations -->

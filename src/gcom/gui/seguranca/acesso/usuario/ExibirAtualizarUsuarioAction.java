@@ -239,8 +239,8 @@ public class ExibirAtualizarUsuarioAction
 					if(unidadeEmpresaUsuario.getUnidadeTipo().getNivel() != null && unidadeEmpresa.getUnidadeTipo().getNivel() != null){
 						if(unidadeEmpresaUsuario.getUnidadeTipo().getNivel().intValue() >= unidadeEmpresa.getUnidadeTipo().getNivel()
 										.intValue()){
-							throw new ActionServletException("atencao.usuario.sem.permissao", usuario.getLogin(), unidadeEmpresa
-											.getDescricao());
+							throw new ActionServletException("atencao.usuario.sem.permissao", usuario.getLogin(),
+											unidadeEmpresa.getDescricao());
 						}
 					}else{
 						throw new ActionServletException("atencao.usuario.sem.permissao", usuario.getLogin(), unidadeEmpresa.getDescricao());
@@ -268,8 +268,8 @@ public class ExibirAtualizarUsuarioAction
 							}
 						}
 						if(idUnidadeEmpresaSuperior == null){
-							throw new ActionServletException("atencao.usuario.sem.permissao", usuario.getLogin(), unidadeEmpresa
-											.getDescricao());
+							throw new ActionServletException("atencao.usuario.sem.permissao", usuario.getLogin(),
+											unidadeEmpresa.getDescricao());
 						}
 						// recupera a unidade do usuário
 						FiltroUnidadeOrganizacional filtroUnidadeEmpresaSuperior = new FiltroUnidadeOrganizacional();
@@ -284,8 +284,8 @@ public class ExibirAtualizarUsuarioAction
 						if(unidadeEmpresaSuperior != null){
 							if(unidadeEmpresaSuperior.getUnidadeTipo().getNivel() == null
 											|| unidadeEmpresaSuperior.getUnidadeTipo().getNivel().equals("")){
-								throw new ActionServletException("atencao.usuario.sem.permissao", usuario.getLogin(), unidadeEmpresa
-												.getDescricao());
+								throw new ActionServletException("atencao.usuario.sem.permissao", usuario.getLogin(),
+												unidadeEmpresa.getDescricao());
 
 							}
 
@@ -295,8 +295,8 @@ public class ExibirAtualizarUsuarioAction
 								// caso o id da unidade empresa informado for diferente do id da
 								// unidade empresa do usuário no mesmo nivel
 								if(!unidadeEmpresaSuperior.getId().equals(unidadeEmpresaUsuario.getId())){
-									throw new ActionServletException("atencao.usuario.sem.permissao", usuario.getLogin(), unidadeEmpresa
-													.getDescricao());
+									throw new ActionServletException("atencao.usuario.sem.permissao", usuario.getLogin(),
+													unidadeEmpresa.getDescricao());
 								}
 							}
 						}
@@ -306,6 +306,7 @@ public class ExibirAtualizarUsuarioAction
 		}
 
 		atualizarUsuarioDadosGeraisActionForm.setNome(usuarioParaAtualizar.getNomeUsuario());
+		atualizarUsuarioDadosGeraisActionForm.setIdUsuario(usuarioParaAtualizar.getId().toString());
 		// atualizarUsuarioDadosGeraisActionForm.setIdFuncionario(usuarioParaAtualizar.getId().toString());
 
 		// cria um array de string para os ids do grupo

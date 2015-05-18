@@ -1303,6 +1303,13 @@
         type="java.math.BigDecimal"
         column="mrem_vlcreditado5"
         length="13"
+    />
+    
+    <property
+        name="numeroConsumoFixoPoco"
+        type="java.lang.Integer"
+        column="mrem_nnconsumofixopoco"
+        length="9"
     /> 
        
     <!-- Associations  -->
@@ -1910,6 +1917,21 @@ type="short"
         column="MREM_QTECONOMIAPUBLICAALT"
         length="2"
     />
+    
+
+    
+     <property
+        name="idCategoriaAtualizacaoCadastral"
+        type="java.lang.Integer"
+        column="CATG_IDATUCADASTRAL"
+    />  
+    
+     <property
+        name="idSubCategoriaAtualizacaoCadastral"
+        type="java.lang.Integer"
+        column="SCAT_IDATUCADASTRAL"
+    />  
+    
     
 </class>
 </hibernate-mapping>

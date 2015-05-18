@@ -34,6 +34,14 @@
 			not-null="true"
 			length="6" />
 
+
+
+		<property name="indicadorPrimeiroTramite" type="short" column="ESTR_ICPRIMEIROTRAMITE"
+			not-null="true" length="2" />
+			
+			
+			
+			
 		<!-- Associations -->
 
 		<!-- bi-directional many-to-one association to SolicitacaoTipoEspecificacao -->

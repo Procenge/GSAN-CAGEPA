@@ -176,6 +176,12 @@ public class PesquisarOrdemServicoHelper {
 
 	private String indicadorProcessoAdmJud;
 
+	private String indicadorReparo;
+
+	private String situacaoDocumentoCobranca;
+
+	private Integer quantidadeDiasUnidade = null;
+
 	public PesquisarOrdemServicoHelper() {
 
 	}
@@ -622,6 +628,37 @@ public class PesquisarOrdemServicoHelper {
 	public void setIndicadorProcessoAdmJud(String indicadorProcessoAdmJud){
 
 		this.indicadorProcessoAdmJud = indicadorProcessoAdmJud;
+	}
+
+	public String getIndicadorReparo(){
+
+		return indicadorReparo;
+	}
+
+	public void setIndicadorReparo(String indicadorReparo){
+
+		this.indicadorReparo = indicadorReparo;
+	}
+
+	public String getSituacaoDocumentoCobranca(){
+
+		return situacaoDocumentoCobranca;
+	}
+
+	public void setSituacaoDocumentoCobranca(String situacaoDocumentoCobranca){
+
+		this.situacaoDocumentoCobranca = situacaoDocumentoCobranca;
+	}
+
+
+	public Integer getQuantidadeDiasUnidade(){
+
+		return quantidadeDiasUnidade;
+	}
+
+	public void setQuantidadeDiasUnidade(Integer quantidadeDiasUnidade){
+
+		this.quantidadeDiasUnidade = quantidadeDiasUnidade;
 	}
 
 }

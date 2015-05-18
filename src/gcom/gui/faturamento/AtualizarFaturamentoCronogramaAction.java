@@ -246,9 +246,8 @@ public class AtualizarFaturamentoCronogramaAction
 		 * "atencao.campos_obrigatorios_cronograma_nao_preenchidos");
 		 * }
 		 */
-
-		fachada.atualizarFaturamentoGrupoCronogramaMensal(faturamentoGrupoCronogramaMensal, faturamentoAtividadeCronogramas,
-						colecaoTodasAtividades, usuarioLogado);
+		String referenciasAtualizadas = fachada.atualizarFaturamentoGrupoCronogramaMensal(faturamentoGrupoCronogramaMensal,
+						faturamentoAtividadeCronogramas, usuarioLogado);
 
 		FiltroFaturamentoGrupo filtroFaturamentoGrupo = new FiltroFaturamentoGrupo();
 		filtroFaturamentoGrupo.adicionarParametro(new ParametroSimples(FiltroFaturamentoGrupo.ID, faturamentoGrupo.getId()));
@@ -261,7 +260,7 @@ public class AtualizarFaturamentoCronogramaAction
 		sessao.removeAttribute("faturamentoAtividades");
 		sessao.removeAttribute("idGrupoFaturamento");
 		montarPaginaSucesso(httpServletRequest, "Cronograma de Faturamento do grupo " + faturamentoGrupoDescricao.getId()
-						+ " referente ao mês/ano: " + faturamentoGrupoCronogramaMensal.getMesAno() + " atualizado com sucesso.",
+						+ " referente ao(s) mês(es)/ano(s): " + referenciasAtualizadas + " atualizado(s) com sucesso.",
 						"Realizar outra Manutenção de Cronograma de Faturamento", "exibirFiltrarFaturamentoCronogramaAction.do");
 
 		return retorno;

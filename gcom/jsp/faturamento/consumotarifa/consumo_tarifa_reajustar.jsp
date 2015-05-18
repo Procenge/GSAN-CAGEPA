@@ -117,6 +117,13 @@
 						width="20" border="0" align="absmiddle" alt="Exibir Calendário" /></a> &nbsp; dd/mm/aaaa</td>
 				</tr>
 				<tr>
+					<td width="184" class="style1"><strong>Ato Administrativo:</strong></td>
+					<td width="210" class="style1">
+						<html:text maxlength="30"
+							property="descricaoAtoAdministrativo" size="30"/>
+					</td>
+				</tr>
+				<tr>
 					<td colspan="3" height="25"><strong>Percentual de Reajuste por
 					Categoria:</strong></td>
 				</tr>
@@ -213,6 +220,7 @@
 <script>
 	    var form = document.InserirReajusteConsumoTarifaActionForm;
 		form.dataVigencia.value = "";
+		form.descricaoAtoAdministrativo.value = "";
 </script>
 
 </html:html>

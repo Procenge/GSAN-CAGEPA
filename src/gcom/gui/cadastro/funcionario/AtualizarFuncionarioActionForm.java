@@ -103,6 +103,12 @@ public class AtualizarFuncionarioActionForm
 
 	private String nomeUnidade;
 
+	private Integer idEquipeTipo;
+
+	private String nomeResumido;
+
+	private String jornadaTipo;
+
 	public String getDescricaoCargo(){
 
 		return descricaoCargo;
@@ -171,6 +177,36 @@ public class AtualizarFuncionarioActionForm
 	public void setIdFuncionario(String idFuncionario){
 
 		this.idFuncionario = idFuncionario;
+	}
+
+	public Integer getIdEquipeTipo(){
+
+		return idEquipeTipo;
+	}
+
+	public void setIdEquipeTipo(Integer idEquipeTipo){
+
+		this.idEquipeTipo = idEquipeTipo;
+	}
+
+	public String getNomeResumido(){
+
+		return nomeResumido;
+	}
+
+	public void setNomeResumido(String nomeResumido){
+
+		this.nomeResumido = nomeResumido;
+	}
+
+	public String getJornadaTipo(){
+
+		return jornadaTipo;
+	}
+
+	public void setJornadaTipo(String jornadaTipo){
+
+		this.jornadaTipo = jornadaTipo;
 	}
 
 }

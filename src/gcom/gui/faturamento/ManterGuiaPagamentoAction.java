@@ -79,17 +79,23 @@
 
 package gcom.gui.faturamento;
 
+import gcom.arrecadacao.pagamento.FiltroGuiaPagamentoPrestacao;
+import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao;
+import gcom.cobranca.bean.GuiaPagamentoValoresHelper;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.gui.faturamento.bean.GuiaPagamentoPrestacaoHelper;
 import gcom.gui.faturamento.guiapagamento.AtualizarGuiaPagamentoActionForm;
+import gcom.seguranca.acesso.PermissaoEspecial;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.Util;
+import gcom.util.filtro.ParametroSimples;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -118,8 +124,12 @@ public class ManterGuiaPagamentoAction
 
 		// Obtém a sessão
 		HttpSession sessao = httpServletRequest.getSession(false);
+		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
 
 		Collection guiasPagamento = (Collection) sessao.getAttribute("guiasPagamentos");
+
+		boolean temPermissaoAtualizarDebitosExecFiscal = fachada.verificarPermissaoEspecial(
+						PermissaoEspecial.ATUALIZAR_DEBITOS_EXECUCAO_FISCAL, this.getUsuarioLogado(httpServletRequest));
 
 		// verifica se veio da tela de atualizacao de guia de pagamento
 		if(Util.isVazioOuBranco(guiasPagamento)){
@@ -161,6 +171,7 @@ public class ManterGuiaPagamentoAction
 
 		if(!Util.isVazioOrNulo(registrosRemocao)){
 			StringBuffer parametroMensagem = new StringBuffer();
+			StringBuffer parametroPrestacaoExecucaoFiscal = new StringBuffer();
 
 			Integer idGuiaPagamentoAux = null;
 			Short numeroPrestacaoAux = null;
@@ -186,8 +197,38 @@ public class ManterGuiaPagamentoAction
 							parametroMensagem.append(", ");
 						}
 
+						/*
+						 * [UC0188] Manter Guia de Pagamento
+						 * [SB0011] Verificar Existência de Conta em Execução Fiscal
+						 */
+						FiltroGuiaPagamentoPrestacao filtroGuiaPagamentoPrestacao = new FiltroGuiaPagamentoPrestacao();
+						filtroGuiaPagamentoPrestacao.adicionarParametro(new ParametroSimples(
+										FiltroGuiaPagamentoPrestacao.GUIA_PAGAMENTO_ID, idGuiaPagamentoAux));
+						filtroGuiaPagamentoPrestacao.adicionarParametro(new ParametroSimples(FiltroGuiaPagamentoPrestacao.NUMERO_PRESTACAO,
+										numeroPrestacaoAux));
+						filtroGuiaPagamentoPrestacao.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoPrestacao.DEBITO_TIPO);
+
+						Collection<GuiaPagamentoPrestacao> colecaoGuiaPagamentoPrestacao = fachada.pesquisar(filtroGuiaPagamentoPrestacao,
+										GuiaPagamentoPrestacao.class.getName());
+
+						GuiaPagamentoValoresHelper guiaPagamentoValores = new GuiaPagamentoValoresHelper();
+						guiaPagamentoValores.setGuiaPagamentoPrestacoes(new HashSet<GuiaPagamentoPrestacao>(colecaoGuiaPagamentoPrestacao));
+						
+						Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores = new ArrayList<GuiaPagamentoValoresHelper>();
+						colecaoGuiaPagamentoValores.add(guiaPagamentoValores);
+						
+						
+						if(fachada.verificarExecucaoFiscal(null, colecaoGuiaPagamentoValores, null)
+										&& !temPermissaoAtualizarDebitosExecFiscal){
+							parametroPrestacaoExecucaoFiscal.append(idGuiaPagamentoAux);
+							parametroPrestacaoExecucaoFiscal.append("/");
+							parametroPrestacaoExecucaoFiscal.append(numeroPrestacaoAux);
+							parametroPrestacaoExecucaoFiscal.append(", ");						
+						}
+
 						break;
 					}
+
 				}
 			}
 
@@ -197,6 +238,15 @@ public class ManterGuiaPagamentoAction
 				parametroMensagemStr = parametroMensagemStr.substring(0, parametroMensagemStr.length() - 2);
 
 				throw new ActionServletException("atencao.guia.prestacao.no.historico", parametroMensagemStr);
+			}
+
+			String parametroMensagemExecFiscal = parametroPrestacaoExecucaoFiscal.toString();
+
+			if(!Util.isVazioOuBranco(parametroMensagemExecFiscal)){
+				parametroMensagemExecFiscal = parametroMensagemExecFiscal.substring(0, parametroMensagemExecFiscal.length() - 2);
+
+				throw new ActionServletException("atencao.guia.prestacao.debito.execucao.fiscal", usuario.getNomeUsuario().toString(),
+								parametroMensagemExecFiscal);
 			}
 		}
 
@@ -249,17 +299,42 @@ public class ManterGuiaPagamentoAction
 
 		if(idImovel != null && !idImovel.equals("")){
 
-			montarPaginaSucesso(httpServletRequest, registrosRemocao.length + " Parcelas de Guia(s) de Pagamento do imóvel " + idImovel
-							+ " cancelada(s) com sucesso.", "Realizar outro Cancelamento de Guia de Pagamento",
-							"exibirManterGuiaPagamentoAction.do?menu=sim");
+			if(atualizarGuiaPagamentoActionForm.getIdRegistroAtendimento() != null
+							&& !atualizarGuiaPagamentoActionForm.getIdRegistroAtendimento().equals("")){
+				montarPaginaSucesso(httpServletRequest, registrosRemocao.length + " Parcelas de Guia(s) de Pagamento do imóvel " + idImovel
+								+ " cancelada(s) com sucesso.", "Realizar outro Cancelamento de Guia de Pagamento",
+								"exibirManterGuiaPagamentoAction.do?menu=sim",
+								"filtrarRegistroAtendimentoAction.do?menuPrincipal=sim&menu=sim&idRA="
+												+ atualizarGuiaPagamentoActionForm.getIdRegistroAtendimento(),
+ "Encerrar RA "
+												+ atualizarGuiaPagamentoActionForm.getIdRegistroAtendimento()
+												+ " vinculado a Guia de Pagamento.");
+			}else{
+				montarPaginaSucesso(httpServletRequest, registrosRemocao.length + " Parcelas de Guia(s) de Pagamento do imóvel " + idImovel
+								+ " cancelada(s) com sucesso.", "Realizar outro Cancelamento de Guia de Pagamento",
+								"exibirManterGuiaPagamentoAction.do?menu=sim");
+			}
 
 		}
 
 		if(idCliente != null && !idCliente.equals("")){
 
-			montarPaginaSucesso(httpServletRequest, registrosRemocao.length + " Parcelas de Guia(s) de Pagamento do cliente " + idCliente
-							+ " cancelada(s) com sucesso.", "Realizar outro Cancelamento de Guia de Pagamento",
-							"exibirManterGuiaPagamentoAction.do?menu=sim");
+			if(atualizarGuiaPagamentoActionForm.getIdRegistroAtendimento() != null
+							&& !atualizarGuiaPagamentoActionForm.getIdRegistroAtendimento().equals("")){
+				montarPaginaSucesso(httpServletRequest, registrosRemocao.length + " Parcelas de Guia(s) de Pagamento do cliente "
+								+ idCliente + " cancelada(s) com sucesso.", "Realizar outro Cancelamento de Guia de Pagamento",
+								"exibirManterGuiaPagamentoAction.do?menu=sim",
+								"filtrarRegistroAtendimentoAction.do?menuPrincipal=sim&menu=sim&idRA="
+												+ atualizarGuiaPagamentoActionForm.getIdRegistroAtendimento(),
+ "Encerrar RA "
+												+ atualizarGuiaPagamentoActionForm.getIdRegistroAtendimento()
+												+ " vinculado a Guia de Pagamento.");
+
+			}else{
+				montarPaginaSucesso(httpServletRequest, registrosRemocao.length + " Parcelas de Guia(s) de Pagamento do cliente "
+								+ idCliente + " cancelada(s) com sucesso.", "Realizar outro Cancelamento de Guia de Pagamento",
+								"exibirManterGuiaPagamentoAction.do?menu=sim");
+			}
 
 		}
 

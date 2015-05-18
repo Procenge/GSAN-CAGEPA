@@ -179,6 +179,8 @@ public class MedicaoHistorico
 	@ControleAlteracao(funcionalidade = {ATRIBUTOS_ATUALIZAR_EXECECOES_LEITURAS_RESUMO, OPERACAO_ALTERAR_DADOS_FATURAMENTO, OPERACAO_CONSULTAR_DADOS_FATURAMENTO})
 	private Integer consumoMedioHidrometro;
 
+	private Integer consumoMedioMedido;
+
 	/** nullable persistent field */
 	@ControleAlteracao(funcionalidade = {ATRIBUTOS_ATUALIZAR_EXECECOES_LEITURAS_RESUMO, OPERACAO_ALTERAR_DADOS_FATURAMENTO, OPERACAO_CONSULTAR_DADOS_FATURAMENTO})
 	private Integer consumoCreditoAnterior;
@@ -253,15 +255,6 @@ public class MedicaoHistorico
 	// para quando chegar no controlador saber se o indicador é 0 ou 1.
 	private String indicadorConfirmacaoLeitura;
 
-	// armazena o valor do consumo faturado para água, se for o caso. utilizado no [UC0082]
-	private Integer numeroConsumoFaturadoLeitura;
-
-	// armazena o valor do consumo faturado para água, se for o caso. utilizado no [UC0082]
-	private Integer numeroConsumoFaturadoAguaLeitura;
-
-	// armazena o valor do consumo faturado para esgoto, se for o caso. utilizado no [UC0082]
-	private Integer numeroConsumoFaturadoEsgotoLeitura;
-
 	public final static Short INDICADOR_CONFIRMACAO_LEITURA_ZERO = Short.valueOf("0");
 
 	public final static Short INDICADOR_CONFIRMACAO_LEITURA_UM = Short.valueOf("1");
@@ -319,6 +312,47 @@ public class MedicaoHistorico
 		this.leituraProcessamentoMovimento = leituraProcessamentoMovimento;
 		this.consumoCreditoAnterior = consumoCreditoAnterior;
 		this.consumoCreditoGerado = consumoCreditoGerado;
+	}
+
+	public MedicaoHistorico(int anoMesReferencia, Short numeroVezesConsecutivasOcorrenciaAnormalidade, Date dataLeituraAnteriorFaturamento,
+							Integer leituraAnteriorFaturamento, Integer leituraAnteriorInformada, Date dataLeituraAtualInformada,
+							Integer leituraAtualInformada, Date dataLeituraAtualFaturamento, Integer leituraAtualFaturamento,
+							Integer numeroConsumoMes, Integer numeroConsumoInformado, Integer consumoCreditoAnterior, Date ultimaAlteracao,
+							Integer consumoMedioHidrometro, Date leituraProcessamentoMovimento, LeituraFaixaFalsa leituraFaixaFalsa,
+							LeituraFiscalizacao leituraFiscalizacao, Imovel imovel, LeituraSituacao leituraSituacaoAnterior,
+							LeituraSituacao leituraSituacaoAtual, HidrometroInstalacaoHistorico hidrometroInstalacaoHistorico,
+							LeituraAnormalidade leituraAnormalidadeFaturamento, LeituraAnormalidade leituraAnormalidadeInformada,
+							LigacaoAgua ligacaoAgua, Funcionario funcionario, gcom.micromedicao.medicao.MedicaoTipo medicaoTipo,
+							Integer consumoCreditoGerado, Integer consumoMedioMedido) {
+
+		this.anoMesReferencia = anoMesReferencia;
+		this.numeroVezesConsecutivasOcorrenciaAnormalidade = numeroVezesConsecutivasOcorrenciaAnormalidade;
+		this.dataLeituraAnteriorFaturamento = dataLeituraAnteriorFaturamento;
+		this.leituraAnteriorFaturamento = leituraAnteriorFaturamento;
+		this.leituraAnteriorInformada = leituraAnteriorInformada;
+		this.dataLeituraAtualInformada = dataLeituraAtualInformada;
+		this.leituraAtualInformada = leituraAtualInformada;
+		this.dataLeituraAtualFaturamento = dataLeituraAtualFaturamento;
+		this.leituraAtualFaturamento = leituraAtualFaturamento;
+		this.numeroConsumoMes = numeroConsumoMes;
+		this.numeroConsumoInformado = numeroConsumoInformado;
+		this.ultimaAlteracao = ultimaAlteracao;
+		this.consumoMedioHidrometro = consumoMedioHidrometro;
+		this.leituraFaixaFalsa = leituraFaixaFalsa;
+		this.leituraFiscalizacao = leituraFiscalizacao;
+		this.imovel = imovel;
+		this.leituraSituacaoAnterior = leituraSituacaoAnterior;
+		this.leituraSituacaoAtual = leituraSituacaoAtual;
+		this.hidrometroInstalacaoHistorico = hidrometroInstalacaoHistorico;
+		this.leituraAnormalidadeFaturamento = leituraAnormalidadeFaturamento;
+		this.leituraAnormalidadeInformada = leituraAnormalidadeInformada;
+		this.ligacaoAgua = ligacaoAgua;
+		this.funcionario = funcionario;
+		this.medicaoTipo = medicaoTipo;
+		this.leituraProcessamentoMovimento = leituraProcessamentoMovimento;
+		this.consumoCreditoAnterior = consumoCreditoAnterior;
+		this.consumoCreditoGerado = consumoCreditoGerado;
+		this.consumoMedioMedido = consumoMedioMedido;
 	}
 
 	/** default constructor */
@@ -490,6 +524,16 @@ public class MedicaoHistorico
 	public void setConsumoMedioHidrometro(Integer consumoMedioHidrometro){
 
 		this.consumoMedioHidrometro = consumoMedioHidrometro;
+	}
+
+	public Integer getConsumoMedioMedido(){
+
+		return this.consumoMedioMedido;
+	}
+
+	public void setConsumoMedioMedido(Integer consumoMedioMedido){
+
+		this.consumoMedioMedido = consumoMedioMedido;
 	}
 
 	public LeituraFaixaFalsa getLeituraFaixaFalsa(){
@@ -758,57 +802,6 @@ public class MedicaoHistorico
 	public void setConsumoCreditoGerado(Integer consumoCreditoGerado){
 
 		this.consumoCreditoGerado = consumoCreditoGerado;
-	}
-
-	/**
-	 * @return the numeroConsumoFaturadoAguaLeitura
-	 */
-	public Integer getNumeroConsumoFaturadoAguaLeitura(){
-
-		return numeroConsumoFaturadoAguaLeitura;
-	}
-
-	/**
-	 * @param numeroConsumoFaturadoAguaLeitura
-	 *            the numeroConsumoFaturadoAguaLeitura to set
-	 */
-	public void setNumeroConsumoFaturadoAguaLeitura(Integer numeroConsumoFaturadoAguaLeitura){
-
-		this.numeroConsumoFaturadoAguaLeitura = numeroConsumoFaturadoAguaLeitura;
-	}
-
-	/**
-	 * @return the numeroConsumoFaturadoEsgotoLeitura
-	 */
-	public Integer getNumeroConsumoFaturadoEsgotoLeitura(){
-
-		return numeroConsumoFaturadoEsgotoLeitura;
-	}
-
-	/**
-	 * @param numeroConsumoFaturadoEsgotoLeitura
-	 *            the numeroConsumoFaturadoEsgotoLeitura to set
-	 */
-	public void setNumeroConsumoFaturadoEsgotoLeitura(Integer numeroConsumoFaturadoEsgotoLeitura){
-
-		this.numeroConsumoFaturadoEsgotoLeitura = numeroConsumoFaturadoEsgotoLeitura;
-	}
-
-	/**
-	 * @return the numeroConsumoFaturadoLeitura
-	 */
-	public Integer getNumeroConsumoFaturadoLeitura(){
-
-		return numeroConsumoFaturadoLeitura;
-	}
-
-	/**
-	 * @param numeroConsumoFaturadoLeitura
-	 *            the numeroConsumoFaturadoLeitura to set
-	 */
-	public void setNumeroConsumoFaturadoLeitura(Integer numeroConsumoFaturadoLeitura){
-
-		this.numeroConsumoFaturadoLeitura = numeroConsumoFaturadoLeitura;
 	}
 
 	public String[] retornarAtributosInformacoesOperacaoEfetuada(){

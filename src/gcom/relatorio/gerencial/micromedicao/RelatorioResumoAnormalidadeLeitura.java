@@ -99,11 +99,7 @@ import gcom.util.Util;
 import gcom.util.agendadortarefas.AgendadorTarefas;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Classe responsável por criar o relatório de resumo de anormalidade por totalizador.
@@ -234,17 +230,26 @@ public class RelatorioResumoAnormalidadeLeitura
 			relatorioBeans.add(totalComAnormalidade);
 			relatorioBeans.add(totalSemAnormalidade);
 
+			RelatorioResumoAnormalidadeLeituraBean totalGeralComAnormalidade = preencherValoresTotalComAnormalidade(opcaoTotalizacao,
+							totalQuantidadeGeral, new BigDecimal(100.0), itemAnterior, "TOTAL GERAL DAS ANORMALIDADES: ");
+
+			relatorioBeans.add(totalGeralComAnormalidade);
+
 			RelatorioResumoAnormalidadeLeituraBean totalGeral = new RelatorioResumoAnormalidadeLeituraBean();
 			totalGeral.setCodigoAnormalidade("");
 			totalGeral.setDescricaoAnormalidade("TOTAL GERAL ");
 			int soma = (totalQuantidadeGeral + totalQuantidadeSemAnormalidadeGeral + Integer
 							.valueOf(totalSemAnormalidade.getQtdeLigacoes()));
 			totalGeral.setQtdeLigacoes(String.valueOf(soma));
+
 			totalGeral.setPercentual(" ");
+
 			totalGeral.setTipoLigacao(itemAnterior.getTipoLigacao());
 			preencherCamposQuebra(opcaoTotalizacao, totalGeral, itemAnterior.getParametrosQuebra());
 			relatorioBeans.add(totalGeral);
 		}
+
+		// TOTALIZADOR GERAL DAS ANORMALIDADES E O RESPECTIVO PERCENTUAL
 
 		Map parametros = montarMapParametros();
 
@@ -303,9 +308,18 @@ public class RelatorioResumoAnormalidadeLeitura
 	private RelatorioResumoAnormalidadeLeituraBean preencherValoresTotalComAnormalidade(int opcaoTotalizacao, int totalQuantidade,
 					BigDecimal totalPercentual, ResumoAnormalidadeConsultaHelper itemAnterior){
 
+		RelatorioResumoAnormalidadeLeituraBean totalComAnormalidade = preencherValoresTotalComAnormalidade(opcaoTotalizacao,
+						totalQuantidade, totalPercentual, itemAnterior, "TOTAL C/ ANORMALIDADE: ");
+
+		return totalComAnormalidade;
+	}
+
+	private RelatorioResumoAnormalidadeLeituraBean preencherValoresTotalComAnormalidade(int opcaoTotalizacao, int totalQuantidade,
+					BigDecimal totalPercentual, ResumoAnormalidadeConsultaHelper itemAnterior, String textoTotalizador){
+
 		RelatorioResumoAnormalidadeLeituraBean totalComAnormalidade = new RelatorioResumoAnormalidadeLeituraBean();
 		totalComAnormalidade.setCodigoAnormalidade("");
-		totalComAnormalidade.setDescricaoAnormalidade("TOTAL C/ ANORMALIDADE: ");
+		totalComAnormalidade.setDescricaoAnormalidade(textoTotalizador);
 		totalComAnormalidade.setQtdeLigacoes(String.valueOf(totalQuantidade));
 		totalComAnormalidade.setPercentual(arredondarPercentual(Util.converterObjetoParaString(totalPercentual)));
 		totalComAnormalidade.setTipoLigacao(itemAnterior.getTipoLigacao());

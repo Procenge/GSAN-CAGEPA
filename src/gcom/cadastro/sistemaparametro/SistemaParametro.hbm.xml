@@ -758,6 +758,15 @@
             length="2"
         />	 
      
+      <property
+            name="numeroTelefoneSecretariaSaude"
+	        type="java.lang.String"
+    	    column="PARM_NNFONESECSAUDE"
+       		length="9"
+    	/>
+     
+     
+     
      
      <filter name="filterSistemaParametroPorEmpresa" condition="parm_id = :parmId" />
      

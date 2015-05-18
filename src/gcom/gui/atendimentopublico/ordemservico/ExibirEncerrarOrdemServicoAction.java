@@ -86,16 +86,22 @@ import gcom.atendimentopublico.registroatendimento.AtendimentoRelacaoTipo;
 import gcom.atendimentopublico.registroatendimento.FiltroAtendimentoMotivoEncerramento;
 import gcom.atendimentopublico.registroatendimento.LocalOcorrencia;
 import gcom.atendimentopublico.registroatendimento.bean.ObterDescricaoSituacaoRAHelper;
+import gcom.cadastro.funcionario.FiltroFuncionario;
+import gcom.cadastro.funcionario.Funcionario;
 import gcom.cadastro.imovel.PavimentoCalcada;
 import gcom.cadastro.imovel.PavimentoRua;
 import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.micromedicao.hidrometro.FiltroHidrometroCondicao;
+import gcom.micromedicao.hidrometro.HidrometroCondicao;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -138,6 +144,24 @@ public class ExibirEncerrarOrdemServicoAction
 		EncerrarOrdemServicoActionForm encerrarOrdemServicoActionForm = (EncerrarOrdemServicoActionForm) actionForm;
 
 		encerrarOrdemServicoActionForm.setTmEncerramento(Util.formatarData(new Date()));
+
+		String permiteCobrarMaterial = "0";
+		String permiteCobrarHora = "0";
+		try{
+			permiteCobrarMaterial = ParametroAtendimentoPublico.P_PERMITE_COBRAR_MATERIAL_OS.executar();
+			permiteCobrarHora = ParametroAtendimentoPublico.P_PERMITE_COBRAR_HORA_OS.executar();
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if((permiteCobrarMaterial != null && permiteCobrarMaterial.equals("1"))
+						|| (permiteCobrarHora != null && permiteCobrarHora.equals("1"))){
+			httpServletRequest.setAttribute("permiteCobrar", "1");
+		}
+
+		httpServletRequest.setAttribute("permiteCobrarHora", permiteCobrarHora);
+		httpServletRequest.setAttribute("permiteCobrarMaterial", permiteCobrarMaterial);
 
 		/*
 		 * Redireciona para exibição da tela limpando os dados passados por queryString no
@@ -394,6 +418,22 @@ public class ExibirEncerrarOrdemServicoAction
 							encerrarOrdemServicoActionForm.setIndicadorVistoriaServicoTipo(""
 											+ ordemServico.getServicoTipo().getIndicadorVistoria());
 
+							encerrarOrdemServicoActionForm.setIndicadorAfericaoServicoTipo(ordemServico.getServicoTipo()
+											.getIndicadorAfericaoHidrometro().toString());
+
+							FiltroHidrometroCondicao filtroHidrometroCondicao = new FiltroHidrometroCondicao();
+							filtroHidrometroCondicao.adicionarParametro(new ParametroSimples(FiltroHidrometroCondicao.INDICADOR_USO,
+											ConstantesSistema.INDICADOR_USO_ATIVO));
+							filtroHidrometroCondicao.setCampoOrderBy(FiltroHidrometroCondicao.DESCRICAO);
+
+							Collection<HidrometroCondicao> colecaoHidrometroCondicao = fachada.pesquisar(filtroHidrometroCondicao,
+											HidrometroCondicao.class.getName());
+
+							if(!Util.isVazioOrNulo(colecaoHidrometroCondicao)){
+
+								sessao.setAttribute("colecaoHidrometroCondicao", colecaoHidrometroCondicao);
+							}
+
 							if(ordemServico.getServicoTipo().getServicoTipoReferencia() != null){
 
 								encerrarOrdemServicoActionForm.setTipoServicoReferenciaId(""
@@ -457,6 +497,199 @@ public class ExibirEncerrarOrdemServicoAction
 						}
 
 						sessao.setAttribute("ordemServicoEncerrar", ordemServico);
+
+						if(httpServletRequest.getParameter("carregarComponente") != null
+										&& !httpServletRequest.getParameter("carregarComponente").equals("")){
+							if(encerrarOrdemServicoActionForm.getIdEquipeProgramada() != null
+											&& !encerrarOrdemServicoActionForm.getIdEquipeProgramada().equals(
+															String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))
+											&& !encerrarOrdemServicoActionForm.getIdEquipeProgramada().equals(
+															String.valueOf(ConstantesSistema.ZERO))
+											&& !encerrarOrdemServicoActionForm.getIdEquipeProgramada().equals("")){
+
+								FiltroEquipeComponentes filtroEquipeComponentes = new FiltroEquipeComponentes();
+								filtroEquipeComponentes.adicionarParametro(new ParametroSimples(FiltroEquipeComponentes.ID_EQUIPE,
+												encerrarOrdemServicoActionForm.getIdEquipeProgramada()));
+
+								filtroEquipeComponentes.adicionarCaminhoParaCarregamentoEntidade("funcionario");
+
+								Collection colecaoEquipeComponentes = fachada.pesquisar(filtroEquipeComponentes,
+												EquipeComponentes.class.getName());
+
+								if(colecaoEquipeComponentes != null && !colecaoEquipeComponentes.isEmpty()){
+
+									sessao.setAttribute("colecaoEquipeComponentes", colecaoEquipeComponentes);
+								}else{
+									sessao.removeAttribute("colecaoEquipeComponentes");
+								}
+							}
+						}
+
+						// Verifica se o usuário removeu um componente e em caso afirmativo
+						// remove o componente da coleção
+						if(httpServletRequest.getParameter("deleteComponente") != null
+										&& !httpServletRequest.getParameter("deleteComponente").equals("")){
+
+							Collection colecaoEquipeComponentes = (Collection) sessao.getAttribute("colecaoEquipeComponentes");
+
+							if(colecaoEquipeComponentes != null && !colecaoEquipeComponentes.isEmpty()){
+
+								int posicaoComponente = new Integer(httpServletRequest.getParameter("deleteComponente")).intValue();
+
+								int index = 0;
+
+								Iterator colecaoEquipeComponentesIterator = colecaoEquipeComponentes.iterator();
+
+								while(colecaoEquipeComponentesIterator.hasNext()){
+
+									index++;
+
+									EquipeComponentes equipeComponentes = (EquipeComponentes) colecaoEquipeComponentesIterator.next();
+
+									if(index == posicaoComponente){
+										colecaoEquipeComponentes.remove(equipeComponentes);
+
+										sessao.setAttribute("colecaoEquipeComponentes", colecaoEquipeComponentes);
+
+										break;
+									}
+								}
+							}
+						}
+
+						if(httpServletRequest.getParameter("tipoConsulta") != null
+										&& httpServletRequest.getParameter("tipoConsulta").equalsIgnoreCase("funcionario")){
+
+							String codigoPesquisa = httpServletRequest.getParameter("idCampoEnviarDados");
+							String descricaoPesquisa = httpServletRequest.getParameter("descricaoCampoEnviarDados");
+
+							encerrarOrdemServicoActionForm.setIdFuncionario(codigoPesquisa);
+							encerrarOrdemServicoActionForm.setNomeFuncionario(descricaoPesquisa);
+							encerrarOrdemServicoActionForm.setNomeComponente("");
+
+							retorno = actionMapping.findForward("inserirEquipeComponente");
+						}
+
+						// Recupera os valores da funcionário do form no pop up de inserir
+						// componentes na equipe
+						String idFuncionario = encerrarOrdemServicoActionForm.getIdFuncionario();
+						String nomeFuncionario = encerrarOrdemServicoActionForm.getNomeFuncionario();
+
+						// Verifica se o usuário solicitou a pesquisa de unidade
+						if(idFuncionario != null && !idFuncionario.trim().equals("")
+										&& (nomeFuncionario == null || nomeFuncionario.trim().equals(""))){
+
+							retorno = actionMapping.findForward("inserirEquipeComponente");
+
+							FiltroFuncionario filtroFuncionario = new FiltroFuncionario();
+							filtroFuncionario.adicionarParametro(new ParametroSimples(FiltroFuncionario.ID, idFuncionario));
+
+							Collection colecaoFuncionario = fachada.pesquisar(filtroFuncionario, Funcionario.class.getName());
+
+							if(colecaoFuncionario != null && !colecaoFuncionario.isEmpty()){
+
+								Funcionario funcionario = (Funcionario) Util.retonarObjetoDeColecao(colecaoFuncionario);
+
+								encerrarOrdemServicoActionForm.setNomeFuncionario(funcionario.getNome());
+								httpServletRequest.setAttribute("nomeCampo", "nomeComponente");
+
+							}else{
+
+								encerrarOrdemServicoActionForm.setIdFuncionario("");
+								encerrarOrdemServicoActionForm.setNomeFuncionario("Funcionário inexistente");
+								httpServletRequest.setAttribute("idFuncionarioNaoEncontrado", "true");
+								httpServletRequest.setAttribute("nomeCampo", "idFuncionario");
+
+							}
+
+						}else if(nomeFuncionario != null && !nomeFuncionario.trim().equals("")
+										&& (idFuncionario == null || idFuncionario.trim().equals(""))){
+
+							encerrarOrdemServicoActionForm.setNomeFuncionario("");
+						}
+
+						// Verifica se o usuário adicionou um componente e em caso afirmativo
+						// adiciona o componente à coleção
+						if(httpServletRequest.getParameter("popUpAdicionarComponente") != null){
+
+							sessao.removeAttribute("popUpAtualizar");
+
+							if(httpServletRequest.getParameter("adicionarComponente") != null){
+
+								retorno = actionMapping.findForward("encerrarOrdemServico");
+
+								Collection colecaoEquipeComponentes = (Collection) sessao.getAttribute("colecaoEquipeComponentes");
+
+								String indicadorResponsavel = encerrarOrdemServicoActionForm.getIndicadorResponsavel();
+								String nomeComponente = encerrarOrdemServicoActionForm.getNomeComponente();
+
+								Funcionario funcionario = null;
+								if(idFuncionario != null && !idFuncionario.trim().equals("")){
+
+									FiltroFuncionario filtroFuncionario = new FiltroFuncionario();
+									filtroFuncionario.adicionarParametro(new ParametroSimples(FiltroFuncionario.ID, idFuncionario));
+
+									Collection colecaoFuncionario = fachada.pesquisar(filtroFuncionario, Funcionario.class.getName());
+
+									if(colecaoFuncionario != null && !colecaoFuncionario.isEmpty()){
+										funcionario = (Funcionario) Util.retonarObjetoDeColecao(colecaoFuncionario);
+									}else{
+										throw new ActionServletException("atencao.pesquisa_inexistente", null, "Funcionário");
+									}
+								}
+
+								if(colecaoEquipeComponentes == null || colecaoEquipeComponentes.isEmpty()){
+									colecaoEquipeComponentes = new ArrayList();
+								}else{
+
+									// Verifica se o componente já existe na coleção e se está
+									// tentando colocar mais de um responsável
+									Iterator colecaoEquipeComponentesIterator = colecaoEquipeComponentes.iterator();
+
+									while(colecaoEquipeComponentesIterator.hasNext()){
+										EquipeComponentes equipeComponentesColecao = (EquipeComponentes) colecaoEquipeComponentesIterator
+														.next();
+
+										if(equipeComponentesColecao.getIndicadorResponsavel() == EquipeComponentes.INDICADOR_RESPONSAVEL_SIM
+														&& indicadorResponsavel.equals("" + EquipeComponentes.INDICADOR_RESPONSAVEL_SIM)){
+											throw new ActionServletException("atencao.responsavel.equipe.ja.existente");
+										}
+
+										if(equipeComponentesColecao.getFuncionario() != null && funcionario != null
+														&& equipeComponentesColecao.getFuncionario().getId().equals(funcionario.getId())){
+											throw new ActionServletException("atencao.equipe_componente.ja.existente");
+										}
+
+									}
+								}
+
+								EquipeComponentes equipeComponentes = new EquipeComponentes();
+								equipeComponentes.setFuncionario(funcionario);
+								equipeComponentes.setIndicadorResponsavel(new Short(indicadorResponsavel).shortValue());
+								if(nomeComponente != null && !nomeComponente.trim().equals("")){
+
+									equipeComponentes.setComponentes(nomeComponente);
+
+								}else{
+									equipeComponentes.setComponentes(null);
+								}
+
+								colecaoEquipeComponentes.add(equipeComponentes);
+
+								encerrarOrdemServicoActionForm.setTamanhoColecao("" + colecaoEquipeComponentes.size());
+
+								sessao.setAttribute("colecaoEquipeComponentes", colecaoEquipeComponentes);
+
+							}else{
+								retorno = actionMapping.findForward("inserirEquipeComponente");
+
+								encerrarOrdemServicoActionForm.setIndicadorResponsavel("");
+								encerrarOrdemServicoActionForm.setIdFuncionario("");
+								encerrarOrdemServicoActionForm.setNomeFuncionario("");
+								encerrarOrdemServicoActionForm.setNomeComponente("");
+							}
+
+						}
 
 						encerrarOrdemServicoActionForm.setUltimaAlteracao(ordemServico.getUltimaAlteracao());
 						inserirColecaoAtendimentoMotivoEncerradoSessao(fachada, sessao, encerrarOrdemServicoActionForm);
@@ -550,6 +783,16 @@ public class ExibirEncerrarOrdemServicoAction
 											if(!Util.isVazioOrNulo(colecaoOsValaPavimento)){
 
 												sessao.setAttribute("colecaoVala", colecaoOsValaPavimento);
+											}
+
+											/*
+											 * Carregar os entulhos medidas
+											 */
+											Collection<EntulhoMedida> colecaoEntulhoMedida = fachada.pesquisarEntulhoMedida();
+
+											if(!Util.isVazioOrNulo(colecaoEntulhoMedida)){
+
+												sessao.setAttribute("colecaoEntulhoMedida", colecaoEntulhoMedida);
 											}
 
 											/*
@@ -682,6 +925,15 @@ public class ExibirEncerrarOrdemServicoAction
 			}
 		}
 
+		// Pesquisar Funcionário
+		if(!Util.isVazioOuBranco(encerrarOrdemServicoActionForm.getIdFuncionario())){
+
+			if(Util.validarNumeroMaiorQueZERO(encerrarOrdemServicoActionForm.getIdFuncionario())){
+
+				this.pesquisarFuncionario(encerrarOrdemServicoActionForm, fachada, httpServletRequest);
+			}
+		}
+
 		boolean manterAtividade = false;
 		if(!Util.isVazioOuBranco(encerrarOrdemServicoActionForm.getMostrarHorasExecucao())
 						&& encerrarOrdemServicoActionForm.getMostrarHorasExecucao().equals(ConstantesSistema.SIM.toString())){
@@ -785,6 +1037,12 @@ public class ExibirEncerrarOrdemServicoAction
 
 			this.removerVala(sessao, removerVala);
 			return actionMapping.findForward("exibirApenasEncerrarOrdemServico");
+		}
+
+		String pesquisarFuncionario = httpServletRequest.getParameter("pesquisarFuncionario");
+
+		if(pesquisarFuncionario != null && !pesquisarFuncionario.equalsIgnoreCase("")){
+			retorno = actionMapping.findForward("pesquisarFuncionario");
 		}
 
 		return retorno;
@@ -1388,6 +1646,20 @@ public class ExibirEncerrarOrdemServicoAction
 
 		osAtividadePeriodoExecucao.setDataInicio(Util.converteStringParaDateHora(dataHoraExecucaoInicio));
 		osAtividadePeriodoExecucao.setDataFim(Util.converteStringParaDateHora(dataHoraExecucaoFim));
+		String permiteCobrarHora = "2";
+		try{
+			permiteCobrarHora = ParametroAtendimentoPublico.P_PERMITE_COBRAR_HORA_OS.executar();
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(permiteCobrarHora.equals("1")) {
+			long horas = (osAtividadePeriodoExecucao.getDataFim().getTime() - osAtividadePeriodoExecucao.getDataInicio().getTime());
+			BigDecimal valorHoras = calcularValorHoraMinuto(horas, ordemServicoAtividade.getAtividade().getValorHora());
+			osAtividadePeriodoExecucao.setValorAtividadePeriodo(valorHoras);
+		} else {
+			osAtividadePeriodoExecucao.setValorAtividadePeriodo(new BigDecimal(0));
+		}
 		osAtividadePeriodoExecucao.setOrdemServicoAtividade(ordemServicoAtividade);
 		osAtividadePeriodoExecucao.setUltimaAlteracao(new Date());
 
@@ -1515,6 +1787,25 @@ public class ExibirEncerrarOrdemServicoAction
 		}
 
 		osExecucaoEquipeHelper.setOsExecucaoEquipe(osExecucaoEquipe);
+
+		// if(sessao.getAttribute("colecaoEquipeComponentes") != null){
+		// Collection<OsExecucaoEquipeComponentes> colecaoOsExecucaoEquipeComponentes = new
+		// ArrayList<OsExecucaoEquipeComponentes>();
+		// Collection<EquipeComponentes> colecaoEquipeComponentes = (Collection)
+		// sessao.getAttribute("colecaoEquipeComponentes");
+		//
+		// OsExecucaoEquipeComponentes osExecucaoEquipeComponentes = null;
+		// for(EquipeComponentes equipeComponentes : colecaoEquipeComponentes){
+		//
+		// osExecucaoEquipeComponentes = new
+		// OsExecucaoEquipeComponentes(equipeComponentes.getIndicadorResponsavel(),
+		// equipeComponentes.getComponentes(), new Date(), equipeComponentes.getFuncionario());
+		// colecaoOsExecucaoEquipeComponentes.add(osExecucaoEquipeComponentes);
+		//
+		// }
+		// osExecucaoEquipeHelper.setColecaoOsExecucaoEquipeComponentes(colecaoOsExecucaoEquipeComponentes);
+		// sessao.removeAttribute("colecaoEquipeComponentes");
+		// }
 
 		return osExecucaoEquipeHelper;
 
@@ -2028,6 +2319,16 @@ public class ExibirEncerrarOrdemServicoAction
 
 			osAtividadeMaterialExecucao = this.gerarOsAtividadeMaterialExecucao(numeroOS, idMaterial, fachada);
 			osAtividadeMaterialExecucao.setQuantidadeMaterial(quantidade);
+			String permiteCobrarMaterial = "2";
+			try{
+				permiteCobrarMaterial = ParametroAtendimentoPublico.P_PERMITE_COBRAR_MATERIAL_OS.executar();
+			}catch(ControladorException e){
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(permiteCobrarMaterial.equals("1")){
+				osAtividadeMaterialExecucao.setValorMaterial(osAtividadeMaterialExecucao.getMaterial().getMaterialValor().multiply(quantidade));
+			}
 			osAtividadeMaterialExecucao.setOrdemServicoAtividade(helper.getOrdemServicoAtividade());
 			osAtividadeMaterialExecucao.setUltimaAlteracao(new Date());
 			helper.getColecaoOsAtividadeMaterialExecucao().add(osAtividadeMaterialExecucao);
@@ -2037,6 +2338,17 @@ public class ExibirEncerrarOrdemServicoAction
 			osAtividadeMaterialExecucao = this.gerarOsAtividadeMaterialExecucao(numeroOS, idMaterial, fachada);
 			osAtividadeMaterialExecucao.setQuantidadeMaterial(quantidade);
 			osAtividadeMaterialExecucao.setUltimaAlteracao(new Date());
+			
+			String permiteCobrarMaterial = "2";
+			try{
+				permiteCobrarMaterial = ParametroAtendimentoPublico.P_PERMITE_COBRAR_MATERIAL_OS.executar();
+			}catch(ControladorException e){
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if(permiteCobrarMaterial.equals("1")){
+				osAtividadeMaterialExecucao.setValorMaterial(osAtividadeMaterialExecucao.getMaterial().getMaterialValor().multiply(quantidade));
+			}
 			osAtividadeMaterialExecucao.setOrdemServicoAtividade(helper.getOrdemServicoAtividade());
 			helper.setColecaoOsAtividadeMaterialExecucao(new ArrayList());
 			helper.getColecaoOsAtividadeMaterialExecucao().add(osAtividadeMaterialExecucao);
@@ -2368,6 +2680,10 @@ public class ExibirEncerrarOrdemServicoAction
 		String profundidadeVala = form.getProfundidadeVala();
 		String indicadorValaAterrada = form.getIndicadorValaAterrada();
 		String indicadorEntulho = form.getIndicadorEntulho();
+		String quantidadeEntulho = form.getQuantidadeEntulho();
+		String idEntulhoMedida = form.getIdEntulhoMedida();
+		String comprimentoTubulacaoAguaPluvial = form.getComprimentoTutulacaoAguaPluvial();
+		String diametroTubulacaoAguaPluvial = form.getDiametroTutulacaoAguaPluvial();
 
 		OrdemServicoValaPavimento vala = new OrdemServicoValaPavimento();
 
@@ -2431,6 +2747,29 @@ public class ExibirEncerrarOrdemServicoAction
 			throw new ActionServletException("atencao.informe_indicador_entulho");
 		}
 
+		if(vala.getIndicadorEntulho() == ConstantesSistema.INDICADOR_USO_ATIVO.intValue()){
+			if(!Util.isVazioOuBranco(quantidadeEntulho)){
+
+				vala.setQuantidadeEntulho(Integer.valueOf(quantidadeEntulho));
+
+			}
+
+			if(!Util.isVazioOuBranco(idEntulhoMedida)){
+
+				EntulhoMedida entulhoMedida = fachada.pesquisarEntulhoMedida(Integer.valueOf(idEntulhoMedida));
+				vala.setEntulhoMedida(entulhoMedida);
+
+			}
+		}
+
+		if(!Util.isVazioOuBranco(comprimentoTubulacaoAguaPluvial)){
+			vala.setNumeroComprimentoTutulacaoAguaPluvial(Util.formatarMoedaRealparaBigDecimal(comprimentoTubulacaoAguaPluvial, 2));
+		}
+
+		if(!Util.isVazioOuBranco(diametroTubulacaoAguaPluvial)){
+			vala.setNumeroDiametroTutulacaoAguaPluvial(Util.formatarMoedaRealparaBigDecimal(diametroTubulacaoAguaPluvial, 2));
+		}
+
 		vala.setUltimaAlteracao(new Date());
 		vala.setOrdemServico(ordemServico);
 
@@ -2456,6 +2795,11 @@ public class ExibirEncerrarOrdemServicoAction
 		form.setProfundidadeVala("");
 		form.setIndicadorValaAterrada("");
 		form.setIndicadorEntulho("");
+		form.setQuantidadeEntulho("");
+		form.setIdEntulhoMedida("");
+		form.setComprimentoTutulacaoAguaPluvial("");
+		form.setDiametroTutulacaoAguaPluvial("");
+
 	}
 
 	/**
@@ -2531,5 +2875,60 @@ public class ExibirEncerrarOrdemServicoAction
 		}
 
 		return osProgramacao;
+	}
+
+	/**
+	 * Pesquisar uma funcionário após teclar ENTER pelo id informado
+	 * 
+	 * @author Anderson Italo
+	 * @date 08/09/2014
+	 */
+	private void pesquisarFuncionario(EncerrarOrdemServicoActionForm form, Fachada fachada, HttpServletRequest httpServletRequest){
+
+		FiltroFuncionario filtroFuncionario = new FiltroFuncionario();
+		filtroFuncionario.adicionarParametro(new ParametroSimples(FiltroFuncionario.ID, form.getIdFuncionario()));
+
+		Collection colecaoFuncionario = fachada.pesquisar(filtroFuncionario, Funcionario.class.getName());
+
+		if(Util.isVazioOrNulo(colecaoFuncionario)){
+
+			form.setIdFuncionario("");
+			form.setNomeFuncionario("Funcionário Inexistente");
+			httpServletRequest.setAttribute("nomeCampo", "idFuncionario");
+
+		}else{
+
+			Funcionario funcionario = (Funcionario) Util.retonarObjetoDeColecao(colecaoFuncionario);
+
+			form.setIdFuncionario(funcionario.getId().toString());
+			form.setNomeFuncionario(funcionario.getNome());
+			httpServletRequest.setAttribute("idFuncionarioEncontrado", "true");
+			httpServletRequest.setAttribute("nomeCampo", "idFuncionario");
+		}
+	}
+
+	public BigDecimal calcularValorHoraMinuto(long tempo, BigDecimal valor){
+
+		int secs = (int) tempo / 1000;
+		double hora = 0;
+		double minuto = 0;
+		if(tempo == 0){
+			hora = 0;
+		}else{
+			int[] ret = new int[3];
+			// calcula nmero de horas, minutos e segundos
+			ret[0] = secs / 3600;
+			secs = secs % 3600;
+			ret[1] = secs / 60;
+			secs = secs % 60;
+			ret[2] = secs;
+			if(ret[0] != 0){
+				hora = ret[0];
+			}
+			if(ret[1] != 0){
+				minuto = ret[1];
+			}
+		} // fim do if (tempo == 0)
+		return valor.multiply(BigDecimal.valueOf(hora)).add(valor.multiply(BigDecimal.valueOf((minuto / 60))));
 	}
 }

@@ -79,6 +79,8 @@ package gcom.gui.atendimentopublico.ordemservico;
 import gcom.atendimentopublico.ordemservico.Material;
 import gcom.atendimentopublico.ordemservico.MaterialUnidade;
 
+import java.math.BigDecimal;
+
 import org.apache.struts.validator.ValidatorForm;
 
 /**
@@ -103,6 +105,8 @@ public class AtualizarMaterialActionForm
 	private String unidadeMaterial;
 
 	private String indicadorUso;
+
+	private String materialValor;
 
 	public String getAbrevMaterial(){
 
@@ -154,9 +158,20 @@ public class AtualizarMaterialActionForm
 		this.unidadeMaterial = unidadeMaterial;
 	}
 
+
 	// [UC0383]MANTER MATERIAL
 	// [SB0001]ATUALIZAR MATERIAL
 	// [SB0002]Atualizar Material...
+
+	public String getMaterialValor(){
+
+		return materialValor;
+	}
+
+	public void setMaterialValor(String materialValor){
+
+		this.materialValor = materialValor;
+	}
 
 	public Material setFormValues(Material material){
 
@@ -167,6 +182,14 @@ public class AtualizarMaterialActionForm
 		MaterialUnidade materialUnidade = new MaterialUnidade();
 		materialUnidade.setId(Integer.valueOf(getUnidadeMaterial()));
 		material.setMaterialUnidade(materialUnidade);
+		if(getMaterialValor() != null && getMaterialValor().length() != 0){
+			String valorAux1 = getMaterialValor().toString().replace(".", "");
+
+			valorAux1 = valorAux1.replace(",", ".");
+			material.setMaterialValor(BigDecimal.valueOf(Double.valueOf(valorAux1)));
+		}else{
+			material.setMaterialValor(BigDecimal.valueOf(0));
+		}
 
 		material.setIndicadorUso(Short.valueOf(getIndicadorUso()));
 

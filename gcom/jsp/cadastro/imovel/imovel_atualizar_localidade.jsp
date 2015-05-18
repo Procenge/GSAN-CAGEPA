@@ -400,8 +400,9 @@ function limparDescricaoRota(){
 <%@ include file="/jsp/util/cabecalho.jsp"%>
 <%@ include file="/jsp/util/menu.jsp" %>
 
-<table width="770" border="0" cellspacing="4" cellpadding="0">
 <input type="hidden" name="numeroPagina" value="1"/>
+
+<table width="770" border="0" cellspacing="4" cellpadding="0">
 <html:hidden property="url" value="1" />
 <html:hidden property="idRota"/>
   <tr>
@@ -468,119 +469,223 @@ function limparDescricaoRota(){
 				</tr>
                  <tr>
 		   <td width="19%"><strong>Localidade:<font color="#FF0000">*</font></strong></td>
-                   <td width="81%" height="24"><html:text maxlength="3" property="idLocalidade" tabindex="1" size="3" 
-					 onkeyup="checa_proximo(this.name);"
-                   onkeypress="javascript:limparPesquisaDescricaoLocalidade();limparPesquisaQuadra();limparPesquisaSetorComercial(); limparDescricaoRota();return validaEnter(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelLocalidadeAction', 'idLocalidade');"/>
-                      <a href="javascript:abrirPopup('exibirPesquisarLocalidadeAction.do?tipo=imovelLocalidade', 400, 800);limparPesquisaSetorComercialQuadra();">
-                         <img border="0" src="<bean:message key="caminho.imagens"/>pesquisa.gif" border="0"/></a>
-
-   				      <logic:present name="codigoLocalidadeNaoEncontrada" scope="request">
-							<html:text property="localidadeDescricao" size="50" readonly="true" 
-							style="background-color:#EFEFEF; border:0; color: #ff0000" 
+                   <td width="81%" height="24">
+                   
+	                   <logic:present name="permitirAtualizarLocalidade" scope="session">
+							<html:text maxlength="3" property="idLocalidade" tabindex="1" size="3" 
+										onkeyup="checa_proximo(this.name);"
+							            onkeypress="javascript:limparPesquisaDescricaoLocalidade();limparPesquisaQuadra();limparPesquisaSetorComercial(); limparDescricaoRota();return validaEnter(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelLocalidadeAction', 'idLocalidade');"/>
+							<a href="javascript:abrirPopup('exibirPesquisarLocalidadeAction.do?tipo=imovelLocalidade', 400, 800);limparPesquisaSetorComercialQuadra();">
+								<img border="0" src="<bean:message key="caminho.imagens"/>pesquisa.gif" border="0"/>
+							</a>
 							
-							/>
-                      </logic:present>
-
-
-                      <logic:notPresent name="codigoLocalidadeNaoEncontrada" scope="request">
-                        <html:text property="localidadeDescricao" size="50" readonly="true" style="background-color:#EFEFEF; border:0; color: #000000" />
-                      </logic:notPresent>
-						<a href="javascript:limparPesquisaLocalidade();limparPesquisaSetorComercial();limparPesquisaQuadra();limparDescricaoRota();document.forms[0].idLocalidade.focus();"> <img
-						src="<bean:message key="caminho.imagens"/>limparcampo.gif"
-						border="0" title="Apagar" /></a>                   
-						</td>
+							<logic:present name="codigoLocalidadeNaoEncontrada" scope="request">
+								<html:text property="localidadeDescricao" size="50" readonly="true" 
+								style="background-color:#EFEFEF; border:0; color: #ff0000"/>
+							</logic:present>
+							
+							<logic:notPresent name="codigoLocalidadeNaoEncontrada" scope="request">
+								<html:text property="localidadeDescricao" size="50" readonly="true" style="background-color:#EFEFEF; border:0; color: #000000" />
+							</logic:notPresent>
+							
+							<a href="javascript:limparPesquisaLocalidade();limparPesquisaSetorComercial();limparPesquisaQuadra();limparDescricaoRota();document.forms[0].idLocalidade.focus();"> 
+								<img src="<bean:message key="caminho.imagens"/>limparcampo.gif"	border="0" title="Apagar" />
+							</a>                   
+						</logic:present>
+						
+	                   <logic:notPresent name="permitirAtualizarLocalidade" scope="session">
+							<html:text maxlength="3" property="idLocalidade" tabindex="1" size="3" disabled="true"
+										onkeyup="checa_proximo(this.name);"
+							            onkeypress="javascript:limparPesquisaDescricaoLocalidade();limparPesquisaQuadra();limparPesquisaSetorComercial(); limparDescricaoRota();return validaEnter(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelLocalidadeAction', 'idLocalidade');"/>
+							
+							<logic:present name="codigoLocalidadeNaoEncontrada" scope="request">
+								<html:text property="localidadeDescricao" size="50" readonly="true" 
+								style="background-color:#EFEFEF; border:0; color: #ff0000"/>
+							</logic:present>
+							
+							<logic:notPresent name="codigoLocalidadeNaoEncontrada" scope="request">
+								<html:text property="localidadeDescricao" size="50" readonly="true" style="background-color:#EFEFEF; border:0; color: #000000" />
+							</logic:notPresent>
+						</logic:notPresent>						
+						
                    </td>
                  </tr>
                  <tr>
                    <td><strong>Setor Comercial:<font color="#FF0000">*</font></strong></td>
-                   <td height="24"><html:text maxlength="3" property="idSetorComercial" size="3" tabindex="2" 
-                    onkeyup="checa_proximo(this.name);"
-                   onkeypress="javascript:valorExistenciaLocalidade();limparDescricaoSetorComercial();limparPesquisaQuadra(); limparDescricaoRota(); return validaEnterDependencia(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelLocalidadeAction', this, document.forms[0].idLocalidade.value, 'Localidade');"/>
-                      <a href="javascript:abrirPopupDependencia('exibirPesquisarSetorComercialAction.do?idLocalidade='+document.forms[0].idLocalidade.value+'&tipo=SetorComercial',document.forms[0].idLocalidade.value,'Localidade', 400, 800);">
-			<img border="0" src="<bean:message key="caminho.imagens"/>pesquisa.gif" border="0"/></a>
-   		      <logic:present name="codigoSetorComercialNaoEncontrada" scope="request">
-			<html:text property="setorComercialDescricao" size="50" readonly="true" style="background-color:#EFEFEF; border:0; color: #ff0000" />
-                      </logic:present>
-
-                      <logic:notPresent name="codigoSetorComercialNaoEncontrada" scope="request">
-                        <html:text property="setorComercialDescricao" size="50" readonly="true" style="background-color:#EFEFEF; border:0; color: #000000" />
-                      </logic:notPresent>
-						<a href="javascript:limparPesquisaSetorComercial();limparPesquisaQuadra(); limparDescricaoRota();document.forms[0].idSetorComercial.focus();"> <img
-						src="<bean:message key="caminho.imagens"/>limparcampo.gif"
-						border="0" title="Apagar" /></a>
+                   <td height="24">
+                   
+                   		<logic:present name="permitirAtualizarLocalidade" scope="session">
+							<html:text maxlength="3" property="idSetorComercial" size="3" tabindex="2" 
+							 			onkeyup="checa_proximo(this.name);"
+										onkeypress="javascript:valorExistenciaLocalidade();limparDescricaoSetorComercial();limparPesquisaQuadra(); limparDescricaoRota(); return validaEnterDependencia(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelLocalidadeAction', this, document.forms[0].idLocalidade.value, 'Localidade');"/>
+							<a href="javascript:abrirPopupDependencia('exibirPesquisarSetorComercialAction.do?idLocalidade='+document.forms[0].idLocalidade.value+'&tipo=SetorComercial',document.forms[0].idLocalidade.value,'Localidade', 400, 800);">
+								<img border="0" src="<bean:message key="caminho.imagens"/>pesquisa.gif" border="0"/>
+							</a>
+							
+							<logic:present name="codigoSetorComercialNaoEncontrada" scope="request">
+								<html:text property="setorComercialDescricao" size="50" readonly="true" style="background-color:#EFEFEF; border:0; color: #ff0000" />
+							</logic:present>
+							
+							<logic:notPresent name="codigoSetorComercialNaoEncontrada" scope="request">
+								<html:text property="setorComercialDescricao" size="50" readonly="true" style="background-color:#EFEFEF; border:0; color: #000000" />
+							</logic:notPresent>
+							
+							<a href="javascript:limparPesquisaSetorComercial();limparPesquisaQuadra(); limparDescricaoRota();document.forms[0].idSetorComercial.focus();"> 
+								<img src="<bean:message key="caminho.imagens"/>limparcampo.gif"	border="0" title="Apagar" />
+							</a>
+						</logic:present>
+						
+                   		<logic:notPresent name="permitirAtualizarLocalidade" scope="session">
+							<html:text maxlength="3" property="idSetorComercial" size="3" tabindex="2" disabled="true"
+							 			onkeyup="checa_proximo(this.name);"
+										onkeypress="javascript:valorExistenciaLocalidade();limparDescricaoSetorComercial();limparPesquisaQuadra(); limparDescricaoRota(); return validaEnterDependencia(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelLocalidadeAction', this, document.forms[0].idLocalidade.value, 'Localidade');"/>
+							
+							<logic:present name="codigoSetorComercialNaoEncontrada" scope="request">
+								<html:text property="setorComercialDescricao" size="50" readonly="true" style="background-color:#EFEFEF; border:0; color: #ff0000" />
+							</logic:present>
+							
+							<logic:notPresent name="codigoSetorComercialNaoEncontrada" scope="request">
+								<html:text property="setorComercialDescricao" size="50" readonly="true" style="background-color:#EFEFEF; border:0; color: #000000" />
+							</logic:notPresent>
+						</logic:notPresent>						
+						
                    </td>
                  </tr>
                  <tr>
                    <td><strong>Quadra:<font color="#FF0000">*</font></strong></td>
-                   <td height="24"><html:text maxlength="5" property="idQuadra" size="4" tabindex="3" 
-                    onkeyup="checa_proximo(this.name);" 
-                   onkeypress="javascript:valorExistenciaSetorComercial();limparDescricaoQuadra(); limparDescricaoRota(); return validaEnterDependencia(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelLocalidadeAction&pesquisaQuadra=1', this, document.forms[0].idSetorComercial.value, 'Setor Comercial');"/>
-					 <a href="javascript:abrirPopupDependencia('exibirPesquisarQuadraAction.do?idLocalidade='+document.forms[0].idLocalidade.value+'&codigoSetorComercial='+document.forms[0].idSetorComercial.value+'&tipo=Quadra&retornarSeteParametros=S',document.forms[0].idSetorComercial.value,'Setor Comercial', 400, 800);">
-				          	<img border="0" src="<bean:message key="caminho.imagens"/>pesquisa.gif" border="0"/>
-				          </a>                 
-						  
-					 
-					 <logic:present name="codigoQuadraNaoEncontrada" scope="request">
-						<span style="color:#ff0000" id="msgQuadra"><bean:write scope="request" name="msgQuadra"/></span>
-                      </logic:present>
-
-                      <logic:notPresent name="codigoQuadraNaoEncontrada" scope="request">
-
-                      </logic:notPresent>  
-                      <a href="javascript:limparPesquisaQuadra();limparDescricaoRota();document.forms[0].idQuadra.focus();"> <img
-							 src="<bean:message key="caminho.imagens"/>limparcampo.gif"
-							 border="0" title="Apagar" />
-						 </a>
+                   <td height="24">
+                   
+                   		<logic:present name="permitirAtualizarLocalidade" scope="session">
+							<html:text maxlength="5" property="idQuadra" size="4" tabindex="3" 
+							 			onkeyup="checa_proximo(this.name);" 
+										onkeypress="javascript:valorExistenciaSetorComercial();limparDescricaoQuadra(); limparDescricaoRota(); return validaEnterDependencia(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelLocalidadeAction&pesquisaQuadra=1', this, document.forms[0].idSetorComercial.value, 'Setor Comercial');"/>
+							<a href="javascript:abrirPopupDependencia('exibirPesquisarQuadraAction.do?idLocalidade='+document.forms[0].idLocalidade.value+'&codigoSetorComercial='+document.forms[0].idSetorComercial.value+'&tipo=Quadra&retornarSeteParametros=S',document.forms[0].idSetorComercial.value,'Setor Comercial', 400, 800);">
+								<img border="0" src="<bean:message key="caminho.imagens"/>pesquisa.gif" border="0"/>
+							</a>                 
+							
+							
+							<logic:present name="codigoQuadraNaoEncontrada" scope="request">
+								<span style="color:#ff0000" id="msgQuadra"><bean:write scope="request" name="msgQuadra"/></span>
+							</logic:present>
+							
+							<logic:notPresent name="codigoQuadraNaoEncontrada" scope="request">
+							</logic:notPresent>  
+							
+							<a href="javascript:limparPesquisaQuadra();limparDescricaoRota();document.forms[0].idQuadra.focus();"> 
+								<img src="<bean:message key="caminho.imagens"/>limparcampo.gif"	 border="0" title="Apagar" />
+							</a>
+						</logic:present>
+						
+                   		<logic:notPresent name="permitirAtualizarLocalidade" scope="session">
+							<html:text maxlength="5" property="idQuadra" size="4" tabindex="3" disabled="true"
+							 			onkeyup="checa_proximo(this.name);" 
+										onkeypress="javascript:valorExistenciaSetorComercial();limparDescricaoQuadra(); limparDescricaoRota(); return validaEnterDependencia(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelLocalidadeAction&pesquisaQuadra=1', this, document.forms[0].idSetorComercial.value, 'Setor Comercial');"/>
+							
+							<logic:present name="codigoQuadraNaoEncontrada" scope="request">
+								<span style="color:#ff0000" id="msgQuadra"><bean:write scope="request" name="msgQuadra"/></span>
+							</logic:present>
+							
+							<logic:notPresent name="codigoQuadraNaoEncontrada" scope="request">
+							</logic:notPresent>  
+						</logic:notPresent>						
                    </td>
                  </tr>		             
 <!-- **************************************************** -->
               <tr>
                 <td height="24"><strong>Lote:<font color="#FF0000">*</font></strong></td>
-                <td><html:text maxlength="4" property="lote" tabindex="4" size="4"  onkeyup="checa_proximo(this.name);" /></td>
+                <td>
+                
+                	<logic:present name="permitirAtualizarLocalidade" scope="session">
+                		<html:text maxlength="4" property="lote" tabindex="4" size="4"  onkeyup="checa_proximo(this.name);" />
+					</logic:present>
+						
+                   	<logic:notPresent name="permitirAtualizarLocalidade" scope="session">
+                   		<html:text maxlength="4" property="lote" tabindex="4" size="4" disabled="true" onkeyup="checa_proximo(this.name);" />                		
+                	</logic:notPresent>	
+                </td>
               </tr>
               <tr>
                 <td height="24"><strong>Sublote:<font color="#FF0000">*</font></strong></td>
-                <td><html:text maxlength="3" property="subLote" tabindex="5" size="3"  onkeyup="checa_proximo(this.name);" /></td>
+                <td>
+                	<logic:present name="permitirAtualizarLocalidade" scope="session">
+                		<html:text maxlength="3" property="subLote" tabindex="5" size="3"  onkeyup="checa_proximo(this.name);" />
+					</logic:present>
+						
+                   	<logic:notPresent name="permitirAtualizarLocalidade" scope="session">
+                   		<html:text maxlength="3" property="subLote" tabindex="5" size="3"  disabled="true" onkeyup="checa_proximo(this.name);" />
+                   	</logic:notPresent>                		
+                </td>
               </tr>
               <tr>
                 <td height="24"><strong>Testada do Lote:</strong></td>
-                <td><html:text maxlength="4" property="testadaLote" tabindex="6" size="4"/></td>
+                <td>
+                	<logic:present name="permitirAtualizarLocalidade" scope="session">
+                		<html:text maxlength="4" property="testadaLote" tabindex="6" size="4"/>
+					</logic:present>
+						
+                   	<logic:notPresent name="permitirAtualizarLocalidade" scope="session">
+                   		<html:text maxlength="4" property="testadaLote" tabindex="6" size="4" disabled="true" />
+                   	</logic:notPresent>                		
+                </td>
               </tr>
 
 				<tr>
 					<td height="24"><strong>Rota:<font color="#FF0000">*</font></strong></td>
 					<td width="81%" height="24" colspan="2">
-					<html:text maxlength="5" property="cdRota" size="5" tabindex="7"
-						onkeyup="checa_proximo(this.name);"
-						onkeypress="javascript:limparPesquisaDescricaoRota(); return validaEnter(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelLocalidadeAction&pesquisaRota=1', 'cdRota');" />
-					<a href="javascript:abrirPopupDependencia('exibirPesquisarRotaAction.do?idLocalidade='+document.forms[0].idLocalidade.value+'&codigoSetorComercial='+document.forms[0].idSetorComercial.value+'&restringirPesquisa=true',document.forms[0].idSetorComercial.value,'Setor Comercial', 400, 800);">
-					<img border="0" src="<bean:message key="caminho.imagens"/>pesquisa.gif" border="0"/></a>
-
-					<logic:present name="rotaNaoEncontrada" scope="request">
-						<html:text property="descricaoRota" size="55" readonly="true" style="background-color:#EFEFEF; border:0; color: #ff0000"/>
-					</logic:present> 
 					
-					<logic:notPresent name="rotaNaoEncontrada" scope="request">
-						<html:text property="descricaoRota" size="55" readonly="true" style="background-color:#EFEFEF; border:0; color: #000000"/>
-					</logic:notPresent>
-					
-					<a href="javascript:limparDescricaoRota(); document.forms[0].cdRota.focus();">
-					<img src="<bean:message key="caminho.imagens"/>limparcampo.gif" border="0" title="Apagar"/></a>
+						<logic:present name="permitirAtualizarLocalidade" scope="session">
+							<html:text maxlength="5" property="cdRota" size="5" tabindex="7"
+										onkeyup="checa_proximo(this.name);"
+										onkeypress="javascript:limparPesquisaDescricaoRota(); return validaEnter(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelLocalidadeAction&pesquisaRota=1', 'cdRota');" />
+							<a href="javascript:abrirPopupDependencia('exibirPesquisarRotaAction.do?idLocalidade='+document.forms[0].idLocalidade.value+'&codigoSetorComercial='+document.forms[0].idSetorComercial.value+'&restringirPesquisa=true',document.forms[0].idSetorComercial.value,'Setor Comercial', 400, 800);">
+								<img border="0" src="<bean:message key="caminho.imagens"/>pesquisa.gif" border="0"/>
+							</a>
+							
+							<logic:present name="rotaNaoEncontrada" scope="request">
+								<html:text property="descricaoRota" size="55" readonly="true" style="background-color:#EFEFEF; border:0; color: #ff0000"/>
+							</logic:present> 
+							
+							<logic:notPresent name="rotaNaoEncontrada" scope="request">
+								<html:text property="descricaoRota" size="55" readonly="true" style="background-color:#EFEFEF; border:0; color: #000000"/>
+							</logic:notPresent>
+							
+							<a href="javascript:limparDescricaoRota(); document.forms[0].cdRota.focus();">
+								<img src="<bean:message key="caminho.imagens"/>limparcampo.gif" border="0" title="Apagar"/>
+							</a>
+						</logic:present>
+						
+						<logic:notPresent name="permitirAtualizarLocalidade" scope="session">
+							<html:text maxlength="5" property="cdRota" size="5" tabindex="7" disabled="true"
+										onkeyup="checa_proximo(this.name);"
+										onkeypress="javascript:limparPesquisaDescricaoRota(); return validaEnter(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelLocalidadeAction&pesquisaRota=1', 'cdRota');" />
+							<logic:present name="rotaNaoEncontrada" scope="request">
+								<html:text property="descricaoRota" size="55" readonly="true" style="background-color:#EFEFEF; border:0; color: #ff0000"/>
+							</logic:present> 
+							
+							<logic:notPresent name="rotaNaoEncontrada" scope="request">
+								<html:text property="descricaoRota" size="55" readonly="true" style="background-color:#EFEFEF; border:0; color: #000000"/>
+							</logic:notPresent>
+						</logic:notPresent>						
 					</td>
 				</tr>
-
 			
 				
 				<logic:present name="colecaoRotas" scope="session">
 				<tr>
-					<td width="16%"><strong>&nbsp;</td>
+					<td width="16%"><strong>&nbsp;</strong></td>
 					<td colspan="3">
 					
-					<html:select property="rotaHelper" tabindex="4" size="6" style="width:230px height:230px" onclick="carregaRota();" >					
-						<html:options collection="colecaoRotas" labelProperty="descricao" property="id" />
-					</html:select>
-					
+						<logic:present name="permitirAtualizarLocalidade" scope="session">
+							<html:select property="rotaHelper" tabindex="4" size="6" style="width:230px height:230px" onclick="carregaRota();" >					
+								<html:options collection="colecaoRotas" labelProperty="descricao" property="id" />
+							</html:select>
+						</logic:present> 
 						
+						<logic:notPresent name="permitirAtualizarLocalidade" scope="session">
+							<html:select property="rotaHelper" tabindex="4" size="6" disabled="true" style="width:230px height:230px" onclick="carregaRota();" >					
+								<html:options collection="colecaoRotas" labelProperty="descricao" property="id" />
+							</html:select>						
+						</logic:notPresent>
 					</td>
 				</tr>
 				</logic:present>
@@ -596,13 +701,29 @@ function limparDescricaoRota(){
 				
 				<tr>
 					<td height="24"><strong>Segmento:</strong></td>
-					<td colspan="2"><html:text maxlength="2"
-						property="nnSegmento" size="2" tabindex="8"
-						onkeyup="checa_proximo(this.name);" /></td>
+					<td colspan="2">
+						<logic:present name="permitirAtualizarLocalidade" scope="session">
+							<html:text maxlength="2" property="nnSegmento" size="2" tabindex="8"
+								onkeyup="checa_proximo(this.name);" />
+						</logic:present>
+						
+						<logic:notPresent name="permitirAtualizarLocalidade" scope="session">
+							<html:text maxlength="2" property="nnSegmento" size="2" tabindex="8" disabled="true" 
+								onkeyup="checa_proximo(this.name);" />
+						</logic:notPresent>						
+					</td>
 				</tr>
 				<tr>
 					<td height="24"><strong>Sequência na Rota:</strong></td>
-					<td><html:text maxlength="4" size="4" property="sequencialRota" tabindex="9" /></td>
+					<td>
+						<logic:present name="permitirAtualizarLocalidade" scope="session">
+							<html:text maxlength="4" size="4" property="sequencialRota" tabindex="9" />
+						</logic:present>
+						
+						<logic:notPresent name="permitirAtualizarLocalidade" scope="session">
+							<html:text maxlength="4" size="4" property="sequencialRota" disabled="true" tabindex="9" />
+						</logic:notPresent>						
+					</td>
 				</tr>
 				
 				<!-- Distrito Operacional -->
@@ -613,10 +734,19 @@ function limparDescricaoRota(){
 			  			</strong>
 			  		</td>
 			  		<td  width="60%" colspan="2">
-			  			<html:select property="idDistritoOperacional" tabindex="4" style="width:200px;">
-							<html:option value="-1"> &nbsp; </html:option>
-							<html:options collection="colecaoDistritoOperacional" property="id" labelProperty="descricaoComId"/>
-						</html:select>
+			  			<logic:present name="permitirAtualizarLocalidade" scope="session">
+				  			<html:select property="idDistritoOperacional" tabindex="4" style="width:200px;">
+								<html:option value="-1"> &nbsp; </html:option>
+								<html:options collection="colecaoDistritoOperacional" property="id" labelProperty="descricaoComId"/>
+							</html:select>
+						</logic:present>
+						
+			  			<logic:notPresent name="permitirAtualizarLocalidade" scope="session">
+				  			<html:select property="idDistritoOperacional" tabindex="4" disabled="true" style="width:200px;">
+								<html:option value="-1"> &nbsp; </html:option>
+								<html:options collection="colecaoDistritoOperacional" property="id" labelProperty="descricaoComId"/>
+							</html:select>
+						</logic:notPresent>						
 					</td>
 				</tr>
 				

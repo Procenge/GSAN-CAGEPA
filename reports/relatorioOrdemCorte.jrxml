@@ -24,6 +24,8 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 
 	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NM_EMPRESA" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NN_FONE" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="inscricao2" class="java.lang.String"/>
 	<field name="matricula1" class="java.lang.String"/>
@@ -930,22 +932,6 @@
 					</textElement>
 				<text><![CDATA[SERVIÇO DE ATENDIMENTO AO CLIENTE]]></text>
 				</staticText>
-				<staticText>
-					<reportElement
-						x="430"
-						y="359"
-						width="336"
-						height="21"
-						key="staticText-39">
-							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
-						</reportElement>
-					<box></box>
-					<textElement verticalAlignment="Middle">
-						<font size="8" isBold="false"/>
-					</textElement>
-				<text><![CDATA[SAC Miranda Leão - Centro      PAC Alvorada                                     PAC Cidade Nova
-PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São José]]></text>
-				</staticText>
 				<line direction="TopDown">
 					<reportElement
 						x="417"
@@ -1065,22 +1051,6 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 					<graphicElement stretchType="NoStretch" fill="Solid" />
 					<imageExpression class="java.awt.Image"><![CDATA[it.businesslogic.ireport.barcode.BcImage.getBarcodeImage(13,$F{representacaoNumericaCodBarraSemDigito2},false,false,null,0,90)]]></imageExpression>
 				</image>
-				<staticText>
-					<reportElement
-						x="14"
-						y="359"
-						width="336"
-						height="21"
-						key="staticText-47">
-							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
-						</reportElement>
-					<box></box>
-					<textElement verticalAlignment="Middle">
-						<font size="8" isBold="false"/>
-					</textElement>
-				<text><![CDATA[SAC Miranda Leão - Centro      PAC Alvorada                                     PAC Cidade Nova
-PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São José]]></text>
-				</staticText>
 				<staticText>
 					<reportElement
 						x="418"
@@ -1877,21 +1847,6 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="73"
-						y="313"
-						width="48"
-						height="9"
-						key="textField-51">
-							<printWhenExpression><![CDATA[new Boolean ($F{numero1} != null)]]></printWhenExpression>
-						</reportElement>
-					<box></box>
-					<textElement textAlignment="Justified" verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true" isUnderline="false"/>
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["0800 0920 195"]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
-					<reportElement
 						x="122"
 						y="313"
 						width="245"
@@ -2039,21 +1994,6 @@ PAC Compensa                         CALL CENTER (0800 0920 195)       PAC São 
 						<font pdfFontName="Helvetica" size="7" isBold="false" isUnderline="false"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA["Qualquer dúvida ligue "]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
-					<reportElement
-						x="488"
-						y="312"
-						width="48"
-						height="9"
-						key="textField-62">
-							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
-						</reportElement>
-					<box></box>
-					<textElement textAlignment="Justified" verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="7" isBold="true" isUnderline="false"/>
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["0800 0920 195"]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
@@ -3611,6 +3551,62 @@ EXPOSTO:]]></text>
 						<font pdfFontName="Helvetica" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{hm2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="488"
+						y="313"
+						width="48"
+						height="9"
+						key="textField-90">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement>
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NN_FONE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="501"
+						y="362"
+						width="184"
+						height="17"
+						key="textField-94">
+							<printWhenExpression><![CDATA[new Boolean($F{numero2} != null)]]></printWhenExpression>
+						</reportElement>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NN_FONE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="91"
+						y="362"
+						width="184"
+						height="17"
+						key="textField-93"/>
+					<box></box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NN_FONE}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="73"
+						y="313"
+						width="48"
+						height="9"
+						key="textField-95"/>
+					<box></box>
+					<textElement textAlignment="Left" verticalAlignment="Top">
+						<font pdfFontName="Helvetica-Bold" size="7" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NN_FONE}]]></textFieldExpression>
 				</textField>
 			</band>
 		</detail>

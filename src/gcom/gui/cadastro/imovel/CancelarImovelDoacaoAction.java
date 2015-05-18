@@ -85,9 +85,11 @@ import gcom.gui.ManutencaoRegistroActionForm;
 import gcom.interceptor.RegistradorOperacao;
 import gcom.seguranca.acesso.Operacao;
 import gcom.seguranca.acesso.OperacaoEfetuada;
+import gcom.seguranca.acesso.usuario.FiltroUsuario;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.seguranca.acesso.usuario.UsuarioAcao;
 import gcom.seguranca.acesso.usuario.UsuarioAcaoUsuarioHelper;
+import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
 import java.util.Date;
@@ -166,13 +168,39 @@ public class CancelarImovelDoacaoAction
 		for(String idCancelamento : idsCancelamento){
 			/*** Prepara o filtro para pesquisar o respectivo imovel doacao na base ***/
 			filtroImovelDoacao.limparListaParametros();
+
+			filtroImovelDoacao = new FiltroImovelDoacao();
 			filtroImovelDoacao.adicionarParametro(new ParametroSimples(FiltroImovelDoacao.ID, idCancelamento));
-			filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade("imovel");
+			filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelDoacao.ENTIDADE_BENEFICENTE_CONTRATO);
+			filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelDoacao.ENTIDADE_BENEFICENTE);
+			filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelDoacao.ENTIDADE_BENEFICENTE_EMPRESA);
+			filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelDoacao.ENTIDADE_BENEFICENTE_CLIENTE);
+			filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelDoacao.IMOVEL);
+
 			imovelDoacao = (ImovelDoacao) fachada.pesquisar(filtroImovelDoacao, ImovelDoacao.class.getName()).iterator().next();
 
 			/*** Cria e atribui o usuário de cancelamento ***/
-			usuarioCancelamento = new Usuario();
-			usuarioCancelamento.setId(((Usuario) sessao.getAttribute("usuarioLogado")).getId());
+			FiltroUsuario filtroUsuario = new FiltroUsuario();
+			filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.EMPRESA);
+			filtroUsuario.adicionarParametro(new ParametroSimples(FiltroUsuario.ID, ((Usuario) sessao.getAttribute("usuarioLogado"))
+							.getId()));
+
+			usuarioCancelamento = (Usuario) Util.retonarObjetoDeColecao(fachada.pesquisar(filtroUsuario, Usuario.class.getName()));
+			
+			if(imovelDoacao.getEntidadeBeneficenteContrato().getEntidadeBeneficente().getEmpresa() == null){
+				throw new ActionServletException("atencao.entidade.sem_empresa", imovelDoacao.getEntidadeBeneficenteContrato()
+								.getEntidadeBeneficente()
+								.getCliente().getNome());
+			}
+
+			if(usuarioCancelamento == null
+							|| usuarioCancelamento.getEmpresa() == null
+							|| !usuarioCancelamento.getEmpresa().equals(
+											imovelDoacao.getEntidadeBeneficenteContrato().getEntidadeBeneficente().getEmpresa())){
+				throw new ActionServletException("atencao.inserir_imovel_doacao.usuario_sem_permissao", usuarioCancelamento
+								.getNomeUsuario().toString(), imovelDoacao.getEntidadeBeneficenteContrato().getEntidadeBeneficente()
+								.getCliente().getNome().toString());
+			}
 
 			/*** Atribui os dados que serão atualizados para o imovel doacao ***/
 			imovelDoacao.setDataCancelamento(new Date());

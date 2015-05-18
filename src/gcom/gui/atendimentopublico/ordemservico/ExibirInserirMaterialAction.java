@@ -84,11 +84,14 @@ import gcom.atendimentopublico.ordemservico.MaterialUnidade;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ControladorException;
+import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -120,6 +123,8 @@ public class ExibirInserirMaterialAction
 
 		ActionForward retorno = actionMapping.findForward("materialInserir");
 
+		HttpSession sessao = httpServletRequest.getSession(false);
+
 		Fachada fachada = Fachada.getInstancia();
 
 		FiltroMaterialUnidade filtroMaterialUnidade = new FiltroMaterialUnidade();
@@ -134,7 +139,15 @@ public class ExibirInserirMaterialAction
 		}
 
 		httpServletRequest.setAttribute("colecaoUnidadeMaterial", colecaoUnidadeMaterial);
+		String permiteCobrarMaterial = "0";
+		try{
+			permiteCobrarMaterial = ParametroAtendimentoPublico.P_PERMITE_COBRAR_MATERIAL_OS.executar();
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
+		sessao.setAttribute("permiteCobrarMaterial", permiteCobrarMaterial);
 		return retorno;
 	}
 

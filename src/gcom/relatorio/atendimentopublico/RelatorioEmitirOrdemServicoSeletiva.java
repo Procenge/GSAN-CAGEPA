@@ -230,6 +230,7 @@ public class RelatorioEmitirOrdemServicoSeletiva
 		helper.setMarca((String[]) getParametro("marca"));
 		helper.setAnormalidadeHidrometro((String[]) getParametro("anormalidadeHidrometro"));
 		helper.setNumeroOcorrenciasConsecutivas((String) getParametro("numeroOcorrenciasConsecutivas"));
+		helper.setReferenciaUltimaAfericaoAnterior((String) getParametro("referenciaUltimaAfericaoAnterior"));
 		helper.setIdUsuario((String) getParametro("idUsuario"));
 		helper.setTipoFormatoRelatorio((Integer) getParametro("tipoFormatoRelatorio"));
 		helper.setHidrometroClasseMetrologica((String[]) getParametro("hidrometroClasseMetrologica"));

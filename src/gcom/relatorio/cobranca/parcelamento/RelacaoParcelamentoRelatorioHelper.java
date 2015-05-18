@@ -97,6 +97,7 @@ public class RelacaoParcelamentoRelatorioHelper {
     private Integer idGerencia;
     private String gerencia;
     private String unidade;
+	private Date ultimaAlteracao;
     
     public RelacaoParcelamentoRelatorioHelper(){    	
     }
@@ -104,7 +105,8 @@ public class RelacaoParcelamentoRelatorioHelper {
 	public RelacaoParcelamentoRelatorioHelper(String situacao, String localidade, String cliente, String ddd, 
 			String telefone, String matricula, Integer parcelamento, Date dataParcelamento, String vencimento, 
 			BigDecimal debitoTotal, BigDecimal valorEntrada, BigDecimal valorParcelamento, Short numeroParcelamento,
-			Integer idLocalidade, Integer idGerencia, String gerencia, String unidade) {		
+			Integer idLocalidade, Integer idGerencia, String gerencia, String unidade, Date ultimaAlteracao) {
+
 		this.situacao = situacao;
 		this.localidade = localidade;
 		this.cliente = cliente;
@@ -122,6 +124,7 @@ public class RelacaoParcelamentoRelatorioHelper {
 		this.idGerencia = idGerencia;
 		this.gerencia = gerencia;
 		this.unidade = unidade;
+		this.ultimaAlteracao = ultimaAlteracao;
 	}
 	
 	
@@ -338,6 +341,15 @@ public class RelacaoParcelamentoRelatorioHelper {
 		this.unidade = unidade;
 	}
 
+	public Date getUltimaAlteracao(){
 
- 
+		return ultimaAlteracao;
+	}
+
+	public void setUltimaAlteracao(Date ultimaAlteracao){
+
+		this.ultimaAlteracao = ultimaAlteracao;
+	}
+
+
 }

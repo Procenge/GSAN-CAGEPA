@@ -108,6 +108,8 @@ public class RateioTipo
 
 	public final static Integer RATEIO_POR_IMOVEL = Integer.valueOf(1);
 
+	public final static Integer RATEIO_VALOR_POR_IMOVEL = Integer.valueOf(4);
+
 	/** full constructor */
 	public RateioTipo(String descricao, Short indicadorUso, Date ultimaAlteracao) {
 

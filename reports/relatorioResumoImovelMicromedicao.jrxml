@@ -2,13 +2,13 @@
 <!-- Created with iReport - A designer for JasperReports -->
 <!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 <jasperReport
-		 name="relatorioContasEmitidas"
+		 name="relatorioResumoImovelMicromedicao"
 		 columnCount="1"
 		 printOrder="Vertical"
-		 orientation="Portrait"
-		 pageWidth="595"
-		 pageHeight="842"
-		 columnWidth="535"
+		 orientation="Landscape"
+		 pageWidth="842"
+		 pageHeight="595"
+		 columnWidth="782"
 		 columnSpacing="0"
 		 leftMargin="30"
 		 rightMargin="30"
@@ -42,6 +42,9 @@
 	<field name="getAnormalidadeLeitura" class="java.lang.String"/>
 	<field name="getSitLeituraAtual" class="java.lang.String"/>
 	<field name="getConsumoMedido" class="java.lang.String"/>
+	<field name="getCategorias" class="java.lang.String"/>
+	<field name="getNumeroEconomias" class="java.lang.String"/>
+	<field name="getNumeroHidrometro" class="java.lang.String"/>
 
 
 		<group  name="consumo" isReprintHeaderOnEachPage="true" >
@@ -53,7 +56,7 @@
 						mode="Opaque"
 						x="1"
 						y="12"
-						width="534"
+						width="779"
 						height="24"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -334,6 +337,84 @@
 					</textElement>
 				<text><![CDATA[ Consumo Medido]]></text>
 				</staticText>
+				<line direction="TopDown">
+					<reportElement
+						x="515"
+						y="13"
+						width="0"
+						height="23"
+						key="line-32"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="619"
+						y="12"
+						width="0"
+						height="23"
+						key="line-33"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<line direction="TopDown">
+					<reportElement
+						x="697"
+						y="13"
+						width="0"
+						height="23"
+						key="line-34"/>
+					<graphicElement stretchType="NoStretch"/>
+				</line>
+				<staticText>
+					<reportElement
+						x="521"
+						y="18"
+						width="71"
+						height="11"
+						key="staticText-112"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Categorias]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="622"
+						y="14"
+						width="73"
+						height="21"
+						key="staticText-113"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Numeros Economias]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						x="701"
+						y="14"
+						width="73"
+						height="20"
+						key="staticText-114"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="8" isBold="true"/>
+					</textElement>
+				<text><![CDATA[Numeros Hidrometro]]></text>
+				</staticText>
 			</band>
 			</groupHeader>
 			<groupFooter>
@@ -356,7 +437,7 @@
 						mode="Opaque"
 						x="1"
 						y="0"
-						width="534"
+						width="780"
 						height="110"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -370,7 +451,7 @@
 						mode="Opaque"
 						x="8"
 						y="4"
-						width="67"
+						width="88"
 						height="55"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -388,7 +469,7 @@
 				<staticText>
 					<reportElement
 						mode="Opaque"
-						x="83"
+						x="193"
 						y="20"
 						width="369"
 						height="16"
@@ -408,7 +489,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="454"
+						x="701"
 						y="0"
 						width="0"
 						height="63"
@@ -422,7 +503,7 @@
 				<staticText>
 					<reportElement
 						mode="Opaque"
-						x="459"
+						x="704"
 						y="4"
 						width="25"
 						height="13"
@@ -442,7 +523,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						mode="Opaque"
-						x="484"
+						x="729"
 						y="4"
 						width="22"
 						height="13"
@@ -462,7 +543,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Report" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						mode="Opaque"
-						x="506"
+						x="751"
 						y="4"
 						width="25"
 						height="13"
@@ -482,7 +563,7 @@
 				<textField isStretchWithOverflow="false" pattern="dd/MM/yyyy" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						mode="Transparent"
-						x="460"
+						x="705"
 						y="19"
 						width="68"
 						height="13"
@@ -502,7 +583,7 @@
 				<textField isStretchWithOverflow="false" pattern="HH:mm:ss" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						mode="Transparent"
-						x="463"
+						x="708"
 						y="33"
 						width="63"
 						height="13"
@@ -522,7 +603,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						mode="Opaque"
-						x="472"
+						x="717"
 						y="46"
 						width="47"
 						height="13"
@@ -542,7 +623,7 @@
 				<line direction="TopDown">
 					<reportElement
 						mode="Opaque"
-						x="81"
+						x="101"
 						y="0"
 						width="0"
 						height="63"
@@ -557,7 +638,7 @@
 					<reportElement
 						x="1"
 						y="62"
-						width="534"
+						width="780"
 						height="0"
 						key="line-14"/>
 					<graphicElement stretchType="NoStretch"/>
@@ -598,7 +679,7 @@
 				</staticText>
 				<staticText>
 					<reportElement
-						x="256"
+						x="286"
 						y="82"
 						width="100"
 						height="11"
@@ -632,7 +713,7 @@
 				</staticText>
 				<staticText>
 					<reportElement
-						x="256"
+						x="286"
 						y="67"
 						width="81"
 						height="11"
@@ -683,7 +764,7 @@
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="356"
+						x="386"
 						y="82"
 						width="108"
 						height="11"
@@ -717,7 +798,7 @@
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="337"
+						x="367"
 						y="67"
 						width="196"
 						height="11"
@@ -914,7 +995,7 @@
 					<reportElement
 						x="431"
 						y="4"
-						width="102"
+						width="84"
 						height="11"
 						key="textField"/>
 					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
@@ -943,6 +1024,45 @@
 						<font fontName="Courier New" size="8"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getConsumoMedido}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="522"
+						y="4"
+						width="97"
+						height="11"
+						key="textField"/>
+					<box></box>
+					<textElement textAlignment="Center">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getCategorias}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="621"
+						y="4"
+						width="75"
+						height="11"
+						key="textField"/>
+					<box></box>
+					<textElement textAlignment="Center">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getNumeroEconomias}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="700"
+						y="4"
+						width="76"
+						height="11"
+						key="textField"/>
+					<box></box>
+					<textElement textAlignment="Center">
+						<font fontName="Courier New" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getNumeroHidrometro}]]></textFieldExpression>
 				</textField>
 			</band>
 		</detail>

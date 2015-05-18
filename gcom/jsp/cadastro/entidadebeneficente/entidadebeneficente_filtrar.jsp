@@ -23,9 +23,8 @@
 <script>
 function validarForm(form){
 
-	if (validateFiltrarEntidadeBeneficenteActionForm(form)) {
-		submeterFormPadrao(form);
-	}
+	submeterFormPadrao(form);
+
 }
 
 //Recebe os dados do(s) popup(s)
@@ -156,6 +155,7 @@ function limparDebitoTipo(){
 							src="<bean:message key='caminho.imagens'/>limparcampo.gif"
 							style="cursor: hand;" /></a>
 					</td>
+					
 				</tr>
 
 			  <tr>
@@ -175,6 +175,15 @@ function limparDebitoTipo(){
 					</a>
 				  </td>
 				</tr>
+				
+				<tr>
+					<td width="162"><strong>Empresa:</strong></td>
+					<td><html:select property="idEmpresa">
+						<option value=""></option>
+						<html:options name="request" collection="colecaoEmpresa"
+							labelProperty="descricao" property="id" />
+					</html:select></td>
+				</tr>					
 			  
 			  <tr>
 				<td><strong>Indicador de Uso:</strong></td>

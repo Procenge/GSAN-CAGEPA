@@ -112,6 +112,9 @@ import org.apache.commons.validator.GenericValidator;
 import org.hibernate.Query;
 
 import br.com.procenge.comum.exception.NegocioException;
+import br.com.procenge.comum.exception.PCGException;
+import br.com.procenge.util.Constantes;
+import br.com.procenge.util.MensagemUtil;
 
 public class Util {
 
@@ -592,7 +595,6 @@ public class Util {
 		return anoMesFormatado;
 	}
 
-
 	public static int somarData(int data){
 
 		String dataFormatacao = "" + data;
@@ -877,7 +879,7 @@ public class Util {
 		return ano;
 	}
 
-	public static int divideDepoisMultiplica(int numerador, int denominador, int numeroMultiplicado){
+	public static int divideDepoisMultiplica(int numerador, int denominador, int numeroMultiplicado, Boolean arredonda){
 
 		BigDecimal n = new BigDecimal(numerador);
 
@@ -887,8 +889,11 @@ public class Util {
 
 		resultado = resultado.multiply(new BigDecimal(numeroMultiplicado));
 
-		return Util.arredondar(resultado);
-
+		if(arredonda){
+			return Util.arredondar(resultado);
+		}else{
+			return resultado.intValue();
+		}
 	}
 
 	/**
@@ -922,7 +927,7 @@ public class Util {
 				dataBD.append("0" + (dataCalendar.get(Calendar.MONTH) + 1) + "/");
 			}
 
-			dataBD.append(dataCalendar.get(Calendar.YEAR));
+			dataBD.append(Util.completarStringZeroEsquerda(String.valueOf(dataCalendar.get(Calendar.YEAR)), 4));
 			retorno = dataBD.toString();
 		}
 		return retorno;
@@ -1390,6 +1395,35 @@ public class Util {
 	}
 
 	/**
+	 * Verifica se String no formato HH:MM é válido.
+	 * 
+	 * @param horaMinuto
+	 * @return boolean
+	 */
+	public static boolean validaHoraMinuto(String horaMinuto){
+
+		boolean retorno = true;
+
+		if(horaMinuto == null || horaMinuto.length() < 5){
+			retorno = false;
+		}else{
+			String hora = horaMinuto.substring(0, 2);
+			String minuto = horaMinuto.substring(3, 5);
+
+			Integer horaInt = Util.converterStringParaInteger(hora);
+			Integer minutoInt = Util.converterStringParaInteger(minuto);
+
+			if(horaInt == null || horaInt.intValue() < 0 || horaInt.intValue() > 23){
+				retorno = false;
+			}else if(minutoInt == null || minutoInt.intValue() < 0 || minutoInt.intValue() > 59){
+				retorno = false;
+			}
+		}
+
+		return retorno;
+	}
+
+	/**
 	 * < <Descrição do método>>
 	 * 
 	 * @param data
@@ -1427,6 +1461,39 @@ public class Util {
 				dataBD.append("0" + dataCalendar.get(Calendar.SECOND));
 			}
 
+		}
+
+		return dataBD.toString();
+	}
+
+	/**
+	 * Rebece uma Data e retorna String no formato HH:MM
+	 * 
+	 * @param data
+	 * @return String no formato HH:MM
+	 */
+	public static String formatarHoraMinutos(Date data){
+
+		StringBuffer dataBD = new StringBuffer("");
+
+		if(data != null){
+
+			Calendar dataCalendar = new GregorianCalendar();
+			dataCalendar.setTime(data);
+
+			if(dataCalendar.get(Calendar.HOUR_OF_DAY) > 9){
+				dataBD.append(dataCalendar.get(Calendar.HOUR_OF_DAY));
+			}else{
+				dataBD.append("0" + dataCalendar.get(Calendar.HOUR_OF_DAY));
+			}
+
+			dataBD.append(":");
+
+			if(dataCalendar.get(Calendar.MINUTE) > 9){
+				dataBD.append(dataCalendar.get(Calendar.MINUTE));
+			}else{
+				dataBD.append("0" + dataCalendar.get(Calendar.MINUTE));
+			}
 		}
 
 		return dataBD.toString();
@@ -1546,51 +1613,54 @@ public class Util {
 	 */
 	public static Integer obterDigitoVerificadorModulo11(String numero){
 
-		String wnumero = numero;
-		int param = 2;
-		int soma = 0;
+		// String wnumero = numero;
+		// int param = 2;
+		// int soma = 0;
+		//
+		// for(int ind = (wnumero.length() - 1); ind > 0; ind--){
+		// if(param > 9){
+		// param = 2;
+		// }
+		// soma = soma + (Integer.parseInt(wnumero.substring(ind - 1, ind)) * param);
+		// param = param + 1;
+		// }
+		//
+		// int resto = soma % 11;
+		// int dv;
+		//
+		// if((resto == 0) || (resto == 1)){
+		// dv = 0;
+		// }else{
+		// dv = 11 - resto;
+		// }
+		// return dv;
+		// /*
+		// * // converte o número recebido para uma string String entradaString =
+		// * numero; // inicia o sequêncial de multiplicação para 2(dois) int
+		// * sequencia = 2; // cria as variáveis que serão utilizadas no calculo
+		// * int digito, contAuxiliar; // variável que vai armazenar a soma da
+		// * múltiplicação de cada dígito int somaDigitosProduto = 0; // contador
+		// * auxiliar contAuxiliar = 1; // laço para calcular a soma da
+		// * múltiplicação de cada dígito for (int i = 0; i <
+		// * entradaString.length(); i++) { // recupera o dígito da string digito =
+		// * new Integer(entradaString.substring(entradaString.length() -
+		// * contAuxiliar, entradaString.length() - i)).intValue(); // multiplica
+		// * o digito pelo sequência e acumula o resultado somaDigitosProduto =
+		// * somaDigitosProduto + (digito * sequencia); // se osequência for igual
+		// * a 9(nove) if (sequencia == 9) { // a sequência volta para 2(dois)
+		// * sequencia = 2; } else { // incrementa a sequência mais 1 ++sequencia; } //
+		// * incrementa o contador auxiliar contAuxiliar++; } // calcula o resto
+		// * da divisão int resto = (somaDigitosProduto % 11); // variável que vai
+		// * armazenar o dígito verificador int dac; // se o resto for 0(zero) ou
+		// * 1(1) if (resto == 0 || resto == 1) { // o dígito verificador vai ser
+		// * 0(zero) dac = 0; } else if (resto == 10) { // o dígito verificador
+		// * vai ser 1(um) dac = 1; } else { // o dígito verificador vai ser a
+		// * diferença dac = 11 - resto; } // retorna o dígito verificador
+		// * calculado return new Integer(dac);
+		// */
 
-		for(int ind = (wnumero.length() - 1); ind > 0; ind--){
-			if(param > 9){
-				param = 2;
-			}
-			soma = soma + (Integer.parseInt(wnumero.substring(ind - 1, ind)) * param);
-			param = param + 1;
-		}
+		return obterDigitoVerificadorModulo11Correto(numero);
 
-		int resto = soma % 11;
-		int dv;
-
-		if((resto == 0) || (resto == 1)){
-			dv = 0;
-		}else{
-			dv = 11 - resto;
-		}
-		return dv;
-		/*
-		 * // converte o número recebido para uma string String entradaString =
-		 * numero; // inicia o sequêncial de multiplicação para 2(dois) int
-		 * sequencia = 2; // cria as variáveis que serão utilizadas no calculo
-		 * int digito, contAuxiliar; // variável que vai armazenar a soma da
-		 * múltiplicação de cada dígito int somaDigitosProduto = 0; // contador
-		 * auxiliar contAuxiliar = 1; // laço para calcular a soma da
-		 * múltiplicação de cada dígito for (int i = 0; i <
-		 * entradaString.length(); i++) { // recupera o dígito da string digito =
-		 * new Integer(entradaString.substring(entradaString.length() -
-		 * contAuxiliar, entradaString.length() - i)).intValue(); // multiplica
-		 * o digito pelo sequência e acumula o resultado somaDigitosProduto =
-		 * somaDigitosProduto + (digito * sequencia); // se osequência for igual
-		 * a 9(nove) if (sequencia == 9) { // a sequência volta para 2(dois)
-		 * sequencia = 2; } else { // incrementa a sequência mais 1 ++sequencia; } //
-		 * incrementa o contador auxiliar contAuxiliar++; } // calcula o resto
-		 * da divisão int resto = (somaDigitosProduto % 11); // variável que vai
-		 * armazenar o dígito verificador int dac; // se o resto for 0(zero) ou
-		 * 1(1) if (resto == 0 || resto == 1) { // o dígito verificador vai ser
-		 * 0(zero) dac = 0; } else if (resto == 10) { // o dígito verificador
-		 * vai ser 1(um) dac = 1; } else { // o dígito verificador vai ser a
-		 * diferença dac = 11 - resto; } // retorna o dígito verificador
-		 * calculado return new Integer(dac);
-		 */
 	}
 
 	/**
@@ -1698,8 +1768,8 @@ public class Util {
 			}
 			if(temCasaDecimal){
 				int tamanho = valorSemPontuacao.length();
-				if(qtdCasasdecimais == 2)
-				valorSemPontuacao = valorSemPontuacao.substring(0, tamanho - 2) + "." + valorSemPontuacao.substring(tamanho - 2, tamanho);
+				if(qtdCasasdecimais == 2) valorSemPontuacao = valorSemPontuacao.substring(0, tamanho - 2) + "."
+								+ valorSemPontuacao.substring(tamanho - 2, tamanho);
 				else if(qtdCasasdecimais == 1) valorSemPontuacao = valorSemPontuacao.substring(0, tamanho - 1) + "."
 								+ valorSemPontuacao.substring(tamanho - 1, tamanho);
 
@@ -1850,6 +1920,17 @@ public class Util {
 	public static Date converteStringParaDate(String data, boolean lenient){
 
 		return converteStringParaDatePorFormato(data, lenient, "dd/MM/yyyy");
+	}
+
+	public static Date converterStringParaDate(String data, String mensagemPropertiesActionServlet){
+
+		try{
+			return converteStringParaDate(data, false);
+		}catch(Exception e){
+			throw new ActionServletException(mensagemPropertiesActionServlet);
+
+		}
+
 	}
 
 	public static Date converteStringParaDatePorFormato(String data, boolean lenient, String formato){
@@ -2747,6 +2828,27 @@ public class Util {
 	}
 
 	/**
+	 * Retorna a Descrição do dia da Semana
+	 * 1=Domingo 2=Segunda-feira 3=Terça-feira 4=Quarta-feira 5=Quinta-feira 6=Sexta-feira 7=Sábado
+	 * 
+	 * @param dia
+	 * @return String
+	 */
+	public static String obterDiaSemanaDescricao(int dia){
+
+		String retorno = "";
+
+		if(dia > 0 && dia <= 7){
+
+			int diaArray = dia - 1;
+			String[] dias = new String[] {"Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"};
+			retorno = dias[diaArray];
+		}
+
+		return retorno;
+	}
+
+	/**
 	 * Retorna o Ultimo Dia Util do Mês informado
 	 * Auhtor: Rafael Santos
 	 * Data: 20/02/2006
@@ -3075,6 +3177,34 @@ public class Util {
 
 		// retorna a nova data
 		return data;
+	}
+
+	/**
+	 * Author: Saulo Lima
+	 * Data: 07/04/2015
+	 * Adiciona nº de dias úteis para uma data
+	 * 
+	 * @param data
+	 * @param numeroDias
+	 * @param colecaoNacionalFeriado
+	 * @param colecaoMunicipioFeriado
+	 * @return data mais o nº de dias úteis informado
+	 */
+	public static Date adicionarNumeroDiasUteisDeUmaData(Date data, int numeroDias, Collection<NacionalFeriado> colecaoNacionalFeriado,
+					Collection<MunicipioFeriado> colecaoMunicipioFeriado){
+
+		Date dataNova = data;
+
+		for(int i = 0; i < numeroDias; i++){
+
+			dataNova = Util.adicionarNumeroDiasDeUmaData(dataNova, 1);
+
+			if(!Util.ehDiaUtil(dataNova, colecaoNacionalFeriado, colecaoMunicipioFeriado)){
+				dataNova = Util.obterProximoDiaUtil(dataNova, colecaoNacionalFeriado, colecaoMunicipioFeriado);
+			}
+		}
+
+		return dataNova;
 	}
 
 	/**
@@ -4149,7 +4279,6 @@ public class Util {
 
 	public static String numero(long n){
 
-
 		String u[] = {"", "UM", "DOIS", "TRES", "QUATRO", "CINCO", "SEIS", "SETE", "OITO", "NOVE", "DEZ", "ONZE", "DOZE", "TREZE", "CATORZE", "QUINZE", "DEZESSEIS", "DEZESSETE", "DEZOITO", "DEZENOVE"};
 		String d[] = {"", "", "VINTE", "TRINTA", "QUARENTA", "CINQUENTA", "SESSENTA", "SETENTA", "OITENTA", "NOVENTA"};
 		String c[] = {"", "CENTO", "DUZENTOS", "TREZENTOS", "QUATROCENTOS", "QUINHENTOS", "SEISCENTOS", "SETECENTOS", "OITOCENTOS", "NOVECENTOS"};
@@ -4540,6 +4669,7 @@ public class Util {
 
 		return matriculaImovelParatrizada;
 	}
+
 	/**
 	 * Retorna uma hora no formato HH:MM a partir de um objeto Date
 	 * 
@@ -5018,6 +5148,11 @@ public class Util {
 	public static boolean isVazioOrNulo(Object[] array){
 
 		return (array == null || array.length == 0);
+	}
+
+	public static boolean isVazioOrNuloMap(Map map){
+
+		return (map == null || map.size() == 0);
 	}
 
 	/**
@@ -5552,6 +5687,37 @@ public class Util {
 	}
 
 	/**
+	 * Retorna a diferença entre datas em dias
+	 * Ex: 20/02/2010 - 18/02/2010 será retornado: 2
+	 * 
+	 * @author goliveira
+	 * @param data
+	 * @return
+	 */
+	public static long obterDiferencaDias(Date dataInical, Date dataFinal){
+
+		Calendar dataInicialCalendar = Calendar.getInstance();
+		dataInicialCalendar.setTime(dataInical);
+		dataInicialCalendar.set(Calendar.HOUR_OF_DAY, 23);
+		dataInicialCalendar.set(Calendar.MINUTE, 59);
+		dataInicialCalendar.set(Calendar.SECOND, 59);
+
+		Calendar dataFinalCalendar = Calendar.getInstance();
+		dataFinalCalendar.setTime(dataFinal);
+		dataFinalCalendar.set(Calendar.HOUR_OF_DAY, 23);
+		dataFinalCalendar.set(Calendar.MINUTE, 59);
+		dataFinalCalendar.set(Calendar.SECOND, 59);
+
+		long diferencaDias = 0;
+		while(dataInicialCalendar.before(dataFinalCalendar)){
+			dataInicialCalendar.add(Calendar.DAY_OF_MONTH, 1);
+			diferencaDias++;
+		}
+
+		return diferencaDias;
+	}
+
+	/**
 	 * Adiciona os parametros na query. Os tipos de dados podem ser: <br>
 	 * <br>
 	 * String[], String, Integer[], Integer, Date[], Date, Double[], Double, BigDecimal[],
@@ -6029,7 +6195,16 @@ public class Util {
 				}
 			}
 		}else{
-			retorno = "";
+
+			for(int i = 0; i < quantidade; i++){
+
+				if(retorno.length() == quantidade){
+
+					break;
+				}
+
+				retorno = valor + retorno;
+			}
 		}
 
 		return retorno;
@@ -6524,8 +6699,8 @@ public class Util {
 		leituraTipo.delete();
 		retorno = this.getBytesFromFile(compactado);
 
-		ServicosEmail.enviarMensagemArquivoAnexado(envioEmail.getEmailReceptor(), envioEmail.getEmailRemetente(), envioEmail
-						.getTituloMensagem(), envioEmail.getCorpoMensagem(), compactado);
+		ServicosEmail.enviarMensagemArquivoAnexado(envioEmail.getEmailReceptor(), envioEmail.getEmailRemetente(),
+						envioEmail.getTituloMensagem(), envioEmail.getCorpoMensagem(), compactado);
 
 		compactado.delete();
 
@@ -6563,6 +6738,14 @@ public class Util {
 			}
 		}else{
 			retorno = "";
+			for(int i = 0; i < tamanhoStringRetorno; i++){
+
+				if(retorno.length() == tamanhoStringRetorno){
+					break;
+				}
+
+				retorno = valorEsquerda + retorno;
+			}
 		}
 
 		return retorno;
@@ -6733,6 +6916,32 @@ public class Util {
 		return retorno;
 	}
 
+	public static boolean isVazioOuBrancoOuZeroZero(Object object){
+
+		boolean retorno = false;
+
+		if(object == null) return true;
+
+		if(object instanceof String){
+			String conteudo = ((String) object).trim();
+			if(conteudo.length() == 0 || "".equalsIgnoreCase(conteudo) || "00".equalsIgnoreCase(conteudo)){
+				return true;
+			}
+		}else if(object instanceof ArrayList){
+			ArrayList conteudo = (ArrayList) object;
+			if(conteudo.isEmpty()){
+				return true;
+			}
+		}else if(object instanceof Integer){
+			Integer conteudo = (Integer) object;
+			if(conteudo.equals(0)){
+				return true;
+			}
+		}
+
+		return retorno;
+	}
+
 	/**
 	 * Método que faz valida se o objeto não é Nulo Branco ou Zero (String e Integer)
 	 * 
@@ -6742,6 +6951,37 @@ public class Util {
 	public static boolean isNaoNuloBrancoZero(Object object){
 
 		return !isVazioOuBrancoOuZero(object);
+	}
+
+	/**
+	 * Método que faz valida se o BigDecimal é diferente de NULO e maior que ZERO
+	 * 
+	 * @param BigDecimal
+	 * @return <true> Se o objeto é diferente de NULO e maior que ZERO e <false> se o objeto for
+	 *         NULO ou menor/igual a ZERO
+	 */
+	public static boolean isMaiorZero(BigDecimal valor){
+
+		if(valor != null && valor.compareTo(BigDecimal.ZERO) > 0){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	/**
+	 * Método que retorna o BigDecimal caso diferente de NULO caso contrário ZERO
+	 * 
+	 * @param BigDecimal
+	 * @return BigDecimal ou ZERO
+	 */
+	public static BigDecimal getValorOuZero(BigDecimal valor){
+
+		if(valor != null){
+			return valor;
+		}else{
+			return BigDecimal.ZERO;
+		}
 	}
 
 	public static String formatarFone(String fone){
@@ -7250,11 +7490,9 @@ public class Util {
 	 * // ***********************************************************************taxa juros=0.0142
 	 * // 11:41:01,850 INFO [STDOUT]
 	 * //
-	 * 
 	 * ***********************************************************************fatorPrestacao=0.986056
 	 * // 11:41:01,850 INFO [STDOUT]
 	 * //
-	 * 
 	 * ***********************************************************************valorPrestacao=4112.819150
 	 * BigDecimal taxaJuros = new BigDecimal("0.0142");
 	 * BigDecimal valorUm = BigDecimal.ONE;
@@ -7469,6 +7707,26 @@ public class Util {
 						.replaceAll("\\(\\)\\=\\{\\}\\[\\]\\~\\^\\]", " ")//
 						.replaceAll("[\\.\\;\\-\\_\\+\\'\\ª\\º\\:\\;\\/]", " ");
 
+	}
+
+	/**
+	 * Recebe um caracter (String) e retorna se for um caracter especial retorna TRUE, caso
+	 * contrário FALSE
+	 * 
+	 * @author Saulo Lima
+	 * @date 23/09/2014
+	 * @param caracter
+	 * @return boolean
+	 */
+	public static boolean isCaracterEspecial(String caracter){
+
+		String caracteresEspeciais = "ãâàáäêèéëîìíïõôòóöûúùüÃÂÀÁÄÊÈÉËÎÌÍÏÕÔÒÓÖÛÙÚÜçÇñÑ!´`?!@#$%¨\\*\"()={}[]~^.;-_+'ªº:;/";
+
+		if(caracter != null && caracteresEspeciais.contains(caracter)){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	public static String obterStackTraceCompleta(Throwable e, StringWriter writer){
@@ -7758,6 +8016,18 @@ public class Util {
 		return resultado;
 	}
 
+	public static BigDecimal somarMapBigDecimal(Map<Integer, BigDecimal> mapValores){
+
+		BigDecimal resultado = BigDecimal.ZERO;
+
+		Collection<Integer> chaves = mapValores.keySet();
+		for(Integer chaveItem : chaves){
+			resultado = resultado.add(mapValores.get(chaveItem));
+		}
+
+		return resultado;
+	}
+
 	public static Date obterDataComDiaExistenteEmTodosMeses(Date data){
 
 		Calendar calendar = Calendar.getInstance();
@@ -7917,19 +8187,24 @@ public class Util {
 			metodoClass = instanciaClasse.getClass().getMethod(metodo, parameterTypes);
 			retorno = metodoClass.invoke(instanciaClasse, parametro);
 		}catch(SecurityException e){
-			throw new RuntimeException("Problemas ao executar o metodo [" + metodo + "] da Classe [" + instanciaClasse.getClass().getName() + "]");
+			throw new RuntimeException("Problemas ao executar o metodo [" + metodo + "] da Classe [" + instanciaClasse.getClass().getName()
+							+ "]");
 		}catch(NoSuchMethodException e){
-			throw new RuntimeException("Problemas ao executar o metodo [" + metodo + "] da Classe [" + instanciaClasse.getClass().getName() + "]");
+			throw new RuntimeException("Problemas ao executar o metodo [" + metodo + "] da Classe [" + instanciaClasse.getClass().getName()
+							+ "]");
 		}catch(IllegalArgumentException e){
-			throw new RuntimeException("Problemas ao executar o metodo [" + metodo + "] da Classe [" + instanciaClasse.getClass().getName() + "]");
+			throw new RuntimeException("Problemas ao executar o metodo [" + metodo + "] da Classe [" + instanciaClasse.getClass().getName()
+							+ "]");
 		}catch(IllegalAccessException e){
-			throw new RuntimeException("Problemas ao executar o metodo [" + metodo + "] da Classe [" + instanciaClasse.getClass().getName() + "]");
+			throw new RuntimeException("Problemas ao executar o metodo [" + metodo + "] da Classe [" + instanciaClasse.getClass().getName()
+							+ "]");
 		}catch(InvocationTargetException e){
-			throw new RuntimeException("Problemas ao executar o metodo [" + metodo + "] da Classe [" + instanciaClasse.getClass().getName() + "]");
+			throw new RuntimeException("Problemas ao executar o metodo [" + metodo + "] da Classe [" + instanciaClasse.getClass().getName()
+							+ "]");
 		}
 		return retorno;
 	}
-	
+
 	/**
 	 * Método calcularTempoDecorridoDesde
 	 * 
@@ -7955,7 +8230,6 @@ public class Util {
 
 		return hora + ":" + minuto + ":" + segundo + "." + restosegundo;
 	}
-
 
 	/**
 	 * Método que converte uma String (dd/mm/yyyy) em uma Data
@@ -8009,8 +8283,7 @@ public class Util {
 	public static void copyFile(File source, File destination) throws IOException{
 
 		if(destination.exists()) destination = new File(destination.getParentFile().getAbsolutePath() + File.separator
-						+ System.currentTimeMillis() + "_"
-						+ destination.getName());// destination.delete();
+						+ System.currentTimeMillis() + "_" + destination.getName());// destination.delete();
 		if(!destination.getParentFile().exists()){
 			destination.getParentFile().mkdirs();
 		}
@@ -8127,7 +8400,7 @@ public class Util {
 	 * @author Hebert Falcão
 	 * @date 28/04/2013
 	 */
-	public static Date gerarDataInicialDoAnoApartirDoAnoMesRefencia(Integer anoMesReferencia){
+	public static Date gerarDataInicialDoAnoApartirDoAnoRefencia(Integer anoReferencia){
 
 		Calendar calendar = new GregorianCalendar();
 		calendar.set(Calendar.HOUR_OF_DAY, 00);
@@ -8137,7 +8410,7 @@ public class Util {
 		Integer mes = 1;
 		calendar.set(Calendar.MONTH, (mes - 1));
 
-		calendar.set(Calendar.YEAR, anoMesReferencia);
+		calendar.set(Calendar.YEAR, Integer.valueOf(anoReferencia));
 
 		Integer dia = calendar.getActualMinimum(Calendar.DAY_OF_MONTH);
 		calendar.set(Calendar.DATE, dia);
@@ -8153,7 +8426,7 @@ public class Util {
 	 * @author Carlos Chrystian
 	 * @date 23/04/2013
 	 */
-	public static Date gerarDataFinalDoAnoApartirDoAnoMesRefencia(Integer anoMesReferencia){
+	public static Date gerarDataFinalDoAnoApartirDoAnoRefencia(Integer anoReferencia){
 
 		Calendar calendar = new GregorianCalendar();
 		calendar.set(Calendar.HOUR_OF_DAY, 23);
@@ -8163,7 +8436,7 @@ public class Util {
 		Integer mes = 12;
 		calendar.set(Calendar.MONTH, (mes - 1));
 
-		calendar.set(Calendar.YEAR, anoMesReferencia);
+		calendar.set(Calendar.YEAR, anoReferencia);
 
 		Integer dia = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 		calendar.set(Calendar.DATE, dia);
@@ -8172,7 +8445,6 @@ public class Util {
 
 		return retorno;
 	}
-
 
 	/**
 	 * Método que Retira caracteres especias do fone
@@ -8513,7 +8785,6 @@ public class Util {
 		return null;
 	}
 
-
 	/**
 	 * Método que converte um MM/yyyy em dd/MM/yyyy sendo dd o último dia do mês
 	 * 
@@ -8713,7 +8984,7 @@ public class Util {
 
 		return retorno;
 	}
-	
+
 	/**
 	 * Método que converte um Ano/Mes/Dia (AAAAMMDD) para DD/MM/AAAA
 	 * 
@@ -8739,6 +9010,418 @@ public class Util {
 		calendario.set(Calendar.MILLISECOND, 0);
 
 		return formatarData(calendario.getTime());
+	}
+
+	/**
+	 * @param string
+	 * @param caracterDeQuebra
+	 * @return
+	 */
+
+	public static Collection<Integer> converterStringParaColecaoInteger(String string, String caracterDeQuebra){
+
+		String[] valores = null;
+		Collection<Integer> colecaoValores = null;
+
+		if(!isVazioOuBranco(string)){
+
+			// Recupera os valores da string
+			valores = string.split(caracterDeQuebra);
+
+			if(!isVazioOrNulo(valores)){
+
+				colecaoValores = new ArrayList<Integer>();
+
+				// carrega valores
+				Integer valorInteiro = null;
+				for(String valor : valores){
+
+					// converte valor
+					try{
+						valorInteiro = Integer.valueOf(valor);
+					}catch(NumberFormatException e){
+						valorInteiro = null;
+					}
+
+					if(valorInteiro != null){
+						colecaoValores.add(valorInteiro);
+					}
+				}
+
+				// Se nenhum valor foi identificado e adicionado à coleção, retornar null
+				if(colecaoValores.isEmpty()){
+					colecaoValores = null;
+				}
+			}
+		}
+
+		return colecaoValores;
+	}
+
+	/**
+	 * Método que recebe uma data com string no formato ddMMyyyy e verifica se é uma data valida.
+	 * 
+	 * @author Anderson Italo
+	 * @date 15/06/2014
+	 */
+	public static boolean validarDataDDMMYYYY(String data){
+
+		SimpleDateFormat format = new SimpleDateFormat("ddMMyyyy");
+		format.setLenient(false);
+
+		try{
+
+			format.parse(data);
+			return true;
+		}catch(ParseException e){
+
+			return false;
+		}
+	}
+
+	/**
+	 * Formata o anomes para o mesano sem barra e o no só com os 2 ultimos
+	 * digitos EX.: entrada: 200702 saída:0207 Autor:Sávio Luiz
+	 */
+	/**
+	 * Método que recebe um anomês e converte para o formato(MM/AA) mês/ano(com 2 dígitos).
+	 * Por exemplo--> entrada: 201405 saída:14/05
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/05/2014
+	 * @param anoMesDia
+	 * @return String
+	 */
+	public static String formatarAnoMesParaMesAnoCom2DigitosComBarra(int anoMes){
+
+		String anoMesFormatado = "";
+		String anoMesRecebido = "" + anoMes;
+
+		if(anoMesRecebido.length() < 6){
+
+			anoMesFormatado = anoMesRecebido;
+		}else{
+
+			String mes = anoMesRecebido.substring(4, 6);
+			String ano = anoMesRecebido.substring(2, 4);
+			anoMesFormatado = mes + "/" + ano;
+		}
+
+		return anoMesFormatado;
+	}
+
+	/**
+	 * Método que recebe uma data e retorna uma data com o próximo dia util igual ou após o dia da
+	 * data informada.
+	 * 
+	 * @author Anderson Italo
+	 * @date 06/06/2014
+	 * @param anoMesDia
+	 * @return String
+	 */
+	public static Date obterProximoDiaUtil(Date dataInformada, Collection<NacionalFeriado> colecaoFeriados,
+					Collection colecaoMunicipioFeriado){
+
+		Date dataRetornada = dataInformada;
+		boolean condicaoContinuarPesquisa = true;
+
+		while(condicaoContinuarPesquisa){
+
+			if(ehDiaUtil(dataRetornada, colecaoFeriados, colecaoMunicipioFeriado)){
+
+				condicaoContinuarPesquisa = false;
+			}else{
+
+				dataRetornada = Util.converteStringParaDate(Util.somaDiasAData(dataRetornada, 1), true);
+			}
+		}
+
+		return dataRetornada;
+	}
+
+	/**
+	 * Método que recebe o código da atividade econômica e verifica se está em formato válido
+	 * (X9999-9/99).
+	 * 
+	 * @author Anderson Italo
+	 * @date 01/07/2014
+	 */
+	public static boolean validarCodigoAtividadeEconomica(String codigo){
+
+		boolean codigoEhValido = true;
+		if(codigo.length() < 10){
+
+			codigoEhValido = false;
+			return codigoEhValido;
+		}else{
+
+			String letrasAlfabeto[] = new String[] {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "X", "Z", "Y", "W"};
+			for(int i = 0; i < codigo.length(); i++){
+
+				if(i == 0){
+
+					boolean validouPrimeiraProsicao = false;
+					for(int j = 0; j < letrasAlfabeto.length; j++){
+
+						if(String.valueOf(codigo.charAt(0)).equals(String.valueOf(letrasAlfabeto[j].charAt(0)))){
+
+							validouPrimeiraProsicao = true;
+							break;
+						}
+					}
+
+					if(!validouPrimeiraProsicao){
+
+						codigoEhValido = false;
+						break;
+					}
+				}else if(i == 1 || i == 2 || i == 3 || i == 4 || i == 6 || i == 8 || i == 9){
+
+					boolean validouProsicaoNumerica = false;
+					if(Util.isInteger(String.valueOf(codigo.charAt(i)))){
+
+						validouProsicaoNumerica = true;
+					}
+
+					if(!validouProsicaoNumerica){
+
+						codigoEhValido = false;
+						break;
+					}
+				}else if(i == 5){
+
+					if(!String.valueOf(codigo.charAt(5)).equals("-")){
+
+						codigoEhValido = false;
+						break;
+					}
+				}else if(i == 7){
+
+					if(!String.valueOf(codigo.charAt(7)).equals("/")){
+
+						codigoEhValido = false;
+						break;
+					}
+				}
+			}
+		}
+
+		return codigoEhValido;
+	}
+
+	/**
+	 * @param localDir
+	 * @return
+	 * @throws IOException
+	 */
+
+	public static List<File> obtainFileListByPatterns(File localDir) throws IOException{
+
+		List<File> listaArquivosZip = new ArrayList<File>();
+
+		if(localDir.isDirectory()){
+			File[] filteredFiles = localDir.listFiles();
+			for(int i = 0; i < filteredFiles.length; i++){
+				if(filteredFiles[i].isFile()){
+
+					listaArquivosZip.add(filteredFiles[i]);
+
+				}
+			}
+		}
+
+		return listaArquivosZip;
+
+
+
+	}
+
+	/**
+	 * @param arquivo
+	 * @param emailReceptor
+	 * @param emailRemetente
+	 * @param tituloMensagem
+	 * @param corpoMensagem
+	 * @throws ControladorException
+	 */
+	public static void mandaArquivoEmail(StringBuilder arquivo, String emailReceptor, String emailRemetente, String tituloMensagem,
+					String corpoMensagem) throws ControladorException{
+
+		try{
+			File leitura = File.createTempFile("GSAN-ARR", ".txt");
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(leitura.getAbsolutePath())));
+			out.write(arquivo.toString());
+			out.close();
+
+			ServicosEmail.enviarMensagemArquivoAnexado(emailReceptor, emailRemetente, tituloMensagem, corpoMensagem, leitura);
+
+			leitura.delete();
+		}catch(IOException e){
+			throw new ControladorException("erro.sistema", e);
+		}catch(Exception e){
+			throw new ControladorException("erro.sistema", e);
+		}
+	}
+
+	/**
+	 * Método responsável por converter um string para uma data.
+	 * 
+	 * @autor gilberto
+	 * @param rotulo
+	 *            O rorulo do campo
+	 * @param strData
+	 *            O valor
+	 * @param formato
+	 *            O formato da data
+	 * @return Uma data
+	 * @throws PCGException
+	 *             Caso ocorra algum erro de convsersão ou formato
+	 */
+	public static Date converterCampoStringParaData(String rotulo, String strData, String formato) throws PCGException{
+
+		Date data = null;
+		SimpleDateFormat formatador = null;
+
+		try{
+			formatador = new SimpleDateFormat(formato);
+			data = formatador.parse(strData);
+			if(!formatador.format(data).equals(strData)){
+				throw new PCGException(Constantes.RESOURCE_BUNDLE, Constantes.ERRO_DADOS_INVALIDOS, MensagemUtil.obterMensagem(
+								Constantes.RESOURCE_BUNDLE, rotulo));
+			}
+		}catch(IllegalArgumentException e){
+			throw new PCGException(Constantes.RESOURCE_BUNDLE, Constantes.ERRO_FORMATO_INVALIDO, formato);
+		}catch(ParseException e){
+			throw new PCGException(Constantes.RESOURCE_BUNDLE, Constantes.ERRO_DADOS_INVALIDOS, MensagemUtil.obterMensagem(
+							Constantes.RESOURCE_BUNDLE, rotulo));
+		}
+
+		return data;
+	}
+
+	/**
+	 * Método retornar uma String no formato dd/MM/aaaa HH:MM a partir da data recebida.
+	 * 
+	 * @param data
+	 *            Objeto do tipo Date
+	 * @return String No formato dd/MM/aaaa HH:MM
+	 */
+	public static String formatarDataComHoraSemSegundos(Date data){
+
+		StringBuffer dataBD = new StringBuffer();
+
+		if(data != null){
+			Calendar dataCalendar = new GregorianCalendar();
+
+			dataCalendar.setTime(data);
+
+			if(dataCalendar.get(Calendar.DAY_OF_MONTH) > 9){
+				dataBD.append(dataCalendar.get(Calendar.DAY_OF_MONTH) + "/");
+			}else{
+				dataBD.append("0" + dataCalendar.get(Calendar.DAY_OF_MONTH) + "/");
+			}
+
+			// Obs.: Janeiro no Calendar é mês zero
+			if((dataCalendar.get(Calendar.MONTH) + 1) > 9){
+				dataBD.append(dataCalendar.get(Calendar.MONTH) + 1 + "/");
+			}else{
+				dataBD.append("0" + (dataCalendar.get(Calendar.MONTH) + 1) + "/");
+			}
+
+			dataBD.append(dataCalendar.get(Calendar.YEAR));
+
+			dataBD.append(" ");
+
+			if(dataCalendar.get(Calendar.HOUR_OF_DAY) > 9){
+				dataBD.append(dataCalendar.get(Calendar.HOUR_OF_DAY));
+			}else{
+				dataBD.append("0" + dataCalendar.get(Calendar.HOUR_OF_DAY));
+			}
+
+			dataBD.append(":");
+
+			if(dataCalendar.get(Calendar.MINUTE) > 9){
+				dataBD.append(dataCalendar.get(Calendar.MINUTE));
+			}else{
+				dataBD.append("0" + dataCalendar.get(Calendar.MINUTE));
+			}
+		}
+
+		return dataBD.toString();
+	}
+
+	/**
+	 * Método retornar um int com a diferença de dias entre datas
+	 * jcvieira
+	 * 
+	 * @param String
+	 *            Objeto do tipo String
+	 * @return int, resultado em dias da subtração: data1 - data2
+	 */
+	public static int diferencaEntreDatas(String data1, String data2) throws ParseException{
+
+		GregorianCalendar ini = new GregorianCalendar();
+		GregorianCalendar fim = new GregorianCalendar();
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		ini.setTime(sdf.parse(data1));
+		fim.setTime(sdf.parse(data2));
+		long dt1 = ini.getTimeInMillis();
+		long dt2 = fim.getTimeInMillis();
+
+		return (int) (((dt1 - dt2) / 86400000));
+	}
+	/**
+	 * O metódo completa uma string com espaços em branco (ex: passa a string
+	 * "12.36" e o tamanho máximo 10 e retorna " 12.36" ) apenas se a string não exceder o tamanho
+	 * máximo
+	 * 
+	 * @author Rodrigo Silveira
+	 * @date 04/01/2008
+	 * @param str
+	 *            String que vai ser complementada com espaços em branco a
+	 *            esquerda
+	 * @param tm
+	 *            Tamanho máximo da string
+	 * @return
+	 */
+	public static String completaStringComEspacoADireitaCondicaoTamanhoMaximo(String str, int tamanhoMaximo){
+
+		StringBuilder strb = new StringBuilder(str);
+
+		// Tamanho da string informada
+		int tamanhoString = 0;
+		if(str != null){
+			tamanhoString = str.length();
+		}else{
+			tamanhoString = 0;
+		}
+
+		// Calcula a quantidade de espaços embranco necessários
+		int quantidadeEspacos = tamanhoMaximo - tamanhoString;
+
+		if(quantidadeEspacos < 0){
+			return str;
+
+		}
+
+		// Cria um array de caracteres de espaços em branco
+		char[] tempCharEspacos = new char[quantidadeEspacos];
+		Arrays.fill(tempCharEspacos, ' ');
+
+		// Cria uma string temporaria com os espaços em branco
+		String temp = new String(tempCharEspacos);
+
+		// Cria uma strinBuilder para armazenar a string
+		StringBuilder stringBuilder = new StringBuilder(temp);
+
+
+		// stringBuilder.append(str);
+
+		strb.append(stringBuilder);
+
+		// Retorna a string informada com espaços em branco a direita
+		// totalizando o tamanho máximo informado
+		return strb.toString();
 	}
 
 }

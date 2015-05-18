@@ -36,6 +36,7 @@
 	<parameter name="estadoEmpresaSigla" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="diaAtual" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="anoAtual" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="siteEmpresa" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="getIndicadorPessoaFisica" class="java.lang.String"/>
 	<field name="getNumeroPagina" class="java.lang.String"/>
@@ -61,18 +62,6 @@
 	<field name="getEstadoCivilCliente" class="java.lang.String"/>
 	<field name="getNacionalidadeCliente" class="java.lang.String"/>
 
-
-		<group  name="pagina" >
-			<groupExpression><![CDATA[$F{getNumeroPagina}]]></groupExpression>
-			<groupHeader>
-			<band height="0"  isSplitAllowed="false" >
-			</band>
-			</groupHeader>
-			<groupFooter>
-			<band height="0"  isSplitAllowed="false" >
-			</band>
-			</groupFooter>
-		</group>
 		<background>
 			<band height="0"  isSplitAllowed="false" >
 			</band>
@@ -653,7 +642,7 @@
 					<textElement textAlignment="Center">
 						<font fontName="Courier New" size="7"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["SITE: www.caerd-ro.com.br"]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA["SITE: " + $P{siteEmpresa}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement

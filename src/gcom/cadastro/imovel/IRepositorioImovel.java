@@ -441,7 +441,8 @@ public interface IRepositorioImovel {
 					String idClienteTipo, String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal,
 					String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio,
 					String cdRotaInicial, String cdRotaFinal, String sequencialRotaInicial, String sequencialRotaFinal,
-					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal)
+					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal)
 					throws ErroRepositorioException;
 
 	public Collection pesquisarSubcategoriasImovelRelatorio(Integer idImovel) throws ErroRepositorioException;
@@ -469,7 +470,8 @@ public interface IRepositorioImovel {
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, Integer relatorio,
 					String cdRotaInicial, String cdRotaFinal, String sequencialRotaInicial, String sequencialRotaFinal,
-					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal)
+					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal)
 					throws ErroRepositorioException;
 
 	/**
@@ -509,7 +511,8 @@ public interface IRepositorioImovel {
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String segmentoInicial,
 					String segmentoFinal, String rotaInicial, String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal,
-					String subloteInicial, String subloteFinal) throws ErroRepositorioException;
+					String subloteInicial, String subloteFinal, String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal)
+					throws ErroRepositorioException;
 
 	/**
 	 * Obtem os dados da Subcategoria do Imovel para o Relatorio de Dados
@@ -923,7 +926,8 @@ public interface IRepositorioImovel {
 	public Object pesquisarQuantidadeImovel(String idImovel, String idLocalidade, String codigoSetorComercial, String numeroQuadra,
 					String idHidrometroHistInst, String lote, String subLote, String codigoCliente, String idMunicipio, String cep,
 					String idBairro, String idLogradouro, boolean pesquisarImovelManterVinculo, boolean pesquisarImovelCondominio,
-					String numeroHidrometroImovel, String numeroImovel) throws ErroRepositorioException;
+					String numeroHidrometroImovel, String numeroImovel, String pCriterioSelecaoVinculoRateio)
+					throws ErroRepositorioException;
 
 	/**
 	 * Pesquisa o Imovel pelos parametros informados
@@ -1013,7 +1017,8 @@ public interface IRepositorioImovel {
 
 	public Collection pesquisarImoveisTarifaConsumo(String idLocalidadeInicial, String idLocalidadeFinal,
 					String codigoSetorComercialInicial, String codigoSetorComercialFinal, String quadraInicial, String quadraFinal,
-					String loteInicial, String loteFinal, String subLoteInicial, String subLoteFinal, String idTarifaAnterior)
+					String loteInicial, String loteFinal, String subLoteInicial, String subLoteFinal, String idTarifaAnterior,
+					String idsCategorias, String idsSubcategorias)
 					throws ErroRepositorioException;
 
 	/**
@@ -1264,7 +1269,7 @@ public interface IRepositorioImovel {
 	 * @return Colecao de subcategorias
 	 * @throws ErroRepositorioException
 	 */
-	public Collection obterSubCategoriasPorCategoria(Integer idCategoria, Integer idImovel) throws ErroRepositorioException;
+	public ImovelSubcategoria obterSubCategoriasPorCategoria(Integer idCategoria, Integer idImovel) throws ErroRepositorioException;
 
 	/**
 	 * Pesquisa todos os ids do perfil do imóvel.
@@ -1364,7 +1369,8 @@ public interface IRepositorioImovel {
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String rotaInicial,
 					String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal, String indicadorOrdenacao)
+					String segmentoFinal, String subloteInicial, String subloteFinal, String indicadorOrdenacao,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal)
 					throws ErroRepositorioException;
 
 	/**
@@ -1389,7 +1395,8 @@ public interface IRepositorioImovel {
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String rotaInicial,
 					String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal, String indicadorOrdenacao)
+					String segmentoFinal, String subloteInicial, String subloteFinal, String indicadorOrdenacao,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal)
 					throws ErroRepositorioException;
 
 	/**
@@ -1461,24 +1468,24 @@ public interface IRepositorioImovel {
 	 * Gerar Boletim de Cadastro
 	 * 
 	 * @date 20/08/2007
+	 * @deprecated
 	 */
 	public Collection<EmitirDocumentoCobrancaBoletimCadastroHelper> pesquisarBoletimCadastro(String idImovelCondominio,
 					String idImovelPrincipal, String[] idSituacaoLigacaoAgua, String consumoMinimoInicialAgua,
 					String consumoMinimoFinalAgua, String[] idSituacaoLigacaoEsgoto, String consumoMinimoInicialEsgoto,
-					String consumoMinimoFinalEsgoto,
-					String intervaloValorPercentualEsgotoInicial, String intervaloValorPercentualEsgotoFinal,
-					String intervaloMediaMinimaImovelInicial, String intervaloMediaMinimaImovelFinal,
-					String intervaloMediaMinimaHidrometroInicial, String intervaloMediaMinimaHidrometroFinal, String idImovelPerfil,
-					String idPocoTipo, String idFaturamentoSituacaoTipo, String idCobrancaSituacaoTipo, String idSituacaoEspecialCobranca,
-					String idEloAnormalidade, String areaConstruidaInicial, String areaConstruidaFinal, String idCadastroOcorrencia,
-					String idConsumoTarifa, String idGerenciaRegional, String idLocalidadeInicial, String idLocalidadeFinal,
-					String setorComercialInicial, String setorComercialFinal, String quadraInicial, String quadraFinal, String loteOrigem,
-					String loteDestno, String cep, String logradouro, String bairro, String municipio, String idTipoMedicao,
-					String indicadorMedicao, String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial,
-					String quantidadeEconomiasFinal, String diaVencimento, String idCliente, String idClienteTipo,
-					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
-					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio,
-					int quantidadeCobrancaDocumentoInicio) throws ErroRepositorioException;
+					String consumoMinimoFinalEsgoto, String intervaloValorPercentualEsgotoInicial,
+					String intervaloValorPercentualEsgotoFinal, String intervaloMediaMinimaImovelInicial,
+					String intervaloMediaMinimaImovelFinal, String intervaloMediaMinimaHidrometroInicial,
+					String intervaloMediaMinimaHidrometroFinal, String idImovelPerfil, String idPocoTipo, String idFaturamentoSituacaoTipo,
+					String idCobrancaSituacaoTipo, String idSituacaoEspecialCobranca, String idEloAnormalidade,
+					String areaConstruidaInicial, String areaConstruidaFinal, String idCadastroOcorrencia, String idConsumoTarifa,
+					String idGerenciaRegional, String idLocalidadeInicial, String idLocalidadeFinal, String setorComercialInicial,
+					String setorComercialFinal, String quadraInicial, String quadraFinal, String loteOrigem, String loteDestno, String cep,
+					String logradouro, String bairro, String municipio, String idTipoMedicao, String indicadorMedicao,
+					String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial, String quantidadeEconomiasFinal,
+					String diaVencimento, String idCliente, String idClienteTipo, String idClienteRelacaoTipo, String numeroPontosInicial,
+					String numeroPontosFinal, String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa,
+					String idUnidadeNegocio, int quantidadeCobrancaDocumentoInicio) throws ErroRepositorioException;
 
 	/**
 	 * @author Vivianne Sousa
@@ -1683,7 +1690,8 @@ public interface IRepositorioImovel {
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String rotaInicial,
 					String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal) throws ErroRepositorioException;
+					String segmentoFinal, String subloteInicial, String subloteFinal, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal) throws ErroRepositorioException;
 
 	/**
 	 * [UC0591] - Gerar Relatório de Clientes Especiais
@@ -2031,7 +2039,8 @@ public interface IRepositorioImovel {
 	String numeroMoradoresFinal, String idAreaConstruidaFaixa,
 
 	String idUnidadeNegocio, String cdRotaInicial, String cdRotaFinal, String sequencialRotaInicial, String sequencialRotaFinal,
-					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal)
+					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal)
 					throws ErroRepositorioException;
 
 	public Collection pesquisarImoveisGerarProvisaoReceita(Integer idSetorComercial) throws ErroRepositorioException;
@@ -2121,5 +2130,35 @@ public interface IRepositorioImovel {
 	 * @date 11/02/2014
 	 */
 	public Collection<Conta> pesquisarContasEmAtrasoPorImovel(Integer idImovel) throws ErroRepositorioException;
+
+	/**
+	 * Retorna o ImovelSubcategoria principal (O registro com maior quantidade de economias).
+	 * 
+	 * @author Anderson Italo
+	 * @date 14/06/2014
+	 * @param idImovel
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public ImovelSubcategoria pesquisarImovelSubcategoriaPrincipal(Integer idImovel) throws ErroRepositorioException;
+	/**
+	 * <p>
+	 * [OC1372979]
+	 * </p>
+	 * 
+	 * @author Magno Silveira (magno.silveira@procenge.com.br)
+	 * @since 22/10/2014
+	 * @param imovelCondominioId
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection pesquisarImoveisSubcategoriasParaCondominio(Integer idImovel) throws ErroRepositorioException;
+
+
+
+	/**
+	 * 
+	 */
+	public void atualizarRotaImovel(Integer idImovel, Integer idRotaAtualizar) throws ErroRepositorioException;
 
 }

@@ -76,6 +76,12 @@
 
 package gcom.gui.atendimentopublico.registroatendimento;
 
+import gcom.fachada.Fachada;
+import gcom.gui.ActionServletException;
+import gcom.gui.GcomAction;
+import gcom.util.FachadaException;
+import gcom.util.Util;
+
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
@@ -85,10 +91,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-
-import gcom.fachada.Fachada;
-import gcom.gui.GcomAction;
-import gcom.util.Util;
 
 /**
  * Esta classe tem por finalidade validar as informações da terceira aba do processo de inserção
@@ -131,11 +133,21 @@ public class InserirRegistroAtendimentoDadosSolicitanteAction
 			indicadorClienteEspecificacao = new Short(form.getIndicadorClienteEspecificacao());
 		}
 
-		// [FS0030] – Verificar preenchimento dos dados de identificação do solicitante
-		fachada.verificaDadosSolicitante(Util.converterStringParaInteger(form.getIdCliente()), Util.converterStringParaInteger(form
-						.getIdUnidadeSolicitante()), Util.converterStringParaInteger(form.getIdFuncionarioResponsavel()), nomeSolicitante,
-						colecaoEndereco, colecaoFone, indicadorClienteEspecificacao, Util.converterStringParaInteger(form.getIdImovel()),
-						null, Util.converterStringParaInteger(form.getEspecificacao()));
+		try{
+
+			// [FS0030] – Verificar preenchimento dos dados de identificação do solicitante
+			fachada.verificaDadosSolicitante(Util.converterStringParaInteger(form.getIdCliente()),
+							Util.converterStringParaInteger(form.getIdUnidadeSolicitante()),
+							Util.converterStringParaInteger(form.getIdFuncionarioResponsavel()), nomeSolicitante, colecaoEndereco,
+							colecaoFone, indicadorClienteEspecificacao, Util.converterStringParaInteger(form.getIdImovel()), null,
+							Util.converterStringParaInteger(form.getEspecificacao()));
+
+		}catch(FachadaException e){
+			throw new ActionServletException(
+							e.getMessage(),
+							"inserirRegistroAtendimentoWizardAction.do?destino=3&action=inserirRegistroAtendimentoDadosLocalOcorrenciaAction",
+							e, e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
 
 		return retorno;
 	}

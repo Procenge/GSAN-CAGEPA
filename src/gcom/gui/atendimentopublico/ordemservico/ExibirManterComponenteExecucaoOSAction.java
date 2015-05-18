@@ -76,12 +76,7 @@
 
 package gcom.gui.atendimentopublico.ordemservico;
 
-import gcom.atendimentopublico.ordemservico.Equipe;
-import gcom.atendimentopublico.ordemservico.EquipeComponentes;
-import gcom.atendimentopublico.ordemservico.FiltroEquipe;
-import gcom.atendimentopublico.ordemservico.FiltroEquipeComponentes;
-import gcom.atendimentopublico.ordemservico.OsExecucaoEquipe;
-import gcom.atendimentopublico.ordemservico.OsExecucaoEquipeComponentes;
+import gcom.atendimentopublico.ordemservico.*;
 import gcom.atendimentopublico.ordemservico.bean.ManterDadosAtividadesOrdemServicoHelper;
 import gcom.atendimentopublico.ordemservico.bean.OSAtividadePeriodoExecucaoHelper;
 import gcom.atendimentopublico.ordemservico.bean.OSExecucaoEquipeHelper;
@@ -311,6 +306,25 @@ public class ExibirManterComponenteExecucaoOSAction
 			httpServletRequest.setAttribute("nomeCampo", "idFuncionario");
 		}
 
+		String tornarResponsavel = httpServletRequest.getParameter("tornarResponsavel");
+		if(tornarResponsavel != null && !tornarResponsavel.equalsIgnoreCase("")){
+
+			Collection colecaoSessao = (Collection) sessao.getAttribute("colecaoManterDadosAtividadesOrdemServicoHelper");
+
+			this.tornarResponsavelOsExecucaoEquipeComponentes(Util.converterStringParaInteger(form.getIdAtividade()),
+							form.getDataExecucao(),
+							form.getHoraInicio(), form.getHoraFim(), form.getIdEquipe(), colecaoSessao, fachada,
+							Long.parseLong(tornarResponsavel));
+
+			// Inicializando o formulário
+			form.setIdFuncionario("");
+			form.setDescricaoFuncionario("");
+			form.setNomeComponente("");
+			form.setResponsavel(String.valueOf(EquipeComponentes.INDICADOR_RESPONSAVEL_NAO));
+
+			httpServletRequest.setAttribute("nomeCampo", "idFuncionario");
+		}
+
 		// Objetos utilizados apenas para facilitar a quebra na exibição
 		httpServletRequest.setAttribute("numeroOS", form.getNumeroOSForm());
 		httpServletRequest.setAttribute("idAtividade", form.getIdAtividade());
@@ -468,6 +482,7 @@ public class ExibirManterComponenteExecucaoOSAction
 			FiltroFuncionario filtroFuncionario = new FiltroFuncionario();
 
 			filtroFuncionario.adicionarParametro(new ParametroSimples(FiltroFuncionario.ID, idFuncionario));
+			filtroFuncionario.adicionarCaminhoParaCarregamentoEntidade("equipeTipo");
 
 			Collection colecaoFuncionario = fachada.pesquisar(filtroFuncionario, Funcionario.class.getName());
 
@@ -480,6 +495,25 @@ public class ExibirManterComponenteExecucaoOSAction
 				Funcionario funcionario = (Funcionario) Util.retonarObjetoDeColecao(colecaoFuncionario);
 
 				osExecucaoEquipeComponentes.setFuncionario(funcionario);
+
+				if(funcionario != null && funcionario.getEquipeTipo() != null && osExecucaoEquipe.getEquipe().getEquipeTipo() != null
+								&& funcionario.getEquipeTipo().getId() != null && osExecucaoEquipe.getEquipe().getEquipeTipo().getId() != null
+								&& osExecucaoEquipe.getEquipe().getEquipeTipo().getId() != Integer.valueOf(ConstantesSistema.VALOR_NAO_INFORMADO).intValue()
+								&& funcionario.getEquipeTipo().getId().intValue() != osExecucaoEquipe.getEquipe().getEquipeTipo().getId().intValue()){
+
+					String mensagem = " Funcionario: " + funcionario.getNome() + " - Tipo Equipe: "
+									+ funcionario.getEquipeTipo().getDescricao() + " ";
+
+					FiltroEquipeTipo filtroEquipeTipo = new FiltroEquipeTipo();
+					filtroEquipeTipo.adicionarParametro(new ParametroSimples(FiltroEquipeTipo.ID, osExecucaoEquipe.getEquipe()
+									.getEquipeTipo().getId()));
+					EquipeTipo equipeTipo = (EquipeTipo) Util.retonarObjetoDeColecao(getFachada().pesquisar(filtroEquipeTipo,
+									EquipeTipo.class.getName()));
+					if(equipeTipo != null){
+						throw new ActionServletException("atencao.inserir_equipe_tipo_equipe_diferente_funcionario",
+										equipeTipo.getDescricao(), mensagem);
+					}
+				}				
 
 			}
 		}else{
@@ -581,4 +615,94 @@ public class ExibirManterComponenteExecucaoOSAction
 		}
 	}
 
+	private void tornarResponsavelOsExecucaoEquipeComponentes(Integer idAtividade, String dataExecucao, String horaInicio, String horaFim,
+					Integer idEquipe, Collection colecaoSessao, Fachada fachada, long identificadorComponente){
+
+
+		Iterator iteratorColecaoSessao = colecaoSessao.iterator();
+		ManterDadosAtividadesOrdemServicoHelper manterDadosAtividadesOrdemServicoHelper = null;
+		OSAtividadePeriodoExecucaoHelper osAtividadePeriodoExecucaoHelper = null;
+		OSExecucaoEquipeHelper osExecucaoEquipeHelper = null;
+		OsExecucaoEquipeComponentes osExecucaoEquipeComponentes = null;
+
+		boolean equipeLocalizada = false;
+
+		// Atividade
+		while(iteratorColecaoSessao.hasNext()){
+
+			manterDadosAtividadesOrdemServicoHelper = (ManterDadosAtividadesOrdemServicoHelper) iteratorColecaoSessao.next();
+
+			if(manterDadosAtividadesOrdemServicoHelper.getOrdemServicoAtividade().getAtividade().getId().intValue() == idAtividade
+							.intValue()){
+
+				if(!Util.isVazioOrNulo(manterDadosAtividadesOrdemServicoHelper.getColecaoOSAtividadePeriodoExecucaoHelper())){
+
+					// Período
+					Collection colecaoOSAtividadePeriodoExecucaoHelper = manterDadosAtividadesOrdemServicoHelper
+									.getColecaoOSAtividadePeriodoExecucaoHelper();
+
+					Iterator iteratorColecaoOSAtividadePeriodoExecucaoHelper = colecaoOSAtividadePeriodoExecucaoHelper.iterator();
+
+					while(iteratorColecaoOSAtividadePeriodoExecucaoHelper.hasNext()){
+
+						osAtividadePeriodoExecucaoHelper = (OSAtividadePeriodoExecucaoHelper) iteratorColecaoOSAtividadePeriodoExecucaoHelper
+										.next();
+
+						if(osAtividadePeriodoExecucaoHelper.getOsAtividadePeriodoExecucao().getDataInicioFormatada().equals(dataExecucao)
+										&& osAtividadePeriodoExecucaoHelper.getOsAtividadePeriodoExecucao().getHoraInicioFormatada()
+														.equals(horaInicio)
+										&& osAtividadePeriodoExecucaoHelper.getOsAtividadePeriodoExecucao().getHoraFimFormatada()
+														.equals(horaFim)){
+
+							// Equipe
+
+							osExecucaoEquipeHelper = osAtividadePeriodoExecucaoHelper.getOrdemServicoExecucaoEquipeHelper();
+
+							if(osExecucaoEquipeHelper.getOsExecucaoEquipe().getEquipe().getId().equals(idEquipe)){
+
+								equipeLocalizada = true;
+
+								// Componente
+								Collection colecaoOSExecucaoEquipeComponentes = osExecucaoEquipeHelper
+												.getColecaoOsExecucaoEquipeComponentes();
+
+								if(colecaoOSExecucaoEquipeComponentes != null && !colecaoOSExecucaoEquipeComponentes.isEmpty()){
+
+									Iterator iteratorColecaoOSExecucaoEquipeComponentes = colecaoOSExecucaoEquipeComponentes.iterator();
+
+									while(iteratorColecaoOSExecucaoEquipeComponentes.hasNext()){
+
+										osExecucaoEquipeComponentes = (OsExecucaoEquipeComponentes) iteratorColecaoOSExecucaoEquipeComponentes
+														.next();
+
+										if(GcomAction.obterTimestampIdObjeto(osExecucaoEquipeComponentes) == identificadorComponente){
+											osExecucaoEquipeComponentes.setIndicadorResponsavel(ConstantesSistema.SIM);
+											// break;
+										}else{
+											osExecucaoEquipeComponentes.setIndicadorResponsavel(ConstantesSistema.NAO);
+										}
+									}
+								}
+							}
+
+							if(equipeLocalizada){
+
+								// break;
+							}
+
+						}
+
+						if(equipeLocalizada){
+
+							// break;
+						}
+					}
+				}
+			}
+
+			if(equipeLocalizada){
+				// break;
+			}
+		}
+	}
 }

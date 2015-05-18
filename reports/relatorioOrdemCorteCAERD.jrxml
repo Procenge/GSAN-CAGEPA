@@ -2,7 +2,7 @@
 <!-- Created with iReport - A designer for JasperReports -->
 <!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 <jasperReport
-		 name="relatorioOrdemCorte"
+		 name="relatorioOrdemCorteCAERD"
 		 columnCount="1"
 		 printOrder="Vertical"
 		 orientation="Landscape"
@@ -24,6 +24,7 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 
 	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NM_EMPRESA" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="inscricao2" class="java.lang.String"/>
 	<field name="matricula1" class="java.lang.String"/>

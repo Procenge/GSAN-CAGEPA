@@ -101,6 +101,8 @@ public class AtualizarHidrometroMotivoBaixaActionForm
 
 	private String descricaoMotivoBaixaHidrometro;
 
+	private String descricaoAbreviada;
+
 	private String indicadorUso;
 
 	public String getIndicadorUso(){
@@ -118,6 +120,7 @@ public class AtualizarHidrometroMotivoBaixaActionForm
 		// Metodo usado para setar todos os valores do Form na base de dados
 		hidrometroMotivoBaixa.setId(new Integer(getIdHidrometroMotivoBaixa()));
 		hidrometroMotivoBaixa.setDescricao(getDescricaoMotivoBaixaHidrometro());
+		hidrometroMotivoBaixa.setDescricaoAbreviada(getDescricaoAbreviada());
 		hidrometroMotivoBaixa.setUltimaAlteracao(new Date());
 		hidrometroMotivoBaixa.setIndicadorUso(new Short(getIndicadorUso()));
 
@@ -142,6 +145,16 @@ public class AtualizarHidrometroMotivoBaixaActionForm
 	public void setIdHidrometroMotivoBaixa(String idHidrometroMotivoBaixa){
 
 		this.idHidrometroMotivoBaixa = idHidrometroMotivoBaixa;
+	}
+
+	public String getDescricaoAbreviada(){
+
+		return descricaoAbreviada;
+	}
+
+	public void setDescricaoAbreviada(String descricaoAbreviada){
+
+		this.descricaoAbreviada = descricaoAbreviada;
 	}
 
 }

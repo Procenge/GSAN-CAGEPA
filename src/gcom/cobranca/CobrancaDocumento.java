@@ -76,6 +76,7 @@
 
 package gcom.cobranca;
 
+import gcom.arrecadacao.pagamento.GuiaPagamento;
 import gcom.atendimentopublico.ordemservico.FiscalizacaoSituacao;
 import gcom.atendimentopublico.ordemservico.OrdemServico;
 import gcom.cadastro.cliente.Cliente;
@@ -219,6 +220,10 @@ public class CobrancaDocumento
 	private String descricaoParecer;
 
 	private ResolucaoDiretoria resolucaoDiretoria;
+	
+	private BigDecimal valorSucumbencia;
+
+	private GuiaPagamento guiaPagamentoSucumbencia;
 
 	// Constantes
 	public final static String INCLUIR_ACRESCIMOS = "1";
@@ -815,6 +820,26 @@ public class CobrancaDocumento
 	public String getDataSituacaoDebitoFormatada(){
 
 		return Util.formatarData(dataSituacaoDebito);
+	}
+	
+	public BigDecimal getValorSucumbencia(){
+
+		return valorSucumbencia;
+	}
+
+	public void setValorSucumbencia(BigDecimal valorSucumbencia){
+
+		this.valorSucumbencia = valorSucumbencia;
+	}	
+
+	public GuiaPagamento getGuiaPagamentoSucumbencia(){
+
+		return guiaPagamentoSucumbencia;
+	}
+
+	public void setGuiaPagamentoSucumbencia(GuiaPagamento guiaPagamentoSucumbencia){
+
+		this.guiaPagamentoSucumbencia = guiaPagamentoSucumbencia;
 	}
 
 }

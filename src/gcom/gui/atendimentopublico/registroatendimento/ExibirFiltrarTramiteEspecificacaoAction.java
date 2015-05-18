@@ -18,22 +18,6 @@ import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.operacional.Bacia;
-import gcom.operacional.DistritoOperacional;
-import gcom.operacional.FiltroBacia;
-import gcom.operacional.FiltroDistritoOperacional;
-import gcom.operacional.FiltroSetorAbastecimento;
-import gcom.operacional.FiltroSistemaAbastecimento;
-import gcom.operacional.FiltroSistemaEsgoto;
-import gcom.operacional.FiltroSubBacia;
-import gcom.operacional.FiltroSubsistemaEsgoto;
-import gcom.operacional.FiltroZonaAbastecimento;
-import gcom.operacional.SetorAbastecimento;
-import gcom.operacional.SistemaAbastecimento;
-import gcom.operacional.SistemaEsgoto;
-import gcom.operacional.SubBacia;
-import gcom.operacional.SubsistemaEsgoto;
-import gcom.operacional.ZonaAbastecimento;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
@@ -87,30 +71,14 @@ public class ExibirFiltrarTramiteEspecificacaoAction
 			form.setNomeMunicipio("");
 			form.setCodigoBairro("");
 			form.setNomeBairro("");
-			form.setIdSistemaAbastecimento(numeroNaoInformadoStr);
-			form.setIdDistritoOperacional(numeroNaoInformadoStr);
-			form.setIdZonaAbastecimento(numeroNaoInformadoStr);
-			form.setIdSetorAbastecimento(numeroNaoInformadoStr);
-			form.setIdSistemaEsgoto(numeroNaoInformadoStr);
-			form.setIdSubsistemaEsgoto(numeroNaoInformadoStr);
-			form.setIdBacia(numeroNaoInformadoStr);
-			form.setIdSubBacia(numeroNaoInformadoStr);
+
 			form.setIdUnidadeOrganizacionalOrigem("");
 			form.setDescricaoUnidadeOrganizacionalOrigem("");
 			form.setIdUnidadeOrganizacionalDestino("");
 			form.setDescricaoUnidadeOrganizacionalDestino("");
 			form.setAtualizar(true);
 
-			sessao.removeAttribute("colecaoSolicitacaoTipoFiltro");
-			sessao.removeAttribute("colecaoSolicitacaoTipoEspecificacaoFiltro");
-			sessao.removeAttribute("colecaoSistemaAbastecimentoFiltro");
-			sessao.removeAttribute("colecaoDistritoOperacionalFiltro");
-			sessao.removeAttribute("colecaoZonaAbastecimentoFiltro");
-			sessao.removeAttribute("colecaoSetorAbastecimentoFiltro");
-			sessao.removeAttribute("colecaoSistemaEsgotoFiltro");
-			sessao.removeAttribute("colecaoSubsistemaEsgotoFiltro");
-			sessao.removeAttribute("colecaoBaciaFiltro");
-			sessao.removeAttribute("colecaoSubBaciaFiltro");
+
 		}
 
 		if(objetoConsulta != null && !objetoConsulta.trim().equals("")){
@@ -351,75 +319,7 @@ public class ExibirFiltrarTramiteEspecificacaoAction
 				sessao.setAttribute("colecaoSolicitacaoTipoEspecificacaoFiltro", colecaoSolicitacaoTipoEspecificacaoFiltro);
 			}
 
-			// Sistema de Abastecimento
-			Collection<SistemaAbastecimento> colecaoSistemaAbastecimentoFiltro = (Collection<SistemaAbastecimento>) sessao
-							.getAttribute("colecaoSistemaAbastecimentoFiltro");
 
-			if(colecaoSistemaAbastecimentoFiltro == null){
-				colecaoSistemaAbastecimentoFiltro = getColecaoSistemaAbastecimento();
-				sessao.setAttribute("colecaoSistemaAbastecimentoFiltro", colecaoSistemaAbastecimentoFiltro);
-			}
-
-			// Unidade Operacional
-			Collection<DistritoOperacional> colecaoDistritoOperacionalFiltro = (Collection<DistritoOperacional>) sessao
-							.getAttribute("colecaoDistritoOperacionalFiltro");
-
-			if(colecaoDistritoOperacionalFiltro == null){
-				colecaoDistritoOperacionalFiltro = getColecaoDistritoOperacional();
-				sessao.setAttribute("colecaoDistritoOperacionalFiltro", colecaoDistritoOperacionalFiltro);
-			}
-
-			// Zona de Abastecimento
-			Collection<ZonaAbastecimento> colecaoZonaAbastecimentoFiltro = (Collection<ZonaAbastecimento>) sessao
-							.getAttribute("colecaoZonaAbastecimentoFiltro");
-
-			if(colecaoZonaAbastecimentoFiltro == null){
-				colecaoZonaAbastecimentoFiltro = getColecaoZonaAbastecimento();
-				sessao.setAttribute("colecaoZonaAbastecimentoFiltro", colecaoZonaAbastecimentoFiltro);
-			}
-
-			// Setor de Abastecimento
-			Collection<SetorAbastecimento> colecaoSetorAbastecimentoFiltro = (Collection<SetorAbastecimento>) sessao
-							.getAttribute("colecaoSetorAbastecimentoFiltro");
-
-			if(colecaoSetorAbastecimentoFiltro == null){
-				colecaoSetorAbastecimentoFiltro = getColecaoSetorAbastecimento();
-				sessao.setAttribute("colecaoSetorAbastecimentoFiltro", colecaoSetorAbastecimentoFiltro);
-			}
-
-			// Sistema de Esgoto
-			Collection<SistemaEsgoto> colecaoSistemaEsgotoFiltro = (Collection<SistemaEsgoto>) sessao
-							.getAttribute("colecaoSistemaEsgotoFiltro");
-
-			if(colecaoSistemaEsgotoFiltro == null){
-				colecaoSistemaEsgotoFiltro = getColecaoSistemaEsgoto();
-				sessao.setAttribute("colecaoSistemaEsgotoFiltro", colecaoSistemaEsgotoFiltro);
-			}
-
-			// Subsitema de Esgoto
-			Collection<SubsistemaEsgoto> colecaoSubsistemaEsgotoFiltro = (Collection<SubsistemaEsgoto>) sessao
-							.getAttribute("colecaoSubsistemaEsgotoFiltro");
-
-			if(colecaoSubsistemaEsgotoFiltro == null){
-				colecaoSubsistemaEsgotoFiltro = getColecaoSubsistemaEsgoto();
-				sessao.setAttribute("colecaoSubsistemaEsgotoFiltro", colecaoSubsistemaEsgotoFiltro);
-			}
-
-			// Bacia
-			Collection<Bacia> colecaoBaciaFiltro = (Collection<Bacia>) sessao.getAttribute("colecaoBaciaFiltro");
-
-			if(colecaoBaciaFiltro == null){
-				colecaoBaciaFiltro = getColecaoBacia();
-				sessao.setAttribute("colecaoBaciaFiltro", colecaoBaciaFiltro);
-			}
-
-			// SubBacia
-			Collection<SubBacia> colecaoSubBaciaFiltro = (Collection<SubBacia>) sessao.getAttribute("colecaoSubBaciaFiltro");
-
-			if(colecaoSubBaciaFiltro == null){
-				colecaoSubBaciaFiltro = getColecaoSubBacia();
-				sessao.setAttribute("colecaoSubBaciaFiltro", colecaoSubBaciaFiltro);
-			}
 		}
 
 		return retorno;
@@ -468,172 +368,6 @@ public class ExibirFiltrarTramiteEspecificacaoAction
 		return colecao;
 	}
 
-	/**
-	 * Retorna Coleção de Sistema de Abastecimento
-	 */
 
-	private Collection<SistemaAbastecimento> getColecaoSistemaAbastecimento(){
-
-		FiltroSistemaAbastecimento filtro = new FiltroSistemaAbastecimento();
-		filtro.setCampoOrderBy(FiltroSistemaAbastecimento.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroSistemaAbastecimento.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<SistemaAbastecimento> colecao = fachada.pesquisar(filtro, SistemaAbastecimento.class.getName());
-
-		if(colecao == null || colecao.isEmpty()){
-			throw new ActionServletException("atencao.naocadastrado", null, "Sistema de Abastecimento");
-		}
-
-		return colecao;
-	}
-
-	/**
-	 * Retorna Coleção de Distrito Operacional
-	 */
-
-	private Collection<DistritoOperacional> getColecaoDistritoOperacional(){
-
-		FiltroDistritoOperacional filtro = new FiltroDistritoOperacional();
-		filtro.setCampoOrderBy(FiltroDistritoOperacional.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroDistritoOperacional.INDICADORUSO, ConstantesSistema.INDICADOR_USO_ATIVO));
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<DistritoOperacional> colecao = fachada.pesquisar(filtro, DistritoOperacional.class.getName());
-
-		if(colecao == null || colecao.isEmpty()){
-			throw new ActionServletException("atencao.naocadastrado", null, "Distrito Operacional");
-		}
-
-		return colecao;
-	}
-
-	/**
-	 * Retorna Coleção de Zona de Abastecimento
-	 */
-
-	private Collection<ZonaAbastecimento> getColecaoZonaAbastecimento(){
-
-		FiltroZonaAbastecimento filtro = new FiltroZonaAbastecimento();
-		filtro.setCampoOrderBy(FiltroZonaAbastecimento.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroZonaAbastecimento.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<ZonaAbastecimento> colecao = fachada.pesquisar(filtro, ZonaAbastecimento.class.getName());
-
-		if(colecao == null || colecao.isEmpty()){
-			throw new ActionServletException("atencao.naocadastrado", null, "Zona de Abastecimento");
-		}
-
-		return colecao;
-	}
-
-	/**
-	 * Retorna Coleção de Setor de Abastecimento
-	 */
-
-	private Collection<SetorAbastecimento> getColecaoSetorAbastecimento(){
-
-		FiltroSetorAbastecimento filtro = new FiltroSetorAbastecimento();
-		filtro.setCampoOrderBy(FiltroSetorAbastecimento.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroSetorAbastecimento.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<SetorAbastecimento> colecao = fachada.pesquisar(filtro, SetorAbastecimento.class.getName());
-
-		if(colecao == null || colecao.isEmpty()){
-			throw new ActionServletException("atencao.naocadastrado", null, "Setor de Abastecimento");
-		}
-
-		return colecao;
-	}
-
-	/**
-	 * Retorna Coleção de Sistema de Esgoto
-	 */
-
-	private Collection<SistemaEsgoto> getColecaoSistemaEsgoto(){
-
-		FiltroSistemaEsgoto filtro = new FiltroSistemaEsgoto();
-		filtro.setCampoOrderBy(FiltroSistemaEsgoto.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroSistemaEsgoto.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<SistemaEsgoto> colecao = fachada.pesquisar(filtro, SistemaEsgoto.class.getName());
-
-		if(colecao == null || colecao.isEmpty()){
-			throw new ActionServletException("atencao.naocadastrado", null, "Sistema de Esgoto");
-		}
-
-		return colecao;
-	}
-
-	/**
-	 * Retorna Coleção de Subsistema de Esgoto
-	 */
-
-	private Collection<SubsistemaEsgoto> getColecaoSubsistemaEsgoto(){
-
-		FiltroSubsistemaEsgoto filtro = new FiltroSubsistemaEsgoto();
-		filtro.setCampoOrderBy(FiltroSubsistemaEsgoto.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroSubsistemaEsgoto.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<SubsistemaEsgoto> colecao = fachada.pesquisar(filtro, SubsistemaEsgoto.class.getName());
-
-		if(colecao == null || colecao.isEmpty()){
-			throw new ActionServletException("atencao.naocadastrado", null, "Subsistema de Esgoto");
-		}
-
-		return colecao;
-	}
-
-	/**
-	 * Retorna Coleção de Bacia
-	 */
-
-	private Collection<Bacia> getColecaoBacia(){
-
-		FiltroBacia filtro = new FiltroBacia();
-		filtro.setCampoOrderBy(FiltroBacia.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroBacia.INDICADORUSO, ConstantesSistema.INDICADOR_USO_ATIVO));
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<Bacia> colecao = fachada.pesquisar(filtro, Bacia.class.getName());
-
-		if(colecao == null || colecao.isEmpty()){
-			throw new ActionServletException("atencao.naocadastrado", null, "Bacia");
-		}
-
-		return colecao;
-	}
-
-	/**
-	 * Retorna Coleção de SubBacia
-	 */
-
-	private Collection<SubBacia> getColecaoSubBacia(){
-
-		FiltroSubBacia filtro = new FiltroSubBacia();
-		filtro.setCampoOrderBy(FiltroSubBacia.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroSubBacia.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<SubBacia> colecao = fachada.pesquisar(filtro, SubBacia.class.getName());
-
-		if(colecao == null || colecao.isEmpty()){
-			throw new ActionServletException("atencao.naocadastrado", null, "Subbacia");
-		}
-
-		return colecao;
-	}
 
 }

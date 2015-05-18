@@ -132,8 +132,8 @@ public class ExibirPesquisarQuadraAction
 		// e em caso afirmativo recebe o parâmetro e manda-o pela sessão para
 		// ser verificado no quadra_resultado_pesquisa e depois retirado da
 		// sessão no ExibirFiltrarQuadraAction
-		if(httpServletRequest.getParameter("consulta") != null){
-			String consulta = httpServletRequest.getParameter("consulta");
+		String consulta = httpServletRequest.getParameter("consulta");
+		if(consulta != null){
 			sessao.setAttribute("consulta", consulta);
 		}
 
@@ -147,7 +147,20 @@ public class ExibirPesquisarQuadraAction
 			idSetorComercial = (String) httpServletRequest.getParameter("idSetorComercial");
 			sessao.setAttribute("idSetorComercial", idSetorComercial);
 		}else{
-			idSetorComercial = (String) sessao.getAttribute("idSetorComercial");
+			if(httpServletRequest.getAttribute("idSetorComercial") != null
+							&& !httpServletRequest.getAttribute("idSetorComercial").toString().trim().equalsIgnoreCase("")){
+				idSetorComercial = (String) httpServletRequest.getAttribute("idSetorComercial");
+				sessao.setAttribute("idSetorComercial", idSetorComercial);
+			}else{
+				if(sessao.getAttribute("idSetorComercial") != null){
+					idSetorComercial = (String) sessao.getAttribute("idSetorComercial");
+				}else{
+					if(pesquisarActionForm.get("idSetorComercial") != null
+									&& !pesquisarActionForm.get("idSetorComercial").toString().trim().equals("")){
+						idSetorComercial = pesquisarActionForm.get("idSetorComercial").toString();
+					}
+				}
+			}
 		}
 
 		if(httpServletRequest.getParameter("idLocalidade") != null
@@ -156,7 +169,20 @@ public class ExibirPesquisarQuadraAction
 			idLocalidade = (String) httpServletRequest.getParameter("idLocalidade");
 			sessao.setAttribute("idLocalidade", idLocalidade);
 		}else{
-			idLocalidade = (String) sessao.getAttribute("idLocalidade");
+			if(httpServletRequest.getAttribute("idLocalidade") != null
+							&& !httpServletRequest.getAttribute("idLocalidade").toString().trim().equalsIgnoreCase("")){
+				idLocalidade = (String) httpServletRequest.getAttribute("idLocalidade");
+				sessao.setAttribute("idLocalidade", idLocalidade);
+			}else{
+				if(sessao.getAttribute("idLocalidade") != null){
+					idLocalidade = (String) sessao.getAttribute("idLocalidade");
+				}else{
+					if(pesquisarActionForm.get("idLocalidade") != null
+									&& !pesquisarActionForm.get("idLocalidade").toString().trim().equals("")){
+						idLocalidade = pesquisarActionForm.get("idLocalidade").toString();
+					}
+				}
+			}
 		}
 
 		if(httpServletRequest.getParameter("codigoSetorComercial") != null
@@ -165,7 +191,16 @@ public class ExibirPesquisarQuadraAction
 			codigoSetorComercial = (String) httpServletRequest.getParameter("codigoSetorComercial");
 			sessao.setAttribute("codigoSetorComercial", codigoSetorComercial);
 		}else{
-			codigoSetorComercial = (String) sessao.getAttribute("codigoSetorComercial");
+			if(sessao.getAttribute("codigoSetorComercial") != null
+							&& !sessao.getAttribute("codigoSetorComercial").toString().trim().equals("")){
+				codigoSetorComercial = (String) sessao.getAttribute("codigoSetorComercial");
+			}else{
+				if(pesquisarActionForm.get("codigoSetorComercial") != null
+								&& !pesquisarActionForm.get("codigoSetorComercial").toString().trim().equals("")){
+					codigoSetorComercial = pesquisarActionForm.get("codigoSetorComercial").toString();
+				}
+			}
+
 		}
 
 		if(tipo != null && !tipo.trim().equalsIgnoreCase("")){
@@ -174,43 +209,45 @@ public class ExibirPesquisarQuadraAction
 			pesquisarActionForm.set("tipoPesquisa", ConstantesSistema.TIPO_PESQUISA_INICIAL.toString());
 		}
 
-		FiltroQuadra filtroQuadra = new FiltroQuadra();
+		if(consulta != null){
+			FiltroQuadra filtroQuadra = new FiltroQuadra();
 
-		// Objetos que serão retornados pelo Hibernate
-		filtroQuadra.adicionarCaminhoParaCarregamentoEntidade("setorComercial");
-		filtroQuadra.adicionarCaminhoParaCarregamentoEntidade("setorComercial.localidade");
-		filtroQuadra.adicionarCaminhoParaCarregamentoEntidade("bairro");
-		filtroQuadra.adicionarCaminhoParaCarregamentoEntidade("rota");
+			// Objetos que serão retornados pelo Hibernate
+			filtroQuadra.adicionarCaminhoParaCarregamentoEntidade("setorComercial");
+			filtroQuadra.adicionarCaminhoParaCarregamentoEntidade("setorComercial.localidade");
+			filtroQuadra.adicionarCaminhoParaCarregamentoEntidade("bairro");
+			filtroQuadra.adicionarCaminhoParaCarregamentoEntidade("rota");
 
-		filtroQuadra.setCampoOrderBy(FiltroQuadra.NUMERO_QUADRA);
-		if(idSetorComercial != null && !idSetorComercial.trim().equalsIgnoreCase("")){
-			filtroQuadra.adicionarParametro(new ParametroSimples(FiltroQuadra.ID_SETORCOMERCIAL, new Integer(idSetorComercial)));
-		}
+			filtroQuadra.setCampoOrderBy(FiltroQuadra.NUMERO_QUADRA);
+			if(idSetorComercial != null && !idSetorComercial.trim().equalsIgnoreCase("")){
+				filtroQuadra.adicionarParametro(new ParametroSimples(FiltroQuadra.ID_SETORCOMERCIAL, new Integer(idSetorComercial)));
+			}
 
-		if(idLocalidade != null && !idLocalidade.trim().equalsIgnoreCase("")){
-			filtroQuadra.adicionarParametro(new ParametroSimples(FiltroQuadra.ID_LOCALIDADE, new Integer(idLocalidade)));
-		}
+			if(idLocalidade != null && !idLocalidade.trim().equalsIgnoreCase("")){
+				filtroQuadra.adicionarParametro(new ParametroSimples(FiltroQuadra.ID_LOCALIDADE, new Integer(idLocalidade)));
+			}
 
-		if(codigoSetorComercial != null && !codigoSetorComercial.trim().equalsIgnoreCase("")){
-			filtroQuadra.adicionarParametro(new ParametroSimples(FiltroQuadra.CODIGO_SETORCOMERCIAL, new Integer(codigoSetorComercial)));
-		}
+			if(codigoSetorComercial != null && !codigoSetorComercial.trim().equalsIgnoreCase("")){
+				filtroQuadra.adicionarParametro(new ParametroSimples(FiltroQuadra.CODIGO_SETORCOMERCIAL, new Integer(codigoSetorComercial)));
+			}
 
-		if(sessao.getAttribute("indicadorUsoTodos") == null){
-			filtroQuadra.adicionarParametro(new ParametroSimples(FiltroQuadra.INDICADORUSO, ConstantesSistema.INDICADOR_USO_ATIVO));
-		}
+			if(sessao.getAttribute("indicadorUsoTodos") == null){
+				filtroQuadra.adicionarParametro(new ParametroSimples(FiltroQuadra.INDICADORUSO, ConstantesSistema.INDICADOR_USO_ATIVO));
+			}
 
-		Collection quadras = fachada.pesquisar(filtroQuadra, Quadra.class.getName());
+			Collection quadras = fachada.pesquisar(filtroQuadra, Quadra.class.getName());
 
-		if(quadras != null && !quadras.isEmpty()){
-			// Aciona o controle de paginação para que sejam pesquisados apenas
-			// os registros que aparecem na página
-			Map resultado = controlarPaginacao(httpServletRequest, retorno, filtroQuadra, Quadra.class.getName());
-			quadras = (Collection) resultado.get("colecaoRetorno");
-			retorno = (ActionForward) resultado.get("destinoActionForward");
+			if(quadras != null && !quadras.isEmpty()){
+				// Aciona o controle de paginação para que sejam pesquisados apenas
+				// os registros que aparecem na página
+				Map resultado = controlarPaginacao(httpServletRequest, retorno, filtroQuadra, Quadra.class.getName());
+				quadras = (Collection) resultado.get("colecaoRetorno");
+				retorno = (ActionForward) resultado.get("destinoActionForward");
 
-			sessao.setAttribute("quadras", quadras);
-		}else{
-			throw new ActionServletException("atencao.pesquisa.nenhumresultado", null, "quadra");
+				sessao.setAttribute("quadras", quadras);
+			}else{
+				throw new ActionServletException("atencao.pesquisa.nenhumresultado", null, "quadra");
+			}
 		}
 
 		// Passa parametros para distinguir o tipo de retorno

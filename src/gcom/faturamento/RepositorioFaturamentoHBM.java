@@ -201,8 +201,8 @@ public final class RepositorioFaturamentoHBM
 			consulta = "select ct.id from Conta ct " + "inner join ct.imovel " + "where ct.referencia = :referencia "
 							+ "and ct.imovel.id = :imovel ";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("referencia", anoMesReferencia).setInteger("imovel",
-							imovel.getId()).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("referencia", anoMesReferencia)
+							.setInteger("imovel", imovel.getId()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -247,8 +247,8 @@ public final class RepositorioFaturamentoHBM
 							+ "inner join fac.faturamentoAtividade fa "
 							+ "where  fg.id = :id and fgcm.anoMesReferencia = :anoMesReferencia and fa.id = :fa ";
 
-			retorno = (Object[]) session.createQuery(consulta).setInteger("id", faturamentoGrupo.getId()).setInteger("anoMesReferencia",
-							anoMesReferencia).setInteger("fa", faturamentoAtividade.getId()).uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta).setInteger("id", faturamentoGrupo.getId())
+							.setInteger("anoMesReferencia", anoMesReferencia).setInteger("fa", faturamentoAtividade.getId()).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -272,8 +272,7 @@ public final class RepositorioFaturamentoHBM
 
 		try{
 			Iterator iterator = session
-							.createQuery(
-											"from gcom.faturamento.FaturamentoAtivCronRota CronogramaRota where CronogramaRota.comp_id.faturamentoAtividadeCronogramaId = :faturamentoAtividadeCronograma")
+							.createQuery("from gcom.faturamento.FaturamentoAtivCronRota CronogramaRota where CronogramaRota.comp_id.faturamentoAtividadeCronogramaId = :faturamentoAtividadeCronograma")
 							.setInteger("faturamentoAtividadeCronograma", idFaturamentoAtividadeCronograma.intValue()).iterate();
 
 			while(iterator.hasNext()){
@@ -491,18 +490,22 @@ public final class RepositorioFaturamentoHBM
 		Collection retorno = null;
 
 		Session session = HibernateUtil.getSession();
-		String consulta = null;
+		StringBuilder consulta = new StringBuilder();
 
 		try{
-			consulta = "SELECT dbcb.id, dbtp.id, dbtp.descricao, dbcb.anoMesReferenciaDebito, "
-							+ "dbcb.anoMesCobrancaDebito, dbcb.numeroPrestacao, dbcb.numeroPrestacaoDebito, "
-							+ "dbcb.valorPrestacao, dbcb.ultimaAlteracao, dbtp.descricaoAbreviada, fntp.id, "
-							+ "lict.id, dbcb.indicadorRemuneraCobrancaAdministrativa "
-							+ "FROM DebitoCobrado dbcb " + "INNER JOIN dbcb.conta cnta " + "INNER JOIN dbcb.debitoTipo dbtp "
-							+ "INNER JOIN dbtp.financiamentoTipo fntp " + "INNER JOIN dbtp.lancamentoItemContabil lict "
-							+ "WHERE  cnta.id = :contaid ";
+			consulta.append("SELECT dbcb.id, dbtp.id, dbtp.descricao, dbcb.anoMesReferenciaDebito, ");
+			consulta.append("dbcb.anoMesCobrancaDebito, dbcb.numeroPrestacao, dbcb.numeroPrestacaoDebito, ");
+			consulta.append("dbcb.valorPrestacao, dbcb.ultimaAlteracao, dbtp.descricaoAbreviada, fntp.id, ");
+			consulta.append("lict.id, dbcb.indicadorRemuneraCobrancaAdministrativa, parc.id ");
+			consulta.append("FROM DebitoCobrado dbcb ");
+			consulta.append("INNER JOIN dbcb.conta cnta ");
+			consulta.append("INNER JOIN dbcb.debitoTipo dbtp ");
+			consulta.append("INNER JOIN dbtp.financiamentoTipo fntp ");
+			consulta.append("INNER JOIN dbtp.lancamentoItemContabil lict ");
+			consulta.append("LEFT JOIN dbcb.parcelamento parc ");
+			consulta.append("WHERE  cnta.id = :contaid ");
 
-			retorno = session.createQuery(consulta).setInteger("contaid", conta.getId().intValue()).list();
+			retorno = session.createQuery(consulta.toString()).setInteger("contaid", conta.getId().intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -563,8 +566,7 @@ public final class RepositorioFaturamentoHBM
 							+ "lict.id, crrz.creditoOrigem.id, crrz.creditoOrigem.descricao, crrz.creditoOrigem.indicadorUsoLivre, crg.id , crrz.lancamentoItemContabil.id "
 							+ "FROM CreditoRealizado crrz " + "INNER JOIN crrz.conta cnta " + "INNER JOIN crrz.creditoTipo crtp "
 							+ "INNER JOIN crtp.lancamentoItemContabil lict " + "INNER JOIN crrz.creditoOrigem crOr "
-							+ "LEFT JOIN crrz.creditoARealizarGeral crg "
-							+ "WHERE  cnta.id = :contaid ";
+							+ "LEFT JOIN crrz.creditoARealizarGeral crg " + "WHERE  cnta.id = :contaid ";
 
 			retorno = session.createQuery(consulta).setInteger("contaid", conta.getId().intValue()).list();
 
@@ -592,8 +594,8 @@ public final class RepositorioFaturamentoHBM
 							+ "where ctv.dataVigencia between :dataLeituraAnterior  and  :dataLeituraAtual  "
 							+ "and ctv.consumoTarifa.id = :idConsumoTarifa " + "order by ctv.dataVigencia ";
 
-			retorno = session.createQuery(consulta).setInteger("idConsumoTarifa", consumoTarifa.getId().intValue()).setDate(
-							"dataLeituraAnterior", dataLeituraAnterior).setDate("dataLeituraAtual", dataLeituraAtual).list();
+			retorno = session.createQuery(consulta).setInteger("idConsumoTarifa", consumoTarifa.getId().intValue())
+							.setDate("dataLeituraAnterior", dataLeituraAnterior).setDate("dataLeituraAtual", dataLeituraAtual).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -629,8 +631,8 @@ public final class RepositorioFaturamentoHBM
 							+ "where ctv.dataVigencia <= :dataFaturamento and ctv.consumoTarifa.id = :idConsumoTarifa "
 							+ "order by ctv.dataVigencia desc ";
 
-			retorno = (ConsumoTarifaVigencia) session.createQuery(consulta).setInteger("idConsumoTarifa", idConsumoTarifa).setDate(
-							"dataFaturamento", dataFaturamento).setMaxResults(1).uniqueResult();
+			retorno = (ConsumoTarifaVigencia) session.createQuery(consulta).setInteger("idConsumoTarifa", idConsumoTarifa)
+							.setDate("dataFaturamento", dataFaturamento).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -657,8 +659,8 @@ public final class RepositorioFaturamentoHBM
 							+ "where ctv.dataVigencia < :dataLeituraAnterior and ct.id = :idConsumoTarifa "
 							+ "order by ctv.dataVigencia desc ";
 
-			retorno = session.createQuery(consulta).setInteger("idConsumoTarifa", consumoTarifa.getId().intValue()).setDate(
-							"dataLeituraAnterior", dataLeituraAnterior).setMaxResults(1).list();
+			retorno = session.createQuery(consulta).setInteger("idConsumoTarifa", consumoTarifa.getId().intValue())
+							.setDate("dataLeituraAnterior", dataLeituraAnterior).setMaxResults(1).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -684,8 +686,9 @@ public final class RepositorioFaturamentoHBM
 							+ "where ctc.consumoTarifaVigencia.id = :idConsumoTarifaVigencia " + "and ct.id = :idCategoria "
 							+ "and ctc.subCategoria.id = :idSubCategoria ";
 
-			retorno = session.createQuery(consulta).setInteger("idConsumoTarifaVigencia", consumoTarifaVigencia.getId()).setInteger(
-							"idCategoria", categoria.getId()).setInteger("idSubCategoria", Subcategoria.SUBCATEGORIA_ZERO.getId()).list();
+			retorno = session.createQuery(consulta).setInteger("idConsumoTarifaVigencia", consumoTarifaVigencia.getId())
+							.setInteger("idCategoria", categoria.getId())
+							.setInteger("idSubCategoria", Subcategoria.SUBCATEGORIA_ZERO.getId()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -779,8 +782,8 @@ public final class RepositorioFaturamentoHBM
 							+ "INNER JOIN ctv.consumoTarifa ct " + "where ct.id = :idConsumoTarifa "
 							+ "and ctv.id = :idConsumoTarifaVigencia";
 
-			retorno = session.createQuery(consulta).setInteger("idConsumoTarifa", consumoTarifa.getId().intValue()).setInteger(
-							"idConsumoTarifaVigencia", idConsumoTarifaVigencia).setMaxResults(1).list();
+			retorno = session.createQuery(consulta).setInteger("idConsumoTarifa", consumoTarifa.getId().intValue())
+							.setInteger("idConsumoTarifaVigencia", idConsumoTarifaVigencia).setMaxResults(1).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -818,8 +821,8 @@ public final class RepositorioFaturamentoHBM
 							+ "FROM gcom.faturamento.consumotarifa.ConsumoTarifaVigencia ctv " + "INNER JOIN ctv.consumoTarifa ct "
 							+ "where ct.id = :idConsumoTarifa " + "and ctv.id = :idConsumoTarifaVigencia)";
 
-			retorno = session.createQuery(consulta).setInteger("idConsumoTarifa", consumoTarifa.getId().intValue()).setInteger(
-							"idConsumoTarifaVigencia", idConsumoTarifaVigencia)
+			retorno = session.createQuery(consulta).setInteger("idConsumoTarifa", consumoTarifa.getId().intValue())
+							.setInteger("idConsumoTarifaVigencia", idConsumoTarifaVigencia)
 
 			.setMaxResults(1).list();
 
@@ -896,8 +899,8 @@ public final class RepositorioFaturamentoHBM
 							+ "FROM gcom.faturamento.consumotarifa.ConsumoTarifaVigencia ctv " + "INNER JOIN ctv.consumoTarifa ct "
 							+ "where ct.id = :idConsumoTarifa " + "and ctv.id = :idConsumoTarifaVigencia)";
 
-			retorno = session.createQuery(consulta).setInteger("idConsumoTarifa", consumoTarifa.getId().intValue()).setInteger(
-							"idConsumoTarifaVigencia", idConsumoTarifaVigencia)
+			retorno = session.createQuery(consulta).setInteger("idConsumoTarifa", consumoTarifa.getId().intValue())
+							.setInteger("idConsumoTarifaVigencia", idConsumoTarifaVigencia)
 
 			.setMaxResults(1).list();
 
@@ -959,8 +962,8 @@ public final class RepositorioFaturamentoHBM
 							+ "left join fgcm.faturamentoGrupo faturamentoGrupo " + "where fgcm.anoMesReferencia = :anoMes and "
 							+ "faturamentoGrupo.id = :idFaturamentoGrupo ";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idFaturamentoGrupo", idFaturamentoGrupo.intValue()).setInteger(
-							"anoMes", anoMes.intValue()).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idFaturamentoGrupo", idFaturamentoGrupo.intValue())
+							.setInteger("anoMes", anoMes.intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -988,9 +991,9 @@ public final class RepositorioFaturamentoHBM
 							+ "left join fac.faturamentoGrupoCronogramaMensal fgcm " + "where fa.id = :idFaturamentoAtividade and "
 							+ "fgcm.id = :idFaturamentoGrupoCronogramaMensal ";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idFaturamentoGrupoCronogramaMensal",
-							idFaturamentoGrupoCronogramaMensal.intValue()).setInteger("idFaturamentoAtividade", idFaturamentoAtividade)
-							.setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta)
+							.setInteger("idFaturamentoGrupoCronogramaMensal", idFaturamentoGrupoCronogramaMensal.intValue())
+							.setInteger("idFaturamentoAtividade", idFaturamentoAtividade).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1021,9 +1024,9 @@ public final class RepositorioFaturamentoHBM
 			atualizarImovel = "update gcom.faturamento.FaturamentoAtividadeCronograma "
 							+ "set ftac_tmrealizacao = :dataRealizacao,ftac_tmultimaalteracao = :dataUltimaAlteracao where ftac_id = :idFaturamentoAtividadeCronograma";
 
-			session.createQuery(atualizarImovel).setTimestamp("dataRealizacao", dataRealizada).setTimestamp("dataUltimaAlteracao",
-							new Date()).setInteger("idFaturamentoAtividadeCronograma", idFaturamentoAtividadeCronograma.intValue())
-							.executeUpdate();
+			session.createQuery(atualizarImovel).setTimestamp("dataRealizacao", dataRealizada)
+							.setTimestamp("dataUltimaAlteracao", new Date())
+							.setInteger("idFaturamentoAtividadeCronograma", idFaturamentoAtividadeCronograma.intValue()).executeUpdate();
 		}catch(HibernateException e){
 
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -1055,9 +1058,9 @@ public final class RepositorioFaturamentoHBM
 							+ " ftcm_id in (select id from gcom.faturamento.FaturamentoGrupoCronogramaMensal where anoMesReferencia = :referencia and faturamentoGrupo.id = :faturamentoGrupo) ";
 
 			session.createQuery(atualizarImovel).setTimestamp("dataRealizacao", new Date()).setTimestamp("dataUltimaAlteracao", new Date())
-							.setInteger("faturamentoAtividade", FaturamentoAtividade.GERAR_ARQUIVO_LEITURA).setInteger("referencia",
-											faturamentoGrupoCronogramaMensal.getAnoMesReferencia()).setInteger("faturamentoGrupo",
-											faturamentoGrupoCronogramaMensal.getFaturamentoGrupo().getId()).executeUpdate();
+							.setInteger("faturamentoAtividade", FaturamentoAtividade.GERAR_ARQUIVO_LEITURA)
+							.setInteger("referencia", faturamentoGrupoCronogramaMensal.getAnoMesReferencia())
+							.setInteger("faturamentoGrupo", faturamentoGrupoCronogramaMensal.getFaturamentoGrupo().getId()).executeUpdate();
 		}catch(HibernateException e){
 
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -1353,8 +1356,8 @@ public final class RepositorioFaturamentoHBM
 							+ "rf.gerenciaRegional.id, rf.sequenciaTipoLancamento, rf.sequenciaItemTipoLancamento "
 							+ "order by rf.sequenciaTipoLancamento, rf.sequenciaItemTipoLancamento, rf.categoria.id ";
 
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("gerenciaRegional",
-							gerenciaRegional).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("gerenciaRegional", gerenciaRegional).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1424,8 +1427,8 @@ public final class RepositorioFaturamentoHBM
 							+ "order by rf.localidade.id, rf.sequenciaTipoLancamento,  "
 							+ "rf.sequenciaItemTipoLancamento, rf.categoria.id ";
 
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("gerenciaRegional",
-							gerenciaRegional).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("gerenciaRegional", gerenciaRegional).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1528,12 +1531,13 @@ public final class RepositorioFaturamentoHBM
 							+ "cnta.debitos, cnta.valorCreditos, cnta.consumoAgua, cnta.consumoEsgoto, "
 							+ "cnta.dataValidadeConta, cnta.dataRevisao, cnta.debitoCreditoSituacaoAtual, cnta.referenciaContabil, "
 							+ "cnta.ultimaAlteracao, cnta.codigoSetorComercial, cnta.quadra, cnta.indicadorAlteracaoVencimento, "
-							+ "cnta.dataRetificacao, cnta.dataEmissao " + "FROM Conta cnta " + "INNER JOIN cnta.imovel imov "
-							+ "INNER JOIN cnta.debitoCreditoSituacaoAtual dcst " + "WHERE imov.id = :idImovel "
-							+ "AND cnta.debitoCreditoSituacaoAtual <> :idSituacaoPreFaturada " + "ORDER BY cnta.referencia";
+							+ "cnta.dataRetificacao, cnta.dataEmissao, cnta.indicadorExecucaoFiscal  " + "FROM Conta cnta "
+							+ "INNER JOIN cnta.imovel imov " + "INNER JOIN cnta.debitoCreditoSituacaoAtual dcst "
+							+ "WHERE imov.id = :idImovel " + "AND cnta.debitoCreditoSituacaoAtual <> :idSituacaoPreFaturada "
+							+ "ORDER BY cnta.referencia";
 
-			retorno = session.createQuery(consulta).setInteger("idImovel", imovel.getId()).setInteger("idSituacaoPreFaturada",
-							DebitoCreditoSituacao.PRE_FATURADA).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", imovel.getId())
+							.setInteger("idSituacaoPreFaturada", DebitoCreditoSituacao.PRE_FATURADA).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1569,8 +1573,8 @@ public final class RepositorioFaturamentoHBM
 							+ "cnta.debitos, cnta.valorCreditos, cnta.consumoAgua, cnta.consumoEsgoto, "
 							+ "cnta.dataValidadeConta, cnta.dataRevisao, cnta.debitoCreditoSituacaoAtual, cnta.referenciaContabil, "
 							+ "cnta.ultimaAlteracao, cnta.codigoSetorComercial, cnta.quadra, cnta.indicadorAlteracaoVencimento, "
-							+ "cnta.dataRetificacao, cnta.dataEmissao " + "FROM Conta cnta " + "INNER JOIN cnta.imovel imov "
-							+ "INNER JOIN cnta.debitoCreditoSituacaoAtual dcst ";
+							+ "cnta.dataRetificacao, cnta.dataEmissao, cnta.indicadorExecucaoFiscal " + "FROM Conta cnta "
+							+ "INNER JOIN cnta.imovel imov " + "INNER JOIN cnta.debitoCreditoSituacaoAtual dcst ";
 
 			if(manterContaHelper.getInContasRevisao().equals(ConstantesSistema.SIM.toString())){
 				consulta += "INNER JOIN cnta.contaMotivoRevisao cmr ";
@@ -1600,8 +1604,8 @@ public final class RepositorioFaturamentoHBM
 
 			consulta += "ORDER BY cnta.referencia";
 
-			query = session.createQuery(consulta).setInteger("idImovel", manterContaHelper.getImovel().getId()).setInteger(
-							"idSituacaoPreFaturada", DebitoCreditoSituacao.PRE_FATURADA);
+			query = session.createQuery(consulta).setInteger("idImovel", manterContaHelper.getImovel().getId())
+							.setInteger("idSituacaoPreFaturada", DebitoCreditoSituacao.PRE_FATURADA);
 
 			if(!Util.isVazioOuBranco(manterContaHelper.getAnoMesReferenciaContaInicio())
 							&& !Util.isVazioOuBranco(manterContaHelper.getAnoMesReferenciaContaFim())){
@@ -1653,9 +1657,10 @@ public final class RepositorioFaturamentoHBM
 							+ "cnta_tmultimaalteracao = :dataUltimaAlteracao, " + "cnta_amreferenciacontabil = :referenciaContabil, "
 							+ "usur_id = :usuarioLogado " + "WHERE cnta_id = :idConta ";
 
-			session.createQuery(update).setDate("dataCancelamento", conta.getDataCancelamento()).setInteger("motivo",
-							conta.getContaMotivoCancelamento().getId()).setInteger("situacaoAtual",
-							conta.getDebitoCreditoSituacaoAtual().getId()).setTimestamp("dataUltimaAlteracao", conta.getUltimaAlteracao())
+			session.createQuery(update).setDate("dataCancelamento", conta.getDataCancelamento())
+							.setInteger("motivo", conta.getContaMotivoCancelamento().getId())
+							.setInteger("situacaoAtual", conta.getDebitoCreditoSituacaoAtual().getId())
+							.setTimestamp("dataUltimaAlteracao", conta.getUltimaAlteracao())
 							.setInteger("referenciaContabil", conta.getReferenciaContabil()).setInteger("idConta", conta.getId())
 							.setInteger("usuarioLogado", conta.getUsuario().getId()).executeUpdate();
 
@@ -1692,9 +1697,10 @@ public final class RepositorioFaturamentoHBM
 							+ "cmrt_id = null, cnta_amreferenciacontabil = :referenciaContabil, "
 							+ "cnta_tmultimaalteracao = :dataUltimaAlteracao, " + "usur_id = :usuarioLogado " + "WHERE cnta_id = :idConta ";
 
-			session.createQuery(update).setDate("dataCancelamento", conta.getDataCancelamento()).setInteger("motivoCancelamento",
-							conta.getContaMotivoCancelamento().getId()).setInteger("situacaoAtual",
-							conta.getDebitoCreditoSituacaoAtual().getId()).setInteger("referenciaContabil", conta.getReferenciaContabil())
+			session.createQuery(update).setDate("dataCancelamento", conta.getDataCancelamento())
+							.setInteger("motivoCancelamento", conta.getContaMotivoCancelamento().getId())
+							.setInteger("situacaoAtual", conta.getDebitoCreditoSituacaoAtual().getId())
+							.setInteger("referenciaContabil", conta.getReferenciaContabil())
 							.setTimestamp("dataUltimaAlteracao", conta.getUltimaAlteracao()).setInteger("idConta", conta.getId())
 							.setInteger("usuarioLogado", conta.getUsuario().getId()).executeUpdate();
 
@@ -1726,9 +1732,10 @@ public final class RepositorioFaturamentoHBM
 			update = "UPDATE gcom.faturamento.conta.Conta SET " + "cnta_dtrevisao = :dataRevisao, cmrv_id = :motivoRevisao, "
 							+ "cnta_tmultimaalteracao = :dataUltimaAlteracao, " + "usur_id = :usuarioLogado " + "WHERE cnta_id = :idConta ";
 
-			session.createQuery(update).setDate("dataRevisao", conta.getDataRevisao()).setInteger("motivoRevisao",
-							conta.getContaMotivoRevisao().getId()).setTimestamp("dataUltimaAlteracao", conta.getUltimaAlteracao())
-							.setInteger("idConta", conta.getId()).setInteger("usuarioLogado", conta.getUsuario().getId()).executeUpdate();
+			session.createQuery(update).setDate("dataRevisao", conta.getDataRevisao())
+							.setInteger("motivoRevisao", conta.getContaMotivoRevisao().getId())
+							.setTimestamp("dataUltimaAlteracao", conta.getUltimaAlteracao()).setInteger("idConta", conta.getId())
+							.setInteger("usuarioLogado", conta.getUsuario().getId()).executeUpdate();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -1791,8 +1798,9 @@ public final class RepositorioFaturamentoHBM
 							+ "cnta_icalteracaovencimento = :indicadorAlteracaoVencimento, "
 							+ "cnta_tmultimaalteracao = :dataUltimaAlteracao " + "WHERE cnta_id = :idConta ";
 
-			session.createQuery(update).setDate("dataVencimento", conta.getDataVencimentoConta()).setDate("dataValidade",
-							conta.getDataValidadeConta()).setShort("indicadorAlteracaoVencimento", conta.getIndicadorAlteracaoVencimento())
+			session.createQuery(update).setDate("dataVencimento", conta.getDataVencimentoConta())
+							.setDate("dataValidade", conta.getDataValidadeConta())
+							.setShort("indicadorAlteracaoVencimento", conta.getIndicadorAlteracaoVencimento())
 							.setTimestamp("dataUltimaAlteracao", conta.getUltimaAlteracao()).setInteger("idConta", conta.getId())
 							.executeUpdate();
 
@@ -1839,16 +1847,14 @@ public final class RepositorioFaturamentoHBM
 
 		try{
 
-			consulta
-							.append("select fac.dataRealizacao from FaturamentoAtividadeCronograma fac ")
+			consulta.append("select fac.dataRealizacao from FaturamentoAtividadeCronograma fac ")
 							// .append("inner join fac.faturamentoAtividade fa ")
 							.append("inner join fac.faturamentoGrupoCronogramaMensal fcm ")
 							// .append("inner join fcm.faturamentoGrupo fg ")
-							.append(
-											"where fcm.faturamentoGrupo = :faturamentoGrupoId and fac.faturamentoAtividade = :faturamentoAtividadeId ");
+							.append("where fcm.faturamentoGrupo = :faturamentoGrupoId and fac.faturamentoAtividade = :faturamentoAtividadeId ");
 
-			retorno = session.createQuery(consulta.toString()).setInteger("faturamentoGrupoId", faturamentoGrupoId.intValue()).setInteger(
-							"faturamentoAtividadeId", faturamentoAtividadeId).uniqueResult();
+			retorno = session.createQuery(consulta.toString()).setInteger("faturamentoGrupoId", faturamentoGrupoId.intValue())
+							.setInteger("faturamentoAtividadeId", faturamentoAtividadeId).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1906,23 +1912,18 @@ public final class RepositorioFaturamentoHBM
 			// + "and dc.debitoCreditoSituacaoAtual.id = :debitoCreditoSituacaoAtualId "
 			// + "and dc.anoMesCobrancaDebito <= :anoMesReferenciaCobrancaDebito";
 
-			consulta = "select dc " 
-							+ "from DebitoACobrar dc " 
-							+ "inner join dc.debitoCreditoSituacaoAtual dcs "
-							+ "inner join dc.imovel im " 
-							+ "inner join dc.financiamentoTipo ft "
-							+ "inner join dc.lancamentoItemContabil ltc " 
-							+ "inner join dc.debitoTipo debitoTipo "
-							+ "inner join dc.localidade localidade " 
-							+ "inner join dc.quadra quadra "
+			consulta = "select dc " + "from DebitoACobrar dc " + "inner join dc.debitoCreditoSituacaoAtual dcs "
+							+ "inner join dc.imovel im " + "inner join dc.financiamentoTipo ft "
+							+ "inner join dc.lancamentoItemContabil ltc " + "inner join dc.debitoTipo debitoTipo "
+							+ "inner join dc.localidade localidade " + "inner join dc.quadra quadra "
 							+ "left join dc.parcelamento parcelamento "
 							+ "where im.id = :imovelId and dc.numeroPrestacaoCobradas < dc.numeroPrestacaoDebito "
 							+ "and dc.debitoCreditoSituacaoAtual.id = :debitoCreditoSituacaoAtualId "
 							+ "and dc.anoMesCobrancaDebito <= :anoMesReferenciaCobrancaDebito";
 
-			retorno = session.createQuery(consulta).setInteger("imovelId", imovelId.intValue()).setInteger("debitoCreditoSituacaoAtualId",
-							debitoCreditoSituacaoAtualId).setInteger("anoMesReferenciaCobrancaDebito", anoMesReferenciaCobrancaDebito)
-							.list();
+			retorno = session.createQuery(consulta).setInteger("imovelId", imovelId.intValue())
+							.setInteger("debitoCreditoSituacaoAtualId", debitoCreditoSituacaoAtualId)
+							.setInteger("anoMesReferenciaCobrancaDebito", anoMesReferenciaCobrancaDebito).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -2106,8 +2107,8 @@ public final class RepositorioFaturamentoHBM
 							// + "or  (cr.numeroPrestacaoRealizada > 0) "
 							+ "and cr.parcelamento.anoMesReferenciaFaturamento < :anoMesFaturamento)) ";
 
-			retorno = session.createQuery(consulta).setInteger("imovelId", imovelId.intValue()).setInteger("anoMesFaturamento",
-							anoMesFaturamento).list();
+			retorno = session.createQuery(consulta).setInteger("imovelId", imovelId.intValue())
+							.setInteger("anoMesFaturamento", anoMesFaturamento).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -2223,9 +2224,9 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,cnta.localidade,cnta.localidade.gerenciaRegional,ctcg.comp_id.categoria, cnta.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao",
-							DebitoCreditoSituacao.NORMAL).uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -2285,9 +2286,9 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,cnta.localidade,cnta.localidade.gerenciaRegional,ctcg.comp_id.categoria, cnta.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao",
-							DebitoCreditoSituacao.NORMAL).uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL).uniqueResult();
 			// erro no hibernate
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -2348,11 +2349,12 @@ public final class RepositorioFaturamentoHBM
 							+ " or dbac.debitoCreditoSituacaoAnterior = :idSituacaoAnterior) ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idLancamentoItemContabil",
-							idLancamentoItemContabil).setInteger("idFinanciamentoTipo", FinanciamentoTipo.SERVICO_NORMAL).setInteger(
-							"idSituacaoAtual", DebitoCreditoSituacao.NORMAL).setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL)
-							.list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.SERVICO_NORMAL)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -2411,11 +2413,11 @@ public final class RepositorioFaturamentoHBM
 							+ "group by gupg.anoMesReferenciaContabil,lcic.sequenciaImpressao,lcic,gupg.localidade,gupg.localidade.gerenciaRegional,gpct.categoria,gupg.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria)
-							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL).setInteger("idSituacaoAnterior",
-											DebitoCreditoSituacao.NORMAL).setInteger("idFinanciamentoTipo",
-											FinanciamentoTipo.SERVICO_NORMAL).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.SERVICO_NORMAL).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -2476,10 +2478,11 @@ public final class RepositorioFaturamentoHBM
 							+ "and dbac.debitoCreditoSituacaoAtual = :idSituacaoAtual ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idLancamentoItemContabil",
-							idLancamentoItemContabil).setInteger("idFinanciamentoTipo", FinanciamentoTipo.SERVICO_NORMAL).setInteger(
-							"idSituacaoAtual", DebitoCreditoSituacao.CANCELADA).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.SERVICO_NORMAL)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -2530,9 +2533,9 @@ public final class RepositorioFaturamentoHBM
 							+ "and cnta.debitoCreditoSituacaoAtual = :idSituacaoAtual ";
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							DebitoCreditoSituacao.CANCELADA).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -2583,8 +2586,8 @@ public final class RepositorioFaturamentoHBM
 							+ "and cnta.debitoCreditoSituacaoAtual = " + DebitoCreditoSituacao.CANCELADA;
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -2640,10 +2643,11 @@ public final class RepositorioFaturamentoHBM
 							+ "and (dbcb.financiamentoTipo = :idFinanciamentoTipo) ";
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idLancamentoItemContabil",
-							idLancamentoItemContabil).setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA).setInteger(
-							"idFinanciamentoTipo", FinanciamentoTipo.SERVICO_NORMAL).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.SERVICO_NORMAL).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -2696,10 +2700,10 @@ public final class RepositorioFaturamentoHBM
 							+ "and (dbcb.financiamentoTipo = :idFinanciamentoTipo) ";
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							DebitoCreditoSituacao.CANCELADA).setInteger("idFinanciamentoTipo", FinanciamentoTipo.PARCELAMENTO_AGUA)
-							.uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.PARCELAMENTO_AGUA).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -2753,10 +2757,10 @@ public final class RepositorioFaturamentoHBM
 							+ "and (dbcb.financiamentoTipo = :idFinanciamentoTipo) ";
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							DebitoCreditoSituacao.CANCELADA).setInteger("idFinanciamentoTipo", FinanciamentoTipo.PARCELAMENTO_ESGOTO)
-							.uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.PARCELAMENTO_ESGOTO).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -2813,10 +2817,10 @@ public final class RepositorioFaturamentoHBM
 							+ " and (dbcb.financiamentoTipo = :idFinanciamentoTipo) ";
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLancamentoItemContabil", idLancamentoItemContabil).setInteger("idLocalidade", idLocalidade).setInteger(
-							"idCategoria", idCategoria).setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA).setInteger(
-							"idFinanciamentoTipo", FinanciamentoTipo.PARCELAMENTO_SERVICO).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil).setInteger("idLocalidade", idLocalidade)
+							.setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.PARCELAMENTO_SERVICO).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -2869,10 +2873,10 @@ public final class RepositorioFaturamentoHBM
 							+ "and (dbcb.financiamentoTipo = :idFinanciamentoTipo) ";
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							DebitoCreditoSituacao.CANCELADA).setInteger("idFinanciamentoTipo", FinanciamentoTipo.JUROS_PARCELAMENTO)
-							.uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.JUROS_PARCELAMENTO).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -2925,9 +2929,10 @@ public final class RepositorioFaturamentoHBM
 							+ "or cnta.debitoCreditoSituacaoAnterior = :idSituacaoAnterior )";
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							DebitoCreditoSituacao.INCLUIDA).setInteger("idSituacaoAnterior", DebitoCreditoSituacao.INCLUIDA).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.INCLUIDA)
+							.setInteger("idSituacaoAnterior", DebitoCreditoSituacao.INCLUIDA).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -2980,9 +2985,10 @@ public final class RepositorioFaturamentoHBM
 							+ "cnta.debitoCreditoSituacaoAnterior = :idSituacaoAnterior) ";
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							DebitoCreditoSituacao.INCLUIDA).setInteger("idSituacaoAnterior", DebitoCreditoSituacao.INCLUIDA).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.INCLUIDA)
+							.setInteger("idSituacaoAnterior", DebitoCreditoSituacao.INCLUIDA).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -3038,11 +3044,11 @@ public final class RepositorioFaturamentoHBM
 							+ "and (dbcb.financiamentoTipo = :idFinanciamentoTipo) ";
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLancamentoItemContabil", idLancamentoItemContabil).setInteger("idLocalidade", idLocalidade).setInteger(
-							"idCategoria", idCategoria).setInteger("idSituacaoAtual", DebitoCreditoSituacao.INCLUIDA).setInteger(
-							"idSituacaoAnterior", DebitoCreditoSituacao.INCLUIDA).setInteger("idFinanciamentoTipo",
-							FinanciamentoTipo.SERVICO_NORMAL).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil).setInteger("idLocalidade", idLocalidade)
+							.setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual", DebitoCreditoSituacao.INCLUIDA)
+							.setInteger("idSituacaoAnterior", DebitoCreditoSituacao.INCLUIDA)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.SERVICO_NORMAL).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -3105,8 +3111,9 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,lict.sequenciaImpressao,lict,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
 							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.SERVICO_NORMAL).list();
 
 			// erro no hibernate
@@ -3169,11 +3176,11 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,lict.sequenciaImpressao,lict,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria)
-							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL).setInteger("idSituacaoAnterior",
-											DebitoCreditoSituacao.NORMAL).setInteger("idFinanciamentoTipo",
-											FinanciamentoTipo.SERVICO_NORMAL).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.SERVICO_NORMAL).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -3231,10 +3238,11 @@ public final class RepositorioFaturamentoHBM
 							+ " or dbac.debitoCreditoSituacaoAnterior = :idSituacaoAnterior) ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idParcelamentoGrupo",
-							ParcelamentoGrupo.DOCUMENTOS_EMITIDOS).setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL).setInteger(
-							"idSituacaoAnterior", DebitoCreditoSituacao.NORMAL).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idParcelamentoGrupo", ParcelamentoGrupo.DOCUMENTOS_EMITIDOS)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -3293,10 +3301,11 @@ public final class RepositorioFaturamentoHBM
 							+ " or dbac.debitoCreditoSituacaoAnterior = :idSituacaoAnterior) ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idParcelamentoGrupo",
-							ParcelamentoGrupo.FINANCIAMENTOS_A_COBRAR_CURTO_PRAZO).setInteger("idSituacaoAtual",
-							DebitoCreditoSituacao.NORMAL).setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idParcelamentoGrupo", ParcelamentoGrupo.FINANCIAMENTOS_A_COBRAR_CURTO_PRAZO)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -3355,10 +3364,11 @@ public final class RepositorioFaturamentoHBM
 							+ " or dbac.debitoCreditoSituacaoAnterior = :idSituacaoAnterior) ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idParcelamentoGrupo",
-							ParcelamentoGrupo.FINANCIAMENTOS_A_COBRAR_LONGO_PRAZO).setInteger("idSituacaoAtual",
-							DebitoCreditoSituacao.NORMAL).setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idParcelamentoGrupo", ParcelamentoGrupo.FINANCIAMENTOS_A_COBRAR_LONGO_PRAZO)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -3417,10 +3427,11 @@ public final class RepositorioFaturamentoHBM
 							+ " or dbac.debitoCreditoSituacaoAnterior = :idSituacaoAnterior) ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idParcelamentoGrupo",
-							ParcelamentoGrupo.PARCELAMENTOS_A_COBRAR_CURTO_PRAZO).setInteger("idSituacaoAtual",
-							DebitoCreditoSituacao.NORMAL).setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idParcelamentoGrupo", ParcelamentoGrupo.PARCELAMENTOS_A_COBRAR_CURTO_PRAZO)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -3479,10 +3490,11 @@ public final class RepositorioFaturamentoHBM
 							+ " or dbac.debitoCreditoSituacaoAnterior = :idSituacaoAnterior) ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idParcelamentoGrupo",
-							ParcelamentoGrupo.PARCELAMENTOS_A_COBRAR_LONGO_PRAZO).setInteger("idSituacaoAtual",
-							DebitoCreditoSituacao.NORMAL).setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idParcelamentoGrupo", ParcelamentoGrupo.PARCELAMENTOS_A_COBRAR_LONGO_PRAZO)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -3539,10 +3551,11 @@ public final class RepositorioFaturamentoHBM
 							+ " or dbac.debitoCreditoSituacaoAnterior = :idSituacaoAnterior) ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idParcelamentoGrupo",
-							ParcelamentoGrupo.JUROS_COBRADOS).setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL).setInteger(
-							"idSituacaoAnterior", DebitoCreditoSituacao.NORMAL).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idParcelamentoGrupo", ParcelamentoGrupo.JUROS_COBRADOS)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -3659,11 +3672,12 @@ public final class RepositorioFaturamentoHBM
 							+ "group by dbac.anoMesReferenciaContabil,loca,greg,catg,uneg ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL).setInteger(
-							"idSituacaoAnterior", DebitoCreditoSituacao.NORMAL).setInteger("arrastoAgua", FinanciamentoTipo.ARRASTO_AGUA)
-							.setInteger("arrastoEsgoto", FinanciamentoTipo.ARRASTO_ESGOTO).setInteger("arrastoServico",
-											FinanciamentoTipo.ARRASTO_SERVICO).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL)
+							.setInteger("arrastoAgua", FinanciamentoTipo.ARRASTO_AGUA)
+							.setInteger("arrastoEsgoto", FinanciamentoTipo.ARRASTO_ESGOTO)
+							.setInteger("arrastoServico", FinanciamentoTipo.ARRASTO_SERVICO).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -3721,9 +3735,10 @@ public final class RepositorioFaturamentoHBM
 							+ "and dbac.debitoCreditoSituacaoAtual = :idSituacaoAtual ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idFinanciamentoTipo",
-							FinanciamentoTipo.PARCELAMENTO_AGUA).setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.PARCELAMENTO_AGUA)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -3781,9 +3796,10 @@ public final class RepositorioFaturamentoHBM
 							+ "and dbac.debitoCreditoSituacaoAtual = :idSituacaoAtual ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idFinanciamentoTipo",
-							FinanciamentoTipo.PARCELAMENTO_ESGOTO).setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.PARCELAMENTO_ESGOTO)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -3842,10 +3858,11 @@ public final class RepositorioFaturamentoHBM
 							+ "and dbac.debitoCreditoSituacaoAtual = :idSituacaoAtual ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idLancamentoItemContabil",
-							idLancamentoItemContabil).setInteger("idFinanciamentoTipo", FinanciamentoTipo.PARCELAMENTO_SERVICO).setInteger(
-							"idSituacaoAtual", DebitoCreditoSituacao.CANCELADA).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.PARCELAMENTO_SERVICO)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -3902,9 +3919,10 @@ public final class RepositorioFaturamentoHBM
 							+ "and dbac.debitoCreditoSituacaoAtual = :idSituacaoAtual ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idFinanciamentoTipo",
-							FinanciamentoTipo.JUROS_PARCELAMENTO).setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.JUROS_PARCELAMENTO)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.CANCELADA).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -3967,10 +3985,10 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao",
-							DebitoCreditoSituacao.NORMAL).setInteger("idFinanciamentoTipo", FinanciamentoTipo.PARCELAMENTO_AGUA)
-							.uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.PARCELAMENTO_AGUA).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -4033,10 +4051,10 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao",
-							DebitoCreditoSituacao.NORMAL).setInteger("idFinanciamentoTipo", FinanciamentoTipo.PARCELAMENTO_ESGOTO)
-							.uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.PARCELAMENTO_ESGOTO).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -4100,8 +4118,9 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,lict.sequenciaImpressao,lict,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
 							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.PARCELAMENTO_SERVICO).list();
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -4165,10 +4184,10 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao",
-							DebitoCreditoSituacao.NORMAL).setInteger("idFinanciamentoTipo", FinanciamentoTipo.JUROS_PARCELAMENTO)
-							.uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.JUROS_PARCELAMENTO).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -4230,10 +4249,11 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							DebitoCreditoSituacao.NORMAL).setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL).setInteger(
-							"idFinanciamentoTipo", FinanciamentoTipo.JUROS_PARCELAMENTO).uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idSituacaoAnterior", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.JUROS_PARCELAMENTO).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -4296,9 +4316,10 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao",
-							DebitoCreditoSituacao.NORMAL).setInteger("idFinanciamentoTipo", FinanciamentoTipo.ARRASTO_AGUA).uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.ARRASTO_AGUA).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -4362,10 +4383,10 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao",
-							DebitoCreditoSituacao.NORMAL).setInteger("idFinanciamentoTipo", FinanciamentoTipo.ARRASTO_ESGOTO)
-							.uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.ARRASTO_ESGOTO).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -4429,8 +4450,9 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,lict.sequenciaImpressao,lict,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
 							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.ARRASTO_SERVICO).list();
 
 			// erro no hibernate
@@ -4495,10 +4517,10 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,crrz.localidade,crrz.localidade.gerenciaRegional,crcg.categoria,crrz.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao",
-							DebitoCreditoSituacao.NORMAL).setInteger("idCreditoOrigem", CreditoOrigem.CONTAS_PAGAS_EM_DUPLICIDADE_EXCESSO)
-							.uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idCreditoOrigem", CreditoOrigem.CONTAS_PAGAS_EM_DUPLICIDADE_EXCESSO).uniqueResult();
 			// erro no hibernate
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -4559,9 +4581,10 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,crrz.localidade,crrz.localidade.gerenciaRegional,crcg.categoria,crrz.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao",
-							DebitoCreditoSituacao.NORMAL).setInteger("idCreditoOrigem", CreditoOrigem.DEVOLUCAO_TARIFA_AGUA).uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idCreditoOrigem", CreditoOrigem.DEVOLUCAO_TARIFA_AGUA).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -4623,10 +4646,10 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,crrz.localidade,crrz.localidade.gerenciaRegional,crcg.categoria,crrz.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao",
-							DebitoCreditoSituacao.NORMAL).setInteger("idCreditoOrigem", CreditoOrigem.DEVOLUCAO_TARIFA_ESGOTO)
-							.uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idCreditoOrigem", CreditoOrigem.DEVOLUCAO_TARIFA_ESGOTO).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -4690,8 +4713,9 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,lict.sequenciaImpressao,lict,crrz.localidade,crrz.localidade.gerenciaRegional,crcg.categoria,crrz.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
 							.setInteger("idCreditoOrigem", CreditoOrigem.SERVICOS_INDIRETOS_PAGOS_INDEVIDAMENTE).list();
 
 			// erro no hibernate
@@ -4755,10 +4779,10 @@ public final class RepositorioFaturamentoHBM
 							+ "group by cnta.referencia,crrz.localidade,crrz.localidade.gerenciaRegional,crcg.categoria,crrz.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao",
-							DebitoCreditoSituacao.NORMAL).setInteger("idCreditoOrigem", CreditoOrigem.DEVOLUCAO_JUROS_PARCELAMENTO)
-							.uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
+							.setInteger("idCreditoOrigem", CreditoOrigem.DEVOLUCAO_JUROS_PARCELAMENTO).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -4813,8 +4837,8 @@ public final class RepositorioFaturamentoHBM
 
 			// executa o hql
 			retorno = session.createQuery(consulta).setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
-							.setInteger("anoMesReferencia", anoMesReferencia).setInteger("idTipoImposto", ImpostoTipo.IR).setInteger(
-											"idSituacao", DebitoCreditoSituacao.NORMAL).list();
+							.setInteger("anoMesReferencia", anoMesReferencia).setInteger("idTipoImposto", ImpostoTipo.IR)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -4868,8 +4892,8 @@ public final class RepositorioFaturamentoHBM
 
 			// executa o hql
 			retorno = session.createQuery(consulta).setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
-							.setInteger("anoMesReferencia", anoMesReferencia).setInteger("idTipoImposto", ImpostoTipo.COFINS).setInteger(
-											"idSituacao", DebitoCreditoSituacao.NORMAL).list();
+							.setInteger("anoMesReferencia", anoMesReferencia).setInteger("idTipoImposto", ImpostoTipo.COFINS)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -4924,8 +4948,8 @@ public final class RepositorioFaturamentoHBM
 
 			// executa o hql
 			retorno = session.createQuery(consulta).setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
-							.setInteger("anoMesReferencia", anoMesReferencia).setInteger("idTipoImposto", ImpostoTipo.CSLL).setInteger(
-											"idSituacao", DebitoCreditoSituacao.NORMAL).list();
+							.setInteger("anoMesReferencia", anoMesReferencia).setInteger("idTipoImposto", ImpostoTipo.CSLL)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -5621,8 +5645,8 @@ public final class RepositorioFaturamentoHBM
 							+ "where ftsh.anoMesFaturamentoSituacaoFim <= :anoMesFaturamento and ftsh.anoMesFaturamentoRetirada is null"
 							+ ")";
 
-			session.createQuery(atualizarSituacaoFaturamentoImovel).setInteger("idSetorComercial", idSetorComercial).setInteger(
-							"anoMesFaturamento", anoMesFaturamento).executeUpdate();
+			session.createQuery(atualizarSituacaoFaturamentoImovel).setInteger("idSetorComercial", idSetorComercial)
+							.setInteger("anoMesFaturamento", anoMesFaturamento).executeUpdate();
 			// ***************************************************
 
 			// Atualizar o ano/mês de faturamento retirada *******
@@ -5632,8 +5656,8 @@ public final class RepositorioFaturamentoHBM
 							+ "and anoMesFaturamentoRetirada is null and imovel in (select imov.id from Imovel imov where imov.setorComercial = :idSetorComercial)";
 			// +"imovel.localidade.id = :idLocalidade";
 
-			session.createQuery(atualizarAnoMesFaturamentoRetirada).setInteger("idSetorComercial", idSetorComercial).setInteger(
-							"anoMesFaturamento", anoMesFaturamento).executeUpdate();
+			session.createQuery(atualizarAnoMesFaturamentoRetirada).setInteger("idSetorComercial", idSetorComercial)
+							.setInteger("anoMesFaturamento", anoMesFaturamento).executeUpdate();
 			// *****************************************************
 
 		}catch(HibernateException e){
@@ -5673,8 +5697,8 @@ public final class RepositorioFaturamentoHBM
 							+ "cnta.debitoCreditoSituacaoAtual = " + DebitoCreditoSituacao.PARCELADA + ")";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("idLocalidade", idLocalidade).setInteger("anoMesReferenciaContabil",
-							anoMesReferenciaContabil).list();
+			retorno = session.createQuery(consulta).setInteger("idLocalidade", idLocalidade)
+							.setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -5854,8 +5878,8 @@ public final class RepositorioFaturamentoHBM
 							+ "cnta.debitoCreditoSituacaoAtual = " + DebitoCreditoSituacao.ARRASTADA + ")";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil).setInteger("idConta",
-							idConta).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil)
+							.setInteger("idConta", idConta).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -5899,8 +5923,8 @@ public final class RepositorioFaturamentoHBM
 							+ "(dbac.numeroPrestacaoDebito = dbac.numeroPrestacaoCobradas) )";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("idSetorComercial", idSetorComercial).setInteger("anoMesReferenciaContabil",
-							anoMesReferenciaContabil).list();
+			retorno = session.createQuery(consulta).setInteger("idSetorComercial", idSetorComercial)
+							.setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -5944,8 +5968,8 @@ public final class RepositorioFaturamentoHBM
 							+ "((crar.numeroPrestacaoCredito = crar.numeroPrestacaoRealizada) and crar.valorResidualMesAnterior = 0) ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("idSetorComercial", idSetorComercial).setInteger("anoMesReferenciaContabil",
-							anoMesReferenciaContabil).list();
+			retorno = session.createQuery(consulta).setInteger("idSetorComercial", idSetorComercial)
+							.setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -5984,8 +6008,8 @@ public final class RepositorioFaturamentoHBM
 							+ "where  loca.id =:idLocalidade and reft.anoMesReferencia = :anoMesFaturameto ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("idLocalidade", idLocalidade).setInteger("anoMesFaturameto",
-							anoMesFaturameto).list();
+			retorno = session.createQuery(consulta).setInteger("idLocalidade", idLocalidade)
+							.setInteger("anoMesFaturameto", anoMesFaturameto).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -6015,9 +6039,10 @@ public final class RepositorioFaturamentoHBM
 							+ conta.getUsuario().getId() + " , cnta_tmultimaalteracao = :dataUltimaAlteracao "
 							+ "WHERE cnta_id = :idConta ";
 
-			session.createQuery(update).setInteger("situacaoAtual", conta.getDebitoCreditoSituacaoAtual().getId()).setInteger(
-							"referenciaContabil", conta.getReferenciaContabil()).setTimestamp("dataUltimaAlteracao",
-							conta.getUltimaAlteracao()).setInteger("idConta", conta.getId()).executeUpdate();
+			session.createQuery(update).setInteger("situacaoAtual", conta.getDebitoCreditoSituacaoAtual().getId())
+							.setInteger("referenciaContabil", conta.getReferenciaContabil())
+							.setTimestamp("dataUltimaAlteracao", conta.getUltimaAlteracao()).setInteger("idConta", conta.getId())
+							.executeUpdate();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -6051,18 +6076,20 @@ public final class RepositorioFaturamentoHBM
 							+ "cnta_tmultimaalteracao = :dataUltimaAlteracao, "
 							+ "cnta_vlimpostos = :valorImpostos, usur_id = :usuarioLogado " + "WHERE cnta_id = :idConta ";
 
-			session.createQuery(update).setInteger("situacaoAgua", conta.getLigacaoAguaSituacao().getId()).setInteger("situacaoEsgoto",
-							conta.getLigacaoEsgotoSituacao().getId()).setDate("dataVencimento", conta.getDataVencimentoConta()).setInteger(
-							"consumoAgua", conta.getConsumoAgua()).setInteger("consumoEsgoto", conta.getConsumoEsgoto()).setBigDecimal(
-							"valorAgua", conta.getValorAgua()).setBigDecimal("valorEsgoto", conta.getValorEsgoto()).setBigDecimal(
-							"valorDebitos", conta.getDebitos()).setBigDecimal("valorCreditos", conta.getValorCreditos()).setBigDecimal(
-							"percentualEsgoto", conta.getPercentualEsgoto()).setDate("dataValidade", conta.getDataValidadeConta())
-							.setInteger("referenciaContabil", conta.getReferenciaContabil()).setDate("dataRetificacao",
-											conta.getDataRetificacao()).setInteger("motivoRetificacao",
-											conta.getContaMotivoRetificacao().getId()).setTimestamp("dataUltimaAlteracao",
-											conta.getUltimaAlteracao()).setInteger("idConta", conta.getId()).setBigDecimal("valorImpostos",
-											conta.getValorImposto()).setInteger("usuarioLogado", conta.getUsuario().getId())
-							.executeUpdate();
+			session.createQuery(update).setInteger("situacaoAgua", conta.getLigacaoAguaSituacao().getId())
+							.setInteger("situacaoEsgoto", conta.getLigacaoEsgotoSituacao().getId())
+							.setDate("dataVencimento", conta.getDataVencimentoConta()).setInteger("consumoAgua", conta.getConsumoAgua())
+							.setInteger("consumoEsgoto", conta.getConsumoEsgoto()).setBigDecimal("valorAgua", conta.getValorAgua())
+							.setBigDecimal("valorEsgoto", conta.getValorEsgoto()).setBigDecimal("valorDebitos", conta.getDebitos())
+							.setBigDecimal("valorCreditos", conta.getValorCreditos())
+							.setBigDecimal("percentualEsgoto", conta.getPercentualEsgoto())
+							.setDate("dataValidade", conta.getDataValidadeConta())
+							.setInteger("referenciaContabil", conta.getReferenciaContabil())
+							.setDate("dataRetificacao", conta.getDataRetificacao())
+							.setInteger("motivoRetificacao", conta.getContaMotivoRetificacao().getId())
+							.setTimestamp("dataUltimaAlteracao", conta.getUltimaAlteracao()).setInteger("idConta", conta.getId())
+							.setBigDecimal("valorImpostos", conta.getValorImposto())
+							.setInteger("usuarioLogado", conta.getUsuario().getId()).executeUpdate();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -6120,8 +6147,8 @@ public final class RepositorioFaturamentoHBM
 		Session session = HibernateUtil.getSession();
 		Collection debitosBase = null;
 		try{
-			debitosBase = session.createQuery("FROM gcom.faturamento.debito.DebitoCobrado dbcb WHERE dbcb.conta.id = :idConta").setInteger(
-							"idConta", conta.getId()).list();
+			debitosBase = session.createQuery("FROM gcom.faturamento.debito.DebitoCobrado dbcb WHERE dbcb.conta.id = :idConta")
+							.setInteger("idConta", conta.getId()).list();
 			Iterator iterator = debitosBase.iterator();
 
 			while(iterator.hasNext()){
@@ -6363,8 +6390,9 @@ public final class RepositorioFaturamentoHBM
 							+ "ligacaoAgua.dataCorte, " // 35
 							+ "ligacaoEsgotoPerfil.percentualEsgotoConsumidaColetada, " // 36
 							+ "localidade.unidadeNegocio.id, " // 37
-							+ "consumoTarifaTemporaria.id, " + "imoveis.dataValidadeTarifaTemporaria " + "from Imovel imoveis "
-							+ "left join imoveis.rota rota " + "left join imoveis.quadra quadras "
+							+ "consumoTarifaTemporaria.id, " // 38
+							+ "imoveis.dataValidadeTarifaTemporaria " // 39
+							+ "from Imovel imoveis " + "left join imoveis.rota rota " + "left join imoveis.quadra quadras "
 							+ "left join imoveis.consumoTarifa consumoTarifa  " + "left join imoveis.localidade localidade  "
 							+ "left join quadras.areaTipo areaTipo " + "left join rota.leiturista leituristaRota "
 							+ "left join rota.empresa empresaRota " + "left join imoveis.imovelPerfil imovelPerfil "
@@ -6456,10 +6484,8 @@ public final class RepositorioFaturamentoHBM
 		Query query = null;
 
 		try{
-			consulta = "select distinct "
- + "imoveis.id " + "from Imovel imoveis " + "left join imoveis.rota rota "
-							+ "where rota.id in (:rotaId) "
-							+ "and imoveis.indicadorImovelCondominio <> 1 ";
+			consulta = "select distinct " + "imoveis.id " + "from Imovel imoveis " + "left join imoveis.rota rota "
+							+ "where rota.id in (:rotaId) " + "and imoveis.indicadorImovelCondominio <> 1 ";
 
 			if(!Util.isVazioOrNulo(colecaoMatriculasComandoSimulacaoFaturamento)){
 
@@ -6531,8 +6557,8 @@ public final class RepositorioFaturamentoHBM
 							+ "where imovel.id = :idImovel and " + "clienteRelacaoTipo.id = :relacaoTipo and "
 							+ "clienteImovel.dataFimRelacao is null";
 
-			Object pesquisa = session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger("relacaoTipo",
-							relacaoTipo.shortValue()).setMaxResults(1).uniqueResult();
+			Object pesquisa = session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("relacaoTipo", relacaoTipo.shortValue()).setMaxResults(1).uniqueResult();
 
 			if(pesquisa != null){
 				retorno = (Short) pesquisa;
@@ -6661,12 +6687,12 @@ public final class RepositorioFaturamentoHBM
 			consulta.append("select cnta_id as idConta ").append("FROM conta  ").append("WHERE cnta_amreferenciaconta = :referencia ")
 							.append("and imov_id = :idImovel  ").append("and dcst_idatual in ( ").append(DebitoCreditoSituacao.NORMAL)
 							.append(", ").append(DebitoCreditoSituacao.INCLUIDA).append(", ").append(DebitoCreditoSituacao.RETIFICADA)
-							.append(", ").append(DebitoCreditoSituacao.PRE_FATURADA).append(", ").append(
-DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCreditoSituacao.PRESCRITA)
+							.append(", ").append(DebitoCreditoSituacao.PRE_FATURADA).append(", ")
+							.append(DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCreditoSituacao.PRESCRITA)
 							.append(" ) ");
 
-			retorno = (Integer) session.createSQLQuery(consulta.toString()).addScalar("idConta", Hibernate.INTEGER).setInteger(
-							"referencia", anoMesReferencia).setInteger("idImovel", imovel.getId().intValue()).setMaxResults(1)
+			retorno = (Integer) session.createSQLQuery(consulta.toString()).addScalar("idConta", Hibernate.INTEGER)
+							.setInteger("referencia", anoMesReferencia).setInteger("idImovel", imovel.getId().intValue()).setMaxResults(1)
 							.uniqueResult();
 
 		}catch(HibernateException e){
@@ -6702,8 +6728,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta = "update gcom.faturamento.debito.DebitoACobrar "
 							+ "set dcst_idatual = :idSituacaoAtual where dbac_id = :idDebitoACobrar";
 
-			session.createQuery(consulta).setInteger("idDebitoACobrar", idDebitoACobrar.intValue()).setInteger("idSituacaoAtual",
-							DebitoCreditoSituacao.PAGA);
+			session.createQuery(consulta).setInteger("idDebitoACobrar", idDebitoACobrar.intValue())
+							.setInteger("idSituacaoAtual", DebitoCreditoSituacao.PAGA);
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -6745,9 +6771,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "WHERE cliente.id = :idCliente AND " + "fatura.anoMesReferencia = :anoMesReferencia AND "
 							+ "fatura.sequencial = :numeroSequencial AND " + "fatura.debito = :valordebito";
 
-			retorno = session.createQuery(consulta).setInteger("idCliente", idCliente.intValue()).setInteger("anoMesReferencia",
-							anoMesReferencia.intValue()).setInteger("numeroSequencial", numeroSequencial.intValue()).setBigDecimal(
-							"valordebito", valordebito)
+			retorno = session.createQuery(consulta).setInteger("idCliente", idCliente.intValue())
+							.setInteger("anoMesReferencia", anoMesReferencia.intValue())
+							.setInteger("numeroSequencial", numeroSequencial.intValue()).setBigDecimal("valordebito", valordebito)
 
 			.list();
 
@@ -6792,8 +6818,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "WHERE cliente.id = :idCliente AND " + "fatura.sequencial = :numeroSequencial AND "
 							+ "fatura.debito = :valordebito";
 
-			retorno = session.createQuery(consulta).setInteger("idCliente", idCliente.intValue()).setInteger("numeroSequencial",
-							numeroSequencial.intValue()).setBigDecimal("valordebito", valordebito).list();
+			retorno = session.createQuery(consulta).setInteger("idCliente", idCliente.intValue())
+							.setInteger("numeroSequencial", numeroSequencial.intValue()).setBigDecimal("valordebito", valordebito).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -6827,12 +6853,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 		Session session = HibernateUtil.getSession();
 		try{
-				consulta = "select im.id from Imovel im"
-								+ " inner join im.localidade lo"
-								+ " inner join im.setorComercial sc"
-								+ " inner join im.quadra qu"
-								+ " inner join qu.rota rt"
-								+ " inner join rt.faturamentoGrupo fg"
+			consulta = "select im.id from Imovel im" + " inner join im.localidade lo" + " inner join im.setorComercial sc"
+							+ " inner join im.quadra qu" + " inner join qu.rota rt" + " inner join rt.faturamentoGrupo fg"
 								+ " left join im.faturamentoSituacaoTipo fst"
 								+ " where fst.id is not null and (im.indicadorExclusao <> :idExclusao OR im.indicadorExclusao is null) and ";
 
@@ -6853,17 +6875,16 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				if(!setorComercialOrigemID.equalsIgnoreCase("") && !setorComercialOrigemID.equalsIgnoreCase("")) consulta += "sc.id between "
 								+ setorComercialOrigemID + " and " + setorComercialDestinoID + " and ";
 
-				if(!quadraOrigemID.equalsIgnoreCase("") && !quadraOrigemID.equalsIgnoreCase("")) consulta += "qu.id between "
-								+ quadraOrigemID + " and " + quadraDestinoID + " and ";
+			if(!quadraOrigemID.equalsIgnoreCase("") && !quadraOrigemID.equalsIgnoreCase("")) consulta += "qu.id between " + quadraOrigemID
+							+ " and " + quadraDestinoID + " and ";
 
-				if(!loteOrigem.equalsIgnoreCase("") && !loteOrigem.equalsIgnoreCase("")) consulta += "im.lote between " + loteOrigem
-								+ " and " + loteDestino + " and ";
+			if(!loteOrigem.equalsIgnoreCase("") && !loteOrigem.equalsIgnoreCase("")) consulta += "im.lote between " + loteOrigem + " and "
+							+ loteDestino + " and ";
 
 				if(!subLoteOrigem.equalsIgnoreCase("") && !subLoteOrigem.equalsIgnoreCase("")) consulta += "im.subLote between "
 								+ subLoteOrigem + " and " + subLoteDestino + " and ";
 
-				collectionIdImoveis = session.createQuery(Util.formatarHQL(consulta, 4)).setShort("idExclusao", Imovel.IMOVEL_EXCLUIDO)
-								.list();
+			collectionIdImoveis = session.createQuery(Util.formatarHQL(consulta, 4)).setShort("idExclusao", Imovel.IMOVEL_EXCLUIDO).list();
 
 			// if(collectionIdImoveis != null && !collectionIdImoveis.isEmpty()){
 			//
@@ -6938,8 +6959,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			// Para paginação deve-se pegar o resultado da consulta
 			// multiplicando o número de páginas por 10
 			// com um máximo de 10 registros por vez
-			colecaoAtividadeCronograma = new ArrayList(new CopyOnWriteArraySet(session.createQuery(consulta).setFirstResult(
-							10 * numeroPagina).setMaxResults(10).list()));
+			colecaoAtividadeCronograma = new ArrayList(new CopyOnWriteArraySet(session.createQuery(consulta)
+							.setFirstResult(10 * numeroPagina).setMaxResults(10).list()));
 
 			/**
 			 * alterado por pedro alexandre dia 23/01/2007
@@ -6950,10 +6971,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			 * FaturamentoAtividadeCronograma faturamentoAtividadeCronograma =
 			 * iterator .next(); // carrega todos os objetos
 			 * Hibernate.initialize(faturamentoAtividadeCronograma.getFaturamentoAtividade());
-			 * 
 			 * Hibernate.initialize(faturamentoAtividadeCronograma.getFaturamentoGrupoCronogramaMensal
 			 * ());
-			 * 
 			 * Hibernate.initialize(faturamentoAtividadeCronograma.getFaturamentoGrupoCronogramaMensal
 			 * ().getFaturamentoGrupo());
 			 * retorno.add(faturamentoAtividadeCronograma); }
@@ -7152,9 +7171,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where dc.imovel.id = :idImovel and " + "dc.debitoTipo.id = :idDebitoTipo and "
 							+ "dc.anoMesReferenciaDebito = :anoMesReferenciaDebito";
 
-			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel).setInteger("idDebitoTipo",
-							idDebitoTipo.intValue()).setInteger("anoMesReferenciaDebito", anoMesReferenciaDebito).setMaxResults(1)
-							.uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel)
+							.setInteger("idDebitoTipo", idDebitoTipo.intValue())
+							.setInteger("anoMesReferenciaDebito", anoMesReferenciaDebito).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -7498,9 +7517,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "WHERE imov.id = :idImovel AND " + "cnta.dataVencimentoConta <= :anoMesReferenciaArrecadacao AND "
 							+ "cnta.dataRevisao is null AND " + "cnta.debitoCreditoSituacaoAtual IN(:normal, :incluida, :retificada)";
 
-			retorno = session.createQuery(consulta).setInteger("idImovel", imovel).setInteger("normal", situacaoNormal).setInteger(
-							"incluida", situacaoIncluida).setInteger("retificada", situacaoRetificada).setInteger(
-							"anoMesReferenciaArrecadacao", anoMesReferenciaArrecadacao).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", imovel).setInteger("normal", situacaoNormal)
+							.setInteger("incluida", situacaoIncluida).setInteger("retificada", situacaoRetificada)
+							.setInteger("anoMesReferenciaArrecadacao", anoMesReferenciaArrecadacao).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -7530,9 +7549,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "cnta.debitoCreditoSituacaoAtual IN(:normal, :incluida, :retificada) AND "
 							+ "cnta.referencia BETWEEN :inicio AND :fim";
 
-			retorno = session.createQuery(consulta).setInteger("idImovel", imovel).setInteger("normal", situacaoNormal).setInteger(
-							"incluida", situacaoIncluida).setInteger("retificada", situacaoRetificada).setInteger("inicio", anoMesInicio)
-							.setInteger("fim", anoMesFim).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", imovel).setInteger("normal", situacaoNormal)
+							.setInteger("incluida", situacaoIncluida).setInteger("retificada", situacaoRetificada)
+							.setInteger("inicio", anoMesInicio).setInteger("fim", anoMesFim).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -7563,9 +7582,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "cnta.debitoCreditoSituacaoAtual IN(:normal, :incluida, :retificada) AND "
 							+ "cnta.referencia BETWEEN :inicio AND :fim" + " and cnta.contaMotivoRevisao.id = :idContaMotivoRevisao";
 
-			retorno = session.createQuery(consulta).setInteger("idImovel", imovel).setInteger("normal", situacaoNormal).setInteger(
-							"incluida", situacaoIncluida).setInteger("retificada", situacaoRetificada).setInteger("inicio", anoMesInicio)
-							.setInteger("fim", anoMesFim).setInteger("idContaMotivoRevisao", idContaMotivoRevisao).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", imovel).setInteger("normal", situacaoNormal)
+							.setInteger("incluida", situacaoIncluida).setInteger("retificada", situacaoRetificada)
+							.setInteger("inicio", anoMesInicio).setInteger("fim", anoMesFim)
+							.setInteger("idContaMotivoRevisao", idContaMotivoRevisao).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -7611,9 +7631,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "imov.id = :idImovel AND "
 							+ "gpag.debitoCreditoSituacaoAtual IN(:normal, :incluida, :retificada) ";
 
-			retorno = session.createQuery(consulta).setInteger("idImovel", imovel).setInteger("normal", situacaoNormal).setInteger(
-							"incluida", situacaoIncluida).setInteger("retificada", situacaoRetificada).setInteger("idDebitoTipo",
-							DebitoTipo.ENTRADA_PARCELAMENTO).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", imovel).setInteger("normal", situacaoNormal)
+							.setInteger("incluida", situacaoIncluida).setInteger("retificada", situacaoRetificada)
+							.setInteger("idDebitoTipo", DebitoTipo.ENTRADA_PARCELAMENTO).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -7656,8 +7676,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "INNER JOIN cnta.imovel imov "
 							+ "WHERE pgmt.imovel.id= :idImovel and pgmt.anoMesReferenciaPagamento = :anoMesReferenciaConta";
 
-			data2 = (Date) session.createQuery(consulta).setInteger("idImovel", idImovel).setInteger("anoMesReferenciaConta",
-							anoMesReferenciaConta).uniqueResult();
+			data2 = (Date) session.createQuery(consulta).setInteger("idImovel", idImovel)
+							.setInteger("anoMesReferenciaConta", anoMesReferenciaConta).uniqueResult();
 
 			if(data2 == null){
 				retorno = data1;
@@ -7780,8 +7800,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "order by imov.id ";
 
 			// Executa o hql
-			retorno = session.createQuery(consulta).setInteger("idCliente", idCliente).setInteger("idTipoRelacao",
-							ClienteRelacaoTipo.RESPONSAVEL).setInteger("indicadorFaturamento", ConstantesSistema.SIM).list();
+			retorno = session.createQuery(consulta).setInteger("idCliente", idCliente)
+							.setInteger("idTipoRelacao", ClienteRelacaoTipo.RESPONSAVEL)
+							.setInteger("indicadorFaturamento", ConstantesSistema.SIM).list();
 
 			// Erro na consulta
 		}catch(HibernateException e){
@@ -7824,9 +7845,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and imov.indicadorEmissaoExtratoFaturamento = :indicadorEmissaoExtratoFaturamento";
 
 			// Executa o HQL
-			retorno = session.createQuery(consulta).setInteger("idTipoRelacao", ClienteRelacaoTipo.RESPONSAVEL).setInteger(
-							"indicadorEmissaoExtratoFaturamento", ConstantesSistema.SIM).setMaxResults(quantidadeRegistros).setFirstResult(
-							numeroIndice).list();
+			retorno = session.createQuery(consulta).setInteger("idTipoRelacao", ClienteRelacaoTipo.RESPONSAVEL)
+							.setInteger("indicadorEmissaoExtratoFaturamento", ConstantesSistema.SIM).setMaxResults(quantidadeRegistros)
+							.setFirstResult(numeroIndice).list();
 
 			// Erro na consulta
 		}catch(HibernateException e){
@@ -7960,8 +7981,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			atualizarConta = "update Conta cnta " + "set ultimaAlteracao = :dataUltimaAlteracao, indicadorCobrancaMulta = 1 "
 							+ "where cnta.id in (:idsContas) ";
 
-			session.createQuery(atualizarConta).setTimestamp("dataUltimaAlteracao", new Date()).setParameterList("idsContas",
-							colecaoIdsContas).executeUpdate();
+			session.createQuery(atualizarConta).setTimestamp("dataUltimaAlteracao", new Date())
+							.setParameterList("idsContas", colecaoIdsContas).executeUpdate();
 		}catch(HibernateException e){
 
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -7991,8 +8012,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			atualizarGuia = "update GuiaPagamento gpag " + "set ultimaAlteracao = :dataUltimaAlteracao, indicadoCobrancaMulta = 1 "
 							+ "where gpag.id in (:idsGuiasPagamentos) ";
 
-			session.createQuery(atualizarGuia).setTimestamp("dataUltimaAlteracao", new Date()).setParameterList("idsGuiasPagamentos",
-							colecaoIdsGuiasPagamento).executeUpdate();
+			session.createQuery(atualizarGuia).setTimestamp("dataUltimaAlteracao", new Date())
+							.setParameterList("idsGuiasPagamentos", colecaoIdsGuiasPagamento).executeUpdate();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -8019,8 +8040,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			for(GuiaPagamentoPrestacaoPK guiaPagamentoPrestacaoPK : colecaoIdsGuiasPagamentoPrestacao){
 
-				GuiaPagamentoPrestacao guiaPagamentoPrestacao = (GuiaPagamentoPrestacao) session.createCriteria(
-								GuiaPagamentoPrestacao.class).add(Restrictions.eq("comp_id", guiaPagamentoPrestacaoPK)).uniqueResult();
+				GuiaPagamentoPrestacao guiaPagamentoPrestacao = (GuiaPagamentoPrestacao) session
+								.createCriteria(GuiaPagamentoPrestacao.class).add(Restrictions.eq("comp_id", guiaPagamentoPrestacaoPK))
+								.uniqueResult();
 				guiaPagamentoPrestacao.setUltimaAlteracao(new Date());
 				guiaPagamentoPrestacao.setIndicadorCobrancaMulta(Short.valueOf("1"));
 
@@ -8051,9 +8073,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			for(GuiaPagamentoPrestacaoHistoricoPK guiaPagamentoPrestacaoHistoricoPK : colecaoIdsGuiasPagamentoPrestacaoHistorico){
 
-				GuiaPagamentoPrestacaoHistorico guiaPagamentoPrestacaoHistorico = (GuiaPagamentoPrestacaoHistorico) session.createCriteria(
-								GuiaPagamentoPrestacaoHistorico.class).add(Restrictions.eq("comp_id", guiaPagamentoPrestacaoHistoricoPK))
-								.uniqueResult();
+				GuiaPagamentoPrestacaoHistorico guiaPagamentoPrestacaoHistorico = (GuiaPagamentoPrestacaoHistorico) session
+								.createCriteria(GuiaPagamentoPrestacaoHistorico.class)
+								.add(Restrictions.eq("comp_id", guiaPagamentoPrestacaoHistoricoPK)).uniqueResult();
 				guiaPagamentoPrestacaoHistorico.setUltimaAlteracao(new Date());
 				guiaPagamentoPrestacaoHistorico.setIndicadorCobrancaMulta(Short.valueOf("1"));
 
@@ -8075,8 +8097,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		try{
 
 			for(Integer idContaHistorico : colecaoIdsContasHistorico){
-				ContaHistorico contaHistorico = (ContaHistorico) session.createCriteria(ContaHistorico.class).add(
-								Restrictions.eq("id", idContaHistorico)).uniqueResult();
+				ContaHistorico contaHistorico = (ContaHistorico) session.createCriteria(ContaHistorico.class)
+								.add(Restrictions.eq("id", idContaHistorico)).uniqueResult();
 				contaHistorico.setUltimaAlteracao(new Date());
 				contaHistorico.setIndicadorCobrancaMulta(Short.valueOf("1"));
 
@@ -8118,12 +8140,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 		try{
 			// Monta o HQL
-			consulta = "select fitm "
-							+ "from FaturaItem fitm " 
-							+ "inner join fitm.fatura fatu " 
-							+ "inner join fitm.imovel imov "
-							+ "where fatu.id = :idFatura " 
-							+ "order by imov.id";
+			consulta = "select fitm " + "from FaturaItem fitm " + "inner join fitm.fatura fatu " + "inner join fitm.imovel imov "
+							+ "where fatu.id = :idFatura " + "order by imov.id";
 
 			// Executa o HQL
 			retorno = session.createQuery(consulta).setInteger("idFatura", idFatura).list();
@@ -8162,8 +8180,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			atualizarConta = "UPDATE gcom.faturamento.conta.Conta SET " + "cnta_dtcancelamento = null, cmcn_id = null, "
 							+ "cnta_tmultimaalteracao = :dataUltimaAlteracao " + "WHERE cnta_id = :idConta ";
 
-			session.createQuery(atualizarConta).setTimestamp("dataUltimaAlteracao", new Date()).setInteger("idConta",
-							Integer.valueOf(idConta).intValue()).executeUpdate();
+			session.createQuery(atualizarConta).setTimestamp("dataUltimaAlteracao", new Date())
+							.setInteger("idConta", Integer.valueOf(idConta).intValue()).executeUpdate();
 		}catch(HibernateException e){
 
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -8204,12 +8222,14 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			}
 
 			if(situacaoAnterior != null){
-				session.createQuery(atualizarConta).setTimestamp("dataUltimaAlteracao", new Date()).setInteger("idConta",
-								Integer.valueOf(idConta).intValue()).setInteger("situacaoAnterior", situacaoAnterior.intValue())
+				session.createQuery(atualizarConta).setTimestamp("dataUltimaAlteracao", new Date())
+								.setInteger("idConta", Integer.valueOf(idConta).intValue())
+								.setInteger("situacaoAnterior", situacaoAnterior.intValue())
 								.setInteger("situacaoAtual", situacaoAtual.intValue()).executeUpdate();
 			}else{
-				session.createQuery(atualizarConta).setTimestamp("dataUltimaAlteracao", new Date()).setInteger("idConta",
-								Integer.valueOf(idConta).intValue()).setInteger("situacaoAtual", situacaoAtual.intValue()).executeUpdate();
+				session.createQuery(atualizarConta).setTimestamp("dataUltimaAlteracao", new Date())
+								.setInteger("idConta", Integer.valueOf(idConta).intValue())
+								.setInteger("situacaoAtual", situacaoAtual.intValue()).executeUpdate();
 			}
 
 		}catch(HibernateException e){
@@ -8242,8 +8262,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			atualizarConta = "UPDATE gcom.faturamento.conta.Conta SET "
 							+ "dcst_idatual = :situacao, cnta_tmultimaalteracao = :dataUltimaAlteracao " + "WHERE cnta_id = :idConta ";
 
-			session.createQuery(atualizarConta).setTimestamp("dataUltimaAlteracao", new Date()).setInteger("idConta",
-							Integer.valueOf(idConta).intValue()).setInteger("situacao", situacao.intValue()).executeUpdate();
+			session.createQuery(atualizarConta).setTimestamp("dataUltimaAlteracao", new Date())
+							.setInteger("idConta", Integer.valueOf(idConta).intValue()).setInteger("situacao", situacao.intValue())
+							.executeUpdate();
 		}catch(HibernateException e){
 
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -8278,17 +8299,15 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 		try{
 
-			consulta
-							.append("select fac.dataRealizacao from FaturamentoAtividadeCronograma fac ")
+			consulta.append("select fac.dataRealizacao from FaturamentoAtividadeCronograma fac ")
 							// .append("inner join fac.faturamentoAtividade fa ")
 							.append("inner join fac.faturamentoGrupoCronogramaMensal fcm ")
 							// .append("inner join fcm.faturamentoGrupo fg ")
-							.append(
-											"where fcm.faturamentoGrupo = :faturamentoGrupoId and fac.faturamentoAtividade = :faturamentoAtividadeId ")
+							.append("where fcm.faturamentoGrupo = :faturamentoGrupoId and fac.faturamentoAtividade = :faturamentoAtividadeId ")
 							.append("and fcm.anoMesReferencia = :anoMesReferencia");
 
-			retorno = session.createQuery(consulta.toString()).setInteger("faturamentoGrupoId", faturamentoGrupoId.intValue()).setInteger(
-							"faturamentoAtividadeId", faturamentoAtividadeId).setInteger("anoMesReferencia", anoMesReferencia)
+			retorno = session.createQuery(consulta.toString()).setInteger("faturamentoGrupoId", faturamentoGrupoId.intValue())
+							.setInteger("faturamentoAtividadeId", faturamentoAtividadeId).setInteger("anoMesReferencia", anoMesReferencia)
 							.uniqueResult();
 
 		}catch(HibernateException e){
@@ -8325,9 +8344,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "set dbac_nnprestacaocobradas = :numeroPrestacao, dbac_tmultimaalteracao = :dataAtual, "
 							+ "dbac_amrefultimacobranca = :anoMesReferenciaUltimaCobranca " + " where dbac_id = :idDebitoAcobrar";
 
-			session.createQuery(atualizarImovel).setShort("numeroPrestacao", prestacaoCobrada).setInteger("idDebitoAcobrar",
-							idDebitoAcobrar.intValue()).setTimestamp("dataAtual", new Date()).setInteger("anoMesReferenciaUltimaCobranca",
-							anoMesReferenciaUltimaCobranca).executeUpdate();
+			session.createQuery(atualizarImovel).setShort("numeroPrestacao", prestacaoCobrada)
+							.setInteger("idDebitoAcobrar", idDebitoAcobrar.intValue()).setTimestamp("dataAtual", new Date())
+							.setInteger("anoMesReferenciaUltimaCobranca", anoMesReferenciaUltimaCobranca).executeUpdate();
 		}catch(HibernateException e){
 
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -8399,9 +8418,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "set crar_nnprestacaorealizadas = :numeroPrestacao,crar_vlresidualmesanterior = :valorMesAnterior, "
 							+ "crar_tmultimaalteracao = :dataAtual" + " where crar_id = :idCreditoARelizar";
 
-			session.createQuery(atualizarImovel).setShort("numeroPrestacao", numeroprestacaoRealizadas.shortValue()).setBigDecimal(
-							"valorMesAnterior", valorResidualMesAnterior).setInteger("idCreditoARelizar", idCreditoARelizar.intValue())
-							.setTimestamp("dataAtual", new Date()).executeUpdate();
+			session.createQuery(atualizarImovel).setShort("numeroPrestacao", numeroprestacaoRealizadas.shortValue())
+							.setBigDecimal("valorMesAnterior", valorResidualMesAnterior)
+							.setInteger("idCreditoARelizar", idCreditoARelizar.intValue()).setTimestamp("dataAtual", new Date())
+							.executeUpdate();
 		}catch(HibernateException e){
 
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -8568,27 +8588,27 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "rota.rota_cdrota, imovel.imov_nnsequencialrota, cnt.cnta_nnquadra, cnt.cnta_nnlote, cnt.cnta_nnsublote";
 
 			retorno = session.createSQLQuery(consulta).addScalar("idConta", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING)
-							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER).addScalar(
-											"digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
-							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT).addScalar("sublote",
-											Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER).addScalar("consumoEsgoto",
-											Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL).addScalar("valorEsgoto",
-											Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL).addScalar("valorCreditos",
-											Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL).addScalar(
-											"dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER).addScalar(
-											"idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
-							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER).addScalar(
-											"idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
-							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER).addScalar(
-											"idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING).addScalar(
-											"descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
+							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER)
+							.addScalar("digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
+							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT)
+							.addScalar("sublote", Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER)
+							.addScalar("consumoEsgoto", Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL)
+							.addScalar("valorEsgoto", Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL)
+							.addScalar("valorCreditos", Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL)
+							.addScalar("dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
+							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER)
+							.addScalar("idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
+							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER)
+							.addScalar("idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING)
+							.addScalar("descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
 							.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL).addScalar("idClienteResponsavel", Hibernate.INTEGER)
-							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT).addScalar("sequencialRota",
-											Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER).addScalar(
-											"debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
-							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("tipoConta", Hibernate.INTEGER).setParameterList(
-											"idTipoConta", idTipoConta).setInteger("idEmpresa", idEmpresa).setInteger("idUsuario",
-											ClienteRelacaoTipo.USUARIO).setInteger("idFaturamentoGrupoParms", idFaturamentoGrupo)
+							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT)
+							.addScalar("sequencialRota", Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER)
+							.addScalar("debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
+							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("tipoConta", Hibernate.INTEGER)
+							.setParameterList("idTipoConta", idTipoConta).setInteger("idEmpresa", idEmpresa)
+							.setInteger("idUsuario", ClienteRelacaoTipo.USUARIO).setInteger("idFaturamentoGrupoParms", idFaturamentoGrupo)
 							.setMaxResults(1000).setFirstResult(numeroPaginas).list();
 
 		}catch(HibernateException e){
@@ -8703,34 +8723,33 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "rota.rota_cdrota, imovel.imov_nnsequencialrota, cnt.cnta_nnquadra, cnt.cnta_nnlote, cnt.cnta_nnsublote, cnt.cnta_amreferenciaconta";
 
 			retorno = session.createSQLQuery(consulta).addScalar("idConta", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING)
-							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER).addScalar(
-											"digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
-							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT).addScalar("sublote",
-											Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER).addScalar("consumoEsgoto",
-											Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL).addScalar("valorEsgoto",
-											Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL).addScalar("valorCreditos",
-											Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL).addScalar(
-											"dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER).addScalar(
-											"idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
-							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER).addScalar(
-											"idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPerfil", Hibernate.INTEGER)
-							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER).addScalar(
-											"idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING).addScalar(
-											"descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
+							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER)
+							.addScalar("digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
+							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT)
+							.addScalar("sublote", Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER)
+							.addScalar("consumoEsgoto", Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL)
+							.addScalar("valorEsgoto", Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL)
+							.addScalar("valorCreditos", Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL)
+							.addScalar("dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
+							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER)
+							.addScalar("idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPerfil", Hibernate.INTEGER)
+							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER)
+							.addScalar("idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING)
+							.addScalar("descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
 							.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL).addScalar("idClienteResponsavel", Hibernate.INTEGER)
-							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT).addScalar("sequencialRota",
-											Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER).addScalar(
-											"debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
-							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("tipoConta", Hibernate.INTEGER).addScalar("idRota",
-											Hibernate.INTEGER).addScalar("icDebitoConta", Hibernate.SHORT).addScalar("tipoEnvioConta",
-											Hibernate.INTEGER).addScalar("idTipoRelacao", Hibernate.INTEGER).addScalar("elo",
- Hibernate.INTEGER).addScalar("idClienteUsuario", Hibernate.INTEGER)
+							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT)
+							.addScalar("sequencialRota", Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER)
+							.addScalar("debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
+							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("tipoConta", Hibernate.INTEGER)
+							.addScalar("idRota", Hibernate.INTEGER).addScalar("icDebitoConta", Hibernate.SHORT)
+							.addScalar("tipoEnvioConta", Hibernate.INTEGER).addScalar("idTipoRelacao", Hibernate.INTEGER)
+							.addScalar("elo", Hibernate.INTEGER).addScalar("idClienteUsuario", Hibernate.INTEGER)
 							.addScalar("dataRevisao", Hibernate.DATE).addScalar("idMotivoRevisao", Hibernate.INTEGER)
 							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("icContaBraille", Hibernate.SHORT)
-							.setInteger("idEmpresa",
-											idEmpresa).setInteger("indicadorNomeConta", ConstantesSistema.SIM.intValue()).setInteger(
-											"idFaturamentoGrupoParms", idFaturamentoGrupo).setInteger("idIndicadorImpressao",
- Integer.valueOf("2")).list();
+							.setInteger("idEmpresa", idEmpresa).setInteger("indicadorNomeConta", ConstantesSistema.SIM.intValue())
+							.setInteger("idFaturamentoGrupoParms", idFaturamentoGrupo)
+							.setInteger("idIndicadorImpressao", Integer.valueOf("2")).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -8816,28 +8835,30 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "rota.rota_cdrota, imovel.imov_nnsequencialrota";
 
 			retorno = session.createSQLQuery(consulta).addScalar("idConta", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING)
-							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER).addScalar(
-											"digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
-							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT).addScalar("sublote",
-											Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER).addScalar("consumoEsgoto",
-											Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL).addScalar("valorEsgoto",
-											Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL).addScalar("valorCreditos",
-											Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL).addScalar(
-											"dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER).addScalar(
-											"idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
-							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER).addScalar(
-											"idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
-							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER).addScalar(
-											"idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING).addScalar(
-											"descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
-							.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL).addScalar("idClienteResponsavel", Hibernate.INTEGER)
+							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER)
+							.addScalar("digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
+							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT)
+							.addScalar("sublote", Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER)
+							.addScalar("consumoEsgoto", Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL)
+							.addScalar("valorEsgoto", Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL)
+							.addScalar("valorCreditos", Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL)
+							.addScalar("dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
+							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER)
+							.addScalar("idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
+							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER)
+							.addScalar("idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING)
+							.addScalar("descricaoLigAguaSit", Hibernate.STRING)
+							.addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
+							.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL)
+							.addScalar("idClienteResponsavel", Hibernate.INTEGER)
 							.addScalar("nomeImovel", Hibernate.STRING)
 
 							// .setInteger("idTipoConta", idTipoConta)
-							.setInteger("idEmpresa", idEmpresa).setDate("data", Util.criarData(16, 05, 2007)).setInteger("idUsuario",
-											ClienteRelacaoTipo.USUARIO).setInteger("referencia", anoMesReferencia).setInteger(
-											"idFaturamentoGrupoParms", idFaturamentoGrupo).setMaxResults(1000)
-							.setFirstResult(numeroPaginas).list();
+							.setInteger("idEmpresa", idEmpresa).setDate("data", Util.criarData(16, 05, 2007))
+							.setInteger("idUsuario", ClienteRelacaoTipo.USUARIO).setInteger("referencia", anoMesReferencia)
+							.setInteger("idFaturamentoGrupoParms", idFaturamentoGrupo).setMaxResults(1000).setFirstResult(numeroPaginas)
+							.list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -8916,24 +8937,24 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "rota.rota_cdrota, imovel.imov_nnsequencialrota";
 
 			retorno = session.createSQLQuery(consulta).addScalar("idConta", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING)
-							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER).addScalar(
-											"digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
-							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT).addScalar("sublote",
-											Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER).addScalar("consumoEsgoto",
-											Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL).addScalar("valorEsgoto",
-											Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL).addScalar("valorCreditos",
-											Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL).addScalar(
-											"dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER).addScalar(
-											"idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
-							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER).addScalar(
-											"idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
-							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER).addScalar(
-											"idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING).addScalar(
-											"descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
+							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER)
+							.addScalar("digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
+							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT)
+							.addScalar("sublote", Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER)
+							.addScalar("consumoEsgoto", Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL)
+							.addScalar("valorEsgoto", Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL)
+							.addScalar("valorCreditos", Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL)
+							.addScalar("dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
+							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER)
+							.addScalar("idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
+							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER)
+							.addScalar("idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING)
+							.addScalar("descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
 							.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL).addScalar("idClienteResponsavel", Hibernate.INTEGER)
-							.addScalar("nomeImovel", Hibernate.STRING).setInteger("idEmpresa", idEmpresa).setInteger("idUsuario",
-											ClienteRelacaoTipo.USUARIO).setInteger("referencia", anoMesReferencia).setMaxResults(1000)
-							.setFirstResult(numeroPaginas).list();
+							.addScalar("nomeImovel", Hibernate.STRING).setInteger("idEmpresa", idEmpresa)
+							.setInteger("idUsuario", ClienteRelacaoTipo.USUARIO).setInteger("referencia", anoMesReferencia)
+							.setMaxResults(1000).setFirstResult(numeroPaginas).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -9028,8 +9049,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "cnt.indicadorDebitoConta = :indDebConta "
 							+ "order by  cnt.referencia,emp.id,loc.id,cnt.codigoSetorComercial," + "cnt.quadra,cnt.lote,cnt.subLote";
 
-			retorno = session.createQuery(consulta).setParameterList("idsContas", idsContas).setShort("indDebConta",
-							Conta.INDICADOR_DEBITO_CONTA_SIM).setInteger("idUsuario", ClienteRelacaoTipo.USUARIO).list();
+			retorno = session.createQuery(consulta).setParameterList("idsContas", idsContas)
+							.setShort("indDebConta", Conta.INDICADOR_DEBITO_CONTA_SIM).setInteger("idUsuario", ClienteRelacaoTipo.USUARIO)
+							.list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -9062,8 +9084,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "inner join cliCnt.clienteRelacaoTipo crt " + "inner join cliCnt.cliente cli "
 							+ "where cnt.id = :idConta AND " + "crt.id = :idResponsavel";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idConta", idConta).setInteger("idResponsavel",
-							ClienteRelacaoTipo.RESPONSAVEL).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idConta", idConta)
+							.setInteger("idResponsavel", ClienteRelacaoTipo.RESPONSAVEL).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -9163,28 +9185,29 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "rota.rota_cdrota,imovel.imov_nnsequencialrota,cnt.cnta_nnquadra,cnt.cnta_nnlote,cnt.cnta_nnsublote";
 
 			retorno = session.createSQLQuery(consulta).addScalar("idConta", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING)
-							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER).addScalar(
-											"digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
-							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT).addScalar("sublote",
-											Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER).addScalar("consumoEsgoto",
-											Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL).addScalar("valorEsgoto",
-											Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL).addScalar("valorCreditos",
-											Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL).addScalar(
-											"dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER).addScalar(
-											"idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
-							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER).addScalar(
-											"idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
-							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER).addScalar(
-											"idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING).addScalar(
-											"descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
+							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER)
+							.addScalar("digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
+							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT)
+							.addScalar("sublote", Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER)
+							.addScalar("consumoEsgoto", Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL)
+							.addScalar("valorEsgoto", Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL)
+							.addScalar("valorCreditos", Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL)
+							.addScalar("dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
+							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER)
+							.addScalar("idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
+							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER)
+							.addScalar("idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING)
+							.addScalar("descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
 							.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL).addScalar("idClienteResponsavel", Hibernate.INTEGER)
-							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT).addScalar("sequencialRota",
-											Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER).addScalar(
-											"debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
-							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("tipoConta", Hibernate.INTEGER).setParameterList(
-											"idTipoConta", idTipoConta).setInteger("idResposavel", ClienteRelacaoTipo.RESPONSAVEL)
-							.setInteger("idFaturamentoGrupo", idFaturamentoGrupo).setShort("indicadorEmissaoExtratoFaturamento",
-											indicadorEmissaoExtratoFaturamento).setMaxResults(1000).setFirstResult(numeroPaginas).list();
+							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT)
+							.addScalar("sequencialRota", Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER)
+							.addScalar("debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
+							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("tipoConta", Hibernate.INTEGER)
+							.setParameterList("idTipoConta", idTipoConta).setInteger("idResposavel", ClienteRelacaoTipo.RESPONSAVEL)
+							.setInteger("idFaturamentoGrupo", idFaturamentoGrupo)
+							.setShort("indicadorEmissaoExtratoFaturamento", indicadorEmissaoExtratoFaturamento).setMaxResults(1000)
+							.setFirstResult(numeroPaginas).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -9232,8 +9255,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where cnt.id in (:idsContas) AND " + "crt.id = :idUsuario "
 							+ "order by  cnt.referencia,emp.id,loc.id,cnt.codigoSetorComercial," + "cnt.quadra,cnt.lote,cnt.subLote";
 
-			retorno = session.createQuery(consulta).setParameterList("idsContas", idsContas).setInteger("idUsuario",
-							ClienteRelacaoTipo.USUARIO).list();
+			retorno = session.createQuery(consulta).setParameterList("idsContas", idsContas)
+							.setInteger("idUsuario", ClienteRelacaoTipo.USUARIO).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -9266,8 +9289,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "inner join cliCnt.clienteRelacaoTipo crt " + "inner join cliCnt.cliente cli "
 							+ "where cnt.id = :idConta AND " + "crt.id = :idUsuario";
 
-			retorno = (String) session.createQuery(consulta).setInteger("idConta", idConta).setInteger("idUsuario",
-							ClienteRelacaoTipo.USUARIO).setMaxResults(1).uniqueResult();
+			retorno = (String) session.createQuery(consulta).setInteger("idConta", idConta)
+							.setInteger("idUsuario", ClienteRelacaoTipo.USUARIO).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -9300,8 +9323,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "inner join cliCnt.clienteRelacaoTipo crt " + "inner join cliCnt.cliente cli "
 							+ "where cnt.id = :idConta AND " + "crt.id = :idResponsavel";
 
-			retorno = (Object[]) session.createQuery(consulta).setInteger("idConta", idConta).setInteger("idResponsavel",
-							ClienteRelacaoTipo.RESPONSAVEL).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta).setInteger("idConta", idConta)
+							.setInteger("idResponsavel", ClienteRelacaoTipo.RESPONSAVEL).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -9369,9 +9392,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 		try{
 
-			consulta.append("select contaCategoria ").append("from ContaCategoria contaCategoria ").append(
-							"inner join contaCategoria.comp_id.conta conta ").append(
-							"inner join fetch contaCategoria.comp_id.categoria categoria ").append("where conta.id = :idConta ");
+			consulta.append("select contaCategoria ").append("from ContaCategoria contaCategoria ")
+							.append("inner join contaCategoria.comp_id.conta conta ")
+							.append("inner join fetch contaCategoria.comp_id.categoria categoria ").append("where conta.id = :idConta ");
 
 			retorno = session.createQuery(consulta.toString()).setInteger("idConta", idConta).list();
 
@@ -9434,8 +9457,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where conta.id = :contaId " + "and categoria.id = :categoriaId " + "and subcategoria.id = :subCategoriaId ";
 
 			retorno = (ContaCategoria) session.createQuery(consulta).setParameter("contaId", contaCategoriaPK.getConta().getId())
-							.setParameter("categoriaId", contaCategoriaPK.getCategoria().getId()).setParameter("subCategoriaId",
-											contaCategoriaPK.getSubcategoria().getId()).uniqueResult();
+							.setParameter("categoriaId", contaCategoriaPK.getCategoria().getId())
+							.setParameter("subCategoriaId", contaCategoriaPK.getSubcategoria().getId()).uniqueResult();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -9470,8 +9493,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where conta.id = :idConta AND " + "categoria.id = :idCategoria "
 							+ "order by contaCategoriaConsumoFaixa.consumoFaixaInicio";
 
-			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue()).setInteger("idCategoria",
-							idCategoria.intValue()).list();
+			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue())
+							.setInteger("idCategoria", idCategoria.intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -9511,8 +9534,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "inner join debCobrado.conta conta " + "where conta.id = :idConta AND finTipo.id in (:tiposParcelamento) "
 							+ "group by debCobrado.numeroPrestacaoDebito,debCobrado.numeroPrestacao";
 
-			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue()).setParameterList("tiposParcelamento",
-							tiposParcelamento).list();
+			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue())
+							.setParameterList("tiposParcelamento", tiposParcelamento).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -9608,8 +9631,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "debCobrado.anoMesReferenciaDebito, "
 							+ "debCobrado.debitoTipo.descricao " + "order by debitoTipo.id,debCobrado.anoMesReferenciaDebito desc";
 
-			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue()).setParameterList("tiposParcelamento",
-							tiposParcelamento).list();
+			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue())
+							.setParameterList("tiposParcelamento", tiposParcelamento).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -9708,9 +9731,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "inner join qualidadeAgua.localidade localidade "
 							+ "where localidade.id = :idLocalidade AND " + "qualidadeAgua.anoMesReferencia = :anoMesReferencia ";
 
-			retorno = (Object[]) session.createQuery(consulta).setInteger("anoMesReferencia",
-							Integer.valueOf(emitirContaHelper.getAmReferencia())).setInteger("idLocalidade",
-							emitirContaHelper.getIdLocalidade()).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta)
+							.setInteger("anoMesReferencia", Integer.valueOf(emitirContaHelper.getAmReferencia()))
+							.setInteger("idLocalidade", emitirContaHelper.getIdLocalidade()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -9792,9 +9815,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				consulta += " and setor.id = " + qualidadeAgua.getSetorComercial().getId();
 			}
 
-			colecao = session.createQuery(consulta).setInteger("anoMesReferencia", qualidadeAgua.getAnoMesReferencia()).setInteger(
-							"idLocalidade", qualidadeAgua.getLocalidade().getId()).setInteger("anoMesReferenciaCronograma",
-							qualidadeAgua.getAnoMesReferencia()).list();
+			colecao = session.createQuery(consulta).setInteger("anoMesReferencia", qualidadeAgua.getAnoMesReferencia())
+							.setInteger("idLocalidade", qualidadeAgua.getLocalidade().getId())
+							.setInteger("anoMesReferenciaCronograma", qualidadeAgua.getAnoMesReferencia()).list();
 
 			if(colecao != null && !colecao.isEmpty()){ // GrupoFaturamento já teve faturamento com
 				// parâmetros de Qualidade de água
@@ -9901,7 +9924,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 					String indicadorMedicao, String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial,
 					String quantidadeEconomiasFinal, String diaVencimento, String idCliente, String idClienteTipo,
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
-					String numeroMoradoresFinal, String idAreaConstruidaFaixa) throws ErroRepositorioException{
+					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal) throws ErroRepositorioException{
 
 		Collection retorno = null;
 
@@ -9993,7 +10017,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 											cep, logradouro, bairro, municipio, idTipoMedicao, indicadorMedicao, idSubCategoria,
 											idCategoria, quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente,
 											idClienteTipo, idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal,
-											numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa);
+											numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa,
+											consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 			/*
 			 * # COLOCANDO O VALOR NAS CONDIÇÕES#
@@ -10020,7 +10045,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							loteDestno, cep, logradouro, bairro, municipio, idTipoMedicao, indicadorMedicao, idSubCategoria, idCategoria,
 							quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
-							idAreaConstruidaFaixa);
+							idAreaConstruidaFaixa, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 			retorno = query.list();
 
@@ -10035,7 +10060,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		return retorno;
 	}
 
-	public String montarCondicaoWhereFiltrarImovelOutrosCriterio(String idImovelCondominio, String idImovelPrincipal, String idNomeConta,
+	private String montarCondicaoWhereFiltrarImovelOutrosCriterio(String idImovelCondominio, String idImovelPrincipal, String idNomeConta,
 					String idSituacaoLigacaoAgua, String consumoMinimoInicialAgua, String consumoMinimoFinalAgua,
 					String idSituacaoLigacaoEsgoto, String consumoMinimoInicialEsgoto, String consumoMinimoFinalEsgoto,
 					String intervaloValorPercentualEsgotoInicial, String intervaloValorPercentualEsgotoFinal,
@@ -10049,7 +10074,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 					String indicadorMedicao, String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial,
 					String quantidadeEconomiasFinal, String diaVencimento, String idCliente, String idClienteTipo,
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
-					String numeroMoradoresFinal, String idAreaConstruidaFaixa){
+					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal){
 
 		String consulta = "";
 		/*
@@ -10147,6 +10173,14 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 										.equalsIgnoreCase(Integer.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO).toString()))){
 			consulta = consulta
 							+ "ligacaoEsgoto.consumoMinimo >= :consumoMinimoInicialEsgoto and ligacaoEsgoto.consumoMinimo <= :consumoMinimoFinalEsgoto  and  ";
+		}
+
+		// consumo fixado esgoto do poço inicial e final
+		if(consumoFixadoEsgotoPocoInicial != null && !consumoFixadoEsgotoPocoInicial.toString().equals("")
+						&& consumoFixadoEsgotoPocoFinal != null && !consumoFixadoEsgotoPocoFinal.toString().equals("")){
+
+			consulta += " ligacaoEsgoto.numeroConsumoFixoPoco >= :consumoFixadoEsgotoPocoInicial and ligacaoEsgoto.numeroConsumoFixoPoco <= :consumoFixadoEsgotoPocoFinal  and  ";
+
 		}
 
 		// percentual esgoto inicial e final
@@ -10332,7 +10366,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		return consulta;
 	}
 
-	public void informarDadosQueryFiltrarImovelOutrosCriterio(Query query, String idImovelCondominio, String idImovelPrincipal,
+	private void informarDadosQueryFiltrarImovelOutrosCriterio(Query query, String idImovelCondominio, String idImovelPrincipal,
 					String idNomeConta, String idSituacaoLigacaoAgua, String consumoMinimoInicialAgua, String consumoMinimoFinalAgua,
 					String idSituacaoLigacaoEsgoto, String consumoMinimoInicialEsgoto, String consumoMinimoFinalEsgoto,
 					String intervaloValorPercentualEsgotoInicial, String intervaloValorPercentualEsgotoFinal,
@@ -10346,7 +10380,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 					String indicadorMedicao, String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial,
 					String quantidadeEconomiasFinal, String diaVencimento, String idCliente, String idClienteTipo,
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
-					String numeroMoradoresFinal, String idAreaConstruidaFaixa){
+					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal){
 
 		// gerencia regional
 		if(idGerenciaRegional != null && !idGerenciaRegional.equals("")
@@ -10421,6 +10456,15 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			query.setInteger("consumoMinimoInicialEsgoto", Integer.valueOf(consumoMinimoInicialEsgoto).intValue());
 			query.setInteger("consumoMinimoFinalEsgoto", Integer.valueOf(consumoMinimoFinalEsgoto).intValue());
 		}
+
+		// consumo fixado esgoto do poço inicial e final
+		if(consumoFixadoEsgotoPocoInicial != null && !consumoFixadoEsgotoPocoInicial.toString().equals("")
+						&& consumoFixadoEsgotoPocoFinal != null && !consumoFixadoEsgotoPocoFinal.toString().equals("")){
+
+			query.setInteger("consumoFixadoEsgotoPocoInicial", Integer.valueOf(consumoFixadoEsgotoPocoInicial).intValue());
+			query.setInteger("consumoFixadoEsgotoPocoFinal", Integer.valueOf(consumoFixadoEsgotoPocoFinal).intValue());
+		}
+
 		// percentual esgoto inicial e final
 		if((intervaloValorPercentualEsgotoInicial != null && !intervaloValorPercentualEsgotoInicial.equals("") && !intervaloValorPercentualEsgotoInicial
 						.trim().equalsIgnoreCase(Integer.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO).toString()))
@@ -10627,8 +10671,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "cnta.debitoCreditoSituacaoAtual = " + DebitoCreditoSituacao.INCLUIDA + ")";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idImovel",
-							Integer.valueOf(idImovel)).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idImovel", Integer.valueOf(idImovel)).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -10667,8 +10711,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "ligacaoTipo.id = :idLigacaoTipo and " + "cshi.referenciaFaturamento = :anoMesReferencia";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel)).setInteger("anoMesReferencia",
-							anoMesReferencia).setInteger("idLigacaoTipo", LigacaoTipo.LIGACAO_AGUA).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel))
+							.setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLigacaoTipo", LigacaoTipo.LIGACAO_AGUA).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -10707,8 +10751,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "ligacaoTipo.id = :idLigacaoTipo and " + "cshi.referenciaFaturamento = :anoMesReferencia";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel)).setInteger("anoMesReferencia",
-							anoMesReferencia).setInteger("idLigacaoTipo", LigacaoTipo.LIGACAO_ESGOTO).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel))
+							.setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLigacaoTipo", LigacaoTipo.LIGACAO_ESGOTO)
+							.list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -10755,9 +10800,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "cshi.referenciaFaturamento = :anoMesReferencia";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel)).setInteger("anoMesReferencia",
-							anoMesReferencia).setInteger("idLigacaoTipo", LigacaoTipo.LIGACAO_AGUA).setShort(
-							"indicadorFaturamentoSituacao", LigacaoAguaSituacao.FATURAMENTO_ATIVO)
+			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel))
+							.setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLigacaoTipo", LigacaoTipo.LIGACAO_AGUA)
+							.setShort("indicadorFaturamentoSituacao", LigacaoAguaSituacao.FATURAMENTO_ATIVO)
 			// .setInteger("idLigacaoAguaLigado",LigacaoAguaSituacao.LIGADO)
 							// .setInteger("idLigacaoAguaCortado", LigacaoAguaSituacao.CORTADO)
 							.list();
@@ -10801,9 +10846,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "cshi.referenciaFaturamento = :anoMesReferencia";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel)).setInteger("anoMesReferencia",
-							anoMesReferencia).setInteger("idLigacaoTipo", LigacaoTipo.LIGACAO_ESGOTO).setInteger("idLigacaoEsgotoLigado",
-							LigacaoEsgotoSituacao.LIGADO).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel))
+							.setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLigacaoTipo", LigacaoTipo.LIGACAO_ESGOTO)
+							.setInteger("idLigacaoEsgotoLigado", LigacaoEsgotoSituacao.LIGADO).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -10853,8 +10898,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "mdhi.anoMesReferencia = :anoMesReferencia";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel)).setInteger("anoMesReferencia",
-							anoMesReferencia)
+			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel))
+							.setInteger("anoMesReferencia", anoMesReferencia)
 			// .setInteger("idLigacaoAguaLigado", LigacaoAguaSituacao.LIGADO)
 							// .setInteger("idLigacaoAguaCortado", LigacaoAguaSituacao.CORTADO)
 							.setShort("indicadorFaturamentoSituacao", LigacaoAguaSituacao.FATURAMENTO_ATIVO).list();
@@ -10896,8 +10941,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "mdhi.anoMesReferencia = :anoMesReferencia";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel)).setInteger("anoMesReferencia",
-							anoMesReferencia).setInteger("idLigacaoEsgotoLigado", LigacaoEsgotoSituacao.LIGADO).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel))
+							.setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLigacaoEsgotoLigado", LigacaoEsgotoSituacao.LIGADO).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -11005,8 +11051,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where imovel.id = :idImovel  and " + "imovel.ligacaoEsgotoSituacao = :idLigacaoEsgotoLigado ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel)).setInteger("idLigacaoEsgotoLigado",
-							LigacaoEsgotoSituacao.LIGADO).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel))
+							.setInteger("idLigacaoEsgotoLigado", LigacaoEsgotoSituacao.LIGADO).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -11043,8 +11089,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where imovel.id = :idImovel  and " + "cshi.referenciaFaturamento = :anoMesReferencia";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel)).setInteger("anoMesReferencia",
-							anoMesReferencia).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", Integer.valueOf(idImovel))
+							.setInteger("anoMesReferencia", anoMesReferencia).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -11128,8 +11174,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "inner join ct.subCategoria sc " + "where ctv.id = :consumoTarifaVigenciaId " + "and ctg.id = :categoriaId "
 							+ "and sc.id = :subcategoriaId";
 
-			retorno = session.createQuery(consulta).setInteger("consumoTarifaVigenciaId", consumoTarifaVigencia.getId()).setInteger(
-							"categoriaId", categoria.getId()).setInteger("subcategoriaId", idSubCategoria).uniqueResult();
+			retorno = session.createQuery(consulta).setInteger("consumoTarifaVigenciaId", consumoTarifaVigencia.getId())
+							.setInteger("categoriaId", categoria.getId()).setInteger("subcategoriaId", idSubCategoria).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -11180,8 +11226,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " order by  faturamentoGrupoCronogramaMensal.anoMesReferencia, faturamentoGrupo.id, faturamentoAtividade.descricao";
 
 			// executa o hql
-			retorno = new ArrayList(new CopyOnWriteArraySet(session.createQuery(consulta).setDate("dataAtual", new Date()).setFirstResult(
-							10 * numeroPagina).setMaxResults(10).list()));
+			retorno = new ArrayList(new CopyOnWriteArraySet(session.createQuery(consulta).setDate("dataAtual", new Date())
+							.setFirstResult(10 * numeroPagina).setMaxResults(10).list()));
 
 			/**
 			 * alterado por pedro alexandre dia 23/01/2007
@@ -11205,7 +11251,6 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			 * while (iterator.hasNext()) { FaturamentoAtividadeCronograma
 			 * faturamentoAtividadeCronograma = (FaturamentoAtividadeCronograma)
 			 * iterator.next();
-			 * 
 			 * Hibernate.initialize(faturamentoAtividadeCronograma.getFaturamentoGrupoCronogramaMensal
 			 * ());
 			 * Hibernate.initialize(faturamentoAtividadeCronograma.getFaturamentoAtividade());
@@ -11311,8 +11356,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			consulta = "SELECT ct.id FROM Conta ct " + "WHERE ct.id = :idConta " + "AND ct.ultimaAlteracao <= :ultimaAlteracao ";
 
-			retorno = (Integer) session.createQuery(consulta).setTimestamp("ultimaAlteracao", ultimaAlteracao).setInteger("idConta",
-							Integer.valueOf(idConta)).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setTimestamp("ultimaAlteracao", ultimaAlteracao)
+							.setInteger("idConta", Integer.valueOf(idConta)).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -11430,7 +11475,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "cnta.consumoMinimoEsgoto, " // 50
 							+ "cnta.valorImposto, " // 51
 							+ "cnta.indicadorCobrancaAdministrativa, " // 52
-							+ "cnta.indicadorRemuneraCobrancaAdministrativa " // 53
+							+ "cnta.indicadorRemuneraCobrancaAdministrativa, " // 53
+							+ "cnta.indicadorExecucaoFiscal " // 54
 							+ "FROM Conta cnta " + "INNER JOIN cnta.imovel imov "
 							+ "INNER JOIN cnta.debitoCreditoSituacaoAtual dcst "
 							+ "INNER JOIN cnta.ligacaoAguaSituacao last "
@@ -11484,8 +11530,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and contaImpressao.faturamentoGrupo.id = :idFaturamentoGrupo " + "and contaImpressao.indicadorImpressao ="
 							+ ConstantesSistema.NAO + " order by contaImpressao.id";
 
-			retorno = session.createQuery(consulta).setInteger("referencia", anoMesReferencia).setInteger("idFaturamentoGrupo",
-							faturamentoGrupo.getId()).list();
+			retorno = session.createQuery(consulta).setInteger("referencia", anoMesReferencia)
+							.setInteger("idFaturamentoGrupo", faturamentoGrupo.getId()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -11532,9 +11578,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " order by cnta_amreferenciaconta,contaImpressao.clie_idresponsavel,emp.empr_id,cnt.loca_id,cnt.cnta_cdsetorcomercial,"
 							+ "cnt.cnta_nnquadra,cnt.cnta_nnlote,cnt.cnta_nnsublote";
 
-			retorno = session.createSQLQuery(consulta).addScalar("idContaImpressao", Hibernate.INTEGER).setInteger("referencia",
-							anoMesReferencia).setInteger("idFaturamentoGrupo", faturamentoGrupo.getId()).setMaxResults(1000)
-							.setFirstResult(numeroPaginas).list();
+			retorno = session.createSQLQuery(consulta).addScalar("idContaImpressao", Hibernate.INTEGER)
+							.setInteger("referencia", anoMesReferencia).setInteger("idFaturamentoGrupo", faturamentoGrupo.getId())
+							.setMaxResults(1000).setFirstResult(numeroPaginas).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -11605,33 +11651,62 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		String consulta;
 
 		try{
-			consulta = "SELECT " + " new " + EmitirContaHelper.class.getName() + " ( " + "cnt.id, " + "cli.nome, "
-							+ "cnt.dataVencimentoConta, " + "cnt.referencia, " + "cnt.digitoVerificadorConta, "
-							+ "cnt.codigoSetorComercial, " + "cnt.quadra, " + "cnt.lote, " + "cnt.subLote, " + "cnt.consumoAgua, "
-							+ "cnt.consumoEsgoto, " + "cnt.valorAgua, " + "cnt.valorEsgoto, " + "cnt.debitos, " + "cnt.valorCreditos, "
-							+ "cnt.valorImposto, " + "cnt.dataValidadeConta, " + "imovel.id, " + "loc.id, " + "gerenciaRegional.id, "
-							+ "gerenciaRegional.nome, " + "ligacaoAguaSituacao.id, " + "ligacaoEsgotoSituacao.id, " + "imovelPerfil.id, "
-							+ "setorComercial.id, " + "faturamentoGrupo.id, " + "emp.id, " + "loc.descricao, "
-							+ "ligacaoAguaSituacao.descricao, " + "ligacaoEsgotoSituacao.descricao, " + "imovelContaEnvio.id, "
-							+ "cnt.percentualEsgoto, " + "imovel.nomeImovel," + "cnt.debitoCreditoSituacaoAtual.id, "
+			consulta = "SELECT " + " new "
+							+ EmitirContaHelper.class.getName()
+							+ " ( "
+							+ "cnt.id, "
+							+ "cli.nome, "
+							+ "cli.cpf, "
+							+ "cli.cnpj, "
+							+ "cnt.dataVencimentoConta, "
+							+ "cnt.referencia, "
+							+ "cnt.digitoVerificadorConta, "
+							+ "cnt.codigoSetorComercial, "
+							+ "cnt.quadra, "
+							+ "cnt.lote, "
+							+ "cnt.subLote, "
+							+ "cnt.consumoAgua, "
+							+ "cnt.consumoEsgoto, "
+							+ "cnt.valorAgua, "
+							+ "cnt.valorEsgoto, "
+							+ "cnt.debitos, "
+							+ "cnt.valorCreditos, "
+							+ "cnt.valorImposto, "
+							+ "cnt.dataValidadeConta, "
+							+ "imovel.id, "
+							+ "loc.id, "
+							+ "gerenciaRegional.id, "
+							+ "gerenciaRegional.nome, "
+							+ "ligacaoAguaSituacao.id, "
+							+ "ligacaoEsgotoSituacao.id, "
+							+ "imovelPerfil.id, "
+							+ "setorComercial.id, "
+							+ "faturamentoGrupo.id, "
+							+ "emp.id, "
+							+ "loc.descricao, "
+							+ "ligacaoAguaSituacao.descricao, "
+							+ "ligacaoEsgotoSituacao.descricao, "
+							+ "imovelContaEnvio.id, "
+							+ "cnt.percentualEsgoto, "
+							+ "imovel.nomeImovel,"
+							+ "cnt.debitoCreditoSituacaoAtual.id, "
 							+ "cmret.id, "
 							+ "funcionario.id, cnt.dataEmissao, cnt.indicadorPagamento, cnt.indicadorCobrancaMulta, cmret.descricaoMotivoRetificacaoConta "
-							+ " ) "
-							+ "from ClienteConta cliCnt " + "RIGHT JOIN cliCnt.conta cnt " + "LEFT JOIN cliCnt.clienteRelacaoTipo crt "
-							+ "LEFT JOIN cliCnt.cliente cli " + "LEFT JOIN cnt.contaMotivoRevisao cmr "
-							+ "LEFT JOIN cnt.quadraConta quadraConta " + "LEFT JOIN cnt.localidade loc "
-							+ "LEFT JOIN loc.gerenciaRegional gerenciaRegional " + "LEFT JOIN cnt.ligacaoAguaSituacao ligacaoAguaSituacao "
+							+ " ) " + "from ClienteConta cliCnt " + "RIGHT JOIN cliCnt.conta cnt "
+							+ "LEFT JOIN cliCnt.clienteRelacaoTipo crt " + "LEFT JOIN cliCnt.cliente cli "
+							+ "LEFT JOIN cnt.contaMotivoRevisao cmr " + "LEFT JOIN cnt.quadraConta quadraConta "
+							+ "LEFT JOIN cnt.localidade loc " + "LEFT JOIN loc.gerenciaRegional gerenciaRegional "
+							+ "LEFT JOIN cnt.ligacaoAguaSituacao ligacaoAguaSituacao "
 							+ "LEFT JOIN cnt.ligacaoEsgotoSituacao ligacaoEsgotoSituacao " + "LEFT JOIN cnt.imovelPerfil imovelPerfil "
 							+ "LEFT JOIN quadraConta.rota rota " + "LEFT JOIN rota.empresa emp "
 							+ "LEFT JOIN quadraConta.setorComercial setorComercial " + "LEFT JOIN rota.faturamentoGrupo faturamentoGrupo "
 							+ "LEFT JOIN cnt.imovel imovel " + "LEFT JOIN imovel.imovelContaEnvio imovelContaEnvio "
-							+ "LEFT JOIN cnt.contaMotivoRetificacao cmret "
-							+ "LEFT JOIN cnt.usuario usuario " + "LEFT JOIN usuario.funcionario funcionario " + "WHERE  cnt.id = :idConta "
-							+ "AND crt.id = :usuario " + "ORDER BY cnt.referencia,emp.id,loc.id,cnt.codigoSetorComercial,"
-							+ "cnt.quadra,cnt.lote,cnt.subLote";
+							+ "LEFT JOIN cnt.contaMotivoRetificacao cmret " + "LEFT JOIN cnt.usuario usuario "
+							+ "LEFT JOIN usuario.funcionario funcionario " + "WHERE  cnt.id = :idConta "
+							+ "AND cliCnt.indicadorNomeConta = 1 "
+							+ "ORDER BY cnt.referencia,emp.id,loc.id,cnt.codigoSetorComercial," + "cnt.quadra,cnt.lote,cnt.subLote";
 
-			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue()).setInteger("usuario",
-							ClienteRelacaoTipo.USUARIO.intValue()).list();
+			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -11672,8 +11747,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				sqlAtualizar = "update DebitoACobrarGeral dage " + "set dage.ultimaAlteracao = :dataUltimaAlteracao "
 								+ "where dage.id = :idDebitoACobrarCategoria";
 
-				session.createQuery(sqlAtualizar).setTimestamp("dataUltimaAlteracao", new Date()).setInteger("idDebitoACobrarCategoria",
-								debitoACobrar.getId()).executeUpdate();
+				session.createQuery(sqlAtualizar).setTimestamp("dataUltimaAlteracao", new Date())
+								.setInteger("idDebitoACobrarCategoria", debitoACobrar.getId()).executeUpdate();
 
 				session.flush();
 			}
@@ -11706,8 +11781,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "inner join cliImo.cliente cli " + "inner join cliImo.imovel imo " + "inner join cli.clienteTipo cltp "
 							+ "where imo.id = :idImovel AND " + "crt.id = :idResponsavel AND " + "cltp.esferaPoder.id = :esferaPoder AND "
 							+ "cliImo.dataFimRelacao is null ";
-			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel).setInteger("idResponsavel",
-							ClienteRelacaoTipo.RESPONSAVEL).setInteger("esferaPoder", EsferaPoder.FEDERAL).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel)
+							.setInteger("idResponsavel", ClienteRelacaoTipo.RESPONSAVEL).setInteger("esferaPoder", EsferaPoder.FEDERAL)
+							.setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -11742,8 +11818,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta = "select itpa from ImpostoTipoAliquota itpa " + "where itpa.impostoTipo.id = :idImpostoTipo AND "
 							+ "(itpa.anoMesReferencia = :anoMesReferencia OR " + "itpa.anoMesReferencia < :anoMesReferencia) "
 							+ " order by itpa.anoMesReferencia ";
-			retorno = (ImpostoTipoAliquota) session.createQuery(consulta).setInteger("idImpostoTipo", idImpostoTipo).setInteger(
-							"anoMesReferencia", anoMesReferencia).setMaxResults(1).uniqueResult();
+			retorno = (ImpostoTipoAliquota) session.createQuery(consulta).setInteger("idImpostoTipo", idImpostoTipo)
+							.setInteger("anoMesReferencia", anoMesReferencia).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -11768,8 +11844,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		Collection<ClienteConta> clienteConta = new ArrayList();
 
 		try{
-			clienteConta = session.createQuery("FROM gcom.cadastro.cliente.ClienteConta clct WHERE clct.conta = :idConta").setInteger(
-							"idConta", idConta).list();
+			clienteConta = session.createQuery("FROM gcom.cadastro.cliente.ClienteConta clct WHERE clct.conta = :idConta")
+							.setInteger("idConta", idConta).list();
 
 			Iterator iterator = clienteConta.iterator();
 
@@ -11801,9 +11877,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		Collection<ContaImpostosDeduzidos> contaImpostosDeduzidos = new ArrayList();
 
 		try{
-			contaImpostosDeduzidos = session.createQuery(
-							"FROM gcom.faturamento.conta.ContaImpostosDeduzidos clid WHERE clid.conta = :idConta").setInteger("idConta",
-							idConta).list();
+			contaImpostosDeduzidos = session
+							.createQuery("FROM gcom.faturamento.conta.ContaImpostosDeduzidos clid WHERE clid.conta = :idConta")
+							.setInteger("idConta", idConta).list();
 
 			Iterator iterator = contaImpostosDeduzidos.iterator();
 
@@ -11850,8 +11926,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where fgcm.anoMesReferencia = :anoMesReferencia and fgcm.faturamentoGrupo.id = :idFaturamentoGrupo)";
 
 			session.createQuery(atualizar).setTimestamp("dataRealizacao", new Date()).setTimestamp("dataUltimaAlteracao", new Date())
-							.setInteger("idAtividade", idAtividade).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-											"idFaturamentoGrupo", idFaturamentoGrupo).executeUpdate();
+							.setInteger("idAtividade", idAtividade).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idFaturamentoGrupo", idFaturamentoGrupo).executeUpdate();
 
 		}catch(HibernateException e){
 
@@ -11885,8 +11961,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "set fagr.anoMesReferencia = :anoMesReferencia ,fagr.ultimaAlteracao = :dataUltimaAlteracao "
 							+ "where fagr.id = :idFaturamentoGrupo ";
 
-			session.createQuery(atualizar).setTimestamp("dataUltimaAlteracao", new Date()).setInteger("anoMesReferencia",
-							anoMesReferenciaAtualizado).setInteger("idFaturamentoGrupo", idFaturamentoGrupo).executeUpdate();
+			session.createQuery(atualizar).setTimestamp("dataUltimaAlteracao", new Date())
+							.setInteger("anoMesReferencia", anoMesReferenciaAtualizado)
+							.setInteger("idFaturamentoGrupo", idFaturamentoGrupo).executeUpdate();
 
 		}catch(HibernateException e){
 
@@ -12010,8 +12087,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and imov.id in " + "(select distinct (cbsh.imovel.id) " + "from CobrancaSituacaoHistorico cbsh "
 							+ "where cbsh.anoMesCobrancaSituacaoFim <= :anoMesFaturamento and cbsh.anoMesCobrancaRetirada is null" + ")";
 
-			session.createQuery(atualizarSituacaoCobrancaImovel).setInteger("idSetorComercial", idSetorComercial).setInteger(
-							"anoMesFaturamento", anoMesFaturamento).executeUpdate();
+			session.createQuery(atualizarSituacaoCobrancaImovel).setInteger("idSetorComercial", idSetorComercial)
+							.setInteger("anoMesFaturamento", anoMesFaturamento).executeUpdate();
 			// ***************************************************
 
 			// Atualizar o ano/mês de cobrança retirada *******
@@ -12020,8 +12097,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where anoMesCobrancaSituacaoFim <= :anoMesFaturamento "
 							+ "and anoMesCobrancaRetirada is null and imovel in (select imovel.id from Imovel imovel where imovel.setorComercial =:idSetorComercial)";
 
-			session.createQuery(atualizarAnoMesCobrancaRetirada).setInteger("idSetorComercial", idSetorComercial).setInteger(
-							"anoMesFaturamento", anoMesFaturamento).executeUpdate();
+			session.createQuery(atualizarAnoMesCobrancaRetirada).setInteger("idSetorComercial", idSetorComercial)
+							.setInteger("anoMesFaturamento", anoMesFaturamento).executeUpdate();
 			// *****************************************************
 
 		}catch(HibernateException e){
@@ -12503,17 +12580,12 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				atualizarContaGeral = "update ContaGeral cntg "
 								+ "set cntg.indicadorHistorico = :indicadorHistorico, cntg.ultimaAlteracao= :dataUltimaAlteracao where cntg.id in (:idsContas)";
 
-				session.createQuery(atualizarContaGeral).setInteger("indicadorHistorico", ConstantesSistema.SIM).setTimestamp(
-								"dataUltimaAlteracao", new Date()).setParameterList("idsContas", idsContas).executeUpdate();
+				session.createQuery(atualizarContaGeral).setInteger("indicadorHistorico", ConstantesSistema.SIM)
+								.setTimestamp("dataUltimaAlteracao", new Date()).setParameterList("idsContas", idsContas).executeUpdate();
 
-			}else if(obj instanceof Conta || obj instanceof ContaGeral){
-				atualizarContaGeral = "update ContaGeral cntg "
-								+ "set cntg.indicadorHistorico = :indicadorHistorico, cntg.ultimaAlteracao= :dataUltimaAlteracao where cntg.id in "
-								+ "(select conta.id from Conta conta where conta in (:idsContas))";
-
-				session.createQuery(atualizarContaGeral).setInteger("indicadorHistorico", ConstantesSistema.SIM).setTimestamp(
-								"dataUltimaAlteracao", new Date()).setParameterList("idsContas", idsContas).executeUpdate();
-
+			}else {
+				throw new ErroRepositorioException(
+								"Parametro de identificação da Conta Geral inválido (atualizarIndicadorContaNoHistorico)");
 			}
 		}catch(HibernateException e){
 
@@ -12553,8 +12625,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 									+ "select debitoACobrar.id from DebitoACobrar debitoACobrar where debitoACobrar in (:idsDebitosACobrar)"
 									+ ")";
 
-					session.createQuery(atualizarDebitoACobrarGeral).setInteger("indicadorHistorico", ConstantesSistema.SIM).setDate(
-									"dataUltimaAlteracao", new Date()).setParameterList("idsDebitosACobrar", idsDebitosACobrar)
+					session.createQuery(atualizarDebitoACobrarGeral).setInteger("indicadorHistorico", ConstantesSistema.SIM)
+									.setDate("dataUltimaAlteracao", new Date()).setParameterList("idsDebitosACobrar", idsDebitosACobrar)
 									.executeUpdate();
 
 				}else if(obj instanceof DebitoACobrarHistorico){
@@ -12564,8 +12636,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 									+ "select debitoACobrar.id from DebitoACobrarHistorico debitoACobrar where debitoACobrar in (:idsDebitosACobrar)"
 									+ ")";
 
-					session.createQuery(atualizarDebitoACobrarGeral).setInteger("indicadorHistorico", ConstantesSistema.SIM).setDate(
-									"dataUltimaAlteracao", new Date()).setParameterList("idsDebitosACobrar", idsDebitosACobrar)
+					session.createQuery(atualizarDebitoACobrarGeral).setInteger("indicadorHistorico", ConstantesSistema.SIM)
+									.setDate("dataUltimaAlteracao", new Date()).setParameterList("idsDebitosACobrar", idsDebitosACobrar)
 									.executeUpdate();
 
 				}
@@ -12601,8 +12673,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			atualizarCreditoARealizarGeral = "update CreditoARealizarGeral cage "
 							+ "set cage.indicadorHistorico = :indicadorHistorico, cage.ultimaAlteracao = :dataUltimaAlteracao where cage.id in (:idsCreditoARealizar)";
 
-			session.createQuery(atualizarCreditoARealizarGeral).setInteger("indicadorHistorico", ConstantesSistema.SIM).setDate(
-							"dataUltimaAlteracao", new Date()).setParameterList("idsCreditoARealizar", idsCreditoARealizar).executeUpdate();
+			session.createQuery(atualizarCreditoARealizarGeral).setInteger("indicadorHistorico", ConstantesSistema.SIM)
+							.setDate("dataUltimaAlteracao", new Date()).setParameterList("idsCreditoARealizar", idsCreditoARealizar)
+							.executeUpdate();
 		}catch(HibernateException e){
 
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -12770,7 +12843,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "cnt.indicadorCobrancaAdministrativa, " // 51
 							+ "cnt.indicadorRemuneraCobrancaAdministrativa, " // 52
 							+ "contaMotivoRevi.id, " // 53
-							+ "ftgr.anoMesReferencia " // 54
+							+ "ftgr.anoMesReferencia, " // 54
+							+ "cnt.consumoPoco " // 55
 							+ "FROM Conta cnt " + "INNER JOIN cnt.debitoCreditoSituacaoAtual debitoCreditoSituacaoAtual "
 							+ "INNER JOIN cnt.localidade localidadeConta " + "INNER JOIN cnt.quadraConta quadraConta "
 							+ "INNER JOIN quadraConta.setorComercial setorComercialConta " + "INNER JOIN cnt.consumoTarifa consumoTarifa "
@@ -12783,8 +12857,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "INNER JOIN imovel.ligacaoAguaSituacao ligacaoAguaSituacaoImovel "
 							+ "INNER JOIN imovel.ligacaoEsgotoSituacao ligacaoEsgotoSituacaoImovel " + "LEFT JOIN imovel.rota rotaImovel "
 							+ "LEFT JOIN rotaImovel.faturamentoGrupo ftgr " + "INNER JOIN imovel.consumoTarifa consumoTarifaImovel "
-							+ "LEFT JOIN cnt.contaMotivoRevisao contaMotivoRevi "
-							+ "WHERE  cnt.id = :idConta ";
+							+ "LEFT JOIN cnt.contaMotivoRevisao contaMotivoRevi " + "WHERE  cnt.id = :idConta ";
 
 			retorno = (Object[]) session.createQuery(consulta).setInteger("idConta", idConta.intValue()).setMaxResults(1).uniqueResult();
 
@@ -12834,17 +12907,17 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and cnta.cnta_amreferenciaconta< :anoMesReferencia)";
 
 			retornoConsulta = session.createSQLQuery(consulta).addScalar("col_0", Hibernate.INTEGER).addScalar("col_1", Hibernate.INTEGER)
-							.addScalar("col_2", Hibernate.DATE).addScalar("col_3", Hibernate.BIG_DECIMAL).addScalar("col_4",
-											Hibernate.BIG_DECIMAL).addScalar("col_5", Hibernate.BIG_DECIMAL).addScalar("col_6",
-											Hibernate.BIG_DECIMAL).addScalar("col_7", Hibernate.BIG_DECIMAL).addScalar("col_8",
-											Hibernate.INTEGER).addScalar("col_9", Hibernate.INTEGER).addScalar("col_10", Hibernate.DATE)
-							.addScalar("col_11", Hibernate.DATE).addScalar("col_12", Hibernate.INTEGER).addScalar("col_13",
-											Hibernate.INTEGER).addScalar("col_14", Hibernate.INTEGER)
-							.addScalar("col_15", Hibernate.INTEGER).setInteger("idCategoria", Categoria.PUBLICO).setInteger("idLocalidade",
-											idLocalidade).setInteger("idQuadra", idQuadra).setInteger("normal",
-											DebitoCreditoSituacao.NORMAL).setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
-							.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).setInteger("anoMesReferencia",
-											anoMesReferenciaContabil)
+							.addScalar("col_2", Hibernate.DATE).addScalar("col_3", Hibernate.BIG_DECIMAL)
+							.addScalar("col_4", Hibernate.BIG_DECIMAL).addScalar("col_5", Hibernate.BIG_DECIMAL)
+							.addScalar("col_6", Hibernate.BIG_DECIMAL).addScalar("col_7", Hibernate.BIG_DECIMAL)
+							.addScalar("col_8", Hibernate.INTEGER).addScalar("col_9", Hibernate.INTEGER)
+							.addScalar("col_10", Hibernate.DATE).addScalar("col_11", Hibernate.DATE).addScalar("col_12", Hibernate.INTEGER)
+							.addScalar("col_13", Hibernate.INTEGER).addScalar("col_14", Hibernate.INTEGER)
+							.addScalar("col_15", Hibernate.INTEGER).setInteger("idCategoria", Categoria.PUBLICO)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idQuadra", idQuadra)
+							.setInteger("normal", DebitoCreditoSituacao.NORMAL).setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+							.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
+							.setInteger("anoMesReferencia", anoMesReferenciaContabil)
 							// .setFirstResult(numeroPagina)
 							// .setMaxResults(25000)
 							.list();
@@ -12988,8 +13061,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "LEFT JOIN ftcm.faturamentoGrupo ftgr " + "WHERE ftat.id = :idFaturamentoAtividade AND "
 							+ "ftgr.id = :idFaturamentoGrupo AND " + "ftcm.anoMesReferencia = :amReferencia ";
 
-			retorno = (Date) session.createQuery(consulta).setInteger("idFaturamentoAtividade", idFaturamentoAtividade).setInteger(
-							"idFaturamentoGrupo", idFaturamentoGrupo).setInteger("amReferencia", amReferencia).setMaxResults(1)
+			retorno = (Date) session.createQuery(consulta).setInteger("idFaturamentoAtividade", idFaturamentoAtividade)
+							.setInteger("idFaturamentoGrupo", idFaturamentoGrupo).setInteger("amReferencia", amReferencia).setMaxResults(1)
 							.uniqueResult();
 
 		}catch(HibernateException e){
@@ -13059,8 +13132,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta = "select cli.id from ClienteImovel cliImo " + "inner join cliImo.clienteRelacaoTipo crt "
 							+ "inner join cliImo.cliente cli " + "inner join cliImo.imovel imo " + "where imo.id = :idImovel AND "
 							+ "crt.id = :idResponsavel AND " + "cliImo.dataFimRelacao is null ";
-			retorno = session.createQuery(consulta).setInteger("idImovel", idImovel).setInteger("idResponsavel",
-							ClienteRelacaoTipo.RESPONSAVEL).setMaxResults(1).uniqueResult();
+			retorno = session.createQuery(consulta).setInteger("idImovel", idImovel)
+							.setInteger("idResponsavel", ClienteRelacaoTipo.RESPONSAVEL).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -13124,13 +13197,13 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			Query query = session.createQuery(consulta);
 
-			query.setInteger("idFaturamentoGrupo", resumoFaturamentoSimulacao.getFaturamentoGrupo().getId().intValue()).setInteger(
-							"idLocalidade", resumoFaturamentoSimulacao.getLocalidade().getId().intValue()).setInteger("idQuadra",
-							resumoFaturamentoSimulacao.getQuadra().getId().intValue()).setInteger("idLigacaoAguaSituacao",
-							resumoFaturamentoSimulacao.getLigacaoAguaSituacao().getId().intValue()).setInteger("idLigacaoEsgotoSituacao",
-							resumoFaturamentoSimulacao.getLigacaoEsgotoSituacao().getId().intValue()).setInteger("idCategoria",
-							resumoFaturamentoSimulacao.getCategoria().getId().intValue()).setInteger("idImovelPerfil",
-							resumoFaturamentoSimulacao.getImovelPerfil().getId().intValue());
+			query.setInteger("idFaturamentoGrupo", resumoFaturamentoSimulacao.getFaturamentoGrupo().getId().intValue())
+							.setInteger("idLocalidade", resumoFaturamentoSimulacao.getLocalidade().getId().intValue())
+							.setInteger("idQuadra", resumoFaturamentoSimulacao.getQuadra().getId().intValue())
+							.setInteger("idLigacaoAguaSituacao", resumoFaturamentoSimulacao.getLigacaoAguaSituacao().getId().intValue())
+							.setInteger("idLigacaoEsgotoSituacao", resumoFaturamentoSimulacao.getLigacaoEsgotoSituacao().getId().intValue())
+							.setInteger("idCategoria", resumoFaturamentoSimulacao.getCategoria().getId().intValue())
+							.setInteger("idImovelPerfil", resumoFaturamentoSimulacao.getImovelPerfil().getId().intValue());
 
 			if(resumoFaturamentoSimulacao.getAnoMesReferencia() != null){
 				query.setInteger("anoMesReferencia", resumoFaturamentoSimulacao.getAnoMesReferencia().intValue());
@@ -13725,8 +13798,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " where rota.id = :idRota and conta.referencia = :anoMesFaturamento ";
 
 			retorno = ((Number) session.createQuery(consulta)
-							.setInteger("anoMesFaturamento", Integer.valueOf(anoMesFaturamento).intValue()).setInteger("idRota",
-											idRota.intValue()).uniqueResult()).intValue();
+							.setInteger("anoMesFaturamento", Integer.valueOf(anoMesFaturamento).intValue())
+							.setInteger("idRota", idRota.intValue()).uniqueResult()).intValue();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -13823,8 +13896,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			operacao.setId(Operacao.OPERACAO_REMOVER_CRONOGRAMA_FATURAMENTO);
 
 			RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_REMOVER_CRONOGRAMA_FATURAMENTO,
-							new UsuarioAcaoUsuarioHelper(usuarioLogado,
-							UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+							new UsuarioAcaoUsuarioHelper(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
 
 			OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
 			operacaoEfetuada.setOperacao(operacao);
@@ -14270,8 +14342,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " imovel.last_id as ligacaoSituacaoAgua," // 19
 							+ " imovel.lest_id as ligacaoSituacaoEsgoto," // 20
 							+ " hidInsHist.hidi_nnhidrometro as numeroHidrometro," // 21
-							+ " imovel.imov_icimovelcondominio as indicadorImovelCondominio" // 22
-
+							+ " imovel.imov_icimovelcondominio as indicadorImovelCondominio," // 22
+							+ " hidInsHist.rttp_id as idRateioTipo, " // 23
+							+ " LA.LTAN_DSLEITURAANORMALIDADE  AS descricaoAnormalidade"//24 OC1173220
 							+ " from imovel imovel"
 							+ " left outer join consumo_historico consumoHistorico on (imovel.imov_id=consumoHistorico.imov_id and consumoHistorico.cshi_amfaturamento = "
 							+ anoMesfaturamentoGrupo
@@ -14289,7 +14362,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " left outer join quadra quadra on imovel.qdra_id=quadra.qdra_id"
 							+ " left outer join setor_comercial setorComercial on imovel.stcm_id=setorComercial.stcm_id"
 							+ " left outer join hidrometro_instalacao_hist hidInsHist on hidInsHist.hidi_id = medicaoHistorico.hidi_id"
-
+							+ " LEFT OUTER JOIN LEITURA_ANORMALIDADE LA ON medicaoHistorico.ltan_idleituraanormalidadefatu = LA.LTAN_ID"
 							+ " where "
 							+ " (imovel.imov_idimovelcondominio = "
 							+ idImovel
@@ -14305,25 +14378,32 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ ") "
 							+ " order by imovel.imov_icimovelcondominio,imovel.imov_id ";
 
-			retorno = (Collection) session.createSQLQuery(consulta).addScalar("idImovel", Hibernate.INTEGER)
+			retorno = (Collection) session
+							.createSQLQuery(consulta)
+							.addScalar("idImovel", Hibernate.INTEGER)
 							.addScalar("qtdEconomias", Hibernate.SHORT)
 							// .addScalar("idMedicaoHistorico", Hibernate.INTEGER)
-							.addScalar("dataLeituraAnterior", Hibernate.DATE).addScalar("leituraAnterior", Hibernate.INTEGER).addScalar(
-											"dataLeituraAtualFaturamento", Hibernate.DATE).addScalar("leituraAtualFaturamento",
-											Hibernate.INTEGER).addScalar("consumoImoveisVinculados", Hibernate.INTEGER)
+							.addScalar("dataLeituraAnterior", Hibernate.DATE)
+							.addScalar("leituraAnterior", Hibernate.INTEGER)
+							.addScalar("dataLeituraAtualFaturamento", Hibernate.DATE)
+							.addScalar("leituraAtualFaturamento", Hibernate.INTEGER)
+							.addScalar("consumoImoveisVinculados", Hibernate.INTEGER)
 							.addScalar("idAnormalidadeLeitura", Hibernate.INTEGER)
 							// .addScalar("idConsumoHistorico", Hibernate.INTEGER)
-							.addScalar("consumoMedio", Hibernate.INTEGER).addScalar("consumoFaturado", Hibernate.INTEGER).addScalar(
-											"rateio", Hibernate.INTEGER).addScalar("dsAbreviadaAnormalidadeConsumo", Hibernate.STRING)
+							.addScalar("consumoMedio", Hibernate.INTEGER)
+							.addScalar("consumoFaturado", Hibernate.INTEGER)
+							.addScalar("rateio", Hibernate.INTEGER)
+							.addScalar("dsAbreviadaAnormalidadeConsumo", Hibernate.STRING)
 							.addScalar("dsAbreviadaTipoConsumo", Hibernate.STRING)
 							// .addScalar("tipoMedicao", Hibernate.INTEGER)
 							.addScalar("consumoEsgoto", Hibernate.INTEGER)
 							// .addScalar("consumoInformado", Hibernate.INTEGER)
-							.addScalar("codigoSetorComercial", Hibernate.INTEGER).addScalar("numeroQuadra", Hibernate.INTEGER).addScalar(
-											"numeroLote", Hibernate.SHORT).addScalar("numeroSubLote", Hibernate.SHORT).addScalar(
-											"nomeCliente", Hibernate.STRING).addScalar("ligacaoSituacaoAgua", Hibernate.INTEGER).addScalar(
-											"ligacaoSituacaoEsgoto", Hibernate.INTEGER).addScalar("numeroHidrometro", Hibernate.STRING)
-							.addScalar("indicadorImovelCondominio", Hibernate.INTEGER).list();
+							.addScalar("codigoSetorComercial", Hibernate.INTEGER).addScalar("numeroQuadra", Hibernate.INTEGER)
+							.addScalar("numeroLote", Hibernate.SHORT).addScalar("numeroSubLote", Hibernate.SHORT)
+							.addScalar("nomeCliente", Hibernate.STRING).addScalar("ligacaoSituacaoAgua", Hibernate.INTEGER)
+							.addScalar("ligacaoSituacaoEsgoto", Hibernate.INTEGER).addScalar("numeroHidrometro", Hibernate.STRING)
+							.addScalar("indicadorImovelCondominio", Hibernate.INTEGER).addScalar("idRateioTipo", Hibernate.INTEGER)
+							.addScalar("descricaoAnormalidade", Hibernate.STRING).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -14403,20 +14483,19 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " codigoSetorComercial, idQuadra," + " imovel.imov_nnlote";
 
 			retorno = session.createSQLQuery(sql).addScalar("idImovel", Hibernate.INTEGER).addScalar("idLocalidade", Hibernate.INTEGER)
-							.addScalar("nomeLocalidade", Hibernate.STRING).addScalar("dataLeituraAtualFat", Hibernate.DATE).addScalar(
-											"numeroLeituraAtualFat", Hibernate.INTEGER).addScalar("consumoFaturadoMes", Hibernate.INTEGER)
+							.addScalar("nomeLocalidade", Hibernate.STRING).addScalar("dataLeituraAtualFat", Hibernate.DATE)
+							.addScalar("numeroLeituraAtualFat", Hibernate.INTEGER).addScalar("consumoFaturadoMes", Hibernate.INTEGER)
 							.addScalar("descricaoLeituraSituacao", Hibernate.STRING).addScalar("descricaoConsumoTipo", Hibernate.STRING)
 							.addScalar("descricaoAnormalidadeConsumo", Hibernate.STRING).addScalar("qtdEconomias", Hibernate.INTEGER)
-							.addScalar("situacaoAgua", Hibernate.INTEGER).addScalar("situacaoEsgoto", Hibernate.INTEGER).addScalar(
-											"abreviadaConsumoTipo", Hibernate.STRING)
-							.addScalar("anormalidadeLeituraFat", Hibernate.INTEGER).addScalar("abreviadaConsumoAnormalidade",
-											Hibernate.STRING).addScalar("perfilImovel", Hibernate.INTEGER).addScalar(
-											"dataLeituraAnteriorFat", Hibernate.DATE).addScalar("consumoMedio", Hibernate.INTEGER)
-							.addScalar("rateio", Hibernate.INTEGER).addScalar("idEmpresa", Hibernate.INTEGER).addScalar(
-											"idLeituraSituacao", Hibernate.INTEGER).addScalar("codigoSetorComercial", Hibernate.INTEGER)
-							.addScalar("idQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.INTEGER).addScalar("subLote",
-											Hibernate.INTEGER).addScalar("consumovinculados", Hibernate.INTEGER).setParameterList(
-											"idsRotas", idsRotas).list();
+							.addScalar("situacaoAgua", Hibernate.INTEGER).addScalar("situacaoEsgoto", Hibernate.INTEGER)
+							.addScalar("abreviadaConsumoTipo", Hibernate.STRING).addScalar("anormalidadeLeituraFat", Hibernate.INTEGER)
+							.addScalar("abreviadaConsumoAnormalidade", Hibernate.STRING).addScalar("perfilImovel", Hibernate.INTEGER)
+							.addScalar("dataLeituraAnteriorFat", Hibernate.DATE).addScalar("consumoMedio", Hibernate.INTEGER)
+							.addScalar("rateio", Hibernate.INTEGER).addScalar("idEmpresa", Hibernate.INTEGER)
+							.addScalar("idLeituraSituacao", Hibernate.INTEGER).addScalar("codigoSetorComercial", Hibernate.INTEGER)
+							.addScalar("idQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.INTEGER)
+							.addScalar("subLote", Hibernate.INTEGER).addScalar("consumovinculados", Hibernate.INTEGER)
+							.setParameterList("idsRotas", idsRotas).list();
 
 		}catch(HibernateException e){
 			e.printStackTrace();
@@ -14515,16 +14594,16 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 				consulta = consulta + " and rf.localidade = :localidade";
 
-				retorno = ((Number) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("localidade",
-								localidade).uniqueResult()).intValue();
+				retorno = ((Number) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+								.setInteger("localidade", localidade).uniqueResult()).intValue();
 
 			}else if((opcaoTotalizacao.equals("gerenciaRegionalLocalidade") || opcaoTotalizacao.equals("gerenciaRegional"))
 							&& gerenciaRegional != null){
 
 				consulta = consulta + " and rf.gerenciaRegional = :gerenciaRegional";
 
-				retorno = ((Number) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-								"gerenciaRegional", gerenciaRegional).uniqueResult()).intValue();
+				retorno = ((Number) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+								.setInteger("gerenciaRegional", gerenciaRegional).uniqueResult()).intValue();
 			}else{
 				retorno = ((Number) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).uniqueResult())
 								.intValue();
@@ -14618,8 +14697,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			String consulta = "SELECT loca_id AS idLocalidade FROM conta WHERE cnta_id = :idConta";
 
-			retorno = (Integer) session.createSQLQuery(consulta).addScalar("idLocalidade", Hibernate.INTEGER).setInteger("idConta",
-							idConta.intValue()).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createSQLQuery(consulta).addScalar("idLocalidade", Hibernate.INTEGER)
+							.setInteger("idConta", idConta.intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -14648,8 +14727,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			String consulta = "SELECT loca_id AS idLocalidade FROM conta_historico WHERE cnta_id = :idContaHistorico";
 
-			retorno = (Integer) session.createSQLQuery(consulta).addScalar("idLocalidade", Hibernate.INTEGER).setInteger(
-							"idContaHistorico", idContaHistorico.intValue()).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createSQLQuery(consulta).addScalar("idLocalidade", Hibernate.INTEGER)
+							.setInteger("idContaHistorico", idContaHistorico.intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -14681,8 +14760,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				while(iteMapAtualizaSequencia.hasNext()){
 					Integer idConta = (Integer) iteMapAtualizaSequencia.next();
 					Integer sequencialConta = mapAtualizaSequencial.get(idConta);
-					session.createQuery(consulta).setInteger("idConta", idConta).setInteger("sequencialConta", sequencialConta).setDate(
-									"dataAtual", new Date()).executeUpdate();
+					session.createQuery(consulta).setInteger("idConta", idConta).setInteger("sequencialConta", sequencialConta)
+									.setDate("dataAtual", new Date()).executeUpdate();
 				}
 			}
 		}catch(HibernateException e){
@@ -14761,8 +14840,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and esferaPoder.id in (:esferaPoder) " + "and contaImpressao.referenciaConta = :anoMesReferencia "
 							+ "order by esferaPoder.id,clienteResponsavel.id ";
 
-			retorno = session.createQuery(consulta).setInteger("grupoFaturamento", grupoFaturamento).setParameterList("esferaPoder",
-							esferaPoder).setInteger("anoMesReferencia", anoMesReferencia).list();
+			retorno = session.createQuery(consulta).setInteger("grupoFaturamento", grupoFaturamento)
+							.setParameterList("esferaPoder", esferaPoder).setInteger("anoMesReferencia", anoMesReferencia).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -14800,8 +14879,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where contaImpressao.faturamentoGrupo.id = :grupoFaturamento " + "and esferaPoder.id in (:esferaPoder) "
 							+ "and contaImpressao.referenciaConta = :anoMesReferencia ";
 
-			retorno = ((Number) session.createQuery(consulta).setInteger("grupoFaturamento", grupoFaturamento).setParameterList(
-							"esferaPoder", esferaPoder).setInteger("anoMesReferencia", anoMesReferencia).uniqueResult()).intValue();
+			retorno = ((Number) session.createQuery(consulta).setInteger("grupoFaturamento", grupoFaturamento)
+							.setParameterList("esferaPoder", esferaPoder).setInteger("anoMesReferencia", anoMesReferencia).uniqueResult())
+							.intValue();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -14827,8 +14907,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "	quadra qd, " + " rota rota " + " where im.qdra_id = qd.qdra_id " + " and qd.rota_id = rota.rota_id "
 							+ " and rota.ftgr_id = fg.ftgr_id " + " and im.imov_id =:idImovel ";
 
-			anoMesFaturamento = (Integer) session.createSQLQuery(sqlMesFaturamentoGrupo).addScalar("anoMes", Hibernate.INTEGER).setInteger(
-							"idImovel", idImovel.intValue()).setMaxResults(1).uniqueResult();
+			anoMesFaturamento = (Integer) session.createSQLQuery(sqlMesFaturamentoGrupo).addScalar("anoMes", Hibernate.INTEGER)
+							.setInteger("idImovel", idImovel.intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException("Erro no Hibernate");
@@ -14921,8 +15001,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							// 12
 							.addScalar("quantidadeContas", Hibernate.INTEGER)
 							// 13
-							.setInteger("idGrupoFaturamento", idGrupoFaturamento).setInteger("anoMes", Integer.valueOf(anoMes)).setInteger(
-											"indicadorFichaCompensacao", Integer.valueOf(indicadorFichaCompensacao)).list();
+							.setInteger("idGrupoFaturamento", idGrupoFaturamento).setInteger("anoMes", Integer.valueOf(anoMes))
+							.setInteger("indicadorFichaCompensacao", Integer.valueOf(indicadorFichaCompensacao)).list();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException("Erro no Hibernate");
@@ -14949,8 +15029,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 */
 
 	public Collection filtrarResumoContasLocalidade(Integer idGrupoFaturamento, String anoMes, Integer idFirma, Integer idSetorComercial,
-					Integer idLocalidade)
-					throws ErroRepositorioException{
+					Integer idLocalidade) throws ErroRepositorioException{
 
 		Collection retorno = null;
 		Session session = HibernateUtil.getSession();
@@ -14958,13 +15037,11 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		try{
 			String sql = "select " + " localidade.loca_id as idLocalidade," + " contaImpressao.empr_id as idEmpresa,"
 
-							+ " clienteTipo.epod_id as esferaPoder,"
- + " setorComercial.stcm_cdsetorcomercial as setorComercial,"
+			+ " clienteTipo.epod_id as esferaPoder," + " setorComercial.stcm_cdsetorcomercial as setorComercial,"
 							+ " min(contaImpressao.cnti_nnsequencialimpressao) as sequencialInicial,"
 							+ " max(contaImpressao.cnti_nnsequencialimpressao) as sequencialFinal,"
 							+ " count(contaImpressao.cnta_id) as qtdeContas," + " SUM(contaImpressao.cnti_vlconta) as valorConta"
-							+ " from conta_impressao contaImpressao"
-							+ " inner join conta conta on contaImpressao.cnta_id = conta.cnta_id"
+							+ " from conta_impressao contaImpressao" + " inner join conta conta on contaImpressao.cnta_id = conta.cnta_id"
 							+ " inner join faturamento_grupo grupoFaturamento on contaImpressao.ftgr_id = grupoFaturamento.ftgr_id"
 							+ " left join empresa empresa on empresa.empr_id = contaImpressao.empr_id"
 							+ " inner join imovel imovel on conta.imov_id = imovel.imov_id"
@@ -14985,13 +15062,11 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				sql = sql + " and localidade.loca_id = :idLocalidade ";
 			}
 			sql = sql + " group by  " + " localidade.loca_id," + " contaImpressao.empr_id," + " clienteTipo.epod_id,"
-							+ " setorComercial.stcm_id, "
-							+ " setorComercial.stcm_cdsetorcomercial";
+							+ " setorComercial.stcm_id, " + " setorComercial.stcm_cdsetorcomercial";
 
 			sql = sql + " union " + " select " + " localidade.loca_id as idLocalidade," + " contaImpressao.empr_id as idEmpresa,"
 
-							+ " clienteTipo.epod_id as esferaPoder,"
- + " setorComercial.stcm_cdsetorcomercial as setorComercial,"
+			+ " clienteTipo.epod_id as esferaPoder," + " setorComercial.stcm_cdsetorcomercial as setorComercial,"
 							+ " min(contaImpressao.cnti_nnsequencialimpressao) as sequencialInicial,"
 							+ " max(contaImpressao.cnti_nnsequencialimpressao) as sequencialFinal,"
 							+ " count(contaImpressao.cnta_id) as qtdeContas," + " SUM(contaImpressao.cnti_vlconta) as valorConta"
@@ -15017,8 +15092,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				sql = sql + " and localidade.loca_id = :idLocalidade ";
 			}
 			sql = sql + " group by  " + " localidade.loca_id," + " contaImpressao.empr_id," + " clienteTipo.epod_id, "
-							+ " setorComercial.stcm_id, "
-							+ " setorComercial.stcm_cdsetorcomercial "
+							+ " setorComercial.stcm_id, " + " setorComercial.stcm_cdsetorcomercial "
 							+ " order by idLocalidade, idEmpresa, esferaPoder";
 
 			if(idFirma != null && idLocalidade == null || idFirma != null && idLocalidade == null && idSetorComercial == null){
@@ -15341,8 +15415,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "AND pgmt.pagamentoSituacaoAtual.id = :idSituacaoAtual "
 							+ "AND pgmt.anoMesReferenciaArrecadacao <= :anoMesReferenciaAtual) ";
 
-			colecaoRetorno1 = session.createQuery(consulta).setInteger("idConta", conta).setInteger("idSituacaoAtual",
-							PagamentoSituacao.PAGAMENTO_CLASSIFICADO).setInteger("anoMesReferenciaAtual", anoMesReferenciaAtual).list();
+			colecaoRetorno1 = session.createQuery(consulta).setInteger("idConta", conta)
+							.setInteger("idSituacaoAtual", PagamentoSituacao.PAGAMENTO_CLASSIFICADO)
+							.setInteger("anoMesReferenciaAtual", anoMesReferenciaAtual).list();
 
 			/*
 			 * consulta = "SELECT pgmt.id " + "FROM Pagamento pgmt " + "INNER
@@ -15403,8 +15478,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "WHERE (gpag.id = :idGuiaPagamento " + "AND pgmt.pagamentoSituacaoAtual.id = :idSituacaoAtual "
 							+ "AND pgmt.anoMesReferenciaArrecadacao <= :anoMesReferenciaAtual) ";
 
-			colecaoRetorno1 = session.createQuery(consulta).setInteger("idGuiaPagamento", idGuiaPagamento).setInteger("idSituacaoAtual",
-							PagamentoSituacao.PAGAMENTO_CLASSIFICADO).setInteger("anoMesReferenciaAtual", anoMesReferenciaAtual).list();
+			colecaoRetorno1 = session.createQuery(consulta).setInteger("idGuiaPagamento", idGuiaPagamento)
+							.setInteger("idSituacaoAtual", PagamentoSituacao.PAGAMENTO_CLASSIFICADO)
+							.setInteger("anoMesReferenciaAtual", anoMesReferenciaAtual).list();
 
 			// consulta = "SELECT MIN(pgmt.dataPagamento) "
 			// + "FROM Pagamento pgmt "
@@ -15462,17 +15538,17 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		StringBuffer consulta = new StringBuffer();
 
 		try{
-			consulta.append("SELECT cnta.id, cnta.referencia, cnta.dataVencimentoConta, cnta.valorAgua, ").append(
-							"cnta.valorEsgoto, cnta.debitos, cnta.valorCreditos, cnta.indicadorCobrancaMulta ").append("FROM Conta cnta ")
-							.append("INNER JOIN cnta.imovel imov ").append("INNER JOIN cnta.debitoCreditoSituacaoAtual dcst ").append(
-											"WHERE imov.id = :idImovel AND ").append(
-											"cnta.dataVencimentoConta <= :dataAnoMesReferenciaUltimoDia AND ").append(
-											"cnta.dataRevisao is null AND ").append(
-											"cnta.debitoCreditoSituacaoAtual IN(:normal, :incluida, :retificada)");
+			consulta.append("SELECT cnta.id, cnta.referencia, cnta.dataVencimentoConta, cnta.valorAgua, ")
+							.append("cnta.valorEsgoto, cnta.debitos, cnta.valorCreditos, cnta.indicadorCobrancaMulta ")
+							.append("FROM Conta cnta ").append("INNER JOIN cnta.imovel imov ")
+							.append("INNER JOIN cnta.debitoCreditoSituacaoAtual dcst ").append("WHERE imov.id = :idImovel AND ")
+							.append("cnta.dataVencimentoConta <= :dataAnoMesReferenciaUltimoDia AND ")
+							.append("cnta.dataRevisao is null AND ")
+							.append("cnta.debitoCreditoSituacaoAtual IN(:normal, :incluida, :retificada)");
 
 			retorno = session.createQuery(consulta.toString()).setInteger("idImovel", imovel).setInteger("normal", situacaoNormal)
-							.setInteger("incluida", situacaoIncluida).setInteger("retificada", situacaoRetificada).setDate(
-											"dataAnoMesReferenciaUltimoDia", dataAnoMesReferenciaUltimoDia).list();
+							.setInteger("incluida", situacaoIncluida).setInteger("retificada", situacaoRetificada)
+							.setDate("dataAnoMesReferenciaUltimoDia", dataAnoMesReferenciaUltimoDia).list();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -15532,8 +15608,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by cnta.referencia,lict.sequenciaImpressao,lict,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacao", DebitoCreditoSituacao.NORMAL)
 							.setInteger("idFinanciamentoTipo", FinanciamentoTipo.DOACOES).list();
 
 			// erro no hibernate
@@ -15712,8 +15789,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "cnta.debitos, cnta.valorCreditos, cnta.consumoAgua, cnta.consumoEsgoto, "
 							+ "cnta.dataValidadeConta, cnta.dataRevisao, cnta.debitoCreditoSituacaoAtual, cnta.referenciaContabil, "
 							+ "cnta.ultimaAlteracao, imov, dcsan, cnta.localidade, cnta.valorImposto " + "from Conta cnta "
-							+ "inner join cnta.imovel imov "
-							+ "inner join cnta.debitoCreditoSituacaoAtual dcst " + "left join cnta.debitoCreditoSituacaoAnterior dcsan ";
+							+ "inner join cnta.imovel imov " + "inner join cnta.debitoCreditoSituacaoAtual dcst "
+							+ "left join cnta.debitoCreditoSituacaoAnterior dcsan ";
 
 			if(!Util.isVazioOuBranco(inContasRevisao) && inContasRevisao.equals(ConstantesSistema.SIM.toString())){
 				consulta += "INNER JOIN cnta.contaMotivoRevisao cmr ";
@@ -15915,8 +15992,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							// 16
 							.addScalar("vencimentoConta", Hibernate.DATE)
 							// 17
-							.setInteger("anoMes", anoMes).setInteger("idCliente", idCliente).setInteger("relacaoTipo",
-											ClienteRelacaoTipo.RESPONSAVEL).list();
+							.setInteger("anoMes", anoMes).setInteger("idCliente", idCliente)
+							.setInteger("relacaoTipo", ClienteRelacaoTipo.RESPONSAVEL).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -15958,26 +16035,27 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 					retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
 									.setParameterList("idsImovel", idsImovel).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-													DebitoCreditoSituacao.RETIFICADA).setDate("dataVencimentoContaInicio",
-													dataVencimentoContaInicio).setDate("dataVencimentoContaFim", dataVencimentoContaFim)
-									.list();
+									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+									.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
+									.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
+									.setDate("dataVencimentoContaFim", dataVencimentoContaFim).list();
 
 				}else{
 
 					retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
 									.setParameterList("idsImovel", idsImovel).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-													DebitoCreditoSituacao.RETIFICADA).setDate("dataVencimentoContaInicio",
-													dataVencimentoContaInicio).setDate("dataVencimentoContaFim", dataVencimentoContaInicio)
-									.list();
+									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+									.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
+									.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
+									.setDate("dataVencimentoContaFim", dataVencimentoContaInicio).list();
 
 				}
 			}else{
 
-				retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim).setParameterList(
-								"idsImovel", idsImovel).setInteger("normal", DebitoCreditoSituacao.NORMAL).setInteger("incluida",
-								DebitoCreditoSituacao.INCLUIDA).setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).list();
+				retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+								.setParameterList("idsImovel", idsImovel).setInteger("normal", DebitoCreditoSituacao.NORMAL)
+								.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+								.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).list();
 			}
 
 		}catch(HibernateException e){
@@ -16046,7 +16124,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			}else if(pTipoBancoDeDados.equals(ConstantesSistema.BANCO_POSTGRESQL)){
 				String call = "{? = call fun_gsan_trans_conta_hist(?)}";
 				statement = session.connection().prepareCall(call);
-				statement.registerOutParameter(1, Types.INTEGER);
+				statement.registerOutParameter(1, Types.BIGINT);
 				statement.setInt(2, idConta);
 				statement.execute();
 			}
@@ -16150,8 +16228,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		StringBuffer consulta = new StringBuffer();
 
 		try{
-			consulta.append("UPDATE Pagamento ").append("SET conta = null ").append(
-							"WHERE id in (select pgmt.id from Pagamento pgmt where pgmt.conta.id = :idConta) ");
+			consulta.append("UPDATE Pagamento ").append("SET conta = null ")
+							.append("WHERE id in (select pgmt.id from Pagamento pgmt where pgmt.conta.id = :idConta) ");
 
 			session.createQuery(consulta.toString()).setInteger("idConta", idConta).executeUpdate();
 
@@ -16260,12 +16338,13 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "or (cnta.valorAgua + cnta.valorEsgoto + cnta.debitos - cnta.valorCreditos - cnta.valorImposto = 0) )";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("idSetorComercial", idSetorComercial).setInteger("anoMesReferenciaContabil",
-							anoMesReferenciaContabil).setInteger("situacaoCancelada", DebitoCreditoSituacao.CANCELADA).setInteger(
-							"situacaoRetificacao", DebitoCreditoSituacao.CANCELADA_POR_RETIFICACAO).setInteger("situacaoParcelada",
- DebitoCreditoSituacao.PARCELADA)
-							.setInteger("situacaoDebitoPrescrito", DebitoCreditoSituacao.PRESCRITA)
-							.setMaxResults(quantidadeRegistros).setFirstResult(numeroIndice).list();
+			retorno = session.createQuery(consulta).setInteger("idSetorComercial", idSetorComercial)
+							.setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil)
+							.setInteger("situacaoCancelada", DebitoCreditoSituacao.CANCELADA)
+							.setInteger("situacaoRetificacao", DebitoCreditoSituacao.CANCELADA_POR_RETIFICACAO)
+							.setInteger("situacaoParcelada", DebitoCreditoSituacao.PARCELADA)
+							.setInteger("situacaoDebitoPrescrito", DebitoCreditoSituacao.PRESCRITA).setMaxResults(quantidadeRegistros)
+							.setFirstResult(numeroIndice).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -16369,12 +16448,12 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		try{
 			// constroi o hql
 			consulta.append("select sum(dbcb.valorPrestacao) ").append("from DebitoCobrado dbcb ").append("inner join dbcb.conta cnta ")
-							.append("inner join dbcb.financiamentoTipo fntp ").append("where cnta.id = :idConta ").append(
-											"and fntp.id in (:tiposParcelamento)");
+							.append("inner join dbcb.financiamentoTipo fntp ").append("where cnta.id = :idConta ")
+							.append("and fntp.id in (:tiposParcelamento)");
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idConta", idConta).setParameterList(
-							"tiposParcelamento", tiposParcelamento).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idConta", idConta)
+							.setParameterList("tiposParcelamento", tiposParcelamento).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -16411,8 +16490,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "inner join ct.consumoTarifaVigencia ctv " + "inner join ct.subCategoria sc "
 							+ "where ctv.id = :consumoTarifaVigenciaId " + "and sc.id = :subcategoriaId";
 
-			retorno = session.createQuery(consulta).setInteger("consumoTarifaVigenciaId", consumoTarifaVigencia.getId()).setInteger(
-							"subcategoriaId", subcategoria.getId()).uniqueResult();
+			retorno = session.createQuery(consulta).setInteger("consumoTarifaVigenciaId", consumoTarifaVigencia.getId())
+							.setInteger("subcategoriaId", subcategoria.getId()).uniqueResult();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -16660,12 +16739,12 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			// constroi o hql
 			consulta.append("select count(distinct cnta.id) ").append(" from DebitoCobrado dbcb ").append("  inner join dbcb.conta cnta ")
-							.append("  inner join dbcb.financiamentoTipo fntp ").append("where cnta.id in (:idsConta) ").append(
-											"  and fntp.id in (:tiposParcelamento)");
+							.append("  inner join dbcb.financiamentoTipo fntp ").append("where cnta.id in (:idsConta) ")
+							.append("  and fntp.id in (:tiposParcelamento)");
 
 			// executa o hql
-			retorno = ((Number) session.createQuery(consulta.toString()).setParameterList("idsConta", idsContas).setParameterList(
-							"tiposParcelamento", tiposParcelamento).uniqueResult()).intValue();
+			retorno = ((Number) session.createQuery(consulta.toString()).setParameterList("idsConta", idsContas)
+							.setParameterList("tiposParcelamento", tiposParcelamento).uniqueResult()).intValue();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -16706,26 +16785,27 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 					retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
 									.setParameterList("idsImovel", idsImovel).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-													DebitoCreditoSituacao.RETIFICADA).setDate("dataVencimentoContaInicio",
-													dataVencimentoContaInicio).setDate("dataVencimentoContaFim", dataVencimentoContaFim)
-									.list();
+									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+									.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
+									.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
+									.setDate("dataVencimentoContaFim", dataVencimentoContaFim).list();
 
 				}else{
 
 					retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
 									.setParameterList("idsImovel", idsImovel).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-													DebitoCreditoSituacao.RETIFICADA).setDate("dataVencimentoContaInicio",
-													dataVencimentoContaInicio).setDate("dataVencimentoContaFim", dataVencimentoContaInicio)
-									.list();
+									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+									.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
+									.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
+									.setDate("dataVencimentoContaFim", dataVencimentoContaInicio).list();
 
 				}
 			}else{
 
-				retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim).setParameterList(
-								"idsImovel", idsImovel).setInteger("normal", DebitoCreditoSituacao.NORMAL).setInteger("incluida",
-								DebitoCreditoSituacao.INCLUIDA).setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).list();
+				retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+								.setParameterList("idsImovel", idsImovel).setInteger("normal", DebitoCreditoSituacao.NORMAL)
+								.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+								.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).list();
 			}
 
 		}catch(HibernateException e){
@@ -16791,8 +16871,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "inner join cnta.debitoCreditoSituacaoAtual dcst "
 							+ "where imov.id = :idImovel AND cnta.referencia = :anoMesReferencia ";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel).setInteger("anoMesReferencia",
-							anoMesReferencia).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel)
+							.setInteger("anoMesReferencia", anoMesReferencia).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -16832,8 +16912,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where conta.id = :idConta AND " + "categoria.id = :idCategoria AND " + "subCategoria.id = :idSubCategoria "
 							+ "order by contaCategoriaConsumoFaixa.consumoFaixaInicio";
 
-			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue()).setInteger("idCategoria",
-							idCategoria.intValue()).setInteger("idSubCategoria", idSubCategoria).list();
+			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue())
+							.setInteger("idCategoria", idCategoria.intValue()).setInteger("idSubCategoria", idSubCategoria).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -16919,8 +16999,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where cnta.imovel.id = :idImovel  " + "and cnta.referencia = :anoMesReferenciaConta "
 							+ "and dcst.id = :debitoCreditoSituacao ";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel).setInteger("anoMesReferenciaConta",
-							anoMesReferenciaConta).setInteger("debitoCreditoSituacao", DebitoCreditoSituacao.RETIFICADA).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel)
+							.setInteger("anoMesReferenciaConta", anoMesReferenciaConta)
+							.setInteger("debitoCreditoSituacao", DebitoCreditoSituacao.RETIFICADA).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -16978,10 +17059,12 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where pag.conta.id = cnta.id and "
 							+ "pag.dataPagamento <= (cnta.dataVencimentoConta + 3))";
 
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaConta", anoMesReferenciaConta)
+			retorno = session.createQuery(consulta)
+							.setInteger("anoMesReferenciaConta", anoMesReferenciaConta)
 			// .setParameterList("idsGrupos", idsGrupos)
-							.setInteger("idDebitoTipo", DebitoTipo.MULTA_IMPONTUALIDADE).setInteger("anoMesReferenciaDebito",
-											anoMesReferenciaDebito).setInteger("idDebCerdSitAtual", DebitoCreditoSituacao.NORMAL).list();
+							.setInteger("idDebitoTipo", DebitoTipo.MULTA_IMPONTUALIDADE)
+							.setInteger("anoMesReferenciaDebito", anoMesReferenciaDebito)
+							.setInteger("idDebCerdSitAtual", DebitoCreditoSituacao.NORMAL).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -17061,8 +17144,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "dc.anoMesReferenciaContabil = :anoMesReferenciaContabil and "
 							+ "debTipoEntBef.id = debTipoACob.id and imov.id = imovD.id ";
 
-			retorno = session.createQuery(consulta).setParameterList("idsRotas", idsRotas).setInteger("anoMesReferenciaContabil",
-							anoMesReferenciaContabil).list();
+			retorno = session.createQuery(consulta).setParameterList("idsRotas", idsRotas)
+							.setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -17095,8 +17178,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta = "select ctv.dataVigencia " + " from ConsumoTarifaVigencia ctv " + " where ctv.consumoTarifa.id = :idConsumoTarifa "
 							+ " and ctv.dataVigencia > :dataInicioVigencia " + " order by ctv.dataVigencia";
 
-			retorno = (Date) session.createQuery(consulta).setInteger("idConsumoTarifa", idConsumoTarifa).setDate("dataInicioVigencia",
-							dataInicioVigencia).setMaxResults(1).uniqueResult();
+			retorno = (Date) session.createQuery(consulta).setInteger("idConsumoTarifa", idConsumoTarifa)
+							.setDate("dataInicioVigencia", dataInicioVigencia).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -17121,8 +17204,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * @return
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarConsumoTarifaRelatorio(String descricao, Date dataVigenciaInicial, Date dataVigenciaFinal)
-					throws ErroRepositorioException{
+	public Collection pesquisarConsumoTarifaRelatorio(String descricao, Date dataVigenciaInicial, Date dataVigenciaFinal,
+					String descricaoAtoAdministrativo) throws ErroRepositorioException{
 
 		Session session = HibernateUtil.getSession();
 		String consulta;
@@ -17155,6 +17238,11 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				consulta = consulta + " ctv.cstv_dtvigencia >= :dataVigenciaInicial and ";
 			}else if(dataVigenciaFinal != null){
 				consulta = consulta + " ctv.cstv_dtvigencia <= :dataVigenciaFinal and ";
+			}
+
+			if(descricaoAtoAdministrativo != null && !descricaoAtoAdministrativo.trim().equals("")){
+
+				consulta = consulta + "ctv.cstv_dsatoadministrativo LIKE '" + descricaoAtoAdministrativo + "%' and ";
 			}
 
 			consulta = Util.formatarHQL(consulta, 4);
@@ -17332,7 +17420,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * @throws ErroRepositorioException
 	 */
 	public Integer pesquisarQuantidadeContasCliente(Integer codigoCliente, Integer relacaoTipo, Integer anoMes,
-					Date dataVencimentoContaInicio, Date dataVencimentoContaFim, Integer anoMesFim, String inContasRevisao, Integer[] motivosRevisaoDisponiveis) throws ErroRepositorioException{
+					Date dataVencimentoContaInicio, Date dataVencimentoContaFim, Integer anoMesFim, String inContasRevisao,
+					Integer[] motivosRevisaoDisponiveis) throws ErroRepositorioException{
 
 		Integer retorno = null;
 
@@ -17434,8 +17523,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 										.setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL)
 										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
 										.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).setInteger("relacao", relacaoTipo)
-										.uniqueResult())
-										.intValue();
+										.uniqueResult()).intValue();
 					}
 				}
 			}
@@ -17548,10 +17636,11 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta = "select conta.id, conta.referencia, conta.dataVencimentoConta, conta.valorAgua, conta.valorEsgoto, "
 							+ "conta.debitos, conta.valorCreditos, conta.consumoAgua, conta.consumoEsgoto, "
 							+ "conta.dataValidadeConta, conta.dataRevisao, conta.debitoCreditoSituacaoAtual, conta.referenciaContabil, "
-							+ "conta.ultimaAlteracao, imov, dcsan, loca.id, conta.valorImposto " + "from ClienteConta clienteConta "
-							+ "inner join clienteConta.cliente cliente " + "inner join clienteConta.conta conta "
-							+ "inner join conta.imovel imov " + "inner join conta.debitoCreditoSituacaoAtual dcst "
-							+ "left join conta.debitoCreditoSituacaoAnterior dcsan " + "inner join conta.localidade loca ";
+							+ "conta.ultimaAlteracao, imov, dcsan, loca.id, conta.valorImposto, conta.indicadorExecucaoFiscal "
+							+ "from ClienteConta clienteConta " + "inner join clienteConta.cliente cliente "
+							+ "inner join clienteConta.conta conta " + "inner join conta.imovel imov "
+							+ "inner join conta.debitoCreditoSituacaoAtual dcst " + "left join conta.debitoCreditoSituacaoAnterior dcsan "
+							+ "inner join conta.localidade loca ";
 
 			if(relacaoTipo != null){
 				consulta = consulta + " inner join clienteConta.clienteRelacaoTipo clienteRelacaoTipo ";
@@ -17771,29 +17860,31 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 					if(dataVencimentoContaFim != null){
 
-						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente).setInteger("anoMes",
-										anoMes).setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-														DebitoCreditoSituacao.RETIFICADA).setInteger("relacao", relacaoTipo).setDate(
-														"dataVencimentoContaInicio", dataVencimentoContaInicio).setDate(
-														"dataVencimentoContaFim", dataVencimentoContaFim).list();
+						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente)
+										.setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+										.setInteger("normal", DebitoCreditoSituacao.NORMAL)
+										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+										.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).setInteger("relacao", relacaoTipo)
+										.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
+										.setDate("dataVencimentoContaFim", dataVencimentoContaFim).list();
 
 					}else{
 
-						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente).setInteger("anoMes",
-										anoMes).setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-														DebitoCreditoSituacao.RETIFICADA).setInteger("relacao", relacaoTipo).setDate(
-														"dataVencimentoContaInicio", dataVencimentoContaInicio).setDate(
-														"dataVencimentoContaFim", dataVencimentoContaInicio).list();
+						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente)
+										.setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+										.setInteger("normal", DebitoCreditoSituacao.NORMAL)
+										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+										.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).setInteger("relacao", relacaoTipo)
+										.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
+										.setDate("dataVencimentoContaFim", dataVencimentoContaInicio).list();
 
 					}
 				}else{
 
 					retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente).setInteger("anoMes", anoMes)
-									.setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL).setInteger(
-													"incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-													DebitoCreditoSituacao.RETIFICADA).setInteger("relacao", relacaoTipo).list();
+									.setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL)
+									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+									.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).setInteger("relacao", relacaoTipo).list();
 				}
 			}
 
@@ -17804,29 +17895,31 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 					if(dataVencimentoContaFim != null){
 
-						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente).setInteger("anoMes",
-										anoMes).setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-														DebitoCreditoSituacao.RETIFICADA).setDate("dataVencimentoContaInicio",
-														dataVencimentoContaInicio)
+						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente)
+										.setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+										.setInteger("normal", DebitoCreditoSituacao.NORMAL)
+										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+										.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
+										.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
 										.setDate("dataVencimentoContaFim", dataVencimentoContaFim).list();
 
 					}else{
 
-						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente).setInteger("anoMes",
-										anoMes).setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-														DebitoCreditoSituacao.RETIFICADA).setDate("dataVencimentoContaInicio",
-														dataVencimentoContaInicio).setDate("dataVencimentoContaFim",
-														dataVencimentoContaInicio).list();
+						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente)
+										.setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+										.setInteger("normal", DebitoCreditoSituacao.NORMAL)
+										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+										.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
+										.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
+										.setDate("dataVencimentoContaFim", dataVencimentoContaInicio).list();
 
 					}
 				}else{
 
 					retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente).setInteger("anoMes", anoMes)
-									.setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL).setInteger(
-													"incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-													DebitoCreditoSituacao.RETIFICADA).list();
+									.setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL)
+									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+									.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).list();
 				}
 
 			}
@@ -17878,29 +17971,31 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 					if(dataVencimentoContaFim != null){
 
-						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente).setInteger("anoMes",
-										anoMes).setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-														DebitoCreditoSituacao.RETIFICADA).setInteger("relacao", relacaoTipo).setDate(
-														"dataVencimentoContaInicio", dataVencimentoContaInicio).setDate(
-														"dataVencimentoContaFim", dataVencimentoContaFim).list();
+						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente)
+										.setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+										.setInteger("normal", DebitoCreditoSituacao.NORMAL)
+										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+										.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).setInteger("relacao", relacaoTipo)
+										.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
+										.setDate("dataVencimentoContaFim", dataVencimentoContaFim).list();
 
 					}else{
 
-						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente).setInteger("anoMes",
-										anoMes).setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-														DebitoCreditoSituacao.RETIFICADA).setInteger("relacao", relacaoTipo).setDate(
-														"dataVencimentoContaInicio", dataVencimentoContaInicio).setDate(
-														"dataVencimentoContaFim", dataVencimentoContaInicio).list();
+						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente)
+										.setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+										.setInteger("normal", DebitoCreditoSituacao.NORMAL)
+										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+										.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).setInteger("relacao", relacaoTipo)
+										.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
+										.setDate("dataVencimentoContaFim", dataVencimentoContaInicio).list();
 
 					}
 				}else{
 
 					retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente).setInteger("anoMes", anoMes)
-									.setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL).setInteger(
-													"incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-													DebitoCreditoSituacao.RETIFICADA).setInteger("relacao", relacaoTipo).list();
+									.setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL)
+									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+									.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).setInteger("relacao", relacaoTipo).list();
 				}
 
 			}
@@ -17911,29 +18006,31 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 					if(dataVencimentoContaFim != null){
 
-						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente).setInteger("anoMes",
-										anoMes).setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-														DebitoCreditoSituacao.RETIFICADA).setDate("dataVencimentoContaInicio",
-														dataVencimentoContaInicio)
+						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente)
+										.setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+										.setInteger("normal", DebitoCreditoSituacao.NORMAL)
+										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+										.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
+										.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
 										.setDate("dataVencimentoContaFim", dataVencimentoContaFim).list();
 
 					}else{
 
-						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente).setInteger("anoMes",
-										anoMes).setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-														DebitoCreditoSituacao.RETIFICADA).setDate("dataVencimentoContaInicio",
-														dataVencimentoContaInicio).setDate("dataVencimentoContaFim",
-														dataVencimentoContaInicio).list();
+						retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente)
+										.setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+										.setInteger("normal", DebitoCreditoSituacao.NORMAL)
+										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+										.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
+										.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
+										.setDate("dataVencimentoContaFim", dataVencimentoContaInicio).list();
 
 					}
 				}else{
 
 					retorno = (Collection) session.createQuery(consulta).setInteger("codigo", codigoCliente).setInteger("anoMes", anoMes)
-									.setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL).setInteger(
-													"incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-													DebitoCreditoSituacao.RETIFICADA).list();
+									.setInteger("anoMesFim", anoMesFim).setInteger("normal", DebitoCreditoSituacao.NORMAL)
+									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+									.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).list();
 				}
 
 			}
@@ -17971,9 +18068,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "or(contaMotivoRevisao.id <> :revisaoAutomaticaEstouroConsumo "
 							+ "and contaMotivoRevisao.id <> :revisaoAutomaticaBaixoConsumo)) ";
 
-			retorno = session.createQuery(consulta).setParameterList("idsConta", idsConta).setInteger("revisaoAutomaticaEstouroConsumo",
-							ContaMotivoRevisao.REVISAO_AUTOMATICA_ESTOURO_CONSUMO).setInteger("revisaoAutomaticaBaixoConsumo",
-							ContaMotivoRevisao.REVISAO_AUTOMATICA_BAIXO_CONSUMO).list();
+			retorno = session.createQuery(consulta).setParameterList("idsConta", idsConta)
+							.setInteger("revisaoAutomaticaEstouroConsumo", ContaMotivoRevisao.REVISAO_AUTOMATICA_ESTOURO_CONSUMO)
+							.setInteger("revisaoAutomaticaBaixoConsumo", ContaMotivoRevisao.REVISAO_AUTOMATICA_BAIXO_CONSUMO).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -18014,24 +18111,23 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "ligacaoAguaSituacao.descricao, " + "ligacaoEsgotoSituacao.descricao, " + "imovelContaEnvio.id, "
 							+ "cntHist.percentualEsgoto, " + "imovel.nomeImovel ," + " cntHist.debitoCreditoSituacaoAtual.id, "
 							+ "cmret.id, " + "funcionario.id, cmret.descricaoMotivoRetificacaoConta " + "  ) "
-							+ "from ClienteContaHistorico cliCntHist "
-							+ "RIGHT JOIN cliCntHist.contaHistorico cntHist " + "LEFT JOIN cliCntHist.clienteRelacaoTipo crt "
-							+ "LEFT JOIN cliCntHist.cliente cli " + "LEFT JOIN cntHist.contaMotivoRevisao cmr "
-							+ "LEFT JOIN cntHist.quadra quadraConta " + "LEFT JOIN cntHist.localidade loc "
-							+ "LEFT JOIN loc.gerenciaRegional gerenciaRegional "
+							+ "from ClienteContaHistorico cliCntHist " + "RIGHT JOIN cliCntHist.contaHistorico cntHist "
+							+ "LEFT JOIN cliCntHist.clienteRelacaoTipo crt " + "LEFT JOIN cliCntHist.cliente cli "
+							+ "LEFT JOIN cntHist.contaMotivoRevisao cmr " + "LEFT JOIN cntHist.quadra quadraConta "
+							+ "LEFT JOIN cntHist.localidade loc " + "LEFT JOIN loc.gerenciaRegional gerenciaRegional "
 							+ "LEFT JOIN cntHist.ligacaoAguaSituacao ligacaoAguaSituacao "
 							+ "LEFT JOIN cntHist.ligacaoEsgotoSituacao ligacaoEsgotoSituacao "
 							+ "LEFT JOIN cntHist.imovelPerfil imovelPerfil " + "LEFT JOIN quadraConta.rota rota "
 							+ "LEFT JOIN rota.empresa emp " + "LEFT JOIN quadraConta.setorComercial setorComercial "
 							+ "LEFT JOIN rota.faturamentoGrupo faturamentoGrupo " + "LEFT JOIN cntHist.imovel imovel "
 							+ "LEFT JOIN imovel.imovelContaEnvio imovelContaEnvio " + "LEFT JOIN cntHist.usuario usuario "
-							+ "LEFT JOIN cntHist.contaMotivoRetificacao cmret "
-							+ "LEFT JOIN usuario.funcionario funcionario " + "WHERE  cntHist.id = :idConta " + "AND crt.id = :usuario "
+							+ "LEFT JOIN cntHist.contaMotivoRetificacao cmret " + "LEFT JOIN usuario.funcionario funcionario "
+							+ "WHERE  cntHist.id = :idConta " + "AND crt.id = :usuario "
 							+ "ORDER BY cntHist.anoMesReferenciaConta,emp.id,loc.id,cntHist.setorComercial,"
 							+ "cntHist.numeroQuadra,cntHist.lote,cntHist.sublote";
 
-			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue()).setInteger("usuario",
-							ClienteRelacaoTipo.USUARIO.intValue()).list();
+			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue())
+							.setInteger("usuario", ClienteRelacaoTipo.USUARIO.intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -18065,8 +18161,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "inner join cliCntHist.clienteRelacaoTipo crt " + "inner join cliCntHist.cliente cli "
 							+ "where cntHist.id = :idConta AND " + "crt.id = :idResponsavel";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idConta", idConta).setInteger("idResponsavel",
-							ClienteRelacaoTipo.RESPONSAVEL).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idConta", idConta)
+							.setInteger("idResponsavel", ClienteRelacaoTipo.RESPONSAVEL).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -18205,26 +18301,26 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "rota.rota_cdrota,imovel.imov_nnsequencialrota,cnt.cnta_nnquadra,cnt.cnta_nnlote,cnt.cnta_nnsublote";
 
 			retorno = session.createSQLQuery(consulta).addScalar("idConta", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING)
-							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER).addScalar(
-											"digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
-							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT).addScalar("sublote",
-											Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER).addScalar("consumoEsgoto",
-											Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL).addScalar("valorEsgoto",
-											Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL).addScalar("valorCreditos",
-											Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL).addScalar(
-											"dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER).addScalar(
-											"idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
-							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER).addScalar(
-											"idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
-							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER).addScalar(
-											"idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING).addScalar(
-											"descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
+							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER)
+							.addScalar("digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
+							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT)
+							.addScalar("sublote", Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER)
+							.addScalar("consumoEsgoto", Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL)
+							.addScalar("valorEsgoto", Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL)
+							.addScalar("valorCreditos", Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL)
+							.addScalar("dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
+							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER)
+							.addScalar("idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
+							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER)
+							.addScalar("idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING)
+							.addScalar("descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
 							.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL).addScalar("idClienteResponsavel", Hibernate.INTEGER)
-							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT).addScalar("sequencialRota",
-											Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER).addScalar(
-											"debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
-							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("tipoConta", Hibernate.INTEGER).setParameterList(
-											"idTipoConta", idTipoConta).setInteger("idResposavel", ClienteRelacaoTipo.RESPONSAVEL)
+							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT)
+							.addScalar("sequencialRota", Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER)
+							.addScalar("debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
+							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("tipoConta", Hibernate.INTEGER)
+							.setParameterList("idTipoConta", idTipoConta).setInteger("idResposavel", ClienteRelacaoTipo.RESPONSAVEL)
 							.setShort("indicadorEmissaoExtratoFaturamento", indicadorEmissaoExtratoFaturamento).setMaxResults(1000)
 							.setFirstResult(numeroPaginas).list();
 
@@ -18304,8 +18400,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where contaHist.id = :idConta AND " + "categoria.id = :idCategoria "
 							+ "order by contaCategoriaConsumoFaixaHistorico.consumoFaixaInicio";
 
-			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue()).setInteger("idCategoria",
-							idCategoria.intValue()).list();
+			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue())
+							.setInteger("idCategoria", idCategoria.intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -18385,8 +18481,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "finTipo.id in (:tiposParcelamento) "
 							+ "group by debCobradoHist.numeroPrestacaoDebito,debCobradoHist.numeroPrestacao";
 
-			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue()).setParameterList("tiposParcelamento",
-							tiposParcelamento).list();
+			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue())
+							.setParameterList("tiposParcelamento", tiposParcelamento).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -18527,8 +18623,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "debCobradoHist.debitoTipo.descricao "
 							+ "order by debitoTipo.id,debCobradoHist.anoMesReferenciaDebito desc";
 
-			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue()).setParameterList("tiposParcelamento",
-							tiposParcelamento).list();
+			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue())
+							.setParameterList("tiposParcelamento", tiposParcelamento).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -18681,13 +18777,13 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			if(indicadorLocalidadeInformatizada == 1 || indicadorLocalidadeInformatizada == 2){
 
-				retorno = session.createQuery(consulta).setInteger("anoMes", anoMesFaturamento).setInteger("idFaturamentoGrupo",
-								idFaturamentoGrupo)
-								.setShort("indicadorInformatizada", Short.valueOf(indicadorLocalidadeInformatizada + "")).setBigDecimal(
-												"valorMinimo", valorMinimo).list();
+				retorno = session.createQuery(consulta).setInteger("anoMes", anoMesFaturamento)
+								.setInteger("idFaturamentoGrupo", idFaturamentoGrupo)
+								.setShort("indicadorInformatizada", Short.valueOf(indicadorLocalidadeInformatizada + ""))
+								.setBigDecimal("valorMinimo", valorMinimo).list();
 			}else{
-				retorno = session.createQuery(consulta).setInteger("anoMes", anoMesFaturamento).setInteger("idFaturamentoGrupo",
-								idFaturamentoGrupo).setBigDecimal("valorMinimo", valorMinimo).list();
+				retorno = session.createQuery(consulta).setInteger("anoMes", anoMesFaturamento)
+								.setInteger("idFaturamentoGrupo", idFaturamentoGrupo).setBigDecimal("valorMinimo", valorMinimo).list();
 			}
 
 		}catch(HibernateException e){
@@ -18788,13 +18884,13 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			if(indicadorLocalidadeInformatizada == 1 || indicadorLocalidadeInformatizada == 2){
 
-				retorno = session.createQuery(consulta).setInteger("anoMes", anoMesFaturamento).setInteger("idFaturamentoGrupo",
-								idFaturamentoGrupo)
-								.setShort("indicadorInformatizada", Short.valueOf(indicadorLocalidadeInformatizada + "")).setBigDecimal(
-												"valorMinimo", valorMinimo).list();
+				retorno = session.createQuery(consulta).setInteger("anoMes", anoMesFaturamento)
+								.setInteger("idFaturamentoGrupo", idFaturamentoGrupo)
+								.setShort("indicadorInformatizada", Short.valueOf(indicadorLocalidadeInformatizada + ""))
+								.setBigDecimal("valorMinimo", valorMinimo).list();
 			}else{
-				retorno = session.createQuery(consulta).setInteger("anoMes", anoMesFaturamento).setInteger("idFaturamentoGrupo",
-								idFaturamentoGrupo).setBigDecimal("valorMinimo", valorMinimo).list();
+				retorno = session.createQuery(consulta).setInteger("anoMes", anoMesFaturamento)
+								.setInteger("idFaturamentoGrupo", idFaturamentoGrupo).setBigDecimal("valorMinimo", valorMinimo).list();
 			}
 
 		}catch(HibernateException e){
@@ -18839,8 +18935,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "left join dbac.imovel imov where dbac.id = :idDebitoACobrar and fntp.id in (:tiposParcelamento) ";
 
 			// executa o hql
-			retorno = (Integer) session.createQuery(consulta).setInteger("idDebitoACobrar", idDebitoACobrar).setParameterList(
-							"tiposParcelamento", tiposParcelamento).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idDebitoACobrar", idDebitoACobrar)
+							.setParameterList("tiposParcelamento", tiposParcelamento).setMaxResults(1).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -18884,9 +18980,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "AND parc_id = :idParcelamento";
 
 			session.createQuery(update).setInteger("situacaoAtual", DebitoCreditoSituacao.CANCELADA).setInteger("idImovel", idImovel)
-							.setInteger("debitoCreditoSituacaoNormal", DebitoCreditoSituacao.NORMAL).setInteger("financiamentoTipo",
-											FinanciamentoTipo.JUROS_PARCELAMENTO).setInteger("idParcelamento", idParcelamento)
-							.executeUpdate();
+							.setInteger("debitoCreditoSituacaoNormal", DebitoCreditoSituacao.NORMAL)
+							.setInteger("financiamentoTipo", FinanciamentoTipo.JUROS_PARCELAMENTO)
+							.setInteger("idParcelamento", idParcelamento).executeUpdate();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -18934,8 +19030,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "WHERE pgmt.imovel.id= :idImovel and pgmt.anoMesReferenciaPagamento = :anoMesReferenciaConta "
 							+ "GROUP BY pgmt.arrecadacaoForma.id " + "ORDER BY 2 ";
 
-			pesquisa2 = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel).setInteger("anoMesReferenciaConta",
-							anoMesReferenciaConta).setMaxResults(1).uniqueResult();
+			pesquisa2 = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel)
+							.setInteger("anoMesReferenciaConta", anoMesReferenciaConta).setMaxResults(1).uniqueResult();
 
 			if(pesquisa1 != null){
 				data1 = (Date) pesquisa1[1];
@@ -19099,8 +19195,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "rf.categoria.id, rf.unidadeNegocio.nome, rf.unidadeNegocio.id, rf.sequenciaTipoLancamento, rf.sequenciaItemTipoLancamento, rf.gerenciaRegional.nome, rf.gerenciaRegional.id  "
 							+ "order by rf.sequenciaTipoLancamento, rf.sequenciaItemTipoLancamento, rf.categoria.id ";
 
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("unidadeNegocio",
-							unidadeNegocio).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("unidadeNegocio", unidadeNegocio).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -20536,8 +20632,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where contaHist.id = :idConta AND " + "categoria.id = :idCategoria AND "
 							+ "subCategoria.id = :idSubCategoria " + "order by contaCategoriaConsumoFaixaHistorico.consumoFaixaInicio";
 
-			retorno = session.createQuery(consulta).setInteger("idConta", idConta).setInteger("idCategoria", idCategoria).setInteger(
-							"idSubCategoria", idSubCategoria).list();
+			retorno = session.createQuery(consulta).setInteger("idConta", idConta).setInteger("idCategoria", idCategoria)
+							.setInteger("idSubCategoria", idSubCategoria).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -20695,8 +20791,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "dcst_idatual = :debitoCreditoSituacaoNormal ";
 
 			session.createQuery(update).setInteger("situacaoAtual", DebitoCreditoSituacao.CANCELADA).setInteger("idImovel", idImovel)
-							.setInteger("debitoCreditoSituacaoNormal", DebitoCreditoSituacao.NORMAL).setInteger("creditoOrigem",
-											CreditoOrigem.DESCONTOS_CONCEDIDOS_NO_PARCELAMENTO).executeUpdate();
+							.setInteger("debitoCreditoSituacaoNormal", DebitoCreditoSituacao.NORMAL)
+							.setInteger("creditoOrigem", CreditoOrigem.DESCONTOS_CONCEDIDOS_NO_PARCELAMENTO).executeUpdate();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -20733,8 +20829,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "cnta.debitoCreditoSituacaoAtual IN(:normal, :incluida, :retificada)";
 
 			retorno = session.createQuery(consulta).setInteger("idImovel", idImovel).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-							.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-											DebitoCreditoSituacao.RETIFICADA).list();
+							.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+							.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -20813,8 +20909,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "inner join cltp.esferaPoder epod " + "where cnta.id = :idConta and crtp.id = :idRelacaoTipo "
 							+ "and epod.id in (:idsEsferasPoder) ";
 
-			retornoPesquisa = session.createQuery(consulta).setInteger("idConta", idConta).setInteger("idRelacaoTipo",
-							ClienteRelacaoTipo.RESPONSAVEL).setParameterList("idsEsferasPoder", colecaoIdsEsferasPoder).list();
+			retornoPesquisa = session.createQuery(consulta).setInteger("idConta", idConta)
+							.setInteger("idRelacaoTipo", ClienteRelacaoTipo.RESPONSAVEL)
+							.setParameterList("idsEsferasPoder", colecaoIdsEsferasPoder).list();
 
 			if(retornoPesquisa != null && !retornoPesquisa.isEmpty()){
 				retorno = true;
@@ -20905,9 +21002,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * @return Integer
 	 * @throws ErroRepositorioException
 	 */
-	public Integer pesquisarQuantidadeContasGrupoFaturamento(Integer anoMes, Integer idGrupoFaturamento, Date dataVencimentoContaInicio,
-					Date dataVencimentoContaFim, Integer anoMesFim, String inContasRevisao, Integer[] motivosRevisaoDisponiveis)
-					throws ErroRepositorioException{
+	public Integer pesquisarQuantidadeContasGrupoFaturamento(Integer anoMes, Collection colecaoGrupoFaturamento,
+					Date dataVencimentoContaInicio, Date dataVencimentoContaFim, Integer anoMesFim, String inContasRevisao,
+					Integer[] motivosRevisaoDisponiveis) throws ErroRepositorioException{
 
 		Integer retorno = 0;
 
@@ -20916,9 +21013,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 		try{
 
-			consulta = "SELECT COUNT(cnta.id) " + "FROM Conta cnta " + "INNER JOIN cnta.imovel imov " + "INNER JOIN imov.quadra quadra "
-							+ "INNER JOIN imov.rota rota " + "INNER JOIN rota.faturamentoGrupo ftgr "
-							+ "INNER JOIN cnta.debitoCreditoSituacaoAtual dcst ";
+			consulta = "SELECT COUNT(cnta.id) " + "FROM Conta cnta " + "INNER JOIN cnta.imovel imov " + "INNER JOIN imov.rota rota "
+							+ "INNER JOIN rota.faturamentoGrupo ftgr " + "INNER JOIN cnta.debitoCreditoSituacaoAtual dcst ";
 
 			if(!Util.isVazioOuBranco(inContasRevisao) && inContasRevisao.equals(ConstantesSistema.SIM.toString())){
 				consulta += "INNER JOIN cnta.contaMotivoRevisao cmr ";
@@ -20926,8 +21022,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				consulta += "LEFT JOIN cnta.contaMotivoRevisao cmr ";
 			}
 
-			consulta += "WHERE cnta.referencia BETWEEN :anoMes AND :anoMesFim "
-							+ "AND ftgr.id = :idGrupoFaturamento " + "AND dcst.id IN(:normal, :incluida, :retificada)";
+			consulta += "WHERE cnta.referencia BETWEEN :anoMes AND :anoMesFim " + "AND ftgr.id IN(:colecaoGrupoFaturamento) "
+							+ "AND dcst.id IN(:normal, :incluida, :retificada)";
 
 			if(!Util.isVazioOuBranco(inContasRevisao) && inContasRevisao.equals(ConstantesSistema.SIM.toString())
 							&& !Util.isVazioOrNulo(motivosRevisaoDisponiveis)){
@@ -20948,7 +21044,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 						retorno = retorno
 										+ ((Number) session.createQuery(consulta).setInteger("anoMes", anoMes)
 														.setInteger("anoMesFim", anoMesFim)
-														.setInteger("idGrupoFaturamento", idGrupoFaturamento)
+														.setParameterList("colecaoGrupoFaturamento", colecaoGrupoFaturamento)
 														.setInteger("normal", DebitoCreditoSituacao.NORMAL)
 														.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
 														.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
@@ -20961,7 +21057,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 						retorno = retorno
 										+ ((Number) session.createQuery(consulta).setInteger("anoMes", anoMes)
 														.setInteger("anoMesFim", anoMesFim)
-														.setInteger("idGrupoFaturamento", idGrupoFaturamento)
+														.setParameterList("colecaoGrupoFaturamento", colecaoGrupoFaturamento)
 														.setInteger("normal", DebitoCreditoSituacao.NORMAL)
 														.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
 														.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
@@ -20975,7 +21071,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 						retorno = retorno
 										+ ((Number) session.createQuery(consulta).setInteger("anoMes", anoMes)
 														.setInteger("anoMesFim", anoMesFim)
-														.setInteger("idGrupoFaturamento", idGrupoFaturamento)
+														.setParameterList("colecaoGrupoFaturamento", colecaoGrupoFaturamento)
 														.setInteger("normal", DebitoCreditoSituacao.NORMAL)
 														.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
 														.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
@@ -20988,7 +21084,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 						retorno = retorno
 										+ ((Number) session.createQuery(consulta).setInteger("anoMes", anoMes)
 														.setInteger("anoMesFim", anoMesFim)
-														.setInteger("idGrupoFaturamento", idGrupoFaturamento)
+														.setParameterList("colecaoGrupoFaturamento", colecaoGrupoFaturamento)
 														.setInteger("normal", DebitoCreditoSituacao.NORMAL)
 														.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
 														.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
@@ -21004,7 +21100,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 					retorno = retorno
 									+ ((Number) session.createQuery(consulta).setInteger("anoMes", anoMes)
 													.setInteger("anoMesFim", anoMesFim)
-													.setInteger("idGrupoFaturamento", idGrupoFaturamento)
+													.setParameterList("colecaoGrupoFaturamento", colecaoGrupoFaturamento)
 													.setInteger("normal", DebitoCreditoSituacao.NORMAL)
 													.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
 													.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
@@ -21015,7 +21111,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 					retorno = retorno
 									+ ((Number) session.createQuery(consulta).setInteger("anoMes", anoMes)
 													.setInteger("anoMesFim", anoMesFim)
-													.setInteger("idGrupoFaturamento", idGrupoFaturamento)
+													.setParameterList("colecaoGrupoFaturamento", colecaoGrupoFaturamento)
 													.setInteger("normal", DebitoCreditoSituacao.NORMAL)
 													.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
 													.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).uniqueResult()).intValue();
@@ -21042,8 +21138,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * @return Collection
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarContasGrupoFaturamento(Integer anoMes, Integer idGrupoFaturamento, Date dataVencimentoContaInicio,
-					Date dataVencimentoContaFim, Integer anoMesFim, String inContasRevisao, Integer[] motivosRevisaoDisponiveis) throws ErroRepositorioException{
+	public Collection pesquisarContasGrupoFaturamento(Integer anoMes, Collection colecaoGrupoFaturamento, Date dataVencimentoContaInicio,
+					Date dataVencimentoContaFim, Integer anoMesFim, String inContasRevisao, Integer[] motivosRevisaoDisponiveis)
+					throws ErroRepositorioException{
 
 		Collection retorno = null;
 
@@ -21064,7 +21161,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				consulta += "LEFT JOIN cnta.contaMotivoRevisao cmr ";
 			}
 						
-			consulta += "WHERE cnta.referencia BETWEEN :anoMes AND :anoMesFim " + "AND ftgr.id = :idGrupoFaturamento "
+			consulta += "WHERE cnta.referencia BETWEEN :anoMes AND :anoMesFim " + "AND ftgr.id in (:colecaoGrupoFaturamento) "
 							+ "AND cnta.debitoCreditoSituacaoAtual IN(:normal, :incluida, :retificada)";
 							
 			if(!Util.isVazioOuBranco(inContasRevisao) && inContasRevisao.equals(ConstantesSistema.SIM.toString())
@@ -21085,7 +21182,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 					if(!Util.isVazioOrNulo(motivosRevisaoDisponiveis)){
 						retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
-										.setInteger("idGrupoFaturamento", idGrupoFaturamento)
+										.setParameterList("colecaoGrupoFaturamento", colecaoGrupoFaturamento)
 										.setInteger("normal", DebitoCreditoSituacao.NORMAL)
 										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
 										.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
@@ -21095,7 +21192,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 					}else{
 						retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
-										.setInteger("idGrupoFaturamento", idGrupoFaturamento)
+										.setParameterList("colecaoGrupoFaturamento", colecaoGrupoFaturamento)
 										.setInteger("normal", DebitoCreditoSituacao.NORMAL)
 										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
 										.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
@@ -21107,7 +21204,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 					
 					if(!Util.isVazioOrNulo(motivosRevisaoDisponiveis)){
 						retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
-										.setInteger("idGrupoFaturamento", idGrupoFaturamento)
+										.setParameterList("colecaoGrupoFaturamento", colecaoGrupoFaturamento)
 										.setInteger("normal", DebitoCreditoSituacao.NORMAL)
 										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
 										.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
@@ -21117,7 +21214,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 					}else{
 						retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
-										.setInteger("idGrupoFaturamento", idGrupoFaturamento)
+										.setParameterList("colecaoGrupoFaturamento", colecaoGrupoFaturamento)
 										.setInteger("normal", DebitoCreditoSituacao.NORMAL)
 										.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
 										.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
@@ -21131,7 +21228,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				
 				if(!Util.isVazioOrNulo(motivosRevisaoDisponiveis)){
 					retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
-									.setInteger("idGrupoFaturamento", idGrupoFaturamento)
+									.setParameterList("colecaoGrupoFaturamento", colecaoGrupoFaturamento)
 									.setInteger("normal", DebitoCreditoSituacao.NORMAL)
 									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
 									.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
@@ -21139,7 +21236,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 				}else{
 					retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
-									.setInteger("idGrupoFaturamento", idGrupoFaturamento)
+									.setParameterList("colecaoGrupoFaturamento", colecaoGrupoFaturamento)
 									.setInteger("normal", DebitoCreditoSituacao.NORMAL)
 									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
 									.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).list();
@@ -21166,7 +21263,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * @return Collection
 	 * @throws ErroRepositorioException
 	 */
-	public Collection obterContasGrupoFaturamento(Integer anoMes, Integer idGrupoFaturamento, Date dataVencimentoContaInicio,
+	public Collection obterContasGrupoFaturamento(Integer anoMes, String idGrupoFaturamento, Date dataVencimentoContaInicio,
 					Date dataVencimentoContaFim, Integer anoMesFim) throws ErroRepositorioException{
 
 		Collection retorno = null;
@@ -21174,12 +21271,14 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		Session session = HibernateUtil.getSession();
 		String consulta;
 
+		Collection<Integer> colecaoIdsGrupoFaturamento = Util.converterStringParaColecaoInteger(idGrupoFaturamento, ";");
+
 		try{ // 0 ,1
 			consulta = "SELECT cnta, imov " + "FROM Conta cnta " + "INNER JOIN cnta.imovel imov " + "INNER JOIN imov.quadra quadra "
 							+ "INNER JOIN cnta.rota rota " + "INNER JOIN rota.faturamentoGrupo ftgr "
 							+ "INNER JOIN FETCH cnta.consumoTarifa cstf " + "INNER JOIN FETCH cnta.quadraConta quad "
 							+ "INNER JOIN FETCH quad.setorComercial strc " + "WHERE cnta.referencia BETWEEN :anoMes AND :anoMesFim "
-							+ "AND ftgr.id = :idGrupoFaturamento "
+							+ "AND ftgr.id in(:colecaoIdsGrupoFaturamento) "
 							+ "AND cnta.debitoCreditoSituacaoAtual in(:normal, :incluida, :retificada)";
 
 			if(dataVencimentoContaInicio != null){
@@ -21187,29 +21286,31 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 				if(dataVencimentoContaFim != null){
 
-					retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim).setInteger(
-									"idGrupoFaturamento", idGrupoFaturamento).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-													DebitoCreditoSituacao.RETIFICADA).setDate("dataVencimentoContaInicio",
-													dataVencimentoContaInicio).setDate("dataVencimentoContaFim", dataVencimentoContaFim)
-									.list();
+					retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+									.setParameterList("colecaoIdsGrupoFaturamento", colecaoIdsGrupoFaturamento)
+									.setInteger("normal", DebitoCreditoSituacao.NORMAL)
+									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+									.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
+									.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
+									.setDate("dataVencimentoContaFim", dataVencimentoContaFim).list();
 
 				}else{
 
-					retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim).setInteger(
-									"idGrupoFaturamento", idGrupoFaturamento).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-													DebitoCreditoSituacao.RETIFICADA).setDate("dataVencimentoContaInicio",
-													dataVencimentoContaInicio).setDate("dataVencimentoContaFim", dataVencimentoContaInicio)
-									.list();
+					retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+									.setParameterList("colecaoIdsGrupoFaturamento", colecaoIdsGrupoFaturamento)
+									.setInteger("normal", DebitoCreditoSituacao.NORMAL)
+									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+									.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
+									.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
+									.setDate("dataVencimentoContaFim", dataVencimentoContaInicio).list();
 
 				}
 			}else{
 
-				retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim).setInteger(
-								"idGrupoFaturamento", idGrupoFaturamento).setInteger("normal", DebitoCreditoSituacao.NORMAL).setInteger(
-								"incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
-								.list();
+				retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+								.setParameterList("colecaoIdsGrupoFaturamento", colecaoIdsGrupoFaturamento)
+								.setInteger("normal", DebitoCreditoSituacao.NORMAL).setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+								.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).list();
 			}
 
 		}catch(HibernateException e){
@@ -21231,7 +21332,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * @return Collection
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarIdContasGrupoFaturamento(Integer anoMes, Integer idGrupoFaturamento, Date dataVencimentoContaInicio,
+	public Collection pesquisarIdContasGrupoFaturamento(Integer anoMes, String idGrupoFaturamento, Date dataVencimentoContaInicio,
 					Date dataVencimentoContaFim, Integer anoMesFim) throws ErroRepositorioException{
 
 		Collection retorno = null;
@@ -21239,11 +21340,13 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		Session session = HibernateUtil.getSession();
 		String consulta;
 
+		Collection<Integer> colecaoIdsGrupo = Util.converterStringParaColecaoInteger(idGrupoFaturamento, ";");
+
 		try{
 			consulta = "SELECT cnta.id " + "FROM Conta cnta " + "INNER JOIN cnta.imovel imov " + "INNER JOIN imov.quadra quadra "
 							+ "INNER JOIN cnta.rota rota " + "INNER JOIN rota.faturamentoGrupo ftgr "
 							+ "INNER JOIN cnta.debitoCreditoSituacaoAtual dcst " + "WHERE cnta.referencia BETWEEN :anoMes AND :anoMesFim "
-							+ "AND ftgr.id = :idGrupoFaturamento "
+							+ "AND ftgr.id  in (:colecaoIdsGrupo) "
 							+ "AND cnta.debitoCreditoSituacaoAtual in(:normal, :incluida, :retificada)";
 
 			if(dataVencimentoContaInicio != null){
@@ -21251,29 +21354,31 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 				if(dataVencimentoContaFim != null){
 
-					retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim).setInteger(
-									"idGrupoFaturamento", idGrupoFaturamento).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-													DebitoCreditoSituacao.RETIFICADA).setDate("dataVencimentoContaInicio",
-													dataVencimentoContaInicio).setDate("dataVencimentoContaFim", dataVencimentoContaFim)
-									.list();
+					retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+									.setParameterList("colecaoIdsGrupo", colecaoIdsGrupo)
+									.setInteger("normal", DebitoCreditoSituacao.NORMAL)
+									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+									.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
+									.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
+									.setDate("dataVencimentoContaFim", dataVencimentoContaFim).list();
 
 				}else{
 
-					retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim).setInteger(
-									"idGrupoFaturamento", idGrupoFaturamento).setInteger("normal", DebitoCreditoSituacao.NORMAL)
-									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
-													DebitoCreditoSituacao.RETIFICADA).setDate("dataVencimentoContaInicio",
-													dataVencimentoContaInicio).setDate("dataVencimentoContaFim", dataVencimentoContaInicio)
-									.list();
+					retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+									.setParameterList("colecaoIdsGrupo", colecaoIdsGrupo)
+									.setInteger("normal", DebitoCreditoSituacao.NORMAL)
+									.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+									.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
+									.setDate("dataVencimentoContaInicio", dataVencimentoContaInicio)
+									.setDate("dataVencimentoContaFim", dataVencimentoContaInicio).list();
 
 				}
 			}else{
 
-				retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim).setInteger(
-								"idGrupoFaturamento", idGrupoFaturamento).setInteger("normal", DebitoCreditoSituacao.NORMAL).setInteger(
-								"incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
-								.list();
+				retorno = session.createQuery(consulta).setInteger("anoMes", anoMes).setInteger("anoMesFim", anoMesFim)
+								.setParameterList("colecaoIdsGrupo", colecaoIdsGrupo).setInteger("normal", DebitoCreditoSituacao.NORMAL)
+								.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+								.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).list();
 			}
 
 		}catch(HibernateException e){
@@ -21429,10 +21534,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and pghi.pghi_amreferenciapagamento=200706 " + "and pghi_dtpagamento < '2007-07-18') ";
 
 			retorno = session.createSQLQuery(consulta).addScalar("imovid", Hibernate.INTEGER).addScalar("prestacao", Hibernate.BIG_DECIMAL)
-							.addScalar("locaid", Hibernate.INTEGER).addScalar("qdraid", Hibernate.INTEGER).addScalar("codsetor",
-											Hibernate.INTEGER).addScalar("numeroqdra", Hibernate.INTEGER).addScalar("numerolote",
-											Hibernate.INTEGER).addScalar("numerosublote", Hibernate.INTEGER).addScalar(
-											"anomesreferenciadebito", Hibernate.INTEGER).list();
+							.addScalar("locaid", Hibernate.INTEGER).addScalar("qdraid", Hibernate.INTEGER)
+							.addScalar("codsetor", Hibernate.INTEGER).addScalar("numeroqdra", Hibernate.INTEGER)
+							.addScalar("numerolote", Hibernate.INTEGER).addScalar("numerosublote", Hibernate.INTEGER)
+							.addScalar("anomesreferenciadebito", Hibernate.INTEGER).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -21492,8 +21597,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where fg.id = :faturamentoGrupoId and fa.id = :faturamentoAtividadeId and "
 							+ "fcm.anoMesReferencia = :anoMesReferencia";
 
-			retorno = (Date) session.createQuery(consulta).setInteger("faturamentoGrupoId", faturamentoGrupoId.intValue()).setInteger(
-							"faturamentoAtividadeId", faturamentoAtividadeId).setInteger("anoMesReferencia", anoMesReferencia)
+			retorno = (Date) session.createQuery(consulta).setInteger("faturamentoGrupoId", faturamentoGrupoId.intValue())
+							.setInteger("faturamentoAtividadeId", faturamentoAtividadeId).setInteger("anoMesReferencia", anoMesReferencia)
 							.uniqueResult();
 
 		}catch(HibernateException e){
@@ -21523,7 +21628,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		StringBuilder consulta = new StringBuilder();
 
 		try{
-			consulta.append("SELECT ").append("cnt.id, ")
+			consulta.append("SELECT ")
+							.append("cnt.id, ")
 			// 0
 							.append("cnt.consumoAgua, ")
 							// 1
@@ -21551,12 +21657,11 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							// 12
 							.append("cnt.referencia ")
 							// 13
-							.append("FROM Conta cnt ").append("INNER JOIN cnt.consumoTarifa consumoTarifa ").append(
-											"INNER JOIN cnt.ligacaoAguaSituacao ligacaoAguaSituacao ").append(
-											"INNER JOIN cnt.ligacaoEsgotoSituacao ligacaoEsgotoSituacao ").append(
-											"INNER JOIN cnt.imovel imovel ").append("INNER JOIN imovel.quadra qdra ").append(
-											"INNER JOIN imovel.rota rota ").append("INNER JOIN rota.faturamentoGrupo ftgr ").append(
-											"WHERE  cnt.id = :idConta ");
+							.append("FROM Conta cnt ").append("INNER JOIN cnt.consumoTarifa consumoTarifa ")
+							.append("INNER JOIN cnt.ligacaoAguaSituacao ligacaoAguaSituacao ")
+							.append("INNER JOIN cnt.ligacaoEsgotoSituacao ligacaoEsgotoSituacao ").append("INNER JOIN cnt.imovel imovel ")
+							.append("INNER JOIN imovel.quadra qdra ").append("INNER JOIN imovel.rota rota ")
+							.append("INNER JOIN rota.faturamentoGrupo ftgr ").append("WHERE  cnt.id = :idConta ");
 
 			retorno = (Object[]) session.createQuery(consulta.toString()).setInteger("idConta", idConta.intValue()).setMaxResults(1)
 							.uniqueResult();
@@ -21625,8 +21730,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "WHERE fatu.codigoQualifica = :codigoQualifica " + "AND fatu.anoMesReferencia = :anoMesReferencia "
 							+ "AND fatu.debito = :valorDebito ";
 
-			retorno = (Object[]) session.createQuery(consulta).setShort("codigoQualifica", codigoQualificador).setInteger(
-							"anoMesReferencia", anoMesReferencia).setBigDecimal("valorDebito", valorDebito).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta).setShort("codigoQualifica", codigoQualificador)
+							.setInteger("anoMesReferencia", anoMesReferencia).setBigDecimal("valorDebito", valorDebito).setMaxResults(1)
+							.uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -21760,18 +21866,18 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " ORDER BY loc.loca_id, stcm.stcm_cdsetorcomercial, quadra.qdra_nnquadra, imov.imov_id ";
 
 			retorno = session.createSQLQuery(consulta).addScalar("idImovel", Hibernate.INTEGER)
-							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("nomeLocalidade", Hibernate.STRING).addScalar(
-											"idSetor", Hibernate.INTEGER).addScalar("codSetor", Hibernate.INTEGER).addScalar("nomeSetor",
-											Hibernate.STRING).addScalar("idQuadra", Hibernate.INTEGER).addScalar("numeroQuadra",
-											Hibernate.INTEGER).addScalar("nomeUsuario", Hibernate.STRING).addScalar("situacaoAgua",
-											Hibernate.INTEGER).addScalar("situacaoEsgoto", Hibernate.INTEGER).addScalar("consumoMedio",
-											Hibernate.INTEGER).addScalar("consumoMesInformado", Hibernate.INTEGER).addScalar("consumoMes1",
-											Hibernate.INTEGER).addScalar("consumoMes2", Hibernate.INTEGER).addScalar("consumoMes3",
-											Hibernate.INTEGER).addScalar("consumoMes4", Hibernate.INTEGER).addScalar("consumoMes5",
-											Hibernate.INTEGER).setInteger("anoMes", anoMes).setInteger("anoMesInformado", anoMesInformado)
-							.setInteger("anoMes1", anoMes1).setInteger("anoMes2", anoMes2).setInteger("anoMes3", anoMes3).setInteger(
-											"anoMes4", anoMes4).setInteger("anoMes5", anoMes5).setInteger("idLocalidade", idLocalidade)
-							.list();
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("nomeLocalidade", Hibernate.STRING)
+							.addScalar("idSetor", Hibernate.INTEGER).addScalar("codSetor", Hibernate.INTEGER)
+							.addScalar("nomeSetor", Hibernate.STRING).addScalar("idQuadra", Hibernate.INTEGER)
+							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("nomeUsuario", Hibernate.STRING)
+							.addScalar("situacaoAgua", Hibernate.INTEGER).addScalar("situacaoEsgoto", Hibernate.INTEGER)
+							.addScalar("consumoMedio", Hibernate.INTEGER).addScalar("consumoMesInformado", Hibernate.INTEGER)
+							.addScalar("consumoMes1", Hibernate.INTEGER).addScalar("consumoMes2", Hibernate.INTEGER)
+							.addScalar("consumoMes3", Hibernate.INTEGER).addScalar("consumoMes4", Hibernate.INTEGER)
+							.addScalar("consumoMes5", Hibernate.INTEGER).setInteger("anoMes", anoMes)
+							.setInteger("anoMesInformado", anoMesInformado).setInteger("anoMes1", anoMes1).setInteger("anoMes2", anoMes2)
+							.setInteger("anoMes3", anoMes3).setInteger("anoMes4", anoMes4).setInteger("anoMes5", anoMes5)
+							.setInteger("idLocalidade", idLocalidade).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -21850,15 +21956,16 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " stcm.stcm_nmsetorcomercial, quadra.qdra_nnquadra "
 							+ " ORDER BY loc.loca_id, stcm.stcm_cdsetorcomercial, quadra.qdra_nnquadra ";
 
-			retorno = session.createSQLQuery(consulta).addScalar("idLocalidade", Hibernate.INTEGER).addScalar("nomeLocalidade",
-							Hibernate.STRING).addScalar("idSetor", Hibernate.INTEGER).addScalar("codSetor", Hibernate.INTEGER).addScalar(
-							"nomeSetor", Hibernate.STRING).addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("consumoMedio",
-							Hibernate.INTEGER).addScalar("consumoMesInformado", Hibernate.INTEGER).addScalar("consumoMes1",
-							Hibernate.INTEGER).addScalar("consumoMes2", Hibernate.INTEGER).addScalar("consumoMes3", Hibernate.INTEGER)
-							.addScalar("consumoMes4", Hibernate.INTEGER).addScalar("consumoMes5", Hibernate.INTEGER).setInteger("anoMes",
-											anoMes).setInteger("anoMesInformado", anoMesInformado).setInteger("anoMes1", anoMes1)
-							.setInteger("anoMes2", anoMes2).setInteger("anoMes3", anoMes3).setInteger("anoMes4", anoMes4).setInteger(
-											"anoMes5", anoMes5).setInteger("idLocalidade", idLocalidade).list();
+			retorno = session.createSQLQuery(consulta).addScalar("idLocalidade", Hibernate.INTEGER)
+							.addScalar("nomeLocalidade", Hibernate.STRING).addScalar("idSetor", Hibernate.INTEGER)
+							.addScalar("codSetor", Hibernate.INTEGER).addScalar("nomeSetor", Hibernate.STRING)
+							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("consumoMedio", Hibernate.INTEGER)
+							.addScalar("consumoMesInformado", Hibernate.INTEGER).addScalar("consumoMes1", Hibernate.INTEGER)
+							.addScalar("consumoMes2", Hibernate.INTEGER).addScalar("consumoMes3", Hibernate.INTEGER)
+							.addScalar("consumoMes4", Hibernate.INTEGER).addScalar("consumoMes5", Hibernate.INTEGER)
+							.setInteger("anoMes", anoMes).setInteger("anoMesInformado", anoMesInformado).setInteger("anoMes1", anoMes1)
+							.setInteger("anoMes2", anoMes2).setInteger("anoMes3", anoMes3).setInteger("anoMes4", anoMes4)
+							.setInteger("anoMes5", anoMes5).setInteger("idLocalidade", idLocalidade).list();
 			System.out.println(consulta);
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -21887,88 +21994,85 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		Session session = HibernateUtil.getSession();
 
 		Collection retorno = null;
-		String consulta = null;
+		StringBuilder consulta = new StringBuilder();
 
 		try{
 
-			consulta = "SELECT imov.imov_id as idImovel, "
-							+ " gerReg.greg_id as idGerencia, "
-							+ " gerReg.greg_nmabreviado as nomeGerencia, "
-							+ " elo.loca_id as idElo, "
-							+ " elo.loca_nmlocalidade as nomeElo, "
-							+ " loc.loca_id as idLocalidade, "
-							+ " loc.loca_nmlocalidade as nomeLocalidade, "
-							+ " setor.stcm_cdsetorcomercial as codigoSetor, "
-							+ " quadra.qdra_nnquadra as numeroQuadra, "
-							+ " imov.imov_nnlote as lote, "
-							+ " imov.imov_nnsublote as sublote, "
-							+ " clieUsuario.clie_nmcliente as nomeClienteUsuario, "
-							+ " clieUsuarioFone.cfon_cdddd as dddFoneUsuario, "
-							+ " clieUsuarioFone.cfon_nnfone as numeroFoneUsuario, "
-							+ " clieUsuarioFone.cfon_nnfoneramal as ramalFoneUsuario, "
-							+ " conta.cnta_amreferenciaconta as anoMesReferencia, "
-							+ " (conta.cnta_vlagua + conta.cnta_vlesgoto + conta.cnta_vldebitos - conta.cnta_vlcreditos - coalesce( conta.cnta_vlimpostos, 0 ) ) as valorConta, "
-							+ " conta.cnta_dtrevisao as dataRevisao, " + " contaMotRev.cmrv_id as idMotivoRevisao, "
-							+ " contaMotRev.cmrv_dsmotivorevisaoconta as descricaoMotivoRevisao, "
-							+ " undNeg.uneg_id as idUnidadeNegocio, " + " undNeg.uneg_nmabreviado as nomeUnidadeNegocio, "
-							+ " iper.iper_id as idImovelPerfil, iper.iper_dsimovelperfil as descricaoImovelPerfil" + " FROM imovel imov "
-							+ " INNER JOIN IMOVEL_PERFIL iper ON imov.iper_id = iper.iper_id" + " INNER JOIN conta conta "
-							+ " on conta.imov_id = imov.imov_id and conta.cnta_dtrevisao is not null " + " and conta.dcst_idatual in ("
-							+ DebitoCreditoSituacao.NORMAL
-							+ ", "
-							+ DebitoCreditoSituacao.RETIFICADA
-							+ ", "
-							+ DebitoCreditoSituacao.INCLUIDA
-							+ ", "
-							+ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO
-							+ ") "
-							+ " INNER JOIN cliente_imovel clieImovUsuario "
-							+ " on clieImovUsuario.imov_id = imov.imov_id "
-							+ " and clieImovUsuario.crtp_id = "
-							+ ClienteRelacaoTipo.USUARIO
-							+ " and clieImovUsuario.clim_dtrelacaofim is null "
-							+ " INNER JOIN cliente clieUsuario "
-							+ " on clieUsuario.clie_id = clieImovUsuario.clie_id "
-							+ " INNER JOIN setor_comercial setor "
-							+ " on setor.stcm_id = imov.stcm_id "
-							+ " INNER JOIN quadra quadra "
-							+ " on quadra.qdra_id = imov.qdra_id "
-							+ " INNER JOIN localidade loc "
-							+ " on loc.loca_id = imov.loca_id "
-							+ " INNER JOIN localidade elo "
-							+ " on elo.loca_id = loc.loca_cdelo "
-							+ " INNER JOIN gerencia_regional gerReg "
-							+ " on gerReg.greg_id = loc.greg_id "
-							+ " LEFT OUTER JOIN unidade_negocio undNeg "
-							+ " on undNeg.uneg_id = loc.uneg_id "
-							+ " LEFT OUTER JOIN cliente_fone clieUsuarioFone "
-							+ " on clieUsuarioFone.clie_id = clieUsuario.clie_id "
-							+ " and clieUsuarioFone.cfon_icfonepadrao = "
-							+ ClienteFone.INDICADOR_FONE_PADRAO
-							+ " LEFT OUTER JOIN conta_motivo_revisao contaMotRev "
-							+ " on contaMotRev.cmrv_id = conta.cmrv_id "
-							+ " LEFT OUTER JOIN pagamento pagto "
-							+ " on pagto.cnta_id = conta.cnta_id ";
+			String where = this.criarCondicionaisRelatorioContasRevisao(idGerenciaRegional, idUnidadeNegocio, idElo, idLocalidadeInicial,
+							idLocalidadeFinal, idMotivoRevisao, idImovelPerfil, referenciaInicial, referenciaFinal);
 
-			consulta = consulta
-							+ criarCondicionaisRelatorioContasRevisao(idGerenciaRegional, idUnidadeNegocio, idElo, idLocalidadeInicial,
-											idLocalidadeFinal, idMotivoRevisao, idImovelPerfil, referenciaInicial, referenciaFinal);
+			consulta.append("SELECT DISTINCT imov.imov_id as idImovel, ");
+			consulta.append(" 		 		 gerReg.greg_id as idGerencia, ");
+			consulta.append(" 		 		 gerReg.greg_nmabreviado as nomeGerencia, ");
+			consulta.append(" 		 		 elo.loca_id as idElo, ");
+			consulta.append(" 		 		 elo.loca_nmlocalidade as nomeElo, ");
+			consulta.append(" 		 		 loc.loca_id as idLocalidade, ");
+			consulta.append(" 		 		 loc.loca_nmlocalidade as nomeLocalidade, ");
+			consulta.append(" 		 		 setor.stcm_cdsetorcomercial as codigoSetor, ");
+			consulta.append(" 		 		 quadra.qdra_nnquadra as numeroQuadra, ");
+			consulta.append(" 		 		 imov.imov_nnlote as lote, ");
+			consulta.append(" 		 		 imov.imov_nnsublote as sublote, ");
+			consulta.append(" 		 		 clieUsuario.clie_nmcliente as nomeClienteUsuario, ");
+			consulta.append(" 		 		 clieUsuarioFone.cfon_cdddd as dddFoneUsuario, ");
+			consulta.append(" 		 		 clieUsuarioFone.cfon_nnfone as numeroFoneUsuario, ");
+			consulta.append(" 		 		 clieUsuarioFone.cfon_nnfoneramal AS ramalFoneUsuario, ");
+			consulta.append(" 		 		 conta.cnta_amreferenciaconta AS anoMesReferencia, ");
+			consulta.append(" 		 		 (conta.cnta_vlagua + conta.cnta_vlesgoto + conta.cnta_vldebitos - conta.cnta_vlcreditos - coalesce( conta.cnta_vlimpostos, 0 ) ) as valorConta, ");
+			consulta.append(" 		 		 conta.cnta_dtrevisao as dataRevisao, ");
+			consulta.append(" 		 		 contaMotRev.cmrv_id as idMotivoRevisao, ");
+			consulta.append(" 		 		 contaMotRev.cmrv_dsmotivorevisaoconta AS descricaoMotivoRevisao, ");
+			consulta.append(" 		 		 undNeg.uneg_id as idUnidadeNegocio, ");
+			consulta.append(" 		 		 undNeg.uneg_nmabreviado as nomeUnidadeNegocio, ");
+			consulta.append(" 		 		 iper.iper_id as idImovelPerfil, ");
+			consulta.append(" 		 		 iper.iper_dsimovelperfil as descricaoImovelPerfil, ");
+			consulta.append(" 		 		 CASE ");
+			consulta.append(" 		 		 	WHEN pagto.pgmt_id IS NULL THEN ' ' ");
+			consulta.append(" 		 		 	ELSE '*' ");
+			consulta.append("				 END AS pagto ");
+			consulta.append(" FROM imovel imov ");
+			consulta.append(" INNER JOIN IMOVEL_PERFIL iper ON imov.iper_id = iper.iper_id");
+			consulta.append(" INNER JOIN conta conta ON conta.imov_id = imov.imov_id ");
+			consulta.append("		 AND conta.cnta_dtrevisao IS NOT NULL ");
+			consulta.append("    	 AND conta.dcst_idatual IN (");
+			consulta.append(DebitoCreditoSituacao.NORMAL);
+			consulta.append(", ");
+			consulta.append(DebitoCreditoSituacao.RETIFICADA);
+			consulta.append(", ");
+			consulta.append(DebitoCreditoSituacao.INCLUIDA);
+			consulta.append(", ");
+			consulta.append(DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO);
+			consulta.append(") ");
+			consulta.append(" INNER JOIN cliente_imovel clieImovUsuario ON clieImovUsuario.imov_id = imov.imov_id ");
+			consulta.append(" 		 AND clieImovUsuario.crtp_id = " + ClienteRelacaoTipo.USUARIO);
+			consulta.append(" 		 AND clieImovUsuario.clim_dtrelacaofim IS NULL ");
+			consulta.append(" INNER JOIN cliente clieUsuario ON clieUsuario.clie_id = clieImovUsuario.clie_id ");
+			consulta.append(" INNER JOIN setor_comercial setor ON setor.stcm_id = imov.stcm_id ");
+			consulta.append(" INNER JOIN quadra quadra ON quadra.qdra_id = imov.qdra_id ");
+			consulta.append(" INNER JOIN localidade loc ON loc.loca_id = imov.loca_id ");
+			consulta.append(" INNER JOIN localidade elo ON elo.loca_id = loc.loca_cdelo ");
+			consulta.append(" INNER JOIN gerencia_regional gerReg ON gerReg.greg_id = loc.greg_id ");
+			consulta.append(" LEFT OUTER JOIN unidade_negocio undNeg ON undNeg.uneg_id = loc.uneg_id ");
+			consulta.append(" LEFT OUTER JOIN cliente_fone clieUsuarioFone ON clieUsuarioFone.clie_id = clieUsuario.clie_id ");
+			consulta.append(" 			  AND clieUsuarioFone.cfon_icfonepadrao = " + ClienteFone.INDICADOR_FONE_PADRAO);
+			consulta.append(" LEFT OUTER JOIN conta_motivo_revisao contaMotRev ON contaMotRev.cmrv_id = conta.cmrv_id ");
+			consulta.append(" LEFT OUTER JOIN pagamento pagto ON pagto.cnta_id = conta.cnta_id ");
 
-			consulta = consulta + " ORDER BY gerReg.greg_id, elo.loca_id,  " + " loc.loca_id, setor.stcm_cdsetorcomercial, "
-							+ " quadra.qdra_nnquadra, imov.imov_nnlote, " + " imov.imov_nnsublote, conta.cnta_amreferenciaconta ";
+			consulta.append(where);
+			consulta.append(" ORDER BY gerReg.greg_id, elo.loca_id, loc.loca_id, setor.stcm_cdsetorcomercial,  quadra.qdra_nnquadra, imov.imov_nnlote, imov.imov_nnsublote, conta.cnta_amreferenciaconta");
 
-			retorno = session.createSQLQuery(consulta).addScalar("idImovel", Hibernate.INTEGER).addScalar("idGerencia", Hibernate.INTEGER)
-							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idElo", Hibernate.INTEGER).addScalar("nomeElo",
-											Hibernate.STRING).addScalar("idLocalidade", Hibernate.INTEGER).addScalar("nomeLocalidade",
-											Hibernate.STRING).addScalar("codigoSetor", Hibernate.INTEGER).addScalar("numeroQuadra",
-											Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT).addScalar("sublote", Hibernate.SHORT)
-							.addScalar("nomeClienteUsuario", Hibernate.STRING).addScalar("dddFoneUsuario", Hibernate.STRING).addScalar(
-											"numeroFoneUsuario", Hibernate.STRING).addScalar("ramalFoneUsuario", Hibernate.STRING)
-							.addScalar("anoMesReferencia", Hibernate.INTEGER).addScalar("valorConta", Hibernate.BIG_DECIMAL).addScalar(
-											"dataRevisao", Hibernate.DATE).addScalar("idMotivoRevisao", Hibernate.INTEGER).addScalar(
-											"descricaoMotivoRevisao", Hibernate.STRING).addScalar("idUnidadeNegocio", Hibernate.INTEGER)
-.addScalar("nomeUnidadeNegocio", Hibernate.STRING)
-							.addScalar("idImovelPerfil", Hibernate.INTEGER).addScalar("descricaoImovelPerfil", Hibernate.STRING).list();
+			retorno = session.createSQLQuery(consulta.toString()).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("idGerencia", Hibernate.INTEGER).addScalar("nomeGerencia", Hibernate.STRING)
+							.addScalar("idElo", Hibernate.INTEGER).addScalar("nomeElo", Hibernate.STRING)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("nomeLocalidade", Hibernate.STRING)
+							.addScalar("codigoSetor", Hibernate.INTEGER).addScalar("numeroQuadra", Hibernate.INTEGER)
+							.addScalar("lote", Hibernate.SHORT).addScalar("sublote", Hibernate.SHORT)
+							.addScalar("nomeClienteUsuario", Hibernate.STRING).addScalar("dddFoneUsuario", Hibernate.STRING)
+							.addScalar("numeroFoneUsuario", Hibernate.STRING).addScalar("ramalFoneUsuario", Hibernate.STRING)
+							.addScalar("anoMesReferencia", Hibernate.INTEGER).addScalar("valorConta", Hibernate.BIG_DECIMAL)
+							.addScalar("dataRevisao", Hibernate.DATE).addScalar("idMotivoRevisao", Hibernate.INTEGER)
+							.addScalar("descricaoMotivoRevisao", Hibernate.STRING).addScalar("idUnidadeNegocio", Hibernate.INTEGER)
+							.addScalar("nomeUnidadeNegocio", Hibernate.STRING).addScalar("idImovelPerfil", Hibernate.INTEGER)
+							.addScalar("descricaoImovelPerfil", Hibernate.STRING).addScalar("pagto", Hibernate.STRING).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -21980,6 +22084,419 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 		return retorno;
 	}
+
+	/**
+	 * pesquisa os dados nessesários para a geracao do relatório analitico de contas
+	 * 
+	 * @author Adriano Sousa
+	 * @created09/10/2014
+	 * @throws ControladorException
+	 */
+
+	// MINHA QUERY
+	public Collection pesquisarDadosRelatorioAnaliticoContas(Integer idGerenciaRegional, Integer idLocalidade, Integer idCategoria,
+					Integer idCliente, Integer idImovel, Integer idSituacao, Integer motivoRetificacao, Integer referencia,
+					Integer faturamentoGrupo, Integer setorComercial, Integer quadra) throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+
+
+		// int mes = Util.obterMes(referencia);
+
+		Collection retorno = null;
+		StringBuilder consulta = new StringBuilder();
+
+		try{
+
+			consulta.append(" 	 select 'Histórico (1,2,3,5)' Origem,  ");
+			consulta.append(" 			ch.imov_id MATRICULA,  ");
+			consulta.append("       (SELECT CL.CLIE_NMCLIENTE  ");
+			consulta.append("         FROM CLIENTE_CONTA_HISTORICO CC   ");
+			consulta.append("         INNER JOIN CLIENTE CL ON (CL.CLIE_ID = CC.CLIE_ID)  ");
+			consulta.append("         WHERE CC.CNTA_ID = CH.CNTA_ID AND CC.CLCH_ICNOMECONTA = 1) USUARIO_TITULAR_CONTA,  ");
+			consulta.append(" 			ch.cnhi_amreferenciaconta REFERENCIA,   ");
+			consulta.append(" 			(select ch_2.cnhi_vlagua+ch_2.cnhi_vlesgoto+ch_2.cnhi_vldebitos-ch_2.cnhi_vlcreditos-ch_2.cnhi_vlimpostos   ");
+			consulta.append(" 			from conta_historico ch_2    ");
+			consulta.append(" 			where ch_2.cnta_id = ( select min(ch_3.cnta_id) from conta_historico ch_3   ");
+			consulta.append(" 			                        where ch_3.imov_id = ch.imov_id    ");
+			consulta.append(" 			                          and ch_3.cnhi_amreferenciaconta = ch.cnhi_amreferenciaconta   ");
+			consulta.append(" 			                          and ch_3.dcst_idatual = 7   ");
+			consulta.append(" 			                          and ch_3.cnhi_tmultimaalteracao < ch.cnhi_tmultimaalteracao  ");
+			consulta.append("                                 	  and to_char(trunc(ch_3.cnhi_tmultimaalteracao),'yyyymm') = :referencia  )) VALOR_ORIGINAL,  ");
+			consulta.append(" 			ch.cnhi_vlagua+ch.cnhi_vlesgoto+ch.cnhi_vldebitos-ch.cnhi_vlcreditos-ch.cnhi_vlimpostos VALOR_REFATURADO,   ");
+			consulta.append(" 			ch.cnhi_tmultimaalteracao DATA_FATURAMENTO,    ");
+			consulta.append(" 			 TO_CHAR(ch.cnhi_tmultimaalteracao, 'hh24:mi') AS HORA_ALTERACAO,  ");
+			consulta.append(" 			cmr.CMRT_DSMOTIVORETIFICACAOCONTA MOTIVO_REFATURAMENTO,  ");
+			consulta.append(" 			u.USUR_NMLOGIN  USUARIO_GSAN  ");
+			consulta.append(" 	from conta_historico ch    ");
+			consulta.append(" 	inner join conta_motivo_retificacao cmr on (ch.cmrt_id = cmr.cmrt_id)  ");
+			consulta.append(" 	left join usuario u on (ch.usur_id = u.usur_id)  ");
+			consulta.append("   left join conta_categoria cct on (ch.cnta_id=cct.cnta_id) ");
+			consulta.append("   left join cliente_conta clct on (ch.cnta_id = clct.cnta_id) ");
+			consulta.append("   left join localidade l on (l.loca_id = ch.loca_id) ");
+			consulta.append("   inner join imovel i on (ch.imov_id = i.imov_id) ");
+			consulta.append("   inner join ROTA r on (i.ROTA_ID = r.rota_id) ");
+			consulta.append(" 	where ch.dcst_idatual in (1,2,3,5)   ");
+
+			// verifica motivoRetificacao
+			if(motivoRetificacao != null){
+				consulta.append("AND ch.cmrt_id = :motivoRetificacao ");
+			}
+			// verifica idcategoria
+			if(idCategoria != null){
+				consulta.append("AND cct.catg_id = :idCategoria  ");
+			}
+			// verifica id situacao
+			if(idSituacao != null){
+				consulta.append("AND ch.dcst_idatual  = :idSituacao  ");
+			}
+			// verifica localidade
+			if(idLocalidade != null){
+				consulta.append("AND ch.LOCA_ID   = :idLocalidade  ");
+			}
+			// verifica se a idImovel não é null
+			if(idImovel != null){
+				consulta.append("AND ch.imov_id   = :idImovel  ");
+			}
+			// verifica se a IdCliente não é null
+			if(idCliente != null){
+				consulta.append("AND clct.CLIE_ID = :idCliente   ");
+			}
+			// verifica idGerenciaRegional
+			if(idGerenciaRegional != null){
+				consulta.append("AND l.greg_id =:idGerenciaRegional ");
+			}
+			if(quadra != null){
+				consulta.append("AND ch.CNHI_NNQUADRA = :quadra ");
+			}
+			if(setorComercial != null){
+				consulta.append(" AND ch.CNHI_CDSETORCOMERCIAL = :setorComercial ");
+			}
+			if(faturamentoGrupo != null){
+				consulta.append(" AND r.ftgr_id = :faturamentoGrupo ");
+			}
+
+			consulta.append("and exists (select * from conta_historico ch_1   ");
+			consulta.append("            where ch.imov_id = ch_1.imov_id   ");
+			consulta.append("              and ch_1.cnhi_amreferenciaconta = ch.cnhi_amreferenciaconta  ");
+			consulta.append("              and ch_1.dcst_idatual = 7  ");
+			consulta.append("              and to_char(trunc(ch_1.cnhi_tmultimaalteracao),'yyyymm') = :referencia  ");
+			consulta.append("              and ch.cnhi_tmultimaalteracao > ch_1.cnhi_tmultimaalteracao )  ");
+			consulta.append("union  ");
+			consulta.append("   select 'Conta (1) com historico (7)' Origem,  ");
+			consulta.append("     ch.imov_id MATRICULA,  ");
+			consulta.append("     (SELECT CL.CLIE_NMCLIENTE   ");
+			consulta.append("      FROM CLIENTE_CONTA_HISTORICO CC   ");
+			consulta.append("      INNER JOIN CLIENTE CL ON (CL.CLIE_ID = CC.CLIE_ID)  ");
+			consulta.append("      WHERE CC.CNTA_ID = CH.CNTA_ID AND CC.CLCH_ICNOMECONTA = 1) USUARIO_TITULAR_CONTA,  ");
+			consulta.append("      ch.CNTA_AMREFERENCIACONTA REFERENCIA,   ");
+			consulta.append("      (select ch_2.cnhi_vlagua+ch_2.cnhi_vlesgoto+ch_2.cnhi_vldebitos-ch_2.cnhi_vlcreditos-ch_2.cnhi_vlimpostos  ");
+			consulta.append("      from conta_historico ch_2   ");
+			consulta.append("      where ch_2.cnta_id = ( select min(ch_3.cnta_id) from conta_historico ch_3  ");
+			consulta.append("                             where ch_3.imov_id = ch.imov_id   ");
+			consulta.append("                             and ch_3.cnhi_amreferenciaconta = ch.cnta_amreferenciaconta  ");
+			consulta.append("                             and ch_3.dcst_idatual = 7  ");
+			consulta.append("                             and to_char(trunc(ch_3.cnhi_tmultimaalteracao),'yyyymm') = :referencia  )) VALOR_ORIGINAL,  ");
+			consulta.append("      (ch.cnta_vlagua+ch.cnta_vlesgoto+ch.cnta_vldebitos-ch.cnta_vlcreditos-ch.cnta_vlimpostos) VALOR_REFATURADO,  ");
+			consulta.append("      ch.CNTA_TMULTIMAALTERACAO DATA_FATURAMENTO,    ");
+			consulta.append(" 		 TO_CHAR(ch.CNTA_TMULTIMAALTERACAO, 'hh24:mi') AS HORA_ALTERACAO,  ");
+			consulta.append(" 		 cmr.CMRT_DSMOTIVORETIFICACAOCONTA MOTIVO_REFATURAMENTO,  ");
+			consulta.append("      u.USUR_NMLOGIN  USUARIO_GSAN  ");
+			consulta.append("     from conta ch   ");
+			consulta.append("     INNER join conta_motivo_retificacao cmr on (ch.cmrt_id = cmr.cmrt_id)  ");
+			consulta.append("     left join usuario u on (ch.usur_id = u.usur_id)  ");
+			consulta.append("     left join conta_categoria cct on (ch.cnta_id=cct.cnta_id) ");
+			consulta.append("     left join cliente_conta clct on (ch.cnta_id = clct.cnta_id) ");
+			consulta.append("     left join localidade l on (l.loca_id = ch.loca_id) ");
+			consulta.append("   inner join imovel i on (ch.imov_id = i.imov_id) ");
+			consulta.append("   inner join ROTA r on (i.ROTA_ID = r.rota_id) ");
+			consulta.append("     where cnta_amreferenciaconta = :referencia    ");
+			consulta.append("     and ch.dcst_idatual in (1)   ");
+			consulta.append("     and exists (select * from conta_historico ch_1   ");
+			consulta.append("                 where ch.imov_id = ch_1.imov_id   ");
+			consulta.append("                  and ch_1.cnhi_amreferenciaconta = ch.cnta_amreferenciaconta  ");
+			consulta.append("                  and ch_1.dcst_idatual = 7  ");
+			consulta.append("                  and to_char(trunc(ch_1.cnhi_tmultimaalteracao),'yyyymm') = :referencia  )  ");
+			// verifica motivoRetificacao
+			if(motivoRetificacao != null){
+				consulta.append("AND ch.cmrt_id = :motivoRetificacao ");
+			}
+			// verifica idcategoria
+			if(idCategoria != null){
+				consulta.append("AND cct.catg_id = :idCategoria  ");
+			}
+			// verifica id situacao
+			if(idSituacao != null){
+				consulta.append("AND ch.dcst_idatual  = :idSituacao  ");
+			}
+			// verifica localidade
+			if(idLocalidade != null){
+				consulta.append("AND ch.LOCA_ID   = :idLocalidade  ");
+			}
+			// verifica se a idImovel não é null
+			if(idImovel != null){
+				consulta.append("AND ch.imov_id   =:idImovel   ");
+			}
+			// verifica idGerenciaRegional
+			if(idGerenciaRegional != null){
+				consulta.append("AND l.greg_id =:idGerenciaRegional ");
+			}
+			// verifica se a IdCliente não é null
+			if(idCliente != null){
+				consulta.append("AND clct.CLIE_ID = :idCliente   ");
+			}
+			if(quadra != null){
+				consulta.append("AND ch.CNTA_NNQUADRA = :quadra ");
+			}
+			if(setorComercial != null){
+				consulta.append(" AND ch.CNTA_CDSETORCOMERCIAL = :setorComercial ");
+			}
+			if(faturamentoGrupo != null){
+				consulta.append(" AND r.ftgr_id = :faturamentoGrupo ");
+			}
+			consulta.append("and exists (select * from conta_historico ch_1   ");
+			consulta.append("            where ch.imov_id = ch_1.imov_id   ");
+			consulta.append("              and ch_1.cnhi_amreferenciaconta = ch.cnta_amreferenciaconta  ");
+			consulta.append("              and to_char(trunc(ch_1.cnhi_tmultimaalteracao),'yyyymm') = :referencia  ");
+			consulta.append("              and ch_1.dcst_idatual = 7 )  ");
+			consulta.append(" union  ");
+			consulta.append("   select 'Histórico (3)' Origem,  ");
+			consulta.append("   ch.imov_id MATRICULA,  ");
+			consulta.append("   (SELECT CL.CLIE_NMCLIENTE  ");
+			consulta.append("           FROM CLIENTE_CONTA_HISTORICO CC   ");
+			consulta.append("           INNER JOIN CLIENTE CL ON (CL.CLIE_ID = CC.CLIE_ID)  ");
+			consulta.append("           WHERE CC.CNTA_ID = CH.CNTA_ID AND CC.CLCH_ICNOMECONTA = 1) USUARIO_TITULAR_CONTA,  ");
+			consulta.append("   ch.cnhi_amreferenciaconta REFERENCIA,  ");
+			consulta.append("   ch.cnhi_vlagua+ch.cnhi_vlesgoto+ch.cnhi_vldebitos-ch.cnhi_vlcreditos-ch.cnhi_vlimpostos  VALOR_ORIGINAL,  ");
+			consulta.append("   0 VALOR_REFATURADO,  ");
+			consulta.append("   ch.cnhi_tmultimaalteracao DATA_FATURAMENTO,  ");
+			consulta.append("   TO_CHAR(ch.cnhi_tmultimaalteracao, 'hh24:mi') AS HORA_ALTERACAO,  ");
+			consulta.append("   cmr.CMRT_DSMOTIVORETIFICACAOCONTA MOTIVO_REFATURAMENTO,  ");
+			consulta.append("   u.USUR_NMLOGIN  USUARIO_GSAN  ");
+			consulta.append("   from conta_historico ch   ");
+			consulta.append("  INNER join conta_motivo_retificacao cmr on (ch.cmrt_id = cmr.cmrt_id)  ");
+			consulta.append("     left join usuario u on (ch.usur_id = u.usur_id)  ");
+			consulta.append("     left join conta_categoria cct on (ch.cnta_id=cct.cnta_id) ");
+			consulta.append("     left join cliente_conta clct on (ch.cnta_id = clct.cnta_id) ");
+			consulta.append("     left join localidade l on (l.loca_id = ch.loca_id) ");
+			consulta.append("   inner join imovel i on (ch.imov_id = i.imov_id) ");
+			consulta.append("   inner join ROTA r on (i.ROTA_ID = r.rota_id) ");
+			consulta.append("   where cnhi_amreferenciaconta = :referencia  ");
+			consulta.append("   and ch.dcst_idatual in (3)   ");
+			// verifica motivoRetificacao
+			if(motivoRetificacao != null){
+				consulta.append("AND ch.cmrt_id = :motivoRetificacao ");
+			}
+			// verifica idcategoria
+			if(idCategoria != null){
+				consulta.append("AND cct.catg_id = :idCategoria  ");
+			}
+			// verifica id situacao
+			if(idSituacao != null){
+				consulta.append("AND ch.dcst_idatual   = :idSituacao   ");
+			}
+			// verifica localidade
+			if(idLocalidade != null){
+				consulta.append("AND ch.LOCA_ID   = :idLocalidade  ");
+			}
+			// verifica se a idImovel não é null
+			if(idImovel != null){
+				consulta.append("AND ch.imov_id   = :idImovel  ");
+			}
+			// verifica idGerenciaRegional
+			if(idGerenciaRegional != null){
+				consulta.append("AND l.greg_id =:idGerenciaRegional  ");
+			}
+			// verifica se a IdCliente não é null
+			if(idCliente != null){
+				consulta.append("AND clct.CLIE_ID = :idCliente   ");
+			}
+			if(quadra != null){
+				consulta.append("AND ch.CNHI_NNQUADRA = :quadra ");
+			}
+			if(setorComercial != null){
+				consulta.append(" AND ch.CNHI_CDSETORCOMERCIAL = :setorComercial ");
+			}
+			if(faturamentoGrupo != null){
+				consulta.append(" AND r.ftgr_id = :faturamentoGrupo ");
+			}
+			consulta.append(" union   ");
+			consulta.append("   select 'Histórico (2)' Origem,  ");
+			consulta.append("   ch.imov_id MATRICULA,  ");
+			consulta.append("   (SELECT CL.CLIE_NMCLIENTE   ");
+			consulta.append("           FROM CLIENTE_CONTA_HISTORICO CC   ");
+			consulta.append("           INNER JOIN CLIENTE CL ON (CL.CLIE_ID = CC.CLIE_ID)  ");
+			consulta.append("           WHERE CC.CNTA_ID = CH.CNTA_ID AND CC.CLCH_ICNOMECONTA = 1) USUARIO_TITULAR_CONTA,  ");
+			consulta.append("   ch.cnhi_amreferenciaconta REFERENCIA,   ");
+			consulta.append("   0  VALOR_ORIGINAL,  ");
+			consulta.append("   (ch.cnhi_vlagua+ch.cnhi_vlesgoto+ch.cnhi_vldebitos-ch.cnhi_vlcreditos-ch.cnhi_vlimpostos) VALOR_REFATURADO,  ");
+			consulta.append("   ch.cnhi_tmultimaalteracao DATA_FATURAMENTO,    ");
+			consulta.append("   TO_CHAR(ch.cnhi_tmultimaalteracao, 'hh24:mi') AS HORA_ALTERACAO,  ");
+			consulta.append("   cmr.CMRT_DSMOTIVORETIFICACAOCONTA MOTIVO_REFATURAMENTO,  ");
+			consulta.append("   u.USUR_NMLOGIN  USUARIO_GSAN  ");
+			consulta.append("   from conta_historico ch   ");
+			consulta.append("   INNER JOIN conta_motivo_retificacao cmr ON (ch.cmrt_id = cmr.cmrt_id) ");
+			consulta.append("   left join usuario u on (ch.usur_id = u.usur_id)  ");
+			consulta.append("   left join conta_categoria cct on (ch.cnta_id=cct.cnta_id) ");
+			consulta.append("   left join cliente_conta clct on (ch.cnta_id = clct.cnta_id) ");
+			consulta.append("   left join localidade l on (l.loca_id = ch.loca_id) ");
+			consulta.append("   inner join imovel i on (ch.imov_id = i.imov_id) ");
+			consulta.append("   inner join ROTA r on (i.ROTA_ID = r.rota_id) ");
+			consulta.append("   where cnhi_amreferenciaconta = :referencia  ");
+			consulta.append("   and ch.dcst_idatual in (2)   ");
+			// verifica motivoRetificacao
+			if(motivoRetificacao != null){
+				consulta.append("AND ch.cmrt_id = :motivoRetificacao  ");
+			}
+			// verifica idcategoria
+			if(idCategoria != null){
+				consulta.append("AND cct.catg_id = :idCategoria   ");
+			}
+			// verifica id situacao
+			if(idSituacao != null){
+				consulta.append("AND ch.dcst_idatual  = :idSituacao  ");
+			}
+			// verifica localidade
+			if(idLocalidade != null){
+				consulta.append("AND ch.LOCA_ID   = :idLocalidade  ");
+			}
+			// verifica idGerenciaRegional
+			if(idGerenciaRegional != null){
+				consulta.append("AND l.greg_id =:idGerenciaRegional  ");
+			}
+			// verifica se a idImovel não é null
+			if(idImovel != null){
+				consulta.append("AND ch.imov_id   = :idImovel  ");
+			}
+			// verifica se a IdCliente não é null
+			if(idCliente != null){
+				consulta.append("AND clct.CLIE_ID = :idCliente     ");
+			}
+			if(quadra != null){
+				consulta.append("AND ch.CNHI_NNQUADRA = :quadra ");
+			}
+			if(setorComercial != null){
+				consulta.append(" AND ch.CNHI_CDSETORCOMERCIAL = :setorComercial ");
+			}
+			if(faturamentoGrupo != null){
+				consulta.append(" AND r.ftgr_id = :faturamentoGrupo ");
+			}
+			consulta.append(" union   ");
+			consulta.append(" select 'Conta (2)' Origem,  ");
+			consulta.append(" ch.imov_id MATRICULA,  ");
+			consulta.append(" (SELECT CL.CLIE_NMCLIENTE   ");
+			consulta.append("           FROM CLIENTE_CONTA_HISTORICO CC   ");
+			consulta.append("           INNER JOIN CLIENTE CL ON (CL.CLIE_ID = CC.CLIE_ID)  ");
+			consulta.append("           WHERE CC.CNTA_ID = CH.CNTA_ID AND CC.CLCH_ICNOMECONTA = 1) USUARIO_TITULAR_CONTA,  ");
+			consulta.append(" ch.cnta_amreferenciaconta REFERENCIA,  ");
+			consulta.append(" 0  VALOR_ORIGINAL,  ");
+			consulta.append(" (ch.cnta_vlagua+ch.cnta_vlesgoto+ch.cnta_vldebitos-ch.cnta_vlcreditos-ch.cnta_vlimpostos) VALOR_REFATURADO,  ");
+			consulta.append(" ch.CNTA_tmultimaalteracao DATA_FATURAMENTO,  ");
+			consulta.append(" TO_CHAR(ch.cnta_tmultimaalteracao, 'hh24:mi') AS HORA_ALTERACAO,  ");
+			consulta.append(" cmr.CMRT_DSMOTIVORETIFICACAOCONTA MOTIVO_REFATURAMENTO,  ");
+			consulta.append(" u.USUR_NMLOGIN  USUARIO_GSAN  ");
+			consulta.append(" from conta ch   ");
+			consulta.append(" INNER JOIN conta_motivo_retificacao cmr ON (ch.cmrt_id = cmr.cmrt_id)  ");
+			consulta.append("   left join usuario u on (ch.usur_id = u.usur_id)  ");
+			consulta.append("   left join conta_categoria cct on (ch.cnta_id=cct.cnta_id) ");
+			consulta.append("   left join cliente_conta clct on (ch.cnta_id = clct.cnta_id) ");
+			consulta.append("   left join localidade l on (l.loca_id = ch.loca_id) ");
+			consulta.append("   inner join imovel i on (ch.imov_id = i.imov_id) ");
+			consulta.append("   inner join ROTA r on (i.ROTA_ID = r.rota_id) ");
+			consulta.append(" where ch.cnta_amreferenciaconta = :referencia  ");
+			consulta.append(" and ch.dcst_idatual in (2)     ");
+			// verifica motivoRetificacao
+			if(motivoRetificacao != null){
+				consulta.append("AND ch.cmrt_id = :motivoRetificacao  ");
+			}
+			// verifica idcategoria
+			if(idCategoria != null){
+				consulta.append("AND cct.catg_id = :idCategoria   ");
+			}
+			// verifica id situacao
+			if(idSituacao != null){
+				consulta.append("AND ch.dcst_idatual = :idSituacao  ");
+			}
+			// verifica localidade
+			if(idLocalidade != null){
+				consulta.append("AND ch.LOCA_ID   = :idLocalidade  ");
+			}
+			// verifica idGerenciaRegional
+			if(idGerenciaRegional != null){
+				consulta.append("AND l.greg_id =:idGerenciaRegional  ");
+			}
+			// verifica se a idImovel não é null
+			if(idImovel != null){
+				consulta.append("AND ch.imov_id   = :idImovel  ");
+			}
+			// verifica se a IdCliente não é null
+			if(idCliente != null){
+				consulta.append("AND clct.CLIE_ID = :idCliente    ");
+			}
+			if(quadra != null){
+				consulta.append("AND ch.CNTA_NNQUADRA = :quadra ");
+			}
+			if(setorComercial != null){
+				consulta.append(" AND ch.CNTA_CDSETORCOMERCIAL = :setorComercial ");
+			}
+			if(faturamentoGrupo != null){
+				consulta.append(" AND r.ftgr_id = :faturamentoGrupo ");
+			}
+			consulta.append("order by 2,3 ");
+
+			SQLQuery sqlAnaliticoContas = session.createSQLQuery(consulta.toString()).addScalar("ORIGEM", Hibernate.STRING)
+							.addScalar("MATRICULA", Hibernate.STRING).addScalar("USUARIO_TITULAR_CONTA", Hibernate.STRING)
+							.addScalar("REFERENCIA", Hibernate.STRING).addScalar("VALOR_ORIGINAL", Hibernate.BIG_DECIMAL)
+							.addScalar("VALOR_REFATURADO", Hibernate.BIG_DECIMAL).addScalar("DATA_FATURAMENTO", Hibernate.DATE)
+							.addScalar("HORA_ALTERACAO", Hibernate.STRING).addScalar("MOTIVO_REFATURAMENTO", Hibernate.STRING)
+							.addScalar("USUARIO_GSAN", Hibernate.STRING);
+			
+
+				sqlAnaliticoContas.setInteger("referencia", referencia);
+
+			if(motivoRetificacao != null){
+				sqlAnaliticoContas.setInteger("motivoRetificacao", motivoRetificacao);
+			}
+			if(idCategoria != null){
+				sqlAnaliticoContas.setInteger("idCategoria", idCategoria);
+			}
+			if(idSituacao != null){
+				sqlAnaliticoContas.setInteger("idSituacao", idSituacao);
+			}
+			if(idImovel != null){
+				sqlAnaliticoContas.setInteger("idImovel", idImovel);
+			}
+			if(idCliente != null){
+				sqlAnaliticoContas.setInteger("idCliente", idCliente);
+			}
+			if(idGerenciaRegional != null){
+				sqlAnaliticoContas.setInteger("idGerenciaRegional", idGerenciaRegional);
+			}
+			if(idLocalidade != null){
+				sqlAnaliticoContas.setInteger("idLocalidade", idLocalidade);
+			}
+			if(quadra != null){
+				sqlAnaliticoContas.setInteger("quadra", quadra);
+			}
+			if(setorComercial != null){
+				sqlAnaliticoContas.setInteger("setorComercial", setorComercial);
+			}
+			if(faturamentoGrupo != null){
+				sqlAnaliticoContas.setInteger("faturamentoGrupo", faturamentoGrupo);
+			}
+
+			retorno = sqlAnaliticoContas.list();
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+		}
 
 	/**
 	 * Pesquisa os dados necessário para a geração do relatório resumido
@@ -22032,12 +22549,12 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " elo.loca_id, elo.loca_nmlocalidade, " + " contaMotRev.cmrv_id, contaMotRev.cmrv_dsmotivorevisaoconta, "
 							+ " loc.loca_id, loc.loca_nmlocalidade, " + " conta.cnta_amreferenciaconta ";
 
-			retorno = session.createSQLQuery(consulta).addScalar("idGerencia", Hibernate.INTEGER).addScalar("nomeGerencia",
-							Hibernate.STRING).addScalar("idElo", Hibernate.INTEGER).addScalar("nomeElo", Hibernate.STRING).addScalar(
-							"idLocalidade", Hibernate.INTEGER).addScalar("nomeLocalidade", Hibernate.STRING).addScalar("anoMesReferencia",
-							Hibernate.INTEGER).addScalar("idMotivoRevisao", Hibernate.INTEGER).addScalar("descricaoMotivoRevisao",
-							Hibernate.STRING).addScalar("qtdeContas", Hibernate.INTEGER).addScalar("valorContas", Hibernate.BIG_DECIMAL)
-							.list();
+			retorno = session.createSQLQuery(consulta).addScalar("idGerencia", Hibernate.INTEGER)
+							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idElo", Hibernate.INTEGER)
+							.addScalar("nomeElo", Hibernate.STRING).addScalar("idLocalidade", Hibernate.INTEGER)
+							.addScalar("nomeLocalidade", Hibernate.STRING).addScalar("anoMesReferencia", Hibernate.INTEGER)
+							.addScalar("idMotivoRevisao", Hibernate.INTEGER).addScalar("descricaoMotivoRevisao", Hibernate.STRING)
+							.addScalar("qtdeContas", Hibernate.INTEGER).addScalar("valorContas", Hibernate.BIG_DECIMAL).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -22063,41 +22580,39 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 					Integer idLocalidadeInicial, Integer idLocalidadeFinal, Integer idMotivoRevisao, Integer idImovelPerfil,
 					Integer referenciaInicial, Integer referenciaFinal){
 
-		String sql = " WHERE pagto.pgmt_id is null and ";
+		// String sql = " WHERE pagto.pgmt_id is null and ";
+		StringBuilder sql = new StringBuilder(" WHERE ");
 
 		if(idGerenciaRegional != null){
-			sql = sql + " gerReg.greg_id = " + idGerenciaRegional.toString() + " and ";
+			sql.append(" gerReg.greg_id = " + idGerenciaRegional.toString() + " AND ");
 		}
 
 		if(idUnidadeNegocio != null){
-			sql = sql + " undNeg.uneg_id = " + idUnidadeNegocio.toString() + " and ";
+			sql.append(" undNeg.uneg_id = " + idUnidadeNegocio.toString() + " AND ");
 		}
 
 		if(idElo != null){
-			sql = sql + " elo.loca_id = " + idElo.toString() + " and ";
+			sql.append(" elo.loca_id = " + idElo.toString() + " AND ");
 		}
 
 		if(idLocalidadeInicial != null){
-			sql = sql + " loc.loca_id between " + idLocalidadeInicial.toString() + " and " + idLocalidadeFinal.toString() + " and ";
+			sql.append(" loc.loca_id between " + idLocalidadeInicial.toString() + " AND " + idLocalidadeFinal.toString() + " AND ");
 		}
 
 		if(idMotivoRevisao != null){
-			sql = sql + " contaMotRev.cmrv_id = " + idMotivoRevisao.toString() + " and ";
+			sql.append(" contaMotRev.cmrv_id = " + idMotivoRevisao.toString() + " AND ");
 		}
 
 		if(idImovelPerfil != null){
-			sql = sql + " imov.iper_id = " + idImovelPerfil.toString() + " and ";
+			sql.append(" imov.iper_id = " + idImovelPerfil.toString() + " AND ");
 		}
 
 		if(referenciaInicial != null){
-			sql = sql + " conta.cnta_amreferenciaconta between " + referenciaInicial.toString() + " and " + referenciaFinal.toString()
-							+ " and ";
+			sql.append("conta.cnta_amreferenciaconta between " + referenciaInicial.toString() + " AND " + referenciaFinal.toString()
+							+ " AND ");
 		}
 
-		sql = Util.formatarHQL(sql, 4);
-
-		return sql;
-
+		return Util.formatarHQL(sql.toString(), 4);
 	}
 
 	/**
@@ -22143,12 +22658,13 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " and cnt.referencia <= :finalReferencia) " + " and (cnt.dataVencimentoConta >=  :inicialVencimento "
 							+ " and cnt.dataVencimentoConta <= :finalVencimento) order by cnt.referencia";
 
-			retorno = session.createQuery(consulta).setInteger("situacaoNormal", DebitoCreditoSituacao.NORMAL).setInteger(
-							"situacaoRetificada", DebitoCreditoSituacao.RETIFICADA).setInteger("situacaoIncluida",
-							DebitoCreditoSituacao.INCLUIDA).setInteger("situacaoParcelada", DebitoCreditoSituacao.PARCELADA).setInteger(
-							"inicialReferencia", inicialReferencia).setInteger("finalReferencia", finalReferencia).setDate(
-							"inicialVencimento", inicialVencimento).setDate("finalVencimento", finalVencimento).setInteger("tarifaSocial",
-							ConsumoTarifa.CONSUMO_SOCIAL).setInteger("idImovel", idImovel).list();
+			retorno = session.createQuery(consulta).setInteger("situacaoNormal", DebitoCreditoSituacao.NORMAL)
+							.setInteger("situacaoRetificada", DebitoCreditoSituacao.RETIFICADA)
+							.setInteger("situacaoIncluida", DebitoCreditoSituacao.INCLUIDA)
+							.setInteger("situacaoParcelada", DebitoCreditoSituacao.PARCELADA)
+							.setInteger("inicialReferencia", inicialReferencia).setInteger("finalReferencia", finalReferencia)
+							.setDate("inicialVencimento", inicialVencimento).setDate("finalVencimento", finalVencimento)
+							.setInteger("tarifaSocial", ConsumoTarifa.CONSUMO_SOCIAL).setInteger("idImovel", idImovel).list();
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -22327,19 +22843,20 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta = consulta + " ORDER BY grupoFat.ftgr_id, greg.greg_id, unidNeg.uneg_id, elo.loca_id, "
 							+ " loc.loca_id, imov.imov_id ";
 
-			retorno = session.createSQLQuery(consulta).addScalar("idGrupoFaturamento", Hibernate.INTEGER).addScalar(
-							"descricaoGrupoFaturamento", Hibernate.STRING).addScalar("idGerencia", Hibernate.INTEGER).addScalar(
-							"nomeGerencia", Hibernate.STRING).addScalar("idUnidadeNegocio", Hibernate.INTEGER).addScalar(
-							"nomeUnidadeNegocio", Hibernate.STRING).addScalar("idElo", Hibernate.INTEGER).addScalar("nomeElo",
-							Hibernate.STRING).addScalar("idLocalidade", Hibernate.INTEGER).addScalar("nomeLocalidade", Hibernate.STRING)
-							.addScalar("idImovel", Hibernate.INTEGER).addScalar("nomeUsuario", Hibernate.STRING).addScalar("sitLigAgua",
-											Hibernate.INTEGER).addScalar("sitLigEsgoto", Hibernate.INTEGER).addScalar("indicadorDebito",
-											Hibernate.SHORT).addScalar("consumoMedio", Hibernate.INTEGER).addScalar("consumoMes",
-											Hibernate.INTEGER).addScalar("anormalidadeConsumo", Hibernate.STRING).addScalar(
-											"anormalidadeLeitura", Hibernate.INTEGER).addScalar("qtdeEconomias", Hibernate.SHORT)
-							.addScalar("tipoMedicao", Hibernate.INTEGER).addScalar("capHidPoco", Hibernate.STRING).addScalar(
-											"locInstHidPoco", Hibernate.STRING).addScalar("capHidAgua", Hibernate.STRING).addScalar(
-											"locInstHidAgua", Hibernate.STRING).setInteger("referencia", referencia).list();
+			retorno = session.createSQLQuery(consulta).addScalar("idGrupoFaturamento", Hibernate.INTEGER)
+							.addScalar("descricaoGrupoFaturamento", Hibernate.STRING).addScalar("idGerencia", Hibernate.INTEGER)
+							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idUnidadeNegocio", Hibernate.INTEGER)
+							.addScalar("nomeUnidadeNegocio", Hibernate.STRING).addScalar("idElo", Hibernate.INTEGER)
+							.addScalar("nomeElo", Hibernate.STRING).addScalar("idLocalidade", Hibernate.INTEGER)
+							.addScalar("nomeLocalidade", Hibernate.STRING).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("nomeUsuario", Hibernate.STRING).addScalar("sitLigAgua", Hibernate.INTEGER)
+							.addScalar("sitLigEsgoto", Hibernate.INTEGER).addScalar("indicadorDebito", Hibernate.SHORT)
+							.addScalar("consumoMedio", Hibernate.INTEGER).addScalar("consumoMes", Hibernate.INTEGER)
+							.addScalar("anormalidadeConsumo", Hibernate.STRING).addScalar("anormalidadeLeitura", Hibernate.INTEGER)
+							.addScalar("qtdeEconomias", Hibernate.SHORT).addScalar("tipoMedicao", Hibernate.INTEGER)
+							.addScalar("capHidPoco", Hibernate.STRING).addScalar("locInstHidPoco", Hibernate.STRING)
+							.addScalar("capHidAgua", Hibernate.STRING).addScalar("locInstHidAgua", Hibernate.STRING)
+							.setInteger("referencia", referencia).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -22452,9 +22969,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by crar.anoMesReferenciaContabil,loca,greg,catg,uneg ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idSituacaoAnterior",
-							idSituacaoAnterior).setInteger("idOrigemCredito", idOrigemCredito).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idSituacaoAtual", idSituacaoAtual)
+							.setInteger("idSituacaoAnterior", idSituacaoAnterior).setInteger("idOrigemCredito", idOrigemCredito).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -22506,9 +23023,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by crar.anoMesReferenciaContabil,loca,greg,catg,uneg ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idOrigemCredito",
-							idOrigemCredito).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idSituacaoAtual", idSituacaoAtual)
+							.setInteger("idOrigemCredito", idOrigemCredito).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -22571,10 +23088,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by cnta.referencia,crrz.localidade,crrz.localidade.gerenciaRegional,crcg.categoria,crrz.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							idSituacaoAtual).setInteger("idSituacaoAnterior", idSituacaoAnterior).setInteger("idCreditoOrigem",
-							idCreditoOrigem).uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idSituacaoAnterior", idSituacaoAnterior)
+							.setInteger("idCreditoOrigem", idCreditoOrigem).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -22636,9 +23153,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by cnta.referenciaContabil,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							idSituacaoAtual).setInteger("idFinanciamentoTipo", idFinanciamentoTipo).uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idFinanciamentoTipo", idFinanciamentoTipo)
+							.uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -22701,9 +23219,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by cnta.referenciaContabil,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							idSituacaoAtual).setInteger("idFinanciamentoTipo", idFinanciamentoTipo).uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idFinanciamentoTipo", idFinanciamentoTipo)
+							.uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -22766,9 +23285,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by cnta.referencia,crrz.localidade,crrz.localidade.gerenciaRegional,crcg.categoria,crrz.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							idSituacaoAtual).setInteger("idCreditoOrigem", idCreditoOrigem).uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idCreditoOrigem", idCreditoOrigem).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -22830,9 +23349,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by cnta.referenciaContabil,crrz.localidade,crrz.localidade.gerenciaRegional,crcg.categoria,crrz.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							idSituacaoAtual).setInteger("idCreditoOrigem", idCreditoOrigem).uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idCreditoOrigem", idCreditoOrigem).uniqueResult();
 			// erro no hibernate
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -22888,8 +23407,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			// executa o hql
 			retorno = session.createQuery(consulta).setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
-							.setInteger("anoMesReferencia", anoMesReferencia).setInteger("idTipoImposto", idImpostoTipo).setInteger(
-											"idSituacaoAtual", idSituacaoAtual).list();
+							.setInteger("anoMesReferencia", anoMesReferencia).setInteger("idTipoImposto", idImpostoTipo)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -22947,8 +23466,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			// executa o hql
 			retorno = session.createQuery(consulta).setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
-							.setInteger("anoMesReferencia", anoMesReferencia).setInteger("idTipoImposto", idImpostoTipo).setInteger(
-											"idSituacaoAtual", idSituacaoAtual).list();
+							.setInteger("anoMesReferencia", anoMesReferencia).setInteger("idTipoImposto", idImpostoTipo)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -23015,10 +23534,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by cnta.referenciaContabil,lict.sequenciaImpressao,lict,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual", idSituacaoAtual).setInteger(
-							"idFinanciamentoTipo", idFinanciamentoTipo).setInteger("idLancamentoItemContabil", idLancamentoItemContabil)
-							.list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idFinanciamentoTipo", idFinanciamentoTipo)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -23085,10 +23604,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by cnta.referenciaContabil,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							idSituacaoAtual).setInteger("idFinanciamentoTipo", idFinanciamentoTipo).setInteger("idLancamentoItemContabil",
-							idLancamentoItemContabil).uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idFinanciamentoTipo", idFinanciamentoTipo)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -23154,10 +23673,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by cnta.referencia,crrz.localidade,crrz.localidade.gerenciaRegional,crcg.categoria,crrz.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							idSituacaoAtual).setParameterList("idsCreditoOrigem", idsCreditoOrigem).setInteger("idLancamentoItemContabil",
-							idLancamentoItemContabil).uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setParameterList("idsCreditoOrigem", idsCreditoOrigem)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil).uniqueResult();
 			// erro no hibernate
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -23221,10 +23740,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by cnta.referenciaContabil,crrz.localidade,crrz.localidade.gerenciaRegional,crcg.categoria,crrz.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							idSituacaoAtual).setParameterList("idsCreditoOrigem", idsCreditoOrigem).setInteger("idLancamentoItemContabil",
-							idLancamentoItemContabil).uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setParameterList("idsCreditoOrigem", idsCreditoOrigem)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil).uniqueResult();
 			// erro no hibernate
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -23273,9 +23792,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and cnta.debitoCreditoSituacaoAtual in (:idsSituacaoAtual) ";
 
 			// executa o hql
-			retorno = (Object[]) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setParameterList("idsSituacaoAtual", idsSituacaoAtual)
-							.uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setParameterList("idsSituacaoAtual", idsSituacaoAtual).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -23325,9 +23844,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and cnta.debitoCreditoSituacaoAtual in (:idsSituacaoAtual) ";
 
 			// executa o hql
-			retorno = (Object[]) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setParameterList("idsSituacaoAtual", idsSituacaoAtual)
-							.uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setParameterList("idsSituacaoAtual", idsSituacaoAtual).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -23386,9 +23905,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by cnta.referencia,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setParameterList("idSituacaoAtual",
-							idsSituacaoAtual).uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setParameterList("idSituacaoAtual", idsSituacaoAtual).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -23443,9 +23962,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by cnta.referenciaContabil,loca,greg,catg,uneg ";
 
 			// executa o hql
-			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("idLocalidade", idLocalidade).setInteger("idCategoria",
-							idCategoria).setInteger("referenciaContabil", anoMesReferencia).setInteger("idTipoImposto", idImpostoTipo)
-							.setParameterList("idsSituacaoAtual", idsSituacaoAtual).uniqueResult();
+			retorno = (ResumoFaturamento) session.createQuery(consulta).setInteger("idLocalidade", idLocalidade)
+							.setInteger("idCategoria", idCategoria).setInteger("referenciaContabil", anoMesReferencia)
+							.setInteger("idTipoImposto", idImpostoTipo).setParameterList("idsSituacaoAtual", idsSituacaoAtual)
+							.uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -23497,9 +24017,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and imtp.id = :idTipoImposto " + "and cnta.debitoCreditoSituacaoAtual = :idSituacaoAtual ";
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("idLocalidade", idLocalidade).setInteger("idCategoria",
-							idCategoria).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idTipoImposto", idImpostoTipo)
-							.setInteger("idSituacaoAtual", idSituacaoAtual).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("idLocalidade", idLocalidade)
+							.setInteger("idCategoria", idCategoria).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idTipoImposto", idImpostoTipo).setInteger("idSituacaoAtual", idSituacaoAtual).uniqueResult();
 
 			if(retorno == null){
 				retorno = BigDecimal.ZERO;
@@ -23565,10 +24085,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and (cnta.debitoCreditoSituacaoAtual = :idSituacaoAtual or cnta.debitoCreditoSituacaoAnterior = :idSituacaoAnterior) ";
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("idLocalidade", idLocalidade).setInteger("idCategoria",
-							idCategoria).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idTipoImposto", idImpostoTipo)
-							.setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idSituacaoAnterior", idSituacaoAnterior)
-							.uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("idLocalidade", idLocalidade)
+							.setInteger("idCategoria", idCategoria).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idTipoImposto", idImpostoTipo).setInteger("idSituacaoAtual", idSituacaoAtual)
+							.setInteger("idSituacaoAnterior", idSituacaoAnterior).uniqueResult();
 
 			if(retorno == null){
 				retorno = BigDecimal.ZERO;
@@ -23625,9 +24145,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and crrz.creditoOrigem.id in (:idsCreditoOrigem) ";
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							idSituacaoAtual).setParameterList("idsCreditoOrigem", idsCreditoOrigem).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setParameterList("idsCreditoOrigem", idsCreditoOrigem)
+							.uniqueResult();
 
 			if(retorno == null){
 				retorno = BigDecimal.ZERO;
@@ -23690,10 +24211,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and crrz.creditoOrigem.id in (:idsCreditoOrigem) ";
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							idSituacaoAtual).setInteger("idSituacaoAnterior", idSituacaoAnterior).setParameterList("idsCreditoOrigem",
-							idsCreditoOrigem).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idSituacaoAnterior", idSituacaoAnterior)
+							.setParameterList("idsCreditoOrigem", idsCreditoOrigem).uniqueResult();
 
 			if(retorno == null){
 				retorno = BigDecimal.ZERO;
@@ -23752,10 +24273,11 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and crrz.creditoOrigem.id in (:idsCreditoOrigem) ";
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							idSituacaoAtual).setInteger("idLancamentoItemContabil", idLancamentoItemContabil).setParameterList(
-							"idsCreditoOrigem", idsCreditoOrigem).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", idSituacaoAtual)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil)
+							.setParameterList("idsCreditoOrigem", idsCreditoOrigem).uniqueResult();
 
 			if(retorno == null){
 				retorno = BigDecimal.ZERO;
@@ -23819,10 +24341,11 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and lict.id = :idLancamentoItemContabil " + "and crrz.creditoOrigem.id in (:idsCreditoOrigem) ";
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual",
-							idSituacaoAtual).setInteger("idSituacaoAnterior", idSituacaoAnterior).setInteger("idLancamentoItemContabil",
-							idLancamentoItemContabil).setParameterList("idsCreditoOrigem", idsCreditoOrigem).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idSituacaoAnterior", idSituacaoAnterior)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil)
+							.setParameterList("idsCreditoOrigem", idsCreditoOrigem).uniqueResult();
 
 			if(retorno == null){
 				retorno = BigDecimal.ZERO;
@@ -23885,9 +24408,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by crar.anoMesReferenciaContabil,lict.sequenciaImpressao,lict,loca,greg,catg,uneg ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idSituacaoAnterior",
-							idSituacaoAnterior).setParameterList("idsOrigemCredito", idsOrigemCredito).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idSituacaoAtual", idSituacaoAtual)
+							.setInteger("idSituacaoAnterior", idSituacaoAnterior).setParameterList("idsOrigemCredito", idsOrigemCredito)
+							.list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -23945,9 +24469,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by crar.anoMesReferenciaContabil,lict.sequenciaImpressao,lict,loca,greg,catg,uneg ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idSituacaoAtual", idSituacaoAtual).setParameterList(
-							"idsOrigemCredito", idsOrigemCredito).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idSituacaoAtual", idSituacaoAtual)
+							.setParameterList("idsOrigemCredito", idsOrigemCredito).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -24000,9 +24524,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " or crar.debitoCreditoSituacaoAnterior = :idSituacaoAnterior) ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setParameterList("idsOrigemCredito", idsOrigemCredito)
-							.setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idSituacaoAnterior", idSituacaoAnterior).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setParameterList("idsOrigemCredito", idsOrigemCredito).setInteger("idSituacaoAtual", idSituacaoAtual)
+							.setInteger("idSituacaoAnterior", idSituacaoAnterior).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -24050,9 +24575,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by imov.id ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idLancamentoItemContabil",
-							idLancamentoItemContabil).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idSituacaoAtual", idSituacaoAtual)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -24105,9 +24630,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and lict.id = :idLancamentoItemContabil " + "group by imov.id ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idSituacaoAnterior",
-							idSituacaoAnterior).setInteger("idLancamentoItemContabil", idLancamentoItemContabil).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idSituacaoAtual", idSituacaoAtual)
+							.setInteger("idSituacaoAnterior", idSituacaoAnterior)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -24166,9 +24692,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by crar.anoMesReferenciaContabil,lict.sequenciaImpressao,lict,loca,greg,catg,uneg ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", categoria.getId()).setInteger("idSituacaoAtual",
-							idSituacaoAtual).setParameterList("idsOrigemCredito", idsOrigemCredito).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", categoria.getId())
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setParameterList("idsOrigemCredito", idsOrigemCredito).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -24221,9 +24747,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by crar.anoMesReferenciaContabil,loca,greg,catg,uneg ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idOrigemCredito",
-							idOrigemCredito).setInteger("idCategoria", categoria.getId()).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idSituacaoAtual", idSituacaoAtual)
+							.setInteger("idOrigemCredito", idOrigemCredito).setInteger("idCategoria", categoria.getId()).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -24286,10 +24812,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by crar.anoMesReferenciaContabil,lict.sequenciaImpressao,lict,loca,greg,catg,uneg ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", categoria.getId()).setInteger("idSituacaoAtual",
-							idSituacaoAtual).setInteger("idSituacaoAnterior", idSituacaoAnterior).setParameterList("idsOrigemCredito",
-							idsOrigemCredito).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", categoria.getId())
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idSituacaoAnterior", idSituacaoAnterior)
+							.setParameterList("idsOrigemCredito", idsOrigemCredito).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -24345,10 +24871,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by crar.anoMesReferenciaContabil,loca,greg,catg,uneg ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil).setInteger(
-							"idLocalidade", idLocalidade).setInteger("idCategoria", categoria.getId()).setInteger("idSituacaoAtual",
-							idSituacaoAtual).setInteger("idSituacaoAnterior", idSituacaoAnterior).setInteger("idOrigemCredito",
-							idOrigemCredito).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferenciaContabil", anoMesReferenciaContabil)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", categoria.getId())
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setInteger("idSituacaoAnterior", idSituacaoAnterior)
+							.setInteger("idOrigemCredito", idOrigemCredito).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -24415,10 +24941,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "group by cnta.referenciaContabil,lict.sequenciaImpressao,lict,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual", idSituacaoAtual)
-							.setParameterList("idsFinanciamentoTipo", idsFinanciamentoTipo).setInteger("idLancamentoItemContabil",
-											idLancamentoItemContabil).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setParameterList("idsFinanciamentoTipo", idsFinanciamentoTipo)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -24484,10 +25010,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "and cnta.referenciaBaixaContabil is null "
 							+ "group by cnta.referenciaContabil,lict.sequenciaImpressao,lict,dbcb.localidade,dbcb.localidade.gerenciaRegional,dccg.categoria,dbcb.localidade.unidadeNegocio ";
 			// executa o hql
-			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idLocalidade",
-							idLocalidade).setInteger("idCategoria", idCategoria).setInteger("idSituacaoAtual", idSituacaoAtual)
-							.setParameterList("idsFinanciamentoTipo", idsFinanciamentoTipo).setInteger("idLancamentoItemContabil",
-											idLancamentoItemContabil).list();
+			retorno = session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia)
+							.setInteger("idLocalidade", idLocalidade).setInteger("idCategoria", idCategoria)
+							.setInteger("idSituacaoAtual", idSituacaoAtual).setParameterList("idsFinanciamentoTipo", idsFinanciamentoTipo)
+							.setInteger("idLancamentoItemContabil", idLancamentoItemContabil).list();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -26025,27 +26551,27 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "rota.rota_cdrota,imovel.imov_nnsequencialrota,cnt.cnta_nnquadra,cnt.cnta_nnlote,cnt.cnta_nnsublote";
 
 			retorno = session.createSQLQuery(consulta).addScalar("idConta", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING)
-							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER).addScalar(
-											"digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
-							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT).addScalar("sublote",
-											Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER).addScalar("consumoEsgoto",
-											Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL).addScalar("valorEsgoto",
-											Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL).addScalar("valorCreditos",
-											Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL).addScalar(
-											"dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER).addScalar(
-											"idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
-							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER).addScalar(
-											"idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
-							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER).addScalar(
-											"idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING).addScalar(
-											"descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
+							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER)
+							.addScalar("digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
+							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT)
+							.addScalar("sublote", Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER)
+							.addScalar("consumoEsgoto", Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL)
+							.addScalar("valorEsgoto", Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL)
+							.addScalar("valorCreditos", Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL)
+							.addScalar("dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
+							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER)
+							.addScalar("idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
+							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER)
+							.addScalar("idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING)
+							.addScalar("descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
 							.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL).addScalar("idClienteResponsavel", Hibernate.INTEGER)
-							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT).addScalar("sequencialRota",
-											Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER).addScalar(
-											"debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
-							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("valorConta", Hibernate.BIG_DECIMAL).setInteger(
-											"idTipoConta", idTipoConta).setInteger("idEmpresa", idEmpresa).setInteger("idUsuario",
-											ClienteRelacaoTipo.USUARIO).setInteger("idFaturamentoGrupoParms", idFaturamentoGrupo)
+							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT)
+							.addScalar("sequencialRota", Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER)
+							.addScalar("debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
+							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("valorConta", Hibernate.BIG_DECIMAL)
+							.setInteger("idTipoConta", idTipoConta).setInteger("idEmpresa", idEmpresa)
+							.setInteger("idUsuario", ClienteRelacaoTipo.USUARIO).setInteger("idFaturamentoGrupoParms", idFaturamentoGrupo)
 							.setBigDecimal("valorLimite", EmitirContaHelper.VALOR_LIMITE_FICHA_COMPENSACAO).setMaxResults(1000)
 							.setFirstResult(numeroPaginas).list();
 
@@ -26149,27 +26675,27 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "rota.rota_cdrota,imovel.imov_nnsequencialrota,cnt.cnta_nnquadra,cnt.cnta_nnlote,cnt.cnta_nnsublote";
 
 			retorno = session.createSQLQuery(consulta).addScalar("idConta", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING)
-							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER).addScalar(
-											"digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
-							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT).addScalar("sublote",
-											Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER).addScalar("consumoEsgoto",
-											Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL).addScalar("valorEsgoto",
-											Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL).addScalar("valorCreditos",
-											Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL).addScalar(
-											"dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER).addScalar(
-											"idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
-							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER).addScalar(
-											"idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
-							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER).addScalar(
-											"idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING).addScalar(
-											"descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
+							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER)
+							.addScalar("digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
+							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT)
+							.addScalar("sublote", Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER)
+							.addScalar("consumoEsgoto", Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL)
+							.addScalar("valorEsgoto", Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL)
+							.addScalar("valorCreditos", Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL)
+							.addScalar("dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
+							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER)
+							.addScalar("idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
+							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER)
+							.addScalar("idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING)
+							.addScalar("descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
 							.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL).addScalar("idClienteResponsavel", Hibernate.INTEGER)
-							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT).addScalar("sequencialRota",
-											Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER).addScalar(
-											"debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
-							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("valorConta", Hibernate.BIG_DECIMAL).setInteger(
-											"idTipoConta", idTipoConta).setInteger("idEmpresa", idEmpresa).setInteger("idUsuario",
-											ClienteRelacaoTipo.USUARIO).setInteger("idFaturamentoGrupoParms", idFaturamentoGrupo)
+							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT)
+							.addScalar("sequencialRota", Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER)
+							.addScalar("debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
+							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("valorConta", Hibernate.BIG_DECIMAL)
+							.setInteger("idTipoConta", idTipoConta).setInteger("idEmpresa", idEmpresa)
+							.setInteger("idUsuario", ClienteRelacaoTipo.USUARIO).setInteger("idFaturamentoGrupoParms", idFaturamentoGrupo)
 							.setBigDecimal("valorLimite", EmitirContaHelper.VALOR_LIMITE_FICHA_COMPENSACAO).list();
 
 		}catch(HibernateException e){
@@ -26273,28 +26799,28 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "rota.rota_cdrota,imovel.imov_nnsequencialrota,cnt.cnta_nnquadra,cnt.cnta_nnlote,cnt.cnta_nnsublote";
 
 			retorno = session.createSQLQuery(consulta).addScalar("idConta", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING)
-							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER).addScalar(
-											"digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
-							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT).addScalar("sublote",
-											Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER).addScalar("consumoEsgoto",
-											Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL).addScalar("valorEsgoto",
-											Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL).addScalar("valorCreditos",
-											Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL).addScalar(
-											"dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER).addScalar(
-											"idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
-							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER).addScalar(
-											"idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
-							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER).addScalar(
-											"idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING).addScalar(
-											"descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
+							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER)
+							.addScalar("digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
+							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT)
+							.addScalar("sublote", Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER)
+							.addScalar("consumoEsgoto", Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL)
+							.addScalar("valorEsgoto", Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL)
+							.addScalar("valorCreditos", Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL)
+							.addScalar("dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
+							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER)
+							.addScalar("idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
+							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER)
+							.addScalar("idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING)
+							.addScalar("descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
 							.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL).addScalar("idClienteResponsavel", Hibernate.INTEGER)
-							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT).addScalar("sequencialRota",
-											Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER).addScalar(
-											"debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
-							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("valorConta", Hibernate.BIG_DECIMAL).setInteger(
-											"idTipoConta", idTipoConta).setInteger("idResposavel", ClienteRelacaoTipo.RESPONSAVEL)
-							.setInteger("idFaturamentoGrupo", idFaturamentoGrupo).setShort("indicadorEmissaoExtratoFaturamento",
-											indicadorEmissaoExtratoFaturamento).
+							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT)
+							.addScalar("sequencialRota", Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER)
+							.addScalar("debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
+							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("valorConta", Hibernate.BIG_DECIMAL)
+							.setInteger("idTipoConta", idTipoConta).setInteger("idResposavel", ClienteRelacaoTipo.RESPONSAVEL)
+							.setInteger("idFaturamentoGrupo", idFaturamentoGrupo)
+							.setShort("indicadorEmissaoExtratoFaturamento", indicadorEmissaoExtratoFaturamento).
 							// setBigDecimal("valorLimite",EmitirContaHelper.VALOR_LIMITE_FICHA_COMPENSACAO).
 							setMaxResults(1000).setFirstResult(numeroPaginas).list();
 
@@ -26399,29 +26925,29 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "rota.rota_cdrota,imovel.imov_nnsequencialrota,cnt.cnta_nnquadra,cnt.cnta_nnlote,cnt.cnta_nnsublote";
 
 			retorno = session.createSQLQuery(consulta).addScalar("idConta", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING)
-							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER).addScalar(
-											"digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
-							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT).addScalar("sublote",
-											Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER).addScalar("consumoEsgoto",
-											Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL).addScalar("valorEsgoto",
-											Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL).addScalar("valorCreditos",
-											Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL).addScalar(
-											"dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER).addScalar(
-											"idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
-							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER).addScalar(
-											"idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
-							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER).addScalar(
-											"idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING).addScalar(
-											"descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
+							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER)
+							.addScalar("digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
+							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT)
+							.addScalar("sublote", Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER)
+							.addScalar("consumoEsgoto", Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL)
+							.addScalar("valorEsgoto", Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL)
+							.addScalar("valorCreditos", Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL)
+							.addScalar("dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
+							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER)
+							.addScalar("idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
+							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER)
+							.addScalar("idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING)
+							.addScalar("descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
 							.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL).addScalar("idClienteResponsavel", Hibernate.INTEGER)
-							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT).addScalar("sequencialRota",
-											Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER).addScalar(
-											"debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
-							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("valorConta", Hibernate.BIG_DECIMAL).setInteger(
-											"idTipoConta", idTipoConta).setInteger("idResposavel", ClienteRelacaoTipo.RESPONSAVEL)
-							.setInteger("idFaturamentoGrupo", idFaturamentoGrupo).setShort("indicadorEmissaoExtratoFaturamento",
-											indicadorEmissaoExtratoFaturamento).setBigDecimal("valorLimite",
-											EmitirContaHelper.VALOR_LIMITE_FICHA_COMPENSACAO).list();
+							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT)
+							.addScalar("sequencialRota", Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER)
+							.addScalar("debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
+							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("valorConta", Hibernate.BIG_DECIMAL)
+							.setInteger("idTipoConta", idTipoConta).setInteger("idResposavel", ClienteRelacaoTipo.RESPONSAVEL)
+							.setInteger("idFaturamentoGrupo", idFaturamentoGrupo)
+							.setShort("indicadorEmissaoExtratoFaturamento", indicadorEmissaoExtratoFaturamento)
+							.setBigDecimal("valorLimite", EmitirContaHelper.VALOR_LIMITE_FICHA_COMPENSACAO).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -26528,26 +27054,26 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "rota.rota_cdrota,imovel.imov_nnsequencialrota,cnt.cnta_nnquadra,cnt.cnta_nnlote,cnt.cnta_nnsublote";
 
 			retorno = session.createSQLQuery(consulta).addScalar("idConta", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING)
-							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER).addScalar(
-											"digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
-							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT).addScalar("sublote",
-											Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER).addScalar("consumoEsgoto",
-											Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL).addScalar("valorEsgoto",
-											Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL).addScalar("valorCreditos",
-											Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL).addScalar(
-											"dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER).addScalar(
-											"idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
-							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER).addScalar(
-											"idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
-							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER).addScalar(
-											"idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING).addScalar(
-											"descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
+							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER)
+							.addScalar("digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
+							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT)
+							.addScalar("sublote", Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER)
+							.addScalar("consumoEsgoto", Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL)
+							.addScalar("valorEsgoto", Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL)
+							.addScalar("valorCreditos", Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL)
+							.addScalar("dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
+							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER)
+							.addScalar("idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
+							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER)
+							.addScalar("idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING)
+							.addScalar("descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
 							.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL).addScalar("idClienteResponsavel", Hibernate.INTEGER)
-							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT).addScalar("sequencialRota",
-											Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER).addScalar(
-											"debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
-							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("valorConta", Hibernate.BIG_DECIMAL).setInteger(
-											"idTipoConta", idTipoConta).setInteger("idResposavel", ClienteRelacaoTipo.RESPONSAVEL)
+							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT)
+							.addScalar("sequencialRota", Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER)
+							.addScalar("debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
+							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("valorConta", Hibernate.BIG_DECIMAL)
+							.setInteger("idTipoConta", idTipoConta).setInteger("idResposavel", ClienteRelacaoTipo.RESPONSAVEL)
 							.setShort("indicadorEmissaoExtratoFaturamento", indicadorEmissaoExtratoFaturamento).
 							// setBigDecimal("valorLimite",EmitirContaHelper.VALOR_LIMITE_FICHA_COMPENSACAO).
 							setMaxResults(1000).setFirstResult(numeroPaginas).list();
@@ -26657,28 +27183,28 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "rota.rota_cdrota,imovel.imov_nnsequencialrota,cnt.cnta_nnquadra,cnt.cnta_nnlote,cnt.cnta_nnsublote";
 
 			retorno = session.createSQLQuery(consulta).addScalar("idConta", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING)
-							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER).addScalar(
-											"digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
-							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT).addScalar("sublote",
-											Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER).addScalar("consumoEsgoto",
-											Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL).addScalar("valorEsgoto",
-											Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL).addScalar("valorCreditos",
-											Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL).addScalar(
-											"dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER).addScalar(
-											"idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
-							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER).addScalar(
-											"idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
-							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER).addScalar(
-											"idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING).addScalar(
-											"descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
+							.addScalar("dataVencimentoConta", Hibernate.DATE).addScalar("amReferencia", Hibernate.INTEGER)
+							.addScalar("digitoVerificador", Hibernate.SHORT).addScalar("codigoSetorComercial", Hibernate.INTEGER)
+							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT)
+							.addScalar("sublote", Hibernate.SHORT).addScalar("consumoAgua", Hibernate.INTEGER)
+							.addScalar("consumoEsgoto", Hibernate.INTEGER).addScalar("valorAgua", Hibernate.BIG_DECIMAL)
+							.addScalar("valorEsgoto", Hibernate.BIG_DECIMAL).addScalar("debitos", Hibernate.BIG_DECIMAL)
+							.addScalar("valorCreditos", Hibernate.BIG_DECIMAL).addScalar("valorImpostos", Hibernate.BIG_DECIMAL)
+							.addScalar("dataValidade", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
+							.addScalar("nomeGerencia", Hibernate.STRING).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER)
+							.addScalar("idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovelPrefil", Hibernate.INTEGER)
+							.addScalar("idSetorComercial", Hibernate.INTEGER).addScalar("idFaturamentoGrupo", Hibernate.INTEGER)
+							.addScalar("idEmpresa", Hibernate.INTEGER).addScalar("descricaoLocalidade", Hibernate.STRING)
+							.addScalar("descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgotoSit", Hibernate.STRING)
 							.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL).addScalar("idClienteResponsavel", Hibernate.INTEGER)
-							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT).addScalar("sequencialRota",
-											Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER).addScalar(
-											"debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
-							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("valorConta", Hibernate.BIG_DECIMAL).setInteger(
-											"idTipoConta", idTipoConta).setInteger("idResposavel", ClienteRelacaoTipo.RESPONSAVEL)
-							.setShort("indicadorEmissaoExtratoFaturamento", indicadorEmissaoExtratoFaturamento).setBigDecimal(
-											"valorLimite", EmitirContaHelper.VALOR_LIMITE_FICHA_COMPENSACAO).list();
+							.addScalar("nomeImovel", Hibernate.STRING).addScalar("codigoRota", Hibernate.SHORT)
+							.addScalar("sequencialRota", Hibernate.INTEGER).addScalar("origem", Hibernate.INTEGER)
+							.addScalar("debitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
+							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("valorConta", Hibernate.BIG_DECIMAL)
+							.setInteger("idTipoConta", idTipoConta).setInteger("idResposavel", ClienteRelacaoTipo.RESPONSAVEL)
+							.setShort("indicadorEmissaoExtratoFaturamento", indicadorEmissaoExtratoFaturamento)
+							.setBigDecimal("valorLimite", EmitirContaHelper.VALOR_LIMITE_FICHA_COMPENSACAO).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -26755,8 +27281,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				while(iteMapAtualizaSequencia.hasNext()){
 					Integer idConta = (Integer) iteMapAtualizaSequencia.next();
 					Integer sequencialConta = mapAtualizaSequencial.get(idConta);
-					session.createQuery(consulta).setInteger("idConta", idConta).setInteger("sequencialConta", sequencialConta).setShort(
-									"indicadorFichaCompensacao", ConstantesSistema.SIM).setDate("dataAtual", new Date()).executeUpdate();
+					session.createQuery(consulta).setInteger("idConta", idConta).setInteger("sequencialConta", sequencialConta)
+									.setShort("indicadorFichaCompensacao", ConstantesSistema.SIM).setDate("dataAtual", new Date())
+									.executeUpdate();
 				}
 			}
 		}catch(HibernateException e){
@@ -26790,9 +27317,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "inner join ct.debitoCreditoSituacaoAtual " + "where ct.id = :idConta and "
 							+ "ct.debitoCreditoSituacaoAtual.id IN(:normal, :incluida, :retificada, :prescrita)";
 
-			retorno = (Conta) session.createQuery(consulta).setInteger("idConta", idConta).setInteger("normal",
-							DebitoCreditoSituacao.NORMAL).setInteger("incluida", DebitoCreditoSituacao.INCLUIDA).setInteger("retificada",
- DebitoCreditoSituacao.RETIFICADA)
+			retorno = (Conta) session.createQuery(consulta).setInteger("idConta", idConta)
+							.setInteger("normal", DebitoCreditoSituacao.NORMAL).setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+							.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
 							.setInteger("prescrita", DebitoCreditoSituacao.PRESCRITA).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
@@ -26817,8 +27344,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta = "SELECT dbcb FROM DebitoCobrado dbcb INNER JOIN dbcb.financiamentoTipo fntp "
 							+ "WHERE dbcb.conta.id = :idConta and fntp.id in (:tiposParcelamento)";
 
-			pesquisa = session.createQuery(consulta).setInteger("idConta", idConta.intValue()).setParameterList("tiposParcelamento",
-							tiposParcelamento).list();
+			pesquisa = session.createQuery(consulta).setInteger("idConta", idConta.intValue())
+							.setParameterList("tiposParcelamento", tiposParcelamento).list();
 
 			if(pesquisa != null && !pesquisa.isEmpty()){
 				retorno = true;
@@ -26892,8 +27419,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "AND contaAtual.imov_id = :idImovel " + "AND NOT EXISTS ( " + "SELECT pgto.cnta_id FROM pagamento pgto "
 							+ "WHERE contaAtual.cnta_id = pgto.cnta_id )";
 
-			retorno = (Object[]) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER).addScalar("valor",
-							Hibernate.BIG_DECIMAL).setInteger("idImovel", idImovel).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER)
+							.addScalar("valor", Hibernate.BIG_DECIMAL).setInteger("idImovel", idImovel).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -26929,8 +27456,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "AND contaAntigo.imov_id = :idImovel " + "AND NOT EXISTS ( " + "SELECT pgto.cnta_id FROM pagamento pgto "
 							+ "WHERE contaAntigo.cnta_id = pgto.cnta_id )" + "GROUP BY contaAntigo.cnta_amreferenciaconta";
 
-			retorno = (Object[]) session.createSQLQuery(consulta).addScalar("anoMes", Hibernate.INTEGER).addScalar("referencia",
-							Hibernate.INTEGER).setInteger("idImovel", idImovel).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createSQLQuery(consulta).addScalar("anoMes", Hibernate.INTEGER)
+							.addScalar("referencia", Hibernate.INTEGER).setInteger("idImovel", idImovel).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -26966,8 +27493,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "AND contaAtual.imov_id = :idImovel " + "AND NOT EXISTS ( " + "SELECT pgto.cnta_id FROM pagamento pgto "
 							+ "WHERE contaAtual.cnta_id = pgto.cnta_id )" + "GROUP BY contaAtual.cnta_amreferenciaconta ";
 
-			retorno = (Object[]) session.createSQLQuery(consulta).addScalar("anoMes", Hibernate.INTEGER).addScalar("referencia",
-							Hibernate.INTEGER).setInteger("idImovel", idImovel).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createSQLQuery(consulta).addScalar("anoMes", Hibernate.INTEGER)
+							.addScalar("referencia", Hibernate.INTEGER).setInteger("idImovel", idImovel).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -27009,8 +27536,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			"and gpp.debitoTipo.id = :idDebitoTipo  ";
 
-			Collection colecao = session.createQuery(consulta).setInteger("idRegistroAtendimento", idRegistroAtendimento).setInteger(
-							"idDebitoTipo", idDebitoTipo).list();
+			Collection colecao = session.createQuery(consulta).setInteger("idRegistroAtendimento", idRegistroAtendimento)
+							.setInteger("idDebitoTipo", idDebitoTipo).list();
 
 			if(colecao != null && !colecao.isEmpty()){ // Já houve Guia de Pagamento para o RA e
 				// Tipo de Débito
@@ -27050,7 +27577,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "guiaPrestacoes.comp_id.itemLancamentoContabilId, " + "guia.documentoTipo.descricaoDocumentoTipo, "
 							+ "guia.numeroPrestacaoTotal, " + "guiaPrestacoes.dataEmissao, " + "guiaPrestacoes.dataVencimento, "
 							+ "guiaPrestacoes.valorPrestacao, " + "guiaPrestacoes.indicadorPagamentoPendente, "
-							+ "guia.debitoCreditoSituacaoAtual.descricaoDebitoCreditoSituacao) " +
+							+ "guia.debitoCreditoSituacaoAtual.descricaoDebitoCreditoSituacao, guiaPrestacoes.indicadorExecucaoFiscal) " +
 
 							"from GuiaPagamento guia join guia.guiasPagamentoPrestacao guiaPrestacoes ";
 
@@ -27172,8 +27699,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where ftsh.imovel.id = :idImovel and ftsh.anoMesFaturamentoRetirada is null "
 							+ "and :anoMesFaturamento between ftsh.anoMesFaturamentoSituacaoInicio and ftsh.anoMesFaturamentoSituacaoFim";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel).setInteger("anoMesFaturamento",
-							anoMesFaturamento).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel)
+							.setInteger("anoMesFaturamento", anoMesFaturamento).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -27303,9 +27830,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 					colecaoAuxiliar.add(id);
 					if(colecaoAuxiliar.size() == 1000){
 						retorno.addAll(session.createQuery(consulta)
-										.setInteger("idSituacaoPreFaturada", DebitoCreditoSituacao.PRE_FATURADA).setInteger(
-														"anoMesReferencia", anoMesReferencia).setParameterList("listImoveisRota",
-														colecaoAuxiliar).list());
+										.setInteger("idSituacaoPreFaturada", DebitoCreditoSituacao.PRE_FATURADA)
+										.setInteger("anoMesReferencia", anoMesReferencia)
+										.setParameterList("listImoveisRota", colecaoAuxiliar).list());
 						colecaoAuxiliar.clear();
 					}
 				}
@@ -27317,8 +27844,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				}
 			}else{
 
-				retorno = session.createQuery(consulta).setInteger("idSituacaoPreFaturada", DebitoCreditoSituacao.PRE_FATURADA).setInteger(
-								"anoMesReferencia", anoMesReferencia).setParameterList("listImoveisRota", listImoveisRota).list();
+				retorno = session.createQuery(consulta).setInteger("idSituacaoPreFaturada", DebitoCreditoSituacao.PRE_FATURADA)
+								.setInteger("anoMesReferencia", anoMesReferencia).setParameterList("listImoveisRota", listImoveisRota)
+								.list();
 
 			}
 
@@ -27393,9 +27921,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where mre.anoMesMovimento = :anoMesFaturamento " + "and mre.faturamentoGrupo.id = :idFaturamentoGrupo "
 							+ "and mre.indicadorFase <> :idFaseProcessado ";
 
-			retorno = ((Number) session.createQuery(consulta).setInteger("idFaturamentoGrupo", idFaturamentoGrupo).setInteger(
-							"anoMesFaturamento", anoMesFaturamento).setShort("idFaseProcessado", indicadorFase).setMaxResults(1)
-							.uniqueResult()).intValue();
+			retorno = ((Number) session.createQuery(consulta).setInteger("idFaturamentoGrupo", idFaturamentoGrupo)
+							.setInteger("anoMesFaturamento", anoMesFaturamento).setShort("idFaseProcessado", indicadorFase)
+							.setMaxResults(1).uniqueResult()).intValue();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -27470,9 +27998,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " and movimentoRoteiro.anoMesMovimento = :anoMesMovimento "
 							+ " and movimentoRoteiro.indicadorFase = :idFaseLido " + " and movimentoRoteiro.numeroHidrometro is null ";
 
-			session.createQuery(update).setShort("idFase", Short.valueOf("2")).setDate("ultimaAlteracao", new Date()).setInteger(
-							"idFaturamentoGrupo", idFaturamentoGrupo).setInteger("anoMesMovimento", anoMesReferencia).setShort(
-							"idFaseLido", Short.valueOf("1")).executeUpdate();
+			session.createQuery(update).setShort("idFase", Short.valueOf("2")).setDate("ultimaAlteracao", new Date())
+							.setInteger("idFaturamentoGrupo", idFaturamentoGrupo).setInteger("anoMesMovimento", anoMesReferencia)
+							.setShort("idFaseLido", Short.valueOf("1")).executeUpdate();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -27714,11 +28242,12 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "where cth.anoMesReferenciaConta = :referencia " + "and cth.imovel.id = :imovel and "
 							+ "cth.debitoCreditoSituacaoAtual.id IN(:normal, :incluida, :retificada, :entradaParcelamento, :prefaturada)";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("imovel", imovel.getId().intValue()).setInteger("referencia",
-							anoMesReferencia).setInteger("normal", DebitoCreditoSituacao.NORMAL).setInteger("incluida",
-							DebitoCreditoSituacao.INCLUIDA).setInteger("retificada", DebitoCreditoSituacao.RETIFICADA).setInteger(
-							"entradaParcelamento", DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).setInteger("prefaturada",
-							DebitoCreditoSituacao.PRE_FATURADA).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("imovel", imovel.getId().intValue())
+							.setInteger("referencia", anoMesReferencia).setInteger("normal", DebitoCreditoSituacao.NORMAL)
+							.setInteger("incluida", DebitoCreditoSituacao.INCLUIDA)
+							.setInteger("retificada", DebitoCreditoSituacao.RETIFICADA)
+							.setInteger("entradaParcelamento", DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO)
+							.setInteger("prefaturada", DebitoCreditoSituacao.PRE_FATURADA).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -28091,8 +28620,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " and to_number(to_char(ch.cnhi_dtvencimentoconta,'yyyymm')) >= :anoMesVencimentoConta ";
 
 			List lista = session.createSQLQuery(consulta).addScalar("idConta", Hibernate.INTEGER).setInteger("idImovel", idImovel)
-							.setInteger("anoMesReferenciaFaturamento", anoMesReferenciaFaturamento).setInteger("anoMesVencimentoConta",
-											anoMesVencimentoConta).list();
+							.setInteger("anoMesReferenciaFaturamento", anoMesReferenciaFaturamento)
+							.setInteger("anoMesVencimentoConta", anoMesVencimentoConta).list();
 			if(lista != null && !lista.isEmpty()){
 				retorno = true;
 			}
@@ -28145,8 +28674,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " and to_number(to_char(ch.cnhi_dtvencimentoconta,'yyyymm')) >= :anoMesVencimentoConta ";
 
 			List lista = session.createSQLQuery(consulta).addScalar("idConta", Hibernate.INTEGER).setInteger("idImovel", idImovel)
-							.setInteger("anoMesReferenciaFaturamento", anoMesReferenciaFaturamento).setInteger("anoMesVencimentoConta",
-											anoMesVencimentoConta).list();
+							.setInteger("anoMesReferenciaFaturamento", anoMesReferenciaFaturamento)
+							.setInteger("anoMesVencimentoConta", anoMesVencimentoConta).list();
 			if(lista != null && !lista.isEmpty()){
 				retorno = true;
 			}
@@ -28233,8 +28762,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "inner join fetch contaCategoriaConsumoFaixaHistorico.contaCategoriaHistorico.comp_id.categoria categoria "
 							+ "where contaHistorico.id = :idConta " + "and  categoria.id = :idCategoria ";
 
-			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue()).setInteger("idCategoria",
-							idCategoria.intValue()).list();
+			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue())
+							.setInteger("idCategoria", idCategoria.intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -28271,8 +28800,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "inner join contaCategoriaConsumoFaixa.contaCategoria.comp_id.categoria categoria "
 							+ "where conta.id = :idConta " + "and categoria.id = :idCategoria ";
 
-			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue()).setInteger("idCategoria",
-							idCategoria.intValue()).list();
+			retorno = session.createQuery(consulta).setInteger("idConta", idConta.intValue())
+							.setInteger("idCategoria", idCategoria.intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -28377,11 +28906,12 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		try{
 
 			// constroi o hql
-			consulta.append("select count(distinct dbcb.cnta_id) as quantidade").append(" from debito_cobrado dbcb ").append(
-							"  where dbcb.cnta_id in (:idsConta) ").append("   and  dbcb.fntp_id in (:tiposParcelamento) ");
+			consulta.append("select count(distinct dbcb.cnta_id) as quantidade").append(" from debito_cobrado dbcb ")
+							.append("  where dbcb.cnta_id in (:idsConta) ").append("   and  dbcb.fntp_id in (:tiposParcelamento) ");
 
-			retorno = (Integer) session.createSQLQuery(consulta.toString()).addScalar("quantidade", Hibernate.INTEGER).setParameterList(
-							"idsConta", idsContas).setParameterList("tiposParcelamento", tiposParcelamento).uniqueResult();
+			retorno = (Integer) session.createSQLQuery(consulta.toString()).addScalar("quantidade", Hibernate.INTEGER)
+							.setParameterList("idsConta", idsContas).setParameterList("tiposParcelamento", tiposParcelamento)
+							.uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -28425,8 +28955,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			Collection<DebitoCobrado> debitoCobradoCollection = new ArrayList<DebitoCobrado>();
 
-			debitoCobradoCollection = (ArrayList<DebitoCobrado>) session.createQuery(consulta.toString()).setInteger("idConta",
-							idConta.intValue()).list();
+			debitoCobradoCollection = (ArrayList<DebitoCobrado>) session.createQuery(consulta.toString())
+							.setInteger("idConta", idConta.intValue()).list();
 
 			if(debitoCobradoCollection != null && !debitoCobradoCollection.isEmpty()){
 				for(DebitoCobrado debitoCobrado : debitoCobradoCollection){
@@ -28561,8 +29091,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("where qtms.id = :idQuitacaoMensagem ");
 			consulta.append("  and qtms.indicadorUso = :indicador ");
 
-			retorno = (Object[]) session.createQuery(consulta.toString()).setInteger("idQuitacaoMensagem", idQuitacaoMensagem).setInteger(
-							"indicador", ConstantesSistema.INDICADOR_USO_ATIVO).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta.toString()).setInteger("idQuitacaoMensagem", idQuitacaoMensagem)
+							.setInteger("indicador", ConstantesSistema.INDICADOR_USO_ATIVO).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -28644,8 +29174,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			hql.append("  and rta.faturamentoGrupo.id = :idGrupoFaturamento ");
 			hql.append("  and imov.faturamentoSituacaoTipo.id is not null ");
 
-			List imoveis = session.createQuery(hql.toString()).setInteger("anoMesFaturamento", anoMesFaturamento).setInteger(
-							"idGrupoFaturamento", idGrupoFaturamento).list();
+			List imoveis = session.createQuery(hql.toString()).setInteger("anoMesFaturamento", anoMesFaturamento)
+							.setInteger("idGrupoFaturamento", idGrupoFaturamento).list();
 
 			if(!Util.isVazioOrNulo(imoveis)){
 				// Atualiza situação do faturamento do imóvel
@@ -28684,8 +29214,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 *                Erro de Hibernate
 	 */
 	public void deletarResumoFaturamentoSimulacaoPorColecaoRotas(Integer idFaturamentoGrupo, Integer anoMesReferencia,
-					Collection<Integer> idRotas)
-					throws ErroRepositorioException{
+					Collection<Integer> idRotas) throws ErroRepositorioException{
 
 		Session session = HibernateUtil.getSession();
 
@@ -28703,9 +29232,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 					colecaoAuxiliar.add(id);
 					if(colecaoAuxiliar.size() == 1000){
 
-						session.createQuery(delete).setInteger("idFaturamentoGrupo", idFaturamentoGrupo.intValue()).setInteger(
-										"anoMesReferencia", anoMesReferencia.intValue()).setParameterList("idRotas", colecaoAuxiliar)
-										.executeUpdate();
+						session.createQuery(delete).setInteger("idFaturamentoGrupo", idFaturamentoGrupo.intValue())
+										.setInteger("anoMesReferencia", anoMesReferencia.intValue())
+										.setParameterList("idRotas", colecaoAuxiliar).executeUpdate();
 
 						colecaoAuxiliar.clear();
 
@@ -28713,15 +29242,16 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				}
 				if(!colecaoAuxiliar.isEmpty()){
 
-					session.createQuery(delete).setInteger("idFaturamentoGrupo", idFaturamentoGrupo.intValue()).setInteger(
-									"anoMesReferencia", anoMesReferencia.intValue()).setParameterList("idRotas", colecaoAuxiliar)
-									.executeUpdate();
+					session.createQuery(delete).setInteger("idFaturamentoGrupo", idFaturamentoGrupo.intValue())
+									.setInteger("anoMesReferencia", anoMesReferencia.intValue())
+									.setParameterList("idRotas", colecaoAuxiliar).executeUpdate();
 
 				}
 			}else{
 
-				session.createQuery(delete).setInteger("idFaturamentoGrupo", idFaturamentoGrupo.intValue()).setInteger("anoMesReferencia",
-								anoMesReferencia.intValue()).setParameterList("idRotas", idRotas).executeUpdate();
+				session.createQuery(delete).setInteger("idFaturamentoGrupo", idFaturamentoGrupo.intValue())
+								.setInteger("anoMesReferencia", anoMesReferencia.intValue()).setParameterList("idRotas", idRotas)
+								.executeUpdate();
 
 			}
 
@@ -28764,9 +29294,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("and dbac.anoMesCobrancaDebito <= :anoMesCobrancaDebito ");
 			consulta.append("and dbtp.indicadorGeracaoConta = :indicadorGeracaoConta ");
 
-			query = session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("idDebitoCreditoSituacao",
-							DebitoCreditoSituacao.NORMAL).setInteger("anoMesCobrancaDebito", anoMesCobrancaDebito).setShort(
-							"indicadorGeracaoConta", ConstantesSistema.SIM);
+			query = session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("idDebitoCreditoSituacao", DebitoCreditoSituacao.NORMAL)
+							.setInteger("anoMesCobrancaDebito", anoMesCobrancaDebito)
+							.setShort("indicadorGeracaoConta", ConstantesSistema.SIM);
 			retorno = (Collection<DebitoACobrar>) query.list();
 
 		}catch(HibernateException e){
@@ -28877,8 +29408,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			String consulta = "select qa from QualidadeAgua qa " + "where qa.anoMesReferencia <= :anoMesFaturamento "
 							+ "and qa.localidade = :idLocalidade " + "order by qa.anoMesReferencia desc";
 
-			retorno = (QualidadeAgua) session.createQuery(consulta).setInteger("anoMesFaturamento", anoMesFaturamento).setInteger(
-							"idLocalidade", idLocalidade).setMaxResults(1).uniqueResult();
+			retorno = (QualidadeAgua) session.createQuery(consulta).setInteger("anoMesFaturamento", anoMesFaturamento)
+							.setInteger("idLocalidade", idLocalidade).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -29043,8 +29574,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("where medicaoHistorico.ligacaoAgua.id = :idImovel ");
 			consulta.append("and medicaoHistorico.anoMesReferencia < :anoMesConta ");
 
-			retorno = (Integer) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("anoMesConta",
-							anoMesConta).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesConta", anoMesConta).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -29080,8 +29611,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("where consumoHistorico.imovel.id = :idImovel ");
 			consulta.append("and consumoHistorico.referenciaFaturamento < :anoMesConta ");
 
-			retorno = (Integer) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("anoMesConta",
-							anoMesConta).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesConta", anoMesConta).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -29110,11 +29641,11 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			if(referencia != null){
 				consulta.append("and consumoHistorico.referenciaFaturamento = :referencia ");
-				retorno = (Integer) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("idLigacaoTipo",
-								idLigacaoTipo).setInteger("referencia", referencia).uniqueResult();
+				retorno = (Integer) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+								.setInteger("idLigacaoTipo", idLigacaoTipo).setInteger("referencia", referencia).uniqueResult();
 			}else{
-				retorno = (Integer) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("idLigacaoTipo",
-								idLigacaoTipo).uniqueResult();
+				retorno = (Integer) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+								.setInteger("idLigacaoTipo", idLigacaoTipo).uniqueResult();
 			}
 
 		}catch(HibernateException e){
@@ -29160,13 +29691,15 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			Date dataAnoCorrenteFinal = Util.criarData(31, 12, ano);
 
 			if(idImovel != null){
-				retorno = ((Number) session.createQuery(consulta).setInteger("idTipoEspecificacaoSolicitacao",
-								idTipoEspecificacaoSolicitacao).setDate("dataInicial", dataAnoCorrenteInicial).setDate("dataFinal",
-								dataAnoCorrenteFinal).setInteger("idImovel", idImovel).uniqueResult()).intValue();
+				retorno = ((Number) session.createQuery(consulta)
+								.setInteger("idTipoEspecificacaoSolicitacao", idTipoEspecificacaoSolicitacao)
+								.setDate("dataInicial", dataAnoCorrenteInicial).setDate("dataFinal", dataAnoCorrenteFinal)
+								.setInteger("idImovel", idImovel).uniqueResult()).intValue();
 			}else{
-				retorno = ((Number) session.createQuery(consulta).setInteger("idTipoEspecificacaoSolicitacao",
-								idTipoEspecificacaoSolicitacao).setDate("dataInicial", dataAnoCorrenteInicial).setDate("dataFinal",
-								dataAnoCorrenteFinal).uniqueResult()).intValue();
+				retorno = ((Number) session.createQuery(consulta)
+								.setInteger("idTipoEspecificacaoSolicitacao", idTipoEspecificacaoSolicitacao)
+								.setDate("dataInicial", dataAnoCorrenteInicial).setDate("dataFinal", dataAnoCorrenteFinal).uniqueResult())
+								.intValue();
 			}
 
 		}catch(HibernateException e){
@@ -29287,8 +29820,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							// + "GROUP BY contaAtual.referencia "
 							+ "ORDER BY contaAtual.referencia ";
 
-			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel).setDate("dtVencimentoConta",
-							dtVencimentoConta).setInteger("anoFaturamento", anoFaturamento).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel)
+							.setDate("dtVencimentoConta", dtVencimentoConta).setInteger("anoFaturamento", anoFaturamento).setMaxResults(1)
+							.uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -29322,6 +29856,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		Date dtVencimentoConta = new Date();
 		dtVencimentoConta = Util.subtrairNumeroDiasDeUmaData(dtVencimentoConta, 1);
 
+
 		try{
 
 			consulta = "SELECT substring(str(contaAtual.referencia), 5, 6) " + "FROM Conta contaAtual "
@@ -29334,8 +29869,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							// + "GROUP BY contaAtual.referencia "
 							+ "ORDER BY contaAtual.referencia ";
 
-			retorno = (Collection) session.createQuery(consulta).setInteger("idImovel", idImovel).setDate("dtVencimentoConta",
-							dtVencimentoConta).setInteger("anoFaturamento", anoFaturamento).setMaxResults(12).list();
+			retorno = (Collection) session.createQuery(consulta).setInteger("idImovel", idImovel)
+							.setDate("dtVencimentoConta", dtVencimentoConta).setInteger("anoFaturamento", anoFaturamento).setMaxResults(12)
+							.list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -29376,8 +29912,13 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("and gpp.comp_id.numeroPrestacao = :numeroPrestacao ");
 			consulta.append("and gp.debitoCreditoSituacaoAtual.id in (:colecaoDebitoSituacaoAtual)");
 
-			retorno = (Integer) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("idGuiaPagamento",
-							idGuiaPagamento).setInteger("numeroPrestacao", numeroPrestacao).setParameterList("colecaoDebitoSituacaoAtual",
+			retorno = (Integer) session
+							.createQuery(consulta.toString())
+							.setInteger("idImovel", idImovel)
+							.setInteger("idGuiaPagamento", idGuiaPagamento)
+							.setInteger("numeroPrestacao", numeroPrestacao)
+							.setParameterList(
+											"colecaoDebitoSituacaoAtual",
 							new Object[] {DebitoCreditoSituacao.NORMAL, DebitoCreditoSituacao.INCLUIDA, DebitoCreditoSituacao.RETIFICADA})
 							.setMaxResults(1).uniqueResult();
 
@@ -29421,8 +29962,13 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("and gpph.comp_id.numeroPrestacao = :numeroPrestacao ");
 			consulta.append("and gph.debitoCreditoSituacaoAtual.id in (:colecaoDebitoSituacaoAtual)");
 
-			retorno = (Integer) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("idGuiaPagamento",
-							idGuiaPagamento).setInteger("numeroPrestacao", numeroPrestacao).setParameterList("colecaoDebitoSituacaoAtual",
+			retorno = (Integer) session
+							.createQuery(consulta.toString())
+							.setInteger("idImovel", idImovel)
+							.setInteger("idGuiaPagamento", idGuiaPagamento)
+							.setInteger("numeroPrestacao", numeroPrestacao)
+							.setParameterList(
+											"colecaoDebitoSituacaoAtual",
 											new Object[] {DebitoCreditoSituacao.NORMAL, DebitoCreditoSituacao.INCLUIDA, DebitoCreditoSituacao.RETIFICADA, DebitoCreditoSituacao.PRESCRITA})
 							.setMaxResults(1).uniqueResult();
 
@@ -29461,8 +30007,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta = "SELECT dam " + "FROM DebitoAutomaticoMovimento dam " + "INNER JOIN dam.guiaPagamento gp "
 							+ "WHERE  gp.id = :idGuiaPagamento and dam.numeroPrestacao = :numeroPrestacao";
 
-			retorno = (DebitoAutomaticoMovimento) session.createQuery(consulta).setInteger("idGuiaPagamento", idGuiaPagamento).setInteger(
-							"numeroPrestacao", numeroPrestacao).setMaxResults(1).uniqueResult();
+			retorno = (DebitoAutomaticoMovimento) session.createQuery(consulta).setInteger("idGuiaPagamento", idGuiaPagamento)
+							.setInteger("numeroPrestacao", numeroPrestacao).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -29725,8 +30271,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "AND cast(substring(str(contaAtual.referencia), 1, 4) as int) < :anoFaturamento "
 							+ "ORDER BY contaAtual.referencia desc";
 
-			retorno = (Collection) session.createQuery(consulta).setInteger("idImovel", idImovel).setDate("dtVencimentoConta",
-							dtVencimentoConta).setInteger("anoFaturamento", anoFaturamento).setMaxResults(5).list();
+			retorno = (Collection) session.createQuery(consulta).setInteger("idImovel", idImovel)
+							.setDate("dtVencimentoConta", dtVencimentoConta).setInteger("anoFaturamento", anoFaturamento).setMaxResults(5)
+							.list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -29742,7 +30289,6 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * 
 	 * gcom.faturamento.IRepositorioFaturamento#buscarDebitoCobradoCategoriaPorConta(gcom.faturamento
 	 * .conta.Conta)
 	 */
@@ -29838,12 +30384,12 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("and fg.indicadorUso = :indicadorUsoFaturamentoGrupo ");
 			consulta.append("order by fg.descricao ");
 
-			retorno = (Collection<FaturamentoGrupo>) session.createQuery(consulta.toString()).setInteger("codigoSetorComercial",
-							codigoSetorComercial).setInteger("idLocalidade", idLocalidade).setShort("indicadorUsoRota",
-							ConstantesSistema.INDICADOR_USO_ATIVO)
-							.setShort("indicadorUsoLocalidade", ConstantesSistema.INDICADOR_USO_ATIVO).setShort(
-											"indicadorUsoSetorComercial", ConstantesSistema.INDICADOR_USO_ATIVO).setShort(
-											"indicadorUsoFaturamentoGrupo", ConstantesSistema.INDICADOR_USO_ATIVO).list();
+			retorno = (Collection<FaturamentoGrupo>) session.createQuery(consulta.toString())
+							.setInteger("codigoSetorComercial", codigoSetorComercial).setInteger("idLocalidade", idLocalidade)
+							.setShort("indicadorUsoRota", ConstantesSistema.INDICADOR_USO_ATIVO)
+							.setShort("indicadorUsoLocalidade", ConstantesSistema.INDICADOR_USO_ATIVO)
+							.setShort("indicadorUsoSetorComercial", ConstantesSistema.INDICADOR_USO_ATIVO)
+							.setShort("indicadorUsoFaturamentoGrupo", ConstantesSistema.INDICADOR_USO_ATIVO).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -29890,13 +30436,14 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("and sc.indicadorUso = :indicadorUsoSetorComercial ");
 			consulta.append("and fg.indicadorUso = :indicadorUsoFaturamentoGrupo ");
 
-			Long qtd = (Long) session.createQuery(consulta.toString()).setInteger("codigoSetorComercial",
-							quadra.getSetorComercial().getCodigo()).setShort("codigoRota", quadra.getRota().getCodigo()).setInteger(
-							"idLocalidade", quadra.getSetorComercial().getLocalidade().getId()).setShort("indicadorUsoRota",
-							ConstantesSistema.INDICADOR_USO_ATIVO)
-							.setShort("indicadorUsoLocalidade", ConstantesSistema.INDICADOR_USO_ATIVO).setShort(
-											"indicadorUsoSetorComercial", ConstantesSistema.INDICADOR_USO_ATIVO).setShort(
-											"indicadorUsoFaturamentoGrupo", ConstantesSistema.INDICADOR_USO_ATIVO).uniqueResult();
+			Long qtd = (Long) session.createQuery(consulta.toString())
+							.setInteger("codigoSetorComercial", quadra.getSetorComercial().getCodigo())
+							.setShort("codigoRota", quadra.getRota().getCodigo())
+							.setInteger("idLocalidade", quadra.getSetorComercial().getLocalidade().getId())
+							.setShort("indicadorUsoRota", ConstantesSistema.INDICADOR_USO_ATIVO)
+							.setShort("indicadorUsoLocalidade", ConstantesSistema.INDICADOR_USO_ATIVO)
+							.setShort("indicadorUsoSetorComercial", ConstantesSistema.INDICADOR_USO_ATIVO)
+							.setShort("indicadorUsoFaturamentoGrupo", ConstantesSistema.INDICADOR_USO_ATIVO).uniqueResult();
 
 			if(qtd != null && qtd.intValue() > 0){
 				return true;
@@ -30026,8 +30573,12 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("dc.debitoTipo.id = :idDebitoTipo and " + "dc.anoMesReferenciaDebito = :anoMesReferenciaDebito and ");
 			consulta.append("dc.debitoCreditoSituacaoAtual.id in (:colecaoDebitoSituacaoAtual) ");
 
-			retornoConsulta = session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("idDebitoTipo",
-							idDebitoTipo.intValue()).setInteger("anoMesReferenciaDebito", anoMesReferenciaDebito).setParameterList(
+			retornoConsulta = session
+							.createQuery(consulta.toString())
+							.setInteger("idImovel", idImovel)
+							.setInteger("idDebitoTipo", idDebitoTipo.intValue())
+							.setInteger("anoMesReferenciaDebito", anoMesReferenciaDebito)
+							.setParameterList(
 							"colecaoDebitoSituacaoAtual",
 							new Object[] {DebitoCreditoSituacao.NORMAL, DebitoCreditoSituacao.INCLUIDA, DebitoCreditoSituacao.RETIFICADA})
 							.list();
@@ -30142,7 +30693,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("clienteGuiaHistorico.id, clienteGuiaHistorico.nome, "); // 11,12
 			consulta.append("guia.valorDebito, guiaHistorico.valorDebito, "); // 13, 14
 			consulta.append("guia.numeroPrestacaoTotal, guiaHistorico.numeroPrestacaoTotal, "); // 15,16
-			consulta.append("guia.numeroContratoParcelOrgaoPublico, guiaHistorico.numeroContratoParcelOrgaoPublico "); // 17,18
+			consulta.append("guia.numeroContratoParcelOrgaoPublico, guiaHistorico.numeroContratoParcelOrgaoPublico, "); // 17,18
+			consulta.append("guia.registroAtendimento.id, guiaHistorico.registroAtendimento.id "); // 19,
+																									// 20
 			consulta.append("FROM GuiaPagamentoGeral guiaGeral ");
 			consulta.append("LEFT JOIN guiaGeral.guiaPagamento guia ");
 			consulta.append("LEFT JOIN guiaGeral.guiaPagamentoHistorico guiaHistorico ");
@@ -30179,8 +30732,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			else if(filtro.getNumeroContratoParcelOrgaoPublico() != null){
 
 				informouParametro = true;
-				consulta.append("(guia.numeroContratoParcelOrgaoPublico = " + filtro.getNumeroContratoParcelOrgaoPublico().toString() + " OR ");
-				consulta.append("guiaHistorico.numeroContratoParcelOrgaoPublico = " + filtro.getNumeroContratoParcelOrgaoPublico().toString() + ") AND ");
+				consulta.append("(guia.numeroContratoParcelOrgaoPublico = " + filtro.getNumeroContratoParcelOrgaoPublico().toString()
+								+ " OR ");
+				consulta.append("guiaHistorico.numeroContratoParcelOrgaoPublico = "
+								+ filtro.getNumeroContratoParcelOrgaoPublico().toString() + ") AND ");
 
 			}else{
 
@@ -30369,6 +30924,15 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				}
 			}
 
+			if(filtro.getNumeroRA() != null){
+
+				informouParametro = true;
+				consulta.append("(guia.registroAtendimento.id in ( ");
+				consulta.append(filtro.getNumeroRA() + ") OR ");
+				consulta.append("guiaHistorico.registroAtendimento.id in ( ");
+				consulta.append(filtro.getNumeroRA() + ")) AND ");
+			}
+
 			if(informouParametro == false){
 
 				consultaAgrupada.append(consulta.toString().replace("WHERE", ""));
@@ -30403,8 +30967,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 					query.setTimestamp("dataVencimentoInicial", Util.formatarDataInicial(filtro.getDataVencimentoInicial()));
 					query.setTimestamp("dataVencimentoFinal", Util.formatarDataFinal(filtro.getDataVencimentoFinal()));
 				}
-				retorno = query.setFirstResult(10 * filtro.getNumeroPagina()).setMaxResults(10)
-								.list();
+				retorno = query.setFirstResult(10 * filtro.getNumeroPagina()).setMaxResults(10).list();
 			}
 
 		}catch(Exception e){
@@ -30473,8 +31036,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			else if(filtro.getNumeroContratoParcelOrgaoPublico() != null){
 
 				informouParametro = true;
-				consulta.append("(guia.numeroContratoParcelOrgaoPublico = " + filtro.getNumeroContratoParcelOrgaoPublico().toString() + " OR ");
-				consulta.append("guiaHistorico.numeroContratoParcelOrgaoPublico = " + filtro.getNumeroContratoParcelOrgaoPublico().toString() + ") AND ");
+				consulta.append("(guia.numeroContratoParcelOrgaoPublico = " + filtro.getNumeroContratoParcelOrgaoPublico().toString()
+								+ " OR ");
+				consulta.append("guiaHistorico.numeroContratoParcelOrgaoPublico = "
+								+ filtro.getNumeroContratoParcelOrgaoPublico().toString() + ") AND ");
 
 			}else{
 
@@ -30599,10 +31164,13 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 					informouParametro = true;
 					consulta.append("(guiaPrestacao.dataEmissao between :dataEmissaoInicial AND :dataEmissaoFinal OR ");
 //					consulta.append(Util.formatarData(filtro.getDataEmissaoInicial()).toString());
-//					consulta.append("' AND '" + Util.formatarData(filtro.getDataEmissaoFinal()).toString() + "' OR ");
+					// consulta.append("' AND '" +
+					// Util.formatarData(filtro.getDataEmissaoFinal()).toString() + "' OR ");
 					consulta.append("guiaPrestacaoHistorico.dataEmissao between :dataEmissaoInicial AND :dataEmissaoFinal) AND ");
-//					consulta.append(Util.formatarData(filtro.getDataEmissaoInicial()).toString() + "' AND '");
-//					consulta.append(Util.formatarData(filtro.getDataEmissaoFinal()).toString() + "') AND ");
+					// consulta.append(Util.formatarData(filtro.getDataEmissaoInicial()).toString()
+					// + "' AND '");
+					// consulta.append(Util.formatarData(filtro.getDataEmissaoFinal()).toString() +
+					// "') AND ");
 				}
 
 				/*
@@ -30618,10 +31186,13 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 					informouParametro = true;
 					consulta.append("(guiaPrestacao.dataVencimento between :dataVencimentoInicial AND :dataVencimentoFinal OR ");
 //					consulta.append(Util.formatarData(filtro.getDataVencimentoInicial()).toString());
-//					consulta.append("' AND '" + Util.formatarData(filtro.getDataVencimentoFinal()).toString() + "' OR ");
+					// consulta.append("' AND '" +
+					// Util.formatarData(filtro.getDataVencimentoFinal()).toString() + "' OR ");
 					consulta.append("guiaPrestacaoHistorico.dataVencimento between :dataVencimentoInicial AND :dataVencimentoFinal) AND ");
-//					consulta.append(Util.formatarData(filtro.getDataVencimentoInicial()).toString() + "' AND '");
-//					consulta.append(Util.formatarData(filtro.getDataVencimentoFinal()).toString() + "') AND ");
+					// consulta.append(Util.formatarData(filtro.getDataVencimentoInicial()).toString()
+					// + "' AND '");
+					// consulta.append(Util.formatarData(filtro.getDataVencimentoFinal()).toString()
+					// + "') AND ");
 				}
 
 				/*
@@ -30655,6 +31226,15 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 					consulta.append("guiaPrestacaoHistorico.debitoTipo.id in ( ");
 					consulta.append(filtro.getIdsDebitoTipo() + ")) AND ");
 				}
+			}
+
+			if(filtro.getNumeroRA() != null){
+
+				informouParametro = true;
+				consulta.append("(guia.registroAtendimento.id in ( ");
+				consulta.append(filtro.getNumeroRA() + ") OR ");
+				consulta.append("guiaHistorico.registroAtendimento.id in ( ");
+				consulta.append(filtro.getNumeroRA() + ")) AND ");
 			}
 
 			if(informouParametro == false){
@@ -30821,7 +31401,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				hql.append(" gphi.imovel.id, ");
 				hql.append(" dcs.descricaoAbreviada, ");
 				hql.append(" gphi.numeroContratoParcelOrgaoPublico, ");
-				hql.append(" gpph.indicadorCobrancaAdministrativa)");
+				hql.append(" gpph.indicadorCobrancaAdministrativa, ");
+				hql.append(" gpph.indicadorExecucaoFiscal, ");
+				hql.append(" gpph.indicadorDividaAtiva , ");
+				hql.append(" gpph.comp_id.numeroProcessoAdministrativoExecucaoFiscal ) ");
 				hql.append(" from GuiaPagamentoHistorico gphi ");
 				hql.append(" join gphi.guiasPagamentoPrestacaoHistorico gpph ");
 				hql.append(" join gphi.documentoTipo dt ");
@@ -30831,7 +31414,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				hql.append(" gpph.comp_id.numeroPrestacao, gphi.numeroPrestacaoTotal, ");
 				hql.append(" gpph.dataEmissao, gpph.dataVencimento, ");
 				hql.append(" gpph.indicadorPagamentoPendente, dcs.descricaoAbreviada, gphi.numeroContratoParcelOrgaoPublico, gphi.imovel.id, "
-								+ "gpph.indicadorCobrancaAdministrativa ");
+								+ "gpph.indicadorCobrancaAdministrativa, gpph.indicadorExecucaoFiscal, gpph.indicadorDividaAtiva, gpph.comp_id.numeroProcessoAdministrativoExecucaoFiscal  ");
 
 			}else if(idConsulta == ConstantesSistema.CONSULTA_UC0188_SB0009_ITEM_1_2){
 
@@ -30865,7 +31448,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				hql.append(" gpag.imovel.id, ");
 				hql.append(" dcs.descricaoAbreviada, ");
 				hql.append(" gpag.numeroContratoParcelOrgaoPublico, ");
-				hql.append(" gpph.indicadorCobrancaAdministrativa)");
+				hql.append(" gpph.indicadorCobrancaAdministrativa, ");
+				hql.append(" gpph.indicadorExecucaoFiscal , ");
+				hql.append(" gpph.indicadorDividaAtiva, ");
+				hql.append(" gpph.comp_id.numeroProcessoAdministrativoExecucaoFiscal ) ");
 				hql.append(" from GuiaPagamento gpag ");
 				hql.append(" join gpag.guiasPagamentoPrestacaoHistorico gpph ");
 				hql.append(" join gpag.documentoTipo dt ");
@@ -30875,7 +31461,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				hql.append(" gpph.comp_id.numeroPrestacao, gpag.numeroPrestacaoTotal, ");
 				hql.append(" gpph.dataEmissao, gpph.dataVencimento, ");
 				hql.append(" gpph.indicadorPagamentoPendente, dcs.descricaoAbreviada, gpag.imovel.id, gpag.numeroContratoParcelOrgaoPublico,"
-								+ " gpph.indicadorCobrancaAdministrativa ");
+								+ " gpph.indicadorCobrancaAdministrativa, gpph.indicadorExecucaoFiscal, gpph.indicadorDividaAtiva, gpph.comp_id.numeroProcessoAdministrativoExecucaoFiscal  ");
 
 			}else if(idConsulta == ConstantesSistema.CONSULTA_UC0188_SB0009_ITEM_1_2){
 
@@ -30909,7 +31495,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				hql.append(" gphi.imovel.id, ");
 				hql.append(" dcs.descricaoAbreviada, ");
 				hql.append(" gphi.numeroContratoParcelOrgaoPublico, ");
-				hql.append(" gppr.indicadorCobrancaAdministrativa)");
+				hql.append(" gppr.indicadorCobrancaAdministrativa, ");
+				hql.append(" gppr.indicadorExecucaoFiscal, ");
+				hql.append(" gppr.indicadorDividaAtiva, ");
+				hql.append(" gppr.comp_id.numeroProcessoAdministrativoExecucaoFiscal ) ");
 				hql.append(" from GuiaPagamentoHistorico gphi ");
 				hql.append(" join gphi.guiasPagamentoPrestacao gppr ");
 				hql.append(" join gphi.documentoTipo dt ");
@@ -30919,7 +31508,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				hql.append(" gppr.comp_id.numeroPrestacao, gphi.numeroPrestacaoTotal, ");
 				hql.append(" gppr.dataEmissao, gppr.dataVencimento, ");
 				hql.append(" gppr.indicadorPagamentoPendente, dcs.descricaoAbreviada, gphi.imovel.id, gphi.numeroContratoParcelOrgaoPublico, "
-								+ "gppr.indicadorCobrancaAdministrativa ");
+								+ "gppr.indicadorCobrancaAdministrativa, gppr.indicadorExecucaoFiscal, gppr.indicadorDividaAtiva, gppr.comp_id.numeroProcessoAdministrativoExecucaoFiscal  ");
 
 			}else if(idConsulta == ConstantesSistema.CONSULTA_UC0188_SB0009_ITEM_1_2){
 
@@ -30951,7 +31540,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				hql.append(" gpag.imovel.id, ");
 				hql.append(" dcs.descricaoAbreviada, ");
 				hql.append(" gpag.numeroContratoParcelOrgaoPublico, ");
-				hql.append(" gppr.indicadorCobrancaAdministrativa)");
+				hql.append(" gppr.indicadorCobrancaAdministrativa, ");
+				hql.append(" gppr.indicadorExecucaoFiscal, ");
+				hql.append(" gppr.indicadorDividaAtiva, ");
+				hql.append(" gppr.comp_id.numeroProcessoAdministrativoExecucaoFiscal ) ");
 				hql.append(" from GuiaPagamento gpag ");
 				hql.append(" join gpag.guiasPagamentoPrestacao gppr ");
 				hql.append(" join gpag.documentoTipo dt ");
@@ -30961,7 +31553,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				hql.append(" gppr.comp_id.numeroPrestacao, gpag.numeroPrestacaoTotal, ");
 				hql.append(" gppr.dataEmissao, gppr.dataVencimento, ");
 				hql.append(" gppr.indicadorPagamentoPendente, dcs.descricaoAbreviada, gpag.imovel.id, gpag.numeroContratoParcelOrgaoPublico,"
-								+ " gppr.indicadorCobrancaAdministrativa ");
+								+ " gppr.indicadorCobrancaAdministrativa, gppr.indicadorExecucaoFiscal, gppr.indicadorDividaAtiva, gppr.comp_id.numeroProcessoAdministrativoExecucaoFiscal  ");
 
 			}else if(idConsulta == ConstantesSistema.CONSULTA_UC0188_SB0009_ITEM_1_2){
 
@@ -31005,6 +31597,134 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 	/**
 	 * Pesquisar Prestações de Guia de Pagamento
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 29/01/2015
+	 */
+	public Collection<GuiaPagamentoPrestacaoHelper> pesquisarGuiasPagamentoPrestacaoPorParcelamento(Integer parcelamentoId)
+					throws ErroRepositorioException{
+
+		List retorno = null;
+		List retorno1 = null;
+		List retorno2 = null;
+		List retorno3 = null;
+		List retorno4 = null;
+
+		Session session = HibernateUtil.getSession();
+		StringBuffer hql = new StringBuffer();
+
+		try{
+			hql = new StringBuffer();
+			hql.append(" select new " + GuiaPagamentoPrestacaoHelper.class.getName() + "(");
+			hql.append(" gpph.comp_id.guiaPagamentoId, ");
+			hql.append(" gpph.comp_id.numeroPrestacao, ");
+			hql.append(" gpph.dataVencimento, ");
+			hql.append(" sum(gpph.valorPrestacao))");
+			hql.append(" from ParcelamentoItem parcItem ");
+			hql.append(" join parcItem.guiaPagamentoGeral gpg ");
+			hql.append(" join gpg.guiaPagamentoHistorico gphi ");
+			hql.append(" join gphi.guiasPagamentoPrestacaoHistorico gpph ");
+			hql.append("where gpph.comp_id.guiaPagamentoId = parcItem.guiaPagamentoGeral.id ");
+			hql.append("  and gpph.comp_id.numeroPrestacao = parcItem.numeroPrestacao ");
+			hql.append(" and parcItem.parcelamento.id = :parcelamentoId ");
+			hql.append(" group by  gpph.comp_id.guiaPagamentoId, gpph.comp_id.numeroPrestacao, gpph.dataVencimento ");
+			hql.append(" order by  gpph.comp_id.guiaPagamentoId, gpph.comp_id.numeroPrestacao ");
+
+			Query qryGuiaPagamento = session.createQuery(hql.toString());
+			qryGuiaPagamento.setInteger("parcelamentoId", parcelamentoId);
+
+			retorno1 = qryGuiaPagamento.list();
+
+			hql = new StringBuffer();
+			hql.append(" select new " + GuiaPagamentoPrestacaoHelper.class.getName() + "(");
+			hql.append(" gpph.comp_id.guiaPagamentoId, ");
+			hql.append(" gpph.comp_id.numeroPrestacao, ");
+			hql.append(" gpph.dataVencimento, ");
+			hql.append(" sum(gpph.valorPrestacao))");
+			hql.append(" from ParcelamentoItem parcItem ");
+			hql.append(" join parcItem.guiaPagamentoGeral gpg ");
+			hql.append(" join gpg.guiaPagamento gpag ");
+			hql.append(" join gpag.guiasPagamentoPrestacaoHistorico gpph ");
+			hql.append("where gpph.comp_id.guiaPagamentoId = parcItem.guiaPagamentoGeral.id ");
+			hql.append("  and gpph.comp_id.numeroPrestacao = parcItem.numeroPrestacao ");
+			hql.append("  and parcItem.parcelamento.id = :parcelamentoId ");
+			hql.append(" group by  gpph.comp_id.guiaPagamentoId, gpph.comp_id.numeroPrestacao, gpph.dataVencimento ");
+			hql.append(" order by  gpph.comp_id.guiaPagamentoId, gpph.comp_id.numeroPrestacao ");
+
+			qryGuiaPagamento = session.createQuery(hql.toString());
+			qryGuiaPagamento.setInteger("parcelamentoId", parcelamentoId);
+
+			retorno2 = qryGuiaPagamento.list();
+
+			hql = new StringBuffer();
+			hql.append(" select new " + GuiaPagamentoPrestacaoHelper.class.getName() + "(");
+			hql.append(" gppr.comp_id.guiaPagamentoId, ");
+			hql.append(" gppr.comp_id.numeroPrestacao, ");
+			hql.append(" gppr.dataVencimento, ");
+			hql.append(" sum(gppr.valorPrestacao))");
+			hql.append(" from ParcelamentoItem parcItem ");
+			hql.append(" join parcItem.guiaPagamentoGeral gpg ");
+			hql.append(" join gpg.guiaPagamentoHistorico gphi ");
+			hql.append(" join gphi.guiasPagamentoPrestacao gppr ");
+			hql.append("where gppr.comp_id.guiaPagamentoId = parcItem.guiaPagamentoGeral.id ");
+			hql.append("  and gppr.comp_id.numeroPrestacao = parcItem.numeroPrestacao ");
+			hql.append("  and parcItem.parcelamento.id = :parcelamentoId ");
+			hql.append(" group by  gppr.comp_id.guiaPagamentoId, gppr.comp_id.numeroPrestacao, gppr.dataVencimento ");
+			hql.append(" order by  gppr.comp_id.guiaPagamentoId, gppr.comp_id.numeroPrestacao ");
+
+			qryGuiaPagamento = session.createQuery(hql.toString());
+			qryGuiaPagamento.setInteger("parcelamentoId", parcelamentoId);
+
+			retorno3 = qryGuiaPagamento.list();
+
+			hql = new StringBuffer();
+			hql.append(" select new " + GuiaPagamentoPrestacaoHelper.class.getName() + "(");
+			hql.append(" gppr.comp_id.guiaPagamentoId, ");
+			hql.append(" gppr.comp_id.numeroPrestacao, ");
+			hql.append(" gppr.dataVencimento, ");
+			hql.append(" sum(gppr.valorPrestacao))");
+			hql.append(" from ParcelamentoItem parcItem ");
+			hql.append(" join parcItem.guiaPagamentoGeral gpg ");
+			hql.append(" join gpg.guiaPagamento gpag ");
+			hql.append(" join gpag.guiasPagamentoPrestacao gppr ");
+			hql.append("where gppr.comp_id.guiaPagamentoId = parcItem.guiaPagamentoGeral.id ");
+			hql.append("  and gppr.comp_id.numeroPrestacao = parcItem.numeroPrestacao ");
+			hql.append("  and parcItem.parcelamento.id = :parcelamentoId ");
+			hql.append(" group by  gppr.comp_id.guiaPagamentoId, gppr.comp_id.numeroPrestacao, gppr.dataVencimento ");
+			hql.append(" order by  gppr.comp_id.guiaPagamentoId, gppr.comp_id.numeroPrestacao ");
+
+			qryGuiaPagamento = session.createQuery(hql.toString());
+			qryGuiaPagamento.setInteger("parcelamentoId", parcelamentoId);
+
+			retorno4 = qryGuiaPagamento.list();
+
+			// Union
+			retorno = retorno1;
+			retorno.addAll(retorno2);
+			retorno.addAll(retorno3);
+			retorno.addAll(retorno4);
+
+			Collections.sort(retorno, new Comparator() {
+
+				public int compare(Object o1, Object o2){
+
+					GuiaPagamentoPrestacaoHelper cd1 = (GuiaPagamentoPrestacaoHelper) o1;
+					GuiaPagamentoPrestacaoHelper cd2 = (GuiaPagamentoPrestacaoHelper) o2;
+					return cd1.getIdGuiaPagamento().compareTo(cd2.getIdGuiaPagamento());
+				}
+			});
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * Pesquisar Prestações de Guia de Pagamento
 	 * [UC0188] Manter Guia de Pagamento
 	 * 
 	 * @author Hugo Lima
@@ -31036,7 +31756,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			hql.append(" gpph.indicadorPagamentoPendente, ");
 			hql.append(" dbttp.id, ");
 			hql.append(" dbttp.descricao, ");
-			hql.append(" dcs.descricaoAbreviada)");
+			hql.append(" dcs.descricaoAbreviada, ");
+			hql.append(" gpph.indicadorDividaAtiva, ");
+			hql.append(" gpph.indicadorExecucaoFiscal, ");
+			hql.append(" gpph.comp_id.numeroProcessoAdministrativoExecucaoFiscal) ");
 			hql.append(" from GuiaPagamentoHistorico gphi ");
 			hql.append(" join gphi.guiasPagamentoPrestacaoHistorico gpph ");
 			hql.append(" join gphi.documentoTipo dt ");
@@ -31059,7 +31782,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			hql.append(" gpph.indicadorPagamentoPendente, ");
 			hql.append(" dbttp.id, ");
 			hql.append(" dbttp.descricao, ");
-			hql.append(" dcs.descricaoAbreviada)");
+			hql.append(" dcs.descricaoAbreviada, ");
+			hql.append(" gpph.indicadorDividaAtiva, ");
+			hql.append(" gpph.indicadorExecucaoFiscal, ");
+			hql.append(" gpph.comp_id.numeroProcessoAdministrativoExecucaoFiscal) ");
 			hql.append(" from GuiaPagamento gpag ");
 			hql.append(" join gpag.guiasPagamentoPrestacaoHistorico gpph ");
 			hql.append(" join gpag.documentoTipo dt ");
@@ -31082,7 +31808,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			hql.append(" gppr.indicadorPagamentoPendente, ");
 			hql.append(" dbttp.id, ");
 			hql.append(" dbttp.descricao, ");
-			hql.append(" dcs.descricaoAbreviada)");
+			hql.append(" dcs.descricaoAbreviada, ");
+			hql.append(" gppr.indicadorDividaAtiva, ");
+			hql.append(" gppr.indicadorExecucaoFiscal, ");
+			hql.append(" gppr.comp_id.numeroProcessoAdministrativoExecucaoFiscal) ");
 			hql.append(" from GuiaPagamentoHistorico gphi ");
 			hql.append(" join gphi.guiasPagamentoPrestacao gppr ");
 			hql.append(" join gphi.documentoTipo dt ");
@@ -31105,7 +31834,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			hql.append(" gppr.indicadorPagamentoPendente, ");
 			hql.append(" dbttp.id, ");
 			hql.append(" dbttp.descricao, ");
-			hql.append(" dcs.descricaoAbreviada)");
+			hql.append(" dcs.descricaoAbreviada, ");
+			hql.append(" gppr.indicadorDividaAtiva, ");
+			hql.append(" gppr.indicadorExecucaoFiscal, ");
+			hql.append(" gppr.comp_id.numeroProcessoAdministrativoExecucaoFiscal) ");
 			hql.append(" from GuiaPagamento gpag ");
 			hql.append(" join gpag.guiasPagamentoPrestacao gppr ");
 			hql.append(" join gpag.documentoTipo dt ");
@@ -31216,8 +31948,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("and bb.parc_id is not null ");
 			consulta.append("and gp.gpag_id = :guiaPagamentoId");
 
-			retorno = session.createSQLQuery(consulta.toString()).addScalar("idConta", Hibernate.STRING).setInteger("guiaPagamentoId",
-							guiaPagamentoId).list();
+			retorno = session.createSQLQuery(consulta.toString()).addScalar("idConta", Hibernate.STRING)
+							.setInteger("guiaPagamentoId", guiaPagamentoId).list();
 
 		}catch(HibernateException e){
 
@@ -31264,9 +31996,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" 	    	)  "); // OR
 			consulta.append(" 	      )  "); // AND
 
-			retorno = session.createSQLQuery(consulta.toString()).addScalar("idBoletoBancario", Hibernate.STRING).addScalar(
-							"descricaoSituacao", Hibernate.STRING).setInteger("guiaPagamentoId", guiaPagamentoId).setShort(
-							"numeroPrestacao", numeroPrestacao).setInteger("idSituacaoBaixa", BoletoBancarioSituacao.BAIXA).list();
+			retorno = session.createSQLQuery(consulta.toString()).addScalar("idBoletoBancario", Hibernate.STRING)
+							.addScalar("descricaoSituacao", Hibernate.STRING).setInteger("guiaPagamentoId", guiaPagamentoId)
+							.setShort("numeroPrestacao", numeroPrestacao).setInteger("idSituacaoBaixa", BoletoBancarioSituacao.BAIXA)
+							.list();
 
 		}catch(HibernateException e){
 
@@ -31413,8 +32146,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("GROUP BY debito.numeroPrestacaoDebito ");
 			consulta.append("ORDER BY debito.numeroPrestacaoDebito DESC");
 
-			retornoConsulta = session.createQuery(consulta.toString()).setInteger("idParcelamento", idParcelamento).setDate("dataAtual",
-							new Date()).setInteger("idlancamentoItemContabil", LancamentoItemContabil.JUROS_DO_PARCELAMENTO).list();
+			retornoConsulta = session.createQuery(consulta.toString()).setInteger("idParcelamento", idParcelamento)
+							.setDate("dataAtual", new Date())
+							.setInteger("idlancamentoItemContabil", LancamentoItemContabil.JUROS_DO_PARCELAMENTO).list();
 
 			if(retornoConsulta != null){
 
@@ -31459,8 +32193,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("AND debito.anoMesReferenciaDebito = :anoMesReferencia ");
 			consulta.append("AND debito.debitoTipo.id = " + DebitoTipo.MULTA_POR_DESCUMPRIMENTO_PARCELAMENTO.toString());
 
-			retornoConsulta = session.createQuery(consulta.toString()).setInteger("idParcelamento", idParcelamento).setInteger(
-							"anoMesReferencia", anoMesReferencia).setMaxResults(1).uniqueResult();
+			retornoConsulta = session.createQuery(consulta.toString()).setInteger("idParcelamento", idParcelamento)
+							.setInteger("anoMesReferencia", anoMesReferencia).setMaxResults(1).uniqueResult();
 
 			if(retornoConsulta != null){
 
@@ -31547,8 +32281,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" select faturamentoGrupo.descricao, ");
 			consulta.append(" faturamentoGrupoCronogramaMensal.anoMesReferencia ");
 			consulta.append(" from FaturamentoAtividadeCronograma faturamentoAtividadeCronograma ");
-			consulta
-							.append(" inner join faturamentoAtividadeCronograma.faturamentoGrupoCronogramaMensal faturamentoGrupoCronogramaMensal ");
+			consulta.append(" inner join faturamentoAtividadeCronograma.faturamentoGrupoCronogramaMensal faturamentoGrupoCronogramaMensal ");
 			consulta.append(" inner join faturamentoGrupoCronogramaMensal.faturamentoGrupo faturamentoGrupo ");
 			consulta.append(" where faturamentoAtividadeCronograma.id = :idComandoFaturamento ");
 
@@ -31592,8 +32325,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(DebitoCreditoSituacao.PRE_FATURADA).append(", ");
 			consulta.append(DebitoCreditoSituacao.PRESCRITA).append(" ) ");
 
-			retorno = (Integer) session.createQuery(consulta.toString()).setInteger("referencia", anoMesReferencia).setInteger("idImovel",
-							imovel.getId().intValue()).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta.toString()).setInteger("referencia", anoMesReferencia)
+							.setInteger("idImovel", imovel.getId().intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -31636,8 +32369,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(DebitoCreditoSituacao.PRESCRITA).append(", ");
 			consulta.append(DebitoCreditoSituacao.PRE_FATURADA).append(" ) ");
 
-			retorno = (Integer) session.createQuery(consulta.toString()).setInteger("referencia", anoMesReferencia).setInteger("idImovel",
-							imovel.getId().intValue()).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta.toString()).setInteger("referencia", anoMesReferencia)
+							.setInteger("idImovel", imovel.getId().intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -31869,8 +32602,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 *          Exibir Contas Pré-Faturadas.
 	 */
 	public Collection<Integer> pesquisarQuantidadeContasPreFaturadas(FaturaContasPreFaturadasHelper faturaContasPreFaturadasHelper,
-					Short permiteFaturarContaPreFaturadaZero)
-					throws ErroRepositorioException{
+					Short permiteFaturarContaPreFaturadaZero) throws ErroRepositorioException{
 
 		// Objeto de retorno
 		Collection<Integer> retorno = null;
@@ -32044,8 +32776,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("inner join ct.imovel im ");
 			consulta.append("where im.id = :imovelId and ct.referencia = :anoMesReferencia");
 
-			retorno = session.createQuery(consulta.toString()).setInteger("imovelId", imovelId.intValue()).setInteger("anoMesReferencia",
-							anoMesReferencia).setMaxResults(1).uniqueResult();
+			retorno = session.createQuery(consulta.toString()).setInteger("imovelId", imovelId.intValue())
+							.setInteger("anoMesReferencia", anoMesReferencia).setMaxResults(1).uniqueResult();
 		}catch(HibernateException e){
 
 			// levanta a exceção para a próxima camada
@@ -32115,8 +32847,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			retorno = session.createSQLQuery(consulta.toString()).addScalar("descricao", Hibernate.STRING)
 							.addScalar("referencia", Hibernate.INTEGER).addScalar("dataUltimoFaturamento", Hibernate.DATE)
 							.addScalar("id", Hibernate.STRING).addScalar("qtRotasNaoFaturadas", Hibernate.STRING)
-							.setInteger("faturamentoAtividade", FaturamentoAtividade.FATURAR_GRUPO)
-							.list();
+							.setInteger("faturamentoAtividade", FaturamentoAtividade.FATURAR_GRUPO).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -32255,8 +32986,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			hql.append("where anoMesCobrancaSituacaoFim <= :anoMesFaturamento ");
 			hql.append("  and anoMesCobrancaRetirada is null ");
 
-			session.createQuery(hql.toString()).setInteger("anoMesFaturamento", anoMesFaturamento).setTimestamp("dataHoraExclusao",
-							new Date()).executeUpdate();
+			session.createQuery(hql.toString()).setInteger("anoMesFaturamento", anoMesFaturamento)
+							.setTimestamp("dataHoraExclusao", new Date()).executeUpdate();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -32295,8 +33026,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			hql.append("where anoMesFaturamentoSituacaoFim <= :anoMesFaturamento ");
 			hql.append("  and anoMesFaturamentoRetirada is null ");
 
-			session.createQuery(hql.toString()).setInteger("anoMesFaturamento", anoMesFaturamento).setTimestamp("dataUltimaAlteracao",
-							new Date()).executeUpdate();
+			session.createQuery(hql.toString()).setInteger("anoMesFaturamento", anoMesFaturamento)
+							.setTimestamp("dataUltimaAlteracao", new Date()).executeUpdate();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -32367,9 +33098,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			hql.append(" and faturamentoGrupoRevisao.anoMesReferenciaFaturamentoInicial <= :referencia ");
 			hql.append(" and faturamentoGrupoRevisao.anoMesReferenciaFaturamentoFinal >= :referencia ");
 
-			retorno = (Collection<FaturamentoGrupoRevisao>) session.createQuery(hql.toString()).setInteger("idFaturamentoGrupo",
-							idFaturamentoGrupo)
-							.setInteger("referencia", referencia).list();
+			retorno = (Collection<FaturamentoGrupoRevisao>) session.createQuery(hql.toString())
+							.setInteger("idFaturamentoGrupo", idFaturamentoGrupo).setInteger("referencia", referencia).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -32400,8 +33130,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " CNTA_AMREFERENCIACONTA = 201205   AND " + "( (CNTA_VLAGUA   > 0   AND  CTCG_VLAGUA   = 0)     "
 							+ " OR  (CNTA_VLESGOTO > 0   AND  CTCG_VLESGOTO = 0) ) ");
 
-			retorno = session.createSQLQuery(consulta.toString()).addScalar("CONTA", Hibernate.INTEGER).addScalar("IMOVEL",
-							Hibernate.INTEGER).addScalar("REF", Hibernate.INTEGER).list();
+			retorno = session.createSQLQuery(consulta.toString()).addScalar("CONTA", Hibernate.INTEGER)
+							.addScalar("IMOVEL", Hibernate.INTEGER).addScalar("REF", Hibernate.INTEGER).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -32465,8 +33195,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * @date 02/06/2012
 	 * @throws ErroRepositorioException
 	 */
-	public List pesquisarTarifasArquivoTextoFaturamentoImediato(Integer referencia)
-					throws ErroRepositorioException{
+	public List pesquisarTarifasArquivoTextoFaturamentoImediato(Integer referencia) throws ErroRepositorioException{
 
 		List retorno = null;
 		Session session = HibernateUtil.getSession();
@@ -32571,10 +33300,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			sql.append(" where exists (select 1 from imovel i where i.rota_id in (" + idsRotas + ") and s.stcm_id = i.stcm_id ) ");
 			sql.append(" order by s.loca_id, s.stcm_cdsetorcomercial ");
 
-			retorno = session.createSQLQuery(sql.toString()).addScalar("idLocalidade", Hibernate.INTEGER).addScalar("nomeLocalidade",
-							Hibernate.STRING).addScalar("codigoSetor", Hibernate.SHORT)
-							.addScalar("consumoGrandeUsuario", Hibernate.INTEGER).addScalar("elo", Hibernate.INTEGER).addScalar("idSetor",
-											Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER).list();
+			retorno = session.createSQLQuery(sql.toString()).addScalar("idLocalidade", Hibernate.INTEGER)
+							.addScalar("nomeLocalidade", Hibernate.STRING).addScalar("codigoSetor", Hibernate.SHORT)
+							.addScalar("consumoGrandeUsuario", Hibernate.INTEGER).addScalar("elo", Hibernate.INTEGER)
+							.addScalar("idSetor", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER).list();
 
 		}catch(HibernateException e){
 
@@ -32655,8 +33384,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			query.setShort("indicadorUso", ConstantesSistema.INDICADOR_USO_ATIVO);
 
-			retorno = (Object[]) query.setMaxResults(1)
-							.uniqueResult();
+			retorno = (Object[]) query.setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -32813,8 +33541,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			String consulta = "select qa from QualidadeAgua qa where qa.anoMesReferencia <= :anoMesFaturamento "
 							+ "and qa.setorComercial.id = :idSetorComercial order by qa.anoMesReferencia desc";
 
-			retorno = (QualidadeAgua) session.createQuery(consulta).setInteger("anoMesFaturamento", anoMesFaturamento).setInteger(
-							"idSetorComercial", idSetorComercial).setMaxResults(1).uniqueResult();
+			retorno = (QualidadeAgua) session.createQuery(consulta).setInteger("anoMesFaturamento", anoMesFaturamento)
+							.setInteger("idSetorComercial", idSetorComercial).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -32893,8 +33621,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			Date dataCorrente = Util.subtrairNumeroDiasDeUmaData(new Date(), qtdDiasVencContaAvisoCorte);
 
-			List<Conta> collContas = session.createQuery(sb.toString()).setInteger("idImovel", idImovel).setInteger("idMotivoNegativacao",
-							idMotivoNegativacao).setDate("dataCorrente", dataCorrente).list();
+			List<Conta> collContas = session.createQuery(sb.toString()).setInteger("idImovel", idImovel)
+							.setInteger("idMotivoNegativacao", idMotivoNegativacao).setDate("dataCorrente", dataCorrente).list();
 
 			for(Conta conta : collContas){
 
@@ -33076,6 +33804,199 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	}
 
 	/**
+	 * [UC0150] Retificar Conta
+	 * Atualizar itens da execução fiscal.
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 10/08/2014
+	 */
+	public void alterarContaExecucaoFiscalItem(Integer idContaAntiga, Integer idContaNova) throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+
+		try{
+			StringBuffer sql = new StringBuffer();
+
+			sql.append("update gcom.cadastro.imovel.ImovelCobrancaSituacaoItem imovelCobSitItem ");
+			sql.append("   set cnta_id = :idContaNova, ");
+			sql.append("       ICSI_ICATUALIZADO = 1, ");
+			sql.append("       ICSI_TMULTIMAALTERACAO = :ultimaAlteracao ");
+			sql.append("where cnta_id = :idContaAntiga ");
+			sql.append("  and ISCB_ID in (select id from gcom.cadastro.imovel.ImovelCobrancaSituacao imovelCobSit ");
+			sql.append(" 			    	where imovelCobSit.dataRetiradaCobranca is null) ");
+
+			Query createQuery = session.createQuery(sql.toString());
+			createQuery.setInteger("idContaAntiga", idContaAntiga);
+			createQuery.setInteger("idContaNova", idContaNova);
+			createQuery.setDate("ultimaAlteracao", new Date());
+
+			createQuery.executeUpdate();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+	}
+
+	/**
+	 * [UC1016] Estornar Pagamentos
+	 * Atualizar itens da execução fiscal.
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 12/08/2014
+	 */
+	public void estornarContaExecucaoFiscalItem(Integer idConta, Date dataEstorno) throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+
+		try{
+			StringBuffer sql = new StringBuffer();
+
+			sql.append("update gcom.cadastro.imovel.ImovelCobrancaSituacaoItem imovelCobSitItem ");
+			sql.append("   set CDST_ID = 1, ");
+			sql.append("       ICSI_DTSITUACAODEBITO = :dataEstorno, ");
+			sql.append("       ICSI_ICATUALIZADO  = 1, ");
+			sql.append("       ICSI_TMULTIMAALTERACAO = :ultimaAlteracao ");
+			sql.append("where cnta_id = :idConta ");
+			sql.append("  and ISCB_ID in (select id from gcom.cadastro.imovel.ImovelCobrancaSituacao imovelCobSit ");
+			sql.append(" 			    	where imovelCobSit.dataRetiradaCobranca is null) ");
+
+			Query createQuery = session.createQuery(sql.toString());
+			createQuery.setInteger("idConta", idConta);
+			createQuery.setDate("ultimaAlteracao", new Date());
+			createQuery.setDate("dataEstorno", dataEstorno);
+
+			createQuery.executeUpdate();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+	}
+
+	/**
+	 * [UC3082] Atualizar Item Documento Cobrança
+	 * Atualizar itens da execução fiscal.
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 12/08/2014
+	 */
+	public void alterarContaExecucaoFiscalItem(Integer idConta, Integer idSituacaoDebitoItem, Date dataSituacaoDebitoItem)
+					throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+
+		try{
+			StringBuffer sql = new StringBuffer();
+
+			sql.append("update gcom.cadastro.imovel.ImovelCobrancaSituacaoItem imovelCobSitItem ");
+			sql.append("   set CDST_ID = :idSituacaoDebitoItem, ");
+			sql.append("       ICSI_DTSITUACAODEBITO = :dataSituacaoDebitoItem, ");
+			sql.append("       ICSI_ICATUALIZADO  = 1, ");
+			sql.append("       ICSI_TMULTIMAALTERACAO = :ultimaAlteracao ");
+			sql.append("where cnta_id = :idConta ");
+			sql.append("  and ISCB_ID in (select id from gcom.cadastro.imovel.ImovelCobrancaSituacao imovelCobSit ");
+			sql.append(" 			    	where imovelCobSit.dataRetiradaCobranca is null) ");
+
+			Query createQuery = session.createQuery(sql.toString());
+			createQuery.setInteger("idConta", idConta);
+			createQuery.setInteger("idSituacaoDebitoItem", idSituacaoDebitoItem);
+			createQuery.setDate("ultimaAlteracao", new Date());
+			createQuery.setDate("dataSituacaoDebitoItem", dataSituacaoDebitoItem);
+
+			createQuery.executeUpdate();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+	}
+
+	/**
+	 * [UC3082] Atualizar Item Documento Cobrança
+	 * Atualizar itens da execução fiscal.
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 12/08/2014
+	 */
+	public void alterarGuiaPagamentoExecucaoFiscalItem(Integer idGuiaPagamento, Short numeroPrestacao, Integer idSituacaoDebitoItem,
+					Date dataSituacaoDebitoItem) throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+
+		try{
+			StringBuffer sql = new StringBuffer();
+
+			sql.append("update gcom.cadastro.imovel.ImovelCobrancaSituacaoItem imovelCobSitItem ");
+			sql.append("   set CDST_ID = :idSituacaoDebitoItem, ");
+			sql.append("       ICSI_DTSITUACAODEBITO = :dataSituacaoDebitoItem, ");
+			sql.append("       ICSI_ICATUALIZADO  = 1, ");
+			sql.append("       ICSI_TMULTIMAALTERACAO = :ultimaAlteracao ");
+			sql.append("where GPAG_ID  = :idGuiaPagamento ");
+			sql.append("  and ICSI_NNPRESTACAO  = :numeroPrestacao ");
+			sql.append("  and ISCB_ID in (select id from gcom.cadastro.imovel.ImovelCobrancaSituacao imovelCobSit ");
+			sql.append(" 			    	where imovelCobSit.dataRetiradaCobranca is null) ");
+
+			Query createQuery = session.createQuery(sql.toString());
+			createQuery.setInteger("idGuiaPagamento", idGuiaPagamento);
+			createQuery.setInteger("numeroPrestacao", numeroPrestacao);
+			createQuery.setInteger("idSituacaoDebitoItem", idSituacaoDebitoItem);
+			createQuery.setDate("ultimaAlteracao", new Date());
+			createQuery.setDate("dataSituacaoDebitoItem", dataSituacaoDebitoItem);
+
+			createQuery.executeUpdate();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+	}
+
+	/**
+	 * [UC1016] Estornar Pagamentos
+	 * Atualizar itens da execução fiscal.
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 12/08/2014
+	 */
+	public void estornarGuiaPagamentoExecucaoFiscalItem(Integer idGuiaPagamento, Short numeroPrestacao, Date dataEstorno)
+					throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+
+		try{
+			StringBuffer sql = new StringBuffer();
+
+			sql.append("update gcom.cadastro.imovel.ImovelCobrancaSituacaoItem imovelCobSitItem ");
+			sql.append("   set CDST_ID = 1, ");
+			sql.append("       ICSI_DTSITUACAODEBITO = :dataEstorno, ");
+			sql.append("       ICSI_ICATUALIZADO  = 1, ");
+			sql.append("       ICSI_TMULTIMAALTERACAO = :ultimaAlteracao ");
+			sql.append("where GPAG_ID = :idGuiaPagamento ");
+			sql.append("  and ICSI_NNPRESTACAO = :numeroPrestacao ");
+			sql.append("  and ISCB_ID in (select id from gcom.cadastro.imovel.ImovelCobrancaSituacao imovelCobSit ");
+			sql.append(" 			    	where imovelCobSit.dataRetiradaCobranca is null) ");
+
+			Query createQuery = session.createQuery(sql.toString());
+			createQuery.setInteger("idGuiaPagamento", idGuiaPagamento);
+			createQuery.setShort("numeroPrestacao", numeroPrestacao);
+			createQuery.setDate("ultimaAlteracao", new Date());
+			createQuery.setDate("dataEstorno", dataEstorno);
+
+			createQuery.executeUpdate();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+	}
+
+	/**
 	 * [UC3061] Gerar Relatório Posição do Débito da Negativação – Legado CASAL
 	 * Pesquisar as contas em processo de negativação e já transferidas para o histórico
 	 * 
@@ -33117,6 +34038,107 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			query.setInteger("parcelada", DebitoCreditoSituacao.PARCELADA);
 			query.setInteger("revisaoSPC", ContaMotivoRevisao.REVISAO_SPC);
 			query.setInteger("negativadoLegado", CobrancaSituacao.NEGATIVADO_LEGADO);
+
+			retorno = query.list();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC3165] Gerar Relatório Posição do Débito da Negativação - Legado CAGEPA
+	 * Pesquisar as contas em processo de negativação e já transferidas para o histórico
+	 * 
+	 * @date 07/03/2015
+	 * @author Luciano Galvão
+	 */
+	public Collection<ContaHistorico> pesquisarContaEmProcessoNegativacaoCagepa(Integer anoMesFaturamento) throws ErroRepositorioException{
+
+		Collection retorno = null;
+
+		Session session = HibernateUtil.getSession();
+
+		StringBuilder consulta = new StringBuilder();
+
+		try{
+			// cnhi
+			consulta.append("select cnhi ");
+			consulta.append("from gcom.cadastro.imovel.ImovelCobrancaSituacaoItem icsItem ");
+			consulta.append("inner join icsItem.imovelCobrancaSituacao ics ");
+			consulta.append("inner join icsItem.contaGeral cntaGeral ");
+			consulta.append("inner join cntaGeral.contaHistorico cnhi ");
+			consulta.append("left join fetch cnhi.debitoCreditoSituacaoAtual ");
+			consulta.append("left join fetch cnhi.contaMotivoCancelamento ");
+			consulta.append("left join fetch cnhi.parcelamento ");
+			consulta.append("where  ");
+			consulta.append("cnhi.anoMesReferenciaConta <= :anoMesFaturamento ");
+			consulta.append("and ics.dataRetiradaCobranca is null ");
+			consulta.append("and ics.cobrancaSituacao.id = :negativadoLegado ");
+			consulta.append("and not exists (select id from gcom.cadastro.imovel.ImovelCobrancaSituacaoItem icsItem1 ");
+			consulta.append("				  where icsItem1.imovelCobrancaSituacao.id = ics.id ");
+			consulta.append("			        and exists (select id from Conta c where c.id = icsItem1.contaGeral.id)) ");
+			
+			Query query = session.createQuery(consulta.toString());
+
+			query.setInteger("anoMesFaturamento", anoMesFaturamento);
+			query.setInteger("negativadoLegado", CobrancaSituacao.NEGATIVADO_LEGADO);
+
+			retorno = query.list();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC0187] Inserir Guia de Pagamento
+	 * Processos das execuções especiais pendentes de cobrança do valor de sucumbência
+	 * 
+	 * @date 08/09/2014
+	 * @author Gicevalter Couto
+	 * @date 20/10/2014S
+	 * @author Saulo Lima
+	 */
+	public Collection<Integer> pesquisarProcessosExecucaoEspeciaisPendentesCobranca(Integer idImovel, Integer idCobrancaSituacaoExecFiscal,
+					Integer idSucumbencia) throws ErroRepositorioException{
+
+		Collection retorno = null;
+
+		Session session = HibernateUtil.getSession();
+
+		StringBuilder consulta = new StringBuilder();
+
+		try{
+			consulta.append("select imovelCobSit.numeroProcessoAdministrativoExecucaoFiscal ");
+			consulta.append("from ImovelCobrancaSituacao imovelCobSit ");
+			consulta.append("where imovelCobSit.imovel.id = :idImovel ");
+			consulta.append("  and imovelCobSit.cobrancaSituacao.id = :idCobrancaSituacao ");
+			consulta.append("  and imovelCobSit.numeroProcessoAdministrativoExecucaoFiscal not in ( ");
+			consulta.append("     select distinct gppe.comp_id.numeroProcessoAdministrativoExecucaoFiscal ");
+			consulta.append("     from GuiaPagamentoPrestacao gppe ");
+			consulta.append("     where gppe.debitoCreditoSituacao.id = 0 ");
+			consulta.append("     and gppe.debitoTipo.id = :idSucumbencia) ");
+			consulta.append("  and numeroProcessoAdministrativoExecucaoFiscal not in ( ");
+			consulta.append("     select distinct gpph.comp_id.numeroProcessoAdministrativoExecucaoFiscal ");
+			consulta.append("     from GuiaPagamentoPrestacaoHistorico gpph ");
+			consulta.append("     where gpph.debitoCreditoSituacao.id = 0 ");
+			consulta.append("     and gpph.debitoTipo.id = :idSucumbencia) ");
+			consulta.append("order by imovelCobSit.numeroProcessoAdministrativoExecucaoFiscal ");
+			
+			Query query = session.createQuery(consulta.toString());
+
+			query.setInteger("idImovel", idImovel);
+			query.setInteger("idCobrancaSituacao", idCobrancaSituacaoExecFiscal);
+			query.setInteger("idSucumbencia", idSucumbencia);
 
 			retorno = query.list();
 
@@ -33190,15 +34212,15 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 				consulta.append("and fgcm.id = :idFaturamentoGrupoCronogramaMensal ");
 
-				retorno = (List<FaturamentoAtividadeCronograma>) session.createQuery(consulta.toString()).setInteger(
-								"idFaturamentoGrupoCronogramaMensal", idFaturamentoGrupoCronogramaMensal).setString(
-								"idFaturamentoAtividade", idsFaturamentoAtividades).list();
+				retorno = (List<FaturamentoAtividadeCronograma>) session.createQuery(consulta.toString())
+								.setInteger("idFaturamentoGrupoCronogramaMensal", idFaturamentoGrupoCronogramaMensal)
+								.setString("idFaturamentoAtividade", idsFaturamentoAtividades).list();
 			}else{
 
 				consulta.append("and fac.dataRealizacao is not null ");
 
-				retorno = (List<FaturamentoAtividadeCronograma>) session.createQuery(consulta.toString()).setString(
-								"idFaturamentoAtividade", idsFaturamentoAtividades).list();
+				retorno = (List<FaturamentoAtividadeCronograma>) session.createQuery(consulta.toString())
+								.setString("idFaturamentoAtividade", idsFaturamentoAtividades).list();
 			}
 
 		}catch(HibernateException e){
@@ -33268,8 +34290,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("   where gpag.parc_id = :idParcelamento ");
 			consulta.append("   ) ");
 
-			retorno = session.createSQLQuery(consulta.toString()).addScalar("idTipoDebito", Hibernate.INTEGER).setInteger("idParcelamento",
-							idParcelamento).list();
+			retorno = session.createSQLQuery(consulta.toString()).addScalar("idTipoDebito", Hibernate.INTEGER)
+							.setInteger("idParcelamento", idParcelamento).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -33303,7 +34325,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 					String indicadorMedicao, String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial,
 					String quantidadeEconomiasFinal, String diaVencimento, String idCliente, String idClienteTipo,
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
-					String numeroMoradoresFinal, String idAreaConstruidaFaixa) throws ErroRepositorioException{
+					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal) throws ErroRepositorioException{
 
 		Integer retorno = null;
 
@@ -33376,7 +34399,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 											cep, logradouro, bairro, municipio, idTipoMedicao, indicadorMedicao, idSubCategoria,
 											idCategoria, quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente,
 											idClienteTipo, idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal,
-											numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa);
+											numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa,
+											consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 			/*
 			 * # COLOCANDO O VALOR NAS CONDIÇÕES#
@@ -33403,7 +34427,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							loteDestno, cep, logradouro, bairro, municipio, idTipoMedicao, indicadorMedicao, idSubCategoria, idCategoria,
 							quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
-							idAreaConstruidaFaixa);
+							idAreaConstruidaFaixa, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 			retorno = ((Number) query.uniqueResult()).intValue();
 
@@ -33463,36 +34487,6 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		return retorno;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see gcom.faturamento.IRepositorioFaturamento#obterContaMotivoRevisao(java.lang.Integer)
-	 */
-	public ContaMotivoRevisao obterContaMotivoRevisao(Integer id) throws ErroRepositorioException{
-
-		ContaMotivoRevisao contaMotivoRevisao = null;
-		Session session = HibernateUtil.getSession();
-
-		try{
-
-			Criteria criteria = session.createCriteria(ContaMotivoRevisao.class);
-			criteria.add(Restrictions.idEq(id));
-
-			contaMotivoRevisao = (ContaMotivoRevisao) criteria.uniqueResult();
-
-		}catch(HibernateException e){
-
-			throw new ErroRepositorioException(e, "Erro no Hibernate");
-
-		}finally{
-
-			HibernateUtil.closeSession(session);
-
-		}
-
-		return contaMotivoRevisao;
-
-	}
-
 	/**
 	 * Retorna os registros de movimento roteiro empresa para a referência e grupo informado
 	 * 
@@ -33514,8 +34508,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " or (mov.descricaoRubrica10 is not null and mov.descricaoRubrica12 is null) "
 							+ " or (mov.descricaoRubrica13 is not null and mov.descricaoRubrica15 is null) ) ";
 
-			retorno = (Collection<MovimentoRoteiroEmpresa>) session.createQuery(consulta).setInteger("idRota", idRota).setInteger(
-							"anoMesFaturamento", anoMesFaturamento).list();
+			retorno = (Collection<MovimentoRoteiroEmpresa>) session.createQuery(consulta).setInteger("idRota", idRota)
+							.setInteger("anoMesFaturamento", anoMesFaturamento).list();
 
 		}catch(HibernateException e){
 
@@ -33552,8 +34546,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				consulta.append("and contaImovel.debitoCreditoSituacaoAtual.id in (" + idsDebitoCreditoSituacaoAtual.toString() + ")");
 			}
 
-			retorno = (Conta) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("anoMesReferencia",
-							anoMesReferencia).setMaxResults(1).uniqueResult();
+			retorno = (Conta) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesReferencia", anoMesReferencia).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -33633,8 +34627,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("and debtipo.id = :idDebitoTipo ");
 			consulta.append("and debito.numeroPrestacaoDebito = :numeroPrestacaoDeb ");
 
-			retorno = session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("anoMesCobranca",
-							anoMesReferencia).setInteger("idDebitoTipo", idDebitoTipo)
+			retorno = session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesCobranca", anoMesReferencia).setInteger("idDebitoTipo", idDebitoTipo)
 							.setShort("numeroPrestacaoDeb", numeroPrestacaoDebito).list();
 
 		}catch(HibernateException e){
@@ -33666,8 +34660,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("pag.conta.id = :idConta ");
 			consulta.append("and pag.anoMesReferenciaPagamento =  :anoMesReferencia ");
 
-			retorno = (Pagamento) session.createQuery(consulta.toString()).setInteger("idConta", idConta).setInteger("anoMesReferencia",
-							anoMesReferencia).setMaxResults(1).uniqueResult();
+			retorno = (Pagamento) session.createQuery(consulta.toString()).setInteger("idConta", idConta)
+							.setInteger("anoMesReferencia", anoMesReferencia).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -33696,8 +34690,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			String consulta = "select mov from MovimentoRoteiroEmpresa mov where "
 							+ " mov.rota.id = :idRota and mov.anoMesMovimento = :anoMesFaturamento and mov.indicadorFase in (1,2) ";
 
-			retorno = (Collection<MovimentoRoteiroEmpresa>) session.createQuery(consulta).setInteger("idRota", idRota).setInteger(
-							"anoMesFaturamento", anoMesFaturamento).list();
+			retorno = (Collection<MovimentoRoteiroEmpresa>) session.createQuery(consulta).setInteger("idRota", idRota)
+							.setInteger("anoMesFaturamento", anoMesFaturamento).list();
 
 		}catch(HibernateException e){
 
@@ -33730,8 +34724,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("and contaImovel.debitoCreditoSituacaoAtual.id in (" + DebitoCreditoSituacao.NORMAL + ","
 							+ DebitoCreditoSituacao.PARCELADA + ")");
 
-			retorno = (Collection) session.createQuery(consulta.toString()).setInteger("idRota", idRota).setInteger("anoMesReferencia",
-							anoMesReferencia).list();
+			retorno = (Collection) session.createQuery(consulta.toString()).setInteger("idRota", idRota)
+							.setInteger("anoMesReferencia", anoMesReferencia).list();
 
 		}catch(HibernateException e){
 
@@ -33764,8 +34758,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("and contaImovel.referencia = :anoMesReferencia ");
 			consulta.append("and contaImovel.debitoCreditoSituacaoAtual.id in (" + DebitoCreditoSituacao.NORMAL + " ) ");
 
-			retorno = (Collection) session.createQuery(consulta.toString()).setInteger("idRota", idRota).setInteger("anoMesReferencia",
-							anoMesReferencia).list();
+			retorno = (Collection) session.createQuery(consulta.toString()).setInteger("idRota", idRota)
+							.setInteger("anoMesReferencia", anoMesReferencia).list();
 
 		}catch(HibernateException e){
 
@@ -33917,8 +34911,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta = "select count(*) as total from debito_a_cobrar where imov_id = :imovel and dbtp_id = :parametroDebitoTipoRateio and dbac_amreferenciadebito = :anoMesReferencia ";
 
 			retorno = (Integer) session.createSQLQuery(consulta).addScalar("total", Hibernate.INTEGER).setInteger("imovel", idImovel)
-							.setInteger("anoMesReferencia", anoMesReferencia).setString("parametroDebitoTipoRateio",
-											parametroDebitoTipoRateio).setMaxResults(1).uniqueResult();
+							.setInteger("anoMesReferencia", anoMesReferencia)
+							.setString("parametroDebitoTipoRateio", parametroDebitoTipoRateio).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -33955,8 +34949,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("and debito.anoMesCobrancaDebito <= :anoMesReferencia ");
 
 			// executa o hql
-			retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("anoMesReferencia",
-							anoMesReferencia).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesReferencia", anoMesReferencia).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -33995,9 +34989,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				consulta.append(" and debito.numeroPrestacaoDebito = :numeroPrestacaoDeb ");
 				consulta.append(" and debito.debitoTipo.id = :idDebitoTipo ");
 
-				retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idConta", idConta).setShort("numeroPrest",
-								numeroPrestacao).setShort("numeroPrestacaoDeb", numeroPrestacaoDebito).setInteger("idDebitoTipo",
-								idDebitoTipo).setMaxResults(1).uniqueResult();
+				retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idConta", idConta)
+								.setShort("numeroPrest", numeroPrestacao).setShort("numeroPrestacaoDeb", numeroPrestacaoDebito)
+								.setInteger("idDebitoTipo", idDebitoTipo).setMaxResults(1).uniqueResult();
 			}else{
 
 				retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idConta", idConta).setMaxResults(1)
@@ -34032,8 +35026,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" and debtipo.id = :idDebitoTipo ");
 			consulta.append(" and debito.anoMesCobrancaDebito = : anoMes");
 
-			retorno = (DebitoACobrar) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("idDebitoTipo",
-							idDebitoTipo).setInteger("anoMes", anoMesCobranca).setMaxResults(1).uniqueResult();
+			retorno = (DebitoACobrar) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("idDebitoTipo", idDebitoTipo).setInteger("anoMes", anoMesCobranca).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -34058,11 +35052,11 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" contaImovel.imovel.id = :idImovel ");
 			consulta.append(" and contaImovel.referencia =  :anoMesReferencia ");
 			consulta.append(" and contaImovel.debitoCreditoSituacaoAtual.id = " + DebitoCreditoSituacao.RETIFICADA.toString());
-			consulta.append(" and contaImovel.usuario.id =  " + Usuario.ID_USUARIO_ADM_SISTEMA.toString());
+			consulta.append(" and contaImovel.usuario.id =  " + Usuario.getIdUsuarioBatchParametro().toString());
 			consulta.append(" and contaImovel.contaMotivoRetificacao.id = 36 ");
 
-			retorno = (Conta) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("anoMesReferencia",
-							anoMesReferencia).setMaxResults(1).uniqueResult();
+			retorno = (Conta) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesReferencia", anoMesReferencia).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -34100,7 +35094,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" and contaImovel.anoMesReferenciaConta =  :anoMesReferencia ");
 			consulta.append(" and contaImovel.debitoCreditoSituacaoAtual.id = "
 							+ DebitoCreditoSituacao.CANCELADA_POR_RETIFICACAO.toString());
-			consulta.append(" and contaImovel.usuario.id =  " + Usuario.ID_USUARIO_ADM_SISTEMA.toString());
+			consulta.append(" and contaImovel.usuario.id =  " + Usuario.getIdUsuarioBatchParametro().toString());
 			consulta.append(" and ( ");
 			consulta.append(" (contaImovel.contaHistorico between :dataInicialPrimeiroAjuste ");
 			consulta.append(" and :dataFinalPrimeiroAjuste) ");
@@ -34117,16 +35111,20 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(")");
 			consulta.append(" order by contaImovel.id desc ");
 
-			retorno = (ContaHistorico) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger(
-							"anoMesReferencia", anoMesReferencia).setTimestamp("dataInicialPrimeiroAjuste", dataInicialPrimeiroAjuste)
-							.setTimestamp("dataFinalPrimeiroAjuste", dataFinalPrimeiroAjuste).setTimestamp("dataInicialSegundoAjuste",
-											dataInicialSegundoAjuste).setTimestamp("dataFinalSegundoAjuste", dataFinalSegundoAjuste)
-							.setTimestamp("dataInicialTerceiroAjuste", dataInicialTerceiroAjuste).setTimestamp("dataFinalTerceiroAjuste",
-											dataFinalTerceiroAjuste).setTimestamp("dataInicialQuartoAjuste", dataInicialQuartoAjuste)
-							.setTimestamp("dataFinalQuartoAjuste", dataFinalQuartoAjuste).setTimestamp("dataInicialQuintoAjuste",
-											dataInicialQuintoAjuste).setTimestamp("dataFinalQuintoAjuste", dataFinalQuintoAjuste)
-							.setTimestamp("dataInicialAjusteQtdRubrica", dataInicialAjusteQtdRubrica).setTimestamp(
-											"dataFinalAjusteQtdRubrica", dataFinalAjusteQtdRubrica).setMaxResults(1).uniqueResult();
+			retorno = (ContaHistorico) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesReferencia", anoMesReferencia)
+							.setTimestamp("dataInicialPrimeiroAjuste", dataInicialPrimeiroAjuste)
+							.setTimestamp("dataFinalPrimeiroAjuste", dataFinalPrimeiroAjuste)
+							.setTimestamp("dataInicialSegundoAjuste", dataInicialSegundoAjuste)
+							.setTimestamp("dataFinalSegundoAjuste", dataFinalSegundoAjuste)
+							.setTimestamp("dataInicialTerceiroAjuste", dataInicialTerceiroAjuste)
+							.setTimestamp("dataFinalTerceiroAjuste", dataFinalTerceiroAjuste)
+							.setTimestamp("dataInicialQuartoAjuste", dataInicialQuartoAjuste)
+							.setTimestamp("dataFinalQuartoAjuste", dataFinalQuartoAjuste)
+							.setTimestamp("dataInicialQuintoAjuste", dataInicialQuintoAjuste)
+							.setTimestamp("dataFinalQuintoAjuste", dataFinalQuintoAjuste)
+							.setTimestamp("dataInicialAjusteQtdRubrica", dataInicialAjusteQtdRubrica)
+							.setTimestamp("dataFinalAjusteQtdRubrica", dataFinalAjusteQtdRubrica).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -34153,14 +35151,15 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" and contaImovel.anoMesReferenciaConta =  :anoMesReferencia ");
 			consulta.append(" and contaImovel.debitoCreditoSituacaoAtual.id = "
 							+ DebitoCreditoSituacao.CANCELADA_POR_RETIFICACAO.toString());
-			consulta.append(" and contaImovel.usuario.id <>  " + Usuario.ID_USUARIO_ADM_SISTEMA.toString());
+			consulta.append(" and contaImovel.usuario.id <>  " + Usuario.getIdUsuarioBatchParametro().toString());
 			consulta.append(" and (contaImovel.contaHistorico between :dataInicialPrimeiroAjuste ");
 			consulta.append(" and :dataCorrente) ");
 			consulta.append(" order by contaImovel.id ");
 
-			retorno = (Collection<ContaHistorico>) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger(
-							"anoMesReferencia", anoMesReferencia).setTimestamp("dataInicialPrimeiroAjuste", dataInicialPrimeiroAjuste)
-							.setTimestamp("dataCorrente", new Date()).list();
+			retorno = (Collection<ContaHistorico>) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesReferencia", anoMesReferencia)
+							.setTimestamp("dataInicialPrimeiroAjuste", dataInicialPrimeiroAjuste).setTimestamp("dataCorrente", new Date())
+							.list();
 
 		}catch(HibernateException e){
 
@@ -34242,16 +35241,19 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" and debito.numeroLote is null ");
 			consulta.append(" and debito.numeroSubLote is null ");
 
-			retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("idDebitoTipo",
-							idDebitoTipo).setInteger("anoMesReferencia", anoMesReferenciaDebito).setInteger("anoMesCobranca",
-							anoMesCobranca).setTimestamp("dataInicialPrimeiroAjuste", dataInicialPrimeiroAjuste).setTimestamp(
-							"dataFinalPrimeiroAjuste", dataFinalPrimeiroAjuste).setTimestamp("dataInicialSegundoAjuste",
-							dataInicialSegundoAjuste).setTimestamp("dataFinalSegundoAjuste", dataFinalSegundoAjuste).setTimestamp(
-							"dataInicialTerceiroAjuste", dataInicialTerceiroAjuste).setTimestamp("dataFinalTerceiroAjuste",
-							dataFinalTerceiroAjuste).setTimestamp("dataInicialQuartoAjuste", dataInicialQuartoAjuste).setTimestamp(
-							"dataFinalQuartoAjuste", dataFinalQuartoAjuste)
-							.setTimestamp("dataInicialQuintoAjuste", dataInicialQuintoAjuste).setTimestamp("dataFinalQuintoAjuste",
-											dataFinalQuintoAjuste).setMaxResults(1).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("idDebitoTipo", idDebitoTipo).setInteger("anoMesReferencia", anoMesReferenciaDebito)
+							.setInteger("anoMesCobranca", anoMesCobranca)
+							.setTimestamp("dataInicialPrimeiroAjuste", dataInicialPrimeiroAjuste)
+							.setTimestamp("dataFinalPrimeiroAjuste", dataFinalPrimeiroAjuste)
+							.setTimestamp("dataInicialSegundoAjuste", dataInicialSegundoAjuste)
+							.setTimestamp("dataFinalSegundoAjuste", dataFinalSegundoAjuste)
+							.setTimestamp("dataInicialTerceiroAjuste", dataInicialTerceiroAjuste)
+							.setTimestamp("dataFinalTerceiroAjuste", dataFinalTerceiroAjuste)
+							.setTimestamp("dataInicialQuartoAjuste", dataInicialQuartoAjuste)
+							.setTimestamp("dataFinalQuartoAjuste", dataFinalQuartoAjuste)
+							.setTimestamp("dataInicialQuintoAjuste", dataInicialQuintoAjuste)
+							.setTimestamp("dataFinalQuintoAjuste", dataFinalQuintoAjuste).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -34307,16 +35309,19 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" and debito.lote is null ");
 			consulta.append(" and debito.sublote is null ");
 
-			retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("idDebitoTipo",
-							idDebitoTipo).setInteger("anoMesReferencia", anoMesReferenciaDebito).setInteger("anoMesCobranca",
-							anoMesCobranca).setTimestamp("dataInicialPrimeiroAjuste", dataInicialPrimeiroAjuste).setTimestamp(
-							"dataFinalPrimeiroAjuste", dataFinalPrimeiroAjuste).setTimestamp("dataInicialSegundoAjuste",
-							dataInicialSegundoAjuste).setTimestamp("dataFinalSegundoAjuste", dataFinalSegundoAjuste).setTimestamp(
-							"dataInicialTerceiroAjuste", dataInicialTerceiroAjuste).setTimestamp("dataFinalTerceiroAjuste",
-							dataFinalTerceiroAjuste).setTimestamp("dataInicialQuartoAjuste", dataInicialQuartoAjuste).setTimestamp(
-							"dataFinalQuartoAjuste", dataFinalQuartoAjuste)
-							.setTimestamp("dataInicialQuintoAjuste", dataInicialQuintoAjuste).setTimestamp("dataFinalQuintoAjuste",
-											dataFinalQuintoAjuste).setMaxResults(1).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("idDebitoTipo", idDebitoTipo).setInteger("anoMesReferencia", anoMesReferenciaDebito)
+							.setInteger("anoMesCobranca", anoMesCobranca)
+							.setTimestamp("dataInicialPrimeiroAjuste", dataInicialPrimeiroAjuste)
+							.setTimestamp("dataFinalPrimeiroAjuste", dataFinalPrimeiroAjuste)
+							.setTimestamp("dataInicialSegundoAjuste", dataInicialSegundoAjuste)
+							.setTimestamp("dataFinalSegundoAjuste", dataFinalSegundoAjuste)
+							.setTimestamp("dataInicialTerceiroAjuste", dataInicialTerceiroAjuste)
+							.setTimestamp("dataFinalTerceiroAjuste", dataFinalTerceiroAjuste)
+							.setTimestamp("dataInicialQuartoAjuste", dataInicialQuartoAjuste)
+							.setTimestamp("dataFinalQuartoAjuste", dataFinalQuartoAjuste)
+							.setTimestamp("dataInicialQuintoAjuste", dataInicialQuintoAjuste)
+							.setTimestamp("dataFinalQuintoAjuste", dataFinalQuintoAjuste).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -34345,15 +35350,16 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" and contaImovel.anoMesReferenciaConta =  :anoMesReferencia ");
 			consulta.append(" and contaImovel.debitoCreditoSituacaoAtual.id = "
 							+ DebitoCreditoSituacao.CANCELADA_POR_RETIFICACAO.toString());
-			consulta.append(" and contaImovel.usuario.id =  " + Usuario.ID_USUARIO_ADM_SISTEMA.toString());
+			consulta.append(" and contaImovel.usuario.id =  " + Usuario.getIdUsuarioBatchParametro().toString());
 			consulta.append(" and ( ");
 			consulta.append(" (contaImovel.contaHistorico between :dataInicialPrimeiroAjuste ");
 			consulta.append(" and :dataFinalPrimeiroAjuste) ");
 			consulta.append(")");
 			consulta.append(" order by contaImovel.id desc ");
 
-			retorno = (ContaHistorico) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger(
-							"anoMesReferencia", anoMesReferencia).setTimestamp("dataInicialPrimeiroAjuste", dataInicialPrimeiroAjuste)
+			retorno = (ContaHistorico) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesReferencia", anoMesReferencia)
+							.setTimestamp("dataInicialPrimeiroAjuste", dataInicialPrimeiroAjuste)
 							.setTimestamp("dataFinalPrimeiroAjuste", dataFinalPrimeiroAjuste).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
@@ -34450,8 +35456,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("and debito.anoMesCobrancaDebito in (:anoMesCobranca) ");
 			consulta.append("and debito.debitoTipo.id = :idDebitoTipo ");
 
-			retorno = session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setParameterList("anoMesCobranca",
-							anoMesReferencia).setInteger("idDebitoTipo", idDebitoTipo).list();
+			retorno = session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setParameterList("anoMesCobranca", anoMesReferencia).setInteger("idDebitoTipo", idDebitoTipo).list();
 
 		}catch(HibernateException e){
 
@@ -34478,13 +35484,14 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" contaImovel.imovel.id = :idImovel ");
 			consulta.append(" and contaImovel.anoMesReferenciaConta =  :anoMesReferencia ");
 			consulta.append(" and contaImovel.debitoCreditoSituacaoAtual.id = " + DebitoCreditoSituacao.RETIFICADA.toString());
-			consulta.append(" and contaImovel.usuario.id =  " + Usuario.ID_USUARIO_ADM_SISTEMA.toString());
+			consulta.append(" and contaImovel.usuario.id =  " + Usuario.getIdUsuarioBatchParametro().toString());
 			consulta.append(" and contaImovel.contaMotivoRetificacao.id = 36");
 			consulta.append(" and contaImovel.dataRetificacao = :dataRetif ");
 			consulta.append(" order by contaImovel.id desc ");
 
-			retorno = (ContaHistorico) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger(
-							"anoMesReferencia", anoMesReferencia).setDate("dataRetif", dataRetificacao).setMaxResults(1).uniqueResult();
+			retorno = (ContaHistorico) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesReferencia", anoMesReferencia).setDate("dataRetif", dataRetificacao).setMaxResults(1)
+							.uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -34511,12 +35518,13 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" contaImovel.imovel.id = :idImovel ");
 			consulta.append(" and contaImovel.referencia =  :anoMesReferencia ");
 			consulta.append(" and contaImovel.debitoCreditoSituacaoAtual.id = " + DebitoCreditoSituacao.RETIFICADA.toString());
-			consulta.append(" and contaImovel.usuario.id =  " + Usuario.ID_USUARIO_ADM_SISTEMA.toString());
+			consulta.append(" and contaImovel.usuario.id =  " + Usuario.getIdUsuarioBatchParametro().toString());
 			consulta.append(" and contaImovel.contaMotivoRetificacao.id = 36");
 			consulta.append(" and contaImovel.dataRetificacao = :dataRetif ");
 
-			retorno = (Conta) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("anoMesReferencia",
-							anoMesReferencia).setDate("dataRetif", dataRetificacao).setMaxResults(1).uniqueResult();
+			retorno = (Conta) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesReferencia", anoMesReferencia).setDate("dataRetif", dataRetificacao).setMaxResults(1)
+							.uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -34573,9 +35581,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				consulta.append(" and debito.numeroPrestacaoDebito = :numeroPrestacaoDeb ");
 				consulta.append(" and debito.debitoTipo.id = :idDebitoTipo ");
 
-				retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idConta", idConta).setShort("numeroPrest",
-								numeroPrestacao).setShort("numeroPrestacaoDeb", numeroPrestacaoDebito).setInteger("idDebitoTipo",
-								idDebitoTipo).setMaxResults(1).uniqueResult();
+				retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idConta", idConta)
+								.setShort("numeroPrest", numeroPrestacao).setShort("numeroPrestacaoDeb", numeroPrestacaoDebito)
+								.setInteger("idDebitoTipo", idDebitoTipo).setMaxResults(1).uniqueResult();
 			}else{
 
 				retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idConta", idConta).setMaxResults(1)
@@ -34767,16 +35775,19 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" and debito.lote is null ");
 			consulta.append(" and debito.sublote is null ");
 
-			retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setTimestamp(
-							"dataInicialPrimeiroAjuste", dataInicialPrimeiroAjuste).setTimestamp("dataFinalPrimeiroAjuste",
-							dataFinalPrimeiroAjuste).setTimestamp("dataInicialSegundoAjuste", dataInicialSegundoAjuste).setTimestamp(
-							"dataFinalSegundoAjuste", dataFinalSegundoAjuste).setTimestamp("dataInicialTerceiroAjuste",
-							dataInicialTerceiroAjuste).setTimestamp("dataFinalTerceiroAjuste", dataFinalTerceiroAjuste).setTimestamp(
-							"dataInicialQuartoAjuste", dataInicialQuartoAjuste)
-							.setTimestamp("dataFinalQuartoAjuste", dataFinalQuartoAjuste).setTimestamp("dataInicialQuintoAjuste",
-											dataInicialQuintoAjuste).setTimestamp("dataFinalQuintoAjuste", dataFinalQuintoAjuste)
-							.setTimestamp("dataFixaSextoAjuste", dataFixaSextoAjuste).setTimestamp("dataFixaSetimoAjuste",
-											dataFixaSetimoAjuste).setMaxResults(1).uniqueResult();
+			retorno = (BigDecimal) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setTimestamp("dataInicialPrimeiroAjuste", dataInicialPrimeiroAjuste)
+							.setTimestamp("dataFinalPrimeiroAjuste", dataFinalPrimeiroAjuste)
+							.setTimestamp("dataInicialSegundoAjuste", dataInicialSegundoAjuste)
+							.setTimestamp("dataFinalSegundoAjuste", dataFinalSegundoAjuste)
+							.setTimestamp("dataInicialTerceiroAjuste", dataInicialTerceiroAjuste)
+							.setTimestamp("dataFinalTerceiroAjuste", dataFinalTerceiroAjuste)
+							.setTimestamp("dataInicialQuartoAjuste", dataInicialQuartoAjuste)
+							.setTimestamp("dataFinalQuartoAjuste", dataFinalQuartoAjuste)
+							.setTimestamp("dataInicialQuintoAjuste", dataInicialQuintoAjuste)
+							.setTimestamp("dataFinalQuintoAjuste", dataFinalQuintoAjuste)
+							.setTimestamp("dataFixaSextoAjuste", dataFixaSextoAjuste)
+							.setTimestamp("dataFixaSetimoAjuste", dataFixaSetimoAjuste).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -34868,8 +35879,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ DebitoCreditoSituacao.RETIFICADA.toString() + "," + DebitoCreditoSituacao.PARCELADA.toString() + ")");
 			consulta.append(" and cont.imov_id = " + idImovel.toString());
 
-			retorno = (Object[]) session.createSQLQuery(consulta.toString()).addScalar("idConta", Hibernate.INTEGER).addScalar(
-							"consumoAgua", Hibernate.INTEGER).addScalar("consumoEsgoto", Hibernate.INTEGER).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createSQLQuery(consulta.toString()).addScalar("idConta", Hibernate.INTEGER)
+							.addScalar("consumoAgua", Hibernate.INTEGER).addScalar("consumoEsgoto", Hibernate.INTEGER).setMaxResults(1)
+							.uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -35005,8 +36017,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * @date 22/02/2013
 	 */
 	public Integer verificaExistenciaLocalidadesAssociadaConcessionariasDiversas(Integer periodoReferenciaContasInicial,
-					Integer periodoReferenciaContasFinal, Integer idImovel)
-					throws ErroRepositorioException{
+					Integer periodoReferenciaContasFinal, Integer idImovel) throws ErroRepositorioException{
 
 		Session session = HibernateUtil.getSession();
 		StringBuffer sql = new StringBuffer();
@@ -35054,8 +36065,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * @date 23/02/2013
 	 */
 	public Integer verificaExistenciaLocalidadesAssociadaConcessionariasDiversas(Collection colecaoContas, String idsGuias,
-					String idsDebitos,
-					String idsCreditos) throws ErroRepositorioException{
+					String idsDebitos, String idsCreditos) throws ErroRepositorioException{
 
 		Session session = HibernateUtil.getSession();
 		StringBuffer sql = new StringBuffer();
@@ -35071,8 +36081,13 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				sql.append(" where cc.cnta_id in (:idContas)  ");
 				sql.append("   and cl.cnlc_dtvigenciafim is null ");
 
-				retornoConsulta = (Number) session.createSQLQuery(sql.toString()).setParameterList("idContas", colecaoContas)
-									.setMaxResults(1).uniqueResult();
+				Collection<Integer> colecaoIdsContas = new ArrayList<Integer>();
+				for(Object idConta : colecaoContas){
+					colecaoIdsContas.add(Integer.valueOf(idConta.toString()));
+				}
+
+				retornoConsulta = (Number) session.createSQLQuery(sql.toString()).setParameterList("idContas", colecaoIdsContas)
+								.setMaxResults(1).uniqueResult();
 
 				if(retornoConsulta != null){
 
@@ -35239,8 +36254,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" and co.cnta_dtvencimentoconta < :dataAtual ");
 
 			retorno = session.createSQLQuery(consulta.toString()).addScalar("idConta", Hibernate.INTEGER)
-							.setParameter("dataAtual", new Date(), Hibernate.DATE)
-							.setMaxResults(1).uniqueResult();
+							.setParameter("dataAtual", new Date(), Hibernate.DATE).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -35316,8 +36330,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("and debito.deba_dtexclusao is null ");
 
 			retorno = (Integer) session.createSQLQuery(consulta.toString()).addScalar("idBanco", Hibernate.INTEGER)
-							.setInteger("idImovel", idImovel).setMaxResults(1)
-							.uniqueResult();
+							.setInteger("idImovel", idImovel).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -35804,8 +36817,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * @created 27/04/2013
 	 */
 	public Collection<QuitacaoDebitoAnual> pesquisarQuitacaoDebitoAnualParaEmicao(Integer idFaturamentoGrupo, Integer anoReferencia,
-					Integer idImovel)
-					throws ErroRepositorioException{
+					Integer idImovel) throws ErroRepositorioException{
 
 		Collection<QuitacaoDebitoAnual> retorno = null;
 		Session session = HibernateUtil.getSession();
@@ -36181,8 +37193,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * , java.lang.Integer, java.lang.Integer)
 	 */
 	public BigDecimal obterValorTarifaVigentePorCategoria(Integer idConsumoTarifaDefault, Integer anoMesReferencia, Integer idCategoria,
-					Integer numeroFaixaInicio, Integer numeroFaixaFim, boolean isPrimeiraFaixa)
-					throws ErroRepositorioException{
+					Integer numeroFaixaInicio, Integer numeroFaixaFim, boolean isPrimeiraFaixa) throws ErroRepositorioException{
 
 		Session session = HibernateUtil.getSession();
 
@@ -36241,8 +37252,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * Reverter contas pré-faturadas
 	 */
 
-	public Collection<Conta> pesquisarConta(Integer referencia, Integer faturamentoGrupo, Integer situacao)
-					throws ErroRepositorioException{
+	public Collection<Conta> pesquisarConta(Integer referencia, Integer faturamentoGrupo, Integer situacao) throws ErroRepositorioException{
 
 		Collection<Conta> retorno = null;
 		Session session = HibernateUtil.getSession();
@@ -36279,8 +37289,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	// 100 and mrem_ammovimento= 201304 )
 	// and cnta_amreferenciaconta = 201304 and dcst_idatual = 9);
 
-	public Collection<DebitoCobrado> pesquisarDebitoCobrado(Integer idConta)
-					throws ErroRepositorioException{
+	public Collection<DebitoCobrado> pesquisarDebitoCobrado(Integer idConta) throws ErroRepositorioException{
 
 		Collection<DebitoCobrado> retorno = null;
 		Session session = HibernateUtil.getSession();
@@ -36423,8 +37432,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	}
 
 	public Collection<DebitoACobrar> pesquisarDebitoACobrarPorListaDeImoveis(Collection collIdImoveis,
-					Integer anoMesReferenciaUltimaCobranca)
-					throws ErroRepositorioException{
+					Integer anoMesReferenciaUltimaCobranca) throws ErroRepositorioException{
 
 		Collection<DebitoACobrar> retorno = null;
 		Session session = HibernateUtil.getSession();
@@ -36541,8 +37549,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		return retorno;
 	}
 
-	public Collection<ContaCategoria> pesquisarContaCategoriaPorConta(Integer idConta)
-					throws ErroRepositorioException{
+	public Collection<ContaCategoria> pesquisarContaCategoriaPorConta(Integer idConta) throws ErroRepositorioException{
 
 		Collection<ContaCategoria> retorno = null;
 		Session session = HibernateUtil.getSession();
@@ -36911,10 +37918,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				consulta.append(" parc_id = :idParcelamento  ");
 				consulta.append(" and  dcst_idatual = :idDebitoCreditoSituacao  ");
 			
-				retorno = (Integer) session.createSQLQuery(consulta.toString()).addScalar("anoMesCobrancaDebito", Hibernate.INTEGER).setInteger(
-								"idParcelamento", idParcelamento).setInteger(
-												"idDebitoCreditoSituacao", idDebitoCreditoSituacao).uniqueResult();
-
+			retorno = (Integer) session.createSQLQuery(consulta.toString()).addScalar("anoMesCobrancaDebito", Hibernate.INTEGER)
+							.setInteger("idParcelamento", idParcelamento).setInteger("idDebitoCreditoSituacao", idDebitoCreditoSituacao)
+							.uniqueResult();
 			
 
 		}catch(HibernateException e){
@@ -36944,11 +37950,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" parc_id = :idParcelamento  ");
 			consulta.append(" and  dcst_idatual = :idDebitoCreditoSituacao  ");
 
-    		retorno = (Integer) session.createSQLQuery(consulta.toString()).addScalar("anoMesCobrancaDebito", Hibernate.INTEGER)
-							.setInteger(
-				"idParcelamento", idParcelamento)
-				.setInteger(
-				"idDebitoCreditoSituacao", idDebitoCreditoSituacao)
+			retorno = (Integer) session.createSQLQuery(consulta.toString()).addScalar("anoMesCobrancaDebito", Hibernate.INTEGER)
+							.setInteger("idParcelamento", idParcelamento).setInteger("idDebitoCreditoSituacao", idDebitoCreditoSituacao)
 				.uniqueResult();
 
 
@@ -36984,8 +37987,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" parc_id = :idParcelamento  ");
 			consulta.append(" and  dcst_id = :idDebitoCreditoSituacao  ");
 
-			retorno = (Date) session.createSQLQuery(consulta.toString()).addScalar("dataInclusao", Hibernate.DATE).setInteger(
-							"idParcelamento", idParcelamento).setInteger("idDebitoCreditoSituacao", idDebitoCreditoSituacao).uniqueResult();
+			retorno = (Date) session.createSQLQuery(consulta.toString()).addScalar("dataInclusao", Hibernate.DATE)
+							.setInteger("idParcelamento", idParcelamento).setInteger("idDebitoCreditoSituacao", idDebitoCreditoSituacao)
+							.uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -37018,8 +38022,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" parc_id = :idParcelamento  ");
 			consulta.append(" and  dcst_id = :idDebitoCreditoSituacao  ");
 
-			retorno = (Date) session.createSQLQuery(consulta.toString()).addScalar("dataInclusao", Hibernate.DATE).setInteger(
-							"idParcelamento", idParcelamento).setInteger("idDebitoCreditoSituacao", idDebitoCreditoSituacao).uniqueResult();
+			retorno = (Date) session.createSQLQuery(consulta.toString()).addScalar("dataInclusao", Hibernate.DATE)
+							.setInteger("idParcelamento", idParcelamento).setInteger("idDebitoCreditoSituacao", idDebitoCreditoSituacao)
+							.uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -37142,8 +38147,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		StringBuilder consulta = new StringBuilder();
 
 		try{
-			consulta
-							.append("select a.cnta_id as conta, cnhi_vldebitos as valorDebitosConta, sum(dbhi_vlprestacao) as valorPestacao , count(*) as quantidadeDebitos from conta_historico a,  ");
+			consulta.append("select a.cnta_id as conta, cnhi_vldebitos as valorDebitosConta, sum(dbhi_vlprestacao) as valorPestacao , count(*) as quantidadeDebitos from conta_historico a,  ");
 			consulta.append(" debito_cobrado_historico b where cnhi_amreferenciaconta <= 201301   ");
 			consulta.append(" and dcst_idatual = 5 ");
 			consulta.append(" and a.cnta_id=b.cnta_id ");
@@ -37151,9 +38155,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" (select imov_id from imovel_cobranca_situacao where iscb_dtretiradacobranca is null and CBST_ID = 4 )  ");
 			consulta.append(" group by a.cnta_id, cnhi_vldebitos having cnhi_vldebitos " + condicao + " sum(dbhi_vlprestacao) ");
 
-			retorno = (Collection<Object[]>) session.createSQLQuery(consulta.toString()).addScalar("conta", Hibernate.INTEGER).addScalar(
-							"valorDebitosConta", Hibernate.BIG_DECIMAL).addScalar("valorPestacao", Hibernate.BIG_DECIMAL).addScalar(
-							"quantidadeDebitos", Hibernate.INTEGER).list();
+			retorno = (Collection<Object[]>) session.createSQLQuery(consulta.toString()).addScalar("conta", Hibernate.INTEGER)
+							.addScalar("valorDebitosConta", Hibernate.BIG_DECIMAL).addScalar("valorPestacao", Hibernate.BIG_DECIMAL)
+							.addScalar("quantidadeDebitos", Hibernate.INTEGER).list();
 
 		}catch(HibernateException e){
 
@@ -37219,8 +38223,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta = "select dbcb from DebitoCobradoHistorico dbcb inner join dbcb.contaHistorico cnta where cnta.id = :idContaHistorico  ";
 
 			// executa o hql
-			retorno = (Collection<DebitoCobradoHistorico>) session.createQuery(consulta.toString()).setInteger("idContaHistorico",
-							idContaHistorico).list();
+			retorno = (Collection<DebitoCobradoHistorico>) session.createQuery(consulta.toString())
+							.setInteger("idContaHistorico", idContaHistorico).list();
 
 		}catch(HibernateException e){
 
@@ -37291,8 +38295,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * @date 08/05/2013
 	 */
 	public Collection<CreditoARealizar> pesquisarCreditosARealizarImovelFaturamentoImediato(Integer idImovel, Integer anoMesCobrancaDebito,
-					boolean isRetornoFaturamento, Date dataGeracaoFaturamento)
-					throws ErroRepositorioException{
+					boolean isRetornoFaturamento, Date dataGeracaoFaturamento) throws ErroRepositorioException{
 
 		Collection<CreditoARealizar> colecaoCreditos = null;
 		List<Object[]> retornoConsulta = null;
@@ -37771,8 +38774,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * gcom.faturamento.IRepositorioFaturamento#pesquisarHistoricoMedicaoIndividualizadaHelper(java
 	 * .lang.Integer, java.lang.Integer, java.lang.Integer)
 	 */
-	public HistoricoMedicaoIndividualizadaHelper pesquisarHistoricoMedicaoIndividualizadaHelper(Integer idImovel,
-					Integer idLigacaoTipo, Integer anoMesRefFaturamento) throws ErroRepositorioException{
+	public HistoricoMedicaoIndividualizadaHelper pesquisarHistoricoMedicaoIndividualizadaHelper(Integer idImovel, Integer idLigacaoTipo,
+					Integer anoMesRefFaturamento) throws ErroRepositorioException{
 
 		Object[] listRetorno = null;
 		HistoricoMedicaoIndividualizadaHelper historicoMedicaoIndividualizadaHelper = null;
@@ -37821,8 +38824,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				// for(Object object : listRetorno){
 				Object[] objects = (Object[]) listRetorno;
 				historicoMedicaoIndividualizadaHelper = new HistoricoMedicaoIndividualizadaHelper((Integer) objects[0],
-									(String) objects[1], (String) objects[2], (Integer) objects[3], (Integer) objects[4],
-									(Integer) objects[5]);
+								(String) objects[1], (String) objects[2], (Integer) objects[3], (Integer) objects[4], (Integer) objects[5]);
 				// lista.add(historicoMedicaoIndividualizadaHelper);
 				}
 			// }
@@ -37872,7 +38874,9 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append("LEFT JOIN CONSUMO_HISTORICO ch ON dac.IMOV_ID = ch.IMOV_ID AND ch.LGTI_ID = :idLigacaoTipo AND ch.CSHI_AMFATURAMENTO= :anoMesRefFaturamento ");
 			consulta.append("INNER JOIN DEBITO_TIPO dtp ON dac.DBTP_ID = dtp.DBTP_ID ");
 			consulta.append("WHERE ");
-			consulta.append("	dac.DBTP_ID = (SELECT ps.PASI_VLPARAMETRO FROM PARAMETRO_SISTEMA ps WHERE ps.PASI_CDPARAMETRO = 'P_DEBITO_TIPO_RATEIO') ");
+			consulta.append("	(dac.DBTP_ID = (SELECT ps.PASI_VLPARAMETRO FROM PARAMETRO_SISTEMA ps WHERE ps.PASI_CDPARAMETRO = 'P_DEBITO_TIPO_RATEIO') or ");
+			consulta.append("	dac.DBTP_ID in (" + DebitoTipo.RATEIO_AGUA.toString() + "," + DebitoTipo.RATEIO_ESGOTO.toString() + ",");
+			consulta.append(DebitoTipo.RATEIO_TEE.toString() + "))");
 			consulta.append("	AND dac.IMOV_ID = :idImovel ");
 			consulta.append("	AND dac.DBAC_AMREFERENCIADEBITO = :anoMesRefFaturamento");
 
@@ -37937,18 +38941,20 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" select contaImovel from ContaHistorico contaImovel  where ");
 			consulta.append(" contaImovel.imovel.id = :idImovel ");
 			consulta.append(" and contaImovel.anoMesReferenciaConta =  :anoMesReferencia ");
-			consulta.append(" and contaImovel.debitoCreditoSituacaoAtual.id = "	+ DebitoCreditoSituacao.CANCELADA_POR_RETIFICACAO.toString());
+			consulta.append(" and contaImovel.debitoCreditoSituacaoAtual.id = "
+							+ DebitoCreditoSituacao.CANCELADA_POR_RETIFICACAO.toString());
 			consulta.append(" and contaImovel.ultimaAlteracao in "); // Alteração solicitada na
 																		// OC1197593
 			consulta.append(" ( ");
 			consulta.append(" select contaImovel.ultimaAlteracao from ContaHistorico contaImovel  where ");
 			consulta.append(" contaImovel.imovel.id = :idImovel ");
 			consulta.append(" and contaImovel.anoMesReferenciaConta =  :anoMesReferencia ");
-			consulta.append(" and contaImovel.debitoCreditoSituacaoAtual.id = "	+ DebitoCreditoSituacao.CANCELADA_POR_RETIFICACAO.toString());
+			consulta.append(" and contaImovel.debitoCreditoSituacaoAtual.id = "
+							+ DebitoCreditoSituacao.CANCELADA_POR_RETIFICACAO.toString());
 			consulta.append(" ) ");
 			
-			retorno = (ContaHistorico) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger(
-							"anoMesReferencia", anoMesReferencia).setMaxResults(1).uniqueResult();
+			retorno = (ContaHistorico) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesReferencia", anoMesReferencia).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -37979,22 +38985,33 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 		try{
 
-			consulta = "SELECT M.MREM_AMMOVIMENTO AS REFERENCIA," + "CC1.CLIE_ID AS COD_RESP," + "CLI1.CLIE_NMCLIENTE AS RESPONSAVEL,"
-							+ "CT.CLTP_DSCLIENTETIPO AS TIPO_RESP," + "IMO.LOCA_ID AS LOCALIDADE,"
-							+ "LO.LOCA_NMLOCALIDADE AS NOME_LOCALID," + "IMO.IMOV_ID AS MATRICULA," + "CC2.CLIE_ID AS COD_USUARIO,"
-							+ "CLI2.CLIE_NMCLIENTE AS USUARIO," + "IMO.LAST_ID AS TIPO_AGUA," + "IMO.LEST_ID AS TIPO_ESGOTO,"
+			consulta = "SELECT M.MREM_AMMOVIMENTO AS REFERENCIA,"
+							+ "CC1.CLIE_ID AS COD_RESP,"
+							+ "CLI1.CLIE_NMCLIENTE AS RESPONSAVEL,"
+							+ "CT.CLTP_DSCLIENTETIPO AS TIPO_RESP,"
+							+ "IMO.LOCA_ID AS LOCALIDADE,"
+							+ "LO.LOCA_NMLOCALIDADE AS NOME_LOCALID,"
+							+ "IMO.IMOV_ID AS MATRICULA,"
+							+ "CC2.CLIE_ID AS COD_USUARIO,"
+							+ "CLI2.CLIE_NMCLIENTE AS USUARIO,"
+							+ "IMO.LAST_ID AS TIPO_AGUA,"
+							+ "IMO.LEST_ID AS TIPO_ESGOTO,"
 							+ "'PUB' AS  CATEGORIA,"
 							+ "( DECODE(MREM_QTECONOMIARESIDENCIAL, null, 0,MREM_QTECONOMIARESIDENCIAL) + "
 							+ "DECODE(MREM_QTECONOMIACOMERCIAL, null, 0,MREM_QTECONOMIACOMERCIAL) + "
 							+ "DECODE(MREM_QTECONOMIAINDUSTRIAL, null, 0,MREM_QTECONOMIAINDUSTRIAL) + "
 							+ "DECODE(MREM_QTECONOMIAPUBLICA, null, 0,MREM_QTECONOMIAPUBLICA)) AS ECONOMIA,"
-							+ "M.MREM_ENDERECOIMOVEL AS ENDERECO," + "M.MREM_NNLEITURAANTERIOR AS VL_LEITURA_ANTERIOR,"
-							+ "M.MREM_NNLEITURA  AS VL_LEITURA_ATUAL," + "M.MREM_NNCONSUMOMEDIDO AS CONSUMO_MICROMEDIDO,"
-							+ "M.MREM_NNCONSUMOFATURADOAGUA AS CONSUMO_FATURADO," + "M.MREM_NNCONSUMOMEDIO AS CONSUMO_MEDIO "
-							+ "FROM IMOVEL IMO " + "INNER JOIN CLIENTE_IMOVEL CC1 ON IMO.IMOV_ID = CC1.IMOV_ID AND CC1.CRTP_ID = 3 "
+							+ "M.MREM_ENDERECOIMOVEL AS ENDERECO,"
+							+ "M.MREM_NNLEITURAANTERIOR AS VL_LEITURA_ANTERIOR,"
+							+ "M.MREM_NNLEITURA  AS VL_LEITURA_ATUAL,"
+							+ "M.MREM_NNCONSUMOMEDIDO AS CONSUMO_MICROMEDIDO,"
+							+ "M.MREM_NNCONSUMOFATURADOAGUA AS CONSUMO_FATURADO,"
+							+ "M.MREM_NNCONSUMOMEDIO AS CONSUMO_MEDIO "
+							+ "FROM IMOVEL IMO "
+							+ "INNER JOIN CLIENTE_IMOVEL CC1 ON IMO.IMOV_ID = CC1.IMOV_ID AND CC1.CRTP_ID = 3 AND CC1.CLIM_DTRELACAOFIM IS NULL "
 							+ "INNER JOIN CLIENTE CLI1 ON CC1.CLIE_ID = CLI1.CLIE_ID "
 							+ "INNER JOIN CLIENTE_TIPO CT ON CLI1.CLTP_ID = CT.CLTP_ID "
-							+ "INNER JOIN CLIENTE_IMOVEL CC2 ON IMO.IMOV_ID = CC2.IMOV_ID AND CC2.CRTP_ID = 2 "
+							+ "INNER JOIN CLIENTE_IMOVEL CC2 ON IMO.IMOV_ID = CC2.IMOV_ID AND CC2.CRTP_ID = 2 AND CC2.CLIM_DTRELACAOFIM IS NULL "
 							+ "INNER JOIN CLIENTE CLI2 ON CC2.CLIE_ID = CLI2.CLIE_ID "
 							+ "INNER JOIN MOVIMENTO_ROTEIRO_EMPRESA M ON IMO.IMOV_ID = M.IMOV_ID "
 							+ "INNER JOIN LOCALIDADE LO ON LO.LOCA_ID = IMO.LOCA_ID " + "WHERE IMO.CSTF_IDTEMPORARIA = 6 "
@@ -38059,8 +39076,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		return retorno;
 	}
 
-	public Collection pesquisarDadosRelatorioMaioresConsumidores(Integer anoMes, Integer localidade,
-					Integer registros) throws ErroRepositorioException{
+	public Collection pesquisarDadosRelatorioMaioresConsumidores(Integer anoMes, Integer localidade, Integer registros)
+					throws ErroRepositorioException{
 
 		Session session = HibernateUtil.getSession();
 
@@ -38088,10 +39105,10 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "inner join cliente y on x.clie_id=y.clie_id " + "inner join cliente_tipo z on y.cltp_id=z.cltp_id "
 							+ "inner join localidade c on b.loca_id=c.loca_id " + "where a.CNTI_VLCONTA > 0 "
 							+ "and y.cltp_id in (16,24,25,56,59,60) " + "and a.CNTI_AMREFERENCIACONTA = :anoMes "
-							+ "and b.LOCA_ID = :localidade) " + "order by refe,loc,conta desc) where rownum <= :registros";
+							+ "and b.LOCA_ID = :localidade) TAB1 " + "order by refe,loc,conta desc) TAB2 ";
 
 			retorno = session.createSQLQuery(consulta).setInteger("anoMes", anoMes).setInteger("localidade", localidade)
-							.setInteger("registros", registros).list();
+							.setMaxResults(registros).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -38104,7 +39121,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		return retorno;
 	}
 
-	public Collection pesquisarDadosRelatorioMaioresDevedores(Integer localidade, Integer registros) throws ErroRepositorioException{
+	public Collection pesquisarDadosRelatorioMaioresDevedores(Integer localidade, Integer registros, Integer[] idsTipoCliente)
+					throws ErroRepositorioException{
 
 		Session session = HibernateUtil.getSession();
 
@@ -38114,12 +39132,12 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 		try{
 
 			consulta = "SELECT * FROM ("
-							+ "SELECT IMO.LOCA_ID || '-' || "
+							+ "SELECT TO_CHAR(IMO.LOCA_ID) || '-' || "
 							+ "LO.LOCA_NMLOCALIDADE AS LOCALIDADE, "
 							+ "IMO.STCM_CDSETORCOMERCIAL AS SETOR, "
 							+ "IMO.IMOV_ID AS MATRICULA, "
 							+ "CLU.CLIE_NMCLIENTE AS NOME, "
-							+ "DECODE(CT.CLTP_ICPESSOAFISICAJURIDICA, 1, CLU.CLIE_NNCPF, CLU.CLIE_NNCNPJ) AS CPF_CNPJ, "
+							+ "(CASE WHEN CT.CLTP_ICPESSOAFISICAJURIDICA = 1 THEN CLU.CLIE_NNCPF ELSE CLU.CLIE_NNCNPJ END) AS CPF_CNPJ, "
 							+ "CT.CLTP_DSCLIENTETIPO AS TIPO_CLIENTE, "
 							+ "TRIM(LT.LGTP_DSABREVIADO) || ' ' || "
 							+ "TRIM(LTT.LGTT_DSABREVIADO) || ' ' || "
@@ -38127,9 +39145,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "TRIM(IMO.IMOV_NNIMOVEL) || ' ' || "
 							+ "TRIM(IMO.IMOV_DSCOMPLEMENTOENDERECO) AS ENDERECO, "
 							+ "COUNT(*) AS QTDE, "
-							+ "SUM(NVL(CTA.CNTA_VLAGUA,0) + NVL(CTA.CNTA_VLESGOTO,0) + NVL(CTA.CNTA_VLDEBITOS,0) - NVL(CTA.CNTA_VLCREDITOS,0) - NVL(CTA.CNTA_VLIMPOSTOS,0)) AS VALOR_DEBITO "
-							+ "FROM CONTA CTA "
-							+ "INNER JOIN IMOVEL IMO ON IMO.IMOV_ID = CTA.IMOV_ID "
+							+ "SUM(COALESCE(CTA.CNTA_VLAGUA,0) + COALESCE(CTA.CNTA_VLESGOTO,0) + COALESCE(CTA.CNTA_VLDEBITOS,0) - COALESCE(CTA.CNTA_VLCREDITOS,0) - COALESCE(CTA.CNTA_VLIMPOSTOS,0)) AS VALOR_DEBITO "
+							+ "FROM CONTA CTA " + "INNER JOIN IMOVEL IMO ON IMO.IMOV_ID = CTA.IMOV_ID "
 							+ "INNER JOIN CLIENTE_CONTA CLCU ON CTA.CNTA_ID = CLCU.CNTA_ID AND CLCU.CRTP_ID = 2 "
 							+ "INNER JOIN CLIENTE CLU ON CLCU.CLIE_ID = CLU.CLIE_ID "
 							+ "INNER JOIN CLIENTE_TIPO CT ON CLU.CLTP_ID = CT.CLTP_ID "
@@ -38137,20 +39154,36 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "INNER JOIN LOCALIDADE LO ON LO.LOCA_ID = IMO.LOCA_ID "
 							+ "LEFT OUTER JOIN LOGRADOURO_TIPO LT ON LT.LGTP_ID = L.LGTP_ID "
 							+ "LEFT OUTER JOIN LOGRADOURO_TITULO LTT ON LTT.LGTT_ID = L.LGTP_ID "
-							+ "WHERE CTA.DCST_IDATUAL IN (0, 1, 2, 4) "
-							+ "AND CTA.CNTA_DTVENCIMENTOCONTA < SYSDATE "
-							+ "AND CTA.LOCA_ID = :localidade "
-							+ "AND CLU.CLTP_ID IN (16,24,25,56,59,60,99,119) "
-							+ "GROUP BY IMO.LOCA_ID || '-' || "
-							+ "LO.LOCA_NMLOCALIDADE, IMO.STCM_CDSETORCOMERCIAL, IMO.IMOV_ID, CLU.CLIE_NMCLIENTE, DECODE(CT.CLTP_ICPESSOAFISICAJURIDICA, 1, CLU.CLIE_NNCPF, CLU.CLIE_NNCNPJ), CT.CLTP_DSCLIENTETIPO, TRIM(LT.LGTP_DSABREVIADO) || ' ' || "
-							+ "TRIM(LTT.LGTT_DSABREVIADO) || ' ' || "
-							+ "TRIM(L.LOGR_NMLOGRADOURO) || ' ' || "
-							+ "TRIM(IMO.IMOV_NNIMOVEL) || ' ' || "
-							+ "TRIM(IMO.IMOV_DSCOMPLEMENTOENDERECO) "
-							+ "ORDER BY SUM(NVL(CTA.CNTA_VLAGUA,0) + NVL(CTA.CNTA_VLESGOTO,0) + NVL(CTA.CNTA_VLDEBITOS,0) - NVL(CTA.CNTA_VLCREDITOS,0) - NVL(CTA.CNTA_VLIMPOSTOS,0)) DESC) "
-							+ "WHERE ROWNUM <= :registros ";
+							+ "WHERE CTA.DCST_IDATUAL IN (0, 1, 2, 4) " + "AND CTA.CNTA_DTVENCIMENTOCONTA < :dataAtual "
+							+ "AND CTA.LOCA_ID = :localidade ";
 
-			retorno = session.createSQLQuery(consulta).setInteger("localidade", localidade).setInteger("registros", registros).list();
+			if(idsTipoCliente != null){
+				consulta = consulta
+								+ "AND CLU.CLTP_ID IN (:idsTipoCliente) "
+								+ "GROUP BY TO_CHAR(IMO.LOCA_ID) || '-' || "
+								+ "LO.LOCA_NMLOCALIDADE, IMO.STCM_CDSETORCOMERCIAL, IMO.IMOV_ID, CLU.CLIE_NMCLIENTE, (CASE WHEN CT.CLTP_ICPESSOAFISICAJURIDICA = 1 THEN CLU.CLIE_NNCPF ELSE CLU.CLIE_NNCNPJ END), CT.CLTP_DSCLIENTETIPO, TRIM(LT.LGTP_DSABREVIADO) || ' ' || "
+								+ "TRIM(LTT.LGTT_DSABREVIADO) || ' ' || "
+								+ "TRIM(L.LOGR_NMLOGRADOURO) || ' ' || "
+								+ "TRIM(IMO.IMOV_NNIMOVEL) || ' ' || "
+								+ "TRIM(IMO.IMOV_DSCOMPLEMENTOENDERECO) "
+								+ "ORDER BY SUM(COALESCE(CTA.CNTA_VLAGUA,0) + COALESCE(CTA.CNTA_VLESGOTO,0) + COALESCE(CTA.CNTA_VLDEBITOS,0) - COALESCE(CTA.CNTA_VLCREDITOS,0) - COALESCE(CTA.CNTA_VLIMPOSTOS,0)) DESC) TAB1 ";
+				retorno = session.createSQLQuery(consulta).setInteger("localidade", localidade).setDate("dataAtual", new Date())
+								.setParameterList("idsTipoCliente", idsTipoCliente).setMaxResults(registros).list();
+			}else{
+				consulta = consulta
+								+ "AND CLU.CLTP_ID IN (16,24,25,56,59,60,99,119) "
+								+ "GROUP BY TO_CHAR(IMO.LOCA_ID) || '-' || "
+								+ "LO.LOCA_NMLOCALIDADE, IMO.STCM_CDSETORCOMERCIAL, IMO.IMOV_ID, CLU.CLIE_NMCLIENTE, (CASE WHEN CT.CLTP_ICPESSOAFISICAJURIDICA = 1 THEN CLU.CLIE_NNCPF ELSE CLU.CLIE_NNCNPJ END), CT.CLTP_DSCLIENTETIPO, TRIM(LT.LGTP_DSABREVIADO) || ' ' || "
+								+ "TRIM(LTT.LGTT_DSABREVIADO) || ' ' || "
+								+ "TRIM(L.LOGR_NMLOGRADOURO) || ' ' || "
+								+ "TRIM(IMO.IMOV_NNIMOVEL) || ' ' || "
+								+ "TRIM(IMO.IMOV_DSCOMPLEMENTOENDERECO) "
+								+ "ORDER BY SUM(COALESCE(CTA.CNTA_VLAGUA,0) + COALESCE(CTA.CNTA_VLESGOTO,0) + COALESCE(CTA.CNTA_VLDEBITOS,0) - COALESCE(CTA.CNTA_VLCREDITOS,0) - COALESCE(CTA.CNTA_VLIMPOSTOS,0)) DESC) TAB1 ";
+				retorno = session.createSQLQuery(consulta).setInteger("localidade", localidade).setDate("dataAtual", new Date())
+								.setMaxResults(registros).list();
+			}
+
+
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -38204,17 +39237,22 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 						+ "JOIN LIGACAO_AGUA F ON F.LAGU_ID = A.IMOV_ID "
 						+ "LEFT OUTER JOIN HIDROMETRO_INSTALACAO_HIST G ON G.LAGU_ID = A.IMOV_ID AND G.HIDI_DTRETIRADAHIDROMETRO IS NULL "
 						+ "LEFT OUTER JOIN HIDROMETRO_INSTALACAO_HIST H ON H.IMOV_ID = A.IMOV_ID AND H.HIDI_DTRETIRADAHIDROMETRO IS NULL "
-						+ "JOIN CONSUMO_HISTORICO I ON I.IMOV_ID = A.IMOV_ID AND I.LGTI_ID = 1 AND I.CSHI_AMFATURAMENTO = :anoMesReferenciaAnterior " // Data imediatamente menor q a solicitada
-						+ "LEFT JOIN MEDICAO_HISTORICO J ON J.LAGU_ID = A.IMOV_ID AND J.MDHI_AMLEITURA = :anoMesReferencia " // Data  solicitada
-						+ "LEFT JOIN MEDICAO_HISTORICO K ON K.IMOV_ID = A.IMOV_ID AND K.MDHI_AMLEITURA = :anoMesReferencia " // Data  solicitada
+							+ "JOIN CONSUMO_HISTORICO I ON I.IMOV_ID = A.IMOV_ID AND I.LGTI_ID = 1 AND I.CSHI_AMFATURAMENTO = :anoMesReferenciaAnterior " // Data
+																																							// imediatamente
+																																							// menor
+																																							// q
+																																							// a
+																																							// solicitada
+							+ "LEFT JOIN MEDICAO_HISTORICO J ON J.LAGU_ID = A.IMOV_ID AND J.MDHI_AMLEITURA = :anoMesReferencia " // Data
+																																	// solicitada
+							+ "LEFT JOIN MEDICAO_HISTORICO K ON K.IMOV_ID = A.IMOV_ID AND K.MDHI_AMLEITURA = :anoMesReferencia " // Data
+																																	// solicitada
 						+ "JOIN LOCALIDADE L ON L.LOCA_ID = A.LOCA_ID "
 						+ "JOIN SETOR_COMERCIAL N ON N.STCM_ID = A.STCM_ID "
 						+ "JOIN CONSUMO_HISTORICO M ON M.IMOV_ID = A.IMOV_ID AND M.LGTI_ID = 1 AND M.CSHI_AMFATURAMENTO = :anoMesReferencia "
 
-						+ "WHERE B.FTGR_ID = :grupoFaturamento "
-						+ "AND C.LAST_CDCONSTANTE IN ('CORTADO', 'CORTADO A PEDIDO') "
-						+ "AND M.CSHI_NNCONSUMOFATURADOMES > 0 "
-						+ "ORDER BY A.LOCA_ID, N.STCM_CDSETORCOMERCIAL ";
+							+ "WHERE B.FTGR_ID = :grupoFaturamento " + "AND C.LAST_CDCONSTANTE IN ('CORTADO', 'CORTADO A PEDIDO') "
+							+ "AND M.CSHI_NNCONSUMOFATURADOMES > 0 " + "ORDER BY A.LOCA_ID, N.STCM_CDSETORCOMERCIAL ";
 
 			retorno = session.createSQLQuery(consulta).setInteger("grupoFaturamento", grupoFaturamento)
 							.setInteger("anoMesReferencia", anoMesReferencia)
@@ -38248,9 +39286,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 			consulta.append(" order by CCH.clie_id,CH.imov_id,CH.cnhi_amreferenciaconta");
 
 			retorno = (Collection) session.createSQLQuery(consulta.toString()).addScalar("idConta", Hibernate.INTEGER)
-							.setInteger("anoMesRefInicial", anoMesRefInicial)
-							.setInteger("anoMesRefFinal", anoMesRefFinal).setParameterList("idsCliente", idsCliente)
-.list();
+							.setInteger("anoMesRefInicial", anoMesRefInicial).setInteger("anoMesRefFinal", anoMesRefFinal)
+							.setParameterList("idsCliente", idsCliente).list();
 
 		}catch(HibernateException e){
 
@@ -38472,10 +39509,8 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 				consulta.append(" where " + condicoes);
 			}
 		
+			retorno = (Collection) session.createSQLQuery(consulta.toString()).addScalar("idImovel", Hibernate.INTEGER).list();
 			
-			retorno = (Collection) session.createSQLQuery(consulta.toString())
-							.addScalar("idImovel", Hibernate.INTEGER).list();
-
 		}catch(HibernateException e){
 
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -38707,8 +39742,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * @created 17/01/2014
 	 * @throws ErroRepositorioException
 	 */
-	public ClienteConta pesquisarClienteContaPorTipoRelacao(Integer idConta, Integer idClienteRelacaoTipo)
-					throws ErroRepositorioException{
+	public ClienteConta pesquisarClienteContaPorTipoRelacao(Integer idConta, Integer idClienteRelacaoTipo) throws ErroRepositorioException{
 
 		ClienteConta retorno = null;
 		Session session = HibernateUtil.getSession();
@@ -38751,8 +39785,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * @date 19/01/2014
 	 */
 	public Collection<FaturamentoSimulacaoComando> pesquisarFaturamentoSimulacaoComando(Integer numeroPagina, Date dataInicialComando,
-					Date dataFinalComando,
-					Short indicadorExecutado) throws ErroRepositorioException{
+					Date dataFinalComando, Short indicadorExecutado) throws ErroRepositorioException{
 
 		Collection<FaturamentoSimulacaoComando> retorno = null;
 
@@ -38798,8 +39831,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 				retorno = session.createQuery(consulta.toString()).setFirstResult(10 * numeroPagina)
 								.setTimestamp("dataInicialComando", Util.formatarDataInicial(dataInicialComando))
-								.setTimestamp("dataFinalComando", Util.formatarDataFinal(dataFinalComando))
-								.setMaxResults(10).list();
+								.setTimestamp("dataFinalComando", Util.formatarDataFinal(dataFinalComando)).setMaxResults(10).list();
 			}else{
 
 				retorno = session.createQuery(consulta.toString()).setFirstResult(10 * numeroPagina).setMaxResults(10).list();
@@ -39160,8 +40192,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ "ctdc_amfaturamentofim=:referencia and ctdc_icencerramento=:aberto";
 
 			session.createSQLQuery(atualizaContratoDemanda).setString("referencia", referencia)
-							.setString("aberto", ConstantesSistema.INATIVO)
-							.executeUpdate();
+							.setString("aberto", ConstantesSistema.INATIVO).executeUpdate();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -39446,15 +40477,12 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 		try{
 			consulta = "SELECT cnta " + "FROM Conta cnta " + "inner join cnta.imovel imov " + "inner join imov.rota rota "
-							+ "inner join rota.faturamentoGrupo fatGrupo "
- + "inner join fetch cnta.localidade loca "
-							+ "WHERE " + "cnta.referencia BETWEEN :inicio and :fim  "
-							+ " and cnta.debitoCreditoSituacaoAtual = :idSituacaoConta " + " and fatGrupo.id =:idFatGrupo";
+							+ "inner join rota.faturamentoGrupo fatGrupo " + "inner join fetch cnta.localidade loca " + "WHERE "
+							+ "cnta.referencia BETWEEN :inicio and :fim  " + " and cnta.debitoCreditoSituacaoAtual = :idSituacaoConta "
+							+ " and fatGrupo.id =:idFatGrupo";
 
-			retorno = session.createQuery(consulta).setInteger("inicio", anoMesInicio)
-.setInteger("fim", anoMesFim)
-							.setInteger("idSituacaoConta", DebitoCreditoSituacao.NORMAL)
-.setInteger("idFatGrupo", faturamentoGrupo.getId())
+			retorno = session.createQuery(consulta).setInteger("inicio", anoMesInicio).setInteger("fim", anoMesFim)
+							.setInteger("idSituacaoConta", DebitoCreditoSituacao.NORMAL).setInteger("idFatGrupo", faturamentoGrupo.getId())
 							.list();
 
 		}catch(HibernateException e){
@@ -39491,8 +40519,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 							+ " and cnta.debitoCreditoSituacaoAtual = :idSituacaoConta and cnta.id in (select max(cc.id) from ContaHistorico cc where cc.imovel.id =  cnta.imovel.id and cc.anoMesReferenciaConta = cnta.anoMesReferenciaConta )"
 							+ " and fatGrupo.id =:idFatGrupo";
 
-			retorno = session.createQuery(consulta).setInteger("inicio", anoMesInicio)
-.setInteger("fim", anoMesFim)
+			retorno = session.createQuery(consulta).setInteger("inicio", anoMesInicio).setInteger("fim", anoMesFim)
 							.setInteger("idSituacaoConta", idSituacaoConta).setInteger("idFatGrupo", faturamentoGrupo.getId()).list();
 
 		}catch(HibernateException e){
@@ -39515,8 +40542,7 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 	 * @date 21/03/2014
 	 * @throws ErroRepositorioException
 	 */
-	public List pesquisarIdsContaRegerarContaCategoriaEFaixa(Integer referencia, String idsGrupos)
-					throws ErroRepositorioException{
+	public List pesquisarIdsContaRegerarContaCategoriaEFaixa(Integer referencia, String idsGrupos) throws ErroRepositorioException{
 
 		List retorno = null;
 		Session session = HibernateUtil.getSession();
@@ -39695,11 +40721,14 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 								+ ocorConsecutiva;
 			}
 
-			consulta = consulta + " ORDER BY grupoFat.ftgr_id, greg.greg_id, unidNeg.uneg_id, elo.loca_id, "
-							+ " loc.loca_id, imov.imov_id ";
+			Object resultadoQuery = session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER)
+							.setInteger("referencia", referencia).setMaxResults(1).uniqueResult();
+			if(resultadoQuery == null){
+				return 0;
+			}
 
-			retorno = ((Number) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER)
-							.setInteger("referencia", referencia).uniqueResult()).intValue();
+			retorno = ((Number) resultadoQuery).intValue();
+
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -39774,6 +40803,1116 @@ DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO).append(", ").append(DebitoCredito
 
 			// executa o hql
 			retorno = session.createQuery(consulta).setInteger("idConta", idConta).setInteger("idCreditoTipo", idCreditoTipo).list();
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * Método que retorna a conta_categoria maior quantidade de economias
+	 * [UC0083] Gerar Dados para Leitura
+	 * [SB0001] - Gerar Arquivo Convencional
+	 * [SB0010] - Gerar Arquivo - Modelo 2
+	 * Dados para leitura (TIPO E)
+	 * 
+	 * @author Anderson Italo
+	 * @date 11/06/2014
+	 * @throws ErroRepositorioException
+	 */
+	public ContaCategoria pesquisarContaCategoriaComMaiorQuantidadeEconomias(Integer idConta) throws ErroRepositorioException{
+
+		ContaCategoria retorno = null;
+
+		Session session = HibernateUtil.getSession();
+		StringBuffer consulta = new StringBuffer();
+
+		try{
+
+			consulta.append("select contaCateg ");
+			consulta.append("from ContaCategoria contaCateg ");
+			consulta.append("inner join fetch contaCateg.comp_id.categoria categ ");
+			consulta.append("inner join fetch contaCateg.comp_id.subcategoria subcateg ");
+			consulta.append("where contaCateg.comp_id.conta.id = :idConta ");
+			consulta.append("order by contaCateg.quantidadeEconomia desc, categ.id asc ");
+
+			retorno = (ContaCategoria) session.createQuery(consulta.toString()).setInteger("idConta", idConta).setMaxResults(1)
+							.uniqueResult();
+
+		}catch(HibernateException e){
+
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * Pesquisa os dados de Cliente Debito a Cobrar.
+	 * 
+	 * @throws ErroRepositorioException
+	 */
+	public Collection pesquisarClienteDebitoACobrar(DebitoACobrar debitoACobrar) throws ErroRepositorioException{
+
+		Collection retorno = null;
+
+		Session session = HibernateUtil.getSession();
+		String consulta = null;
+
+		try{
+			consulta = "select cldc " + "from ClienteDebitoACobrar cldc " + "where cldc.debitoACobrar.id = :idDebitoACobrar";
+
+			retorno = session.createQuery(consulta).setInteger("idDebitoACobrar", debitoACobrar.getId()).list();
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+		return retorno;
+	}
+
+	/**
+	 * Pesquisa os dados de Cliente Credito A Realizar.
+	 * 
+	 * @throws ErroRepositorioException
+	 */
+	public Collection pesquisarClienteCreditoARealizar(CreditoARealizar creditoARealizar) throws ErroRepositorioException{
+
+		Collection retorno = null;
+
+		Session session = HibernateUtil.getSession();
+		String consulta = null;
+
+		try{
+			consulta = "select cldc " + "from ClienteCreditoARealizar cldc " + "where cldc.creditoARealizar.id = :idCreditoARealizarr";
+
+			retorno = session.createQuery(consulta).setInteger("idCreditoARealizarr", creditoARealizar.getId()).list();
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+		return retorno;
+	}
+
+	/**
+	 * @param debitoACobrarHistorico
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection pesquisarClienteDebitoACobrarHistorico(DebitoACobrarHistorico debitoACobrarHistorico) throws ErroRepositorioException{
+
+		Collection retorno = null;
+
+		Session session = HibernateUtil.getSession();
+		String consulta = null;
+
+		try{
+			consulta = "select cldc " + "from ClienteDebitoACobrarHistorico cldc "
+							+ "where cldc.debitoACobrarHistorico.id = :idDebitoACobrarHistorico";
+
+			retorno = session.createQuery(consulta).setInteger("idDebitoACobrarHistorico", debitoACobrarHistorico.getId()).list();
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+		return retorno;
+	}
+
+	public Collection<FaturamentoGrupoCronogramaMensal> pesquisarFaturamentoGrupoCronogramaMensalReferenciaMaior(
+					Integer idFaturamentoGrupo, Integer anoMesReferencia) throws ErroRepositorioException{
+
+		Collection<FaturamentoGrupoCronogramaMensal> retorno = null;
+		Session session = HibernateUtil.getSession();
+		StringBuffer consulta = new StringBuffer();
+
+		try{
+
+			consulta.append("select fgcm from FaturamentoGrupoCronogramaMensal fgcm ");
+			consulta.append("inner join fetch fgcm.faturamentoGrupo fg  ");
+			consulta.append("where fgcm.anoMesReferencia not in(:anoMesReferencia) and fg.id = :idFaturamentoGrupo ");
+			consulta.append("and exists (select 1 from FaturamentoAtividadeCronograma fac where fac.faturamentoGrupoCronogramaMensal.id = fgcm.id ");
+			consulta.append("and fac.dataRealizacao is null) order by fgcm.anoMesReferencia ");
+
+			retorno = (Collection<FaturamentoGrupoCronogramaMensal>) session.createQuery(consulta.toString())
+							.setInteger("idFaturamentoGrupo", idFaturamentoGrupo.intValue())
+							.setInteger("anoMesReferencia", anoMesReferencia.intValue()).list();
+
+		}catch(HibernateException e){
+
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	public FaturamentoGrupoCronogramaMensal pesquisarUltimoFaturamentoGrupoCronogramaMensal(Integer idFaturamentoGrupo)
+					throws ErroRepositorioException{
+
+		FaturamentoGrupoCronogramaMensal retorno = null;
+		Session session = HibernateUtil.getSession();
+		String consulta = null;
+
+		try{
+
+			consulta = "select fgcm from FaturamentoGrupoCronogramaMensal fgcm inner join fetch fgcm.faturamentoGrupo "
+							+ " fg where fg.id = :idFaturamentoGrupo " + " order by fgcm.anoMesReferencia desc ";
+
+			retorno = (FaturamentoGrupoCronogramaMensal) session.createQuery(consulta)
+							.setInteger("idFaturamentoGrupo", idFaturamentoGrupo.intValue()).setMaxResults(1).uniqueResult();
+
+		}catch(HibernateException e){
+
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see gcom.faturamento.IRepositorioFaturamento#obterContasPorLocalidade(java.lang.Integer,
+	 * java.lang.Integer, java.lang.Integer)
+	 */
+	public Collection<Conta> obterContasPorLocalidade(Integer idLocalidade, Integer anoMesReferencia) throws ErroRepositorioException{
+
+		Collection<Conta> contas = null;
+
+		Session session = HibernateUtil.getSession();
+		StringBuilder consulta = new StringBuilder();
+
+		try{
+			consulta.append("SELECT ");
+			consulta.append(" cnta ");
+			consulta.append("FROM ");
+			consulta.append("  Conta cnta ");
+			consulta.append("INNER JOIN FETCH cnta.imovel i ");
+			consulta.append("INNER JOIN FETCH i.quadra q ");
+			consulta.append("INNER JOIN FETCH q.quadraPerfil qp ");
+			consulta.append("INNER JOIN FETCH i.setorComercial sc ");
+			consulta.append("WHERE ");
+			consulta.append(" cnta.localidade.id = :idLocalidade ");
+			consulta.append("AND cnta.referencia = :anoMesReferencia ");
+			consulta.append("ORDER BY ");
+			consulta.append(" cnta.referencia");
+
+			contas = session.createQuery(consulta.toString()).setInteger("idLocalidade", idLocalidade)
+							.setInteger("anoMesReferencia", anoMesReferencia).list();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return contas;
+	}
+
+	/**
+	 * [UC3156] Simular Cálculo da Conta Dados Reais
+	 * 
+	 * @author Anderson Italo
+	 * @date 22/09/2014
+	 */
+	public Collection pesquisarContasSimularCalculoDadosReais(FiltroContaSimularCalculoHelper helper, Integer numeroPagina)
+					throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+		Collection retorno = new ArrayList<Object>();
+		StringBuilder consulta = new StringBuilder();
+		StringBuilder condicoes = new StringBuilder();
+
+		try{
+
+			consulta.append(" select co.cnta_id as idConta, "); // 0
+			consulta.append(" co.cnta_amreferenciaconta as anoMesReferenciaConta, "); // 1
+			consulta.append(" ((coalesce(co.cnta_vlagua,0) + coalesce(co.cnta_vlesgoto,0) + coalesce(co.cnta_vldebitos,0)) - (coalesce(co.cnta_vlcreditos,0) + coalesce(co.cnta_vlimpostos,0))) as valorConta,");// 2
+			consulta.append(" co.dcst_idatual as idDebitoCreditoSituacaoAtual,"); // 3
+			consulta.append(" co.cnta_dtvencimentoconta as dataVencimento,"); // 4
+			consulta.append(" coalesce(co.cnta_vlagua,0) as valorAgua,"); // 5
+			consulta.append(" coalesce(co.cnta_vlesgoto,0) as valorEsgoto,"); // 6
+			consulta.append(" coalesce(co.cnta_vldebitos,0) as valorDebitos,"); // 7
+			consulta.append(" coalesce(co.cnta_vlcreditos,0) as valorCreditos,"); // 8
+			consulta.append(" coalesce(co.cnta_vlimpostos,0) as valorImpostos, "); // 9
+			consulta.append(" co.cstf_id as idConsumoTarifa, "); // 10
+			consulta.append(" co.last_id as idLigacaoAguaSituacao, "); // 11
+			consulta.append(" co.lest_id as idLigacaoEsgotoSituacao, "); // 12
+			consulta.append(" co.imov_id as idImovel, "); // 13
+			consulta.append(" co.cnta_nnconsumoagua as consumoFaturadoAgua, "); // 14
+			consulta.append(" co.cnta_nnconsumoesgoto as consumoFaturadoEsgoto, "); // 15
+			consulta.append(" co.cnta_pcesgoto as percentualEsgoto, "); // 16
+			consulta.append(" im.cstf_id as idConsumoTarifaImovel, "); // 17
+			consulta.append(" 2 as indicadorHistorico"); // 18
+
+			consulta.append(" from conta co");
+			consulta.append(" inner join imovel im on im.imov_id = co.imov_id");
+
+			// Período de Referência do Faturamento
+			if(helper.getPeriodoReferenciaFaturamentoInicial() != null && helper.getPeriodoReferenciaFaturamentoFinal() != null){
+
+				condicoes.append(" (co.cnta_amreferenciaconta >= " + helper.getPeriodoReferenciaFaturamentoInicial().toString()
+								+ " and co.cnta_amreferenciaconta <= " + helper.getPeriodoReferenciaFaturamentoFinal().toString() + ") and");
+			}
+
+			// Imóvel
+			if(helper.getIdImovel() != null){
+
+				condicoes.append(" co.imov_id = " + helper.getIdImovel().toString() + " and");
+			}
+
+			// Situação da Ligação de Água
+			if(helper.getIdLigacaoAguaSituacao() != null){
+
+				condicoes.append(" co.last_id = " + helper.getIdLigacaoAguaSituacao().toString() + " and");
+			}
+
+			// Situação da Ligação de Esgoto
+			if(helper.getIdLigacaoEsgotoSituacao() != null){
+
+				condicoes.append(" co.lest_id = " + helper.getIdLigacaoEsgotoSituacao().toString() + " and");
+			}
+
+			// Tarifa de Consumo
+			if(helper.getIdConsumoTarifa() != null){
+
+				condicoes.append(" co.cstf_id = " + helper.getIdConsumoTarifa().toString() + " and");
+			}
+
+			// Grupo de Faturamento
+			if(helper.getIdFaturamentoGrupo() != null){
+
+				condicoes.append(" exists(select 1 from  rota ro where ro.rota_id = im.rota_id ");
+				condicoes.append(" and ro.ftgr_id = " + helper.getIdFaturamentoGrupo().toString() + ") and");
+			}
+
+			// Categeoria(s)
+			if(helper.getIdsCategorias() != null){
+
+				condicoes.append(" exists (select 1 from conta_categoria cc where cc.cnta_id = co.cnta_id and cc.catg_id in ("
+								+ helper.getIdsCategorias() + ")) and");
+			}
+
+			// Verificar existência de vigência válida para categoria da conta e vigência
+			// selecionada
+			if(helper.getIdConsumoTarifaVigenciaRecalcular() != null){
+
+				condicoes.append(" exists (select 1 from conta_categoria cc where cc.cnta_id = co.cnta_id and cc.catg_id in (");
+				condicoes.append(" select distinct(ctc.catg_id) from consumo_tarifa_categoria ctc");
+				condicoes.append(" inner join consumo_tarifa_vigencia ctv on ctc.cstc_id = ctc.cstc_id");
+				condicoes.append(" where  ctc.cstv_id = " + helper.getIdConsumoTarifaVigenciaRecalcular().toString() + ")) and");
+			}
+
+			condicoes.append(" co.dcst_idatual in (" + DebitoCreditoSituacao.NORMAL.toString() + ", "
+							+ DebitoCreditoSituacao.INCLUIDA.toString() + ", " + DebitoCreditoSituacao.RETIFICADA.toString() + ", "
+							+ DebitoCreditoSituacao.PARCELADA.toString() + ") and");
+
+			consulta.append(" where " + condicoes.toString().substring(0, condicoes.toString().length() - 3));
+
+			condicoes = new StringBuilder();
+
+			// Union com resultado de pesquisa no histórico
+			consulta.append(" UNION ALL ");
+
+			consulta.append(" select ch.cnta_id as idConta, "); // 0
+			consulta.append(" ch.cnhi_amreferenciaconta as anoMesReferenciaConta, "); // 1
+			consulta.append(" ((coalesce(ch.cnhi_vlagua,0) + coalesce(ch.cnhi_vlesgoto,0) + coalesce(ch.cnhi_vldebitos,0)) - (coalesce(ch.cnhi_vlcreditos,0) + coalesce(ch.cnhi_vlimpostos,0))) as valorConta,");// 2
+			consulta.append(" ch.dcst_idatual as idDebitoCreditoSituacaoAtual,"); // 3
+			consulta.append(" ch.cnhi_dtvencimentoconta as dataVencimento,"); // 4
+			consulta.append(" coalesce(ch.cnhi_vlagua,0) as valorAgua,"); // 5
+			consulta.append(" coalesce(ch.cnhi_vlesgoto,0) as valorEsgoto,"); // 6
+			consulta.append(" coalesce(ch.cnhi_vldebitos,0) as valorDebitos,"); // 7
+			consulta.append(" coalesce(ch.cnhi_vlcreditos,0) as valorCreditos,"); // 8
+			consulta.append(" coalesce(ch.cnhi_vlimpostos,0) as valorImpostos, "); // 9
+			consulta.append(" ch.cstf_id as idConsumoTarifa, "); // 10
+			consulta.append(" ch.last_id as idLigacaoAguaSituacao, "); // 11
+			consulta.append(" ch.lest_id as idLigacaoEsgotoSituacao, "); // 12
+			consulta.append(" ch.imov_id as idImovel, "); // 13
+			consulta.append(" ch.cnhi_nnconsumoagua as consumoFaturadoAgua, "); // 14
+			consulta.append(" ch.cnhi_nnconsumoesgoto as consumoFaturadoEsgoto, "); // 15
+			consulta.append(" ch.cnhi_pcesgoto as percentualEsgoto, "); // 16
+			consulta.append(" im.cstf_id as idConsumoTarifaImovel, "); // 17
+			consulta.append(" 1 as indicadorHistorico"); // 18
+
+			consulta.append(" from conta_historico ch");
+			consulta.append(" inner join imovel im on im.imov_id = ch.imov_id");
+
+			// Período de Referência do Faturamento
+			if(helper.getPeriodoReferenciaFaturamentoInicial() != null && helper.getPeriodoReferenciaFaturamentoFinal() != null){
+
+				condicoes.append(" (ch.cnhi_amreferenciaconta >= " + helper.getPeriodoReferenciaFaturamentoInicial().toString()
+								+ " and ch.cnhi_amreferenciaconta <= " + helper.getPeriodoReferenciaFaturamentoFinal().toString() + ") and");
+			}
+
+			// Imóvel
+			if(helper.getIdImovel() != null){
+
+				condicoes.append(" ch.imov_id = " + helper.getIdImovel().toString() + " and");
+			}
+
+			// Situação da Ligação de Água
+			if(helper.getIdLigacaoAguaSituacao() != null){
+
+				condicoes.append(" ch.last_id = " + helper.getIdLigacaoAguaSituacao().toString() + " and");
+			}
+
+			// Situação da Ligação de Esgoto
+			if(helper.getIdLigacaoEsgotoSituacao() != null){
+
+				condicoes.append(" ch.lest_id = " + helper.getIdLigacaoEsgotoSituacao().toString() + " and");
+			}
+
+			// Tarifa de Consumo
+			if(helper.getIdConsumoTarifa() != null){
+
+				condicoes.append(" ch.cstf_id = " + helper.getIdConsumoTarifa().toString() + " and");
+			}
+
+			// Grupo de Faturamento
+			if(helper.getIdFaturamentoGrupo() != null){
+
+				condicoes.append(" exists(select 1 from rota ro where ro.rota_id = im.rota_id  ");
+				condicoes.append(" and ro.ftgr_id = " + helper.getIdFaturamentoGrupo().toString() + ") and");
+			}
+
+			// Categeoria(s)
+			if(helper.getIdsCategorias() != null){
+
+				condicoes.append(" exists (select 1 from conta_categoria_historico cch where cch.cnta_id = ch.cnta_id and cch.catg_id in ("
+								+ helper.getIdsCategorias() + ")) and");
+			}
+
+			// Verificar existência de vigência válida para categoria da conta e vigência
+			// selecionada
+			if(helper.getIdConsumoTarifaVigenciaRecalcular() != null){
+
+				condicoes.append(" exists (select 1 from conta_categoria_historico cch where cch.cnta_id = ch.cnta_id and cch.catg_id in (");
+				condicoes.append(" select distinct(ctc.catg_id) from consumo_tarifa_categoria ctc");
+				condicoes.append(" inner join consumo_tarifa_vigencia ctv on ctc.cstc_id = ctc.cstc_id");
+				condicoes.append(" where  ctc.cstv_id = " + helper.getIdConsumoTarifaVigenciaRecalcular().toString() + ")) and");
+			}
+
+			condicoes.append(" ch.dcst_idatual in (" + DebitoCreditoSituacao.NORMAL.toString() + ", "
+							+ DebitoCreditoSituacao.INCLUIDA.toString() + ", " + DebitoCreditoSituacao.RETIFICADA.toString() + ", "
+							+ DebitoCreditoSituacao.PARCELADA.toString() + ") and");
+
+			consulta.append(" where " + condicoes.toString().substring(0, condicoes.toString().length() - 3));
+
+			consulta.append(" order by 14 asc, 2 desc ");
+
+			if(numeroPagina != null){
+
+				retorno = (Collection) session.createSQLQuery(consulta.toString()).addScalar("idConta", Hibernate.INTEGER)
+							.addScalar("anoMesReferenciaConta", Hibernate.INTEGER).addScalar("valorConta", Hibernate.BIG_DECIMAL)
+								.addScalar("idDebitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("dataVencimento", Hibernate.DATE)
+							.addScalar("valorAgua", Hibernate.BIG_DECIMAL).addScalar("valorEsgoto", Hibernate.BIG_DECIMAL)
+							.addScalar("valorDebitos", Hibernate.BIG_DECIMAL).addScalar("valorCreditos", Hibernate.BIG_DECIMAL)
+							.addScalar("valorImpostos", Hibernate.BIG_DECIMAL).addScalar("idConsumoTarifa", Hibernate.INTEGER)
+								.addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER)
+								.addScalar("idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovel", Hibernate.INTEGER)
+								.addScalar("consumoFaturadoAgua", Hibernate.INTEGER).addScalar("consumoFaturadoEsgoto", Hibernate.INTEGER)
+								.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL).addScalar("idConsumoTarifaImovel", Hibernate.INTEGER)
+								.addScalar("indicadorHistorico", Hibernate.SHORT).setFirstResult(10 * numeroPagina).setMaxResults(10)
+								.list();
+			}else{
+
+				retorno = (Collection) session.createSQLQuery(consulta.toString()).addScalar("idConta", Hibernate.INTEGER)
+								.addScalar("anoMesReferenciaConta", Hibernate.INTEGER).addScalar("valorConta", Hibernate.BIG_DECIMAL)
+								.addScalar("idDebitoCreditoSituacaoAtual", Hibernate.INTEGER).addScalar("dataVencimento", Hibernate.DATE)
+								.addScalar("valorAgua", Hibernate.BIG_DECIMAL).addScalar("valorEsgoto", Hibernate.BIG_DECIMAL)
+								.addScalar("valorDebitos", Hibernate.BIG_DECIMAL).addScalar("valorCreditos", Hibernate.BIG_DECIMAL)
+								.addScalar("valorImpostos", Hibernate.BIG_DECIMAL).addScalar("idConsumoTarifa", Hibernate.INTEGER)
+								.addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER)
+								.addScalar("idLigacaoEsgotoSituacao", Hibernate.INTEGER).addScalar("idImovel", Hibernate.INTEGER)
+								.addScalar("consumoFaturadoAgua", Hibernate.INTEGER).addScalar("consumoFaturadoEsgoto", Hibernate.INTEGER)
+								.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL).addScalar("idConsumoTarifaImovel", Hibernate.INTEGER)
+								.addScalar("indicadorHistorico", Hibernate.SHORT).list();
+			}
+
+		}catch(HibernateException e){
+
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC3156] Simular Cálculo da Conta Dados Reais
+	 * 
+	 * @author Anderson Italo
+	 * @date 22/09/2014
+	 */
+	public Integer pesquisarTotalRegistrosContasSimularCalculoDadosReais(FiltroContaSimularCalculoHelper helper)
+					throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+		Integer retorno = 0;
+		StringBuilder consulta = new StringBuilder();
+		StringBuilder condicoes = new StringBuilder();
+
+		try{
+
+			consulta.append(" select count(distinct(co.cnta_id)) as qtdConta ");
+			consulta.append(" from conta co ");
+
+			// Período de Referência do Faturamento
+			if(helper.getPeriodoReferenciaFaturamentoInicial() != null && helper.getPeriodoReferenciaFaturamentoFinal() != null){
+
+				condicoes.append(" (co.cnta_amreferenciaconta >= " + helper.getPeriodoReferenciaFaturamentoInicial().toString()
+								+ " and co.cnta_amreferenciaconta <= " + helper.getPeriodoReferenciaFaturamentoFinal().toString() + ") and");
+			}
+
+			// Imóvel
+			if(helper.getIdImovel() != null){
+
+				condicoes.append(" co.imov_id = " + helper.getIdImovel().toString() + " and");
+			}
+
+			// Situação da Ligação de Água
+			if(helper.getIdLigacaoAguaSituacao() != null){
+
+				condicoes.append(" co.last_id = " + helper.getIdLigacaoAguaSituacao().toString() + " and");
+			}
+
+			// Situação da Ligação de Esgoto
+			if(helper.getIdLigacaoEsgotoSituacao() != null){
+
+				condicoes.append(" co.lest_id = " + helper.getIdLigacaoEsgotoSituacao().toString() + " and");
+			}
+
+			// Tarifa de Consumo
+			if(helper.getIdConsumoTarifa() != null){
+
+				condicoes.append(" co.cstf_id = " + helper.getIdConsumoTarifa().toString() + " and");
+			}
+
+			// Grupo de Faturamento
+			if(helper.getIdFaturamentoGrupo() != null){
+
+				condicoes.append(" exists(select 1 from  imovel im inner join rota ro on ro.rota_id = im.rota_id where co.imov_id = im.imov_id ");
+				condicoes.append(" and ro.ftgr_id = " + helper.getIdFaturamentoGrupo().toString() + ") and");
+			}
+
+			// Categeoria(s)
+			if(helper.getIdsCategorias() != null){
+
+				condicoes.append(" exists (select 1 from conta_categoria cc where cc.cnta_id = co.cnta_id and cc.catg_id in ("
+								+ helper.getIdsCategorias() + ")) and");
+			}
+
+			// Verificar existência de vigência válida para categoria da conta e vigência
+			// selecionada
+			if(helper.getIdConsumoTarifaVigenciaRecalcular() != null){
+
+				condicoes.append(" exists (select 1 from conta_categoria cc where cc.cnta_id = co.cnta_id and cc.catg_id in (");
+				condicoes.append(" select distinct(ctc.catg_id) from consumo_tarifa_categoria ctc");
+				condicoes.append(" inner join consumo_tarifa_vigencia ctv on ctc.cstc_id = ctc.cstc_id");
+				condicoes.append(" where  ctc.cstv_id = " + helper.getIdConsumoTarifaVigenciaRecalcular().toString() + ")) and");
+			}
+
+			condicoes.append(" co.dcst_idatual in (" + DebitoCreditoSituacao.NORMAL.toString() + ", "
+							+ DebitoCreditoSituacao.INCLUIDA.toString() + ", " + DebitoCreditoSituacao.RETIFICADA.toString() + ", "
+							+ DebitoCreditoSituacao.PARCELADA.toString() + ") and");
+
+			consulta.append(" where " + condicoes.toString().substring(0, condicoes.toString().length() - 3));
+
+			condicoes = new StringBuilder();
+
+			// Union com resultado de pesquisa no histórico
+			consulta.append(" UNION ALL ");
+
+			consulta.append(" select count(distinct(ch.cnta_id)) as qtdConta ");
+			consulta.append(" from conta_historico ch");
+
+
+			// Período de Referência do Faturamento
+			if(helper.getPeriodoReferenciaFaturamentoInicial() != null && helper.getPeriodoReferenciaFaturamentoFinal() != null){
+
+				condicoes.append(" (ch.cnhi_amreferenciaconta >= " + helper.getPeriodoReferenciaFaturamentoInicial().toString()
+								+ " and ch.cnhi_amreferenciaconta <= " + helper.getPeriodoReferenciaFaturamentoFinal().toString() + ") and");
+			}
+
+			// Imóvel
+			if(helper.getIdImovel() != null){
+
+				condicoes.append(" ch.imov_id = " + helper.getIdImovel().toString() + " and");
+			}
+
+			// Situação da Ligação de Água
+			if(helper.getIdLigacaoAguaSituacao() != null){
+
+				condicoes.append(" ch.last_id = " + helper.getIdLigacaoAguaSituacao().toString() + " and");
+			}
+
+			// Situação da Ligação de Esgoto
+			if(helper.getIdLigacaoEsgotoSituacao() != null){
+
+				condicoes.append(" ch.lest_id = " + helper.getIdLigacaoEsgotoSituacao().toString() + " and");
+			}
+
+			// Tarifa de Consumo
+			if(helper.getIdConsumoTarifa() != null){
+
+				condicoes.append(" ch.cstf_id = " + helper.getIdConsumoTarifa().toString() + " and");
+			}
+
+			// Grupo de Faturamento
+			if(helper.getIdFaturamentoGrupo() != null){
+
+				condicoes.append(" exists(select 1 from  imovel im inner join rota ro on ro.rota_id = im.rota_id where ch.imov_id = im.imov_id  ");
+				condicoes.append(" and ro.ftgr_id = " + helper.getIdFaturamentoGrupo().toString() + ") and");
+			}
+
+			// Categeoria(s)
+			if(helper.getIdsCategorias() != null){
+
+				condicoes.append(" exists (select 1 from conta_categoria_historico cch where cch.cnta_id = ch.cnta_id and cch.catg_id in ("
+								+ helper.getIdsCategorias() + ")) and");
+			}
+
+			// Verificar existência de vigência válida para categoria da conta e vigência
+			// selecionada
+			if(helper.getIdConsumoTarifaVigenciaRecalcular() != null){
+
+				condicoes.append(" exists (select 1 from conta_categoria_historico cch where cch.cnta_id = ch.cnta_id and cch.catg_id in (");
+				condicoes.append(" select distinct(ctc.catg_id) from consumo_tarifa_categoria ctc");
+				condicoes.append(" inner join consumo_tarifa_vigencia ctv on ctc.cstc_id = ctc.cstc_id");
+				condicoes.append(" where  ctc.cstv_id = " + helper.getIdConsumoTarifaVigenciaRecalcular().toString() + ")) and");
+			}
+
+			condicoes.append(" ch.dcst_idatual in (" + DebitoCreditoSituacao.NORMAL.toString() + ", "
+							+ DebitoCreditoSituacao.INCLUIDA.toString() + ", " + DebitoCreditoSituacao.RETIFICADA.toString() + ", "
+							+ DebitoCreditoSituacao.PARCELADA.toString() + ") and");
+
+			consulta.append(" where " + condicoes.toString().substring(0, condicoes.toString().length() - 3));
+
+
+			Collection retornoUnion = (Collection) session.createSQLQuery(consulta.toString()).addScalar("qtdConta", Hibernate.INTEGER)
+							.list();
+
+			if(!Util.isVazioOrNulo(retornoUnion)){
+
+				for(Object totalizador : retornoUnion){
+
+					Number dadosTotalizador = (Number) totalizador;
+
+					if(dadosTotalizador != null){
+
+						retorno = retorno.intValue() + dadosTotalizador.intValue();
+					}
+				}
+			}
+
+		}catch(HibernateException e){
+
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC3013] Gerar Declaração Anual Quitação Débitos
+	 * [SB0001] - Gerar Declaração Anual Quitação Débitos
+	 * O sistema seleciona as guias de pagamento quitadas ou parceladas no ano de
+	 * referência (a partir da tabela GUIA_PAGAMENTO_PRESTACAO com
+	 * GPAG_ID = GPAG_ID da tabela GUIA_PAGAMENTO com IMOV_ID = IMOV_ID
+	 * da tabela IMOVEL e DCST_ID = DCST_ID da tabela
+	 * DEBITO_CREDITO_SITUACAO com DCST_ICVALIDO com o valor
+	 * correspondente a "Sim" e GPAG_ID = GPAG_ID e PGHI_NNPRESTACAO =
+	 * PGHI_NNPRESTACAO da tabela PAGAMENTO_HISTORICO com PGST_IDATUAL=0
+	 * e PGHI_DTPAGAMENTO menor ou igual ao último dia do ano de
+	 * referência ou DCST_ID=DCST_ID da tabela DEBITO_CREDITO_SITUACAO
+	 * com DCST_DSDEBITOCREDITOSITUACAO com o valor correspondente a
+	 * "Cancelada por Parcelamento").
+	 * 
+	 * @author Yara Souza
+	 * @date 29/09/2014
+	 *       select * from guia_pagamento_prestacao_hist gpph
+	 *       left join guia_pagamento gp on gp.gpag_id = gppH.gpag_id
+	 *       inner join debito_credito_situacao dcst on dcst.dcst_id = gpph.dcst_id and
+	 *       dcst.dcst_icvalido = 1
+	 *       where ( exists (select 1 from pagamento_historico where gpag_id = gpph.gpag_id ) and
+	 *       gpph.dcst_id = 0 )
+	 *       or gpph.dcst_id = 5 ;
+	 */
+	public Collection<GuiaPagamentoPrestacaoHistorico> pesquisaGuiasPagamentoQuitadasAnoReferencia(Integer idImovel,
+					Integer referenciaFinal, Date dataFinal) throws ErroRepositorioException{
+
+		Collection<GuiaPagamentoPrestacaoHistorico> retorno = null;
+		Session session = HibernateUtil.getSession();
+		StringBuffer consulta = new StringBuffer();
+
+		try{
+			consulta.append("select gpph ");
+			consulta.append("from GuiaPagamentoPrestacaoHistorico gpph ");
+			consulta.append("left join gpph.guiaPagamento gp ");
+			consulta.append("inner join gpph.debitoCreditoSituacao dcst ");
+			consulta.append(" where gp.imovel.id = :idImovel ");
+			consulta.append(" and dcst.indicadorValido = :indicadorValido ");
+			consulta.append(" and (exists (select 1 from PagamentoHistorico ph where ph.guiaPagamentoGeral.id = gp.id and ph.numeroPrestacao = gpph.comp_id.numeroPrestacao and ph.dataPagamento <= :dataFinal ))");
+			consulta.append(" or (dcst.id = :debitoCreditoSituacaoParcelada) ");
+			consulta.append(" and gpph.anoMesReferenciaFaturamento = :referenciaFinal ");
+
+			Query query = session.createQuery(consulta.toString());
+			query.setShort("indicadorValido", ConstantesSistema.SIM);
+			query.setInteger("idImovel", idImovel);
+			query.setDate("dataFinal", dataFinal);
+			query.setInteger("referenciaFinal", referenciaFinal);
+			query.setInteger("debitoCreditoSituacaoParcelada", DebitoCreditoSituacao.PARCELADA);
+
+			retorno = (Collection<GuiaPagamentoPrestacaoHistorico>) query.list();
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC3013] Gerar Declaração Anual Quitação Débitos
+	 * [SB0004 - Verificar Não Geração da Declaração para o Imóvel - Modelo Default]
+	 * 
+	 * @author Yara Souza
+	 * @created 01/10/2014
+	 */
+	public boolean verificarImovelContasVencidasAnoReferenciaEmRevisao(Integer idImovel, Date ultimoDiaDoAnoDeReferencia,
+					Integer pVerificarPagamentoPendente) throws ErroRepositorioException{
+
+		boolean retorno = false;
+
+		Session session = HibernateUtil.getSession();
+		StringBuffer consulta = new StringBuffer();
+
+		try{
+
+			Number qtd = 0;
+
+			consulta.append(" SELECT count(c.cnta_id) as qtd ");
+			consulta.append(" from conta c ");
+			consulta.append(" inner join debito_credito_situacao dcst on dcst.dcst_id = c.dcst_idatual ");
+			consulta.append(" left join conta_motivo_revisao cmrv on cmrv.cmrv_id = c.cmrv_id ");
+			consulta.append(" where c.imov_id =:idImovel ");
+			consulta.append(" and dcst.DCST_ICVALIDO =:indicadorValido ");
+			consulta.append(" and c.cnta_dtvencimentoconta <=:ultimoDiaDoAnoDeReferencia ");
+			consulta.append(" and (cmrv.cmrv_id is null or cmrv.CMRV_ICINIBEDECLARACAOQUITACAO =:indicadorInibeDeclaracaoQuitacao)");
+
+			if(pVerificarPagamentoPendente.equals(ConstantesSistema.SIM)){
+				consulta.append(" and c.cnta_icpagamento =:indicadorPagamento or  c.cnta_icpagamento is null ");		
+
+				qtd = (Number) session.createSQLQuery(consulta.toString()).addScalar("qtd", Hibernate.INTEGER)
+								.setInteger("idImovel", idImovel).setShort("indicadorValido", ConstantesSistema.SIM)
+								.setDate("ultimoDiaDoAnoDeReferencia",ultimoDiaDoAnoDeReferencia)
+								.setShort("indicadorInibeDeclaracaoQuitacao", ConstantesSistema.SIM)
+								.setShort("indicadorPagamento", ConstantesSistema.NAO).uniqueResult();
+			}else{
+				qtd = (Number) session.createSQLQuery(consulta.toString()).addScalar("qtd", Hibernate.INTEGER)
+								.setInteger("idImovel", idImovel).setShort("indicadorValido", ConstantesSistema.SIM)
+								.setDate("ultimoDiaDoAnoDeReferencia", ultimoDiaDoAnoDeReferencia)
+								.setShort("indicadorInibeDeclaracaoQuitacao", ConstantesSistema.SIM).uniqueResult();
+			}
+					
+			if(qtd != null && qtd.intValue() > 0){
+				return true;
+			}
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC3013] Gerar Declaração Anual Quitação Débitos
+	 * [SB0004 - Verificar Não Geração da Declaração para o Imóvel - Modelo Default]
+	 * 
+	 * @author Yara Souza
+	 * @created 01/10/2014
+	 */
+	public boolean verificarImovelGuiasVencidasAnoReferencia(Integer idImovel, Date ultimoDiaDoAnoDeReferencia,
+					Integer pVerificarPagamentoPendente) throws ErroRepositorioException{
+
+		boolean retorno = false;
+
+		Session session = HibernateUtil.getSession();
+		StringBuffer consulta = new StringBuffer();
+
+		try{
+			consulta.append("select count(*) as qtd ");
+			consulta.append("from guia_pagamento_prestacao gppr ");
+			consulta.append("inner join guia_pagamento gpag on gpag.gpag_id = gppr.gpag_id ");
+			consulta.append("inner join debito_credito_situacao dcst on dcst.dcst_id = gppr.dcst_id ");
+			consulta.append("where gpag.imov_id =:idImovel ");
+			consulta.append("  and gppr.gppr_dtvencimento <=:ultimoDiaDoAnoDeReferencia ");
+			consulta.append("  and dcst.dcst_icvalido =:indicadorValido ");
+
+			SQLQuery query = null;
+
+			if(pVerificarPagamentoPendente.equals(ConstantesSistema.SIM)){
+				consulta.append("  and ( gppr.gppr_icpagamento =:indicadorPagamento or gppr.gppr_icpagamento is null) ");
+
+				query = session.createSQLQuery(consulta.toString()).addScalar("qtd", Hibernate.INTEGER);
+
+				query.setInteger("idImovel", idImovel);
+				query.setDate("ultimoDiaDoAnoDeReferencia", ultimoDiaDoAnoDeReferencia);
+				query.setShort("indicadorValido", ConstantesSistema.SIM);
+				query.setShort("indicadorPagamento", ConstantesSistema.NAO);
+			}else{
+				query = session.createSQLQuery(consulta.toString()).addScalar("qtd", Hibernate.INTEGER);
+
+				query.setInteger("idImovel", idImovel);
+				query.setDate("ultimoDiaDoAnoDeReferencia", ultimoDiaDoAnoDeReferencia);
+				query.setShort("indicadorValido", ConstantesSistema.SIM);
+
+			}
+
+
+
+			Number qtd = (Number) query.setMaxResults(1).uniqueResult();
+
+			if(qtd != null && qtd.intValue() > 0){
+				return true;
+			}
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC3013] Gerar Declaração Anual Quitação Débitos
+	 * [SB0004 - Verificar Não Geração da Declaração para o Imóvel - Modelo Default]
+	 * 
+	 * @author Yara Souza
+	 * @created 01/10/2014
+	 */
+	public boolean verificarPagamentosHistoricoParaImovelAnoReferencia(Integer idImovel, Integer referenciaInicial,
+					Integer referenciaFinal, Integer pVerificarPagamentoPendente) throws ErroRepositorioException{
+
+		boolean retorno = false;
+
+		Session session = HibernateUtil.getSession();
+		StringBuffer consulta = new StringBuffer();
+
+		try{
+			consulta.append("select count(*) ");
+			consulta.append("from pagamento_historico pghi ");
+			consulta.append("where pghi.imov_id = :idImovel ");
+
+			if(pVerificarPagamentoPendente.equals(ConstantesSistema.SIM)){
+				consulta.append("  and ( pghi.gpag_id is not null and  and pghi.pghi_amreferenciapagamento between :referenciaInicial and :referenciaFinal  ) ");
+
+			}else{
+				consulta.append("  and pghi.pghi_amreferenciapagamento between :referenciaInicial and :referenciaFinal ");
+			}
+
+			SQLQuery query = session.createSQLQuery(consulta.toString());
+
+			query.setInteger("idImovel", idImovel);
+			query.setInteger("referenciaInicial", referenciaInicial);
+			query.setInteger("referenciaFinal", referenciaFinal);
+
+			Number qtd = (Number) query.setMaxResults(1).uniqueResult();
+
+			if(qtd != null && qtd.intValue() > 0){
+				return true;
+			}
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC0187] Inserir Guia de Pagamento
+	 * Processos das execuções especiais pendentes de cobrança do valor de sucumbência
+	 */
+	public Collection<Integer> pesquisarProcessosExecucaoEspeciaisPendentesCobrancaPorCliente(Integer idCliente,
+					Integer idCobrancaSituacaoExecFiscal, Integer idSucumbencia) throws ErroRepositorioException{
+
+		Collection retorno = null;
+
+		Session session = HibernateUtil.getSession();
+
+		StringBuilder consulta = new StringBuilder();
+
+		try{
+			consulta.append("select imovelCobSit.numeroProcessoAdministrativoExecucaoFiscal ");
+			consulta.append("from ImovelCobrancaSituacao imovelCobSit ");
+			consulta.append("where imovelCobSit.cliente.id = :idCliente ");
+			consulta.append("  and imovelCobSit.cobrancaSituacao.id = :idCobrancaSituacao ");
+			consulta.append("  and imovelCobSit.numeroProcessoAdministrativoExecucaoFiscal not in ( ");
+			consulta.append("     select distinct gppe.comp_id.numeroProcessoAdministrativoExecucaoFiscal ");
+			consulta.append("     from GuiaPagamentoPrestacao gppe ");
+			consulta.append("     where gppe.debitoCreditoSituacao.id = " + DebitoCreditoSituacao.NORMAL);
+			consulta.append("     and gppe.debitoTipo.id = :idSucumbencia) ");
+			consulta.append("  and numeroProcessoAdministrativoExecucaoFiscal not in ( ");
+			consulta.append("     select distinct gpph.comp_id.numeroProcessoAdministrativoExecucaoFiscal ");
+			consulta.append("     from GuiaPagamentoPrestacaoHistorico gpph ");
+			consulta.append("     where gpph.debitoCreditoSituacao.id =  " + DebitoCreditoSituacao.NORMAL);
+			consulta.append("     and gpph.debitoTipo.id = :idSucumbencia) ");
+			consulta.append("order by imovelCobSit.numeroProcessoAdministrativoExecucaoFiscal ");
+
+			Query query = session.createQuery(consulta.toString());
+
+			query.setInteger("idCliente", idCliente);
+			query.setInteger("idCobrancaSituacao", idCobrancaSituacaoExecFiscal);
+			query.setInteger("idSucumbencia", idSucumbencia);
+
+			retorno = query.list();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	public List<Object[]> gerarRelatorioTotalContasEmitidasLocalidade(Integer anoMesReferencia) throws ErroRepositorioException{
+
+		List<Object[]> listaRetorno = new ArrayList<Object[]>();
+
+		StringBuilder consulta = new StringBuilder();
+
+		consulta.append(" SELECT TOT_LOC AS LOCAL, TOT_SFT AS SETOR, SUM(TOT_QTTOT) AS QT_CONTAS, SUM( TOT_VLTOT ) AS VALOR_CONTAS ");
+		consulta.append(" , SUM(TOT_VLTOTPARTICULAR ) AS VALOR_PARTICULAR , SUM( TOT_VLTOTPUBLICO ) AS VALOR_PUBLICO ");
+
+		consulta.append(" FROM TOT_LOCSFT GROUP BY TOT_LOC, TOT_SFT ORDER BY TOT_LOC, TOT_SFT ");
+
+		Session session = HibernateUtil.getSession();
+
+		try{
+
+			SQLQuery sqlQuery = session.createSQLQuery(consulta.toString());
+
+			listaRetorno = sqlQuery.list();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return listaRetorno;
+	}
+
+	public void inserirRegistrosTabelaTemporariaRelatorioTotalContasEmitidasLocalidade(Integer anoMesReferencia)
+					throws ErroRepositorioException{
+
+		StringBuilder sql = new StringBuilder();
+
+		StringBuilder stringLancamentoContabil = new StringBuilder();
+
+		stringLancamentoContabil.append(" JOIN LANCAMENTO_CONTABIL_SINTETICO LACS ON LACS.UNCO_ID = C.LOCA_ID ");
+
+		stringLancamentoContabil.append(" JOIN CATEGORIA CATG ON CATG.CATG_ID = LACS.CATG_ID ");
+
+		StringBuilder stringLancamentoContabilSelect = new StringBuilder();
+
+		stringLancamentoContabilSelect.append(" SUM(CASE CATG.CATG_ID WHEN 1 THEN LACS.LACS_VL ELSE 0 END) + ");
+		stringLancamentoContabilSelect.append(" SUM(CASE CATG.CATG_ID WHEN 2 THEN LACS.LACS_VL ELSE 0 END) + ");
+		stringLancamentoContabilSelect.append(" SUM(CASE CATG.CATG_ID WHEN 3 THEN LACS.LACS_VL ELSE 0 END) AS VALOR_PARTICULAR , ");
+		stringLancamentoContabilSelect.append(" SUM(CASE CATG.CATG_ID WHEN 4 THEN LACS.LACS_VL ELSE 0 END) AS VALOR_PUBLICO ");
+
+		String stringLancamentoContabilCriterioConsulta = " AND Trunc(LACS.LACS_DTCONTABIL, 'MONTH') = TO_DATE('01- "
+						+ anoMesReferencia.toString().substring(4) + " - " + anoMesReferencia.toString().substring(0, 4)
+						+ "', 'dd-mm-yyyy') ";
+
+		sql.append(" INSERT INTO  TOT_LOCSFT ");
+		sql.append(" ( ");
+
+		sql.append(" SELECT C.LOCA_ID, C.CNTA_CDSETORCOMERCIAL, 'DEBITO' ,  ( select count( * ) from conta c2 where c2.loca_id = c.loca_id  and C.CNTA_CDSETORCOMERCIAL = C2.CNTA_CDSETORCOMERCIAL and C2.CNTA_AMREFERENCIACONTA =:REFERENCIA AND C2.DCST_IDATUAL <> 9 )  , SUM(C.CNTA_VLAGUA + C.CNTA_VLESGOTO + C.CNTA_VLDEBITOS )  ");
+		sql.append(" , " + stringLancamentoContabilSelect.toString());
+
+		sql.append("  FROM CONTA C ");
+		sql.append(stringLancamentoContabil.toString());
+		sql.append(" WHERE C.CNTA_AMREFERENCIACONTA =:REFERENCIA AND C.DCST_IDATUAL <> 9 " + stringLancamentoContabilCriterioConsulta
+						+ "  GROUP BY C.LOCA_ID, C.CNTA_CDSETORCOMERCIAL, 'DEBITO'  ");
+
+		sql.append(" ) ");
+
+		sql.append("  UNION ");
+		sql.append("  ( ");
+
+		sql.append(" SELECT C.LOCA_ID, C.CNHI_CDSETORCOMERCIAL,'PAGNEG', ( select count( * ) from CONTA_HISTORICO c2 where c2.loca_id = c.loca_id  and C.CNHI_CDSETORCOMERCIAL = C2.CNHI_CDSETORCOMERCIAL and C2.CNHI_AMREFERENCIACONTA =:REFERENCIA AND C2.DCST_IDATUAL IN (0,1,2,4,5) )  , SUM(C.CNHI_VLAGUA + C.CNHI_VLESGOTO + C.CNHI_VLDEBITOS ) ");
+		sql.append(" , " + stringLancamentoContabilSelect.toString());
+
+		sql.append(" FROM CONTA_HISTORICO C  ");
+
+		sql.append(stringLancamentoContabil.toString());
+
+		sql.append(" WHERE C.CNHI_AMREFERENCIACONTA =:REFERENCIA AND C.DCST_IDATUAL IN (0,1,2,4,5) "
+						+ stringLancamentoContabilCriterioConsulta + "GROUP BY C.LOCA_ID, C.CNHI_CDSETORCOMERCIAL, 'PAGNEG' ");
+
+		sql.append("  ) ");
+
+		sql.append(" ORDER BY 1,2 ");
+
+		Session session = HibernateUtil.getSession();
+
+		try{
+
+			SQLQuery sqlQuery = session.createSQLQuery(sql.toString());
+			sqlQuery.setParameter("REFERENCIA", anoMesReferencia);
+
+			sqlQuery.executeUpdate();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+	}
+
+	public void criarTabelaTemporariaRelatorioTotalContasEmitidasLocalidade() throws ErroRepositorioException{
+
+		StringBuilder sql = new StringBuilder();
+		Session session = HibernateUtil.getSession();
+		SQLQuery sqlQuery = null;
+
+		// Drop table
+		try{
+			sql.append(" DROP TABLE GSAN_ADMIN.TOT_LOCSFT ");
+			sqlQuery = session.createSQLQuery(sql.toString());
+			sqlQuery.executeUpdate();
+
+		}catch(HibernateException e){
+		}
+
+		// Create table
+		try{
+			sql = new StringBuilder();
+			sql.append(" CREATE TABLE GSAN_ADMIN.TOT_LOCSFT ");
+			sql.append("	  (  ");
+			sql.append("	    TOT_LOC                    NUMBER(*,0)  NOT NULL ENABLE, ");
+			sql.append("	    TOT_SFT                    NUMBER(*,0)  NOT NULL ENABLE, ");
+			sql.append("	   TOT_TIPO                   CHAR  (6)    NOT NULL ENABLE, ");
+			sql.append("	    TOT_QTTOT                  NUMBER(*,0)  NOT NULL ENABLE, ");
+			sql.append("	    TOT_VLTOT                  NUMBER(13,2) NOT NULL ENABLE , ");
+			sql.append("	    TOT_VLTOTPARTICULAR           NUMBER(13,2) NOT NULL ENABLE,  ");
+			sql.append("	    TOT_VLTOTPUBLICO           NUMBER(13,2) NOT NULL ENABLE ");
+
+			sql.append("	  ) ");
+
+			sqlQuery = session.createSQLQuery(sql.toString());
+
+			sqlQuery.executeUpdate();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+	}
+
+	public Long gerarQuantidadeRelatorioTotalContasEmitidasLocalidade(Integer anoMesReferencia) throws ErroRepositorioException{
+
+		StringBuilder consulta = new StringBuilder();
+
+		consulta.append(" SELECT count( * ) ");
+
+		consulta.append(" FROM TOT_LOCSFT ");
+
+		Session session = HibernateUtil.getSession();
+
+		try{
+
+			SQLQuery sqlQuery = session.createSQLQuery(consulta.toString());
+
+			return ((BigDecimal) sqlQuery.setMaxResults(1).uniqueResult()).longValue();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+	}
+	/**
+	 * @author Magno Silveira <magno.silveira@procenge.com.br>
+	 * @since 16/04/2015
+	 * @param idImovel
+	 * @param paramMotivoRetificaoOcorrenciaConsumo
+	 * @return
+	 */
+	public int obterQtdContasRetificadasPorMotivoRetificacao(Integer idImovel, Integer paramMotivoRetificaoOcorrenciaConsumo)
+					throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+
+		String consulta = "";
+
+		int retorno = 0;
+
+		try{
+			consulta = "select COUNT(*) from CONTA where IMOV_ID = :idImovel and CNTA_DTRETIFICACAO is not null and TO_CHAR(CNTA_DTRETIFICACAO, 'yyyy') = TO_CHAR(current_date, 'yyyy') and CMRT_ID = :paramMotivoRetificaoOcorrenciaConsumo";
+			retorno = ((Number) session.createSQLQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("paramMotivoRetificaoOcorrenciaConsumo", paramMotivoRetificaoOcorrenciaConsumo).uniqueResult())
+							.intValue();
+
+			consulta = "select COUNT(*) from CONTA_HISTORICO where IMOV_ID = :idImovel and CNHI_DTRETIFICACAO is not null and TO_CHAR(CNHI_DTRETIFICACAO, 'yyyy') = TO_CHAR(current_date, 'yyyy') and CMRT_ID = :paramMotivoRetificaoOcorrenciaConsumo";
+			retorno += ((Number) session.createSQLQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("paramMotivoRetificaoOcorrenciaConsumo", paramMotivoRetificaoOcorrenciaConsumo).uniqueResult())
+							.intValue();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada

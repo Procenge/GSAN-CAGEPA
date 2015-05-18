@@ -106,6 +106,7 @@ public class ImovelSubcategoria
 	/**
 	 * identifier field
 	 */
+
 	private gcom.cadastro.imovel.ImovelSubcategoriaPK comp_id;
 
 	/**

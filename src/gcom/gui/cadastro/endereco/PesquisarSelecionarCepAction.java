@@ -115,7 +115,7 @@ public class PesquisarSelecionarCepAction
 		String faixaInicial = selecionarCepActionForm.getFaixaInicial();
 		String codigoLado = selecionarCepActionForm.getCodigoLado();
 		String faixaInicialFormatada = null;
-		Integer controlePaginacao = 1;
+		Integer controlePaginacao = 4;
 
 		if(faixaInicial != null && !faixaInicial.equals("")){
 

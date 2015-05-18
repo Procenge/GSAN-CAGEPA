@@ -76,8 +76,12 @@
 
 package gcom.gui.seguranca.acesso;
 
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.usuario.Usuario;
+import gcom.util.ControladorException;
+import gcom.util.Util;
+import gcom.util.parametrizacao.ParametroGeral;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -130,6 +134,66 @@ public class ExibirEfetuarAlteracaoSenhaSimplificadaAction
 
 		// Seta o lembrete da senha do usuário no request
 		httpServletRequest.setAttribute("lembreteSenha", lembreteSenha);
+
+		String quantidadeMinimaCaracteres = null;
+		String quantidadeMinimaLetrasMinusculas = null;
+		String quantidadeMinimaLetrasMaiusculas = null;
+		String quantidadeMinimaNumeros = null;
+		String quantidadeMinimaCaracteresEspeciais = null;
+		String quantidadeHistorico = null;
+
+		try{
+			quantidadeMinimaCaracteres = ParametroGeral.P_SENHA_QUANTIDADE_MINIMA_CARACTERES.executar();
+			quantidadeMinimaLetrasMinusculas = ParametroGeral.P_SENHA_QUANTIDADE_MINIMA_LETRAS_MINUSCULAS.executar();
+			quantidadeMinimaLetrasMaiusculas = ParametroGeral.P_SENHA_QUANTIDADE_MINIMA_LETRAS_MAIUSCULAS.executar();
+			quantidadeMinimaNumeros = ParametroGeral.P_SENHA_QUANTIDADE_MINIMA_NUMEROS.executar();
+			quantidadeMinimaCaracteresEspeciais = ParametroGeral.P_SENHA_QUANTIDADE_MINIMA_CARACTERES_ESPECIAIS.executar();
+			quantidadeHistorico = ParametroGeral.P_SENHA_QUANTIDADE_HISTORICO.executar();
+		}catch(ControladorException e){
+			throw new ActionServletException(e.getMessage(), e);
+		}
+
+		if(quantidadeMinimaCaracteres != null){
+			Integer valor = Util.converterStringParaInteger(quantidadeMinimaCaracteres);
+			if(valor != null && valor.intValue() > 0){
+				sessao.setAttribute("quantidadeMinimaCaracteres", quantidadeMinimaCaracteres);
+			}
+		}
+
+		if(quantidadeMinimaLetrasMinusculas != null){
+			Integer valor = Util.converterStringParaInteger(quantidadeMinimaLetrasMinusculas);
+			if(valor != null && valor.intValue() > 0){
+				sessao.setAttribute("quantidadeMinimaLetrasMinusculas", quantidadeMinimaLetrasMinusculas);
+			}
+		}
+
+		if(quantidadeMinimaLetrasMaiusculas != null){
+			Integer valor = Util.converterStringParaInteger(quantidadeMinimaLetrasMaiusculas);
+			if(valor != null && valor.intValue() > 0){
+				sessao.setAttribute("quantidadeMinimaLetrasMaiusculas", quantidadeMinimaLetrasMaiusculas);
+			}
+		}
+
+		if(quantidadeMinimaNumeros != null){
+			Integer valor = Util.converterStringParaInteger(quantidadeMinimaNumeros);
+			if(valor != null && valor.intValue() > 0){
+				sessao.setAttribute("quantidadeMinimaNumeros", quantidadeMinimaNumeros);
+			}
+		}
+
+		if(quantidadeMinimaCaracteresEspeciais != null){
+			Integer valor = Util.converterStringParaInteger(quantidadeMinimaCaracteresEspeciais);
+			if(valor != null && valor.intValue() > 0){
+				sessao.setAttribute("quantidadeMinimaCaracteresEspeciais", quantidadeMinimaCaracteresEspeciais);
+			}
+		}
+
+		if(quantidadeHistorico != null){
+			Integer valor = Util.converterStringParaInteger(quantidadeHistorico);
+			if(valor != null && valor.intValue() > 0){
+				sessao.setAttribute("quantidadeHistorico", quantidadeHistorico);
+			}
+		}
 
 		// Retornao mapeamento contido na variável retorno
 		return retorno;

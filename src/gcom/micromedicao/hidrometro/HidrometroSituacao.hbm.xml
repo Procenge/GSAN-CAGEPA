@@ -44,6 +44,14 @@
         column="hist_tmultimaalteracao"
         length="8"
     />
+    
+    <property
+        name="codigoConstante"
+        type="java.lang.String"
+        column="hist_cdconstante"
+        length="60"
+        not-null="false"
+    />  
 
     <!-- associations -->
     <!-- bi-directional one-to-many association to Hidrometro 

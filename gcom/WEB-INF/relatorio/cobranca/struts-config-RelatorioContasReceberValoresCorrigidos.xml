@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="RelatorioContasReceberValoresCorrigidosForm"
+			type="gcom.gui.relatorio.cobranca.RelatorioContasReceberValoresCorrigidosForm" />
+
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+
+	<action-mappings>
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<action
+			name="RelatorioContasReceberValoresCorrigidosForm"
+			type="gcom.gui.relatorio.cobranca.ExibirFiltroRelatorioContasReceberValoresCorrigidosAction"
+			input="/exibirFiltrorRelContasReceberValoCorrigido.do"
+			path="/exibirFiltrorRelContasReceberValoCorrigido">
+			
+			<forward name="exibirFiltrorRelContasReceberValorCorrigido" path="/jsp/relatorio/cobranca/relatorio_contas_receber_valores_corrigidos.jsp"></forward>
+		</action>
+		
+		<action
+			name="RelatorioContasReceberValoresCorrigidosForm"
+			type="gcom.gui.relatorio.cobranca.GerarRelatorioContasReceberValoresCorrigidosAction"
+			input="/gerarRelatorioContasReceberValoresCorrigidos.do"
+			path="/gerarRelatorioContasReceberValoresCorrigidos">
+			
+			<forward name="gerarRelatorioContasReceberValorCorrigido" path="/jsp/relatorio/cobranca/relatorio_contas_receber_valores_corrigidos.jsp"></forward>
+		</action>
+		
+		
+	</action-mappings>
+
+
+</struts-config>

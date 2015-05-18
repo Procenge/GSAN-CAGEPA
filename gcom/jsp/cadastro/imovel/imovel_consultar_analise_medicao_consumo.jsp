@@ -95,6 +95,21 @@ function verificarExibicaoRelatorio() {
 	
 }
 
+function limparImovelTecla() {
+
+	var form = document.forms[0];
+	
+	form.matriculaImovelAnaliseMedicaoConsumo.value = "";
+
+	if (form.digitoVerificadorImovelAnaliseMedicaoConsumo != undefined) {
+		form.digitoVerificadorImovelAnaliseMedicaoConsumo.value = "";
+	}
+		
+	form.situacaoAguaAnaliseMedicaoConsumo.value = "";
+	form.situacaoEsgotoAnaliseMedicaoConsumo.value = "";
+	form.tipoLigacao.value = "";
+
+}
 -->
 </script>
 </head>
@@ -202,7 +217,7 @@ function verificarExibicaoRelatorio() {
 					<td colspan="4">
 					<table align="center" bgcolor="#99ccff" border="0" width="100%">
 						<tr>
-							<td align="center"><strong>Dados do Im&oacute;vel</strong></td>
+							<td align="center"><strong>Dados do Im&oacute;vel </strong></td>
 						</tr>
 						<tr bgcolor="#cbe5fe">
 							<td align="center" width="100%">
@@ -213,7 +228,8 @@ function verificarExibicaoRelatorio() {
 									<td width="75%" colspan="3"><html:text
 										property="idImovelAnaliseMedicaoConsumo" maxlength="9"
 										size="9"
-										onkeypress="validaEnterComMensagem(event, 'consultarImovelWizardAction.do?action=exibirConsultarImovelDadosAnaliseMedicaoConsumoAction&indicadorNovo=OK','idImovelAnaliseMedicaoConsumo','Im&oacute;vel');" />
+										onkeypress="validaEnterComMensagem(event, 'consultarImovelWizardAction.do?action=exibirConsultarImovelDadosAnaliseMedicaoConsumoAction&indicadorNovo=OK','idImovelAnaliseMedicaoConsumo','Im&oacute;vel');" 
+										onkeyup="limparImovelTecla();"/>
 									<a
 										href="javascript:abrirPopup('exibirPesquisarImovelAction.do', 400, 800);">
 									<img width="23" height="21"
@@ -221,25 +237,67 @@ function verificarExibicaoRelatorio() {
 										border="0" /></a> <logic:present
 										name="idImovelAnaliseMedicaoConsumoNaoEncontrado"
 										scope="request">
-										<html:text property="matriculaImovelAnaliseMedicaoConsumo"
-											size="40" readonly="true"
-											style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+											<html:text property="matriculaImovelAnaliseMedicaoConsumo"
+												size="40" readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										</logic:equal>
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+											<html:text property="digitoVerificadorImovelAnaliseMedicaoConsumo"
+												size="2" readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+												
+											<html:text property="matriculaImovelAnaliseMedicaoConsumo"
+												size="31" readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />																						
+										</logic:equal>
+												
 									</logic:present> <logic:notPresent
 										name="idImovelAnaliseMedicaoConsumoNaoEncontrado"
 										scope="request">
 										<logic:present
 											name="valorMatriculaImovelAnaliseMedicaoConsumo"
 											scope="request">
-											<html:text property="matriculaImovelAnaliseMedicaoConsumo"
-												size="40" readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+												<html:text property="matriculaImovelAnaliseMedicaoConsumo"
+													size="40" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelAnaliseMedicaoConsumo"
+													size="2" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+													
+												<html:text property="matriculaImovelAnaliseMedicaoConsumo"
+													size="31" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />																								
+											</logic:equal>											
+												
 										</logic:present>
 										<logic:notPresent
 											name="valorMatriculaImovelAnaliseMedicaoConsumo"
 											scope="request">
-											<html:text property="matriculaImovelAnaliseMedicaoConsumo"
-												size="40" readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">											
+												<html:text property="matriculaImovelAnaliseMedicaoConsumo"
+													size="40" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>	
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelAnaliseMedicaoConsumo"
+													size="2" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+													
+												<html:text property="matriculaImovelAnaliseMedicaoConsumo"
+													size="31" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />																								
+											</logic:equal>											
+													
 										</logic:notPresent>
 									</logic:notPresent> <a href="javascript:limparForm();"> <img
 										src="<bean:message key="caminho.imagens"/>limparcampo.gif"
@@ -262,6 +320,20 @@ function verificarExibicaoRelatorio() {
 										size="15" maxlength="15" /></td>
 
 								</tr>
+								<tr>
+								
+								<td height="10">
+									<div class="style9"><strong>Tipo de Ligação:</strong></div>
+									</td>
+									<td><html:text property="tipoLigacao"
+										readonly="true"
+										style="background-color:#EFEFEF; border:0; color: #000000"
+										size="15" maxlength="15" /></td>
+							
+									<td width="90"></td>
+									<td width="120"></td>
+								</tr>
+								
 								<tr>
 									<td height="10">
 									<div class="style9"><strong>Segmento:</strong></div>
@@ -499,7 +571,7 @@ function verificarExibicaoRelatorio() {
 
 					<table width="100%" bgcolor="#99CCFF">
 						<tr>
-							<td colspan="5" bgcolor="#79bbfd" align="center"><strong>Dados da
+							<td colspan="6" bgcolor="#79bbfd" align="center"><strong>Dados da
 							Ligação de Esgoto</strong></td>
 
 						</tr>
@@ -508,7 +580,7 @@ function verificarExibicaoRelatorio() {
 							<td align="center" width="20%">Data da Ligação</td>
 							<td align="center" width="20%">Diametro</td>
 							<td align="center" width="20%">Material</td>
-							<td colspan="2" align="center" width="40%">Perfil de Ligação</td>
+							<td colspan="3" align="center" width="40%">Perfil de Ligação</td>
 						</tr>
 
 						<tr bgcolor="#FFFFFF" class="styleFontePequena">
@@ -518,7 +590,7 @@ function verificarExibicaoRelatorio() {
 							&nbsp;</td>
 							<td align="center">${sessionScope.consultarImovelActionForm.descricaoLigacaoEsgotoMaterial}
 							&nbsp;</td>
-							<td colspan="2" align="center">${sessionScope.consultarImovelActionForm.descricaoligacaoEsgotoPerfil}
+							<td colspan="3" align="center">${sessionScope.consultarImovelActionForm.descricaoligacaoEsgotoPerfil}
 							&nbsp;</td>
 						</tr>
 						<tr bgcolor="#99CCFF" class="styleFontePeqNegrito">
@@ -526,6 +598,7 @@ function verificarExibicaoRelatorio() {
 							<td align="center">Percentual de Esgoto</td>
 							<td align="center">Percentual de Coleta</td>
 							<td align="center">Indicador de Poço</td>
+							<td align="center">Consumo Fixo de Poço</td>
 							<td align="center">Local de Instala&ccedil;&atilde;o do Ramal</td>
 							
 						</tr>
@@ -536,6 +609,7 @@ function verificarExibicaoRelatorio() {
 							&nbsp;</td>
 							<td align="center">${sessionScope.consultarImovelActionForm.percentualAguaConsumidaColetada}&nbsp;</td>
 							<td align="center">${sessionScope.consultarImovelActionForm.descricaoPocoTipo}&nbsp;</td>
+							<td align="center">${sessionScope.consultarImovelActionForm.consumoFixoPoco}&nbsp;</td>
 							<td align="center">${sessionScope.consultarImovelActionForm.descricaoRamalLocalInstalacaoEsgoto}&nbsp;</td>
 						</tr>
 
@@ -682,7 +756,7 @@ function verificarExibicaoRelatorio() {
 											<td width="20%" align="center">Anormalidade de Leitura Inf.</td>
 											<td width="20%" align="center">Anormalidade Leitura Fat.</td>
 											<td width="18%" align="center">M&eacute;dia do Hidr&ocirc;metro</td>
-											<td width="14%" align="center">Cr&eacute;dito de Consumo</td>
+											<td width="14%" align="center">Saldo Cr&eacute;dito Consumo</td>
 										</tr>
 										<tr bgcolor="#FFFFFF" class="styleFontePequena">
 											<td align="center">${sessionScope.consultarImovelActionForm.situacaoLeituraAtual}
@@ -717,7 +791,7 @@ function verificarExibicaoRelatorio() {
 
 								<tr bgcolor="#99CCFF" class="styleFontePeqNegrito">
 									<td width="18%" align="center">Consumo Medido</td>
-									<td width="18%" align="center">Cr&eacute;dito de Consumo</td>
+									<td width="18%" align="center">Cr&eacute;dito Consumo Fat.</td>
 									<td width="18%" align="center">Consumo Faturado</td>									
 									<td width="20%" align="center">Consumo do Rateio</td>
 									<td width="26%" align="center">M&eacute;dia do Imóvel</td>
@@ -766,15 +840,15 @@ function verificarExibicaoRelatorio() {
 								</tr>
 
 								<tr bgcolor="#99CCFF" class="styleFontePeqNegrito">								  
-									<td width="8%" align="left">M&ecirc;s/Ano</td>
+									<td width="6%" align="left">M&ecirc;s/Ano</td>
 									<td width="8%" align="left">Data. Leit. Inform.</td>
-									<td width="7%" align="left">Leitu. Inform.</td>
+									<td width="6%" align="left">Leitu. Inform.</td>
 									<td width="7%" align="left">Data. Leit. Faturam.</td>
-									<td width="4%" align="left">Leitu. Fatur.</td>
-									<td width="4%" align="left">Cons. Médio</td>
-									<td width="4%" align="left">Sld Créd. Cons.</td>
-									<td width="4%" align="left">Anor. Infor.</td>
-									<td width="4%" align="left">Anor. Fatur.</td>
+									<td width="3%" align="left">Leitu. Fatur.</td>
+									<td width="3%" align="left">Cons. Médio</td>
+									<td width="4%" align="left">Créd. Cons. Ant.</td>
+									<td width="3%" align="left">Anor. Infor.</td>
+									<td width="3%" align="left">Anor. Fatur.</td>
 									<td width="9%" align="left">Sit. Leit. Atual</td>
 									<td width="6%" align="left">Func.</td>								
 								</tr>
@@ -797,58 +871,58 @@ function verificarExibicaoRelatorio() {
 							%>
 												<tr bgcolor="#FFFFFF" class="styleFontePequena">
 													<%}%>
-													<td width="8%" align="left"><font color="#000000"
+													<td width="6%" align="left"><font color="#000000"
 														style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif">
 													${medicaoHistorico.mesAno} &nbsp;</font></td>
-													<td width="8%" align="left"><font color="#000000"
+													<td width="3%"  align="left"><font color="#000000"
 														style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif"> <bean:write
 														name="medicaoHistorico"
 														property="dataLeituraAtualInformada"
 														formatKey="date.format" /> </font></td>
-													<td width="6%" align="left"><font color="#000000"
+													<td width="7%"  align="left"><font color="#000000"
 														style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif">
 													${medicaoHistorico.leituraAtualInformada} &nbsp;</font></td>
-													<td width="8%" align="left"><font color="#000000"
+													<td width="3%"   align="left"><font color="#000000"
 														style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif"> <bean:write
 														name="medicaoHistorico"
 														property="dataLeituraAtualFaturamento"
 														formatKey="date.format" /> </font></td>
 
-													<td width="4%" align="left"><font color="#000000"
+													<td width="4%"   align="left"><font color="#000000"
 														style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif">
 													${medicaoHistorico.leituraAtualFaturamento} &nbsp;</font></td>
-													<td width="4%" align="left"><font color="#000000"
+													<td width="4%"   align="left"><font color="#000000"
 														style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif">
 													${medicaoHistorico.consumoMedioHidrometro} &nbsp;</font></td>
-													<td width="4%" align="left"><font color="#000000"
+													<td width="6%"   align="left"><font color="#000000"
 														style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif">
 													${medicaoHistorico.consumoCreditoAnterior} &nbsp;</font></td>
-													<td width="4%" align="left"><font color="#000000" style="font-size:9px"
+													<td width="4%"   align="left"><font color="#000000" style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif">									
 												    <a title="${medicaoHistorico.leituraAnormalidadeInformada.descricao}">
 														 ${medicaoHistorico.leituraAnormalidadeInformada.id}
 													</a>
 													&nbsp;</font></td>
-													<td width="4%" align="left"><font color="#000000" style="font-size:9px"
+													<td width="4%"   align="left"><font color="#000000" style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif">
 													<a title="${medicaoHistorico.leituraAnormalidadeFaturamento.descricao}">
 														 ${medicaoHistorico.leituraAnormalidadeFaturamento.id}
 													</a>																									
 													</font>
 													</td>
-													<td width="6%" align="left"><font color="#000000" style="font-size:9px"
+													<td width="9%"   align="left"><font color="#000000" style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif" >
 													${medicaoHistorico.leituraSituacaoAtual.descricao} &nbsp;</font>
 													</td>
 													
-											    	<td width="4%" align="left" title="${medicaoHistorico.funcionario.nome}" >${medicaoHistorico.funcionario.id}
+											    	<td  width="6%"  align="left" title="${medicaoHistorico.funcionario.nome}" >${medicaoHistorico.funcionario.id}
 													&nbsp;
 													</td>
 													
@@ -875,7 +949,7 @@ function verificarExibicaoRelatorio() {
 								<tr bgcolor="#90c7fc" class="styleFontePeqNegrito">
 									<td width="11%" align="center">M&ecirc;s/Ano</td>
 									<td width="11%" align="center">Consumo Medido</td>
-									<td width="11%" align="center">Crédito de Consumo</td>
+									<td width="11%" align="center">Crédito Consumo Fat.</td>
 									<td width="13%" align="center">Consumo Faturado</td>
 									<td width="11%" align="center">Consumo Médio</td>
 									<td width="11%" align="center">Anormalidade Consumo</td>
@@ -1031,7 +1105,7 @@ function verificarExibicaoRelatorio() {
 											<td width="20%" align="center">Anormalidade de Leitura Inf.</td>
 											<td width="20%" align="center">Anormalidade Leitura Fat.</td>
 											<td width="18%" align="center">M&eacute;dia Hidr&ocirc;metro</td>
-											<td width="14%" align="center">Cr&eacute;dito de Consumo</td>
+											<td width="14%" align="center">Saldo Cr&eacute;dito Consumo</td>
 										</tr>
 										<tr bgcolor="#FFFFFF" class="styleFontePequena">
 											<td align="center">${sessionScope.consultarImovelActionForm.situacaoLeituraAtualPoco}
@@ -1068,7 +1142,7 @@ function verificarExibicaoRelatorio() {
 
 								<tr bgcolor="#99CCFF" class="styleFontePeqNegrito">
 									<td width="18%" align="center">Consumo Medido</td>
-									<td width="18%" align="center">Crédito de Consumo</td>
+									<td width="18%" align="center">Crédito Consumo Fat.</td>
 									<td width="18%" align="center">Consumo Faturado</td>							
 									<td width="20%" align="center">Consumo do Rateio</td>
 									<td width="26%" align="center">M&eacute;dia do Imóvel</td>
@@ -1204,7 +1278,7 @@ function verificarExibicaoRelatorio() {
 							<table width="100%" border="0" cellpadding="0" cellspacing="0">
 
 								<tr>
-									<td colspan="8" bgcolor="#79bbfd" align="center"><strong>Hist&oacute;rico
+									<td colspan="9" bgcolor="#79bbfd" align="center"><strong>Hist&oacute;rico
 									do Volume da Ligação de Esgoto</strong></td>
 
 								</tr>
@@ -1212,15 +1286,16 @@ function verificarExibicaoRelatorio() {
 								<tr bgcolor="#90c7fc" class="styleFontePeqNegrito">
 									<td width="11%" align="center">M&ecirc;s/Ano</td>
 									<td width="11%" align="center">Consumo Medido</td>
-									<td width="11%" align="center">Crédito de Consumo</td>
+									<td width="11%" align="center">Crédito Consumo Fat.</td>
 									<td width="13%" align="center">Consumo Faturado</td>
+									<td width="11%" align="center">Consumo Poço</td>
 									<td width="11%" align="center">Consumo Médio</td>
 									<td width="11%" align="center">Anormalidade Consumo</td>
 									<td width="10%" align="center">Dias de Consumo</td>
-									<td width="22%" align="center">Tipo de Consumo</td>
+									<td width="11%" align="center">Tipo de Consumo</td>
 								</tr>
 								<tr bordercolor="#90c7fc">
-									<td colspan="8">
+									<td colspan="9">
 									<div style="width: 100%; height: 100%; overflow: auto;">
 									<table width="100%" align="left" bgcolor="#90c7fc">
 										<!--corpo da segunda tabela-->
@@ -1259,6 +1334,11 @@ function verificarExibicaoRelatorio() {
 													<td width="11%" align="center"><font color="#000000"
 														style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif">
+													${imovelMicromedicao.consumoHistorico.consumoPoco}
+													&nbsp;</font></td>
+													<td width="11%" align="center"><font color="#000000"
+														style="font-size:9px"
+														face="Verdana, Arial, Helvetica, sans-serif">
 													${imovelMicromedicao.consumoHistorico.consumoMedio}
 													&nbsp;</font></td>
 													<td width="11%" align="center"><font color="#000000"
@@ -1270,7 +1350,7 @@ function verificarExibicaoRelatorio() {
 														style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif">
 													${imovelMicromedicao.qtdDias}&nbsp;</font></td>
-													<td width="22%"><font color="#000000" style="font-size:9px"
+													<td width="11%"><font color="#000000" style="font-size:9px"
 														face="Verdana, Arial, Helvetica, sans-serif">
 													${imovelMicromedicao.consumoHistorico.consumoTipo.descricao}
 													&nbsp;</font></td>

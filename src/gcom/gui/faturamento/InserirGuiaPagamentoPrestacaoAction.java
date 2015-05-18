@@ -179,6 +179,12 @@ public class InserirGuiaPagamentoPrestacaoAction
 			beanHelper.setUltimaAlteracao(new Date());
 			beanHelper.setIdItemLancamentoContabil(debitoTipo.getLancamentoItemContabil().getId());
 
+			if(inserirGuiaPagamentoForm.getNumeroProcessoAdministrativoExecucaoFiscal() != null
+							&& !inserirGuiaPagamentoForm.getNumeroProcessoAdministrativoExecucaoFiscal().equals("")){
+				beanHelper.setNumeroProcessoAdministrativoExecucaoFiscal(Integer.valueOf(inserirGuiaPagamentoForm
+								.getNumeroProcessoAdministrativoExecucaoFiscal()));
+			}
+
 			colecaoGuiaPrestacaoHelper.add(beanHelper);
 
 			// Caso o número de prestações tenha sido alterado

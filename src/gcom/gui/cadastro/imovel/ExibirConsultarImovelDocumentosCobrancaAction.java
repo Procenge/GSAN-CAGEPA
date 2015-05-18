@@ -78,14 +78,18 @@ package gcom.gui.cadastro.imovel;
 
 import gcom.atendimentopublico.ordemservico.OrdemServico;
 import gcom.atendimentopublico.ordemservico.bean.ObterDescricaoSituacaoOSHelper;
+import gcom.atendimentopublico.registroatendimento.bean.ObterIndicadorExistenciaHidrometroHelper;
 import gcom.cadastro.imovel.Imovel;
-import gcom.cobranca.CobrancaDocumento;
-import gcom.cobranca.FiltroCobrancaDocumento;
+import gcom.cobranca.*;
 import gcom.cobranca.bean.CobrancaDocumentoHelper;
 import gcom.fachada.Fachada;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
 import java.util.*;
 
@@ -159,9 +163,10 @@ public class ExibirConsultarImovelDocumentosCobrancaAction
 			sessao.removeAttribute("idImovelPrincipalAba");
 			consultarImovelActionForm.setIdImovelDocumentosCobranca(null);
 			consultarImovelActionForm.setMatriculaImovelDocumentosCobranca(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelDocumentosCobranca(null);
 			consultarImovelActionForm.setSituacaoAguaDocumentosCobranca(null);
 			consultarImovelActionForm.setSituacaoEsgotoDocumentosCobranca(null);
-
+			consultarImovelActionForm.setTipoLigacao(null);
 			consultarImovelActionForm.setSituacaoCobrancaDadosComplementares(null);
 
 			if(indicadorNovo == null || indicadorNovo.equals("")){
@@ -223,6 +228,20 @@ public class ExibirConsultarImovelDocumentosCobrancaAction
 					consultarImovelActionForm.setMatriculaImovelDocumentosCobranca(fachada.pesquisarInscricaoImovel(new Integer(
 									idImovelDocumentosCobranca.trim()), true));
 
+					try{
+						if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString()
+										.equals(ConstantesSistema.NAO.toString())){
+							if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+								consultarImovelActionForm.setDigitoVerificadorImovelDocumentosCobranca(Imovel
+												.getDigitoVerificadorMatricula(idImovelDocumentosCobranca.trim()));
+							}
+						}
+					}catch(ControladorException e1){
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						throw new ActionServletException(e1.getMessage(), e1);
+					}
+
 					// seta a situação de agua
 					if(imovel.getLigacaoAguaSituacao() != null){
 						consultarImovelActionForm.setSituacaoAguaDocumentosCobranca(imovel.getLigacaoAguaSituacao().getDescricao());
@@ -232,6 +251,20 @@ public class ExibirConsultarImovelDocumentosCobrancaAction
 						consultarImovelActionForm.setSituacaoEsgotoDocumentosCobranca(imovel.getLigacaoEsgotoSituacao().getDescricao());
 					}
 
+					// seta o tipo de ligação
+					if(idImovelDocumentosCobranca != null || idImovelDocumentosCobranca != ""){
+						boolean tipoLigacaoBoolean = false;
+						ObterIndicadorExistenciaHidrometroHelper obterIndicadorExistenciaHidrometroHelper = fachada
+										.obterIndicadorExistenciaHidrometroLigacaoAguaPoco(Util.obterInteger(idImovelDocumentosCobranca),
+														tipoLigacaoBoolean);
+						if(obterIndicadorExistenciaHidrometroHelper.getIndicadorLigacaoAgua().intValue() == 1
+										|| obterIndicadorExistenciaHidrometroHelper.getIndicadorPoco().intValue() == 1){
+							consultarImovelActionForm.setTipoLigacao("Hidrometrado");
+						}else{
+							consultarImovelActionForm.setTipoLigacao("Consumo Fixo");
+						}
+
+					}
 					// 1º Passo - Pegar o total de registros através de um count
 					// da consulta que aparecerá na tela
 					// int totalRegistros = fachada
@@ -247,8 +280,30 @@ public class ExibirConsultarImovelDocumentosCobrancaAction
 					// 3º Passo - Obter a coleção da consulta que aparecerá na
 					// tela passando o numero de paginas
 					// da pesquisa que está no request
-					Collection colecaoDocumentoCobranca = fachada.consultarImovelDocumentosCobranca(new Integer(idImovelDocumentosCobranca
-									.trim()), 0);
+					// Collection colecaoDocumentoCobranca =
+					// fachada.consultarImovelDocumentosCobranca(new
+					// Integer(idImovelDocumentosCobranca
+					// .trim()), 0);
+
+					FiltroCobrancaDocumento filtroCobrancaDocumento = new FiltroCobrancaDocumento();
+
+					filtroCobrancaDocumento.adicionarCaminhoParaCarregamentoEntidade("documentoEmissaoForma");
+					filtroCobrancaDocumento.adicionarCaminhoParaCarregamentoEntidade("imovel");
+					filtroCobrancaDocumento
+									.adicionarCaminhoParaCarregamentoEntidade("cobrancaAcaoAtividadeCronograma.cobrancaAcaoCronograma.cobrancaAcao");
+					filtroCobrancaDocumento.adicionarCaminhoParaCarregamentoEntidade("cobrancaAcaoAtividadeComando.cobrancaAcao");
+					filtroCobrancaDocumento.adicionarCaminhoParaCarregamentoEntidade("cobrancaAcao.cobrancaAcaoPredecessora");
+					filtroCobrancaDocumento.adicionarCaminhoParaCarregamentoEntidade("documentoTipo");
+					filtroCobrancaDocumento.adicionarCaminhoParaCarregamentoEntidade(FiltroCobrancaDocumento.COBRANCA_ACAO_SITUACAO);
+					filtroCobrancaDocumento.adicionarCaminhoParaCarregamentoEntidade(FiltroCobrancaDocumento.COBRANCA_DEBITO_SITUACAO);
+
+					filtroCobrancaDocumento.adicionarParametro(new ParametroSimples(FiltroCobrancaDocumento.IMOVEL_ID, new Integer(
+									idImovelDocumentosCobranca.trim())));
+
+					filtroCobrancaDocumento.setCampoOrderBy(FiltroCobrancaDocumento.NUMERO_SEQUENCIAL + " DESC");
+
+					Collection<CobrancaDocumento> colecaoDocumentoCobranca = fachada.pesquisar(filtroCobrancaDocumento,
+									CobrancaDocumento.class.getName());
 
 					/*
 					 * if (colecaoDocumentoCobranca == null ||
@@ -268,16 +323,35 @@ public class ExibirConsultarImovelDocumentosCobrancaAction
 					 */
 
 					if(colecaoDocumentoCobranca != null && !colecaoDocumentoCobranca.isEmpty()){
+						FiltroCobrancaDebitoSituacao filtroCobrancaDebitoSituacao = new FiltroCobrancaDebitoSituacao();
+						filtroCobrancaDebitoSituacao.adicionarParametro(new ParametroSimples(FiltroCobrancaDebitoSituacao.ID,
+										CobrancaDebitoSituacao.PAGO));
+						CobrancaDebitoSituacao cobrancaDebitoSituacaoPago = (CobrancaDebitoSituacao) Util.retonarObjetoDeColecao(fachada
+										.pesquisar(filtroCobrancaDebitoSituacao, CobrancaDebitoSituacao.class.getName()));
 
 						Iterator colecaoDocumentoCobrancaIterator = colecaoDocumentoCobranca.iterator();
 						CobrancaDocumentoHelper cobrancaDocumentoHelper = null;
 						CobrancaDocumento cobrancaDocumento = null;
-						Collection colecaoCobrancaDocumentoHelper = new ArrayList();
+						Collection<CobrancaDocumentoHelper> colecaoCobrancaDocumentoHelper = new ArrayList();
+						Collection<CobrancaDocumentoItem> colecaoCobrancaDocumentoItem = null;
+						FiltroCobrancaDocumentoItem filtroCobrancaDocumentoItem = new FiltroCobrancaDocumentoItem();
 
 						while(colecaoDocumentoCobrancaIterator.hasNext()){
 							cobrancaDocumento = (CobrancaDocumento) colecaoDocumentoCobrancaIterator.next();
+
+							filtroCobrancaDocumentoItem.limparListaParametros();
+							filtroCobrancaDocumentoItem.adicionarParametro(new ParametroSimples(
+											FiltroCobrancaDocumentoItem.COBRANCA_DOCUMENTO_ID, cobrancaDocumento.getId()));
+
+							colecaoCobrancaDocumentoItem = fachada.pesquisar(filtroCobrancaDocumentoItem,
+											CobrancaDocumentoItem.class.getName());
+
 							cobrancaDocumentoHelper = new CobrancaDocumentoHelper();
 							cobrancaDocumentoHelper.setCobrancaDocumento(cobrancaDocumento);
+							cobrancaDocumentoHelper.setCobrancaDocumentoAcaoCobranca(Fachada.getInstancia()
+											.obterCobrancaDocumentoGeradoAcaoCobranca(cobrancaDocumento));
+
+							cobrancaDocumentoHelper.setDescricaoCobrancaAcao(this.obterDescricaoCobrancaAcao(cobrancaDocumento));
 
 							Object[] dadosOrdemServico = fachada.pesquisarDadosOrdemServicoDocumentoCobranca(cobrancaDocumento.getId());
 							if(dadosOrdemServico != null){
@@ -321,11 +395,37 @@ public class ExibirConsultarImovelDocumentosCobrancaAction
 
 							cobrancaDocumentoHelper.getCobrancaDocumento().setDescricaoParecer(cobrancaDocumentoAux.getDescricaoParecer());
 
-							Integer quantidade = fachada.consultarQuantidadeImovelDocumentosItemCobranca(cobrancaDocumento.getId());
-
-							cobrancaDocumentoHelper.setQuantidadeItensCobrancaDocumento(quantidade);
+							if(colecaoCobrancaDocumentoItem == null || colecaoCobrancaDocumentoItem.isEmpty()){
+								cobrancaDocumentoHelper.setQuantidadeItensCobrancaDocumento(0);
+							}else{
+								cobrancaDocumentoHelper.setQuantidadeItensCobrancaDocumento(colecaoCobrancaDocumentoItem.size());
+							}
 
 							colecaoCobrancaDocumentoHelper.add(cobrancaDocumentoHelper);
+
+							// [SB0003] Verificar Documento de Cobrança do Tipo Extrato de Débito
+							if(cobrancaDocumento.getDocumentoTipo().getId().equals(DocumentoTipo.EXTRATO_DE_DEBITO)){
+								boolean todosItensPagos = true;
+								Date maiorDataDebitoSituacao = null;
+								for(CobrancaDocumentoItem cobrancaDocumentoItem : colecaoCobrancaDocumentoItem){
+									if(!cobrancaDocumentoItem.getCobrancaDebitoSituacao().getId().equals(CobrancaDebitoSituacao.PAGO)){
+										todosItensPagos = false;
+										break;
+									}
+
+									if((maiorDataDebitoSituacao == null)
+													|| (maiorDataDebitoSituacao.before(cobrancaDocumentoItem.getDataSituacaoDebito()))){
+										maiorDataDebitoSituacao = cobrancaDocumentoItem.getDataSituacaoDebito();
+									}
+								}
+
+								if(todosItensPagos){
+									cobrancaDocumento.setCobrancaDebitoSituacao(cobrancaDebitoSituacaoPago);
+									cobrancaDocumento.setDataSituacaoDebito(maiorDataDebitoSituacao);
+								}
+
+							}
+
 						}
 
 						// Track No. 619 : Ordenar por data de emissão
@@ -364,9 +464,12 @@ public class ExibirConsultarImovelDocumentosCobrancaAction
 				// limpar os dados pesquisados
 				sessao.removeAttribute("imovelDocumentosCobranca");
 				sessao.removeAttribute("colecaoDocumentoCobranca");
+
+				consultarImovelActionForm.setDigitoVerificadorImovelDocumentosCobranca(null);
 				consultarImovelActionForm.setIdImovelDocumentosCobranca(null);
 				consultarImovelActionForm.setSituacaoAguaDocumentosCobranca(null);
 				consultarImovelActionForm.setSituacaoEsgotoDocumentosCobranca(null);
+				consultarImovelActionForm.setTipoLigacao(null);
 
 			}
 		}else{
@@ -378,11 +481,52 @@ public class ExibirConsultarImovelDocumentosCobrancaAction
 			sessao.removeAttribute("colecaoDocumentoCobranca");
 			sessao.removeAttribute("idImovelPrincipalAba");
 			consultarImovelActionForm.setMatriculaImovelDocumentosCobranca(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelDocumentosCobranca(null);
 			consultarImovelActionForm.setSituacaoAguaDocumentosCobranca(null);
 			consultarImovelActionForm.setSituacaoEsgotoDocumentosCobranca(null);
+			consultarImovelActionForm.setTipoLigacao(null);
+
+		}
+
+		try{
+			if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+				if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+					httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '1');
+				}else{
+					throw new ControladorException("erro.parametro.nao.informado", null, "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+				}
+
+			}else{
+				httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '0');
+			}
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new ActionServletException(e.getMessage(), e);
+		}
+
+		return retorno;
+	}
+
+	private String obterDescricaoCobrancaAcao(CobrancaDocumento cobrancaDocumento){
+
+		String retorno = "";
+
+		if(cobrancaDocumento.getDocumentoEmissaoForma() != null && cobrancaDocumento.getCobrancaAcao() != null){
+
+			if(cobrancaDocumento.getDocumentoEmissaoForma().getId().intValue() == DocumentoEmissaoForma.CRONOGRAMA.intValue()){
+
+				retorno = cobrancaDocumento.getCobrancaAcao().getDescricaoCobrancaAcao();
+
+			}else if(cobrancaDocumento.getDocumentoEmissaoForma().getId().intValue() == DocumentoEmissaoForma.EVENTUAL.intValue()){
+
+				retorno = cobrancaDocumento.getCobrancaAcao().getDescricaoCobrancaAcao();
+
+			}
 
 		}
 
 		return retorno;
+
 	}
 }

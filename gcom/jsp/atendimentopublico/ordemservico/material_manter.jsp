@@ -152,6 +152,9 @@ function remover(objeto){
 								<td width="15%" align="center">
 									<strong>Unidade</strong>
 								</td>
+								<td width="15%" align="center">
+									<strong>Valor</strong>
+								</td>
 								</tr>
 						</table>
 					</td>
@@ -191,6 +194,11 @@ function remover(objeto){
 											<td width="15%" align="center">
 											<bean:write name="material" property="materialUnidade.descricao"/>
 											</td>
+											<logic:equal name="permiteCobrarMaterial" value="1" scope="session">
+											<td width="15%" align="center">
+											<bean:write name="material" property="materialValor"/>
+											</td>
+											</logic:equal>
 										</tr>
 									</pg:item>
 								</logic:iterate>

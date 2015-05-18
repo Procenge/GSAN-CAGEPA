@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="ConsultarHistoricoCREDTACActionForm"
+			type="gcom.gui.cobranca.ajustetarifa.ConsultarHistoricoCREDTACActionForm" />
+		<form-bean name="ExibirDadosHistoricoCREDTACActionForm"
+			type="gcom.gui.cobranca.ajustetarifa.ExibirDadosHistoricoCREDTACActionForm" />
+	</form-beans>
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="ConsultarHistoricoCREDTACActionForm"
+			type="gcom.gui.cobranca.ajustetarifa.ExibirConsultarHistoricoCREDTACAction"
+			validate="true" path="/exibirConsultarHistoricoCREDTACAction">
+
+			<forward name="exibirConsultarHistoricoCREDTAC"
+				path="/jsp/cobranca/ajustetarifa/historico_credtac_consultar.jsp" />
+
+		</action>
+
+		<action name="ConsultarHistoricoCREDTACActionForm"
+			type="gcom.gui.cobranca.ajustetarifa.ConsultarHistoricoCREDTACAction"
+			validate="true" path="/consultarHistoricoCREDTACAction">
+			
+			<forward name="consultarHistoricoCREDTAC"
+				path="/exibirDadosHistoricoCREDTACAction.do" /> 
+		</action>
+		
+		<action name="ExibirDadosHistoricoCREDTACActionForm" 
+			type="gcom.gui.cobranca.ajustetarifa.ExibirDadosHistoricoCREDTACAction" 
+			scope="session" 
+			validate="false"
+			path="/exibirDadosHistoricoCREDTACAction">
+			<forward name="exibirDadosHistoricoCREDTAC" path="/jsp/cobranca/ajustetarifa/historico_credtac_dados_exibir.jsp" />
+		</action>
+		
+		<action
+			type="gcom.gui.seguranca.sistema.ExibirLogTransacoesPopupAction"
+			scope="session"
+			path="/exibirLogTransacoesPopupAction">
+			<forward
+				name="exibirLogTransacoesPopup"
+				path="/jsp/seguranca/sistema/transacoes_visualizar_log_popup.jsp" />
+		</action>
+
+	</action-mappings>
+	<message-resources null="false" parameter="gcom.properties.application" />
+
+</struts-config>

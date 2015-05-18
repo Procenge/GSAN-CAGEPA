@@ -143,9 +143,10 @@ public class ExibirManterClienteAction
 		String tipoPesquisaNomeMae = (String) sessao.getAttribute("tipoPesquisaNomeMae");
 		String inscricaoEstadual = (String) sessao.getAttribute("inscricaoEstadual");
 		String indicadorContaBraille = (String) sessao.getAttribute("indicadorContaBraille");
+		String documentoValidado = (String) sessao.getAttribute("documentoValidado");
+		String numeroBeneficio = (String) sessao.getAttribute("numeroBeneficio");
 
-		// Verifica se o filtro foi informado pela página de filtragem de
-		// cliente
+		// Verifica se o filtro foi informado pela página de filtragem de cliente
 		if(sessao.getAttribute("filtroCliente") != null){
 			filtroCliente = (FiltroCliente) sessao.getAttribute("filtroCliente");
 		}else{
@@ -195,7 +196,8 @@ public class ExibirManterClienteAction
 			// Integer totalRegistros = fachada
 			// / .pesquisarClienteDadosClienteEnderecoCount(filtroCliente);
 			Integer totalRegistros = (Integer) fachada.filtrarQuantidadeCliente(codigo, cpf, rg, cnpj, nome, nomeMae, cep, idMunicipio,
-							codigoBairro, idLogradouro, indicadorUso, tipoPesquisa, tipoPesquisaNomeMae, null, inscricaoEstadual, indicadorContaBraille);
+							codigoBairro, idLogradouro, indicadorUso, tipoPesquisa, tipoPesquisaNomeMae, null, inscricaoEstadual,
+							indicadorContaBraille, documentoValidado, numeroBeneficio);
 
 			// 2º Passo - Chamar a função de Paginação passando o total de registros
 			retorno = this.controlarPaginacao(httpServletRequest, retorno, totalRegistros);
@@ -207,8 +209,10 @@ public class ExibirManterClienteAction
 			// .pesquisarClienteDadosClienteEndereco(filtroCliente, (Integer) httpServletRequest
 			// .getAttribute("numeroPaginasPesquisa"));
 			clientes = fachada.filtrarCliente(codigo, cpf, rg, cnpj, nome, nomeMae, cep, idMunicipio, codigoBairro, idLogradouro,
-							indicadorUso, tipoPesquisa, tipoPesquisaNomeMae, null, (Integer) httpServletRequest
-											.getAttribute("numeroPaginasPesquisa"), inscricaoEstadual, indicadorContaBraille);
+							indicadorUso, tipoPesquisa, tipoPesquisaNomeMae, null,
+											(Integer) httpServletRequest.getAttribute("numeroPaginasPesquisa"), inscricaoEstadual,
+ indicadorContaBraille,
+							documentoValidado, numeroBeneficio);
 
 			if(clientes == null || clientes.isEmpty()){
 				// Nenhum cliente cadastrado

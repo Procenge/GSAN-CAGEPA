@@ -95,6 +95,7 @@ function consultarPavimentos(obj) {
   	}	
 }
 
+
 function consultarCombosAgua(obj) {
  	var idRedeRamal = obj.options[obj.selectedIndex].value;
   	var selectDiametroAgua = document.getElementsByName("idDiametroAgua")[0];
@@ -587,6 +588,27 @@ function consultarCombosEsgoto(obj) {
 											<td align="left">
 												<label><html:radio property="indicadorEntulho"	value="2" /> <strong>Não</strong></label>
 											</td>
+								        </tr>
+								        
+								        <tr bgcolor="#cbe5fe">
+								          <td><strong>Quantidade Entulho:</strong></td>
+								          <td><html:text property="quantidadeEntulho" size="7" maxlength="4" onkeyup="javascript:verificaNumeroInteiro(this);"/></td>
+								          <td><strong>Medida do Entulho:</strong></td>
+								          <td>
+								          	<select name="idEntulhoMedida">
+						        			    <option value="-1">&nbsp;</option>
+						        			    <c:forEach items="${sessionScope.colecaoEntulhoMedida}" var="entulhoMedida" >
+						        			    	<option value="${entulhoMedida.id}">${entulhoMedida.descricao}</option>
+						        			    </c:forEach>
+											</select>
+										  </td>
+								        </tr>
+								        
+								        <tr bgcolor="#cbe5fe">
+								        	<td><strong>Comprimento Tubulação água pluvial:</strong></td>
+								          	<td><html:text property="comprimentoTutulacaoAguaPluvial" size="7" maxlength="7" onkeyup="javaScript:formataValorMonetario(this, 6);"/></td>
+								          	<td><strong>Diametro Tubulação água pluvial:</strong></td>
+								          	<td><html:text property="diametroTutulacaoAguaPluvial" size="7" maxlength="7" onkeyup="javaScript:formataValorMonetario(this, 6);"/></td>
 								        </tr>
 								        
 								        

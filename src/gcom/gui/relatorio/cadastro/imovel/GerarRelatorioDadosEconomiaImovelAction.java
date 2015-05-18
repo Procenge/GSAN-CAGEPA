@@ -82,32 +82,14 @@ import gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao;
 import gcom.atendimentopublico.ligacaoesgoto.FiltroLigacaoEsgotoSituacao;
 import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgoto;
 import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao;
-import gcom.cadastro.cliente.Cliente;
-import gcom.cadastro.cliente.ClienteImovel;
-import gcom.cadastro.cliente.ClienteRelacaoTipo;
-import gcom.cadastro.cliente.ClienteTipo;
-import gcom.cadastro.cliente.FiltroClienteRelacaoTipo;
-import gcom.cadastro.cliente.FiltroClienteTipo;
+import gcom.cadastro.cliente.*;
 import gcom.cadastro.endereco.Cep;
 import gcom.cadastro.endereco.FiltroLogradouro;
 import gcom.cadastro.endereco.Logradouro;
 import gcom.cadastro.endereco.LogradouroCep;
 import gcom.cadastro.geografico.Bairro;
 import gcom.cadastro.geografico.Municipio;
-import gcom.cadastro.imovel.CadastroOcorrencia;
-import gcom.cadastro.imovel.Categoria;
-import gcom.cadastro.imovel.EloAnormalidade;
-import gcom.cadastro.imovel.FiltroCadastroOcorrencia;
-import gcom.cadastro.imovel.FiltroCategoria;
-import gcom.cadastro.imovel.FiltroEloAnormalidade;
-import gcom.cadastro.imovel.FiltroImovel;
-import gcom.cadastro.imovel.FiltroImovelPerfil;
-import gcom.cadastro.imovel.FiltroPocoTipo;
-import gcom.cadastro.imovel.FiltroSubCategoria;
-import gcom.cadastro.imovel.Imovel;
-import gcom.cadastro.imovel.ImovelPerfil;
-import gcom.cadastro.imovel.PocoTipo;
-import gcom.cadastro.imovel.Subcategoria;
+import gcom.cadastro.imovel.*;
 import gcom.cadastro.localidade.GerenciaRegional;
 import gcom.cadastro.localidade.Localidade;
 import gcom.cadastro.localidade.Quadra;
@@ -584,6 +566,22 @@ public class GerarRelatorioDadosEconomiaImovelAction
 
 			if(consumoFixadoEsgotoFinalPesquisado != null && !consumoFixadoEsgotoFinalPesquisado.equals("")){
 				consumoFixadoEsgotoFinal = consumoFixadoEsgotoFinalPesquisado;
+			}
+
+			// Intervalo Consumo Fixado de Esgoto do Poço
+
+			String consumoFixadoEsgotoPocoInicial = null;
+			if(imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoInicial() != null
+							&& !imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoInicial().equals("")){
+
+				consumoFixadoEsgotoPocoInicial = imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoInicial();
+			}
+
+			String consumoFixadoEsgotoPocoFinal = null;
+			if(imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoFinal() != null
+							&& !imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoFinal().equals("")){
+
+				consumoFixadoEsgotoPocoFinal = imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoFinal();
 			}
 
 			// Intervalo Percentual Esgoto
@@ -1063,8 +1061,16 @@ public class GerarRelatorioDadosEconomiaImovelAction
 							consumoFixadoAguaFinal));
 			ligacaoEsgotoParametrosInicial.setConsumoMinimo(consumoFixadoEsgotoInicial == null ? null : new Integer(
 							consumoFixadoEsgotoInicial));
+
+			ligacaoEsgotoParametrosInicial.setNumeroConsumoFixoPoco(consumoFixadoEsgotoPocoInicial == null ? null : new Integer(
+							consumoFixadoEsgotoPocoInicial));
+
 			ligacaoEsgotoParametrosInicial.setPercentual(percentualEsgotoInicial == null ? null : new BigDecimal(percentualEsgotoInicial));
 			ligacaoEsgotoParametrosFinal.setConsumoMinimo(consumoFixadoEsgotoFinal == null ? null : new Integer(consumoFixadoEsgotoFinal));
+
+			ligacaoEsgotoParametrosFinal.setNumeroConsumoFixoPoco(consumoFixadoEsgotoPocoFinal == null ? null : new Integer(
+							consumoFixadoEsgotoPocoFinal));
+
 			ligacaoEsgotoParametrosFinal.setPercentual(percentualEsgotoFinal == null ? null : new BigDecimal(percentualEsgotoFinal));
 			consumoHistoricoParametrosInicial.setConsumoMedio(mediaMinimaImovelInicial == null ? null : new Integer(
 							mediaMinimaImovelInicial));
@@ -1214,6 +1220,12 @@ public class GerarRelatorioDadosEconomiaImovelAction
 			// consumo Minimo Fixado Esgoto Final
 			relatorioDadosEconomiaImovel.addParametro("consumoMinimoFixadoEsgotoFinal", imovelOutrosCriteriosActionForm
 							.getConsumoMinimoFixadoEsgotoFinal());
+
+			// consumo Fixado Esgoto do Poço Inicial
+			relatorioDadosEconomiaImovel.addParametro("consumoFixadoEsgotoPocoInicial", consumoFixadoEsgotoPocoInicial);
+
+			// consumo Fixado Esgoto do Poço Final
+			relatorioDadosEconomiaImovel.addParametro("consumoFixadoEsgotoPocoFinal", consumoFixadoEsgotoPocoFinal);
 
 			// intervalo Percentual Esgoto Inicial
 			relatorioDadosEconomiaImovel.addParametro("intervaloPercentualEsgotoInicial", imovelOutrosCriteriosActionForm

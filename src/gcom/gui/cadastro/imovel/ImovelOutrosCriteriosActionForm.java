@@ -200,6 +200,10 @@ public class ImovelOutrosCriteriosActionForm
 
 	private String consumoMinimoFixadoEsgotoFinal;
 
+	private String consumoFixadoEsgotoPocoInicial;
+
+	private String consumoFixadoEsgotoPocoFinal;
+
 	private String tipoMedicao;
 
 	private String perfilImovel;
@@ -296,6 +300,10 @@ public class ImovelOutrosCriteriosActionForm
 	private String segmentoFinal;
 
 	private String indicadorOrdenacao;
+
+	private String indicadorOrdenacaoAscDesc;
+
+	private String indicadorOpcaoAgrupamento;
 
 	private String exibirOrdenacao;
 
@@ -1691,6 +1699,60 @@ public class ImovelOutrosCriteriosActionForm
 	public void setSituacaoLigacaoEsgotoArray(String[] situacaoLigacaoEsgotoArray){
 
 		this.situacaoLigacaoEsgotoArray = situacaoLigacaoEsgotoArray;
+	}
+
+	/**
+	 * @return the consumoFixadoEsgotoPocoInicial
+	 */
+	public String getConsumoFixadoEsgotoPocoInicial(){
+
+		return consumoFixadoEsgotoPocoInicial;
+	}
+
+	/**
+	 * @param consumoFixadoEsgotoPocoInicial
+	 *            the consumoFixadoEsgotoPocoInicial to set
+	 */
+	public void setConsumoFixadoEsgotoPocoInicial(String consumoFixadoEsgotoPocoInicial){
+
+		this.consumoFixadoEsgotoPocoInicial = consumoFixadoEsgotoPocoInicial;
+	}
+
+	/**
+	 * @return the consumoFixadoEsgotoPocoFinal
+	 */
+	public String getConsumoFixadoEsgotoPocoFinal(){
+
+		return consumoFixadoEsgotoPocoFinal;
+	}
+
+	/**
+	 * @param consumoFixadoEsgotoPocoFinal
+	 *            the consumoFixadoEsgotoPocoFinal to set
+	 */
+	public void setConsumoFixadoEsgotoPocoFinal(String consumoFixadoEsgotoPocoFinal){
+
+		this.consumoFixadoEsgotoPocoFinal = consumoFixadoEsgotoPocoFinal;
+	}
+
+	public String getIndicadorOrdenacaoAscDesc(){
+
+		return indicadorOrdenacaoAscDesc;
+	}
+
+	public void setIndicadorOrdenacaoAscDesc(String indicadorOrdenacaoAscDesc){
+
+		this.indicadorOrdenacaoAscDesc = indicadorOrdenacaoAscDesc;
+	}
+
+	public String getIndicadorOpcaoAgrupamento(){
+
+		return indicadorOpcaoAgrupamento;
+	}
+
+	public void setIndicadorOpcaoAgrupamento(String indicadorOpcaoAgrupamento){
+
+		this.indicadorOpcaoAgrupamento = indicadorOpcaoAgrupamento;
 	}
 
 }

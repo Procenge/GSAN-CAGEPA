@@ -250,6 +250,20 @@
     	<column name="pghi_id" />
     
     </many-to-one>
+    
+    <!-- bi-directional one-to-many association to ClienteCreditoARealizar -->
+    <set
+        name="clientesCreditoARealizar"
+        lazy="true"
+        inverse="true"
+    >
+        <key>
+            <column name="crar_id" />
+        </key>
+        <one-to-many
+            class="gcom.cadastro.cliente.ClienteCreditoARealizar"
+        />
+    </set>     
         
 </class>
 </hibernate-mapping>

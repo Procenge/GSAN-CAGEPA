@@ -274,6 +274,14 @@ public class ParametroMicromedicao
 
 	public static Parametro P_GESTAO_LEITURA_ENDERECO = new ParametroMicromedicao("P_GESTAO_LEITURA_ENDERECO");
 
+	public static final Parametro P_MODELO_ARQUIVO_LEITURA = new ParametroMicromedicao("P_MODELO_ARQUIVO_LEITURA");
+
+	public static final Parametro P_CRITERIO_SELECAO_VINCULO_RATEIO = new ParametroMicromedicao("P_CRITERIO_SELECAO_VINCULO_RATEIO");
+
+	public static final Parametro P_ACUMULA_CONSUMO_ESGOTO_POCO = new ParametroMicromedicao("P_ACUMULA_CONSUMO_ESGOTO_POCO");
+
+	public static final Parametro P_ORDENACAO_IMOVEIS_RELACAO_LEITURA = new ParametroMicromedicao("P_ORDENACAO_IMOVEIS_RELACAO_LEITURA");
+
 	private ParametroMicromedicao(String parametro) {
 
 		super(parametro);

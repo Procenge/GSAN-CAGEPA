@@ -206,15 +206,19 @@ public class FiltrarDevolucaoAction
 								.formatarAnoMesParaMesAno(mesAnoFaturamento.toString()));
 			}
 		}
+		
+		
 		if(filtrarDevolucaoActionForm.getDataDevolucaoFim() != null
 						&& !filtrarDevolucaoActionForm.getDataDevolucaoFim().equalsIgnoreCase("")){
 			mesAnoDataFinal = new Integer(filtrarDevolucaoActionForm.getDataDevolucaoFim().substring(6, 10)
 							+ filtrarDevolucaoActionForm.getDataDevolucaoFim().substring(3, 5));
 			if(Util.compararAnoMesReferencia(mesAnoDataFinal, mesAnoFaturamento, ">")){
-				throw new ActionServletException("atencao.mes.ano.final.maior.mes.ano.faturamento.corrente", null, Util
-								.formatarAnoMesParaMesAno(mesAnoFaturamento.toString()));
+				throw new ActionServletException("atencao.mes.ano.final.maior.mes.ano.faturamento.corrente", null,
+								Util.formatarAnoMesParaMesAno(mesAnoFaturamento.toString()));
 			}
 		}
+		
+		
 		// [FS0003] - Verificar se um dos campos obrigatórios foi informado
 		// Caso o usuário não tenha informado nenhum desses campos faz um
 		// crítica solicitando que ele digite algum deles
@@ -267,22 +271,32 @@ public class FiltrarDevolucaoAction
 					dataDevolucaoFinal = dataDevolucaoInicial;
 				}
 
-				Date dataDevolucaoInicialFormatada = Util.converteStringParaDate(dataDevolucaoInicial);
-				String data1 = Util.recuperaDataInvertida(dataDevolucaoInicialFormatada);
+				// Date dataDevolucaoInicialFormatada =
+				// Util.converteStringParaDate(dataDevolucaoInicial);
+				// String data1 = Util.recuperaDataInvertida(dataDevolucaoInicialFormatada);
 
-				if(data1 != null && !data1.equals("") && data1.trim().length() == 8){
+				Date data1 = Util.converteStringParaDate(dataDevolucaoInicial);
 
-					data1 = data1.substring(0, 4) + "-" + data1.substring(4, 6) + "-" + data1.substring(6, 8);
+				// if(data1 != null && !data1.equals("") && data1.trim().length() == 8){
+				//
+				// data1 = data1.substring(0, 4) + "-" + data1.substring(4, 6) + "-" +
+				// data1.substring(6, 8);
+				//
+				// }
+				// Date dataDevolucaoFinalFormatada =
+				// Util.converteStringParaDate(dataDevolucaoFinal);
+				// String data2 = Util.recuperaDataInvertida(dataDevolucaoFinalFormatada);
 
-				}
-				Date dataDevolucaoFinalFormatada = Util.converteStringParaDate(dataDevolucaoFinal);
-				String data2 = Util.recuperaDataInvertida(dataDevolucaoFinalFormatada);
+				Date data2 = Util.converteStringParaDate(dataDevolucaoFinal);
 
-				if(data2 != null && !data2.equals("") && data2.trim().length() == 8){
-
-					data2 = data2.substring(0, 4) + "-" + data2.substring(4, 6) + "-" + data2.substring(6, 8);
-
-				}
+				
+//
+				// if(data2 != null && !data2.equals("") && data2.trim().length() == 8){
+				//
+				// data2 = data2.substring(0, 4) + "-" + data2.substring(4, 6) + "-" +
+				// data2.substring(6, 8);
+				//
+				// }
 				if(telaConsultaDevolucaoAtual){
 					filtroDevolucao.adicionarParametro(new Intervalo(FiltroDevolucao.DATA_DEVOLUCAO, data1, data2));
 				}

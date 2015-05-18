@@ -249,6 +249,18 @@
 												maxlength="20" />
 											</td>
 										</tr>
+										<tr>
+											<td align="left">
+											<div align="left"><strong> Número do RA:</strong></div>
+											</td>
+											<td align="left" colspan="3">
+												<html:text property="idRegistroAtendimento" 
+												readonly="true"
+												style="background-color:#EFEFEF; border:0" 
+												size="15"
+												maxlength="15" />
+											</td>
+										</tr>										
 									</table>
 								</td>
 							</tr>
@@ -348,6 +360,73 @@
 							<tr>
 								<td><strong>Guias de Pagamento:</strong></td>
 							</tr>
+							
+							<%
+									String pctQtdColunasGuias="9";
+							
+									String pctTipoDocumento  = "12%";
+									String pctNumeroGuia    = "10%";
+									String pctNumeroParcela = "10%";
+									String pctNumeroContratoPublico = "0%";
+									String pctValorParcela   = "12%";
+									String pctDataEmissao   = "12%";
+									String pctDataVencimento = "12%";
+									String pctGuiaPaga      = "8%";
+									String pctSituacaoGuia 	 = "17%";
+									String pctDividaAtivaGuia  = "0%";
+									String pctNumeroProcessoAdm  = "0%";
+									
+									
+									if (session.getAttribute("exibirDividaAtivaColuna") != null) {
+										if (session.getAttribute("exibirNuContratoParcOrgaoPublico") != null) {
+											pctTipoDocumento  = "11%";
+											pctNumeroGuia    = "8%";
+											pctNumeroParcela = "10%";
+											pctNumeroContratoPublico = "14%";
+											pctValorParcela   = "8%";
+											pctDataEmissao   = "8%";
+											pctDataVencimento = "8%";
+											pctGuiaPaga      = "7%";
+											pctSituacaoGuia 	 = "7%";
+											pctDividaAtivaGuia  = "5%";
+											pctNumeroProcessoAdm  = "7%";
+											
+											pctQtdColunasGuias      = "12";											
+											
+										} else {
+											pctTipoDocumento  = "12%";
+											pctNumeroGuia    = "9%";
+											pctNumeroParcela = "9%";
+											pctNumeroContratoPublico = "0%";
+											pctValorParcela   = "9%";
+											pctDataEmissao   = "11%";
+											pctDataVencimento = "11%";
+											pctGuiaPaga      = "7%";
+											pctSituacaoGuia 	 = "9%";
+											pctDividaAtivaGuia  = "8%";
+											pctNumeroProcessoAdm  = "8%";
+											
+											pctQtdColunasGuias      = "11";
+										}
+									} else {
+										if (session.getAttribute("exibirNuContratoParcOrgaoPublico") != null) {
+											pctTipoDocumento  = "12%";
+											pctNumeroGuia    = "9%";
+											pctNumeroParcela = "10%";
+											pctNumeroContratoPublico = "14%";
+											pctValorParcela   = "12%";
+											pctDataEmissao   = "10%";
+											pctDataVencimento = "12%";
+											pctGuiaPaga      = "7%";
+											pctSituacaoGuia 	 = "7%";
+											pctDividaAtivaGuia  = "0%";
+											pctNumeroProcessoAdm  = "0%";
+											
+											pctQtdColunasGuias      = "10";											
+										}
+									}
+							%>
+													
 							<tr bgcolor="#cbe5fe">
 								<td width="100%" align="center">
 	
@@ -360,26 +439,35 @@
 									</tr>
 	
 									<tr bordercolor="#000000">
-										<td width="8%" bgcolor="#90c7fc" align="center">
+										<td width="7%" bgcolor="#90c7fc" align="center">
 										<div align="center"><strong><a
 											href="javascript:facilitador(this);">Todos</a></strong></div></td>									
-										<td width="12%" bgcolor="#90c7fc" align="center"><strong>Tipo do Documento</strong></td>
-										<td width="10%" bgcolor="#90c7fc" align="center"><strong>Guia</strong></td>
-										<td width="10%" bgcolor="#90c7fc" align="left"><strong>Prestação</strong></td>
+										<td width="<%= pctTipoDocumento%>" bgcolor="#90c7fc" align="center"><strong>Tipo do Documento</strong></td>
+										<td width="<%= pctNumeroGuia%>" bgcolor="#90c7fc" align="center"><strong>Guia</strong></td>
+										<td width="<%= pctNumeroParcela%>" bgcolor="#90c7fc" align="left"><strong>Prestação</strong></td>
 										
 										<logic:present name="exibirNuContratoParcOrgaoPublico" scope="session">
-											<td width="12%" bgcolor="#90c7fc" align="center"><strong>No. Contrato Parcel. Órgão Público</strong></td>
+											<td width="<%= pctNumeroContratoPublico%>" bgcolor="#90c7fc" align="center"><strong>No. Contrato Parcel. Órgão Público</strong></td>
 										</logic:present>
 										
-										<td width="12%" bgcolor="#90c7fc" align="center"><strong>Valor da Prestação</strong></td>
-										<td width="12%" bgcolor="#90c7fc" align="center"><strong>Emissão</strong></td>
-										<td width="12%" bgcolor="#90c7fc" align="center"><strong>Vencimento</strong></td>
-										<td width="8%" bgcolor="#90c7fc" align="center"><strong>Paga</strong></td>
-										<td width="10%" bgcolor="#90c7fc" align="center"><strong>Situação</strong></td>
+										<td width="<%= pctValorParcela%>" bgcolor="#90c7fc" align="center"><strong>Valor da Prestação</strong></td>
+										<td width="<%= pctDataEmissao%>" bgcolor="#90c7fc" align="center"><strong>Emissão</strong></td>
+										<td width="<%= pctDataVencimento%>" bgcolor="#90c7fc" align="center"><strong>Vencimento</strong></td>
+										<td width="<%= pctGuiaPaga%>" bgcolor="#90c7fc" align="center"><strong>Paga</strong></td>
+										<td width="<%= pctSituacaoGuia%>" bgcolor="#90c7fc" align="center"><strong>Situação</strong></td>
+										<logic:present name="exibirDividaAtivaColuna" scope="session">
+											<td width="<%= pctDividaAtivaGuia%>" bgcolor="#90c7fc" align="center">
+												<strong>DA</strong>
+											</td>
+											<td width="<%= pctNumeroProcessoAdm%>" bgcolor="#90c7fc" align="center">
+												<strong>Proc. EF</strong>
+											</td>																
+										</logic:present>
+										
 									</tr>
 	
 									<tr>
-										<td colspan="10"> 
+										<td colspan="<%= pctQtdColunasGuias%>" > 
 										<div style="width: 100%; height: 100; overflow: auto;">
 										<table width="100%" bgcolor="#99CCFF">
 													<logic:present name="colecaoGuiasPrestacoes">
@@ -411,9 +499,9 @@
 																}
 															%>
 															
-																<td width="8%"><div align="center"><input type="checkbox" name="idRegistrosRemocao" value='<bean:write name="guiaPagamentoPrestacao" property="idGuiaPagamento" /><bean:write name="guiaPagamentoPrestacao" property="numeroPrestacao" />' /></div></td>
+																<td width="7%"><div align="center"><input type="checkbox" name="idRegistrosRemocao" value='<bean:write name="guiaPagamentoPrestacao" property="idGuiaPagamento" /><bean:write name="guiaPagamentoPrestacao" property="numeroPrestacao" />' /></div></td>
 
-																<td width="15%" align="left">
+																<td width="<%= pctTipoDocumento%>" align="left">
 																	<a href="javascript:abrirPopup('exibirConsultarGuiaPagamentoAction.do?guiaPagamentoId=<bean:write name="guiaPagamentoPrestacao" property="idGuiaPagamento" />', 600, 900);">
 																		<font color="<%=corSituacaoGuia %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 																			<bean:write name="guiaPagamentoPrestacao" property="descricaoDocumentoTipo" />&nbsp;
@@ -421,13 +509,13 @@
 																	</a>
 																</td>
 
-																<td width="9%" align="center">
+																<td width="<%= pctNumeroGuia%>" align="center">
 																	<font color="<%=corSituacaoGuia %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 																		<bean:write name="guiaPagamentoPrestacao" property="idGuiaPagamento" />
 																	</font>
 																</td>
 																
-																<td width="11%" align="center" title="${guiaPagamentoPrestacao.debitoTipoHint}">
+																<td width="<%= pctNumeroParcela%>" align="center" title="${guiaPagamentoPrestacao.debitoTipoHint}">
 																	<font color="<%=corSituacaoGuia %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 																		<bean:write name="guiaPagamentoPrestacao" property="numeroPrestacao" /> / <bean:write name="guiaPagamentoPrestacao" property="numeroPrestacaoTotal" />
 																	</font>
@@ -435,7 +523,7 @@
 																
 																<logic:present name="exibirNuContratoParcOrgaoPublico" scope="session">
 																	
-																	<td width="15%" align="center">
+																	<td width="<%= pctNumeroContratoPublico%>" align="center">
 																		<font color="<%=corSituacaoGuia %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 																			<bean:write name="guiaPagamentoPrestacao" property="numeroContratoParcelOrgaoPublico" />
 																		</font>
@@ -443,42 +531,86 @@
 																	
 																</logic:present>
 
-																<td width="12%" align="center">
+																<td width="<%= pctValorParcela%>" align="center">
 																	<font color="<%=corSituacaoGuia %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 																		<bean:write name="guiaPagamentoPrestacao" property="valorTotalPorPrestacao" formatKey="money.format" />
 																	</font>
 																</td>
 																
 																
-																<td width="13%" align="center">
+																<td width="<%= pctDataEmissao%>" align="center">
 																	<font color="<%=corSituacaoGuia %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 																		<bean:write name="guiaPagamentoPrestacao" property="dataEmissao" formatKey="date.format" />
 																	</font>
 																</td>
 																
 																
-																<td width="13%" align="center">
+																<td width="<%= pctDataVencimento%>" align="center">
 																	<font color="<%=corSituacaoGuia %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 																		<bean:write name="guiaPagamentoPrestacao" property="dataVencimento" formatKey="date.format" />
 																	</font>
 																</td>
 																
-																<td width="8%" align="center" title="${guiaPagamentoPrestacao.indicadorPagamentoHint}">
+																<td width="<%= pctGuiaPaga%>" align="center" title="${guiaPagamentoPrestacao.indicadorPagamentoHint}">
 																	<font color="<%=corSituacaoGuia %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 																		<bean:write name="guiaPagamentoPrestacao" property="dsIndicadorPagamento" />
 																	</font>
 																</td>
 																
 
-																<td width="10%" align="center">
+																<td width="<%= pctSituacaoGuia%>" align="center">
 																	<font color="<%=corSituacaoGuiaPrescrita %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 																		<bean:write name="guiaPagamentoPrestacao" property="descricaoDebitoCreditoSituacao" />
 																	</font>
 																</td>
 																
+																<logic:present name="exibirDividaAtivaColuna" scope="session">
+																	<td width="<%= pctDividaAtivaGuia%>" align="center">
+																		<font color="<%=corSituacaoGuia %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
+																			<logic:equal name="guiaPagamentoPrestacao" property="indicadorDividaAtiva" value="2">
+																				<logic:equal name="guiaPagamentoPrestacao" property="indicadorExecucaoFiscal" value="2">
+																					N
+																				</logic:equal>
+																			</logic:equal>
+												
+																			<logic:equal name="guiaPagamentoPrestacao" property="indicadorDividaAtiva" value="1">
+																				<logic:equal name="guiaPagamentoPrestacao" property="indicadorExecucaoFiscal" value="2">
+																					A
+																				</logic:equal>
+																			</logic:equal>
+																		
+																			<logic:equal name="guiaPagamentoPrestacao" property="indicadorExecucaoFiscal" value="1">
+																				E
+																			</logic:equal>
+																		</font>
+																	</td>
+																	
+																	<td width="<%= pctNumeroProcessoAdm%>" align="center" title="${guiaPagamentoPrestacao.indicadorPagamentoHint}">
+																		<font color="<%=corSituacaoGuia %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
+																			
+																		<%if (((GuiaPagamentoPrestacaoHelper)guiaPagamentoPrestacao).getNumeroProcessoAdministrativoExecucaoFiscal().compareTo(Integer.valueOf(0)) != 0) {%>
+																				<bean:write name="guiaPagamentoPrestacao" property="numeroProcessoAdministrativoExecucaoFiscal"/>
+																		<%}%>																				
+																			
+																		</font>
+																	</td>			
+																</logic:present>																	
+																
 															</tr>
 													</logic:iterate>
 												</logic:present>
+												
+												<logic:present name="exibirDividaAtivaColuna" scope="session">											
+													<tr>
+														<td colspan="<%= pctQtdColunasGuias%>" height="23">
+															<font color="#000000" style="font-size:10px" face="Verdana, Arial, Helvetica, sans-serif"> 
+																<strong>DA-Situação da Guia na Dívida Ativa;  
+																	<br>Proc. EF-Nº do Processo Administrativo da Execução Fiscal
+																</strong>
+															</font><br>
+														</td>
+													</tr>
+												</logic:present>												
 										</table>
 										</div>
 										</td>

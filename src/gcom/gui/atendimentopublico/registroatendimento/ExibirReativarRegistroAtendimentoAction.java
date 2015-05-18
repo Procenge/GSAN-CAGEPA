@@ -143,6 +143,21 @@ public class ExibirReativarRegistroAtendimentoAction
 			form.resetarReativar();
 		}
 
+		try{
+			String pIndicadorTramiteRestritoUnidades = ParametroAtendimentoPublico.P_INDICADOR_TRAMITE_RESTRITO_UNIDADES_RESPONSAVEIS
+							.executar();
+
+			if(pIndicadorTramiteRestritoUnidades != null && pIndicadorTramiteRestritoUnidades.equals(ConstantesSistema.SIM.toString())){
+				sessao.setAttribute("desabilitarUnidadeDestino", pIndicadorTramiteRestritoUnidades);
+			}else{
+				sessao.removeAttribute("desabilitarUnidadeDestino");
+			}
+
+		}catch(ControladorException e1){
+
+			throw new ActionServletException("atencao.sistemaparametro_inexistente", "P_INDICADOR_TRAMITE_RESTRITO_UNIDADES_RESPONSAVEIS");
+		}
+
 		Integer idRegistroAtendimento = Integer.valueOf(httpServletRequest.getParameter("numeroRA"));
 
 		if(form.getValidaUnidadeAtendimento().equalsIgnoreCase("false") && form.getValidaUnidadeDestino().equalsIgnoreCase("false")){
@@ -575,7 +590,7 @@ public class ExibirReativarRegistroAtendimentoAction
 		especificacaoTramiteAuxiliar.setIndicadorUso(ConstantesSistema.INDICADOR_USO_ATIVO);
 
 		Collection<UnidadeOrganizacional> colecaoUnidadeOrganizacional = Fachada.getInstancia().obterUnidadeDestinoPorEspecificacao(
-						especificacaoTramiteAuxiliar);
+						especificacaoTramiteAuxiliar, true);
 
 		if(!Util.isVazioOrNulo(colecaoUnidadeOrganizacional)){
 			String pSugerirUnidadeComMaisDeUmaEspecTram = null;
@@ -596,7 +611,7 @@ public class ExibirReativarRegistroAtendimentoAction
 								.retonarObjetoDeColecao(colecaoUnidadeOrganizacional);
 
 				form.setIdUnidadeDestino(String.valueOf(unidadeOrganizacional.getId()));
-				form.setUnidadeDestino(String.valueOf(unidadeOrganizacional.getDescricao()));
+				form.setDescricaoUnidadeDestino(unidadeOrganizacional.getDescricao());
 			}
 		}
 	}

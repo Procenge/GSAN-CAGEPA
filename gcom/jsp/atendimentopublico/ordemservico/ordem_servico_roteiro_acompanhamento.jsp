@@ -313,6 +313,8 @@
 	    	form.motivoNaoEncerramento.value = descricaoRegistro[1];
 	    	form.idOrdemServico.value = descricaoRegistro[2];
 	    	form.chaveEquipe.value = descricaoRegistro[3];
+	    	form.dataVisita.value = descricaoRegistro[4];
+	    	form.horaVisita.value = descricaoRegistro[5];
 	
 	    	form.action='exibirAcompanharRoteiroProgramacaoOrdemServicoAction.do?tipoAcao=S';
 		    form.submit();
@@ -563,6 +565,11 @@
 	<html:hidden property="chaveEquipe"/>
 	<html:hidden property="dataRoteiro"/>
 	<html:hidden property="chavesRelatorio"/>
+	<html:hidden property="motivoVisitaImprodutiva"/>
+	<html:hidden property="motivoCobrarVisitaImprodutiva"/>	
+	<html:hidden property="dataVisita"/>
+	<html:hidden property="horaVisita"/>		
+
 	
 	<input type="hidden" name="idEquipeSelecionada" value="" /> 
 

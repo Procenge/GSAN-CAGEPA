@@ -40,9 +40,13 @@
 package gcom.gui.cadastro.entidadebeneficente;
 
 import gcom.cadastro.cliente.Cliente;
+import gcom.cadastro.empresa.Empresa;
+import gcom.cadastro.empresa.FiltroEmpresa;
 import gcom.fachada.Fachada;
 import gcom.faturamento.debito.DebitoTipo;
 import gcom.gui.GcomAction;
+
+import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -81,8 +85,6 @@ public class ExibirInserirEntidadeBeneficenteAction
 			} else {
 				form.setNomeCliente("CLIENTE INEXISTENTE");
 				httpServletRequest.setAttribute("corFonteCliente", "#ff0000");
-				// throw new ActionServletException("atencao.pesquisa.cliente.inexistente", null,
-				// idCliente);
 			}
 		}
 
@@ -97,33 +99,16 @@ public class ExibirInserirEntidadeBeneficenteAction
 			}else{
 				form.setDescricaoDebitoTipo("TIPO DE DEBITO INEXISTENTE");
 				httpServletRequest.setAttribute("corFonteDebitoTipo", "#ff0000");
-				// throw new ActionServletException("atencao.pesquisa.debitoTipo.inexistente", null,
-				// idDebitoTipo);
 			}
 
 		}
 
-		// if(idDigitadoEnterEmpresa != null && !idDigitadoEnterEmpresa.trim().equals("")){
-		// FiltroEntidadeBeneficente filtro = new FiltroEntidadeBeneficente();
-		// filtro.adicionarParametro(new ParametroSimples(FiltroEntidadeBeneficente.ID,
-		// idDigitadoEnterEmpresa));
-		//
-		// Collection codigoEmpresaEncontrado = fachada.pesquisar(filtro,
-		// FiltroEntidadeBeneficente.class.getName());
-		//
-		// if(codigoEmpresaEncontrado != null && !codigoEmpresaEncontrado.isEmpty()){
-		// form.setCodigoEmpresa("");
-		// httpServletRequest.setAttribute("corEmpresa", "exception");
-		// form.setMensagemEmpresa(ConstantesSistema.CODIGO_EMPRESA_JA_CADASTRADO);
-		// form.setOkEmpresa("false");
-		// }else{
-		// form.setOkEmpresa("true");
-		// }
-		// }else{
-		// // Buscar o próximo id para cadastrar uma entidade beneficente.
-		// int proximoID = fachada.pesquisarProximoIdEmpresa();
-		// form.setCodigoEmpresa(Integer.toString(proximoID));
-		// }
+		FiltroEmpresa filtroEmpresa = new FiltroEmpresa();
+		filtroEmpresa.setCampoOrderBy(FiltroEmpresa.DESCRICAO);
+
+		Collection<Empresa> colecaoEmpresa = fachada.pesquisar(filtroEmpresa, Empresa.class.getName());
+
+		httpServletRequest.setAttribute("colecaoEmpresa", colecaoEmpresa);
 
 		return retorno;
 	}

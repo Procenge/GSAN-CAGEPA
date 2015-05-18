@@ -41,14 +41,7 @@ public class FiltrarTramiteEspecificacaoAction
 		filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.LOCALIDADE);
 		filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.SETOR_COMERCIAL);
 		filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.BAIRRO);
-		filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.SISTEMA_ABASTECIMENTO);
-		filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.DISTRITO_OPERACIONAL);
-		filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.ZONA_ABASTECIMENTO);
-		filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.SETOR_ABASTECIMENTO);
-		filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.SISTEMA_ESGOTO);
-		filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.SUBSISTEMA_ESGOTO);
-		filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.BACIA);
-		filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.SUBBACIA);
+
 		filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.UNID_ORGANIZACIONAL_ORIGEM);
 		filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.UNID_ORGANIZACIONAL_DESTINO);
 
@@ -60,16 +53,10 @@ public class FiltrarTramiteEspecificacaoAction
 		String idLocalidade = form.getIdLocalidade();
 		String codigoSetorComercial = form.getCodigoSetorComercial();
 		String codigoBairro = form.getCodigoBairro();
-		String idSistemaAbastecimento = form.getIdSistemaAbastecimento();
-		String idDistritoOperacional = form.getIdDistritoOperacional();
-		String idZonaAbastecimento = form.getIdZonaAbastecimento();
-		String idSetorAbastecimento = form.getIdSetorAbastecimento();
-		String idSistemaEsgoto = form.getIdSistemaEsgoto();
-		String idSubsistemaEsgoto = form.getIdSubsistemaEsgoto();
-		String idBacia = form.getIdBacia();
-		String idSubBacia = form.getIdSubBacia();
+
 		String idUnidadeOrganizacionalOrigem = form.getIdUnidadeOrganizacionalOrigem();
 		String idUnidadeOrganizacionalDestino = form.getIdUnidadeOrganizacionalDestino();
+		String indicadorPrimeiroTramite = form.getIndicadorPrimeiroTramite();
 		boolean indicadorAtualizar = form.isAtualizar();
 
 		boolean peloMenosUmParametroInformado = false;
@@ -105,51 +92,7 @@ public class FiltrarTramiteEspecificacaoAction
 			filtroTramiteEspecificacao.adicionarParametro(new ParametroSimples(FiltroTramiteEspecificacao.BAIRRO_CODIGO, codigoBairro));
 		}
 
-		if(!Util.isVazioOuBranco(idSistemaAbastecimento) && !idSistemaAbastecimento.equals(numeroNaoInformadoStr)){
-			peloMenosUmParametroInformado = true;
-			filtroTramiteEspecificacao.adicionarParametro(new ParametroSimples(FiltroTramiteEspecificacao.SISTEMA_ABASTECIMENTO_ID,
-							idSistemaAbastecimento));
-		}
 
-		if(!Util.isVazioOuBranco(idDistritoOperacional) && !idDistritoOperacional.equals(numeroNaoInformadoStr)){
-			peloMenosUmParametroInformado = true;
-			filtroTramiteEspecificacao.adicionarParametro(new ParametroSimples(FiltroTramiteEspecificacao.DISTRITO_OPERACIONAL_ID,
-							idDistritoOperacional));
-		}
-
-		if(!Util.isVazioOuBranco(idZonaAbastecimento) && !idZonaAbastecimento.equals(numeroNaoInformadoStr)){
-			peloMenosUmParametroInformado = true;
-			filtroTramiteEspecificacao.adicionarParametro(new ParametroSimples(FiltroTramiteEspecificacao.ZONA_ABASTECIMENTO_ID,
-							idZonaAbastecimento));
-		}
-
-		if(!Util.isVazioOuBranco(idSetorAbastecimento) && !idSetorAbastecimento.equals(numeroNaoInformadoStr)){
-			peloMenosUmParametroInformado = true;
-			filtroTramiteEspecificacao.adicionarParametro(new ParametroSimples(FiltroTramiteEspecificacao.SETOR_ABASTECIMENTO_ID,
-							idSetorAbastecimento));
-		}
-
-		if(!Util.isVazioOuBranco(idSistemaEsgoto) && !idSistemaEsgoto.equals(numeroNaoInformadoStr)){
-			peloMenosUmParametroInformado = true;
-			filtroTramiteEspecificacao.adicionarParametro(new ParametroSimples(FiltroTramiteEspecificacao.SISTEMA_ESGOTO_ID,
-							idSistemaEsgoto));
-		}
-
-		if(!Util.isVazioOuBranco(idSubsistemaEsgoto) && !idSubsistemaEsgoto.equals(numeroNaoInformadoStr)){
-			peloMenosUmParametroInformado = true;
-			filtroTramiteEspecificacao.adicionarParametro(new ParametroSimples(FiltroTramiteEspecificacao.SUBSISTEMA_ESGOTO_ID,
-							idSubsistemaEsgoto));
-		}
-
-		if(!Util.isVazioOuBranco(idBacia) && !idBacia.equals(numeroNaoInformadoStr)){
-			peloMenosUmParametroInformado = true;
-			filtroTramiteEspecificacao.adicionarParametro(new ParametroSimples(FiltroTramiteEspecificacao.BACIA_ID, idBacia));
-		}
-
-		if(!Util.isVazioOuBranco(idSubBacia) && !idSubBacia.equals(numeroNaoInformadoStr)){
-			peloMenosUmParametroInformado = true;
-			filtroTramiteEspecificacao.adicionarParametro(new ParametroSimples(FiltroTramiteEspecificacao.SUBBACIA_ID, idSubBacia));
-		}
 
 		if(!Util.isVazioOuBranco(idUnidadeOrganizacionalOrigem)){
 			peloMenosUmParametroInformado = true;
@@ -162,6 +105,13 @@ public class FiltrarTramiteEspecificacaoAction
 			filtroTramiteEspecificacao.adicionarParametro(new ParametroSimples(FiltroTramiteEspecificacao.UNID_ORGANIZACIONAL_DESTINO_ID,
 							idUnidadeOrganizacionalDestino));
 		}
+
+		if(!Util.isVazioOuBranco(indicadorPrimeiroTramite)){
+			peloMenosUmParametroInformado = true;
+			filtroTramiteEspecificacao.adicionarParametro(new ParametroSimples(FiltroTramiteEspecificacao.INDICADOR_PRIMEIRO_TRAMITE,
+							indicadorPrimeiroTramite));
+		}
+
 
 		// Erro caso o usuário mandou filtrar sem nenhum parâmetro
 		if(!peloMenosUmParametroInformado){

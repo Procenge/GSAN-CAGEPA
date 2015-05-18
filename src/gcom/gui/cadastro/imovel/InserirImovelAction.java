@@ -103,6 +103,7 @@ import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -314,42 +315,55 @@ public class InserirImovelAction
 			actionServletException = new ActionServletException("atencao.required", null, "um cliente do tipo usúario");
 			setarUrlLevantarExcecao(url, actionServletException);
 		}else{
+			Integer tipoRelacaoTitularDebito = null;
+
+			try{
+				tipoRelacaoTitularDebito = Integer.valueOf(ParametroFaturamento.P_TIPO_RELACAO_ATUAL_TITULAR_DEBITO_IMOVEL.executar()
+								.toString());
+			}catch(NumberFormatException e1){
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}catch(ControladorException e1){
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
 			Iterator iteratorClientes = clientes.iterator();
 
 			// verifica se entre os cliente existe o cliente usuario
 			boolean existeClienteUsuario = false;
+			boolean existeIndicadorNomeConta = false;
 			boolean existeClienteProprietario = false;
+			boolean existeClienteResponsavel = false;
+
 			while(iteratorClientes.hasNext()){
 				ClienteImovel clienteImovel = (ClienteImovel) iteratorClientes.next();
 				if(clienteImovel.getClienteRelacaoTipo() != null){
+
+					if(clienteImovel.getIndicadorNomeConta().equals(ConstantesSistema.SIM)){
+						existeIndicadorNomeConta = true;
+					}
+
 					if(clienteImovel.getClienteRelacaoTipo().getId().toString().equals(ClienteRelacaoTipo.USUARIO.toString())){
 						existeClienteUsuario = true;
+
 					}else if(clienteImovel.getClienteRelacaoTipo().getId().toString().equals(ClienteRelacaoTipo.PROPRIETARIO.toString())){
 						existeClienteProprietario = true;
+					}else if(clienteImovel.getClienteRelacaoTipo().getId().intValue() == ClienteRelacaoTipo.RESPONSAVEL.intValue()){
+						existeClienteResponsavel = true;
 					}
 				}
 
-				/*
-				 * if(getParametroCompanhia(httpServletRequest).equals(SistemaParametro.
-				 * INDICADOR_EMPRESA_DESO)) {
-				 * if (clienteImovel.getImovelContaEnvio() != null
-				 * && clienteImovel.getImovelContaEnvio().getId() ==
-				 * ConstantesSistema.NUMERO_NAO_INFORMADO) {
-				 * clienteImovel.setImovelContaEnvio(null);
-				 * }
-				 * if
-				 * (ConstantesSistema.SIM.equals(clienteImovel.getIndicadorEmissaoExtratoFaturamento
-				 * ())) {
-				 * extratoResponsavel = ConstantesSistema.SIM.toString();
-				 * } else {
-				 * extratoResponsavel = ConstantesSistema.NAO.toString();
-				 * }
-				 * }
-				 */
+
 			}
 
 			if(!existeClienteUsuario){
 				actionServletException = new ActionServletException("atencao.required", null, "um cliente do tipo usúario");
+				setarUrlLevantarExcecao(url, actionServletException);
+			}
+
+			if(!existeClienteResponsavel && tipoRelacaoTitularDebito.equals(ClienteRelacaoTipo.RESPONSAVEL)){
+				actionServletException = new ActionServletException("atencao.required", null, "um cliente do tipo responsável");
 				setarUrlLevantarExcecao(url, actionServletException);
 			}
 
@@ -359,7 +373,24 @@ public class InserirImovelAction
 					setarUrlLevantarExcecao(url, actionServletException);
 				}
 			}
+
+			if(!existeIndicadorNomeConta){
+
+				iteratorClientes = clientes.iterator();
+
+				while(iteratorClientes.hasNext()){
+					ClienteImovel clienteImovel = (ClienteImovel) iteratorClientes.next();
+					if(clienteImovel.getClienteRelacaoTipo().getId().toString().equals(ClienteRelacaoTipo.USUARIO.toString())){
+
+						clienteImovel.setIndicadorNomeConta(ConstantesSistema.SIM);
+					}
+
+				}
+
+			}
+
 		}
+
 
 		// Obtem os valores que vem na coleção de subCategorias(economia)para
 
@@ -887,7 +918,7 @@ public class InserirImovelAction
 				boolean achouResponsavel = false;
 				for(Object objeto : clientes){
 					ClienteImovel clienteImovel = (ClienteImovel) objeto;
-					if(clienteImovel.getClienteRelacaoTipo().equals(ClienteRelacaoTipo.RESPONSAVEL)){
+					if(clienteImovel.getClienteRelacaoTipo().getId().equals(ClienteRelacaoTipo.RESPONSAVEL)){
 						achouResponsavel = true;
 					}
 				}
@@ -925,8 +956,8 @@ public class InserirImovelAction
 
 			}
 			if(quadraNaBase.getIndicadorRedeAgua() != null && quadraNaBase.getIndicadorRedeAgua().equals(Quadra.REDE_PARCIAL)){
-				if(!(((ligacaoAguaSituacao.getId().toString().equals(LigacaoAguaSituacao.POTENCIAL.toString()))) && !(ligacaoAguaSituacao
-								.getId().toString().equals(LigacaoAguaSituacao.FACTIVEL.toString())))
+				if(!(ligacaoAguaSituacao.getId().toString().equals(LigacaoAguaSituacao.POTENCIAL.toString()))
+								&& !(ligacaoAguaSituacao.getId().toString().equals(LigacaoAguaSituacao.FACTIVEL.toString()))
 								&& !(ligacaoAguaSituacao.getId().toString().equals(LigacaoAguaSituacao.VIRTUAL.toString()))){
 					ActionServletException ex = new ActionServletException("atencao.imovel.ligacao_agua.incompativel");
 					setarUrlLevantarExcecao(url, ex);
@@ -1010,6 +1041,12 @@ public class InserirImovelAction
 		imovel.setDistritoOperacional(distritoOperacional);
 		imovel.setCodigoSetorComercial(setorComercial.getCodigo());
 		imovel.setNumeroQuadra(quadra.getNumeroQuadra());
+
+		if(inserirImovelActionForm.get("indicadorEnvioCorreio") != null && !inserirImovelActionForm.get("indicadorEnvioCorreio").equals("")){
+			imovel.setIndicadorEnvioCorreio(Short.valueOf(inserirImovelActionForm.get("indicadorEnvioCorreio").toString()));
+		}else{
+			imovel.setIndicadorEnvioCorreio((short) 2);
+		}
 
 		if(numeroMoradores == null || numeroMoradores.equals("")){
 

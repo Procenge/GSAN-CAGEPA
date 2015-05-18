@@ -80,6 +80,7 @@ import gcom.batch.Relatorio;
 import gcom.cadastro.imovel.bean.GerarRelacaoDebitosHelper;
 import gcom.cadastro.imovel.bean.GerarRelacaoDebitosImovelHelper;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
+import gcom.cobranca.OpcaoAgrupamento;
 import gcom.cobranca.bean.ContaValoresHelper;
 import gcom.cobranca.bean.GuiaPagamentoValoresHelper;
 import gcom.fachada.Fachada;
@@ -121,6 +122,31 @@ public class RelatorioGerarRelacaoDebitos
 	public RelatorioGerarRelacaoDebitos() {
 
 		super(null, "");
+	}
+
+	private void ordenarContasPeloValor(String indicadorOrdenacao, final String indicadorOrdenacaoAscDesc,
+					RelatorioGerarRelacaoDebitosBean relatorio){
+
+		if(indicadorOrdenacao != null && indicadorOrdenacao.equals("4") && indicadorOrdenacaoAscDesc != null){
+			Collections.sort(relatorio.getArrayRelatorioGerarRelacaoDebitosContasBean(),
+							new Comparator<RelatorioGerarRelacaoDebitosContasBean>() {
+
+								public int compare(RelatorioGerarRelacaoDebitosContasBean o1, RelatorioGerarRelacaoDebitosContasBean o2){
+
+									if(indicadorOrdenacaoAscDesc.equalsIgnoreCase("ASC")){
+										return Double.valueOf(o1.getContaValorOriginal().replace(".", "").replace(",", ".")).compareTo(
+														Double.valueOf(o2.getContaValorOriginal().replace(".", "").replace(",", ".")));
+
+									}
+
+									return Double.valueOf(o2.getContaValorOriginal().replace(".", "").replace(",", ".")).compareTo(
+													Double.valueOf(o1.getContaValorOriginal().replace(".", "").replace(",", ".")));
+
+								}
+
+							});
+
+		}
 	}
 
 	/**
@@ -195,6 +221,11 @@ public class RelatorioGerarRelacaoDebitos
 		String consumoMinimoFixadoEsgotoInicial = (String) getParametro("consumoMinimoFixadoEsgotoInicial");
 		// consumo Minimo Fixado Esgoto Final
 		String consumoMinimoFixadoEsgotoFinal = (String) getParametro("consumoMinimoFixadoEsgotoFinal");
+
+		String consumoFixadoEsgotoPocoInicial = (String) getParametro("consumoFixadoEsgotoPocoInicial");
+
+		String consumoFixadoEsgotoPocoFinal = (String) getParametro("consumoFixadoEsgotoPocoFinal");
+
 		// intervalo Percentual Esgoto Inicial
 		String intervaloPercentualEsgotoInicial = (String) getParametro("intervaloPercentualEsgotoInicial");
 		// intervalor Percentual Esgoto Final
@@ -280,9 +311,49 @@ public class RelatorioGerarRelacaoDebitos
 		 * }
 		 */
 
+		String indicadorOpcaoAgrupamento = (String) getParametro("indicadorOpcaoAgrupamento");
+		String indicadorOrdenacaoAscDesc = (String) getParametro("indicadorOrdenacaoAscDesc");
+
 		int tipoFormatoRelatorio = (Integer) getParametro("tipoFormatoRelatorio");
 
 		Fachada fachada = Fachada.getInstancia();
+
+		SistemaParametro sistemaParametro = fachada.pesquisarParametrosDoSistema();
+
+		// Parâmetros do relatório
+		Map parametros = new HashMap();
+
+		parametros.put("imagem", sistemaParametro.getImagemRelatorio());
+
+		parametros.put("mesAnoArrecadacao", Util.formatarAnoMesParaMesAno(sistemaParametro.getAnoMesArrecadacao().intValue()));
+
+		parametros.put("tipoFormatoRelatorio", "R0610");
+
+		parametros.put("indicadorOpcaoAgrupamento", indicadorOpcaoAgrupamento);
+
+		OpcaoAgrupamento opcaoAgrupamento = OpcaoAgrupamento.valuesOf(indicadorOpcaoAgrupamento);
+
+		switch(opcaoAgrupamento){
+			case CATEGORIA:
+				parametros.put("agrupamento", "Agrupado por Categoria");
+				break;
+			case GRUPO_FATURAMENTO:
+				parametros.put("agrupamento", "Agrupado por Grupo de Faturamento");
+				break;
+
+			case GERENCIA_REGIONAL_LOCALIDADE:
+				parametros.put("agrupamento", "Agrupado por Gerência Regional/Localidade");
+				break;
+			case PERIODO_ANUAL:
+				parametros.put("agrupamento", "Agrupado por Período de Referência Anual do Débito");
+				break;
+			case PERIODO_MENSAL:
+				parametros.put("agrupamento", "Agrupado por Período de Referência Mensal do Débito");
+				break;
+
+		}
+
+		byte[] retorno = null;
 
 		Collection colecaoDadosRelatorio = fachada.gerarRelacaoDebitos(imovelCondominioID, imovelPrincipalID, nomeContaID, situacaoAgua,
 						consumoMinimoInicial, consumoMinimoFinal, situacaoLigacaoEsgoto, consumoMinimoFixadoEsgotoInicial,
@@ -297,12 +368,11 @@ public class RelatorioGerarRelacaoDebitos
 						numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal, areaConstruidaFaixa,
 						tipoDebito, valorDebitoInicial, valorDebitoFinal, qtdContasInicial, qtdContasFinal, referenciaFaturaInicial,
 						referenciaFaturaFinal, vencimentoInicial, vencimentoFinal, qtdImoveis, qtdMaiores, indicadorOrdenacao,
-						idUnidadeNegocio);
+						idUnidadeNegocio, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal, indicadorOpcaoAgrupamento,
+						indicadorOrdenacaoAscDesc);
 
 		// coleção de beans do relatório
 		List relatorioBeans = new ArrayList();
-
-		byte[] retorno = null;
 
 		// bean do relatorio
 		RelatorioGerarRelacaoDebitosBean relatorioGerarRelacaoDebitosBean = null;
@@ -313,6 +383,8 @@ public class RelatorioGerarRelacaoDebitos
 			Iterator iteratorColecaoDadosRelatorio = colecaoDadosRelatorio.iterator();
 			Integer idLocalidade = null;
 			Integer idGerencia = null;
+			Integer agrupamentoAno = 1500;
+			String idImovel = "-1";
 			int countContasLocalidade = 0;
 			int countImovelLocalidade = 0;
 			int countDebitosLocalidade = 0;
@@ -329,14 +401,19 @@ public class RelatorioGerarRelacaoDebitos
 			while(iteratorColecaoDadosRelatorio.hasNext()){
 				GerarRelacaoDebitosHelper gerarRelacaoDebitosHelper = (GerarRelacaoDebitosHelper) iteratorColecaoDadosRelatorio.next();
 
-				countImovelLocalidade++;
-				countImovelGerencia++;
 				countImovelTotal++;
+
+				String idImovelRelatorio = gerarRelacaoDebitosHelper.getGerarRelacaoDebitosImovelHelper().getIdImovel();
+				if(!idImovelRelatorio.equals(idImovel)){
+					idImovel = idImovelRelatorio;
+					countImovelLocalidade++;
+					countImovelGerencia++;
+				}
 
 				if(gerarRelacaoDebitosHelper.getTotalGeralAtualizado() != null){
 					totalDebitosLocalidade = totalDebitosLocalidade.add(gerarRelacaoDebitosHelper.getTotalGeralAtualizado());
 					totalDebitosGerencia = totalDebitosGerencia.add(gerarRelacaoDebitosHelper.getTotalGeralAtualizado());
-					totalDebitosTotal = totalDebitosTotal.add(gerarRelacaoDebitosHelper.getTotalGeralAtualizado());
+
 				}
 
 				Collection colecaoRelatorioGerarRelacaoDebitosGuiasPagamentoBean = null;
@@ -385,19 +462,36 @@ public class RelatorioGerarRelacaoDebitos
 
 				// carrega os dados dos valores totais do imovel
 				RelatorioGerarRelacaoDebitosTotaisImovelBean relatorioGerarRelacaoDebitosTotaisImovelBean = new RelatorioGerarRelacaoDebitosTotaisImovelBean(
-								Util.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalContas()), Util
-												.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalDebitosACobrar()),
+								Util.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalContas()),
+								Util.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalDebitosACobrar()),
 								Util.formatarMoedaReal(contaDacGuia),// Util.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalContas()),
 								Util.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalGuiasPagamento()),
 								Util.formatarMoedaReal(acrescimo),// Util.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalMulta()),
-								Util.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalJuros()), Util
-												.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalAtualizacaoMonetaria()), Util
-												.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalGeralAtualizado()),
+								Util.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalJuros()),
+								Util.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalAtualizacaoMonetaria()),
+								Util.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalGeralAtualizado()),
 								colecaoRelatorioGerarRelacaoDebitosGuiasPagamentoBean);
 
 				// adiciona os dados dos valores totais do imovel
 				Collection colecaoRelatorioGerarRelacaoDebitosTotaisImovelBean = new ArrayList();
-				colecaoRelatorioGerarRelacaoDebitosTotaisImovelBean.add(relatorioGerarRelacaoDebitosTotaisImovelBean);
+
+				if(opcaoAgrupamento.equals(OpcaoAgrupamento.PERIODO_ANUAL)){
+
+					String ano = String.valueOf(
+									new ArrayList<ContaValoresHelper>(gerarRelacaoDebitosHelper.getColecaoContas()).get(0).getConta()
+													.getReferencia()).substring(0, 4);
+
+					Integer agrupamentoAnoAtual = new Integer(ano);
+
+					if(!agrupamentoAno.equals(agrupamentoAnoAtual)){
+						agrupamentoAno = agrupamentoAnoAtual;
+						colecaoRelatorioGerarRelacaoDebitosTotaisImovelBean.add(relatorioGerarRelacaoDebitosTotaisImovelBean);
+
+					}
+				}else{
+
+					colecaoRelatorioGerarRelacaoDebitosTotaisImovelBean.add(relatorioGerarRelacaoDebitosTotaisImovelBean);
+				}
 
 				// colecao dos creditos a realizar
 				Collection colecaoRelatorioGerarRelacaoDebitosTipoDebitoCreditoBean = null;
@@ -461,10 +555,6 @@ public class RelatorioGerarRelacaoDebitos
 					while(iteratorColecaoContas.hasNext()){
 						ContaValoresHelper contaValoresHelper = (ContaValoresHelper) iteratorColecaoContas.next();
 
-						countContasLocalidade++;
-						countContasGerencia++;
-						countContasTotal++;
-
 						String revisao = "";
 						if(contaValoresHelper.getConta().getContaMotivoRevisao() != null
 										&& contaValoresHelper.getConta().getContaMotivoRevisao().getId() != null){
@@ -500,17 +590,17 @@ public class RelatorioGerarRelacaoDebitos
 
 						colecaoRelatorioGerarRelacaoDebitosContasTotalBean = new ArrayList();
 						// dados do total da conta
-						relatorioGerarRelacaoDebitosContasTotalBean = new RelatorioGerarRelacaoDebitosContasTotalBean(Util
-										.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalContas()), Util
-										.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalContaAtualizado()));
+						relatorioGerarRelacaoDebitosContasTotalBean = new RelatorioGerarRelacaoDebitosContasTotalBean(
+										Util.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalContas()),
+										Util.formatarMoedaReal(gerarRelacaoDebitosHelper.getTotalContaAtualizado()));
 
 						colecaoRelatorioGerarRelacaoDebitosContasTotalBean.add(relatorioGerarRelacaoDebitosContasTotalBean);
 
-						relatorioGerarRelacaoDebitosContasBean = new RelatorioGerarRelacaoDebitosContasBean(revisao, Util
-										.formatarAnoMesParaMesAno(contaValoresHelper.getConta().getReferencia())
-										+ "-" + contaValoresHelper.getConta().getDigitoVerificadorConta(), Util
-										.formatarData(contaValoresHelper.getConta().getDataVencimentoConta()), Util
-										.formatarMoedaReal(new BigDecimal(contaValoresHelper.getConta().getValorTotalConta())),
+						relatorioGerarRelacaoDebitosContasBean = new RelatorioGerarRelacaoDebitosContasBean(revisao,
+										Util.formatarAnoMesParaMesAno(contaValoresHelper.getConta().getReferencia()) + "-"
+														+ contaValoresHelper.getConta().getDigitoVerificadorConta(),
+										Util.formatarData(contaValoresHelper.getConta().getDataVencimentoConta()),
+										Util.formatarMoedaReal(new BigDecimal(contaValoresHelper.getConta().getValorTotalConta())),
 										representacaoNumericaCodBarraFormatada, colecaoRelatorioGerarRelacaoDebitosContasTotalBean);
 
 						colecaoRelatorioGerarRelacaoDebitosContasBean.add(relatorioGerarRelacaoDebitosContasBean);
@@ -523,13 +613,18 @@ public class RelatorioGerarRelacaoDebitos
 
 				if(idLocalidade == null){
 					idLocalidade = new Integer(gerarRelacaoDebitosImovelHelper.getIdLocalidade());
+					countContasTotal += gerarRelacaoDebitosHelper.getColecaoContas().size();
+
+					totalDebitosTotal = totalDebitosTotal.add(totalDebitosLocalidade);
+
 				}else{
 					Integer idLocalAtual = new Integer(gerarRelacaoDebitosImovelHelper.getIdLocalidade());
 					if(!idLocalidade.equals(idLocalAtual)){
-						countContasLocalidade = 0;
-						countImovelLocalidade = 0;
-						countDebitosLocalidade = 0;
-						totalDebitosLocalidade = new BigDecimal("0.00");
+						idLocalidade = new Integer(gerarRelacaoDebitosImovelHelper.getIdLocalidade());
+						countContasTotal += gerarRelacaoDebitosHelper.getColecaoContas().size();
+						countDebitosLocalidade = 1;
+
+						totalDebitosTotal = totalDebitosTotal.add(totalDebitosLocalidade);
 
 					}
 				}
@@ -539,236 +634,58 @@ public class RelatorioGerarRelacaoDebitos
 				}else{
 					Integer idGerenciaAtual = new Integer(gerarRelacaoDebitosImovelHelper.getIdGerenciaRegional());
 					if(!idGerencia.equals(idGerenciaAtual)){
-						countContasGerencia = 0;
-						countImovelGerencia = 0;
-						countDebitosGerencia = 0;
-						totalDebitosGerencia = new BigDecimal("0.00");
+						idGerencia = new Integer(gerarRelacaoDebitosImovelHelper.getIdGerenciaRegional());
+						countDebitosLocalidade = 1;
+
 					}
 				}
-
-				// dados do imovel
-				/*
-				 * relatorioGerarRelacaoDebitosBean = new
-				 * RelatorioGerarRelacaoDebitosBean(
-				 * gerarRelacaoDebitosImovelHelper.getIdGerenciaRegional(),
-				 * gerarRelacaoDebitosImovelHelper.getNomeGerenciaRegional(),
-				 * gerarRelacaoDebitosImovelHelper.getIdLocalidade(),
-				 * gerarRelacaoDebitosImovelHelper.getNomeLocalidade(),
-				 * gerarRelacaoDebitosImovelHelper.getIdImovel(),
-				 * gerarRelacaoDebitosImovelHelper.getInscricaoImovel(),
-				 * gerarRelacaoDebitosImovelHelper.getNomeClienteUsuario(),
-				 * gerarRelacaoDebitosImovelHelper.getNomeClienteResponsavel(),
-				 * gerarRelacaoDebitosImovelHelper.getEndereco(),
-				 * gerarRelacaoDebitosImovelHelper.getQuantidadeEconomias(),
-				 * gerarRelacaoDebitosImovelHelper.getCategoriaPrincipal(),
-				 * gerarRelacaoDebitosImovelHelper.getSituacaoAgua(),
-				 * gerarRelacaoDebitosImovelHelper.getSituacaoEsgoto(),
-				 * gerarRelacaoDebitosImovelHelper.getPercentualEsgoto(),
-				 * gerarRelacaoDebitosImovelHelper.getDataCorte(),
-				 * gerarRelacaoDebitosImovelHelper.getConsumoMediaImovel(),
-				 * colecaoRelatorioGerarRelacaoDebitosContasBean,
-				 * colecaoRelatorioGerarRelacaoDebitosTotaisImovelBean,
-				 * colecaoRelatorioGerarRelacaoDebitosTipoDebitoCreditoBean,
-				 * gerarRelacaoDebitosImovelHelper.getNomeGerenciaRegional() + " - " +
-				 * gerarRelacaoDebitosImovelHelper.getGerenciaRegional(),
-				 * gerarRelacaoDebitosImovelHelper.getIdLocalidade()+ " - " +
-				 * gerarRelacaoDebitosImovelHelper.getDescricaoLocalidade());
-				 */
 
 				String percentualEsgoto = "";
 				if(gerarRelacaoDebitosImovelHelper.getPercentualEsgoto() != null){
 					percentualEsgoto = percentualEsgoto + gerarRelacaoDebitosImovelHelper.getPercentualEsgoto() + " %";
 
 				}
+
+				countContasLocalidade = gerarRelacaoDebitosHelper.getColecaoContas().size();
+				countContasGerencia = gerarRelacaoDebitosHelper.getColecaoContas().size();
+
 				relatorioGerarRelacaoDebitosBean = new RelatorioGerarRelacaoDebitosBean(gerarRelacaoDebitosImovelHelper.getIdImovel(),
-								gerarRelacaoDebitosImovelHelper.getInscricaoImovel(), gerarRelacaoDebitosImovelHelper
-												.getNomeClienteUsuario(), gerarRelacaoDebitosImovelHelper.getNomeClienteResponsavel(),
-								gerarRelacaoDebitosImovelHelper.getEndereco(), gerarRelacaoDebitosImovelHelper.getQuantidadeEconomias(),
+								gerarRelacaoDebitosImovelHelper.getInscricaoImovel(),
+								gerarRelacaoDebitosImovelHelper.getNomeClienteUsuario(),
+								gerarRelacaoDebitosImovelHelper.getNomeClienteResponsavel(), gerarRelacaoDebitosImovelHelper.getEndereco(),
+								gerarRelacaoDebitosImovelHelper.getQuantidadeEconomias(),
 								gerarRelacaoDebitosImovelHelper.getCategoriaPrincipal(), gerarRelacaoDebitosImovelHelper.getSituacaoAgua(),
-								gerarRelacaoDebitosImovelHelper.getSituacaoEsgoto(), percentualEsgoto, gerarRelacaoDebitosImovelHelper
-												.getDataCorte(), gerarRelacaoDebitosImovelHelper.getConsumoMediaImovel(),
+								gerarRelacaoDebitosImovelHelper.getSituacaoEsgoto(), percentualEsgoto,
+								gerarRelacaoDebitosImovelHelper.getDataCorte(), gerarRelacaoDebitosImovelHelper.getConsumoMediaImovel(),
 								gerarRelacaoDebitosImovelHelper.getNomeGerenciaRegional() + " - "
-												+ gerarRelacaoDebitosImovelHelper.getGerenciaRegional(), gerarRelacaoDebitosImovelHelper
-												.getIdLocalidade()
-												+ " - " + gerarRelacaoDebitosImovelHelper.getDescricaoLocalidade(), ""
-												+ countContasLocalidade, "" + countImovelLocalidade, "" + countDebitosLocalidade, ""
-												+ countContasGerencia, "" + countImovelGerencia, "" + countDebitosGerencia, ""
-												+ countContasTotal, "" + countImovelTotal, "" + countDebitosTotal, Util
-												.formatarMoedaReal(totalDebitosLocalidade), Util.formatarMoedaReal(totalDebitosGerencia),
-								Util.formatarMoedaReal(totalDebitosTotal), colecaoRelatorioGerarRelacaoDebitosContasBean,
-								colecaoRelatorioGerarRelacaoDebitosTipoDebitoCreditoBean,
+												+ gerarRelacaoDebitosImovelHelper.getGerenciaRegional(),
+								gerarRelacaoDebitosImovelHelper.getIdLocalidade() + " - "
+												+ gerarRelacaoDebitosImovelHelper.getDescricaoLocalidade(), "" + countContasLocalidade, ""
+												+ countImovelLocalidade, "" + countDebitosLocalidade, "" + countContasGerencia, ""
+												+ countImovelGerencia, "" + countDebitosGerencia, "" + countContasTotal, ""
+												+ countImovelTotal, "" + countDebitosTotal, Util.formatarMoedaReal(totalDebitosLocalidade),
+								Util.formatarMoedaReal(totalDebitosGerencia), Util.formatarMoedaReal(totalDebitosTotal),
+								colecaoRelatorioGerarRelacaoDebitosContasBean, colecaoRelatorioGerarRelacaoDebitosTipoDebitoCreditoBean,
 								colecaoRelatorioGerarRelacaoDebitosTotaisImovelBean, colecaoRelatorioGerarRelacaoDebitosGuiasPagamentoBean);
+
+				ordenarContasPeloValor(indicadorOrdenacao, indicadorOrdenacaoAscDesc, relatorioGerarRelacaoDebitosBean);
 
 				// add item da colecao
 				relatorioBeans.add(relatorioGerarRelacaoDebitosBean);
+
+				countImovelLocalidade = 1;
+
+				totalDebitosLocalidade = new BigDecimal("0.00");
+
+				countImovelGerencia = 1;
+				countDebitosGerencia = 1;
+				totalDebitosGerencia = new BigDecimal("0.00");
+
 			}
 		}else{
 			throw new ActionServletException("atencao.relatorio.vazio");
 		}
 
-		SistemaParametro sistemaParametro = fachada.pesquisarParametrosDoSistema();
-
-		// Parâmetros do relatório
-		Map parametros = new HashMap();
-
-		parametros.put("imagem", sistemaParametro.getImagemRelatorio());
-
-		parametros.put("mesAnoArrecadacao", Util.formatarAnoMesParaMesAno(sistemaParametro.getAnoMesArrecadacao().intValue()));
-
-		parametros.put("tipoFormatoRelatorio", "R0610");
-
-		// adiciona os parâmetros do relatório
-		// adiciona o laudo da análise
-		/*
-		 * parametros.put("gerenciaRegional",
-		 * gerenciaRegional.getNomeAbreviado());
-		 * parametros.put("idLocalidadeOrigem", imovelParametrosInicial
-		 * .getLocalidade().getId() == null ? "" : "" +
-		 * imovelParametrosInicial.getLocalidade().getId());
-		 * parametros.put("idLocalidadeDestino", imovelParametrosFinal
-		 * .getLocalidade().getId() == null ? "" : "" +
-		 * imovelParametrosFinal.getLocalidade().getId());
-		 * parametros.put("nomeLocalidadeOrigem", imovelParametrosInicial
-		 * .getLocalidade().getDescricao());
-		 * parametros.put("nomeLocalidadeDestino", imovelParametrosFinal
-		 * .getLocalidade().getDescricao());
-		 * parametros.put("idSetorComercialOrigem", imovelParametrosInicial
-		 * .getSetorComercial().getId() == null ? "" : "" +
-		 * imovelParametrosInicial.getSetorComercial().getCodigo());
-		 * parametros.put("idSetorComercialDestino", imovelParametrosFinal
-		 * .getSetorComercial().getId() == null ? "" : "" +
-		 * imovelParametrosFinal.getSetorComercial().getCodigo());
-		 * parametros.put("nomeSetorComercialOrigem", imovelParametrosInicial
-		 * .getSetorComercial().getDescricao());
-		 * parametros.put("nomeSetorComercialDestino", imovelParametrosFinal
-		 * .getSetorComercial().getDescricao());
-		 * parametros.put("numeroQuadraOrigem", imovelParametrosInicial
-		 * .getQuadra().getNumeroQuadra() == 0 ? "" : "" +
-		 * imovelParametrosInicial.getQuadra().getNumeroQuadra());
-		 * parametros.put("numeroQuadraDestino",
-		 * imovelParametrosFinal.getQuadra() .getNumeroQuadra() == 0 ? "" : "" +
-		 * imovelParametrosFinal.getQuadra().getNumeroQuadra());
-		 * parametros.put("loteOrigem", imovelParametrosInicial.getLote() == 0 ? "" : "" +
-		 * imovelParametrosInicial.getLote()); parametros.put("loteDestino",
-		 * imovelParametrosFinal.getLote() == 0 ? "" : "" +
-		 * imovelParametrosFinal.getLote()); parametros.put("idMunicipio",
-		 * municipio.getId() == null ? "" : "" + municipio.getId());
-		 * parametros.put("nomeMunicipio", municipio.getNome());
-		 * parametros.put("idBairro", bairro.getCodigo() == 0 ? "" : "" +
-		 * bairro.getCodigo()); parametros.put("nomeBairro", bairro.getNome());
-		 * parametros.put("cep",
-		 * imovelParametrosInicial.getLogradouroCep().getCep().getCodigo() ==
-		 * null ? "" : "" +
-		 * imovelParametrosInicial.getLogradouroCep().getCep().getCodigo());
-		 * parametros.put("idLogradouro",
-		 * imovelParametrosInicial.getLogradouroCep().getLogradouro() .getId() ==
-		 * null ? "" : "" +
-		 * imovelParametrosInicial.getLogradouroCep().getLogradouro().getId());
-		 * parametros.put("nomeLogradouro", imovelParametrosInicial
-		 * .getLogradouroCep().getLogradouro().getNome());
-		 * parametros.put("idCliente", clienteImovelParametros.getCliente()
-		 * .getId() == null ? "" : "" +
-		 * clienteImovelParametros.getCliente().getId());
-		 * parametros.put("nomeCliente", clienteImovelParametros.getCliente()
-		 * .getNome()); parametros.put("tipoRelacao", clienteImovelParametros
-		 * .getClienteRelacaoTipo().getDescricao());
-		 * parametros.put("tipoCliente", clienteImovelParametros.getCliente()
-		 * .getClienteTipo().getDescricao()); parametros.put("imovelCondominio",
-		 * imovelParametrosInicial .getImovelCondominio().getId() == null ? "" : "" +
-		 * imovelParametrosInicial.getImovelCondominio().getId());
-		 * parametros.put("imovelPrincipal", imovelParametrosInicial
-		 * .getImovelPrincipal().getId() == null ? "" : "" +
-		 * imovelParametrosInicial.getImovelPrincipal().getId());
-		 * parametros.put("nomeConta", imovelParametrosInicial.getNomeConta()
-		 * .getNomeConta()); parametros.put("situacaoLigacaoAgua",
-		 * imovelParametrosInicial .getLigacaoAguaSituacao().getDescricao());
-		 * parametros.put("situacaoLigacaoEsgoto", imovelParametrosInicial
-		 * .getLigacaoEsgotoSituacao().getDescricao());
-		 * parametros.put("consumoMinimoFixadoAguaInicial",
-		 * imovelParametrosInicial.getLigacaoAgua()
-		 * .getNumeroConsumoMinimoAgua() == null ? null : "" +
-		 * imovelParametrosInicial.getLigacaoAgua()
-		 * .getNumeroConsumoMinimoAgua());
-		 * parametros.put("consumoMinimoFixadoAguaFinal", imovelParametrosFinal
-		 * .getLigacaoAgua().getNumeroConsumoMinimoAgua() == null ? null : "" +
-		 * imovelParametrosFinal.getLigacaoAgua()
-		 * .getNumeroConsumoMinimoAgua());
-		 * parametros.put("percentualEsgotoInicial", imovelParametrosInicial
-		 * .getLigacaoEsgoto().getPercentual() == null ? null :
-		 * imovelParametrosInicial.getLigacaoEsgoto().getPercentual()
-		 * .toString()); parametros.put("percentualEsgotoFinal",
-		 * imovelParametrosFinal .getLigacaoEsgoto().getPercentual() == null ?
-		 * null : imovelParametrosFinal.getLigacaoEsgoto().getPercentual()
-		 * .toString()); parametros .put("consumoMinimoFixadoEsgotoInicial",
-		 * imovelParametrosInicial.getLigacaoEsgoto() .getConsumoMinimo() ==
-		 * null ? null : "" + imovelParametrosInicial.getLigacaoEsgoto()
-		 * .getConsumoMinimo());
-		 * parametros.put("consumoMinimoFixadoEsgotoFinal",
-		 * imovelParametrosFinal .getLigacaoEsgoto().getConsumoMinimo() == null ?
-		 * null : "" +
-		 * imovelParametrosFinal.getLigacaoEsgoto().getConsumoMinimo());
-		 * parametros.put("indicadorMedicao", indicadorMedicao == null ? "" :
-		 * indicadorMedicao.equals(new Short("0")) ? "SEM MEDIÇÃO" : "COM
-		 * MEDIÇÃO"); parametros.put("tipoMedicao",
-		 * medicaoHistoricoParametrosInicial .getMedicaoTipo().getDescricao());
-		 * parametros .put( "mediaMinimaImovelInicial",
-		 * consumoHistoricoParametrosInicial.getConsumoMedio() == null ? null : "" +
-		 * consumoHistoricoParametrosInicial .getConsumoMedio()); parametros
-		 * .put("mediaMinimaImovelFinal", consumoHistoricoParametrosFinal
-		 * .getConsumoMedio() == null ? null : "" +
-		 * consumoHistoricoParametrosFinal.getConsumoMedio()); parametros
-		 * .put("mediaMinimaHidrometroInicial",
-		 * medicaoHistoricoParametrosInicial .getConsumoMedioHidrometro() ==
-		 * null ? null : "" + medicaoHistoricoParametrosInicial
-		 * .getConsumoMedioHidrometro()); parametros
-		 * .put("mediaMinimaHidrometroFinal", medicaoHistoricoParametrosFinal
-		 * .getConsumoMedioHidrometro() == null ? null : "" +
-		 * medicaoHistoricoParametrosFinal .getConsumoMedioHidrometro());
-		 * parametros.put("perfilImovel", imovelParametrosInicial
-		 * .getImovelPerfil().getDescricao()); parametros.put("categoria",
-		 * categoria.getDescricao()); parametros.put("subCategoria",
-		 * subcategoria.getDescricao()); parametros.put("qtdeEconomiaInicial",
-		 * imovelParametrosInicial .getQuantidadeEconomias() == null ? null : "" +
-		 * imovelParametrosInicial.getQuantidadeEconomias());
-		 * parametros.put("qtdeEconomiaFinal", imovelParametrosFinal
-		 * .getQuantidadeEconomias() == null ? null : "" +
-		 * imovelParametrosFinal.getQuantidadeEconomias());
-		 * parametros.put("numeroPontosInicial", imovelParametrosInicial
-		 * .getNumeroPontosUtilizacao() == 0 ? null : "" +
-		 * imovelParametrosInicial.getNumeroPontosUtilizacao());
-		 * parametros.put("numeroPontosFinal", imovelParametrosFinal
-		 * .getNumeroPontosUtilizacao() == 0 ? null : "" +
-		 * imovelParametrosFinal.getNumeroPontosUtilizacao());
-		 * parametros.put("numeroMoradoresInicial", imovelParametrosInicial
-		 * .getNumeroMorador() == 0 ? null : "" +
-		 * imovelParametrosInicial.getNumeroMorador());
-		 * parametros.put("numeroMoradoresFinal", imovelParametrosFinal
-		 * .getNumeroMorador() == 0 ? null : "" +
-		 * imovelParametrosFinal.getNumeroMorador());
-		 * parametros.put("areaConstruidaInicial", imovelParametrosInicial
-		 * .getAreaConstruida().equals(new Short("0")) ? null : "" +
-		 * imovelParametrosInicial.getAreaConstruida());
-		 * parametros.put("areaConstruidaFinal", imovelParametrosFinal
-		 * .getAreaConstruida().equals(new Short("0")) ? null : "" +
-		 * imovelParametrosFinal.getAreaConstruida());
-		 * parametros.put("tipoPoco", imovelParametrosInicial.getPocoTipo()
-		 * .getDescricao()); parametros.put("tipoSituacaoEspecialFaturamento",
-		 * imovelParametrosInicial.getFaturamentoSituacaoTipo()
-		 * .getDescricao()); parametros.put("tipoSituacaoEspecialCobranca",
-		 * imovelParametrosInicial .getCobrancaSituacaoTipo().getDescricao());
-		 * parametros.put("situacaoCobranca", cobrancaSituacao == null ? "" :
-		 * cobrancaSituacao.getDescricao());
-		 * parametros.put("diaVencimentoAlternativo", imovelParametrosInicial
-		 * .getDiaVencimento() == null ? "" : "" +
-		 * imovelParametrosInicial.getDiaVencimento());
-		 * parametros.put("anormalidadeElo", imovelParametrosInicial
-		 * .getEloAnormalidade() == null ? "" : imovelParametrosInicial
-		 * .getEloAnormalidade().getDescricao());
-		 * parametros.put("ocorrenciaCadastro", imovelParametrosInicial
-		 * .getCadastroOcorrencia().getDescricao());
-		 * parametros.put("tarifaConsumo", imovelParametrosInicial
-		 * .getConsumoTarifa().getDescricao());
-		 */
 		RelatorioDataSource ds = new RelatorioDataSource((List) relatorioBeans);
 
 		// exporta o relatório em pdf e retorna o array de bytes
@@ -799,6 +716,8 @@ public class RelatorioGerarRelacaoDebitos
 		final String[] idSituacaoLigacaoEsgoto = (String[]) getParametro("situacaoLigacaoEsgoto");
 		final String consumoMinimoInicialEsgoto = (String) getParametro("consumoMinimoFixadoEsgotoInicial");
 		final String consumoMinimoFinalEsgoto = (String) getParametro("consumoMinimoFixadoEsgotoFinal");
+		final String consumoFixadoEsgotoPocoInicial = (String) getParametro("consumoFixadoEsgotoPocoInicial");
+		final String consumoFixadoEsgotoPocoFinal = (String) getParametro("consumoFixadoEsgotoPocoFinal");
 		final String intervaloValorPercentualEsgotoInicial = (String) getParametro("intervaloPercentualEsgotoInicial");
 		final String intervaloValorPercentualEsgotoFinal = (String) getParametro("intervaloPercentualEsgotoFinal");
 		final String intervaloMediaMinimaImovelInicial = (String) getParametro("intervaloMediaMinimaImovelInicial");
@@ -866,7 +785,8 @@ public class RelatorioGerarRelacaoDebitos
 						idCategoria, quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 						idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 						idAreaConstruidaFaixa, idUnidadeNegocio, relatorio, cdRotaInicial, cdRotaFinal, sequencialRotaInicial,
-						sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+						sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal, consumoFixadoEsgotoPocoInicial,
+						consumoFixadoEsgotoPocoFinal);
 
 		return retorno;
 	}

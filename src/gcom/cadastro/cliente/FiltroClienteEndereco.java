@@ -257,4 +257,11 @@ public class FiltroClienteEndereco
 	public final static String LOGRADOURO_BAIRRO = "logradouroBairro";
 
 	public final static String LOGRADOURO_BAIRRO_ID = "logradouroBairro.id";
+
+	public final static String IMOVEL = "imovel";
+
+	public final static String IMOVEL_ROTA = "imovel.rota";
+
+	public final static String INDICADOR_ENDERECO_CORRESPONDENCIA = "indicadorEnderecoCorrespondencia";
+
 }

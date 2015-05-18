@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<data-sources />
+	<form-beans>
+		<form-bean name="GerarRelatorioProvisaoParaPerdasRecebimentoDynaActionForm"
+			type="org.apache.struts.action.DynaActionForm">
+			<form-property
+				name="relatorio"
+				type="java.lang.String" />
+			<form-property
+				name="psNumeroAno"
+				type="java.lang.String" />
+			<form-property
+				name="psNumeroMes"
+				type="java.lang.String" />
+			<form-property
+				name="psTipoRelatorio"
+				type="java.lang.String" />
+			<form-property
+				name="pnValorMinimo"
+				type="java.lang.String" />
+			<form-property
+				name="pnValorMaximo"
+				type="java.lang.String" />	
+			<form-property
+				name="pnDiasMinimo"
+				type="java.lang.Integer" />	
+			<form-property
+				name="pnDiasMaximo"
+				type="java.lang.Integer" />		
+			<form-property
+				name="psCodCategoria"
+				type="java.lang.Integer" />
+			<form-property
+				name="psCodLocalidade"
+				type="java.lang.String" />
+			<form-property
+				name="nomeLocalidade"
+				type="java.lang.String" />	
+			<form-property
+				name="psCodMunicipio"
+				type="java.lang.Integer" />
+			<form-property
+				name="descricaoMunicipio"
+				type="java.lang.String" />		
+			<form-property
+				name="psCodRegional"
+				type="java.lang.Integer" />
+			
+		</form-bean>					
+	</form-beans>
+	<global-exceptions />
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		
+		<action name="GerarRelatorioProvisaoParaPerdasRecebimentoDynaActionForm"
+			type="gcom.relatorio.contabil.ExibirGerarRelatorioRelAgAction"
+			validate="false" scope="session"
+			path="/exibirGerarRelatorioRelAgAction">
+			<forward name="exibirGerarRelatorioRelAgAction"
+				path="/jsp/relatorio/contabil/relatorio_provisoes_para_perda_recebimento.jsp" />
+		</action>
+		<action
+			path="/gerarRelatorioProvisaoParaPerdasRecebimentoAction"
+			type="br.com.procenge.geradorrelatorio.gui.GeradorRelatorioAction"
+			scope="request"
+			name="GerarRelatorioProvisaoParaPerdasRecebimentoDynaActionForm"
+			parameter="acao">
+
+			<exception
+				handler="br.com.procenge.util.StrutsExceptionHandler"
+				key="ERRO_NEGOCIO"
+				type="br.com.procenge.comum.exception.PCGException"
+				path="/telaPrincipal.do" />
+
+			<forward name="paginaPrincipal" path="/telaPrincipal.do" />
+
+		</action>	
+		
+	</action-mappings>
+
+</struts-config>

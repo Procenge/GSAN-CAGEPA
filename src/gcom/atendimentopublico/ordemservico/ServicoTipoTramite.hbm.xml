@@ -19,6 +19,11 @@
 
 		<property name="ultimaAlteracao" type="java.sql.Timestamp"
 			column="sttr_tmultimaalteracao" not-null="true" length="8" />
+			
+		<property name="indicadorPrimeiroTramite" type="short" column="STTR_ICPRIMEIROTRAMITE"
+			not-null="true" length="2" />
+			
+			
 
 		<!-- Associations -->
 

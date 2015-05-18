@@ -79,16 +79,21 @@
 
 package gcom.gui.cadastro.imovel;
 
+import gcom.atendimentopublico.registroatendimento.bean.ObterIndicadorExistenciaHidrometroHelper;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.imovel.bean.ImovelMicromedicao;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
 import gcom.faturamento.FaturamentoGrupo;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.micromedicao.consumo.LigacaoTipo;
 import gcom.micromedicao.medicao.MedicaoHistorico;
 import gcom.micromedicao.medicao.MedicaoTipo;
+import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
+import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -223,6 +228,20 @@ public class ExibirConsultarImovelDadosAnaliseMedicaoConsumoAction
 					consultarImovelActionForm.setMatriculaImovelAnaliseMedicaoConsumo(fachada.pesquisarInscricaoImovel(Integer
 									.valueOf(idImovelAnaliseMedicaoConsumo.trim()), true));
 
+					try{
+						if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString()
+										.equals(ConstantesSistema.NAO.toString())){
+							if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+								consultarImovelActionForm.setDigitoVerificadorImovelAnaliseMedicaoConsumo(Imovel
+												.getDigitoVerificadorMatricula(idImovelAnaliseMedicaoConsumo.trim()));
+							}
+						}
+					}catch(ControladorException e1){
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						throw new ActionServletException(e1.getMessage(), e1);
+					}
+
 					httpServletRequest.setAttribute("idImovelAnaliseMedicaoConsumoNaoEncontrado", null);
 
 					// pesquisa o endereço
@@ -234,6 +253,21 @@ public class ExibirConsultarImovelDadosAnaliseMedicaoConsumoAction
 
 					// seta a situação de agua
 					consultarImovelActionForm.setSituacaoAguaAnaliseMedicaoConsumo(imovel.getLigacaoAguaSituacao().getDescricao());
+
+					// Seta o Tipo de Ligação
+					if(idImovelAnaliseMedicaoConsumo != null || idImovelAnaliseMedicaoConsumo != ""){
+						boolean tipoLigacaoBoolean = false;
+						ObterIndicadorExistenciaHidrometroHelper obterIndicadorExistenciaHidrometroHelper = fachada
+										.obterIndicadorExistenciaHidrometroLigacaoAguaPoco(
+														Util.obterInteger(idImovelAnaliseMedicaoConsumo), tipoLigacaoBoolean);
+						if(obterIndicadorExistenciaHidrometroHelper.getIndicadorLigacaoAgua().intValue() == 1
+										|| obterIndicadorExistenciaHidrometroHelper.getIndicadorPoco().intValue() == 1){
+							consultarImovelActionForm.setTipoLigacao("Hidrometrado");
+						}else{
+							consultarImovelActionForm.setTipoLigacao("Consumo Fixo");
+						}
+
+					}
 
 					// seta a situação de esgoto
 					consultarImovelActionForm.setSituacaoEsgotoAnaliseMedicaoConsumo(imovel.getLigacaoEsgotoSituacao().getDescricao());
@@ -567,6 +601,12 @@ public class ExibirConsultarImovelDadosAnaliseMedicaoConsumoAction
 							consultarImovelActionForm.setIdLigacaoEsgoto("");
 						}
 
+						// consumo fixo poço
+						if(parmClienteImovel[49] != null){
+
+							consultarImovelActionForm.setConsumoFixoPoco(parmClienteImovel[49].toString());
+						}
+
 						// DADOS DO HIDROMETRO DO POÇO
 
 						// numero do hidrometro
@@ -870,7 +910,21 @@ public class ExibirConsultarImovelDadosAnaliseMedicaoConsumoAction
 
 						// Crédito de Consumos Anteriores
 						if(parmMedicaoHistorico.length >= 23 && parmMedicaoHistorico[22] != null){
-							consultarImovelActionForm.setConsumoCreditoAnterior(((Integer) parmMedicaoHistorico[22]).toString());
+
+							Integer consumoCreditoAnterior = 0;
+							if(parmMedicaoHistorico[22] != null){
+
+								consumoCreditoAnterior = (Integer) parmMedicaoHistorico[22];
+							}
+
+							Integer consumoCreditoGerado = 0;
+							if(parmMedicaoHistorico[26] != null){
+
+								consumoCreditoGerado = (Integer) parmMedicaoHistorico[26];
+							}
+
+							consultarImovelActionForm.setConsumoCreditoAnterior(String.valueOf(consumoCreditoAnterior.intValue()
+											+ consumoCreditoGerado.intValue()));
 						}else{
 							consultarImovelActionForm.setConsumoCreditoAnterior("");
 						}
@@ -1136,8 +1190,22 @@ public class ExibirConsultarImovelDadosAnaliseMedicaoConsumoAction
 						}
 
 						if(parmMedicaoHistoricoLigacaoEsgoto.length >= 23 && parmMedicaoHistoricoLigacaoEsgoto[22] != null){
-							consultarImovelActionForm.setConsumoCreditoAnteriorEsgoto(((Integer) parmMedicaoHistoricoLigacaoEsgoto[22])
-											.toString());
+
+							Integer consumoCreditoAnterior = 0;
+							if(parmMedicaoHistorico[22] != null){
+
+								consumoCreditoAnterior = (Integer) parmMedicaoHistorico[22];
+							}
+
+							Integer consumoCreditoGerado = 0;
+							if(parmMedicaoHistorico[26] != null){
+
+								consumoCreditoGerado = (Integer) parmMedicaoHistorico[26];
+							}
+
+							consultarImovelActionForm.setConsumoCreditoAnteriorEsgoto(String.valueOf(consumoCreditoAnterior.intValue()
+											+ consumoCreditoGerado.intValue()));
+
 						}else{
 							consultarImovelActionForm.setConsumoCreditoAnteriorEsgoto("");
 						}
@@ -1236,8 +1304,10 @@ public class ExibirConsultarImovelDadosAnaliseMedicaoConsumoAction
 				sessao.removeAttribute("medicoesHistoricosPoco");
 				sessao.removeAttribute("imoveisMicromedicaoEsgoto");
 
+				consultarImovelActionForm.setDigitoVerificadorImovelAnaliseMedicaoConsumo(null);
 				consultarImovelActionForm.setIdImovelAnaliseMedicaoConsumo(null);
 				consultarImovelActionForm.setSituacaoAguaAnaliseMedicaoConsumo(null);
+				consultarImovelActionForm.setTipoLigacao(null);
 				consultarImovelActionForm.setSituacaoEsgotoAnaliseMedicaoConsumo(null);
 				consultarImovelActionForm.setNumeroSegmento(null);
 				consultarImovelActionForm.setTipoApresentacao(null);
@@ -1348,7 +1418,6 @@ public class ExibirConsultarImovelDadosAnaliseMedicaoConsumoAction
 				consultarImovelActionForm.setQuantidadeEconomiaFiltro(null);
 				consultarImovelActionForm.setTipoMedicaoFiltro(null);
 				consultarImovelActionForm.setIdTipoMedicaoFiltro(null);
-				consultarImovelActionForm.setTipoLigacaoFiltro(null);
 				consultarImovelActionForm.setTipoAnormalidadeFiltro(null);
 				consultarImovelActionForm.setAnormalidadeLeituraInformadaFiltro(null);
 				consultarImovelActionForm.setAnormalidadeLeituraFaturadaFiltro(null);
@@ -1416,7 +1485,9 @@ public class ExibirConsultarImovelDadosAnaliseMedicaoConsumoAction
 			sessao.removeAttribute("imoveisMicromedicaoEsgoto");
 
 			consultarImovelActionForm.setMatriculaImovelAnaliseMedicaoConsumo(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelAnaliseMedicaoConsumo(null);
 			consultarImovelActionForm.setSituacaoAguaAnaliseMedicaoConsumo(null);
+			consultarImovelActionForm.setTipoLigacao(null);
 			consultarImovelActionForm.setSituacaoEsgotoAnaliseMedicaoConsumo(null);
 			consultarImovelActionForm.setNumeroSegmento(null);
 			consultarImovelActionForm.setTipoApresentacao(null);
@@ -1578,6 +1649,23 @@ public class ExibirConsultarImovelDadosAnaliseMedicaoConsumoAction
 			consultarImovelActionForm.setConsumoCreditoAnteriorEsgoto(null);
 		}
 
+		try{
+			if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+				if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+					httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '1');
+				}else{
+					throw new ControladorException("erro.parametro.nao.informado", null, "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+				}
+
+			}else{
+				httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '0');
+			}
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new ActionServletException(e.getMessage(), e);
+		}
+
 		return retorno;
 	}
 
@@ -1614,7 +1702,9 @@ public class ExibirConsultarImovelDadosAnaliseMedicaoConsumoAction
 		consultarImovelActionForm.setIdImovelRegistroAtendimento(null);
 
 		consultarImovelActionForm.setMatriculaImovelAnaliseMedicaoConsumo(null);
+		consultarImovelActionForm.setDigitoVerificadorImovelAnaliseMedicaoConsumo(null);
 		consultarImovelActionForm.setSituacaoAguaAnaliseMedicaoConsumo(null);
+		consultarImovelActionForm.setTipoLigacao(null);
 		consultarImovelActionForm.setSituacaoEsgotoAnaliseMedicaoConsumo(null);
 		consultarImovelActionForm.setNumeroSegmento(null);
 		consultarImovelActionForm.setTipoApresentacao(null);

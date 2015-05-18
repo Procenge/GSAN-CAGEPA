@@ -76,6 +76,7 @@
 
 package gcom.micromedicao.hidrometro;
 
+import gcom.cadastro.empresa.Empresa;
 import gcom.interceptor.ControleAlteracao;
 import gcom.interceptor.ObjetoTransacao;
 import gcom.util.filtro.Filtro;
@@ -128,6 +129,14 @@ public class Hidrometro
 	private Short numeroDigitosLeitura;
 
 	private Date ultimaAlteracao;
+
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_HIDROMETRO_INSERIR, ATRIBUTOS_HIDROMETRO_ATUALIZAR, ATRIBUTOS_HIDROMETRO_REMOVER})
+	private Integer numeroNotaFiscal;
+	
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_HIDROMETRO_INSERIR, ATRIBUTOS_HIDROMETRO_ATUALIZAR, ATRIBUTOS_HIDROMETRO_REMOVER})
+	private String loteEntrega;
+
+	private Empresa empresaUltimaAfericao;
 
 	@ControleAlteracao(value = FiltroHidrometro.HIDROMETRO_TIPO, funcionalidade = {ATRIBUTOS_HIDROMETRO_INSERIR, ATRIBUTOS_HIDROMETRO_ATUALIZAR, ATRIBUTOS_HIDROMETRO_REMOVER})
 	private gcom.micromedicao.hidrometro.HidrometroTipo hidrometroTipo;
@@ -240,6 +249,8 @@ public class Hidrometro
 		this.hidrometroDiametro = hidrometroDiametro;
 		this.hidrometroMovimentados = hidrometroMovimentados;
 	}
+
+
 
 	public Integer getId(){
 
@@ -465,6 +476,16 @@ public class Hidrometro
 		this.fatorConversao = fatorConversao;
 	}
 
+	public String getLoteEntrega(){
+
+		return loteEntrega;
+	}
+
+	public void setLoteEntrega(String loteEntrega){
+
+		this.loteEntrega = loteEntrega;
+	}
+
 	public String toString(){
 
 		return new ToStringBuilder(this).append("id", getId()).toString();
@@ -504,6 +525,37 @@ public class Hidrometro
 		this.hidrometroDiametro = hidrometroDiametro;
 	}
 
+	public Hidrometro(String numero, Date dataAquisicao, Short anoFabricacao, Short indicadorMacromedidor, Date dataUltimaRevisao,
+						Date dataBaixa, Integer numeroLeituraAcumulada, Short numeroDigitosLeitura, Date ultimaAlteracao,
+						gcom.micromedicao.hidrometro.HidrometroTipo hidrometroTipo,
+						gcom.micromedicao.hidrometro.HidrometroSituacao hidrometroSituacao,
+						gcom.micromedicao.hidrometro.HidrometroMarca hidrometroMarca,
+						gcom.micromedicao.hidrometro.HidrometroCapacidade hidrometroCapacidade,
+						gcom.micromedicao.hidrometro.HidrometroMotivoBaixa hidrometroMotivoBaixa,
+						gcom.micromedicao.hidrometro.HidrometroLocalArmazenagem hidrometroLocalArmazenagem,
+						gcom.micromedicao.hidrometro.HidrometroClasseMetrologica hidrometroClasseMetrologica,
+						gcom.micromedicao.hidrometro.HidrometroDiametro hidrometroDiametro, String loteEntrega) {
+
+		this.numero = numero;
+		this.dataAquisicao = dataAquisicao;
+		this.anoFabricacao = anoFabricacao;
+		this.indicadorMacromedidor = indicadorMacromedidor;
+		this.dataUltimaRevisao = dataUltimaRevisao;
+		this.dataBaixa = dataBaixa;
+		this.numeroLeituraAcumulada = numeroLeituraAcumulada;
+		this.numeroDigitosLeitura = numeroDigitosLeitura;
+		this.ultimaAlteracao = ultimaAlteracao;
+		this.hidrometroTipo = hidrometroTipo;
+		this.hidrometroSituacao = hidrometroSituacao;
+		this.hidrometroMarca = hidrometroMarca;
+		this.hidrometroCapacidade = hidrometroCapacidade;
+		this.hidrometroMotivoBaixa = hidrometroMotivoBaixa;
+		this.hidrometroLocalArmazenagem = hidrometroLocalArmazenagem;
+		this.hidrometroClasseMetrologica = hidrometroClasseMetrologica;
+		this.hidrometroDiametro = hidrometroDiametro;
+		this.loteEntrega = loteEntrega;
+	}
+
 	/** minimal constructor */
 	public Hidrometro(String numero, Date dataAquisicao, Short anoFabricacao, Date dataUltimaRevisao, Integer numeroLeituraAcumulada,
 						gcom.micromedicao.hidrometro.HidrometroTipo hidrometroTipo,
@@ -529,6 +581,7 @@ public class Hidrometro
 		this.hidrometroClasseMetrologica = hidrometroClasseMetrologica;
 		this.hidrometroDiametro = hidrometroDiametro;
 	}
+
 
 	/**
 	 * Hidrometro
@@ -640,6 +693,26 @@ public class Hidrometro
 	public void setCodigoFormatoNumeracao(Integer codigoFormatoNumeracao){
 
 		this.codigoFormatoNumeracao = codigoFormatoNumeracao;
+	}
+
+	public Empresa getEmpresaUltimaAfericao(){
+
+		return empresaUltimaAfericao;
+	}
+
+	public void setEmpresaUltimaAfericao(Empresa empresaUltimaAfericao){
+
+		this.empresaUltimaAfericao = empresaUltimaAfericao;
+	}
+
+	public Integer getNumeroNotaFiscal(){
+
+		return numeroNotaFiscal;
+	}
+
+	public void setNumeroNotaFiscal(Integer numeroNotaFiscal){
+
+		this.numeroNotaFiscal = numeroNotaFiscal;
 	}
 
 }

@@ -116,6 +116,8 @@ public class PesquisarHidrometroActionForm
 
 	private String numeroHidrometro;
 
+	private String dataInstalacao;
+
 	/**
 	 * Description of the Method
 	 * 
@@ -293,6 +295,16 @@ public class PesquisarHidrometroActionForm
 	public void setDescricaoLocalArmazenamento(String descricaoLocalArmazenamento){
 
 		this.descricaoLocalArmazenamento = descricaoLocalArmazenamento;
+	}
+
+	public String getDataInstalacao(){
+
+		return dataInstalacao;
+	}
+
+	public void setDataInstalacao(String dataInstalacao){
+
+		this.dataInstalacao = dataInstalacao;
 	}
 
 }

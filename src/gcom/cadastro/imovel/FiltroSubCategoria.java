@@ -120,6 +120,8 @@ public class FiltroSubCategoria
 	 */
 	public final static String CATEGORIA = "categoria";
 
+	public final static String CODIGO_GRUPO_SUBCATEGRIA = "codigoGrupoSubcategoria";
+
 	/**
 	 * Construtor da classe FiltroCategoria
 	 */

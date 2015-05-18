@@ -58,6 +58,13 @@
         not-null="false"
         length="60"
     />
+    
+    <property
+        name="indicadorCreditoConsumo"
+        type="java.lang.Short"
+        column="csan_iccreditoconsumo"
+        length="2"
+    />
 
     <!-- associations -->
     <!-- bi-directional many-to-one association to ConsumoTipo -->

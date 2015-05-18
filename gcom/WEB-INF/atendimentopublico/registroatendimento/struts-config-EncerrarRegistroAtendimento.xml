@@ -28,6 +28,22 @@
 			validate="true" scope="session"
 			path="/encerrarRegistroAtendimentoAction">
 		</action>
+		
+		<action name="EncerrarRegistroAtendimentoActionForm"  
+			type="gcom.gui.atendimentopublico.registroatendimento.ExibirCancelarRegistroAtendimentoAction" 
+			validate="true"
+			scope="session"
+			path="/exibirCancelarRegistroAtendimentoAction">
+			<forward name="cancelarRegistroAtendimento"
+			path="/jsp/atendimentopublico/registroatendimento/registro_atendimento_cancelar.jsp" />			
+		</action>	
+		
+		<action name="EncerrarRegistroAtendimentoActionForm"  
+			type="gcom.gui.atendimentopublico.registroatendimento.CancelarRegistroAtendimentoAction" 
+			validate="true"
+			scope="session"
+			path="/cancelarRegistroAtendimentoAction">
+		</action>					
  
 	</action-mappings>
 

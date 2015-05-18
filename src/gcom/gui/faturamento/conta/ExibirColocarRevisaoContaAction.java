@@ -77,6 +77,7 @@
 package gcom.gui.faturamento.conta;
 
 import gcom.atendimentopublico.registroatendimento.EspecificacaoTipoValidacao;
+import gcom.cobranca.bean.ContaValoresHelper;
 import gcom.fachada.Fachada;
 import gcom.faturamento.conta.Conta;
 import gcom.faturamento.conta.ContaMotivoRevisao;
@@ -84,10 +85,13 @@ import gcom.faturamento.conta.FiltroConta;
 import gcom.faturamento.conta.FiltroMotivoRevisaoConta;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.seguranca.acesso.PermissaoEspecial;
+import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
@@ -108,6 +112,7 @@ public class ExibirColocarRevisaoContaAction
 		ActionForward retorno = actionMapping.findForward("exibirColocarRevisaoConta");
 
 		HttpSession sessao = httpServletRequest.getSession(false);
+		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
 
 		// Instância do formulário que está sendo utilizado
 		ColocarRevisaoContaActionForm colocarRevisaoContaActionForm = (ColocarRevisaoContaActionForm) actionForm;
@@ -118,7 +123,11 @@ public class ExibirColocarRevisaoContaAction
 		String contaSelected = httpServletRequest.getParameter("conta");
 		String idImovel = httpServletRequest.getParameter("idImovel");
 
+		boolean temPermissaoAtualizarDebitosExecFiscal = fachada.verificarPermissaoEspecial(
+						PermissaoEspecial.ATUALIZAR_DEBITOS_EXECUCAO_FISCAL, this.getUsuarioLogado(httpServletRequest));
+
 		String[] arrayIdentificadores = contaSelected.split(",");
+		StringBuffer parametroExecucaoFiscal = new StringBuffer();
 
 		for(int i = 0; i < arrayIdentificadores.length; i++){
 
@@ -130,6 +139,7 @@ public class ExibirColocarRevisaoContaAction
 			FiltroConta filtroConta = new FiltroConta();
 			filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.IMOVEL);
 			filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.DEBITO_CREDITO_SITUACAO_ATUAL);
+			filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.DEBITOS_COBRADOS);
 			filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.ID, idConta));
 			Collection colecaoConta = fachada.pesquisar(filtroConta, Conta.class.getName());
 			Conta contaSelecao = (Conta) colecaoConta.iterator().next();
@@ -138,8 +148,27 @@ public class ExibirColocarRevisaoContaAction
 					throw new ActionServletException("atencao.conta_em_situacao_nao_permitida", contaSelecao
 									.getDebitoCreditoSituacaoAtual().getDescricaoDebitoCreditoSituacao(), "ação");
 				}
+
+				ContaValoresHelper contaValores = new ContaValoresHelper();
+				contaValores.setConta(contaSelecao);
+
+				Collection<ContaValoresHelper> colecaoContaValores = new ArrayList<ContaValoresHelper>();
+				colecaoContaValores.add(contaValores);
+
+				if(fachada.verificarExecucaoFiscal(colecaoContaValores, null, null) && !temPermissaoAtualizarDebitosExecFiscal){
+					parametroExecucaoFiscal.append(contaSelecao.getReferenciaFormatada());
+					parametroExecucaoFiscal.append(", ");
+				}
 			}
 
+		}
+
+		String parametroMensagemExecFiscal = parametroExecucaoFiscal.toString();
+		if(!Util.isVazioOuBranco(parametroMensagemExecFiscal)){
+			parametroMensagemExecFiscal = parametroMensagemExecFiscal.substring(0, parametroMensagemExecFiscal.length() - 2);
+
+			throw new ActionServletException("atencao.conta.debito.execucao.fiscal", usuario.getNomeUsuario().toString(),
+							parametroMensagemExecFiscal);
 		}
 
 		// [FS0001] - Verificar Existência de RA

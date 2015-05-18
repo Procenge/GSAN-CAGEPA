@@ -89,6 +89,46 @@
         length="2"
     />
 
+
+<property
+        name="ddd"
+        type="java.lang.String"
+        column="UNID_CDDDD"
+        length="2"
+    />
+    <property
+        name="telefone"
+        type="java.lang.String"
+        column="UNID_NNFONE"
+        length="9"
+    />
+
+
+    <property
+        name="ramal"
+        type="java.lang.String"
+        column="UNID_NNRAMAL"
+        length="4"
+    />
+ 
+   <property
+        name="fax"
+        type="java.lang.String"
+        column="UNID_NNFAX"
+        length="4"
+    />
+
+
+    <property
+        name="observacao"
+        type="java.lang.String"
+        column="UNID_DSOBSERVACAO"
+        length="400"
+    />
+
+
+
+
     <!-- Associations -->
   
     <!-- bi-directional many-to-one association to UnidadeNivel 

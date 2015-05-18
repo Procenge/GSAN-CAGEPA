@@ -87,9 +87,13 @@ import gcom.cadastro.endereco.LogradouroBairro;
 import gcom.cadastro.endereco.LogradouroCep;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.unidade.UnidadeOrganizacional;
+import gcom.cobranca.bean.ContaValoresHelper;
+import gcom.cobranca.bean.GuiaPagamentoValoresHelper;
 import gcom.cobranca.bean.ObterDebitoImovelOuClienteHelper;
 import gcom.faturamento.conta.Conta;
 import gcom.faturamento.conta.ContaMotivoRevisao;
+import gcom.faturamento.credito.CreditoARealizar;
+import gcom.faturamento.debito.DebitoACobrar;
 import gcom.gui.atendimentopublico.ordemservico.GerarRelatorioEstatisticoAtendimentoPorRacaCorActionForm;
 import gcom.integracao.acquagis.DadosAcquaGis;
 import gcom.operacional.DivisaoEsgoto;
@@ -1031,6 +1035,20 @@ public interface ControladorRegistroAtendimentoLocal
 					Usuario usuarioLogado) throws ControladorException;
 
 	/**
+	 * [UC0435] Encerrar Registro de Atendimento
+	 * 
+	 * @author Leonardo Regis
+	 * @date 26/08/2006
+	 * @param registroAtendimento
+	 * @param registroAtendimentoUnidade
+	 * @param usuarioLogado
+	 * @throws ControladorException
+	 */
+	public void encerrarRegistroAtendimento(Collection<RegistroAtendimento> colecaoRegistroAtendimento,
+					Collection<RegistroAtendimentoUnidade> colecaoRegistroAtendimentoUnidade, Usuario usuarioLogado)
+					throws ControladorException;
+
+	/**
 	 * [UC0366] Inserir Registro de Atendimento
 	 * [FS0030] Verificar preenchimento dos dados de Identificação do solicitante
 	 * 
@@ -1103,7 +1121,7 @@ public interface ControladorRegistroAtendimentoLocal
 					BigDecimal coordenadaNorte, BigDecimal coordenadaLeste, Integer sequenceRA, Integer idRaReiterada, String tipoCliente,
 					String numeroCpf, String numeroRg, String orgaoExpedidorRg, String unidadeFederacaoRG, String numeroCnpj,
 					Collection<Conta> colecaoContas, String identificadores, ContaMotivoRevisao contaMotivoRevisao,
-					String indicadorProcessoAdmJud, String numeroProcessoAgencia)
+					String indicadorProcessoAdmJud, String numeroProcessoAgencia, Short quantidadePrestacoesGuiaPagamento)
 					throws ControladorException;
 
 	/**
@@ -1686,18 +1704,6 @@ public interface ControladorRegistroAtendimentoLocal
 	public Integer procurarDiasPazo(Integer raId) throws ControladorException;
 
 	/**
-	 * Consultar os comentários do imóvel.
-	 * 
-	 * @author Virgínia Melo
-	 * @date 01/02/2009
-	 * @param idImovel
-	 *            - id do imóvel;
-	 * @return Collection
-	 * @throws ControladorException
-	 */
-	public Collection consultarImovelComentario(Integer idImovel) throws ControladorException;
-
-	/**
 	 * Pesquisa um Registro de Atendimento
 	 * 
 	 * @author eduardo henrique
@@ -1905,7 +1911,8 @@ public interface ControladorRegistroAtendimentoLocal
 	 * @return
 	 * @throws ControladorException
 	 */
-	public Collection<UnidadeOrganizacional> obterUnidadeDestinoPorEspecificacao(EspecificacaoTramite especificacaoTramite)
+	public Collection<UnidadeOrganizacional> obterUnidadeDestinoPorEspecificacao(EspecificacaoTramite especificacaoTramite,
+					boolean checarIndicadorPrimeiroTramite)
 					throws ControladorException;
 
 	/**
@@ -2075,7 +2082,10 @@ public interface ControladorRegistroAtendimentoLocal
 	 * @created 16/01/2014
 	 */
 	public void verificarTitularidadeDebito(Integer idImovel, Short indicadorConsiderarApenasDebitoTitularAtual,
-					ClienteRelacaoTipo clienteRelacaoTipo, ObterDebitoImovelOuClienteHelper obterDebitoImovelOuClienteHelper)
+					ClienteRelacaoTipo clienteRelacaoTipo, ObterDebitoImovelOuClienteHelper obterDebitoImovelOuClienteHelper,
+					Collection<ContaValoresHelper> colecaoContasValores, Collection<DebitoACobrar> colecaoDebitoACobrar,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuiasPagamentoValores,
+					Collection<CreditoARealizar> colecaoCreditoARealizar)
 					throws ControladorException;
 
 	/**
@@ -2107,8 +2117,25 @@ public interface ControladorRegistroAtendimentoLocal
 	public List<RelatorioRAComProcessoAdmJudBean> consultarDadosRAComProcessoAdmJud(
 					RelatorioRAComProcessoAdmJudHelper relatorioRAComProcessoAdmJudHelper) throws ControladorException, NegocioException;
 
+	/**
+	 * @param form
+	 * @return
+	 * @throws ControladorException
+	 */
+
 	public List<RelatorioEstatisticoAtendimentoPorRacaCorBean> pesquisarDadosRelatorioEstatisticoAtendimentoPorRacaCor(
 					GerarRelatorioEstatisticoAtendimentoPorRacaCorActionForm form)
 					throws ControladorException;
+
+	/**
+	 * @param idSolicitacaoTipoEspecificacao
+	 * @return
+	 * @throws ControladorException
+	 */
+	public List<ServicoAssociadoValorHelper> pesquisarServicoAssociado(Integer idSolicitacaoTipoEspecificacao) throws ControladorException;
+
+	public Integer inserirRAPorSolicitacaoTipoEspecificacao(Integer idSolicitacaoTipoEspecificacao, Usuario usuarioLogado, Cliente cliente,
+					Imovel imovel)
+					throws NumberFormatException, ControladorException;
 
 }

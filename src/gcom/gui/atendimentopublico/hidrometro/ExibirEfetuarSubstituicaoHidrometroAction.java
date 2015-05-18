@@ -200,6 +200,11 @@ public class ExibirEfetuarSubstituicaoHidrometroAction
 			}
 		}
 
+		if(httpServletRequest.getParameter("submitAutomatico2") != null
+						&& httpServletRequest.getParameter("submitAutomatico2").equals("ok")){
+			httpServletRequest.setAttribute("submitAutomatico2", "ok");
+		}
+
 		this.pesquisarObjetosObrigatorios(httpServletRequest);
 
 		HttpSession sessao = httpServletRequest.getSession(false);

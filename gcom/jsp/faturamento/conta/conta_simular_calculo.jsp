@@ -207,6 +207,11 @@ function habilitacaoCamposEsgoto(){
 		form.consumoFaturadoEsgoto.disabled = false;
 		form.percentualEsgoto.disabled = false;
 		form.ligacaoEsgotoPerfilId.disabled = false;
+		
+		if (form.habilitarConsumoFixoPoco.value == 1){
+			
+			form.consumoFixoPoco.disabled = false;
+		}
  	}else{
 
 		form.consumoFaturadoEsgoto.value = "";
@@ -217,6 +222,12 @@ function habilitacaoCamposEsgoto(){
 		
 		form.ligacaoEsgotoPerfilId.disabled = true;
 		form.ligacaoEsgotoPerfilId.value = 0;
+		
+		if (form.habilitarConsumoFixoPoco.value == 1){
+			
+			form.consumoFixoPoco.value = "";
+			form.consumoFixoPoco.disabled = true;
+		}
   	}
 }
 
@@ -283,6 +294,7 @@ function carregarPercentualPerfil(percentualPerfil){
 <INPUT TYPE="hidden" ID="ANO_LIMITE" value="${requestScope.anoLimite}"/>
 <html:hidden property="indicadorEsgotoFaturavel"/>
 <html:hidden property="indicadorAguaFaturavel"/>
+<html:hidden property="habilitarConsumoFixoPoco"/>
 
 <%@ include file="/jsp/util/cabecalho.jsp"%>
 <%@ include file="/jsp/util/menu.jsp" %>
@@ -449,6 +461,19 @@ function carregarPercentualPerfil(percentualPerfil){
 														<td>
 															<html:text property="consumoFaturadoEsgoto" size="10" maxlength="6" style="text-align: right;"/>
 														</td>
+													</tr>
+													<tr>
+														<td height="10"><strong>Consumo de Poço:</strong></td>
+														<logic:equal name="SimularCalculoContaActionForm" property="habilitarConsumoFixoPoco" value="1">
+															<td><html:text property="consumoFixoPoco" size="10" maxlength="10"
+																style="text-align: right;" /></td>
+														</logic:equal>
+														<logic:equal name="SimularCalculoContaActionForm" property="habilitarConsumoFixoPoco" value="2">
+															<td><html:text property="consumoFixoPoco" size="10" maxlength="10"
+																readonly="true" disabled="true"
+																style="text-align: right;" /></td>
+														</logic:equal>
+															
 													</tr>
 													<tr> 
 														<td height="10"><strong>Percentual de Esgoto:</strong></td>
@@ -810,6 +835,17 @@ function carregarPercentualPerfil(percentualPerfil){
 								   	</table>
 								   	<br>
 								   	<table width="100%" bgcolor="#99CCFF">
+								   		<logic:present name="valorDebitoPoco" scope="request">
+									      	<tr>
+												<td width="31%" align="right"><strong>Valor Débito Poço:&nbsp;</strong></td>
+												<td width="24%" bgcolor="#FFFFFF" align="right"></td>
+												<td width="24%" bgcolor="#FFFFFF" align="right">
+												</td>
+										        <td width="21%" bgcolor="#FFFFFF" align="right">
+													<bean:write name="valorDebitoPoco" formatKey="money.format"/>
+										        </td>
+											</tr>
+								      	</logic:present>
 										<tr bgcolor="#cbe5fe" height="18"> 
 											<td width="31%" align="right"><strong>Total:&nbsp;</strong></td>
 											<td width="24%" bgcolor="#FFFFFF" align="right">
@@ -826,10 +862,6 @@ function carregarPercentualPerfil(percentualPerfil){
 									</logic:present>
 								</td>
 							</tr>
-							<tr>
-								<td colspan="4" height="10"></td>
-							</tr>
-							
 							
 						</table>
 					</td>

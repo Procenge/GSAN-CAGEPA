@@ -481,13 +481,24 @@ public class OrdemServico
 	@ControleAlteracao(funcionalidade = {ATRIBUTOS_ORDEM_SERVICO_ATUALIZAR})
 	private OrdemServico ordemServicoVinculada;
 
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_ORDEM_SERVICO_ATUALIZAR})
+	private OrdemServico ordemServicoReparo;
+
 	private OsSeletivaComando osSeletivaComando;
+
+	private String situacaoDocumentoDebito;
 
 	/**
 	 * persistent field
 	 */
 	@ControleAlteracao(funcionalidade = {ATRIBUTOS_ORDEM_SERVICO_ATUALIZAR})
 	private Date dataExecucao;
+
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_ORDEM_SERVICO_ATUALIZAR})
+	private BigDecimal valorHorasTrabalhadas;
+
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_ORDEM_SERVICO_ATUALIZAR})
+	private BigDecimal valorMateriais;
 
 	private Set tramites;
 
@@ -1302,6 +1313,46 @@ public class OrdemServico
 	public void setDataExecucao(Date dataExecucao){
 
 		this.dataExecucao = dataExecucao;
+	}
+
+	public OrdemServico getOrdemServicoReparo(){
+
+		return ordemServicoReparo;
+	}
+
+	public void setOrdemServicoReparo(OrdemServico ordemServicoReparo){
+
+		this.ordemServicoReparo = ordemServicoReparo;
+	}
+
+	public BigDecimal getValorHorasTrabalhadas(){
+
+		return valorHorasTrabalhadas;
+	}
+
+	public void setValorHorasTrabalhadas(BigDecimal valorHorasTrabalhadas){
+
+		this.valorHorasTrabalhadas = valorHorasTrabalhadas;
+	}
+
+	public BigDecimal getValorMateriais(){
+
+		return valorMateriais;
+	}
+
+	public void setValorMateriais(BigDecimal valorMateriais){
+
+		this.valorMateriais = valorMateriais;
+	}
+
+	public String getSituacaoDocumentoDebito(){
+
+		return situacaoDocumentoDebito;
+	}
+
+	public void setSituacaoDocumentoDebito(String situacaoDocumentoDebito){
+
+		this.situacaoDocumentoDebito = situacaoDocumentoDebito;
 	}
 
 }

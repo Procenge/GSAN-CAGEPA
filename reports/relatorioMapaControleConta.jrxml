@@ -29,6 +29,7 @@
 	<parameter name="mesAno" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="vencimento" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_NM_ESTADO" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NOME_EMPRESA_RELATORIO" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="getNomeEmpresa" class="java.lang.String"/>
 	<field name="getIdLocalidade" class="java.lang.String"/>
@@ -600,26 +601,6 @@
 				<staticText>
 					<reportElement
 						mode="Opaque"
-						x="269"
-						y="23"
-						width="176"
-						height="14"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-56"/>
-					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#FFFFFF"/>
-</box>
-					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Courier New" pdfFontName="Courier-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[COMPANHIA DE SANEAMENTO DE ]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						mode="Opaque"
 						x="81"
 						y="5"
 						width="595"
@@ -640,9 +621,9 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						mode="Opaque"
-						x="438"
+						x="185"
 						y="23"
-						width="176"
+						width="429"
 						height="14"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -652,10 +633,10 @@
 					<bottomPen lineWidth="0.0" lineColor="#000000"/>
 					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 </box>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="Courier New" pdfFontName="Courier-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NM_ESTADO}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NOME_EMPRESA_RELATORIO}+" "+$P{P_NM_ESTADO}]]></textFieldExpression>
 				</textField>
 			</band>
 		</pageHeader>

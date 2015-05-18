@@ -92,6 +92,7 @@ import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
 import gcom.util.ParametroNaoInformadoException;
 import gcom.util.Util;
+import gcom.util.filtro.ComparacaoTexto;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
@@ -159,6 +160,13 @@ public class AtualizarClienteAction
 
 		}
 
+		Short documentoValidado = (short) 2;
+
+		if(sessao.getAttribute("documentoValidado") != null
+						&& (Short.valueOf(sessao.getAttribute("documentoValidado").toString())).intValue() == 1){
+			documentoValidado = (short) 1;
+		}
+
 		Boolean validarDadosCliente = this.validarDadosCliente(indicadorUso);
 
 		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
@@ -224,6 +232,8 @@ public class AtualizarClienteAction
 
 		}
 
+		AtividadeEconomica atividadeEconomica = null;
+
 		if(tipoPessoa != null && tipoPessoa.equals(ClienteTipo.INDICADOR_PESSOA_JURIDICA)){
 			// Vai para Pessoa Juridica mas tem dados existentes em pessoa fisica
 			String cpf = (String) clienteActionForm.get("cpf");
@@ -253,7 +263,7 @@ public class AtualizarClienteAction
 
 			// Valida se o CNPJ ainda foi informado para o cliente PJ
 			// Eduardo Henrique
-			if(cnpj == null || cnpj.trim().equalsIgnoreCase("")){ // O CNPJ é obrigatório caso o
+			if(Util.isVazioOuBranco(cnpj)){ // O CNPJ é obrigatório caso o
 
 				if(validarDadosCliente){
 
@@ -272,6 +282,54 @@ public class AtualizarClienteAction
 					// Verifica a existencia de cpf ja cadastrado
 
 					this.existeCnpf(cnpj, fachada, clienteTipo);
+				}
+			}
+
+			String pIndicadorAtividadeEconomicaObrigatorio = null;
+
+			try{
+
+				pIndicadorAtividadeEconomicaObrigatorio = (String) ParametroCadastro.P_CNAE_OBRIGATORIO.executar();
+			}catch(ControladorException e){
+
+				throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(
+								new String[e.getParametroMensagem().size()]));
+			}
+
+			// Atividade Econômica (CNAE)
+			if(pIndicadorAtividadeEconomicaObrigatorio.equals(ConstantesSistema.SIM.toString())){
+
+				httpServletRequest.setAttribute("obrigatorioAtividadeEcocnomica", "true");
+				String codigoAtividadeEconomica = (String) clienteActionForm.get("codigoAtividadeEconomica");
+
+				if(!Util.isVazioOuBranco(codigoAtividadeEconomica)){
+
+					if(httpServletRequest.getParameter("pesquisaAtividadeEconomica") != null
+									&& !httpServletRequest.getParameter("pesquisaAtividadeEconomica").equals("")){
+
+						codigoAtividadeEconomica = httpServletRequest.getParameter("pesquisaAtividadeEconomica");
+					}
+
+					FiltroAtividadeEconomica filtroAtividadeEconomica = new FiltroAtividadeEconomica();
+					filtroAtividadeEconomica.adicionarParametro(new ComparacaoTexto(FiltroAtividadeEconomica.CODIGO,
+									codigoAtividadeEconomica));
+					filtroAtividadeEconomica.adicionarParametro(new ParametroSimples(FiltroAtividadeEconomica.INDICADOR_USO,
+									ConstantesSistema.INDICADOR_USO_ATIVO));
+
+					Collection<AtividadeEconomica> colecaoAtividadeEconomica = fachada.pesquisar(filtroAtividadeEconomica,
+									AtividadeEconomica.class.getName());
+
+					// [FS0001 - Verificar existência de dados]
+					if(Util.isVazioOrNulo(colecaoAtividadeEconomica)){
+
+						throw new ActionServletException("atencao.pesquisa_inexistente", null, "Atividade Ecônomica");
+					}else{
+
+						atividadeEconomica = (AtividadeEconomica) Util.retonarObjetoDeColecao(colecaoAtividadeEconomica);
+					}
+				}else{
+
+					throw new ActionServletException("atencao.required", null, "Atividade Ecônomica");
 				}
 			}
 
@@ -338,14 +396,14 @@ public class AtualizarClienteAction
 										&& (idOrgaoExpedidor != null && idOrgaoExpedidor.equals(ConstantesSistema.NUMERO_NAO_INFORMADO)) && (idUnidadeFederacao != null && idUnidadeFederacao
 										.equals(ConstantesSistema.NUMERO_NAO_INFORMADO))))){
 			if(validarDadosCliente){
-
-				throw new ActionServletException("atencao.rg_campos_relacionados.nao_preenchidos");
-
+				if(!usuarioPermissaoEspecial){
+					throw new ActionServletException("atencao.rg_campos_relacionados.nao_preenchidos");
+				}
 			}
 
 		}
 
-		if(tipoPessoa != null && tipoPessoa.equals(ClienteTipo.INDICADOR_PESSOA_FISICA) && cpf == null){
+		if(tipoPessoa != null && tipoPessoa.equals(ClienteTipo.INDICADOR_PESSOA_FISICA) && Util.isVazioOuBranco(cpf)){
 
 			if(validarDadosCliente){
 				if(!usuarioPermissaoEspecial){
@@ -517,7 +575,7 @@ public class AtualizarClienteAction
 							dataNascimento != null && !dataNascimento.trim().equalsIgnoreCase("") ? formatoData.parse(dataNascimento)
 											: null, cnpj, email, indicadorUso, clienteAtualizacao.getUltimaAlteracao(), orgaoExpedidorRg,
 							clienteResponsavel, pessoaSexo, profissao, unidadeFederacao, clienteTipo, ramoAtividade, null,
-							inscricaoEstadual, Short.parseShort(indicadorContaBraille));
+							inscricaoEstadual, Short.parseShort(indicadorContaBraille), documentoValidado);
 
 			// Seta o id do cliente atualizado para ser identificado no BD na atualização
 			cliente.setId(clienteAtualizacao.getId());
@@ -536,6 +594,20 @@ public class AtualizarClienteAction
 			// Nome da Mãe
 			if(clienteActionForm.get("nomeMae") != null && (!(clienteActionForm.get("nomeMae").equals("")))){
 				cliente.setNomeMae((String) clienteActionForm.get("nomeMae"));
+			}
+
+			if(clienteActionForm.get("tipoPessoa") != null && !clienteActionForm.get("tipoPessoa").toString().equals("")){
+
+				if(clienteActionForm.get("tipoPessoa").toString().equals(ClienteTipo.APOSENTADO_PENSIONISTA.toString())){
+
+					String numeroBeneficio = (String) clienteActionForm.get("numeroBeneficio");
+					if(Util.isVazioOuBranco(numeroBeneficio)){
+
+						throw new ActionServletException("atencao.required", null, "Número do Benefício");
+					}
+
+					cliente.setNumeroBeneficio(numeroBeneficio);
+				}
 			}
 
 			Short indMulta = httpServletRequest.getParameter("indMulta") != null
@@ -610,6 +682,10 @@ public class AtualizarClienteAction
 				}
 
 			}
+
+			// Atividade Ecônomica
+			cliente.setAtividadeEconomica(atividadeEconomica);
+
 			// Estado Civil
 			Integer idEstadoCivil = (Integer) clienteActionForm.get("idEstadoCivil");
 

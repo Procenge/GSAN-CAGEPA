@@ -136,4 +136,6 @@ public class FiltroFuncionario
 	public final static String UNIDADE_ORGANIZACIONAL_ID = "unidadeOrganizacional.id";
 
 	public final static String UNIDADE_ORGANIZACIONAL = "unidadeOrganizacional";
+
+	public final static String EQUIPE_TIPO_ID = "equipeTipo.id";
 }

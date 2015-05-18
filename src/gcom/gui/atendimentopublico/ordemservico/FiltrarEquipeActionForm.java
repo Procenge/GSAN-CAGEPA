@@ -113,6 +113,10 @@ public class FiltrarEquipeActionForm
 
 	private String atualizar;
 
+	private Integer idEquipeTipo;
+
+	private String descricaoEquipeTipo;
+
 	/**
 	 * @return Retorna o campo atualizar.
 	 */
@@ -315,6 +319,26 @@ public class FiltrarEquipeActionForm
 	public void setIndicadorUso(String indicadorUso){
 
 		this.indicadorUso = indicadorUso;
+	}
+
+	public Integer getIdEquipeTipo(){
+
+		return idEquipeTipo;
+	}
+
+	public void setIdEquipeTipo(Integer idEquipeTipo){
+
+		this.idEquipeTipo = idEquipeTipo;
+	}
+
+	public String getDescricaoEquipeTipo(){
+
+		return descricaoEquipeTipo;
+	}
+
+	public void setDescricaoEquipeTipo(String descricaoEquipeTipo){
+
+		this.descricaoEquipeTipo = descricaoEquipeTipo;
 	}
 
 }

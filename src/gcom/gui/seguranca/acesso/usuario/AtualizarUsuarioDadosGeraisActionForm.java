@@ -101,6 +101,8 @@ public class AtualizarUsuarioDadosGeraisActionForm
 
 	private String nome = "";
 
+	private String idUsuario = "";
+
 	private String funcionarioNaoEncontrada = "false";
 
 	private String idLotacao = "";
@@ -148,6 +150,8 @@ public class AtualizarUsuarioDadosGeraisActionForm
 	private String unidadeNegocio = "";
 
 	private String situacao = "";
+
+	private String indicadorHorarioAcessoRestrito = "";
 
 	/**
 	 * @return Retorna o campo situacao.
@@ -552,6 +556,26 @@ public class AtualizarUsuarioDadosGeraisActionForm
 	public void setDataNascimento(String dataNascimento){
 
 		this.dataNascimento = dataNascimento;
+	}
+
+	public String getIndicadorHorarioAcessoRestrito(){
+
+		return indicadorHorarioAcessoRestrito;
+	}
+
+	public void setIndicadorHorarioAcessoRestrito(String indicadorHorarioAcessoRestrito){
+
+		this.indicadorHorarioAcessoRestrito = indicadorHorarioAcessoRestrito;
+	}
+
+	public String getIdUsuario(){
+
+		return idUsuario;
+	}
+
+	public void setIdUsuario(String idUsuario){
+
+		this.idUsuario = idUsuario;
 	}
 
 }

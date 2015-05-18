@@ -143,10 +143,24 @@ public class ExibirInserirRegistroAtendimentoDadosLocalOcorrenciaAction
 		/*
 		 * Carregamento inicial da tela responsável pelo redebimento das
 		 * informações referentes ao local da ocorrência (ABA Nº 02)
-		 * 
 		 * ==========================================================================================
 		 * ==================
 		 */
+
+		try{
+			String pIndicadorTramiteRestritoUnidades = ParametroAtendimentoPublico.P_INDICADOR_TRAMITE_RESTRITO_UNIDADES_RESPONSAVEIS
+							.executar();
+
+			if(pIndicadorTramiteRestritoUnidades != null && pIndicadorTramiteRestritoUnidades.equals(ConstantesSistema.SIM.toString())){
+				sessao.setAttribute("desabilitarUnidadeDestino", pIndicadorTramiteRestritoUnidades);
+			}else{
+				sessao.removeAttribute("desabilitarUnidadeDestino");
+			}
+
+		}catch(ControladorException e1){
+
+			throw new ActionServletException("atencao.sistemaparametro_inexistente", "P_INDICADOR_TRAMITE_RESTRITO_UNIDADES_RESPONSAVEIS");
+		}
 
 		/*
 		 * Divisão de Esgoto - Carregando a coleção que irá ficar disponível
@@ -1004,7 +1018,7 @@ public class ExibirInserirRegistroAtendimentoDadosLocalOcorrenciaAction
 		especificacaoTramiteAuxiliar.setIndicadorUso(ConstantesSistema.INDICADOR_USO_ATIVO);
 
 		Collection<UnidadeOrganizacional> colecaoUnidadeOrganizacional = Fachada.getInstancia().obterUnidadeDestinoPorEspecificacao(
-						especificacaoTramiteAuxiliar);
+						especificacaoTramiteAuxiliar, true);
 		
 		if(!Util.isVazioOrNulo(colecaoUnidadeOrganizacional)){
 			String pSugerirUnidadeComMaisDeUmaEspecTram = null;
@@ -1096,40 +1110,52 @@ public class ExibirInserirRegistroAtendimentoDadosLocalOcorrenciaAction
 				// 1. Caso a especificação informada para o RA tenha indicativo que é para colocar
 				// contas em revisão (STEP_ICCOLOCACONTASEMREVISAO da tabela
 				// SOLICITACAO_TIPO_ESPECIFICACAO com valor igual a SIM (1))
-				if(!Util.isVazioOuBranco(solicitacaoTipoEspecificacao.getIndicadorContaEmRevisao())
-								&& solicitacaoTipoEspecificacao.getIndicadorContaEmRevisao().intValue() == ConstantesSistema.SIM.intValue()){
 
-					// 1.1. Caso o imóvel informado tenha conta(s) [FS0047 – Verificar existência de
-					// alguma conta].
+				if(Util.isVazioOuBranco(sessao.getAttribute(SelecionarContaRevisaoActionForm.NOME_SESSAO))){
 
-					Collection<Conta> contas = pesquisarContasImovel(sessao, inserirRegistroAtendimentoActionForm.getIdImovel());
+					if(!Util.isVazioOuBranco(solicitacaoTipoEspecificacao.getIndicadorContaEmRevisao())
+									&& solicitacaoTipoEspecificacao.getIndicadorContaEmRevisao().intValue() == ConstantesSistema.SIM
+													.intValue()){
 
-					if(contas != null && !contas.isEmpty()){
+						// 1.1. Caso o imóvel informado tenha conta(s) [FS0047 – Verificar
+						// existência de
+						// alguma conta].
 
-						// 1.1.1. Caso a especificação informada para o RA tenha indicativo que é
-						// para
-						// exibir mensagem de alerta (STEP_ICMENSAGEMALERTA da tabela
-						// SOLICITACAO_TIPO_ESPECIFICACAO com valor igual a SIM (1)
-						if(!Util.isVazioOuBranco(solicitacaoTipoEspecificacao.getIndicadorMensagemAlertaRevisao())
-										&& solicitacaoTipoEspecificacao.getIndicadorMensagemAlertaRevisao().intValue() == ConstantesSistema.SIM
-														.intValue()){
+						Collection<Conta> contas = pesquisarContasImovel(sessao, inserirRegistroAtendimentoActionForm.getIdImovel());
 
-							// 1.1.1.1. O sistema exibe a mensagem “Atenção, existem faturas
-							// pendentes para o imóvel <<IMOV_ID da tabela REGISTRO_ATENDIMENTO>>.
-							// Deseja colocar as contas em revisão?”
-							httpServletRequest
-											.setAttribute("msgEnviarContaRevisao", "Atenção, existem faturas pendentes para o imóvel "
-															+ inserirRegistroAtendimentoActionForm.getIdImovel()
-															+ ". Deseja colocar as contas em revisão?");
+						if(contas != null && !contas.isEmpty()){
 
-							httpServletRequest.setAttribute("abrirPopUpEnviarContaRevisao", SelecionarContaRevisaoActionForm.COM_MENSAGEM);
-							// 1.1.1.1.1. Caso Sim, [SB0034 – Listar Contas]
+							// 1.1.1. Caso a especificação informada para o RA tenha indicativo que
+							// é
+							// para
+							// exibir mensagem de alerta (STEP_ICMENSAGEMALERTA da tabela
+							// SOLICITACAO_TIPO_ESPECIFICACAO com valor igual a SIM (1)
+							if(!Util.isVazioOuBranco(solicitacaoTipoEspecificacao.getIndicadorMensagemAlertaRevisao())
+											&& solicitacaoTipoEspecificacao.getIndicadorMensagemAlertaRevisao().intValue() == ConstantesSistema.SIM
+															.intValue()){
 
-						}else{
-							// 1.1.2. Caso Não, [SB0034 – Listar Contas]
-							httpServletRequest.setAttribute("abrirPopUpEnviarContaRevisao", SelecionarContaRevisaoActionForm.SEM_MENSAGEM);
+								// 1.1.1.1. O sistema exibe a mensagem “Atenção, existem faturas
+								// pendentes para o imóvel <<IMOV_ID da tabela
+								// REGISTRO_ATENDIMENTO>>.
+								// Deseja colocar as contas em revisão?”
+								httpServletRequest.setAttribute(
+												"msgEnviarContaRevisao",
+												"Atenção, existem faturas pendentes para o imóvel "
+																+ inserirRegistroAtendimentoActionForm.getIdImovel()
+																+ ". Deseja colocar as contas em revisão?");
+
+								httpServletRequest.setAttribute("abrirPopUpEnviarContaRevisao",
+												SelecionarContaRevisaoActionForm.COM_MENSAGEM);
+								// 1.1.1.1.1. Caso Sim, [SB0034 – Listar Contas]
+
+							}else{
+								// 1.1.2. Caso Não, [SB0034 – Listar Contas]
+								httpServletRequest.setAttribute("abrirPopUpEnviarContaRevisao",
+												SelecionarContaRevisaoActionForm.SEM_MENSAGEM);
+							}
 						}
-					}
+						}
+
 				}
 			}
 		}

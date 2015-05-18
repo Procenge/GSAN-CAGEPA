@@ -119,9 +119,6 @@ public class AtualizarUnidadeOrganizacionalActionForm
 
 	private String unidadeAceita;
 
-	// private String unidadeCentralAtendimento;
-	// private String unidadeTarifaSocial;
-
 	private String meioSolicitacao;
 
 	private String indicadorUso;
@@ -129,6 +126,17 @@ public class AtualizarUnidadeOrganizacionalActionForm
 	private String codigoUnidadeTipo = "";
 
 	private String modificarEmpresa = "N";
+
+	private String ddd;
+
+	private String telefone;
+
+	private String ramal;
+
+	private String fax;
+
+	private String observacao;
+
 
 	public String getCodigoUnidadeTipo(){
 
@@ -364,4 +372,55 @@ public class AtualizarUnidadeOrganizacionalActionForm
 
 		this.modificarEmpresa = modificarEmpresa;
 	}
+
+	public String getDdd(){
+
+		return ddd;
+	}
+
+	public void setDdd(String ddd){
+
+		this.ddd = ddd;
+	}
+
+	public String getTelefone(){
+
+		return telefone;
+	}
+
+	public void setTelefone(String telefone){
+
+		this.telefone = telefone;
+	}
+
+	public String getRamal(){
+
+		return ramal;
+	}
+
+	public void setRamal(String ramal){
+
+		this.ramal = ramal;
+	}
+
+	public String getFax(){
+
+		return fax;
+	}
+
+	public void setFax(String fax){
+
+		this.fax = fax;
+	}
+
+	public String getObservacao(){
+
+		return observacao;
+	}
+
+	public void setObservacao(String observacao){
+
+		this.observacao = observacao;
+	}
+
 }

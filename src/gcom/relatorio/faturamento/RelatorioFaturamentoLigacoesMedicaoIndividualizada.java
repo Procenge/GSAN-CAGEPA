@@ -163,7 +163,8 @@ public class RelatorioFaturamentoLigacoesMedicaoIndividualizada
 							faturamentoLigacoesMedicaoIndividualizadaRelatorioHelper.getNumeroQuadra(),
 							faturamentoLigacoesMedicaoIndividualizadaRelatorioHelper.getNumeroLote(),
 							faturamentoLigacoesMedicaoIndividualizadaRelatorioHelper.getNumeroSubLote(),
-							faturamentoLigacoesMedicaoIndividualizadaRelatorioHelper.getDiferencaConsumoMacroMicros());
+							faturamentoLigacoesMedicaoIndividualizadaRelatorioHelper.getDiferencaConsumoMacroMicros(),
+							faturamentoLigacoesMedicaoIndividualizadaRelatorioHelper.getAnormalidadeLeitura());
 
 			retorno.add(relatorioFaturamentoLigacoesMedicaoIndividualizadaBean);
 

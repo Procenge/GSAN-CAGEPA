@@ -272,6 +272,9 @@ public class EfetuarCorteLigacaoAguaComRetiradaHidrometroAction
 			integracaoComercialHelper.setOrdemServico(ordemServico);
 			integracaoComercialHelper.setUsuarioLogado(usuario);
 
+			String qtdParcelas = corteLigacaoAguaActionForm.getQuantidadeParcelas();
+			integracaoComercialHelper.setQtdParcelas(qtdParcelas);
+
 			if(ordemServico.getServicoTipo().getDebitoTipo() != null && ordemServico.getServicoNaoCobrancaMotivo() == null){
 				try{
 

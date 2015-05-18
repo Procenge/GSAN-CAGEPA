@@ -76,25 +76,17 @@
 
 package gcom.gui.util;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 
 public class FiltroRecursosExternos
 				implements Filter {
 
 	public static String DIR_RECURSOS_EXTERNOS = null;
+
+	public static String DIR_ARQUIVOS_PROCESSADOS_ARRECADACAO = null;
 
 	// Variável que aramzena as configurações iniciais do filtro
 	private FilterConfig filterConfig;
@@ -103,6 +95,7 @@ public class FiltroRecursosExternos
 
 		this.filterConfig = filterConfig;
 		this.DIR_RECURSOS_EXTERNOS = filterConfig.getInitParameter("Folder-RecursosExternos");
+		this.DIR_ARQUIVOS_PROCESSADOS_ARRECADACAO = DIR_RECURSOS_EXTERNOS + "/ARQUIVOS_PROCESSADOS_ARRECADACAO/";
 	}
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws ServletException, IOException{

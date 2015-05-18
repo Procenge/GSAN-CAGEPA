@@ -166,6 +166,7 @@ public class ExibirAtualizarHidrometroMotivoBaixaAction
 		// ------ O MotivoBaixa do Hidrometro foi encontrada
 		atualizarHidrometroMotivoBaixaActionForm.setIdHidrometroMotivoBaixa(hidrometroMotivoBaixa.getId().toString());
 		atualizarHidrometroMotivoBaixaActionForm.setDescricaoMotivoBaixaHidrometro(hidrometroMotivoBaixa.getDescricao());
+		atualizarHidrometroMotivoBaixaActionForm.setDescricaoAbreviada(hidrometroMotivoBaixa.getDescricaoAbreviada());
 		atualizarHidrometroMotivoBaixaActionForm.setIndicadorUso(hidrometroMotivoBaixa.getIndicadorUso().toString());
 
 		sessao.setAttribute("hidrometroMotivoBaixa", hidrometroMotivoBaixa);

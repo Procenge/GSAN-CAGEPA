@@ -146,6 +146,16 @@ public class ManterCategoriaFaixaConsumoTarifaAction
 		}
 		ConsumoTarifaFaixa consumoTarifaFaixa = new ConsumoTarifaFaixa();
 
+		String pQuantidadeDecimaisValorTarifa = null;
+
+		try{
+
+			pQuantidadeDecimaisValorTarifa = (String) ParametroFaturamento.P_QUANTIDADE_DECIMAIS_VALOR_TARIFA.executar();
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
+
 		Integer i = 0;
 		Object[] teste = colecaoFaixa.toArray();
 		if(teste.length > 0){
@@ -230,9 +240,11 @@ public class ManterCategoriaFaixaConsumoTarifaAction
 
 						consumoTarifaFaixa.setNumeroConsumoFaixaIFim(limiteSuperFaixa);
 						consumoTarifaFaixa.setValorConsumoTarifa(Util.formatarMoedaRealparaBigDecimal(
-										inserirCategoriaFaixaConsumoTarifaActionForm.getValorM3Faixa(), 4));
+										inserirCategoriaFaixaConsumoTarifaActionForm.getValorM3Faixa(),
+										Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
 						consumoTarifaFaixa.setValorUsoEsgotoTarifa(Util.formatarMoedaRealparaBigDecimal(
-										inserirCategoriaFaixaConsumoTarifaActionForm.getValorM3FaixaEsgoto(), 4));
+										inserirCategoriaFaixaConsumoTarifaActionForm.getValorM3FaixaEsgoto(),
+										Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
 						consumoTarifaFaixa.setUltimaAlteracao(new Date());
 
 						consumoTarifaFaixaAtual.setNumeroConsumoFaixaInicio(new Integer(limiteSuperFaixa + 1));
@@ -250,7 +262,8 @@ public class ManterCategoriaFaixaConsumoTarifaAction
 										.intValue() + 1));
 						consumoTarifaFaixa.setNumeroConsumoFaixaIFim(limiteSuperFaixa);
 						consumoTarifaFaixa.setValorConsumoTarifa(Util.formatarMoedaRealparaBigDecimal(
-										inserirCategoriaFaixaConsumoTarifaActionForm.getValorM3Faixa(), 4));
+										inserirCategoriaFaixaConsumoTarifaActionForm.getValorM3Faixa(),
+										Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
 						consumoTarifaFaixa.setUltimaAlteracao(new Date());
 
 						consumoTarifaFaixaAtual.setNumeroConsumoFaixaInicio(new Integer(limiteSuperFaixa + 1));
@@ -290,10 +303,12 @@ public class ManterCategoriaFaixaConsumoTarifaAction
 			consumoTarifaFaixa.setNumeroConsumoFaixaInicio(new Integer(i + 1));
 			consumoTarifaFaixa
 							.setNumeroConsumoFaixaIFim(new Integer(inserirCategoriaFaixaConsumoTarifaActionForm.getLimiteSuperiorFaixa()));
-			consumoTarifaFaixa.setValorConsumoTarifa(Util.formatarMoedaRealparaBigDecimal(inserirCategoriaFaixaConsumoTarifaActionForm
-							.getValorM3Faixa(), 4));
+			consumoTarifaFaixa.setValorConsumoTarifa(Util.formatarMoedaRealparaBigDecimal(
+							inserirCategoriaFaixaConsumoTarifaActionForm.getValorM3Faixa(),
+							Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
 			consumoTarifaFaixa.setValorUsoEsgotoTarifa(Util.formatarMoedaRealparaBigDecimal(
-							inserirCategoriaFaixaConsumoTarifaActionForm.getValorM3FaixaEsgoto(), 4));
+							inserirCategoriaFaixaConsumoTarifaActionForm.getValorM3FaixaEsgoto(),
+							Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
 			consumoTarifaFaixa.setUltimaAlteracao(new Date());
 
 		}

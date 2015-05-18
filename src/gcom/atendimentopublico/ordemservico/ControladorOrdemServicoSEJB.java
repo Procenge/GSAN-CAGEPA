@@ -78,6 +78,9 @@ package gcom.atendimentopublico.ordemservico;
 
 import gcom.acquagis.atendimento.OrdemServicoDetalhesJSONHelper;
 import gcom.acquagis.atendimento.OrdemServicoJSONHelper;
+import gcom.arrecadacao.ControladorArrecadacaoLocal;
+import gcom.arrecadacao.ControladorArrecadacaoLocalHome;
+import gcom.arrecadacao.pagamento.*;
 import gcom.atendimentopublico.ControladorAtendimentoPublicoLocal;
 import gcom.atendimentopublico.ControladorAtendimentoPublicoLocalHome;
 import gcom.atendimentopublico.bean.IntegracaoComercialHelper;
@@ -98,6 +101,7 @@ import gcom.cadastro.cliente.ControladorClienteLocalHome;
 import gcom.cadastro.empresa.Empresa;
 import gcom.cadastro.endereco.ControladorEnderecoLocal;
 import gcom.cadastro.endereco.ControladorEnderecoLocalHome;
+import gcom.cadastro.funcionario.FiltroFuncionario;
 import gcom.cadastro.funcionario.Funcionario;
 import gcom.cadastro.geografico.Bairro;
 import gcom.cadastro.imovel.*;
@@ -123,23 +127,29 @@ import gcom.faturamento.bean.CalcularValoresAguaEsgotoHelper;
 import gcom.faturamento.bean.EmitirContaHelper;
 import gcom.faturamento.consumotarifa.ConsumoTarifa;
 import gcom.faturamento.debito.*;
+import gcom.faturamento.debito.DebitoTipo.DebitoTipoEnum;
 import gcom.financeiro.ControladorFinanceiroLocal;
 import gcom.financeiro.ControladorFinanceiroLocalHome;
 import gcom.gui.ActionServletException;
 import gcom.gui.atendimentopublico.ordemservico.OrdemServicoSeletivaHelper;
 import gcom.gui.atendimentopublico.ordemservico.RoteiroOSDadosProgramacaoHelper;
+import gcom.gui.faturamento.bean.GuiaPagamentoPrestacaoHelper;
+import gcom.gui.faturamento.bean.ListaDadosPrestacaoGuiaHelper;
 import gcom.interceptor.RegistradorOperacao;
 import gcom.micromedicao.ControladorMicromedicaoLocal;
 import gcom.micromedicao.ControladorMicromedicaoLocalHome;
+import gcom.micromedicao.FiltroRota;
 import gcom.micromedicao.Rota;
 import gcom.micromedicao.bean.HidrometroRelatorioOSHelper;
 import gcom.micromedicao.consumo.LigacaoTipo;
+import gcom.micromedicao.hidrometro.Hidrometro;
+import gcom.micromedicao.hidrometro.HidrometroCondicao;
+import gcom.micromedicao.hidrometro.HidrometroHistoricoAfericao;
+import gcom.micromedicao.hidrometro.HidrometroInstalacaoHistorico;
+import gcom.micromedicao.medicao.MedicaoTipo;
 import gcom.operacional.DistritoOperacional;
 import gcom.operacional.SetorAbastecimento;
-import gcom.relatorio.atendimentopublico.FiltrarRelatorioResumoOrdensServicoPendentesHelper;
-import gcom.relatorio.atendimentopublico.RelatorioOrdemServicoListarImoveis;
-import gcom.relatorio.atendimentopublico.RelatorioResumoOrdensServicoEncerradasPendentes;
-import gcom.relatorio.atendimentopublico.RelatorioResumoOrdensServicoPendentesHelper;
+import gcom.relatorio.atendimentopublico.*;
 import gcom.relatorio.ordemservico.GeradorRelatorioOrdemServico;
 import gcom.relatorio.ordemservico.OSRelatorioEstruturaHelper;
 import gcom.relatorio.ordemservico.OSRelatorioPadraoComOcorrenciaHelper;
@@ -155,14 +165,17 @@ import gcom.util.*;
 import gcom.util.filtro.*;
 import gcom.util.parametrizacao.ExecutorParametro;
 import gcom.util.parametrizacao.Parametrizacao;
+import gcom.util.parametrizacao.ParametroGeral;
 import gcom.util.parametrizacao.atendimentopublico.ExecutorParametrosAtendimentoPublico;
 import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 import gcom.util.parametrizacao.ordemservico.ParametroOrdemServico;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -175,6 +188,7 @@ import javax.ejb.SessionContext;
 
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.map.HashedMap;
 
 public class ControladorOrdemServicoSEJB
 				implements SessionBean, Parametrizacao {
@@ -804,8 +818,7 @@ public class ControladorOrdemServicoSEJB
 
 			filtro.setColecaoIdsOS(colecaoOS);
 
-			Integer permiteTramiteIndependente = Util
-							.converterStringParaInteger((String) ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE
+			Short permiteTramiteIndependente = Short.parseShort((String) ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE
 											.executar(ExecutorParametrosAtendimentoPublico.getInstancia()));
 
 			return repositorioOrdemServico.pesquisarOrdemServico(filtro, permiteTramiteIndependente);
@@ -1410,7 +1423,8 @@ public class ControladorOrdemServicoSEJB
 	 */
 	public Integer gerarOrdemServico(OrdemServico ordemServico, Usuario usuario,
 					Map<Integer, ServicoAssociadoAutorizacaoHelper> autorizacoesServicos, Integer idLocalidade, Integer idSetorComercial,
-					Integer idBairro, Integer idUnidadeOrigem, Integer idUnidadeDestino, String parecerUnidadeDestino)
+					Integer idBairro, Integer idUnidadeOrigem, Integer idUnidadeDestino, String parecerUnidadeDestino,
+					String idOSPrincipal, Boolean forcarGerarOS, Short qtdPrestacaoGuiaPagamento)
 					throws ControladorException{
 
 		try{
@@ -1421,41 +1435,848 @@ public class ControladorOrdemServicoSEJB
 			// [FS0010] - Verificar restrição de emissão da Ordem de Serviço
 			this.verificarRestricaoEmissaoOrdemServico(usuario, ordemServico, ConstantesSistema.NAO);
 
-			// [SB0004] - Gerar Ordem de serviço
-			Integer idOrdemServicoGerada = this.inserirOrdemServico(ordemServico, usuario);
-
-			if(ordemServico.getServicoTipo().getServicoTipoReferencia() != null
-							&& ordemServico.getServicoTipo().getServicoTipoReferencia().getIndicadorExistenciaOsReferencia() == ConstantesSistema.SIM){
-
-				OrdemServico osReferencia = ordemServico.getOsReferencia();
-				osReferencia.setSituacao(OrdemServico.SITUACAO_AGUARDANDO_LIBERACAO);
-
-				this.getControladorUtil().atualizar(osReferencia);
+			Integer idOrdemServicoGerada = null;
+			Integer idServicoTipo = null;
+			Integer idRegistroAtendimento = null;
+			
+			if (ordemServico != null && ordemServico.getServicoTipo() != null && ordemServico.getServicoTipo().getId() != null) {
+				idServicoTipo = ordemServico.getServicoTipo().getId();
 			}
 
-			// verifica se fará gerações de Serviços Associados
-			ServicoTipo servicoTipoOS = null;
-			try{
-				servicoTipoOS = repositorioOrdemServico.pesquisarServicoTipoPorId(ordemServico.getServicoTipo().getId());
-			}catch(ErroRepositorioException e){
-				sessionContext.setRollbackOnly();
-				throw new ControladorException("erro.sistema", e);
+			if(ordemServico != null && ordemServico.getRegistroAtendimento() != null
+							&& ordemServico.getRegistroAtendimento().getId() != null){
+				idRegistroAtendimento = ordemServico.getRegistroAtendimento().getId();
 			}
 
-			if(servicoTipoOS.getServicosAssociados() != null && !servicoTipoOS.getServicosAssociados().isEmpty()){
-				ordemServico.setServicoTipo(servicoTipoOS);
-				this.gerarServicosAssociadosOrdemServico(ordemServico, usuario, EventoGeracaoServico.GERACAO_ORDEM_SERVICO, null,
-								autorizacoesServicos);
+			// Verificar se o Tipo de Servico é de Pagamento Antecipado
+			// sendo o mesmo irá criar uma Guia de Pagamento paa que após o pagamento desta Guia
+			// seja criada a ordem de servico
+			FiltroServicoTipo filtroServicoTipo = new FiltroServicoTipo();
+			filtroServicoTipo.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoTipo.DEBITOTIPO);
+			filtroServicoTipo.adicionarParametro(new ParametroSimples(FiltroServicoTipo.ID, idServicoTipo));
+
+			ServicoTipo servicoTipoAtual = (ServicoTipo) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(filtroServicoTipo,
+							ServicoTipo.class.getName()));
+
+			Boolean flagGerarOrdemServico = null;
+			if(forcarGerarOS == null || forcarGerarOS.equals(false)){
+				flagGerarOrdemServico = !this.validarGerarGuiaPagamentoOS(idServicoTipo, idRegistroAtendimento);
+			}else{
+				flagGerarOrdemServico = true;
 			}
 
-			this.gerarTramiteOrdemServico(idLocalidade, idSetorComercial, idBairro, idUnidadeOrigem, idUnidadeDestino,
-							parecerUnidadeDestino, usuario, ordemServico);
+			if(flagGerarOrdemServico){
+
+				// [SB0004] - Gerar Ordem de serviço
+				idOrdemServicoGerada = this.inserirOrdemServico(ordemServico, usuario);
+
+				if(ordemServico.getServicoTipo().getServicoTipoReferencia() != null
+								&& ordemServico.getServicoTipo().getServicoTipoReferencia().getIndicadorExistenciaOsReferencia() == ConstantesSistema.SIM){
+
+					OrdemServico osReferencia = ordemServico.getOsReferencia();
+					osReferencia.setSituacao(OrdemServico.SITUACAO_AGUARDANDO_LIBERACAO);
+
+					this.getControladorUtil().atualizar(osReferencia);
+				}
+
+				// verifica se fará gerações de Serviços Associados
+				ServicoTipo servicoTipoOS = null;
+				try{
+					servicoTipoOS = repositorioOrdemServico.pesquisarServicoTipoPorId(ordemServico.getServicoTipo().getId());
+				}catch(ErroRepositorioException e){
+					sessionContext.setRollbackOnly();
+					throw new ControladorException("erro.sistema", e);
+				}
+
+				if(servicoTipoOS.getServicosAssociados() != null && !servicoTipoOS.getServicosAssociados().isEmpty()){
+					ordemServico.setServicoTipo(servicoTipoOS);
+					this.gerarServicosAssociadosOrdemServico(ordemServico, usuario, EventoGeracaoServico.GERACAO_ORDEM_SERVICO, null,
+									autorizacoesServicos);
+				}
+
+				this.gerarTramiteOrdemServico(idLocalidade, idSetorComercial, idBairro, idUnidadeOrigem, idUnidadeDestino,
+								parecerUnidadeDestino, usuario, ordemServico);
+
+				this.validarAtualizarOrdemServicoReparo(idOrdemServicoGerada, idOSPrincipal, usuario);
+			}else{
+				// Obter a quantidade de Dias para o Calculo do Vencimento
+				Calendar dataVencimento = Calendar.getInstance();
+				String parametroDiasCalculoVencimento = (String) ParametroFaturamento.P_NUMERO_DIAS_CALCULO_VENCIMENTO_GUIA_COBRANCA_SERVICO_ANTECIPADO
+								.executar();
+
+				Integer qtdeDiasVencimento = 0;
+				if(parametroDiasCalculoVencimento != null){
+					dataVencimento.add(Calendar.DAY_OF_YEAR, Integer.valueOf(parametroDiasCalculoVencimento));
+
+					qtdeDiasVencimento = Integer.valueOf(parametroDiasCalculoVencimento);
+				}
+
+				// Criando a GuiaPagamento
+				GuiaPagamento guiaPagamento = new GuiaPagamento();
+
+				guiaPagamento.setImovel(ordemServico.getImovel());
+
+				if(ordemServico.getRegistroAtendimento() != null && ordemServico.getRegistroAtendimento().getId() != null){
+					FiltroRegistroAtendimentoSolicitante filtroRegistroAtendimentoSolicitante = new FiltroRegistroAtendimentoSolicitante();
+					filtroRegistroAtendimentoSolicitante.adicionarParametro(new ParametroSimples(
+									FiltroRegistroAtendimentoSolicitante.REGISTRO_ATENDIMENTO_ID, ordemServico.getRegistroAtendimento()
+													.getId()));
+
+					RegistroAtendimentoSolicitante registroAtendimentoSolicitante = (RegistroAtendimentoSolicitante) Util
+									.retonarObjetoDeColecao(getControladorUtil().pesquisar(filtroRegistroAtendimentoSolicitante,
+													RegistroAtendimentoSolicitante.class.getName()));
+					if(registroAtendimentoSolicitante != null){
+						guiaPagamento.setCliente(registroAtendimentoSolicitante.getCliente());
+					}
+				}
+				
+				// Incluir as Prestações da Guia de Pagamento
+				Collection<ServicoDebitoTipo> colecaoServicoDebitoTipo = new ArrayList<ServicoDebitoTipo>();
+				
+				if (servicoTipoAtual.getDebitoTipo() != null) {
+					ServicoDebitoTipo servicoDebitoTipo = new ServicoDebitoTipo();
+					
+					servicoDebitoTipo.setDebitoTipo(servicoTipoAtual.getDebitoTipo());
+					servicoDebitoTipo.setServicoTipo(servicoTipoAtual);
+					
+					servicoDebitoTipo.setNumeroPrestacoes(servicoTipoAtual.getNumeroMaximoGuiaPrestacaoAntecipadaPermitidas());
+					servicoDebitoTipo.setValorServicoDebitoTipo(servicoTipoAtual.getValor());
+					
+					colecaoServicoDebitoTipo.add(servicoDebitoTipo);
+					
+				} else {
+					FiltroServicoDebitoTipo filtroServicoDebitoTipo = new FiltroServicoDebitoTipo();
+					filtroServicoDebitoTipo.adicionarParametro(new ParametroSimples(FiltroServicoDebitoTipo.ID_SERVICO_TIPO,
+									servicoTipoAtual.getId()));
+					filtroServicoDebitoTipo.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoDebitoTipo.DEBITO_TIPO);
+					
+					colecaoServicoDebitoTipo = getControladorUtil().pesquisar(filtroServicoDebitoTipo, ServicoDebitoTipo.class.getName());
+				}
+				
+				// Criando as Prestações
+				Short numeroTotalPrestacoesASerGeradas = 0;
+				Short numeroTotalPrestacoesPesquisada = 0;
+				Collection<GuiaPagamentoPrestacaoHelper> colecaoGuiaPagamentoPrestacao = new ArrayList<GuiaPagamentoPrestacaoHelper>();				
+				Collection<ListaDadosPrestacaoGuiaHelper> colecaoListaDadosPrestacaoGuia = new ArrayList<ListaDadosPrestacaoGuiaHelper>();
+
+				for(ServicoDebitoTipo servicoDebitoTipo : colecaoServicoDebitoTipo){
+					Short numeroTotalGuiaPrestacao = 1;
+					if(servicoDebitoTipo.getNumeroPrestacoes() != null){
+						numeroTotalGuiaPrestacao = servicoDebitoTipo.getNumeroPrestacoes();
+
+						if(numeroTotalPrestacoesPesquisada.compareTo(numeroTotalGuiaPrestacao) < 0){
+							numeroTotalPrestacoesPesquisada = numeroTotalGuiaPrestacao;
+						}
+					}
+					
+					if(qtdPrestacaoGuiaPagamento != null){
+						if(servicoDebitoTipo.getNumeroPrestacoes() != null
+										&& qtdPrestacaoGuiaPagamento.compareTo(servicoDebitoTipo.getNumeroPrestacoes()) > 0){
+							numeroTotalGuiaPrestacao = servicoDebitoTipo.getNumeroPrestacoes();
+						}else{
+							numeroTotalGuiaPrestacao = qtdPrestacaoGuiaPagamento;
+						}
+					}
+
+					if(numeroTotalPrestacoesASerGeradas.compareTo(numeroTotalGuiaPrestacao) <= 0){
+						numeroTotalPrestacoesASerGeradas = (short) (numeroTotalGuiaPrestacao);
+					}
+	
+					guiaPagamento.setRegistroAtendimento(ordemServico.getRegistroAtendimento());
+					guiaPagamento.setNumeroPrestacaoTotal(numeroTotalGuiaPrestacao);
+					guiaPagamento.setIndicadorEmissaoObservacaoRA((short) 2);
+					guiaPagamento.setServicoTipo(ordemServico.getServicoTipo());
+	
+					OrdemServico ordemServicoGuiaPagamento = new OrdemServico();
+					guiaPagamento.setOrdemServico(ordemServicoGuiaPagamento);
+	
+					BigDecimal valorPrestacao = servicoDebitoTipo.getValorServicoDebitoTipo().divide(new BigDecimal(numeroTotalGuiaPrestacao.toString()), 2,
+									RoundingMode.DOWN);
+					BigDecimal valorPrestacaoResto = servicoDebitoTipo.getValorServicoDebitoTipo().subtract( valorPrestacao.multiply(new BigDecimal(numeroTotalGuiaPrestacao.toString())));
+									
+					for(int numeroPrestacaoAtual = 1; numeroTotalGuiaPrestacao >= numeroPrestacaoAtual; numeroPrestacaoAtual++){
+	
+						GuiaPagamentoPrestacaoHelper guiaPagamentoPrestacao = new GuiaPagamentoPrestacaoHelper();
+						guiaPagamentoPrestacao.setDescricaoTipoDebito(servicoDebitoTipo.getDebitoTipo().getDescricao());
+						guiaPagamentoPrestacao
+										.setIdItemLancamentoContabil(servicoDebitoTipo.getDebitoTipo().getLancamentoItemContabil().getId());
+						guiaPagamentoPrestacao.setUltimaAlteracao(new Date());
+	
+						if (numeroPrestacaoAtual == numeroTotalGuiaPrestacao) {
+							guiaPagamentoPrestacao.setValorPrestacaoTipoDebito(valorPrestacao.add(valorPrestacaoResto));
+							guiaPagamentoPrestacao.setValorTipoDebito(valorPrestacao.add(valorPrestacaoResto));
+						}else{
+							guiaPagamentoPrestacao.setValorPrestacaoTipoDebito(valorPrestacao);
+							guiaPagamentoPrestacao.setValorTipoDebito(valorPrestacao);
+						}
+						
+						colecaoGuiaPagamentoPrestacao.add(guiaPagamentoPrestacao);
+					}
+	
+					Calendar dataVencimentoPrestacoes = Calendar.getInstance();
+					dataVencimentoPrestacoes.setTime(dataVencimento.getTime());
+					for(int numeroPrestacaoAtual = 1; numeroTotalGuiaPrestacao >= numeroPrestacaoAtual; numeroPrestacaoAtual++){
+						ListaDadosPrestacaoGuiaHelper listaDadosPrestacaoGuia = null;
+	
+						for(ListaDadosPrestacaoGuiaHelper dadosPrestacaoGuiaHelper : colecaoListaDadosPrestacaoGuia){
+							if(dadosPrestacaoGuiaHelper.getPrestacao().intValue() == numeroPrestacaoAtual){
+								listaDadosPrestacaoGuia = dadosPrestacaoGuiaHelper;
+							}
+						}
+
+						Boolean bflagNovoItem = false;
+						if(listaDadosPrestacaoGuia == null){
+							listaDadosPrestacaoGuia = new ListaDadosPrestacaoGuiaHelper();
+							listaDadosPrestacaoGuia.setPrestacao(numeroPrestacaoAtual);
+							listaDadosPrestacaoGuia.setDataVencimentoPrestacao(dataVencimentoPrestacoes.getTime());
+
+							bflagNovoItem = true;
+						}
+
+						Map<Integer, BigDecimal> mapValorDebitoNaPrestacaoPorTipoDebito = listaDadosPrestacaoGuia
+										.getMapValorDebitoNaPrestacaoPorTipoDebito();
+	
+						if(numeroPrestacaoAtual == numeroTotalGuiaPrestacao){
+							mapValorDebitoNaPrestacaoPorTipoDebito.put(servicoDebitoTipo.getDebitoTipo().getId(),
+											valorPrestacao.add(valorPrestacaoResto));
+						}else{
+							mapValorDebitoNaPrestacaoPorTipoDebito.put(servicoDebitoTipo.getDebitoTipo().getId(), valorPrestacao);
+						}
+	
+						Map<Integer, Integer> mapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito = new HashedMap();
+	
+						listaDadosPrestacaoGuia.setMapValorDebitoNaPrestacaoPorTipoDebito(mapValorDebitoNaPrestacaoPorTipoDebito);
+						listaDadosPrestacaoGuia
+										.setMapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito(mapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito);
+	
+						if(bflagNovoItem){
+							colecaoListaDadosPrestacaoGuia.add(listaDadosPrestacaoGuia);
+							dataVencimentoPrestacoes.add(Calendar.MONTH, 1);
+						}
+					}
+				}
+
+				if (colecaoGuiaPagamentoPrestacao.size() > 0 && colecaoListaDadosPrestacaoGuia.size()> 0 ) {
+					if(qtdPrestacaoGuiaPagamento != null){
+						if(qtdPrestacaoGuiaPagamento.compareTo(numeroTotalPrestacoesPesquisada) > 0){
+							throw new ControladorException("atencao.ordem_servico.limite_prestacao_guia_pagamento", null,
+											servicoTipoAtual.getDescricao(), numeroTotalPrestacoesPesquisada.toString());
+						}
+					}
+
+					SimpleDateFormat formataData = new SimpleDateFormat("dd/MM/yyyy");
+	
+					FiltroUsuario filtroUsuario = new FiltroUsuario();
+	
+					// Busca o usuário por senha e login
+					filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.GERENCIA_REGIONAL);
+					filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.LOCALIDADE_ELO);
+					filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.LOCALIDADE);
+	
+					filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.USUARIO_SITUACAO);
+					filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.USUARIO_TIPO);
+					filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.UNIDADE_ORGANIZACIONAL);
+					filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.FUNCIONARIO);
+					filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.EMPRESA);
+	
+					filtroUsuario.adicionarParametro(new ParametroSimples(FiltroUsuario.ID, usuario.getId()));
+	
+					Usuario usuarioGuiaPagamento = (Usuario) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(filtroUsuario,
+									Usuario.class.getName()));
+
+					guiaPagamento.setNumeroPrestacaoTotal(numeroTotalPrestacoesASerGeradas);
+	
+					String numeroContratoParcelOrgaoPublico = null;
+					idOrdemServicoGerada = (Integer) this.getControladorFaturamento().inserirGuiaPagamento(guiaPagamento, usuarioGuiaPagamento,
+									formataData.format(dataVencimento.getTime()).toString(), qtdeDiasVencimento, colecaoGuiaPagamentoPrestacao,
+									colecaoListaDadosPrestacaoGuia, numeroContratoParcelOrgaoPublico);
+				}
+			}
 
 			return idOrdemServicoGerada;
+
 		}catch(ControladorException e){
 			sessionContext.setRollbackOnly();
 			throw e;
 		}
+	}
+
+	public Collection<Integer> gerarOrdemServicoAPartirGuiaPagamento(Collection<GuiaPagamentoHistorico> colecaoGuiaPagamentoHistorico)
+					throws ControladorException{
+
+		try{
+			Collection<Integer> colecaoIdOS = new ArrayList<Integer>();
+
+			String paramUsuarioBatch = ParametroGeral.P_USUARIO_BATCH.executar();
+
+			FiltroUsuario filtroUsuario = new FiltroUsuario();
+			filtroUsuario.adicionarParametro(new ParametroSimples(FiltroUsuario.ID, Util.obterInteger(paramUsuarioBatch)));
+
+			Collection colUsuarios = getControladorUtil().pesquisar(filtroUsuario, Usuario.class.getName());
+			Usuario usuario = (Usuario) colUsuarios.iterator().next();
+
+			for(GuiaPagamentoHistorico guiaPagamentoHistoricoAtual : colecaoGuiaPagamentoHistorico){
+				Integer idServicoTipo = null;
+				Integer idtRegistroAtendimento = null;
+				Boolean indicadorGuiaPagamentoHistorico = null;
+				Boolean indicadorexisteOSGuiaPagamento = false;
+				Integer idGuiaPagamento = null;
+				Imovel imovelPesquisado = null;
+				Cliente clientePesquisado = null;
+
+				FiltroGuiaPagamentoHistorico filtroGuiaPagamentoHistorico = new FiltroGuiaPagamentoHistorico();
+				filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.REGISTRO_ATENDIMENTO);
+				filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.SERVICO_TIPO);
+				filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.DEBITO_TIPO);
+				filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.CLIENTE);
+				filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.IMOVEL);
+				
+				filtroGuiaPagamentoHistorico.adicionarParametro(new ParametroSimples(FiltroGuiaPagamentoHistorico.ID, guiaPagamentoHistoricoAtual.getId()));
+
+				GuiaPagamento guiaPagamentoPesquisado = null;
+				GuiaPagamentoHistorico guiaPagamentoHistoricoPesquisado = (GuiaPagamentoHistorico) Util
+								.retonarObjetoDeColecao(getControladorUtil().pesquisar(filtroGuiaPagamentoHistorico,
+												GuiaPagamentoHistorico.class.getName()));
+
+				if (guiaPagamentoHistoricoPesquisado != null && guiaPagamentoHistoricoPesquisado.getOrdemServico() != null ) {
+					indicadorexisteOSGuiaPagamento	= true;				
+				}
+				
+				if(guiaPagamentoHistoricoPesquisado != null && guiaPagamentoHistoricoPesquisado.getRegistroAtendimento() != null
+								&& guiaPagamentoHistoricoPesquisado.getRegistroAtendimento().getId() != null
+								&& guiaPagamentoHistoricoPesquisado.getServicoTipo() != null
+								&& guiaPagamentoHistoricoPesquisado.getServicoTipo().getId() != null){
+					idServicoTipo = guiaPagamentoHistoricoPesquisado.getServicoTipo().getId();
+					idtRegistroAtendimento = guiaPagamentoHistoricoPesquisado.getRegistroAtendimento().getId();
+					indicadorGuiaPagamentoHistorico = true;
+					idGuiaPagamento = guiaPagamentoHistoricoPesquisado.getId();
+					imovelPesquisado = guiaPagamentoHistoricoPesquisado.getImovel();
+					clientePesquisado = guiaPagamentoHistoricoPesquisado.getCliente();
+				}else{
+					FiltroGuiaPagamento filtroGuiaPagamento = new FiltroGuiaPagamento();
+					filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.REGISTRO_ATENDIMENTO);
+					filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.SERVICO_TIPO);
+					filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.DEBITO_TIPO);
+					filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.CLIENTE);
+					filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.IMOVEL);
+
+					filtroGuiaPagamento
+									.adicionarParametro(new ParametroSimples(FiltroGuiaPagamento.ID, guiaPagamentoHistoricoAtual.getId()));
+
+					guiaPagamentoPesquisado = (GuiaPagamento) Util.retonarObjetoDeColecao(getControladorUtil()
+									.pesquisar(filtroGuiaPagamento, GuiaPagamento.class.getName()));
+
+					if (guiaPagamentoPesquisado != null && guiaPagamentoPesquisado.getOrdemServico() != null ) {
+						indicadorexisteOSGuiaPagamento	= true;				
+					}
+					
+					if(guiaPagamentoPesquisado != null && guiaPagamentoPesquisado.getRegistroAtendimento() != null
+									&& guiaPagamentoPesquisado.getRegistroAtendimento().getId() != null
+									&& guiaPagamentoPesquisado.getServicoTipo() != null
+									&& guiaPagamentoPesquisado.getServicoTipo().getId() != null){
+						idServicoTipo = guiaPagamentoPesquisado.getServicoTipo().getId();
+						idtRegistroAtendimento = guiaPagamentoPesquisado.getRegistroAtendimento().getId();
+						indicadorGuiaPagamentoHistorico = false;
+						idGuiaPagamento = guiaPagamentoPesquisado.getId();
+						imovelPesquisado = guiaPagamentoPesquisado.getImovel();
+						clientePesquisado = guiaPagamentoPesquisado.getCliente();
+					}
+				}
+
+				Collection<GuiaPagamentoPrestacaoHistorico> colecaoGuiaPagamentoPrestacaoHistorico = new ArrayList<GuiaPagamentoPrestacaoHistorico>();
+
+				if(idtRegistroAtendimento != null && idServicoTipo != null && idGuiaPagamento != null){
+								
+					// Verifica se todas as prestacoes foram pagas dentro do prazo
+					FiltroGuiaPagamentoPrestacaoHistorico filtroGuiaPagamentoPrestacaoHistorico = new FiltroGuiaPagamentoPrestacaoHistorico();
+					filtroGuiaPagamentoPrestacaoHistorico.adicionarParametro(new ParametroSimples(
+									FiltroGuiaPagamentoPrestacaoHistorico.GUIA_PAGAMENTO_ID, idGuiaPagamento));
+					filtroGuiaPagamentoPrestacaoHistorico.adicionarParametro(new ParametroSimples(
+									FiltroGuiaPagamentoPrestacaoHistorico.INDICADOR_PAGAMENTO, ConstantesSistema.SIM));
+
+					colecaoGuiaPagamentoPrestacaoHistorico = getControladorUtil().pesquisar(filtroGuiaPagamentoPrestacaoHistorico,
+									GuiaPagamentoPrestacaoHistorico.class.getName());
+
+					Boolean bFlagPagamentoDentroPrazo = true;
+					Boolean bFlagExisteUmPagamentoDentroPrazo = false;
+					for(GuiaPagamentoPrestacaoHistorico guiaPagamentoPrestacaoHistoricoAtual : colecaoGuiaPagamentoPrestacaoHistorico){
+						
+						FiltroPagamentoHistorico filtroPagamentoHistorico = new FiltroPagamentoHistorico();
+						filtroPagamentoHistorico.adicionarParametro(new ParametroSimples(FiltroPagamentoHistorico.GUIA_PAGAMENTO_ID,
+										guiaPagamentoPrestacaoHistoricoAtual.getComp_id().getGuiaPagamentoId()));
+						filtroPagamentoHistorico.adicionarParametro(new ParametroSimples(FiltroPagamentoHistorico.NUMERO_PRESTACAO,
+										guiaPagamentoPrestacaoHistoricoAtual.getComp_id().getNumeroPrestacao()));
+						
+						PagamentoHistorico pagamentoPesquisado = (PagamentoHistorico) Util.retonarObjetoDeColecao(getControladorUtil()
+										.pesquisar(filtroPagamentoHistorico, PagamentoHistorico.class.getName()));
+
+						if(pagamentoPesquisado != null){
+							if(pagamentoPesquisado.getDataPagamento().after(guiaPagamentoPrestacaoHistoricoAtual.getDataVencimento())){
+								bFlagPagamentoDentroPrazo = false;
+							}else{
+								bFlagExisteUmPagamentoDentroPrazo = true;
+							}
+						}
+					}
+
+					FiltroRegistroAtendimento filtroRegistroAtendimento = new FiltroRegistroAtendimento();
+					filtroRegistroAtendimento
+									.adicionarParametro(new ParametroSimples(FiltroRegistroAtendimento.ID, idtRegistroAtendimento));
+
+					filtroRegistroAtendimento
+									.adicionarCaminhoParaCarregamentoEntidade(FiltroRegistroAtendimento.SOLICITACAO_TIPO_ESPECIFICACAO);
+					filtroRegistroAtendimento.adicionarCaminhoParaCarregamentoEntidade(FiltroRegistroAtendimento.SOLICITACAO_TIPO);
+					filtroRegistroAtendimento.adicionarCaminhoParaCarregamentoEntidade(FiltroRegistroAtendimento.IMOVEL);
+					filtroRegistroAtendimento.adicionarCaminhoParaCarregamentoEntidade("imovel.localidade");
+					filtroRegistroAtendimento.adicionarCaminhoParaCarregamentoEntidade("imovel.setorComercial");
+					filtroRegistroAtendimento.adicionarCaminhoParaCarregamentoEntidade("imovel.quadra");
+
+					RegistroAtendimento registroAtendimentoPesquisado = (RegistroAtendimento) Util
+									.retonarObjetoDeColecao(getControladorUtil().pesquisar(filtroRegistroAtendimento,
+													RegistroAtendimento.class.getName()));
+
+					// if(bFlagPagamentoDentroPrazo){
+					Integer idLocalidade = null;
+					Integer idSetorComercial = null;
+
+					// Pesquisa para ver se já existe uma OS para Guia de pagamento
+					if(!indicadorexisteOSGuiaPagamento){
+						Collection<Integer> colecaoIdServicoTipo = this
+										.consultarIdServicoTipoGeracaoAutomaticaPorEspecificacao(registroAtendimentoPesquisado
+														.getSolicitacaoTipoEspecificacao().getId());
+
+						Integer idSolicitacaoTipo = registroAtendimentoPesquisado.getSolicitacaoTipoEspecificacao().getSolicitacaoTipo()
+										.getId();
+						Integer idSolicitacaoTipoEspecificacao = registroAtendimentoPesquisado.getSolicitacaoTipoEspecificacao().getId();
+
+						Collection<OrdemServico> colecaoOsGeradaAutomatica = null;
+						colecaoOsGeradaAutomatica = getControladorRegistroAtendimento().gerarColecaoOrdemServicoAutomatica(
+										colecaoIdServicoTipo, idSolicitacaoTipo);
+
+						if(getControladorRegistroAtendimento().gerarOrdemServicoAutomatica(idSolicitacaoTipoEspecificacao)
+										&& !Util.isVazioOrNulo(colecaoOsGeradaAutomatica)){
+							Imovel imovel = null;
+							Integer idOrdemServico = null;
+
+							for(OrdemServico osGeradaAutomatica : colecaoOsGeradaAutomatica){
+								// O Imóvel da OS será o mesmo do RA
+								imovel = registroAtendimentoPesquisado.getImovel();
+
+								if(imovel != null){
+									osGeradaAutomatica.setImovel(imovel);
+								}
+
+								osGeradaAutomatica.setRegistroAtendimento(registroAtendimentoPesquisado);
+
+								Object[] dadosDaRA = getControladorRegistroAtendimento().pesquisarDadosLocalizacaoRegistroAtendimento(
+												registroAtendimentoPesquisado.getId());
+								Integer idBairro = null;
+								if(dadosDaRA != null){
+									if(idLocalidade == null){
+										idLocalidade = (Integer) dadosDaRA[0];
+									}
+									if(idSetorComercial == null){
+										idSetorComercial = (Integer) dadosDaRA[1];
+									}
+									idBairro = (Integer) dadosDaRA[2];
+								}
+
+								FiltroTramite filtroTramite = new FiltroTramite();
+								filtroTramite.adicionarParametro(new ParametroSimples(FiltroTramite.REGISTRO_ATENDIMENTO_ID,
+												registroAtendimentoPesquisado.getId()));
+								filtroTramite.adicionarCaminhoParaCarregamentoEntidade(FiltroTramite.UNIDADE_ORGANIZACIONAL_ORIGEM);
+								filtroTramite.adicionarCaminhoParaCarregamentoEntidade(FiltroTramite.UNIDADE_ORGANIZACIONAL_DESTINO);
+								filtroTramite.setCampoOrderByDesc(FiltroTramite.ID);
+
+								Tramite tramitePesquisado = (Tramite) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(
+												filtroTramite, Tramite.class.getName()));
+
+								Integer idUnidadeAtendimento = tramitePesquisado.getUnidadeOrganizacionalOrigem().getId();
+								Integer idUnidadeDestino = tramitePesquisado.getUnidadeOrganizacionalDestino().getId();
+								String parecerUnidadeDestino = tramitePesquisado.getParecerTramite();
+
+								// Gerar a Ordem de Servico
+								idOrdemServico = this.gerarOrdemServico(osGeradaAutomatica, usuario, null, idLocalidade, idSetorComercial,
+												idBairro, idUnidadeAtendimento, idUnidadeDestino, parecerUnidadeDestino, null, true, null);
+
+								colecaoIdOS.add(idOrdemServico);
+
+								// Atualizar a Guia de Pagamento
+								OrdemServico ordemServicoGerada = new OrdemServico();
+								ordemServicoGerada.setId(idOrdemServico);
+
+								if(indicadorGuiaPagamentoHistorico){
+									guiaPagamentoHistoricoPesquisado.setOrdemServico(ordemServicoGerada);
+									getControladorUtil().atualizar(guiaPagamentoHistoricoPesquisado);
+								}else{
+									guiaPagamentoPesquisado.setOrdemServico(ordemServicoGerada);
+									getControladorUtil().atualizar(guiaPagamentoPesquisado);
+								}
+
+							}
+						}
+					}
+					/*
+					 * else{
+					 * if(!indicadorexisteOSGuiaPagamento){
+					 * FiltroPagamentoHistorico filtroPagamentoHistorico = new
+					 * FiltroPagamentoHistorico();
+					 * filtroPagamentoHistorico.adicionarParametro(new
+					 * ParametroSimples(FiltroPagamentoHistorico.GUIA_PAGAMENTO_ID,
+					 * idGuiaPagamento));
+					 * Collection<PagamentoHistorico> colecaoPagamentoHistorico =
+					 * getControladorUtil().pesquisar(
+					 * filtroPagamentoHistorico, PagamentoHistorico.class.getName());
+					 * for(PagamentoHistorico pagamentoHistorico : colecaoPagamentoHistorico){
+					 * if(imovelPesquisado != null){
+					 * CreditoARealizar creditoARealizar = new CreditoARealizar();
+					 * // Criando o objeto Crédito Tipo
+					 * CreditoTipo creditoTipo = new CreditoTipo();
+					 * creditoTipo.setId(CreditoTipo.DEVSERVICOFRPRZ);
+					 * creditoARealizar.setCreditoTipo(creditoTipo);
+					 * // Criando o objeto Crédito Origem
+					 * CreditoOrigem creditoOrigem = new CreditoOrigem();
+					 * creditoOrigem.setId(CreditoOrigem.DEVOLUCAO_SERVICO);
+					 * creditoARealizar.setCreditoOrigem(creditoOrigem);
+					 * // Criando o objeto Registro Atendimento
+					 * creditoARealizar.setRegistroAtendimento(registroAtendimentoPesquisado);
+					 * creditoARealizar.setOrdemServico(null);
+					 * creditoARealizar.setAnoMesReferenciaCredito(pagamentoHistorico.
+					 * getAnoMesReferenciaPagamento());
+					 * creditoARealizar.setNumeroPrestacaoCredito(Short.valueOf("1"));
+					 * // Setando as informações do Imóvel
+					 * creditoARealizar.setImovel(registroAtendimentoPesquisado.getImovel());
+					 * creditoARealizar.setCodigoSetorComercial(registroAtendimentoPesquisado.getImovel
+					 * ().getSetorComercial()
+					 * .getCodigo());
+					 * creditoARealizar.setNumeroQuadra(new
+					 * Integer(registroAtendimentoPesquisado.getImovel().getQuadra()
+					 * .getNumeroQuadra()));
+					 * creditoARealizar.setNumeroLote(registroAtendimentoPesquisado.getImovel().getLote
+					 * ());
+					 * creditoARealizar.setNumeroSubLote(registroAtendimentoPesquisado.getImovel().
+					 * getSubLote());
+					 * creditoARealizar.setQuadra(registroAtendimentoPesquisado.getImovel().getQuadra
+					 * ());
+					 * creditoARealizar.setLocalidade(registroAtendimentoPesquisado.getImovel().
+					 * getLocalidade());
+					 * creditoARealizar.setValorCredito(pagamentoHistorico.getValorPagamento());
+					 * creditoARealizar.setPagamentoHistorico(pagamentoHistorico);
+					 * getControladorFaturamento().inserirCreditoARealizar(registroAtendimentoPesquisado
+					 * .getImovel(),
+					 * creditoARealizar, usuario, false);
+					 * }else if(clientePesquisado != null){
+					 * GuiaDevolucao guiaDevolucao = new GuiaDevolucao();
+					 * guiaDevolucao.setCliente(clientePesquisado);
+					 * guiaDevolucao.setRegistroAtendimento(registroAtendimentoPesquisado);
+					 * DocumentoTipo documentoTipo = new DocumentoTipo();
+					 * documentoTipo.setId(DocumentoTipo.GUIA_PAGAMENTO);
+					 * guiaDevolucao.setDocumentoTipo(documentoTipo);
+					 * GuiaPagamentoGeral guiaPagamentoGeral = new GuiaPagamentoGeral();
+					 * guiaPagamentoGeral.setId(idGuiaPagamento);
+					 * guiaDevolucao.setGuiaPagamentoGeral(guiaPagamentoGeral);
+					 * for(GuiaPagamentoPrestacaoHistorico guiaPagamentoPrestacaoHistoricoAtual :
+					 * colecaoGuiaPagamentoPrestacaoHistorico){
+					 * if(guiaPagamentoPrestacaoHistoricoAtual.getComp_id().getNumeroPrestacao().
+					 * toString()
+					 * .equals(pagamentoHistorico.getNumeroPrestacao().toString())){
+					 * DebitoTipo debitoTipo = new DebitoTipo();
+					 * debitoTipo.setId(guiaPagamentoPrestacaoHistoricoAtual.getDebitoTipo().getId())
+					 * ;
+					 * guiaDevolucao.setDebitoTipo(debitoTipo);
+					 * }
+					 * }
+					 * guiaDevolucao.setValorDevolucao(pagamentoHistorico.getValorPagamento());
+					 * guiaDevolucao.setNumeroPrestacao(Short.valueOf(pagamentoHistorico.
+					 * getNumeroPrestacao().toString()));
+					 * guiaDevolucao.setPagamentoHistorico(pagamentoHistorico);
+					 * String paramFuncionarioAdministrador =
+					 * ParametroGeral.P_FUNCIONARIO_ADMINISTRADOR_SISTEMA.executar();
+					 * Funcionario funcionario = new Funcionario();
+					 * funcionario.setId(new Integer(paramFuncionarioAdministrador));
+					 * guiaDevolucao.setFuncionarioAnalista(funcionario);
+					 * funcionario = new Funcionario();
+					 * funcionario.setId(new Integer(paramFuncionarioAdministrador));
+					 * guiaDevolucao.setFuncionarioAutorizador(funcionario);
+					 * getControladorArrecadacao().inserirGuiaDevolucao(guiaDevolucao, usuario,
+					 * false, true,
+					 * CreditoTipo.DEVSERVICOFRPRZ);
+					 * }
+					 * }
+					 * // Cancelar as outras prestacoes da Guia
+					 * Collection<GuiaPagamentoPrestacaoHelper> colecaoGuiasPrestacoes =
+					 * getControladorFaturamento()
+					 * .pesquisarGuiasPagamentoPrestacaoFiltrar(idGuiaPagamento);
+					 * if(colecaoGuiasPrestacoes != null && colecaoGuiasPrestacoes.size() > 0){
+					 * Collection<String> colecaoGuiasPrestacoesRemovidas = new ArrayList<String>();
+					 * for(GuiaPagamentoPrestacaoHelper guiaPagamentoHelper :
+					 * colecaoGuiasPrestacoes){
+					 * FiltroGuiaPagamentoPrestacao filtroGuiaPagamentoPrestacao = new
+					 * FiltroGuiaPagamentoPrestacao();
+					 * filtroGuiaPagamentoPrestacao.adicionarParametro(new ParametroSimples(
+					 * FiltroGuiaPagamentoPrestacao.GUIA_PAGAMENTO_ID, guiaPagamentoHelper
+					 * .getIdGuiaPagamento()));
+					 * filtroGuiaPagamentoPrestacao
+					 * .adicionarParametro(new
+					 * ParametroSimples(FiltroGuiaPagamentoPrestacao.NUMERO_PRESTACAO,
+					 * guiaPagamentoHelper.getNumeroPrestacao()));
+					 * GuiaPagamentoPrestacao guiaPagamentoPrestacaoPesquisada =
+					 * (GuiaPagamentoPrestacao) Util
+					 * .retonarObjetoDeColecao(getControladorUtil().pesquisar(
+					 * filtroGuiaPagamentoPrestacao,
+					 * GuiaPagamentoPrestacao.class.getName()));
+					 * if(guiaPagamentoPrestacaoPesquisada != null){
+					 * colecaoGuiasPrestacoesRemovidas.add(guiaPagamentoHelper.getIdGuiaPagamento().
+					 * toString()
+					 * + guiaPagamentoHelper.getNumeroPrestacao().toString());
+					 * }
+					 * }
+					 * String[] registrosRemocao = new
+					 * String[colecaoGuiasPrestacoesRemovidas.size()];
+					 * int contLinha = 0;
+					 * for(String guiaPagamentoRemovida : colecaoGuiasPrestacoesRemovidas){
+					 * registrosRemocao[contLinha] = guiaPagamentoRemovida;
+					 * contLinha = contLinha + 1;
+					 * }
+					 * if(contLinha > 0){
+					 * getControladorFaturamento().cancelarGuiaPagamento(colecaoGuiasPrestacoes,
+					 * registrosRemocao, true,
+					 * usuario);
+					 * }
+					 * }
+					 * // Encerra Registro de Atendimento
+					 * FiltroRegistroAtendimentoUnidade filtroRegistroAtendimentoUnidade =
+					 * new FiltroRegistroAtendimentoUnidade();
+					 * filtroRegistroAtendimentoUnidade.adicionarParametro(new
+					 * ParametroSimples(
+					 * FiltroRegistroAtendimentoUnidade.REGISTRO_ATENDIMENTO_ID,
+					 * idtRegistroAtendimento));
+					 * RegistroAtendimentoUnidade registroAtendimentoUnidadePesquisado =
+					 * (RegistroAtendimentoUnidade) Util
+					 * .retonarObjetoDeColecao(getControladorUtil().pesquisar(
+					 * filtroRegistroAtendimentoUnidade,
+					 * RegistroAtendimentoUnidade.class.getName()));
+					 * AtendimentoMotivoEncerramento atendimentoMotivoEncerramento = new
+					 * AtendimentoMotivoEncerramento();
+					 * atendimentoMotivoEncerramento.setId(AtendimentoMotivoEncerramento.
+					 * CANCELADO_POR_DERCURSO_DE_PRAZO);
+					 * registroAtendimentoPesquisado.setAtendimentoMotivoEncerramento(
+					 * atendimentoMotivoEncerramento);
+					 * getControladorRegistroAtendimento().encerrarRegistroAtendimento(
+					 * registroAtendimentoPesquisado,
+					 * registroAtendimentoUnidadePesquisado, usuario);
+					 * }
+					 * }
+					 */
+				}
+			}
+			
+			return colecaoIdOS;
+
+		}catch(ControladorException e){
+			sessionContext.setRollbackOnly();
+			throw e;
+		}
+	}
+
+	protected ControladorArrecadacaoLocal getControladorArrecadacao(){
+
+		ControladorArrecadacaoLocalHome localHome = null;
+		ControladorArrecadacaoLocal local = null;
+
+		// pega a instância do ServiceLocator.
+
+		ServiceLocator locator = null;
+
+		try{
+			locator = ServiceLocator.getInstancia();
+
+			localHome = (ControladorArrecadacaoLocalHome) locator.getLocalHomePorEmpresa(ConstantesJNDI.CONTROLADOR_ARRECADACAO_SEJB);
+
+			local = localHome.create();
+
+			return local;
+		}catch(CreateException e){
+			throw new SistemaException(e);
+		}catch(ServiceLocatorException e){
+			throw new SistemaException(e);
+		}
+	}
+
+	public Boolean validarGerarGuiaPagamentoOS(Integer idServicoTipo, Integer idRegistroAtendimento) throws ControladorException{
+
+		Boolean flagGerarGuiaPagamento = false;
+
+		// Verificar se o Tipo de Servico é de Pagamento Antecipado
+		// sendo o mesmo irá criar uma Guia de Pagamento paa que após o pagamento desta Guia
+		// seja criada a ordem de servico
+		FiltroServicoTipo filtroServicoTipo = new FiltroServicoTipo();
+		filtroServicoTipo.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoTipo.DEBITOTIPO);
+		filtroServicoTipo.adicionarParametro(new ParametroSimples(FiltroServicoTipo.ID, idServicoTipo));
+
+		ServicoTipo servicoTipoAtual = (ServicoTipo) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(
+						filtroServicoTipo, ServicoTipo.class.getName()));
+
+		if(servicoTipoAtual.getIndicadorPagamentoAntecipado() == 1 && idRegistroAtendimento != null){
+			FiltroGuiaPagamento filtroGuiaPagamento = new FiltroGuiaPagamento();
+			filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.SERVICO_TIPO);
+			filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.DEBITO_TIPO);
+
+			filtroGuiaPagamento.adicionarParametro(new ParametroSimples(FiltroGuiaPagamento.REGISTRO_ATENDIMENTO_ID, idRegistroAtendimento));
+			
+			if (servicoTipoAtual.getDebitoTipo() != null ) {
+				filtroGuiaPagamento.adicionarParametro(new ParametroSimples(FiltroGuiaPagamento.ID_DEBITO_TIPO, servicoTipoAtual
+							.getDebitoTipo().getId()));
+			} else {
+				FiltroServicoDebitoTipo filtroServicoDebitoTipo = new FiltroServicoDebitoTipo();
+				filtroServicoDebitoTipo.adicionarParametro(new ParametroSimples(FiltroServicoDebitoTipo.ID_SERVICO_TIPO,
+								servicoTipoAtual.getId()));
+				filtroServicoDebitoTipo.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoDebitoTipo.DEBITO_TIPO);
+				
+				Collection<ServicoDebitoTipo> colecaoServicoDebitoTipo = getControladorUtil().pesquisar(filtroServicoDebitoTipo, ServicoDebitoTipo.class.getName());
+				Collection<Integer> idsDebitoTipo = new ArrayList<Integer>();
+				for(ServicoDebitoTipo servicoDebitoTipo : colecaoServicoDebitoTipo){
+					idsDebitoTipo.add(servicoDebitoTipo.getDebitoTipo().getId() );
+				}
+				
+				if(idsDebitoTipo.size() == 0){
+					throw new ControladorException("atencao.informe_campo", null, " 1 (um) Tipo de Débito para este Tipo de Servico "
+									+ servicoTipoAtual.getDescricao());
+				}
+
+				filtroGuiaPagamento.adicionarParametro(new ParametroSimplesColecao(FiltroGuiaPagamento.ID_DEBITO_TIPO, idsDebitoTipo));
+			}
+
+			Collection<GuiaPagamento> colecaoGuiaPagamento = getControladorUtil().pesquisar(filtroGuiaPagamento,
+							GuiaPagamento.class.getName());
+			if(colecaoGuiaPagamento.size() == 0){
+				FiltroGuiaPagamentoHistorico filtroGuiaPagamentoHistorico = new FiltroGuiaPagamentoHistorico();
+				filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.SERVICO_TIPO);
+				filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.DEBITO_TIPO);
+				filtroGuiaPagamentoHistorico
+								.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.DEBITO_CREDITO_SITUACAO_ATUAL);
+
+				filtroGuiaPagamentoHistorico.adicionarParametro(new ParametroSimples(FiltroGuiaPagamentoHistorico.REGISTRO_ATENDIMENTO_ID,
+								idRegistroAtendimento));
+				
+				if(servicoTipoAtual.getDebitoTipo() != null){
+					filtroGuiaPagamentoHistorico.adicionarParametro(new ParametroSimples(FiltroGuiaPagamentoHistorico.ID_DEBITO_TIPO,
+									servicoTipoAtual.getDebitoTipo().getId()));
+				}else{
+					FiltroServicoDebitoTipo filtroServicoDebitoTipo = new FiltroServicoDebitoTipo();
+					filtroServicoDebitoTipo.adicionarParametro(new ParametroSimples(FiltroServicoDebitoTipo.ID_SERVICO_TIPO,
+									servicoTipoAtual.getId()));
+					filtroServicoDebitoTipo.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoDebitoTipo.DEBITO_TIPO);
+
+					Collection<ServicoDebitoTipo> colecaoServicoDebitoTipo = getControladorUtil().pesquisar(filtroServicoDebitoTipo,
+									ServicoDebitoTipo.class.getName());
+					Collection<Integer> idsDebitoTipo = new ArrayList<Integer>();
+					for(ServicoDebitoTipo servicoDebitoTipo : colecaoServicoDebitoTipo){
+						idsDebitoTipo.add(servicoDebitoTipo.getDebitoTipo().getId());
+					}
+
+					if(idsDebitoTipo.size() == 0){
+						throw new ControladorException("atencao.informe_campo", null, " 1 (um) Tipo de Débito para este Tipo de Servico "
+										+ servicoTipoAtual.getDescricao());
+					}
+
+					filtroGuiaPagamentoHistorico.adicionarParametro(new ParametroSimplesColecao(
+									FiltroGuiaPagamentoHistorico.ID_DEBITO_TIPO, idsDebitoTipo));
+				}
+
+				Collection<GuiaPagamentoHistorico> colecaoGuiaPagamentoHistorico = getControladorUtil().pesquisar(filtroGuiaPagamentoHistorico,
+								GuiaPagamentoHistorico.class.getName());					
+				
+				if(colecaoGuiaPagamentoHistorico.size() == 0){
+					flagGerarGuiaPagamento = true;
+				}else{
+					GuiaPagamentoHistorico guiaPagamentoHistoricoAtual = (GuiaPagamentoHistorico) Util
+									.retonarObjetoDeColecao(colecaoGuiaPagamentoHistorico);
+					// Verifica se todas as prestações foram canceladas
+					FiltroGuiaPagamentoPrestacaoHistorico filtroGuiaPagamentoPrestacaoHistorico = new FiltroGuiaPagamentoPrestacaoHistorico();
+					filtroGuiaPagamentoPrestacaoHistorico.adicionarParametro(new ParametroSimples(
+									FiltroGuiaPagamentoPrestacaoHistorico.GUIA_PAGAMENTO_ID, guiaPagamentoHistoricoAtual.getId()));
+					filtroGuiaPagamentoPrestacaoHistorico.adicionarCaminhoParaCarregamentoEntidade("debitoCreditoSituacao");
+
+					Collection<GuiaPagamentoPrestacaoHistorico> colecaoGuiaPagamentoHistoricoPrestacao = getControladorUtil().pesquisar(
+									filtroGuiaPagamentoPrestacaoHistorico, GuiaPagamentoPrestacaoHistorico.class.getName());
+
+					flagGerarGuiaPagamento = true;
+					for(GuiaPagamentoPrestacaoHistorico guiaPagamentoPrestacaoHistoricoAtual : colecaoGuiaPagamentoHistoricoPrestacao){
+						if(!guiaPagamentoPrestacaoHistoricoAtual.getDebitoCreditoSituacao().getId().equals(DebitoCreditoSituacao.CANCELADA)){
+							flagGerarGuiaPagamento = false;
+						}
+					}
+				}
+
+			}else{
+				GuiaPagamento guiaPagamentoPedente = (GuiaPagamento) Util.retonarObjetoDeColecao(colecaoGuiaPagamento);
+
+				sessionContext.setRollbackOnly();
+				throw new ControladorException("atencao.ordem_servico.guia.pagamento.pedente", null, servicoTipoAtual.getDescricao(),
+								idRegistroAtendimento.toString(), Util.formatarMoedaReal(guiaPagamentoPedente
+												.getValorDebito()));
+			}
+		}
+		
+		
+		return flagGerarGuiaPagamento;
+	}
+
+	private void validarAtualizarOrdemServicoReparo(Integer idOrdemServicoGerada, String idOSPrincipal, Usuario usuario)
+					throws ControladorException{
+
+		OrdemServico ordemServicoReparo = this.pesquisarOrdemServico(idOrdemServicoGerada);
+		String idServicosTipoReparoString = ParametroOrdemServico.P_SERVICO_TIPO_REPARO.executar();
+		if(idServicosTipoReparoString != null){
+
+			String[] idServicosTipoReparo = idServicosTipoReparoString.split(",");
+			if(idServicosTipoReparo != null && idServicosTipoReparo.length > 0){
+
+				Map<String, String> mapaTipoServicoReparo = new HashMap<String, String>();
+				for(int i = 0; i < idServicosTipoReparo.length; i++){
+					mapaTipoServicoReparo.put(idServicosTipoReparo[i], idServicosTipoReparo[i]);
+				}
+
+				if(idOSPrincipal == null || idOSPrincipal.equals("-1")){
+					if(mapaTipoServicoReparo.containsKey(String.valueOf(ordemServicoReparo.getServicoTipo().getId()))){
+						try{
+							sessionContext.setRollbackOnly();
+						}catch(IllegalStateException ex){
+
+						}
+						throw new ControladorException("atencao.os_reparo_obrigatorio_os_principal");
+					}
+
+				}else if(idOSPrincipal != null){
+
+					if(!mapaTipoServicoReparo.containsKey(String.valueOf(ordemServicoReparo.getServicoTipo().getId()))){
+						try{
+							sessionContext.setRollbackOnly();
+						}catch(IllegalStateException ex){
+
+						}
+						throw new ControladorException("atencao.servico_tipo.nao_eh_reparo");
+					}
+
+					OrdemServico ordemServicoPrincipal = this.pesquisarOrdemServico(Integer.parseInt(idOSPrincipal));
+
+					if(ordemServicoPrincipal.getOrdemServicoReparo() != null){
+						try{
+							sessionContext.setRollbackOnly();
+						}catch(IllegalStateException ex){
+
+						}
+						throw new ControladorException("atencao.ja_existe_os_reparo_os_principal");
+					}
+
+					ordemServicoPrincipal.setOrdemServicoReparo(ordemServicoReparo);
+					this.atualizarOrdemServico(ordemServicoPrincipal, usuario);
+				}
+
+			}
+		}
+
 	}
 
 	/**
@@ -2160,38 +2981,104 @@ public class ControladorOrdemServicoSEJB
 		// unidadeOrganizacional = ordemServico.obterUnidadeOrganizacionalAbertura();
 		// }
 
+		if(ordemServico.getValorHorasTrabalhadas() == null){
+			ordemServico.setValorHorasTrabalhadas(BigDecimal.ZERO);
+		}
+
+		if(ordemServico.getValorMateriais() == null){
+			ordemServico.setValorMateriais(BigDecimal.ZERO);
+		}
+
 		UnidadeOrganizacional unidadeOrganizacional = null;
 		ordemServico.setOrdemServicoUnidades(null);
 
 		Integer idOrdemServico = (Integer) getControladorUtil().inserir(ordemServico);
 
 		if(unidadeOrganizacional == null){
+			String flagTramiteIndependente = ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().toString();
 
 			/*
 			 * Caso não exista RA, atualizar a unidade como a unidade que represente a localidade do
 			 * imóvel associado ao documento de cobrança
 			 */
 			if(ordemServico.getCobrancaDocumento() != null){
-
 				CobrancaDocumento cobrancaDocumento = this.getControladorCobranca().pesquisarCobrancaDocumento(
 								ordemServico.getCobrancaDocumento().getId());
 
-				Imovel imovel = getControladorImovel().pesquisarImovel(cobrancaDocumento.getImovel().getId());
-				unidadeOrganizacional = getControladorUnidade().pesquisarUnidadeOrganizacionalLocalidade(imovel.getLocalidade().getId());
+				Integer idLocalidade = null;
+				if(cobrancaDocumento.getImovel() != null){
+
+					Imovel imovel = getControladorImovel().pesquisarImovel(cobrancaDocumento.getImovel().getId());
+					idLocalidade = imovel.getLocalidade().getId();
+
+				}else{
+
+					idLocalidade = cobrancaDocumento.getLocalidade().getId();
+				}
+				
+				// [UC3036] – Obter Unidade Tramite Ordem de Serviço
+				Integer idUnidadeOrganizacional = null;
+								
+				idUnidadeOrganizacional = this.pesquisarUnidadeTramiteOS(ordemServico.getServicoTipo().getId(), idLocalidade, null, null,
+								null);
+
+				if(idUnidadeOrganizacional == null){
+					unidadeOrganizacional = getControladorUnidade().pesquisarUnidadeOrganizacionalLocalidade(idLocalidade);
+				} else {
+					unidadeOrganizacional = getControladorUnidade().pesquisarUnidadeOrganizacional(idUnidadeOrganizacional);
+				}
 
 			}else if(ordemServico.getRegistroAtendimento() != null){
-				unidadeOrganizacional = this.getControladorRegistroAtendimento().obterUnidadeAtendimentoRA(
-								ordemServico.getRegistroAtendimento().getId());
+				if(flagTramiteIndependente.equals(ConstantesSistema.NAO.toString())){
+					unidadeOrganizacional = this.getControladorRegistroAtendimento().obterUnidadeAtendimentoRA(
+									ordemServico.getRegistroAtendimento().getId());
+				} else {
+					RegistroAtendimento registroAtendimentoPesq = this.getControladorRegistroAtendimento().pesquisarRegistroAtendimento(
+									ordemServico.getRegistroAtendimento().getId());
 
-			}else{ // Busca a Unidade pela Localidade da Empresa
-				String idLocalidadePadrao = ParametroCadastro.P_LOCA_ID_LOCALIDADE_PADRAO.executar();
-				if(idLocalidadePadrao == null){
-					throw new IllegalArgumentException("erro.sistema");
+					Integer idLocalidade = null;
+					if(registroAtendimentoPesq.getImovel() != null){
+						Imovel imovel = getControladorImovel().pesquisarImovel(registroAtendimentoPesq.getImovel().getId());
+						idLocalidade = imovel.getLocalidade().getId();
+					}else{
+						idLocalidade = registroAtendimentoPesq.getLocalidade().getId();
+					}
+
+					Integer idUnidadeOrganizacional = this.pesquisarUnidadeTramiteOS(ordemServico.getServicoTipo().getId(), idLocalidade,
+									null, null, null);
+					
+					if(idUnidadeOrganizacional != null){
+						unidadeOrganizacional = getControladorUnidade().pesquisarUnidadeOrganizacional(idUnidadeOrganizacional);
+					}else{
+						unidadeOrganizacional = this.getControladorRegistroAtendimento().obterUnidadeAtendimentoRA(
+										ordemServico.getRegistroAtendimento().getId());
+					}
 				}
-				unidadeOrganizacional = getControladorUnidade().pesquisarUnidadeOrganizacionalLocalidade(
-								Integer.valueOf(idLocalidadePadrao));
-			}
+			}else{ // Busca a Unidade pela Localidade da Empresa
+				
+				Integer idLocalidade = null;
+				if(ordemServico.getImovel() != null){
+					Imovel imovel = getControladorImovel().pesquisarImovel(ordemServico.getImovel().getId());
 
+					idLocalidade = imovel.getLocalidade().getId();
+				}else{
+					idLocalidade = Integer.valueOf(ParametroCadastro.P_LOCA_ID_LOCALIDADE_PADRAO.executar());
+				}
+
+				Integer idUnidadeOrganizacional = this.pesquisarUnidadeTramiteOS(ordemServico.getServicoTipo().getId(), idLocalidade, null,
+								null, null);
+
+				if(idUnidadeOrganizacional == null){
+					String idLocalidadePadrao = ParametroCadastro.P_LOCA_ID_LOCALIDADE_PADRAO.executar();
+					if(idLocalidadePadrao == null){
+						throw new IllegalArgumentException("erro.sistema");
+					}
+					unidadeOrganizacional = getControladorUnidade().pesquisarUnidadeOrganizacionalLocalidade(
+									Integer.valueOf(idLocalidadePadrao));
+				}else{
+					unidadeOrganizacional = getControladorUnidade().pesquisarUnidadeOrganizacional(idUnidadeOrganizacional);
+				}
+			}
 		}
 
 		OrdemServicoUnidade ordemServicoUnidade = new OrdemServicoUnidade();
@@ -2237,6 +3124,11 @@ public class ControladorOrdemServicoSEJB
 
 		Calendar calendar = Calendar.getInstance();
 		UnidadeOrganizacional unidadeOrganizacional = null;
+		Integer idSetorComercial = null;
+		Integer unidadeOrganizacionalId = null;
+		Integer idBairro = null;
+		Integer unidadeId = null;
+
 		// [SB0004] - Gerar Ordem de serviço
 
 		ordemServico.setAtendimentoMotivoEncerramento(null);
@@ -2305,7 +3197,6 @@ public class ControladorOrdemServicoSEJB
 		if(colecaoServicoTipoTramite != null && !colecaoServicoTipoTramite.isEmpty()){
 
 			Integer servicoTipoId = null;
-			Integer unidadeId = null;
 
 			if(ordemServico.getServicoTipo() != null){
 
@@ -2326,7 +3217,7 @@ public class ControladorOrdemServicoSEJB
 			// Recupera o Setor Comercial
 			Integer idImovel = null;
 			Imovel imovel = null;
-			Integer idSetorComercial = null;
+
 
 			if(!Util.isVazioOuBranco(ordemServico.getImovel())){
 				idImovel = ordemServico.getImovel().getId();
@@ -2336,8 +3227,6 @@ public class ControladorOrdemServicoSEJB
 					idImovel = ordemServico.getRegistroAtendimento().getImovel().getId();
 				}
 			}
-
-			Integer unidadeOrganizacionalId = null;
 
 			Collection colecaoServicoTipoTramiteLocUnidade;
 			
@@ -2352,10 +3241,12 @@ public class ControladorOrdemServicoSEJB
 						FiltroImovel filtroImovel = new FiltroImovel();
 						filtroImovel.adicionarParametro(new ParametroSimples(FiltroImovel.ID, idImovel));
 						filtroImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroImovel.SETOR_COMERCIAL);
+						filtroImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroImovel.LOGRADOURO_BAIRRO);
 
 						imovel = (Imovel) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(filtroImovel, Imovel.class.getName()));
 
 						idSetorComercial = imovel.getSetorComercial().getId();
+						idBairro = imovel.getLogradouroBairro().getBairro().getId();
 						unidadeOrganizacionalId = pesquisarUnidadeTramiteOS(servicoTipoId, idLocalidade, idSetorComercial, null, unidadeId);
 					}
 
@@ -2363,6 +3254,7 @@ public class ControladorOrdemServicoSEJB
 
 			}catch(ErroRepositorioException e){
 				e.printStackTrace();
+				throw new ControladorException("erro.sistema", e);
 			}
 
 			FiltroUnidadeOrganizacional filtroUnidadeOrganizacional = new FiltroUnidadeOrganizacional();
@@ -2393,14 +3285,20 @@ public class ControladorOrdemServicoSEJB
 				ordemServicoUnidade.setUnidadeOrganizacional(unidadeOrganizacional);
 			}
 
-			Fachada fachada = Fachada.getInstancia();
+			if(ordemServico.getValorHorasTrabalhadas() == null){
+				ordemServico.setValorHorasTrabalhadas(BigDecimal.ZERO);
+			}
 
-			idOrdemServico = (Integer) fachada.inserir(ordemServico);
+			if(ordemServico.getValorMateriais() == null){
+				ordemServico.setValorMateriais(BigDecimal.ZERO);
+			}
+
+			idOrdemServico = (Integer) this.getControladorUtil().inserir(ordemServico);
 
 			FiltroOrdemServico filtroOrdemServico = new FiltroOrdemServico();
 			filtroOrdemServico.adicionarParametro(new ParametroSimples(FiltroOrdemServico.ID, idOrdemServico));
 
-			Collection<OrdemServico> colecaoOS = fachada.pesquisar(filtroOrdemServico, OrdemServico.class.getName());
+			Collection<OrdemServico> colecaoOS = this.getControladorUtil().pesquisar(filtroOrdemServico, OrdemServico.class.getName());
 
 			ordemServico = (OrdemServico) Util.retonarObjetoDeColecao(colecaoOS);
 
@@ -2411,7 +3309,11 @@ public class ControladorOrdemServicoSEJB
 			ordemServicoUnidade.setAtendimentoRelacaoTipo(atrt);
 			ordemServicoUnidade.setUltimaAlteracao(calendar.getTime());
 
-			fachada.inserir(ordemServicoUnidade);
+			this.getControladorUtil().inserir(ordemServicoUnidade);
+			
+			this.gerarTramiteOrdemServico(idLocalidade, idSetorComercial, idBairro, unidadeOrganizacionalId, unidadeOrganizacionalId, null,
+							usuario,
+							ordemServico);
 
 			/*
 			 * [OC790655][UC0430][SB0004.7.1]: Caso o tipo de serviço da ordem de
@@ -2511,6 +3413,7 @@ public class ControladorOrdemServicoSEJB
 		FiltroOrdemServico filtroOrdemServico = new FiltroOrdemServico();
 		filtroOrdemServico.adicionarCaminhoParaCarregamentoEntidade("osReferencia");
 		filtroOrdemServico.adicionarCaminhoParaCarregamentoEntidade("registroAtendimento");
+		filtroOrdemServico.adicionarCaminhoParaCarregamentoEntidade("registroAtendimento.registroAtendimentoSolicitantes");
 		filtroOrdemServico.adicionarCaminhoParaCarregamentoEntidade("servicoTipo.servicoTipoReferencia.servicoTipo");
 		filtroOrdemServico.adicionarCaminhoParaCarregamentoEntidade("servicoTipo.servicoTipoPrioridade");
 		filtroOrdemServico.adicionarCaminhoParaCarregamentoEntidade("servicoTipo.ordemServicoLayout");
@@ -2518,6 +3421,7 @@ public class ControladorOrdemServicoSEJB
 		filtroOrdemServico.adicionarCaminhoParaCarregamentoEntidade("servicoTipoReferencia.servicoTipoReferencia");
 		filtroOrdemServico.adicionarCaminhoParaCarregamentoEntidade("servicoTipoPrioridadeAtual");
 		filtroOrdemServico.adicionarCaminhoParaCarregamentoEntidade("servicoTipoPrioridadeOriginal");
+		filtroOrdemServico.adicionarCaminhoParaCarregamentoEntidade("imovel");
 
 		filtroOrdemServico.adicionarParametro(new ParametroSimples(FiltroOrdemServico.ID, id.toString()));
 
@@ -2593,6 +3497,7 @@ public class ControladorOrdemServicoSEJB
 				Equipe equipe = new Equipe();
 				UnidadeOrganizacional unidadeOrganizacional = new UnidadeOrganizacional();
 				ServicoPerfilTipo servicoPerfilTipo = new ServicoPerfilTipo();
+				EquipeTipo equipeTipo = new EquipeTipo();
 
 				equipe.setId((Integer) arrayEquipe[0]);
 				equipe.setNome((String) arrayEquipe[1]);
@@ -2614,6 +3519,11 @@ public class ControladorOrdemServicoSEJB
 				servicoPerfilTipo.setDescricao((String) arrayEquipe[7]);
 
 				equipe.setServicoPerfilTipo(servicoPerfilTipo);
+
+				equipeTipo.setId((Integer) arrayEquipe[8]);
+				equipeTipo.setDescricao((String) arrayEquipe[9]);
+
+				equipe.setEquipeTipo(equipeTipo);
 
 				retorno.setEquipe(equipe);
 
@@ -2682,7 +3592,7 @@ public class ControladorOrdemServicoSEJB
 
 		Set retorno = new CopyOnWriteArraySet();
 
-		Integer permiteTramiteIndependente = Util.converterStringParaInteger((String) ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE
+		Short permiteTramiteIndependente = Short.parseShort((String) ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE
 						.executar(ExecutorParametrosAtendimentoPublico.getInstancia()));
 
 		Collection colecao = new ArrayList();
@@ -2831,6 +3741,60 @@ public class ControladorOrdemServicoSEJB
 						break;
 
 					}
+				case 7:
+
+					// Consulta somente o servico solicitado
+					if(origemServico == ConstantesSistema.SIM.intValue()){
+
+						colecao = this.repositorioOrdemServico.pesquisarBairroPorRA(unidadeLotacao.getId(),
+										permiteTramiteIndependente);
+						retorno.addAll(colecao);
+						break;
+
+						// Consulta somente o servico seletivo
+					}else if(origemServico == ConstantesSistema.NAO.intValue()){
+
+						colecao = this.repositorioOrdemServico.pesquisarBairroPorUnidade(unidadeLotacao.getId());
+						retorno.addAll(colecao);
+						break;
+
+						// Consulta ambas origens de serviço
+					}else{
+
+						retorno.addAll(this.repositorioOrdemServico.pesquisarBairroPorRA(unidadeLotacao.getId(),
+										permiteTramiteIndependente));
+						colecao = this.repositorioOrdemServico.pesquisarBairroPorUnidade(unidadeLotacao.getId());
+						retorno.addAll(this.removeObjetoRepetido(retorno, colecao));
+						break;
+
+					}
+				case 8:
+
+					// Consulta somente o servico solicitado
+					if(origemServico == ConstantesSistema.SIM.intValue()){
+
+						colecao = this.repositorioOrdemServico.pesquisarServicoTipoPrioridadePorRA(unidadeLotacao.getId(),
+										permiteTramiteIndependente);
+						retorno.addAll(colecao);
+						break;
+
+						// Consulta somente o servico seletivo
+					}else if(origemServico == ConstantesSistema.NAO.intValue()){
+
+						colecao = this.repositorioOrdemServico.pesquisarServicoTipoPrioridadePorUnidade(unidadeLotacao.getId());
+						retorno.addAll(colecao);
+						break;
+
+						// Consulta ambas origens de serviço
+					}else{
+
+						retorno.addAll(this.repositorioOrdemServico.pesquisarServicoTipoPrioridadePorRA(unidadeLotacao.getId(),
+										permiteTramiteIndependente));
+						colecao = this.repositorioOrdemServico.pesquisarServicoTipoPrioridadePorUnidade(unidadeLotacao.getId());
+						retorno.addAll(this.removeObjetoRepetido(retorno, colecao));
+						break;
+
+					}
 			}// fim do switch
 
 		}catch(ErroRepositorioException e){
@@ -2925,8 +3889,7 @@ public class ControladorOrdemServicoSEJB
 
 		try{
 
-			Integer permiteTramiteIndependente = Util
-							.converterStringParaInteger((String) ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE
+			Short permiteTramiteIndependente = Short.parseShort((String) ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE
 											.executar(ExecutorParametrosAtendimentoPublico.getInstancia()));
 
 			return this.repositorioOrdemServico.pesquisarOrdemServicoElaborarProgramacao(filtro, permiteTramiteIndependente);
@@ -3116,7 +4079,7 @@ public class ControladorOrdemServicoSEJB
 	 * @param equipeComponentes
 	 * @throws ControladorException
 	 */
-	public void validarInsercaoEquipeComponentes(Collection colecaoEquipeComponentes) throws ControladorException{
+	public void validarInsercaoEquipeComponentes(Collection colecaoEquipeComponentes, Equipe equipe) throws ControladorException{
 
 		// Testar se novo componente pode ser inserido na coleção
 		if(colecaoEquipeComponentes != null && !colecaoEquipeComponentes.isEmpty()){
@@ -3139,6 +4102,53 @@ public class ControladorOrdemServicoSEJB
 				}
 				throw new ControladorException("atencao.inserir_equipe_nenhum_responsavel", null, "");
 			}
+
+			validaEquipeComponenteEquipeTIpo(colecaoEquipeComponentes, equipe);
+
+		}
+	}
+
+	private void validaEquipeComponenteEquipeTIpo(Collection colecaoEquipeComponentes, Equipe equipe) throws ControladorException{
+
+		EquipeTipo equipeTipo = null;
+		if(equipe.getEquipeTipo() != null && equipe.getEquipeTipo().getId() != null
+						&& equipe.getEquipeTipo().getId() != Integer.valueOf(ConstantesSistema.VALOR_NAO_INFORMADO).intValue()){
+			FiltroEquipeTipo filtroEquipeTipo = new FiltroEquipeTipo();
+			filtroEquipeTipo.adicionarParametro(new ParametroSimples(FiltroEquipeTipo.ID, equipe.getEquipeTipo().getId()));
+			equipeTipo = (EquipeTipo) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(filtroEquipeTipo,
+							EquipeTipo.class.getName()));
+			equipe.setEquipeTipo(equipeTipo);
+		}
+
+		String mensagem = "";
+		for(Iterator iter = colecaoEquipeComponentes.iterator(); iter.hasNext();){
+			EquipeComponentes element = (EquipeComponentes) iter.next();
+			if(element.getFuncionario() != null && element.getFuncionario().getId() != null){
+				FiltroFuncionario filtroFuncionario = new FiltroFuncionario();
+				filtroFuncionario.adicionarParametro(new ParametroSimples(FiltroFuncionario.ID, element.getFuncionario().getId()));
+				filtroFuncionario.adicionarCaminhoParaCarregamentoEntidade("equipeTipo");
+				Collection colecaoFuncionario = getControladorUtil().pesquisar(filtroFuncionario, Funcionario.class.getName());
+				Funcionario funcionario = (Funcionario) Util.retonarObjetoDeColecao(colecaoFuncionario);
+				if(funcionario != null && funcionario.getEquipeTipo() != null && equipe.getEquipeTipo() != null
+								&& funcionario.getEquipeTipo().getId() != null && equipe.getEquipeTipo().getId() != null
+								&& equipe.getEquipeTipo().getId() != Integer.valueOf(ConstantesSistema.VALOR_NAO_INFORMADO).intValue()
+								&& funcionario.getEquipeTipo().getId().intValue() != equipe.getEquipeTipo().getId().intValue()){
+
+					mensagem = mensagem + " Funcionario: " + funcionario.getNome() + " - Tipo Equipe: "
+									+ funcionario.getEquipeTipo().getDescricao() + " ";
+				}
+			}
+
+		}
+		if(!mensagem.equals("")){
+			try{
+				sessionContext.setRollbackOnly();
+			}catch(IllegalStateException ex){
+
+			}
+
+			throw new ControladorException("atencao.inserir_equipe_tipo_equipe_diferente_funcionario", null, equipeTipo
+							.getDescricao(), mensagem);
 		}
 	}
 
@@ -3166,6 +4176,7 @@ public class ControladorOrdemServicoSEJB
 					obterDadosAtividadesOSHelper.setMaterial(material.getMaterial());
 					obterDadosAtividadesOSHelper.setMaterialUnidade(material.getMaterial().getMaterialUnidade());
 					obterDadosAtividadesOSHelper.setQtdeMaterial(material.getQuantidadeMaterial());
+					obterDadosAtividadesOSHelper.setMaterialValor(material.getValorMaterial());
 					colecaoObterDadosAtividadesOSHelper.add(obterDadosAtividadesOSHelper);
 				}
 			}
@@ -3179,6 +4190,8 @@ public class ControladorOrdemServicoSEJB
 					obterDadosAtividadesOSHelper.setDataInicio(periodo.getOsAtividadePeriodoExecucao().getDataInicio());
 					obterDadosAtividadesOSHelper.setDataFim(periodo.getOsAtividadePeriodoExecucao().getDataFim());
 					obterDadosAtividadesOSHelper.setEquipe(periodo.getEquipe());
+					obterDadosAtividadesOSHelper.setValorAtividadePeriodo(periodo.getOsAtividadePeriodoExecucao()
+									.getValorAtividadePeriodo());
 					colecaoObterDadosAtividadesOSHelper.add(obterDadosAtividadesOSHelper);
 				}
 			}
@@ -3230,6 +4243,7 @@ public class ControladorOrdemServicoSEJB
 					throws ControladorException{
 
 		try{
+			
 			OrdemServico os = repositorioOrdemServico.recuperaOSPorId(ordemServicoId);
 			// [FS0001]
 			Imovel imovel = null;
@@ -3305,7 +4319,10 @@ public class ControladorOrdemServicoSEJB
 				DebitoACobrar debitoACobrar = inserirDebitoACobrar(valorDebito, qtdeParcelas, os, debitoTipo, debitoACobrarGeral,
 								taxaJurosFinanciamento, null, null);
 
-				getControladorFaturamento().inserirDebitoACobrarCategoria(debitoACobrar, debitoACobrar.getImovel());
+				this.getControladorFaturamento().inserirDebitoACobrarCategoria(debitoACobrar, debitoACobrar.getImovel());
+
+				// INSERIR CLIENTE_DEBITO_A_COBRAR
+				this.getControladorCobranca().inserirClienteDebitoACobrar(debitoACobrar);
 
 				this.getControladorContabil().registrarLancamentoContabil(debitoACobrar, OperacaoContabil.INCLUIR_DEBITO_A_COBRAR);
 
@@ -3421,6 +4438,9 @@ public class ControladorOrdemServicoSEJB
 							taxaJurosFinanciamento, numeroDiasSuspensao, ocorrenciaInfracaoItem);
 
 			getControladorFaturamento().inserirDebitoACobrarCategoria(debitoACobrar, debitoACobrar.getImovel());
+
+			// INSERIR CLIENTE_DEBITO_A_COBRAR
+			this.getControladorCobranca().inserirClienteDebitoACobrar(debitoACobrar);
 
 			this.getControladorContabil().registrarLancamentoContabil(debitoACobrar, OperacaoContabil.INCLUIR_DEBITO_A_COBRAR);
 
@@ -3571,6 +4591,7 @@ public class ControladorOrdemServicoSEJB
 										debitoACobrar.getDebitoTipo().getId()));
 
 		this.getControladorUtil().inserir(debitoACobrar);
+
 
 		return debitoACobrar;
 	}
@@ -3791,7 +4812,9 @@ public class ControladorOrdemServicoSEJB
 						obterDadosAtividadeOSHelper.setMaterialUtilizado(material.getMaterial());
 						obterDadosAtividadeOSHelper.setMaterialUnidade(material.getMaterial().getMaterialUnidade());
 						obterDadosAtividadeOSHelper.setQtdeMaterial(material.getQuantidadeMaterial());
+						obterDadosAtividadeOSHelper.setValorMaterial(material.getValorMaterial());
 						colecaoObterDadosAtividadeOSHelper.add(obterDadosAtividadeOSHelper);
+
 					}
 				}
 
@@ -3807,6 +4830,8 @@ public class ControladorOrdemServicoSEJB
 						obterDadosAtividadeOSHelper.setDataInicio(periodo.getOsAtividadePeriodoExecucao().getDataInicio());
 						obterDadosAtividadeOSHelper.setDataFim(periodo.getOsAtividadePeriodoExecucao().getDataFim());
 						obterDadosAtividadeOSHelper.setEquipe(periodo.getEquipe());
+						obterDadosAtividadeOSHelper.setValorAtividadePeriodo(periodo.getOsAtividadePeriodoExecucao()
+										.getValorAtividadePeriodo());
 						colecaoObterDadosAtividadeOSHelper.add(obterDadosAtividadeOSHelper);
 					}
 				}
@@ -4092,7 +5117,9 @@ public class ControladorOrdemServicoSEJB
 	public void validarCamposEncerrarOS(String indicadorExecucao, String numeroOS, String motivoEncerramento, String dataEncerramento,
 					String tipoServicoReferenciaId, String indicadorPavimento, String pavimento, String idTipoRetornoOSReferida,
 					String indicadorDeferimento, String indicadorTrocaServicoTipo, String idServicoTipo, String dataRoteiro, String idRA,
-					String indicadorVistoriaServicoTipo, String codigoRetornoVistoriaOs, String horaEncerramento, Usuario usuarioLogado)
+					String indicadorVistoriaServicoTipo, String codigoRetornoVistoriaOs, String horaEncerramento, Usuario usuarioLogado,
+					String indicadorAfericaoHidrometro, String idHidrometroCondicao, String indicadorResultado, String idFuncionario,
+					String indicadorClienteAcompanhou)
 					throws ControladorException{
 
 		// caso o motivo de encerramento esteja nulo
@@ -4332,6 +5359,41 @@ public class ControladorOrdemServicoSEJB
 						}
 					}
 				}
+
+				if(!Util.isVazioOuBranco(indicadorAfericaoHidrometro)
+								&& indicadorAfericaoHidrometro.equals(ConstantesSistema.SIM.toString())){
+
+					if(Util.isVazioOuBranco(idHidrometroCondicao)){
+
+						throw new ControladorException("atencao.required", null, "Condição do Hidrômetro para Aferição");
+					}
+
+					if(Util.isVazioOuBranco(indicadorResultado)){
+
+						throw new ControladorException("atencao.required", null, "Resultado");
+					}
+
+					if(Util.isVazioOuBranco(idFuncionario)){
+
+						throw new ControladorException("atencao.required", null, "Funcionário");
+					}else{
+
+						FiltroFuncionario filtroFuncionario = new FiltroFuncionario();
+						filtroFuncionario.adicionarParametro(new ParametroSimples(FiltroFuncionario.ID, Util.obterInteger(idFuncionario)));
+
+						Collection colecaoFuncionario = getControladorUtil().pesquisar(filtroFuncionario, Funcionario.class.getName());
+
+						if(Util.isVazioOrNulo(colecaoFuncionario)){
+
+							throw new ControladorException("pesquisa.funcionario.inexistente");
+						}
+					}
+
+					if(Util.isVazioOuBranco(indicadorClienteAcompanhou)){
+
+						throw new ControladorException("atencao.required", null, "Cliente Acompanhou");
+					}
+				}
 			}
 		}
 	}
@@ -4418,6 +5480,7 @@ public class ControladorOrdemServicoSEJB
 			// [UC0461] Manter Dados das Atividades da Ordem de serviço
 			this.inserirDadosAtividadesOrdemServico(dadosAtividadeorAtividadesOrdemServicoHelper);
 
+
 			// Preparando objeto para o registrar transação
 			AtendimentoMotivoEncerramento atendimentoMotivo = repositorioOrdemServico
 							.pesquisarAtendimentoMotivoEncerramentoPorId(idMotivoEncerramento);
@@ -4427,6 +5490,18 @@ public class ControladorOrdemServicoSEJB
 			osNaBase.setDataExecucao(helper.getDataExecucao());
 			osNaBase.setDescricaoParecerEncerramento(helper.getParecerEncerramento());
 			osNaBase.setSituacao(OrdemServico.SITUACAO_ENCERRADO);
+
+			BigDecimal valorTotalHorasTrabalhadas = BigDecimal.ZERO;
+			BigDecimal valorTotalMateriaias = BigDecimal.ZERO;
+			if(dadosAtividadeorAtividadesOrdemServicoHelper != null){
+				valorTotalHorasTrabalhadas = recuperarValorHorasTrabalhadasOS(dadosAtividadeorAtividadesOrdemServicoHelper
+							.getColecaoManterDadosAtividadesOrdemServicoHelper());
+				valorTotalMateriaias = recuperarValorMateriaisOS(dadosAtividadeorAtividadesOrdemServicoHelper
+								.getColecaoManterDadosAtividadesOrdemServicoHelper());
+			}
+
+			osNaBase.setValorHorasTrabalhadas(valorTotalHorasTrabalhadas);
+			osNaBase.setValorMateriais(valorTotalMateriaias);
 
 			// ------------ REGISTRAR TRANSAÇÃO----------------------------
 			RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_ORDEM_SERVICO_ENCERRAR, osNaBase.getId(),
@@ -4557,7 +5632,7 @@ public class ControladorOrdemServicoSEJB
 				}
 
 				this.gerarOrdemServico(helper.getOsFiscalizacao(), helper.getUsuarioLogado(), null, idLocalidade, idSetorComercial,
-								idBairro, idUnidadeAtual, null, null);
+								idBairro, idUnidadeAtual, null, null, null, false, null);
 			}
 
 			// verifica se fará gerações de Serviços Associados
@@ -4804,6 +5879,15 @@ public class ControladorOrdemServicoSEJB
 			osNaBase.setDimensao3(null);
 		}
 
+		if(dadosAtividadeorAtividadesOrdemServicoHelper != null){
+			BigDecimal valorTotalHorasTrabalhadas = recuperarValorHorasTrabalhadasOS(dadosAtividadeorAtividadesOrdemServicoHelper
+							.getColecaoManterDadosAtividadesOrdemServicoHelper());
+			BigDecimal valoorTotalMateriaias = recuperarValorMateriaisOS(dadosAtividadeorAtividadesOrdemServicoHelper
+							.getColecaoManterDadosAtividadesOrdemServicoHelper());
+			osNaBase.setValorHorasTrabalhadas(valorTotalHorasTrabalhadas);
+			osNaBase.setValorMateriais(valoorTotalMateriaias);
+		}
+
 		// pesquisa os parametros tabela serviço tipo
 		Short indAtualizarComercial = null;
 		Short indIncluirDebito = null;
@@ -5001,7 +6085,7 @@ public class ControladorOrdemServicoSEJB
 				}
 
 				this.gerarOrdemServico(helper.getOsFiscalizacao(), helper.getUsuarioLogado(), null, idLocalidade, idSetorComercial,
-								idBairro, idUnidadeAtual, null, null);
+								idBairro, idUnidadeAtual, null, null, null, false, null);
 			}
 
 			/*
@@ -5011,14 +6095,32 @@ public class ControladorOrdemServicoSEJB
 			 * atualiza o sistema comercial Valor do serviço maior que zero Tipo do débito diferente
 			 * de zero
 			 */
-			if(indIncluirDebito.shortValue() == ConstantesSistema.SIM.shortValue()
-							&& indAtualizarComercial.shortValue() == ServicoTipo.INDICADOR_ATUALIZA_COMERCIAL_NAO
+			if(indIncluirDebito.shortValue() == ConstantesSistema.SIM.shortValue()){
+				if(indAtualizarComercial.shortValue() == ServicoTipo.INDICADOR_ATUALIZA_COMERCIAL_NAO
 							&& valorServico.compareTo(new BigDecimal("0.00")) == 1
 							&& (idDebitoTipo != null && idDebitoTipo.intValue() != ConstantesSistema.ZERO.intValue())){
 
-				// [UC0475] - Gerar Débito Ordem de Serviço
-				this.gerarDebitoOrdemServico(helper.getNumeroOS(), idDebitoTipo, valorServico, 1);
+					// [UC0475] - Gerar Débito Ordem de Serviço
+					this.gerarDebitoOrdemServico(helper.getNumeroOS(), idDebitoTipo, valorServico, 1);
+				}
+				if(helper.getIndicadorCobrarHorasMateriais().equals("1")
+								&& osNaBase.getValorHorasTrabalhadas().compareTo(new BigDecimal("0.00")) == 1){
+					if(DebitoTipoEnum.ORDEM_SERVICO_HORA.getId() != null){
+						this.gerarDebitoOrdemServico(helper.getNumeroOS(), DebitoTipoEnum.ORDEM_SERVICO_HORA.getId(),
+									osNaBase.getValorHorasTrabalhadas(), 1);
+					}
+				}
+
+				if(helper.getIndicadorCobrarHorasMateriais().equals("1")
+								&& osNaBase.getValorMateriais().compareTo(new BigDecimal("0.00")) == 1){
+					if(DebitoTipoEnum.ORDEM_SERVICO_HORA.getId() != null){
+						this.gerarDebitoOrdemServico(helper.getNumeroOS(), DebitoTipoEnum.ORDEM_SERVICO_HORA.getId(),
+										osNaBase.getValorMateriais(), 1);
+					}
+				}
 			}
+
+
 
 			/*
 			 * INTEGRAÇÃO COMERCIAL Autor: Raphael Rossiter Data: 25/04/2007
@@ -5061,10 +6163,109 @@ public class ControladorOrdemServicoSEJB
 			throw ex;
 		}
 
+		// [SB0010] - Verificar Atualização Dados Encerramento no Histórico de Aferição do
+		// Hidrômetro
+		this.verificarAtualizacaoDadosEncerramentoHistoricoAfericaoHidrometro(helper, osNaBase);
+
 		// ControladorOrdemServicoSEJB.showMem(this.getClass().getSimpleName(),
 		// " void encerrarOSComExecucaoSemReferencia(OSEncerramentoHelper helper, Map<Integer, ServicoAssociadoAutorizacaoHelper> autorizacoesServicos,",
 		// "fim");
 
+	}
+
+	/**
+	 * [UC0457] Encerra Ordem de Serviço
+	 * [SB0010] - Verificar Atualização Dados Encerramento no Histórico de Aferição do Hidrômetro
+	 * 
+	 * @author Anderson Italo
+	 * @date 09/09/2014
+	 */
+	private void verificarAtualizacaoDadosEncerramentoHistoricoAfericaoHidrometro(OSEncerramentoHelper helper, OrdemServico ordemServico)
+					throws ControladorException{
+
+		if(helper != null && ordemServico != null && ordemServico.getImovel() != null){
+
+			// Caso o tipo de serviço da ordem de serviço encerrada tenha a indicação de geração de
+			// dados no histórico de aferição de hidrômetro
+			if(helper.getIndicadorAfericaoServicoTipo() != null && helper.getIndicadorAfericaoServicoTipo().equals(ConstantesSistema.SIM)){
+
+				LigacaoAgua ligacaoAgua = (LigacaoAgua) getControladorUtil().pesquisar(ordemServico.getImovel().getId(), LigacaoAgua.class,
+								true);
+
+				if(ligacaoAgua != null && ligacaoAgua.getHidrometroInstalacaoHistorico() != null){
+
+					HidrometroInstalacaoHistorico hidrometroInstalacaoHistorico = (HidrometroInstalacaoHistorico) getControladorUtil()
+									.pesquisar(ligacaoAgua.getHidrometroInstalacaoHistorico().getId(), HidrometroInstalacaoHistorico.class,
+													true);
+
+					// Atualiza a tabela HIDROMETRO_HISTORICO_AFERICAO
+					HidrometroHistoricoAfericao hidrometroHistoricoAfericao = new HidrometroHistoricoAfericao();
+					hidrometroHistoricoAfericao.setHidrometro(hidrometroInstalacaoHistorico.getHidrometro());
+
+					Funcionario funcionario = (Funcionario) getControladorUtil().pesquisar(helper.getIdFuncionario(), Funcionario.class,
+									false);
+
+					if(funcionario != null){
+
+						hidrometroHistoricoAfericao.setFuncionario(funcionario);
+					}else{
+
+						throw new ControladorException("atencao.required", null, "Funcionário");
+					}
+
+					HidrometroCondicao hidrometroCondicao = (HidrometroCondicao) getControladorUtil().pesquisar(
+									helper.getIdHidrometroCondicao(), HidrometroCondicao.class, false);
+
+					if(hidrometroCondicao != null){
+
+						hidrometroHistoricoAfericao.setHidrometroCondicao(hidrometroCondicao);
+					}else{
+
+						throw new ControladorException("atencao.required", null, "Condição do Hidrômetro para Aferição");
+					}
+
+					hidrometroHistoricoAfericao.setOrdemServico(ordemServico);
+
+					if(helper.getIndicadorClienteAcompanhou() != null){
+
+						hidrometroHistoricoAfericao.setIndicadorClienteAcompanhou(helper.getIndicadorClienteAcompanhou());
+					}else{
+
+						throw new ControladorException("atencao.required", null, "Cliente Acompanhou");
+					}
+
+					if(helper.getIndicadorResultado() != null){
+
+						hidrometroHistoricoAfericao.setIndicadorResultado(helper.getIndicadorResultado());
+					}else{
+
+						throw new ControladorException("atencao.required", null, "Resultado");
+					}
+
+					hidrometroHistoricoAfericao.setIndicadorUso(ConstantesSistema.INDICADOR_USO_ATIVO);
+					hidrometroHistoricoAfericao.setUltimaAlteracao(new Date());
+
+					if(ordemServico.getDataExecucao() != null){
+
+						hidrometroHistoricoAfericao.setDataAfericao(ordemServico.getDataExecucao());
+					}else{
+
+						throw new ControladorException("atencao.required", null, "Data de Execução");
+					}
+
+					getControladorUtil().inserir(hidrometroHistoricoAfericao);
+
+					// Atualiza a tabela HIDROMETRO
+					Hidrometro hidrometro = (Hidrometro) getControladorUtil().pesquisar(
+									hidrometroInstalacaoHistorico.getHidrometro().getId(), Hidrometro.class, true);
+					hidrometro.setEmpresaUltimaAfericao(funcionario.getEmpresa());
+					hidrometro.setDataUltimaRevisao(ordemServico.getDataExecucao());
+					hidrometro.setUltimaAlteracao(new Date());
+
+					getControladorUtil().atualizar(hidrometro);
+				}
+			}
+		}
 	}
 
 	/**
@@ -5235,6 +6436,15 @@ public class ControladorOrdemServicoSEJB
 			osNaBase.setDimensao3(Util.formatarMoedaRealparaBigDecimal(helper.getDimensao3()));
 		}else{
 			osNaBase.setDimensao3(null);
+		}
+
+		if(dadosAtividadesOrdemServicoHelper != null){
+			BigDecimal valorTotalHorasTrabalhadas = recuperarValorHorasTrabalhadasOS(dadosAtividadesOrdemServicoHelper
+							.getColecaoManterDadosAtividadesOrdemServicoHelper());
+			BigDecimal valoorTotalMateriaias = recuperarValorMateriaisOS(dadosAtividadesOrdemServicoHelper
+							.getColecaoManterDadosAtividadesOrdemServicoHelper());
+			osNaBase.setValorHorasTrabalhadas(valorTotalHorasTrabalhadas);
+			osNaBase.setValorMateriais(valoorTotalMateriaias);
 		}
 
 		// seta o id da os referida retorno tipo na os
@@ -5635,7 +6845,7 @@ public class ControladorOrdemServicoSEJB
 						}
 
 						idOrdemServicoDiagnostico = this.gerarOrdemServico(ordemServicoGerar, helper.getUsuarioLogado(), null,
-										idLocalidade, idSetorComercial, idBairro, idUnidadeAtual, null, null);
+										idLocalidade, idSetorComercial, idBairro, idUnidadeAtual, null, null, null, false, null);
 
 						// idOrdemServicoDiagnostico = gerarOrdemServico(ordemServicoGerar,
 						// helper.getUsuarioLogado(), null);
@@ -5683,7 +6893,7 @@ public class ControladorOrdemServicoSEJB
 				}
 
 				this.gerarOrdemServico(helper.getOsFiscalizacao(), helper.getUsuarioLogado(), null, idLocalidade, idSetorComercial,
-								idBairro, idUnidadeAtual, null, null);
+								idBairro, idUnidadeAtual, null, null, null, false, null);
 
 				// gerarOrdemServico(helper.getOsFiscalizacao(), helper.getUsuarioLogado(), null);
 
@@ -5698,15 +6908,26 @@ public class ControladorOrdemServicoSEJB
 			 */
 
 			if(indIncluirDebito != null && indAtualizarComercial != null){
-				if(indIncluirDebito.shortValue() == ConstantesSistema.SIM.shortValue()
-								&& indAtualizarComercial.shortValue() == ServicoTipo.INDICADOR_ATUALIZA_COMERCIAL_NAO
+				if(indIncluirDebito.shortValue() == ConstantesSistema.SIM.shortValue()){
+					if(indAtualizarComercial.shortValue() == ServicoTipo.INDICADOR_ATUALIZA_COMERCIAL_NAO
 								&& valorServico.compareTo(new BigDecimal("0.00")) == 1
 								&& (idDebitoTipo != null && idDebitoTipo.intValue() != ConstantesSistema.ZERO.intValue())){
 
 					// [UC0475] - Gerar Débito Ordem de Serviço
 					this.gerarDebitoOrdemServico(helper.getNumeroOS(), idDebitoTipo, valorServico, 1);
+					}
+					if(helper.getIndicadorCobrarHorasMateriais().equals("1")
+									&& osNaBase.getValorHorasTrabalhadas().compareTo(new BigDecimal("0.00")) == 1){
+						this.gerarDebitoOrdemServico(helper.getNumeroOS(), idDebitoTipo, osNaBase.getValorHorasTrabalhadas(), 1);
+					}
+
+					if(helper.getIndicadorCobrarHorasMateriais().equals("1")
+									&& osNaBase.getValorMateriais().compareTo(new BigDecimal("0.00")) == 1){
+						this.gerarDebitoOrdemServico(helper.getNumeroOS(), idDebitoTipo, osNaBase.getValorMateriais(), 1);
+					}
 				}
 			}
+
 
 			/*
 			 * INTEGRAÇÃO COMERCIAL Autor: Raphael Rossiter Data: 25/04/2007
@@ -5733,6 +6954,10 @@ public class ControladorOrdemServicoSEJB
 									EventoGeracaoServico.ENCERRAMENTO_ORDEM_SERVICO, origemEncerramento, autorizacoesServicos);
 				}
 			}
+
+			// [SB0010] - Verificar Atualização Dados Encerramento no Histórico de Aferição do
+			// Hidrômetro
+			this.verificarAtualizacaoDadosEncerramentoHistoricoAfericaoHidrometro(helper, osNaBase);
 
 			// ControladorOrdemServicoSEJB.showMem(this.getClass().getSimpleName(),
 			// " void encerrarOSComExecucaoComReferencia(OSEncerramentoHelper helper, Map<Integer, ServicoAssociadoAutorizacaoHelper> autorizacoesServicos, OrigemEncerramentoOrdemServico origemEncerramento",
@@ -6018,56 +7243,41 @@ public class ControladorOrdemServicoSEJB
 			// ID da Unidade Tramite
 			Integer idUnidadeTramite = null;
 
-			Integer permiteTramiteIndependente = Util
-							.converterStringParaInteger((String) ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE
-											.executar(ExecutorParametrosAtendimentoPublico.getInstancia()));
+			Short permiteTramiteIndependente = Short.parseShort((String) ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE
+							.executar(ExecutorParametrosAtendimentoPublico.getInstancia()));
 
-			if(permiteTramiteIndependente != null && permiteTramiteIndependente.equals(1)){
+			if(permiteTramiteIndependente != null && permiteTramiteIndependente.equals(ConstantesSistema.SIM.intValue())){
 				UnidadeOrganizacional unidadeOrigem = null;
+
+				// [UC3040 - Obter Unidade Atual da OS].
 				unidadeOrigem = this.obterUnidadeAtualOrdemServico(ordemServico.getId());
 
+				// [UC3036 - Obter Unidade Tramite Ordem de Serviço].
 				idUnidadeTramite = this.pesquisarUnidadeTramiteOS(ordemServico.getServicoTipo().getId(), null, null, null,
 								unidadeOrigem.getId());
 
 				if(idUnidadeTramite == null){
-					idUnidadeTramite = unidadeOrigem.getId();
-				}
-			}else{
-				if(ordemServico.getRegistroAtendimento() != null && ordemServico.getRegistroAtendimento().getId() != null){
-					UnidadeOrganizacional unidadeAtualRA = this.getControladorRegistroAtendimento().obterUnidadeAtualRA(
-									ordemServico.getRegistroAtendimento().getId());
-					if(unidadeAtualRA != null && unidadeAtualRA.getId() != null){
-						idUnidadeTramite = unidadeAtualRA.getId();
-					}
-				}else{
-					// Caso a ordem de serviço seja seletiva e não tenha RA vinculada
-					// Atualiza a Ordem de Serviço com a Unidade de Geração da OS.
-					UnidadeOrganizacional unidadeGeracaoOS = null;
 					try{
-						unidadeGeracaoOS = repositorioOrdemServico.obterUnidadeGeracaoOrdemServico(ordemServico.getId());
+						sessionContext.setRollbackOnly();
+					}catch(IllegalStateException ex){
 
-						if(!Util.isVazioOuBranco(unidadeGeracaoOS)){
-							idUnidadeTramite = unidadeGeracaoOS.getId();
-						}
-					}catch(ErroRepositorioException e){
-						e.printStackTrace();
 					}
+					throw new ControladorException("atencao.tramitar_os_unidade_nao_existente");
 				}
-			}
 
-			if(idUnidadeTramite == null){
-				try{
-					sessionContext.setRollbackOnly();
-				}catch(IllegalStateException ex){
+				// 2.3. Caso a unidade destino, retornada pelo [UC3036], seja diferente da unidade
+				// atual da OS, retornada pelo [UC3040], gerar trâmite de O.S. [SB0002 - Gerar
+				// Trâmite de O.S.].
+				if(!idUnidadeTramite.equals(unidadeOrigem.getId())){
 
+					// [SB0002 - Gerar Trâmite de O.S.]
+					Tramite tramite = this.getTramite(ordemServico, usuario, idUnidadeTramite,
+									"Tramite gerado pelo sistema na alteração do tipo de serviço da ordem de serviçoo");
+
+					this.tramitarOS(tramite, ordemServico.getUltimaAlteracao());
 				}
-				throw new ControladorException("atencao.tramitar_os_unidade_nao_existente");
+
 			}
-
-			Tramite tramite = this.getTramite(ordemServico, usuario, idUnidadeTramite,
-							"Tramite gerado pelo sistema na geração da ordem de serviço");
-
-			this.tramitarOS(tramite, ordemServico.getUltimaAlteracao());
 
 		}
 
@@ -6269,11 +7479,14 @@ public class ControladorOrdemServicoSEJB
 				Date dataEncerramento = Util.converteStringParaDate(dataEncerramentoOS);
 				Date dataExecucaoObjeto = Util.converteStringParaDate(dataExecucao);
 
-				if(Util.formatarDataFinal(dataExecucaoObjeto).compareTo(Util.formatarDataFinal(datageracao)) == -1
-								|| Util.formatarDataFinal(dataExecucaoObjeto).compareTo(Util.formatarDataFinal(dataEncerramento)) == 1){
-
-					throw new ControladorException("atencao.data_execucao_invalida");
-				}
+				// if(Util.formatarDataFinal(dataExecucaoObjeto).compareTo(Util.formatarDataFinal(datageracao))
+				// == -1
+				// ||
+				// Util.formatarDataFinal(dataExecucaoObjeto).compareTo(Util.formatarDataFinal(dataEncerramento))
+				// == 1){
+				//
+				// throw new ControladorException("atencao.data_execucao_invalida");
+				// }
 			}
 		}
 
@@ -7092,7 +8305,7 @@ public class ControladorOrdemServicoSEJB
 	 * @throws ControladorException
 	 */
 	public void atualizarOrdemServicoProgramacaoSituacaoOs(Integer numeroOS, Date dataRoteiro, short situacaoFechamento,
-					Integer idOsProgramNaoEncerMotivo) throws ControladorException{
+					Integer idOsProgramNaoEncerMotivo, Date dataHoraVisita, Usuario usuario) throws ControladorException{
 
 		try{
 
@@ -7102,8 +8315,6 @@ public class ControladorOrdemServicoSEJB
 			short indicadorAtivo = ConstantesSistema.NUMERO_NAO_INFORMADO;
 
 			if(situacaoFechamento == OrdemServico.SITUACAO_PENDENTE.shortValue()){
-
-
 				indicadorAtivo = ConstantesSistema.NAO;
 			}
 
@@ -7125,10 +8336,203 @@ public class ControladorOrdemServicoSEJB
 					ordemServicoProgramacao.setSituacaoFechamento(situacaoFechamento);
 
 					if(idOsProgramNaoEncerMotivo != null){
-						OsProgramNaoEncerMotivo osProgramNaoEncerMotivo = new OsProgramNaoEncerMotivo();
-						osProgramNaoEncerMotivo.setId(idOsProgramNaoEncerMotivo);
+						FiltroOsProgramNaoEncerMotivo filtroOsProgramNaoEncerMotivo = new FiltroOsProgramNaoEncerMotivo();
+						filtroOsProgramNaoEncerMotivo.adicionarParametro(new ParametroSimples(FiltroOsProgramNaoEncerMotivo.ID, idOsProgramNaoEncerMotivo));
 
+						OsProgramNaoEncerMotivo osProgramNaoEncerMotivo = (OsProgramNaoEncerMotivo) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(
+										filtroOsProgramNaoEncerMotivo, OsProgramNaoEncerMotivo.class.getName()));
+						
 						ordemServicoProgramacao.setOsProgramNaoEncerMotivo(osProgramNaoEncerMotivo);
+
+						if (situacaoFechamento == OrdemServico.SITUACAO_PENDENTE.shortValue() 
+										&& osProgramNaoEncerMotivo.getIndicadorVisitaImprodutiva().equals(ConstantesSistema.SIM)){
+							ordemServicoProgramacao.setDataHoraVisita(dataHoraVisita);
+						}else{
+							ordemServicoProgramacao.setDataHoraVisita(null);
+						}
+						
+						
+						if(osProgramNaoEncerMotivo.getIndicadorCobraVisitaImprodutiva().equals(ConstantesSistema.SIM)){
+							// Preencher Debito a Cobrar
+							FiltroOrdemServico filtroOrdemServico = new FiltroOrdemServico();
+							filtroOrdemServico.adicionarParametro(new ParametroSimples(FiltroOrdemServico.ID, numeroOS));
+
+							filtroOrdemServico.adicionarCaminhoParaCarregamentoEntidade(FiltroOrdemServico.SERVICO_TIPO);
+							filtroOrdemServico.adicionarCaminhoParaCarregamentoEntidade(FiltroOrdemServico.DEBITO_TIPO);
+							filtroOrdemServico.adicionarCaminhoParaCarregamentoEntidade(FiltroOrdemServico.REGISTRO_ATENDIMENTO);
+
+							OrdemServico ordemServicoPesquisado = (OrdemServico) Util.retonarObjetoDeColecao(getControladorUtil()
+											.pesquisar(filtroOrdemServico, OrdemServico.class.getName()));
+
+							if(ordemServicoPesquisado.getImovel() != null){
+								DebitoACobrar debitoACobrar = new DebitoACobrar();
+
+								debitoACobrar.setRegistroAtendimento(ordemServicoPesquisado.getRegistroAtendimento());
+								debitoACobrar.setOrdemServico(ordemServicoPesquisado);
+
+								debitoACobrar.setGeracaoDebito(new Date());
+								debitoACobrar.setNumeroPrestacaoCobradas(new Short("0"));
+								debitoACobrar.setPercentualTaxaJurosFinanciamento(null);
+								debitoACobrar.setNumeroDiasSuspensao(null);
+
+								debitoACobrar.setUltimaAlteracao(new Date());
+	
+								Imovel imovelPesquisado = this.getControladorImovel().pesquisarImovel(
+												ordemServicoPesquisado.getImovel().getId());
+
+								debitoACobrar.setImovel(imovelPesquisado);
+								debitoACobrar.setLocalidade(imovelPesquisado.getLocalidade());
+								debitoACobrar.setQuadra(imovelPesquisado.getQuadra());
+		
+								debitoACobrar.setCodigoSetorComercial(imovelPesquisado.getSetorComercial().getCodigo());
+								debitoACobrar.setNumeroQuadra(new Integer(imovelPesquisado.getQuadra().getNumeroQuadra()));
+								debitoACobrar.setNumeroLote(imovelPesquisado.getLote());
+								debitoACobrar.setNumeroSubLote(imovelPesquisado.getSubLote());
+		
+								CobrancaForma cobrancaForma = new CobrancaForma();
+								cobrancaForma.setId(CobrancaForma.COBRANCA_EM_CONTA);
+								debitoACobrar.setCobrancaForma(cobrancaForma);
+								
+								FiltroDebitoTipo filtroDebitoTipo = new FiltroDebitoTipo();
+								filtroDebitoTipo.adicionarCaminhoParaCarregamentoEntidade("financiamentoTipo");
+								filtroDebitoTipo.adicionarParametro(new ParametroSimples(FiltroDebitoTipo.ID, DebitoTipo.VISITA_TECNICA));
+								filtroDebitoTipo.adicionarCaminhoParaCarregamentoEntidade("lancamentoItemContabil");								
+								
+								DebitoTipo debitoTipo = (DebitoTipo) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(
+												filtroDebitoTipo, DebitoTipo.class.getName()));
+								
+								debitoACobrar.setDebitoTipo(debitoTipo);
+								debitoACobrar.setLancamentoItemContabil(debitoTipo.getLancamentoItemContabil());
+								debitoACobrar.setFinanciamentoTipo(debitoTipo.getFinanciamentoTipo());
+
+								debitoACobrar.setValorDebito(debitoTipo.getValorPadrao());
+
+								FiltroRota filtroRota = new FiltroRota();
+								filtroRota.adicionarCaminhoParaCarregamentoEntidade(FiltroRota.FATURAMENTO_GRUPO );
+								filtroRota.adicionarParametro(new ParametroSimples(FiltroRota.ID_ROTA, imovelPesquisado.getRota().getId()));
+								
+								Rota rotaPesquisada = (Rota) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(
+												filtroRota, Rota.class.getName()));								
+								
+								debitoACobrar.setAnoMesReferenciaDebito(this.getControladorUtil().pesquisarParametrosDoSistema()
+												.getAnoMesFaturamento());
+								debitoACobrar.setAnoMesCobrancaDebito(rotaPesquisada.getFaturamentoGrupo().getAnoMesReferencia());
+								
+								getControladorFaturamento().inserirDebitoACobrar(1, debitoACobrar, null, imovelPesquisado,
+												null, null, usuario, false, null, null, null);								
+
+							}else{
+								// Gerar Guia de Pagamento para Cliente
+
+								// Obter a quantidade de Dias para o Calculo do Vencimento
+								Calendar dataVencimento = Calendar.getInstance();
+								String parametroDiasCalculoVencimento = (String) ParametroFaturamento.P_NUMERO_DIAS_CALCULO_VENCIMENTO_GUIA_COBRANCA_SERVICO_ANTECIPADO
+												.executar();
+
+								Integer qtdeDiasVencimento = 0;
+								if(parametroDiasCalculoVencimento != null){
+									dataVencimento.add(Calendar.DAY_OF_YEAR, Integer.valueOf(parametroDiasCalculoVencimento));
+
+									qtdeDiasVencimento = Integer.valueOf(parametroDiasCalculoVencimento);
+								}
+
+								// Criando a GuiaPagamento
+								GuiaPagamento guiaPagamento = new GuiaPagamento();
+
+								if(ordemServicoPesquisado.getRegistroAtendimento() != null
+												&& ordemServicoPesquisado.getRegistroAtendimento().getId() != null){
+									FiltroRegistroAtendimentoSolicitante filtroRegistroAtendimentoSolicitante = new FiltroRegistroAtendimentoSolicitante();
+									filtroRegistroAtendimentoSolicitante.adicionarParametro(new ParametroSimples(
+													FiltroRegistroAtendimentoSolicitante.REGISTRO_ATENDIMENTO_ID, ordemServicoPesquisado
+																	.getRegistroAtendimento().getId()));
+
+									RegistroAtendimentoSolicitante registroAtendimentoSolicitante = (RegistroAtendimentoSolicitante) Util
+													.retonarObjetoDeColecao(getControladorUtil().pesquisar(
+																	filtroRegistroAtendimentoSolicitante,
+																	RegistroAtendimentoSolicitante.class.getName()));
+									if(registroAtendimentoSolicitante != null){
+										guiaPagamento.setCliente(registroAtendimentoSolicitante.getCliente());
+									}
+								}
+
+								guiaPagamento.setRegistroAtendimento(ordemServicoPesquisado.getRegistroAtendimento());
+								guiaPagamento.setNumeroPrestacaoTotal(Short.valueOf("1"));
+								guiaPagamento.setIndicadorEmissaoObservacaoRA((short) 2);
+								guiaPagamento.setServicoTipo(null);
+
+								guiaPagamento.setOrdemServico(ordemServicoPesquisado);
+
+								// Criando as Prestações
+								Collection<GuiaPagamentoPrestacaoHelper> colecaoGuiaPagamentoPrestacao = new ArrayList<GuiaPagamentoPrestacaoHelper>();
+
+								FiltroDebitoTipo filtroDebitoTipo = new FiltroDebitoTipo();
+								filtroDebitoTipo.adicionarCaminhoParaCarregamentoEntidade("financiamentoTipo");
+								filtroDebitoTipo.adicionarParametro(new ParametroSimples(FiltroDebitoTipo.ID, DebitoTipo.VISITA_TECNICA));
+								filtroDebitoTipo.adicionarCaminhoParaCarregamentoEntidade("lancamentoItemContabil");
+
+								DebitoTipo debitoTipo = (DebitoTipo) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(
+												filtroDebitoTipo, DebitoTipo.class.getName()));
+
+								GuiaPagamentoPrestacaoHelper guiaPagamentoPrestacao = new GuiaPagamentoPrestacaoHelper();
+								guiaPagamentoPrestacao.setDescricaoTipoDebito(ordemServicoPesquisado.getServicoTipo().getDescricao());
+								guiaPagamentoPrestacao.setId(Long.valueOf(ordemServicoPesquisado.getServicoTipo().getId()));
+
+								guiaPagamentoPrestacao.setIdItemLancamentoContabil(debitoTipo.getLancamentoItemContabil().getId());
+								guiaPagamentoPrestacao.setUltimaAlteracao(new Date());
+								guiaPagamentoPrestacao.setValorPrestacaoTipoDebito(debitoTipo.getValorPadrao());
+								guiaPagamentoPrestacao.setValorTipoDebito(debitoTipo.getValorPadrao());
+
+								colecaoGuiaPagamentoPrestacao.add(guiaPagamentoPrestacao);
+
+								// Carrega segundo colecao
+								Collection<ListaDadosPrestacaoGuiaHelper> colecaoListaDadosPrestacaoGuia = new ArrayList<ListaDadosPrestacaoGuiaHelper>();
+								ListaDadosPrestacaoGuiaHelper listaDadosPrestacaoGuia = new ListaDadosPrestacaoGuiaHelper();
+
+								listaDadosPrestacaoGuia.setPrestacao(1);
+								listaDadosPrestacaoGuia.setDataVencimentoPrestacao(dataVencimento.getTime());
+
+								Map<Integer, BigDecimal> mapValorDebitoNaPrestacaoPorTipoDebito = listaDadosPrestacaoGuia
+												.getMapValorDebitoNaPrestacaoPorTipoDebito();
+								mapValorDebitoNaPrestacaoPorTipoDebito.put(debitoTipo.getId(),
+												debitoTipo.getValorPadrao());
+
+								Map<Integer, Integer> mapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito = new HashedMap();
+
+								listaDadosPrestacaoGuia.setMapValorDebitoNaPrestacaoPorTipoDebito(mapValorDebitoNaPrestacaoPorTipoDebito);
+								listaDadosPrestacaoGuia
+												.setMapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito(mapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito);
+
+								colecaoListaDadosPrestacaoGuia.add(listaDadosPrestacaoGuia);
+								//
+
+								SimpleDateFormat formataData = new SimpleDateFormat("dd/MM/yyyy");
+
+								FiltroUsuario filtroUsuario = new FiltroUsuario();
+
+								// Busca o usuário por senha e login
+								filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.GERENCIA_REGIONAL);
+								filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.LOCALIDADE_ELO);
+								filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.LOCALIDADE);
+
+								filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.USUARIO_SITUACAO);
+								filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.USUARIO_TIPO);
+								filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.UNIDADE_ORGANIZACIONAL);
+								filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.FUNCIONARIO);
+								filtroUsuario.adicionarCaminhoParaCarregamentoEntidade(FiltroUsuario.EMPRESA);
+
+								filtroUsuario.adicionarParametro(new ParametroSimples(FiltroUsuario.ID, usuario.getId()));
+
+								Usuario usuarioGuiaPagamento = (Usuario) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(
+												filtroUsuario, Usuario.class.getName()));
+
+								String numeroContratoParcelOrgaoPublico = null;
+								this.getControladorFaturamento().inserirGuiaPagamento(guiaPagamento,
+												usuarioGuiaPagamento, formataData.format(dataVencimento.getTime()).toString(),
+												qtdeDiasVencimento, colecaoGuiaPagamentoPrestacao, colecaoListaDadosPrestacaoGuia,
+												numeroContratoParcelOrgaoPublico);
+
+							}
+						}						
 
 					}
 
@@ -8798,14 +10202,15 @@ public class ControladorOrdemServicoSEJB
 	 * @return Collection
 	 */
 	public Collection pesquisarEquipes(String idEquipe, String nome, String placa, String cargaTrabalho, String idUnidade,
-					String idFuncionario, String idPerfilServico, String indicadorUso, Integer numeroPagina) throws ControladorException{
+					String idFuncionario, String idPerfilServico, String indicadorUso, Integer idEquipeTipo, Integer numeroPagina)
+					throws ControladorException{
 
 		Collection retorno = null;
 
 		try{
 
 			retorno = repositorioOrdemServico.pesquisarEquipes(idEquipe, nome, placa, cargaTrabalho, idUnidade, idFuncionario,
-							idPerfilServico, indicadorUso, numeroPagina);
+							idPerfilServico, indicadorUso, idEquipeTipo, numeroPagina);
 
 		}catch(ErroRepositorioException e){
 			sessionContext.setRollbackOnly();
@@ -8833,14 +10238,14 @@ public class ControladorOrdemServicoSEJB
 	 * @return int
 	 */
 	public int pesquisarEquipesCount(String idEquipe, String nome, String placa, String cargaTrabalho, String idUnidade,
-					String idFuncionario, String idPerfilServico, String indicadorUso) throws ControladorException{
+					String idFuncionario, String idPerfilServico, String indicadorUso, Integer idEquipeTipo) throws ControladorException{
 
 		int retorno = 0;
 
 		try{
 
 			retorno = repositorioOrdemServico.pesquisarEquipesCount(idEquipe, nome, placa, cargaTrabalho, idUnidade, idFuncionario,
-							idPerfilServico, indicadorUso);
+							idPerfilServico, indicadorUso, idEquipeTipo);
 
 		}catch(ErroRepositorioException e){
 			sessionContext.setRollbackOnly();
@@ -9075,7 +10480,7 @@ public class ControladorOrdemServicoSEJB
 						usuarioLogado.getUnidadeOrganizacional().getId(), usuarioLogado.getId(), clienteUsuario.getId(), null, null, false,
 						null, null, null, null, idUnidadeDestino, parecerUnidadeDestino, colecaoIdServicoTipo, null, null, null, null,
 						getControladorRegistroAtendimento().obterSequenceRA(), null, null, null, null, null, null, null, null, null, null,
-						indicadorProcessoAdmJud, numeroProcessoAgencia);
+						indicadorProcessoAdmJud, numeroProcessoAgencia, null);
 
 		/*
 		 * inserirRegistroAtendimento(short indicadorAtendimentoOnLine, String
@@ -10008,6 +11413,8 @@ public class ControladorOrdemServicoSEJB
 
 		equipe.setUltimaAlteracao(new Date());
 
+		validaEquipeComponenteEquipeTIpo(colecaoEquipeComponentes, equipe);
+
 		// ------------ REGISTRAR TRANSAÇÃO----------------------------
 		RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_EQUIPE_ATUALIZAR, new UsuarioAcaoUsuarioHelper(
 						usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
@@ -10268,7 +11675,7 @@ public class ControladorOrdemServicoSEJB
 		Collection colecaoCalcularValoresAguaEsgotoHelper = getControladorFaturamento().calcularValoresAguaEsgoto(anoMesReferencia,
 						idLigacaoAguaSituacaoNova, idLigacaoEsgotoSituacaoNova, indicadorFatAgua, indicadorFatEsgoto,
 						colecaoQuantidadeEconomias, consumoAgua, consumoEsgoto, volumeObtido, dataRealizacao, dataRealizacaoAtual,
-						percentualEsgoto, idConsumoTarifa, imovel.getId());
+						percentualEsgoto, idConsumoTarifa, imovel.getId(), null);
 
 		BigDecimal valorTotalAgua = new BigDecimal("0.00");
 		BigDecimal valorTotalEsgoto = new BigDecimal("0.00");
@@ -10463,8 +11870,7 @@ public class ControladorOrdemServicoSEJB
 
 			filtro.setColecaoIdsOS(colecaoOS);
 
-			Integer permiteTramiteIndependente = Util
-							.converterStringParaInteger((String) ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE
+			Short permiteTramiteIndependente = Short.parseShort((String) ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE
 											.executar(ExecutorParametrosAtendimentoPublico.getInstancia()));
 
 			return repositorioOrdemServico.pesquisarOrdemServicoTamanho(filtro, permiteTramiteIndependente);
@@ -10806,17 +12212,20 @@ public class ControladorOrdemServicoSEJB
 
 			String idServicoTipoStr = ordemServicoSeletivaHelper.getServicoTipo();
 			Boolean substituicaoHidrometro = this.comparaServicoTipoSubgrupoSubstituicaoHidrometro(idServicoTipoStr);
+			Boolean corte = this.comparaServicoTipoSubgrupoCorte(idServicoTipoStr);
 
 			SistemaParametro sistemaParametros = getControladorUtil().pesquisarParametrosDoSistema();
 			Integer anoMesFaturamentoAtual = sistemaParametros.getAnoMesFaturamento();
 			String situacaLigacaoAguaPermitidaManutencao = ParametroOrdemServico.P_SIT_AGUA_PERMIT_OS_SELETIVA_MANUT_HIDROMETRO.executar()
 							.toString();
+			String situacaLigacaoAguaPermitidaCorte = ParametroOrdemServico.P_SIT_AGUA_PERMIT_OS_SELETIVA_CORTE.executar().toString();
 
 			// casos seja informado o arquivo com as matrículas
 			boolean informouMatriculasEmArquivo = false;
 			if(ordemServicoSeletivaHelper.getColecaoImoveis() == null || ordemServicoSeletivaHelper.getColecaoImoveis().isEmpty()){
 				colecaoDados = repositorioOrdemServico.filtrarImovelEmissaoOrdensSeletivas(ordemServicoSeletivaHelper, anormalidades,
-								substituicaoHidrometro, anoMesFaturamentoAtual, situacaLigacaoAguaPermitidaManutencao);
+								substituicaoHidrometro, corte, anoMesFaturamentoAtual, situacaLigacaoAguaPermitidaManutencao,
+								situacaLigacaoAguaPermitidaCorte);
 			}else{
 				colecaoDados = new ArrayList<Integer>(ordemServicoSeletivaHelper.getColecaoImoveis());
 				informouMatriculasEmArquivo = true;
@@ -10873,7 +12282,7 @@ public class ControladorOrdemServicoSEJB
 												.obterDebitoImovelOuCliente(1, idImovel.toString(), null, null, "198001", "999912",
 																dataInicio.getTime(), dataFim.getTime(), 1, 1, 2, 2, 2, 2, 2, null,
 																sistemaParametros, null, null, null, ConstantesSistema.SIM,
-																ConstantesSistema.SIM, ConstantesSistema.SIM);
+																ConstantesSistema.SIM, ConstantesSistema.SIM, 2, null);
 
 								if(obterDebitoImovelOuClienteHelper.getColecaoContasValores() != null
 												&& !obterDebitoImovelOuClienteHelper.getColecaoContasValores().isEmpty()){
@@ -11104,6 +12513,14 @@ public class ControladorOrdemServicoSEJB
 		// Sete o imovel
 		if(imovel != null){
 			ordemServico.setImovel(imovel);
+		}
+
+		if(ordemServico.getValorHorasTrabalhadas() == null){
+			ordemServico.setValorHorasTrabalhadas(BigDecimal.ZERO);
+		}
+
+		if(ordemServico.getValorMateriais() == null){
+			ordemServico.setValorMateriais(BigDecimal.ZERO);
 		}
 
 		Integer idOrdemServico = null;
@@ -12759,14 +14176,18 @@ public class ControladorOrdemServicoSEJB
 
 			Boolean substituicaoHidrometro = this.comparaServicoTipoSubgrupoSubstituicaoHidrometro(ordemServicoSeletivaHelper
 							.getServicoTipo());
+			Boolean corte = this.comparaServicoTipoSubgrupoCorte(ordemServicoSeletivaHelper.getServicoTipo());
+
 
 			SistemaParametro sistemaParametros = getControladorUtil().pesquisarParametrosDoSistema();
 			Integer anoMesFaturamentoAtual = sistemaParametros.getAnoMesFaturamento();
 			String situacaLigacaoAguaPermitidaManutencao = ParametroOrdemServico.P_SIT_AGUA_PERMIT_OS_SELETIVA_MANUT_HIDROMETRO.executar()
 							.toString();
+			String situacaLigacaoAguaPermitidaCorte = ParametroOrdemServico.P_SIT_AGUA_PERMIT_OS_SELETIVA_CORTE.executar().toString();
 
 			totalRegistros = repositorioOrdemServico.filtrarImovelEmissaoOrdensSeletivasCount(ordemServicoSeletivaHelper, anormalidades,
-							substituicaoHidrometro, anoMesFaturamentoAtual, situacaLigacaoAguaPermitidaManutencao);
+							substituicaoHidrometro, corte, anoMesFaturamentoAtual, situacaLigacaoAguaPermitidaManutencao,
+							situacaLigacaoAguaPermitidaCorte);
 
 			if(totalRegistros == null){
 				totalRegistros = 0;
@@ -13940,7 +15361,7 @@ public class ControladorOrdemServicoSEJB
 										sistemaParametro.getAnoMesFaturamento(), LigacaoAguaSituacao.LIGADO,
 										LigacaoEsgotoSituacao.FACTIVEL, Short.valueOf("1"), Short.valueOf("1"), colecaoCategoriaAux,
 										volumeTotal, volumeTotal, consumoMinimoLigacao, Util.adicionarNumeroDiasDeUmaData(new Date(), -30),
-										new Date(), jurosPercentualEsgoto, imovel.getConsumoTarifa().getId(), imovel.getId());
+										new Date(), jurosPercentualEsgoto, imovel.getConsumoTarifa().getId(), imovel.getId(), null);
 
 						for(CalcularValoresAguaEsgotoHelper calcularValoresAguaEsgotoHelper : colecaoCalculoValoresAguaEsgotoHelper){
 							valorFaturadoAguaCategoria = calcularValoresAguaEsgotoHelper.getValorFaturadoAguaCategoria();
@@ -14051,9 +15472,7 @@ public class ControladorOrdemServicoSEJB
 
 		try{
 
-			Integer permiteTramiteIndependente = Util
-							.converterStringParaInteger((String) ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE
-											.executar(ExecutorParametrosAtendimentoPublico.getInstancia()));
+			Short permiteTramiteIndependente = Short.parseShort((String) ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar(ExecutorParametrosAtendimentoPublico.getInstancia()));
 
 			// Caso o trâmite da OS seja independente do RA
 			if(permiteTramiteIndependente.equals(ConstantesSistema.SIM)){
@@ -14403,6 +15822,73 @@ public class ControladorOrdemServicoSEJB
 				throw new ControladorException("atencao.tramitar_os_unidade_destino_tramite");
 			}
 
+			// 3. Caso a tramitação esteja restrita às unidades responsáveis pela ordem de serviço
+			// (PASI_VLPARAMETRO com o valor 1 (um) na tabela PARAMETRO_SISTEMA com
+			// PASI_CDPARAMETRO="P_INDICADOR_TRAMITE_RESTRITO_UNIDADES_RESPONSAVEIS"):
+			// 3.1. Caso a unidade destino informada/pesquisada não esteja entre as unidades
+			// responsáveis pelo tipo de serviço (não existe ocorrência na tabela
+			// SERVICO_TIPO_TRAMITE com SVTP_ID=SVTP_ID da tabela ORDEM_SERVICO e (LOCA_ID=LOCA_ID
+			// da tabela REGISTRO_ATENDIMENTO ou LOCA_ID com o valor nulo) e (STCM_ID=SCTM_ID da
+			// tabela REGISTRO_ATENDIMENTO ou STCM_ID com o valor nulo) e BAIR_ID=(BAIR_ID da tabela
+			// LOGRADOURO_BAIRRO com LGBR_ID=LGBR_ID da Tabela REGISTRO_ATENDIMENTO ou BAIR_ID com o
+			// valor nulo) e (UNID_IDORIGEM=unidade atual da OS, retornada pelo [UC3040], ou
+			// UNID_IDORIGEM com o valor nulo) e UNID_IDDESTINO=Id da unidade destino
+			// informada/pesquisada), exibir a mensagem
+			// "A Unidade de Destino não é responsável pelo tipo de serviço <<SVTP_DSSERVICOTIPO da tabela SERVICO_TIPO com SVTP_ID=SVTP_ID da tabela ORDEM_SERVICO>>, 
+			//logo não está autorizada a receber esta OS. Trâmite não autorizado".
+			
+			try{
+				String pIndicadorTramiteRestritoUnidades = ParametroAtendimentoPublico.P_INDICADOR_TRAMITE_RESTRITO_UNIDADES_RESPONSAVEIS
+								.executar();
+
+				if(pIndicadorTramiteRestritoUnidades != null && pIndicadorTramiteRestritoUnidades.equals(ConstantesSistema.SIM.toString())){
+					
+					FiltroServicoTipoTramite filtroServicoTipoTramite = new FiltroServicoTipoTramite();
+					filtroServicoTipoTramite.adicionarParametro(new ParametroSimples(FiltroServicoTipoTramite.SERVICO_TIPO_ID, tramite.getOrdemServico()
+									.getServicoTipo().getId()));
+					filtroServicoTipoTramite.adicionarParametro(new ParametroSimples(FiltroServicoTipoTramite.LOCALIDADE_ID, tramite.getRegistroAtendimento().getLocalidade()
+									.getId(), ConectorOr.CONECTOR_OR));
+					filtroServicoTipoTramite.adicionarParametro(new ParametroNulo(FiltroServicoTipoTramite.LOCALIDADE_ID));
+					filtroServicoTipoTramite.adicionarParametro(new ParametroSimples(FiltroServicoTipoTramite.SETOR_COMERCIAL_ID, tramite
+									.getRegistroAtendimento().getSetorComercial().getId(), ConectorOr.CONECTOR_OR));
+					filtroServicoTipoTramite.adicionarParametro(new ParametroNulo(FiltroServicoTipoTramite.SETOR_COMERCIAL_ID));
+					filtroServicoTipoTramite.adicionarParametro(new ParametroSimples(FiltroServicoTipoTramite.BAIRRO_ID, tramite
+									.getRegistroAtendimento().getLogradouroBairro().getBairro().getId(), ConectorOr.CONECTOR_OR));
+					filtroServicoTipoTramite.adicionarParametro(new ParametroNulo(FiltroServicoTipoTramite.BAIRRO_ID));
+					filtroServicoTipoTramite
+									.adicionarParametro(new ParametroSimples(FiltroServicoTipoTramite.UNIDADE_ORGANIZACIONAL_ORIGEM_ID,
+													unidadeAtual.getId(), ConectorOr.CONECTOR_OR));
+					filtroServicoTipoTramite
+									.adicionarParametro(new ParametroNulo(FiltroServicoTipoTramite.UNIDADE_ORGANIZACIONAL_ORIGEM_ID));
+					filtroServicoTipoTramite.adicionarParametro(new ParametroSimples(
+									FiltroServicoTipoTramite.UNIDADE_ORGANIZACIONAL_DESTINO_ID, tramite.getUnidadeOrganizacionalDestino()
+													.getId()));
+					
+					Collection<ServicoTipoTramite> colecaoServicoTipoTramite = this.getControladorUtil().pesquisar(filtroServicoTipoTramite,
+									ServicoTipoTramite.class.getName());
+					
+					if(Util.isVazioOrNulo(colecaoServicoTipoTramite)){
+
+						throw new ControladorException("atencao.sistemaparametro_inexistente", null, tramite.getOrdemServico()
+										.getServicoTipo().getDescricao());
+
+					}
+					
+					
+					
+				}else{
+					
+				}
+
+			}catch(ControladorException e1){
+
+				throw new ControladorException("atencao.sistemaparametro_inexistente", e1,
+								"P_INDICADOR_TRAMITE_RESTRITO_UNIDADES_RESPONSAVEIS");
+			}
+
+			
+
+
 		}
 	}
 
@@ -14429,13 +15915,22 @@ public class ControladorOrdemServicoSEJB
 				throw new ControladorException("atencao.informe_campo", null, "Tipo de Serviço");
 			}
 
-			if(idUnidadeOrigem == null){
-				sessionContext.setRollbackOnly();
-				throw new ControladorException("atencao.informe_campo", null, "Unidade de Origem");
+			/*
+			 * if(idUnidadeOrigem == null){
+			 * sessionContext.setRollbackOnly();
+			 * throw new ControladorException("atencao.informe_campo", null, "Unidade de Origem");
+			 * }
+			 */
+			Integer idUnidade = null;
+			idUnidade = repositorioOrdemServico.pesquisarUnidadeTramiteOS(idServicoTipoTramite, idLocalidade, idSetorComercial, idBairro,
+							idUnidadeOrigem, null);
+			if (idUnidade == null) {
+				idUnidade = repositorioOrdemServico.pesquisarUnidadeTramiteOS(idServicoTipoTramite, idLocalidade, idSetorComercial, idBairro,
+								null, new Short("1"));				
 			}
+			
+			return idUnidade;
 
-			return repositorioOrdemServico.pesquisarUnidadeTramiteOS(idServicoTipoTramite, idLocalidade, idSetorComercial, idBairro,
-							idUnidadeOrigem);
 		}catch(ErroRepositorioException ex){
 			ex.printStackTrace();
 			throw new ControladorException("erro.sistema", ex);
@@ -14597,7 +16092,7 @@ public class ControladorOrdemServicoSEJB
 					// definição de unidade de trâmite para cada O.S.
 					// [<<Inclui>> [UC3036 – Obter Unidade Tramite Ordem de Serviço];
 					// Caso contrário, assumir a mesma opção de trâmite determinada para a R.A
-					if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().equals(ConstantesSistema.SIM.toString())){
+					if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().toString().equals(ConstantesSistema.SIM.toString())){
 
 						// Prevalece a unidade que usuário informou em tela
 						if(tramite.getUnidadeOrganizacionalDestino() != null){
@@ -15621,7 +17116,7 @@ public class ControladorOrdemServicoSEJB
 
 		Integer idUnidadeTramiteOS = null;
 
-		if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().equals(ConstantesSistema.SIM.toString())){
+		if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().toString().equals(ConstantesSistema.SIM.toString())){
 			ServicoTipo servicoTipo = ordemServico.getServicoTipo();
 			Integer idServicoTipo = servicoTipo.getId();
 
@@ -16354,4 +17849,808 @@ public class ControladorOrdemServicoSEJB
 		return retorno;
 	}
 
+	/**
+	 * @param imovelEmissaoOrdensSeletivaHelper
+	 * @param usuarioLogado
+	 */
+
+	public Object[] gerarRelatorioOrdemSeletiva(ImovelEmissaoOrdensSeletivaHelper imovelEmissaoOrdensSeletivaHelper, Usuario usuarioLogado){
+
+		Object[] retorno = new Object[2];
+
+		if(imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaInicial() != null
+						&& !imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaInicial().equals("")
+						&& imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaFinal() != null
+						&& !imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaFinal().equals("")){
+
+			String areaInicial = imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaInicial();
+			String areaFinal = imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaFinal();
+
+			areaInicial = areaInicial.replace(".", "");
+			areaInicial = areaInicial.replace(",", ".");
+			areaFinal = areaFinal.replace(".", "");
+			areaFinal = areaFinal.replace(",", ".");
+
+			imovelEmissaoOrdensSeletivaHelper.setIntervaloAreaConstruidaInicial(areaInicial);
+			imovelEmissaoOrdensSeletivaHelper.setIntervaloAreaConstruidaFinal(areaFinal);
+		}
+
+		// Valor do Débito
+		String valorTotalDebitoVencido = imovelEmissaoOrdensSeletivaHelper.getValorTotalDebitoVencido();
+
+		if(!Util.isVazioOuBranco(valorTotalDebitoVencido)){
+			valorTotalDebitoVencido = valorTotalDebitoVencido.replace(".", "");
+			valorTotalDebitoVencido = valorTotalDebitoVencido.replace(",", ".");
+		}
+
+		if(imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaPredefinida() != null){
+
+			if(imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaPredefinida().trim()
+							.equalsIgnoreCase(String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				imovelEmissaoOrdensSeletivaHelper.setIntervaloAreaConstruidaPredefinida(null);
 }
+			if(imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaPredefinida() != null){
+				// Verifica se o usuario informou o Intervalo de Area Construida Pre definida
+				FiltroAreaConstruidaFaixa filtroAreaConstruidaFaixa = new FiltroAreaConstruidaFaixa();
+
+				filtroAreaConstruidaFaixa.adicionarParametro(new ParametroSimples(FiltroAreaConstruidaFaixa.CODIGO,
+								imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaPredefinida()));
+
+				Collection<AreaConstruidaFaixa> colecaoAreaConstruida;
+				try{
+					colecaoAreaConstruida = getControladorUtil().pesquisar(filtroAreaConstruidaFaixa, AreaConstruidaFaixa.class.getName());
+
+					if(colecaoAreaConstruida != null && !colecaoAreaConstruida.isEmpty()){
+						Iterator<AreaConstruidaFaixa> iColecaoAreaConstruida = colecaoAreaConstruida.iterator();
+						AreaConstruidaFaixa faixa = iColecaoAreaConstruida.next();
+
+						// Seta os Intervalos
+						imovelEmissaoOrdensSeletivaHelper.setIntervaloAreaConstruidaInicial(faixa.getVolumeMenorFaixa().toString());
+						imovelEmissaoOrdensSeletivaHelper.setIntervaloAreaConstruidaFinal(faixa.getVolumeMaiorFaixa().toString());
+					}
+
+				}catch(ControladorException e){
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+
+			}
+		}
+
+		if(imovelEmissaoOrdensSeletivaHelper.getImovelCondominio() == null){
+			imovelEmissaoOrdensSeletivaHelper.setImovelCondominio("2");
+		}
+
+		if(imovelEmissaoOrdensSeletivaHelper.getTipoMedicao() != null
+						&& imovelEmissaoOrdensSeletivaHelper.getTipoMedicao().trim()
+										.equalsIgnoreCase(String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+			imovelEmissaoOrdensSeletivaHelper.setTipoMedicao(null);
+		}else{
+			if(imovelEmissaoOrdensSeletivaHelper.getTipoMedicao() == null){
+				imovelEmissaoOrdensSeletivaHelper.setTipoMedicao(String.valueOf(MedicaoTipo.LIGACAO_AGUA));
+			}
+		}
+
+		// Grupo de Faturamento
+		if(imovelEmissaoOrdensSeletivaHelper.getFaturamentoGrupo() != null
+						&& imovelEmissaoOrdensSeletivaHelper.getFaturamentoGrupo().trim()
+										.equalsIgnoreCase(String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+			imovelEmissaoOrdensSeletivaHelper.setFaturamentoGrupo(null);
+		}
+
+		// Regional
+		if(imovelEmissaoOrdensSeletivaHelper.getGerenciaRegional() != null
+						&& imovelEmissaoOrdensSeletivaHelper.getGerenciaRegional().trim()
+										.equalsIgnoreCase(String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+			imovelEmissaoOrdensSeletivaHelper.setGerenciaRegional(null);
+		}
+
+		// Cortado no Período - Inicial
+		String intervaloDataCorteInicial = imovelEmissaoOrdensSeletivaHelper.getIntervaloDataCorteInicial();
+
+		if(!Util.isVazioOuBranco(intervaloDataCorteInicial)){
+			intervaloDataCorteInicial = Util.formatarMesAnoParaAnoMes(intervaloDataCorteInicial);
+		}
+
+		// Cortado no Período - Final
+		String intervaloDataCorteFinal = imovelEmissaoOrdensSeletivaHelper.getIntervaloDataCorteFinal();
+
+		if(!Util.isVazioOuBranco(intervaloDataCorteFinal)){
+			intervaloDataCorteFinal = Util.formatarMesAnoParaAnoMes(intervaloDataCorteFinal);
+		}
+
+		// Cortado no Período - Inicial
+		String dataCorteInicial = imovelEmissaoOrdensSeletivaHelper.getDataCorteInicial();
+		// Cortado no Período - Final
+		String dataCorteFinal = imovelEmissaoOrdensSeletivaHelper.getDataCorteFinal();
+
+		// Verifica se o usuario selecionou simulação
+		if(!imovelEmissaoOrdensSeletivaHelper.getSimulacao().equals("1")){
+			RelatorioEmitirOrdemServicoSeletiva relatorioEmitirOrdemServicoSeletiva = new RelatorioEmitirOrdemServicoSeletiva(usuarioLogado);
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("servicoTipo", imovelEmissaoOrdensSeletivaHelper.getServicoTipo());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("servicoTipoDescricao",
+							imovelEmissaoOrdensSeletivaHelper.getServicoTipoDescricao());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("simulacao", imovelEmissaoOrdensSeletivaHelper.getSimulacao());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("firma", imovelEmissaoOrdensSeletivaHelper.getFirma());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("nomeFirma", imovelEmissaoOrdensSeletivaHelper.getNomeFirma());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("quantidadeMaxima", imovelEmissaoOrdensSeletivaHelper.getQuantidadeMaxima());
+
+			// Valida o Elo e recupera a Descricao
+			if(imovelEmissaoOrdensSeletivaHelper.getElo() == null || imovelEmissaoOrdensSeletivaHelper.getElo().equals("")){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("elo", "");
+				relatorioEmitirOrdemServicoSeletiva.addParametro("nomeElo", "");
+			}else{
+				Localidade localidadeElo = pesquisaElo(Integer.decode(imovelEmissaoOrdensSeletivaHelper.getElo()));
+
+				if(localidadeElo == null){
+					throw new ActionServletException("atencao.pesquisa_inexistente", null, "Elo");
+				}
+				relatorioEmitirOrdemServicoSeletiva.addParametro("elo", localidadeElo.getLocalidade().getId().toString());
+				relatorioEmitirOrdemServicoSeletiva.addParametro("nomeElo", localidadeElo.getLocalidade().getDescricao());
+
+			}
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("faturamentoGrupo", imovelEmissaoOrdensSeletivaHelper.getFaturamentoGrupo());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("gerenciaRegional", imovelEmissaoOrdensSeletivaHelper.getGerenciaRegional());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("localidade", imovelEmissaoOrdensSeletivaHelper.getLocalidade());
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getBairro())
+							&& !imovelEmissaoOrdensSeletivaHelper.getBairro()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("bairro", imovelEmissaoOrdensSeletivaHelper.getBairro());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getLogradouro())
+							&& !imovelEmissaoOrdensSeletivaHelper.getLogradouro()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("logradouro", imovelEmissaoOrdensSeletivaHelper.getLogradouro());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getSetor())
+							&& !imovelEmissaoOrdensSeletivaHelper.getSetor()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("setor", imovelEmissaoOrdensSeletivaHelper.getSetor());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getQuadra())
+							&& !imovelEmissaoOrdensSeletivaHelper.getQuadra()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("quadra", imovelEmissaoOrdensSeletivaHelper.getQuadra());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getRota())
+							&& !imovelEmissaoOrdensSeletivaHelper.getRota()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("rota", imovelEmissaoOrdensSeletivaHelper.getRota());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getLote())
+							&& !imovelEmissaoOrdensSeletivaHelper.getLote()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("lote", imovelEmissaoOrdensSeletivaHelper.getLote());
+			}
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("inscricaoTipo", imovelEmissaoOrdensSeletivaHelper.getInscricaoTipo());
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getPerfilImovel())
+							&& !imovelEmissaoOrdensSeletivaHelper.getPerfilImovel()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("perfilImovel", imovelEmissaoOrdensSeletivaHelper.getPerfilImovel());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getCategoria())
+							&& !imovelEmissaoOrdensSeletivaHelper.getCategoria()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("categoria", imovelEmissaoOrdensSeletivaHelper.getCategoria());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getSubCategoria())
+							&& !imovelEmissaoOrdensSeletivaHelper.getSubCategoria()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("subCategoria", imovelEmissaoOrdensSeletivaHelper.getSubCategoria());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getLigacaoAguaSituacao())
+							&& !imovelEmissaoOrdensSeletivaHelper.getLigacaoAguaSituacao()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("ligacaoAguaSituacao",
+								imovelEmissaoOrdensSeletivaHelper.getLigacaoAguaSituacao());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getLigacaoEsgotoSituacao())
+							&& !imovelEmissaoOrdensSeletivaHelper.getLigacaoEsgotoSituacao()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("ligacaoEsgotoSituacao",
+								imovelEmissaoOrdensSeletivaHelper.getLigacaoEsgotoSituacao());
+			}
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloDataCorteInicial",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloDataCorteInicial());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloDataCorteFinal",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloDataCorteFinal());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("dataCorteInicial", imovelEmissaoOrdensSeletivaHelper.getDataCorteInicial());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("dataCorteFinal", imovelEmissaoOrdensSeletivaHelper.getDataCorteFinal());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloQuantidadeEconomiasInicial",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloQuantidadeEconomiasInicial());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloQuantidadeEconomiasFinal",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloQuantidadeEconomiasFinal());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloNumeroPontosUtilizacaoInicial",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloNumeroPontosUtilizacaoInicial());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloNumeroPontosUtilizacaoFinal",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloNumeroPontosUtilizacaoFinal());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloQuantidadeDocumentosInicial",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloQuantidadeDocumentosInicial());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloQuantidadeDocumentosFinal",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloQuantidadeDocumentosFinal());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloNumeroMoradoresInicial",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloNumeroMoradoresInicial());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloNumeroMoradoresFinal",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloNumeroMoradoresFinal());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloAreaConstruidaInicial",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaInicial());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloAreaConstruidaFinal",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaFinal());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloAreaConstruidaPredefinida",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaPredefinida());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("imovelCondominio", imovelEmissaoOrdensSeletivaHelper.getImovelCondominio());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("consumoPorEconomia",
+							imovelEmissaoOrdensSeletivaHelper.getConsumoPorEconomia());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloNumeroConsumoMesInicial",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloNumeroConsumoMesInicial());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloNumeroConsumoMesFinal",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloNumeroConsumoMesFinal());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("colecaoConsumoMedioImovel",
+							imovelEmissaoOrdensSeletivaHelper.getColecaoConsumoMedioImovel());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloQuantidadeContasVencidasInicial",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloQuantidadeContasVencidasInicial());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("intervaloQuantidadeContasVencidasFinal",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloQuantidadeContasVencidasFinal());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("valorTotalDebitoVencido",
+							imovelEmissaoOrdensSeletivaHelper.getValorTotalDebitoVencido());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("tipoMedicao", imovelEmissaoOrdensSeletivaHelper.getTipoMedicao());
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getMarca())
+							&& !imovelEmissaoOrdensSeletivaHelper.getMarca()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("marca", imovelEmissaoOrdensSeletivaHelper.getMarca());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getHidrometroClasseMetrologica())
+							&& !imovelEmissaoOrdensSeletivaHelper.getHidrometroClasseMetrologica()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("hidrometroClasseMetrologica",
+								imovelEmissaoOrdensSeletivaHelper.getHidrometroClasseMetrologica());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getHidrometroProtecao())
+							&& !imovelEmissaoOrdensSeletivaHelper.getHidrometroProtecao()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("hidrometroProtecao",
+								imovelEmissaoOrdensSeletivaHelper.getHidrometroProtecao());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getHidrometroLocalInstalacao())
+							&& !imovelEmissaoOrdensSeletivaHelper.getHidrometroLocalInstalacao()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletiva.addParametro("hidrometroLocalInstalacao",
+								imovelEmissaoOrdensSeletivaHelper.getHidrometroLocalInstalacao());
+			}
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("anormalidadeHidrometro",
+							imovelEmissaoOrdensSeletivaHelper.getAnormalidadeHidrometro());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("numeroOcorrenciasConsecutivas",
+							imovelEmissaoOrdensSeletivaHelper.getNumeroOcorrenciasConsecutivas());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("colecaoDadosDoHidrometro",
+							imovelEmissaoOrdensSeletivaHelper.getColecaoDadosDoHidrometro());
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("colecaoImoveis", imovelEmissaoOrdensSeletivaHelper.getIdsImoveis());
+
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("idUsuario", String.valueOf(usuarioLogado.getId()));
+
+			relatorioEmitirOrdemServicoSeletiva.addParametro("idComandoOsSeletiva",
+							String.valueOf(imovelEmissaoOrdensSeletivaHelper.getIdComandoOsServicoSeletiva()));
+
+			retorno[0] = relatorioEmitirOrdemServicoSeletiva;
+
+		}else{
+			RelatorioEmitirOrdemServicoSeletivaSugestao relatorioEmitirOrdemServicoSeletivaSugestao = new RelatorioEmitirOrdemServicoSeletivaSugestao(
+							usuarioLogado);
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("servicoTipo", imovelEmissaoOrdensSeletivaHelper.getServicoTipo());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("servicoTipoDescricao",
+							imovelEmissaoOrdensSeletivaHelper.getServicoTipoDescricao());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("simulacao", imovelEmissaoOrdensSeletivaHelper.getSimulacao());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("firma", imovelEmissaoOrdensSeletivaHelper.getFirma());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("nomeFirma", imovelEmissaoOrdensSeletivaHelper.getNomeFirma());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao
+.addParametro("quantidadeMaxima",
+							imovelEmissaoOrdensSeletivaHelper.getQuantidadeMaxima());
+
+			// Valida o Elo e recupera a Descricao
+			if(imovelEmissaoOrdensSeletivaHelper.getElo() == null || imovelEmissaoOrdensSeletivaHelper.getElo().equals("")){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("elo", "");
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("nomeElo", "");
+			}else{
+				Localidade localidadeElo = pesquisaElo(Integer.decode(imovelEmissaoOrdensSeletivaHelper.getElo()));
+
+				if(localidadeElo == null){
+					throw new ActionServletException("atencao.pesquisa_inexistente", null, "Elo");
+				}
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("elo", localidadeElo.getLocalidade().getId().toString());
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("nomeElo", localidadeElo.getLocalidade().getDescricao());
+			}
+
+			relatorioEmitirOrdemServicoSeletivaSugestao
+.addParametro("faturamentoGrupo",
+							imovelEmissaoOrdensSeletivaHelper.getFaturamentoGrupo());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao
+.addParametro("gerenciaRegional",
+							imovelEmissaoOrdensSeletivaHelper.getGerenciaRegional());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("localidade", imovelEmissaoOrdensSeletivaHelper.getLocalidade());
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getBairro())
+							&& !imovelEmissaoOrdensSeletivaHelper.getBairro()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("bairro", imovelEmissaoOrdensSeletivaHelper.getBairro());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getLogradouro())
+							&& !imovelEmissaoOrdensSeletivaHelper.getLogradouro()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("logradouro", imovelEmissaoOrdensSeletivaHelper.getLogradouro());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getSetor())
+							&& !imovelEmissaoOrdensSeletivaHelper.getSetor()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("setor", imovelEmissaoOrdensSeletivaHelper.getSetor());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getQuadra())
+							&& !imovelEmissaoOrdensSeletivaHelper.getQuadra()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("quadra", imovelEmissaoOrdensSeletivaHelper.getQuadra());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getRota())
+							&& !imovelEmissaoOrdensSeletivaHelper.getRota()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("rota", imovelEmissaoOrdensSeletivaHelper.getRota());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getLote())
+							&& !imovelEmissaoOrdensSeletivaHelper.getLote()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("lote", imovelEmissaoOrdensSeletivaHelper.getLote());
+			}
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("inscricaoTipo", imovelEmissaoOrdensSeletivaHelper.getInscricaoTipo());
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getPerfilImovel())
+							&& !imovelEmissaoOrdensSeletivaHelper.getPerfilImovel()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("perfilImovel",
+								imovelEmissaoOrdensSeletivaHelper.getPerfilImovel());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getCategoria())
+							&& !imovelEmissaoOrdensSeletivaHelper.getCategoria()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("categoria", imovelEmissaoOrdensSeletivaHelper.getCategoria());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getSubCategoria())
+							&& !imovelEmissaoOrdensSeletivaHelper.getSubCategoria()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("subCategoria",
+								imovelEmissaoOrdensSeletivaHelper.getSubCategoria());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getLigacaoAguaSituacao())
+							&& !imovelEmissaoOrdensSeletivaHelper.getLigacaoAguaSituacao()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("ligacaoAguaSituacao",
+								imovelEmissaoOrdensSeletivaHelper.getLigacaoAguaSituacao());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getLigacaoEsgotoSituacao())
+							&& !imovelEmissaoOrdensSeletivaHelper.getLigacaoEsgotoSituacao()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("ligacaoEsgotoSituacao",
+								imovelEmissaoOrdensSeletivaHelper.getLigacaoEsgotoSituacao());
+			}
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloDataCorteInicial", intervaloDataCorteInicial);
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloDataCorteFinal", intervaloDataCorteFinal);
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("dataCorteInicial", dataCorteInicial);
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("dataCorteFinal", dataCorteFinal);
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloQuantidadeEconomiasInicial",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloQuantidadeEconomiasInicial());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloQuantidadeEconomiasFinal",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloQuantidadeEconomiasFinal());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloNumeroPontosUtilizacaoInicial",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloNumeroPontosUtilizacaoInicial());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloNumeroPontosUtilizacaoFinal",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloNumeroPontosUtilizacaoFinal());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloQuantidadeDocumentosInicial",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloQuantidadeDocumentosInicial());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloQuantidadeDocumentosFinal",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloQuantidadeDocumentosFinal());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloNumeroMoradoresInicial",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloNumeroMoradoresInicial());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloNumeroMoradoresFinal",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloNumeroMoradoresFinal());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloAreaConstruidaInicial",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaInicial());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloAreaConstruidaFinal",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaFinal());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloAreaConstruidaPredefinida",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloAreaConstruidaPredefinida());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao
+.addParametro("imovelCondominio",
+							imovelEmissaoOrdensSeletivaHelper.getImovelCondominio());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("consumoPorEconomia",
+							imovelEmissaoOrdensSeletivaHelper.getConsumoPorEconomia());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloNumeroConsumoMesInicial",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloNumeroConsumoMesInicial());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloNumeroConsumoMesFinal",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloNumeroConsumoMesFinal());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("colecaoConsumoMedioImovel",
+							imovelEmissaoOrdensSeletivaHelper.getColecaoConsumoMedioImovel());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloQuantidadeContasVencidasInicial",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloQuantidadeContasVencidasInicial());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("intervaloQuantidadeContasVencidasFinal",
+							imovelEmissaoOrdensSeletivaHelper.getIntervaloQuantidadeContasVencidasFinal());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("valorTotalDebitoVencido", valorTotalDebitoVencido);
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("tipoMedicao", imovelEmissaoOrdensSeletivaHelper.getTipoMedicao());
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getMarca())
+							&& !imovelEmissaoOrdensSeletivaHelper.getMarca()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("marca", imovelEmissaoOrdensSeletivaHelper.getMarca());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getHidrometroClasseMetrologica())
+							&& !imovelEmissaoOrdensSeletivaHelper.getHidrometroClasseMetrologica()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("hidrometroClasseMetrologica",
+								imovelEmissaoOrdensSeletivaHelper.getHidrometroClasseMetrologica());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getHidrometroProtecao())
+							&& !imovelEmissaoOrdensSeletivaHelper.getHidrometroProtecao()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("hidrometroProtecao",
+								imovelEmissaoOrdensSeletivaHelper.getHidrometroProtecao());
+			}
+
+			if(!Util.isVazioOuBranco(imovelEmissaoOrdensSeletivaHelper.getHidrometroLocalInstalacao())
+							&& !imovelEmissaoOrdensSeletivaHelper.getHidrometroLocalInstalacao()[0].trim().equalsIgnoreCase(
+											String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("hidrometroLocalInstalacao",
+								imovelEmissaoOrdensSeletivaHelper.getHidrometroLocalInstalacao());
+			}
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("anormalidadeHidrometro",
+							imovelEmissaoOrdensSeletivaHelper.getAnormalidadeHidrometro());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("numeroOcorrenciasConsecutivas",
+							imovelEmissaoOrdensSeletivaHelper.getNumeroOcorrenciasConsecutivas());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("colecaoDadosDoHidrometro",
+							imovelEmissaoOrdensSeletivaHelper.getColecaoDadosDoHidrometro());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("colecaoImoveis", imovelEmissaoOrdensSeletivaHelper.getIdsImoveis());
+
+			relatorioEmitirOrdemServicoSeletivaSugestao.addParametro("idUsuario", String.valueOf(usuarioLogado.getId()));
+
+			retorno[1] = relatorioEmitirOrdemServicoSeletivaSugestao;
+
+		}
+
+		return retorno;
+
+	}
+
+	/**
+	 * Recupera a coleção Entulho Medida.
+	 * 
+	 * @author Genival Barbosa
+	 * @date 20/09/2014
+	 * @return Coleção de EntuhoMedida
+	 */
+	public Collection<EntulhoMedida> pesquisarEntulhoMedida() throws ControladorException{
+
+		try{
+			return this.repositorioOrdemServico.pesquisarEntulhoMedida();
+		}catch(ErroRepositorioException ex){
+			sessionContext.setRollbackOnly();
+			throw new ControladorException("erro.sistema", ex);
+		}
+	}
+
+	/**
+	 * Recupera um Entulho Medida.
+	 * 
+	 * @author Genival Barbosa
+	 * @date 20/09/2014
+	 * @return Entulho Medida
+	 */
+	public EntulhoMedida pesquisarEntulhoMedida(Integer idEntulhoMedida) throws ControladorException{
+
+		try{
+			return this.repositorioOrdemServico.pesquisarEntulhoMedida(idEntulhoMedida);
+		}catch(ErroRepositorioException ex){
+			sessionContext.setRollbackOnly();
+			throw new ControladorException("erro.sistema", ex);
+		}
+	}
+
+	/**
+	 * Pesquisar ordem de serviço.
+	 * 
+	 * @author Genival Barbosa
+	 * @date 30/09/2014
+	 * @return Ordem Servico
+	 */
+	public OrdemServico pesquisarOrdemServicoPrincipal(Integer idOrdemServico) throws ControladorException{
+
+		OrdemServico retorno = null;
+		try{
+			retorno = repositorioOrdemServico.pesquisarOrdemServicoPrincipal(idOrdemServico);
+		}catch(ErroRepositorioException ex){
+			sessionContext.setRollbackOnly();
+			ex.printStackTrace();
+			throw new ControladorException("erro.sistema", ex);
+		}
+		return retorno;
+	}
+
+
+	/**
+	 * @param elo
+	 * @return
+	 */
+	private Localidade pesquisaElo(Integer elo){
+
+		Fachada fachada = Fachada.getInstancia();
+		Localidade localidade = null;
+
+		FiltroLocalidade filtro = new FiltroLocalidade();
+		filtro.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID_ELO, elo));
+		filtro.adicionarParametro(new ParametroSimples(FiltroLocalidade.INDICADORUSO, ConstantesSistema.INDICADOR_USO_ATIVO));
+
+		Collection<Localidade> colecaoLocalidade = fachada.pesquisar(filtro, Localidade.class.getName());
+		Iterator<Localidade> iColecaoLocalidade = colecaoLocalidade.iterator();
+		localidade = iColecaoLocalidade.next();
+
+		return localidade;
+	}
+
+	/**
+	 * Pesquisa a Localidade
+	 * 
+	 * @param elo
+	 * @return
+	 */
+	private Localidade pesquisaLocalidade(Integer idLocalidade){
+
+		Fachada fachada = Fachada.getInstancia();
+		Localidade localidade = null;
+
+		FiltroLocalidade filtro = new FiltroLocalidade();
+		filtro.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, idLocalidade));
+		filtro.adicionarParametro(new ParametroSimples(FiltroLocalidade.INDICADORUSO, ConstantesSistema.INDICADOR_USO_ATIVO));
+
+		Collection<Localidade> colecaoLocalidade = fachada.pesquisar(filtro, Localidade.class.getName());
+		Iterator<Localidade> iColecaoLocalidade = colecaoLocalidade.iterator();
+		localidade = iColecaoLocalidade.next();
+
+		return localidade;
+	}
+
+	/**
+	 * Pesquisa o Setor Comercial
+	 * 
+	 * @param elo
+	 * @return
+	 */
+	private SetorComercial pesquisaSetorComercial(Integer codigoSetorComercial, Integer idLocalidadeInicial, Integer idLocalidadeFinal){
+
+		Fachada fachada = Fachada.getInstancia();
+		SetorComercial setorComercial = null;
+
+		FiltroSetorComercial filtro = new FiltroSetorComercial();
+		filtro.adicionarParametro(new Intervalo(FiltroSetorComercial.ID_LOCALIDADE, idLocalidadeInicial, idLocalidadeFinal));
+		filtro.adicionarParametro(new ParametroSimples(FiltroSetorComercial.CODIGO_SETOR_COMERCIAL, codigoSetorComercial));
+		filtro.adicionarParametro(new ParametroSimples(FiltroSetorComercial.INDICADORUSO, ConstantesSistema.INDICADOR_USO_ATIVO));
+
+		Collection<SetorComercial> colecaoSetor = fachada.pesquisar(filtro, SetorComercial.class.getName());
+		Iterator<SetorComercial> iColecaoSetor = colecaoSetor.iterator();
+		setorComercial = iColecaoSetor.next();
+
+		return setorComercial;
+	}
+
+	/**
+	 * @param numeroQuadra
+	 * @param idLocalidadeInicial
+	 * @param idLocalidadeFinal
+	 * @param codigoSetorComercialInicial
+	 * @param codigoSetorComercialFinal
+	 * @return
+	 */
+	private Quadra pesquisaQuadra(Integer numeroQuadra, Integer idLocalidadeInicial, Integer idLocalidadeFinal,
+					Integer codigoSetorComercialInicial, Integer codigoSetorComercialFinal){
+
+		Fachada fachada = Fachada.getInstancia();
+		Quadra quadra = null;
+
+		FiltroQuadra filtro = new FiltroQuadra();
+		filtro.adicionarParametro(new Intervalo(FiltroQuadra.ID_LOCALIDADE, idLocalidadeInicial, idLocalidadeFinal));
+		filtro.adicionarParametro(new Intervalo(FiltroQuadra.CODIGO_SETORCOMERCIAL, codigoSetorComercialInicial, codigoSetorComercialFinal));
+		filtro.adicionarParametro(new ParametroSimples(FiltroQuadra.NUMERO_QUADRA, numeroQuadra));
+		filtro.adicionarParametro(new ParametroSimples(FiltroQuadra.INDICADORUSO, ConstantesSistema.INDICADOR_USO_ATIVO));
+
+		Collection<Quadra> colecaoQuadra = fachada.pesquisar(filtro, Quadra.class.getName());
+		if(colecaoQuadra == null || colecaoQuadra.isEmpty()){
+			throw new ActionServletException("atencao.quadra.inexistente");
+		}
+		Iterator<Quadra> iColecaoQuadra = colecaoQuadra.iterator();
+		quadra = iColecaoQuadra.next();
+
+		return quadra;
+	}
+
+	/**
+	 * @param idServicoTipo
+	 * @return
+	 * @throws ControladorException
+	 */
+
+	public boolean comparaServicoTipoSubgrupoCorte(String idServicoTipo) throws ControladorException{
+
+		FiltroServicoTipo filtroServicoTipo = new FiltroServicoTipo();
+		filtroServicoTipo.adicionarParametro(new ParametroSimples(FiltroServicoTipo.ID, idServicoTipo));
+		filtroServicoTipo.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoTipo.SERVICO_TIPO_SUB_GRUPO);
+
+		Collection<ServicoTipo> collectionServicoTipo;
+		try{
+			collectionServicoTipo = getControladorUtil().pesquisar(filtroServicoTipo, ServicoTipo.class.getName());
+		}catch(ControladorException e){
+			throw new ControladorException("erro.sistema", e);
+		}
+
+		ServicoTipo servicoTipo = collectionServicoTipo.iterator().next();
+
+		if(servicoTipo.getServicoTipoSubgrupo().getId() != null
+						&& (servicoTipo.getServicoTipoSubgrupo().getId().equals(ServicoTipoSubgrupo.CORTE))){
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	public BigDecimal recuperarValorHorasTrabalhadasOS(Collection<ManterDadosAtividadesOrdemServicoHelper> colecaoManterDadosAtividadesOrdemServicoHelper) {
+		BigDecimal valorTotal = new BigDecimal(0.0);
+		if(colecaoManterDadosAtividadesOrdemServicoHelper!=null) {
+			for(ManterDadosAtividadesOrdemServicoHelper helper : colecaoManterDadosAtividadesOrdemServicoHelper) {
+				if(helper.getColecaoOSAtividadePeriodoExecucaoHelper()!=null) {
+					for(OSAtividadePeriodoExecucaoHelper periodoHelper : helper.getColecaoOSAtividadePeriodoExecucaoHelper()){
+						if(periodoHelper.getOsAtividadePeriodoExecucao() != null
+										&& periodoHelper.getOsAtividadePeriodoExecucao().getValorAtividadePeriodo() != null){
+							valorTotal = valorTotal.add(periodoHelper.getOsAtividadePeriodoExecucao().getValorAtividadePeriodo());
+						}
+					}
+				}
+				
+			}
+			
+		}
+		return valorTotal;
+	}
+
+	public BigDecimal recuperarValorMateriaisOS(
+					Collection<ManterDadosAtividadesOrdemServicoHelper> colecaoManterDadosAtividadesOrdemServicoHelper){
+
+		BigDecimal valorTotal = new BigDecimal(0.0);
+		if(colecaoManterDadosAtividadesOrdemServicoHelper != null){
+			for(ManterDadosAtividadesOrdemServicoHelper helper : colecaoManterDadosAtividadesOrdemServicoHelper){
+				if(helper.getColecaoOsAtividadeMaterialExecucao() != null){
+					for(OsAtividadeMaterialExecucao materialHelper : helper.getColecaoOsAtividadeMaterialExecucao()){
+						if(materialHelper.getValorMaterial() != null){
+							valorTotal = valorTotal.add(materialHelper.getValorMaterial());
+						}
+					}
+				}
+
+			}
+
+		}
+		return valorTotal;
+	}
+
+	public OrdemServicoProgramacao pesquisarOSProgramacaoAtivaPorOS(Integer idOS) throws ControladorException{
+
+		try{
+		return repositorioOrdemServico.pesquisarOSProgramacaoAtivaPorOS(idOS);
+		}catch(ErroRepositorioException e){
+			throw new ControladorException("erro.sistema", e);
+		}
+	}
+
+	public Integer recuperaQuantidadeDiasUnidade(Integer idOS, Short permiteTramiteIndependente) throws ControladorException{
+
+		try{
+			return repositorioOrdemServico.recuperaQuantidadeDiasUnidade(idOS, permiteTramiteIndependente);
+		}catch(ErroRepositorioException e){
+			throw new ControladorException("erro.sistema", e);
+		}
+	}
+}
+

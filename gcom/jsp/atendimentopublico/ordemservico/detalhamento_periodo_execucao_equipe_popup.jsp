@@ -89,6 +89,13 @@
 															<bean:write name="helper" property="dataFim" formatKey="datehour.format"/>
 														</div>
 													</td>
+													<logic:equal name="permiteCobrarHora" value="1" scope="request">
+													<td bordercolor="#90c7fc">
+							                        	<div align="center">
+															R$ <bean:write name="helper" property="valorAtividadePeriodo" />
+														</div>
+													</td>
+													</logic:equal>
 												</tr>
 											</logic:iterate>
 									</table>

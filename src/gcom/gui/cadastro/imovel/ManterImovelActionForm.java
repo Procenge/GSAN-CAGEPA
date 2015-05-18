@@ -202,6 +202,8 @@ public class ManterImovelActionForm
 
 	private String textoSelecionadoSubCategoria;
 
+	private String indicadorContratoConsumo;
+
 	private String idCategoria;
 
 	private String idSubCategoria;
@@ -253,6 +255,44 @@ public class ManterImovelActionForm
 	private String dataInicioClienteImovelRelacao;
 
 	private String msgAlteracaoInscrPendente;
+
+	private String dataFimClienteImovelRelacao;
+
+	private String dataCorrenteServidor;
+
+	/**
+	 * @return Retorna o campo dataCorrenteServidor.
+	 */
+	public String getDataCorrenteServidor(){
+
+		return dataCorrenteServidor;
+	}
+
+	/**
+	 * @param dataCorrenteServidor
+	 *            O dataCorrenteServidor a ser setado.
+	 */
+	public void setDataCorrenteServidor(String dataCorrenteServidor){
+
+		this.dataCorrenteServidor = dataCorrenteServidor;
+	}
+
+	/**
+	 * @return Retorna o campo indicadorContratoConsumo.
+	 */
+	public String getIndicadorContratoConsumo(){
+
+		return indicadorContratoConsumo;
+	}
+
+	/**
+	 * @param indicadorContratoConsumo
+	 *            O indicadorContratoConsumo a ser setado.
+	 */
+	public void setIndicadorContratoConsumo(String indicadorContratoConsumo){
+
+		this.indicadorContratoConsumo = indicadorContratoConsumo;
+	}
 
 	/**
 	 * @return Retorna a foto da fachada.
@@ -439,6 +479,23 @@ public class ManterImovelActionForm
 	public void setCordenadasUtmY(String cordenadasUtmY){
 
 		this.cordenadasUtmY = cordenadasUtmY;
+	}
+
+	/**
+	 * @return Retorna o campo dataFimClienteImovelRelacao.
+	 */
+	public String getDataFimClienteImovelRelacao(){
+
+		return dataFimClienteImovelRelacao;
+	}
+
+	/**
+	 * @param dataInicioClienteImovelRelacao
+	 *            O dataInicioClienteImovelRelacao a ser setado.
+	 */
+	public void setDataFimClienteImovelRelacao(String dataFimClienteImovelRelacao){
+
+		this.dataFimClienteImovelRelacao = dataFimClienteImovelRelacao;
 	}
 
 	/**

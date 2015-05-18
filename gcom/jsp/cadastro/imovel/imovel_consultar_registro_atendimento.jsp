@@ -77,6 +77,23 @@ function abrirManterRegistroAtendimentoIncompleto(){
 	abrirPopupDeNome('exibirFiltrarRegistroAtendimentoIncompletoAction.do?menu=nao&apareceMenu=nao', 400, 800, '', 'yes');
 }
 	
+function limparImovelTecla() {
+
+	var form = document.forms[0];
+	
+	form.matriculaImovelRegistroAtendimento.value = "";
+
+	if (form.digitoVerificadorImovelRegistroAtendimento != undefined) {
+		form.digitoVerificadorImovelRegistroAtendimento.value = "";
+	}
+		
+	form.situacaoAguaRegistroAtendimento.value = "";
+	form.situacaoEsgotoRegistroAtendimento.value = "";
+	form.tipoLigacao.value = "";
+
+}	
+	
+	
 </script>
 
 
@@ -183,30 +200,72 @@ function abrirManterRegistroAtendimentoIncompleto(){
 										color="#FF0000">*</font></strong></td>
 									<td width="75%" colspan="3"><html:text
 										property="idImovelRegistroAtendimento" maxlength="9" size="9"
-										onkeypress="validaEnterComMensagem(event, 'consultarImovelWizardAction.do?action=exibirConsultarImovelRegistroAtendimentoAction&indicadorNovo=OK&limparForm=S','idImovelRegistroAtendimento','Im&oacute;vel');"/> 
+										onkeypress="validaEnterComMensagem(event, 'consultarImovelWizardAction.do?action=exibirConsultarImovelRegistroAtendimentoAction&indicadorNovo=OK&limparForm=S','idImovelRegistroAtendimento','Im&oacute;vel');"
+										onkeyup="limparImovelTecla();"/> 
 									<a
 										href="javascript:abrirPopup('exibirPesquisarImovelAction.do', 400, 800);">
 									<img width="23" height="21"
 										src="<bean:message key="caminho.imagens"/>pesquisa.gif"
 										border="0" /></a> <logic:present
 										name="idImovelRegistroAtendimentoNaoEncontrado" scope="request">
-										<html:text property="matriculaImovelRegistroAtendimento" size="40"
-											readonly="true"
-											style="background-color:#EFEFEF; border:0; color: #ff0000" />
-
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+											<html:text property="matriculaImovelRegistroAtendimento" size="40"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										</logic:equal>
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+											<html:text property="digitoVerificadorImovelRegistroAtendimento" size="2"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+												
+											<html:text property="matriculaImovelRegistroAtendimento" size="31"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />												
+										</logic:equal>										
+										
 									</logic:present> <logic:notPresent
 										name="idImovelRegistroAtendimentoNaoEncontrado" scope="request">
 										<logic:present name="valorMatriculaImovelRegistroAtendimento"
 											scope="request">
-											<html:text property="matriculaImovelRegistroAtendimento"
-												size="40" readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+												<html:text property="matriculaImovelRegistroAtendimento"
+													size="40" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelRegistroAtendimento"
+													size="2" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+													
+												<html:text property="matriculaImovelRegistroAtendimento"
+													size="31" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />													
+											</logic:equal>											
+											
 										</logic:present>
 										<logic:notPresent name="valorMatriculaImovelRegistroAtendimento"
 											scope="request">
-											<html:text property="matriculaImovelRegistroAtendimento"
-												size="40" readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">											
+												<html:text property="matriculaImovelRegistroAtendimento"
+													size="40" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelRegistroAtendimento"
+													size="2" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+																																			
+												<html:text property="matriculaImovelRegistroAtendimento"
+													size="31" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>											
+												
 										</logic:notPresent>
 									</logic:notPresent> <a href="javascript:limparForm();"> <img
 										src="<bean:message key="caminho.imagens"/>limparcampo.gif"
@@ -226,6 +285,19 @@ function abrirManterRegistroAtendimentoIncompleto(){
 										property="situacaoEsgotoRegistroAtendimento" readonly="true"
 										style="background-color:#EFEFEF; border:0; color: #000000"
 										size="15" maxlength="15" /></td>
+								</tr>	
+								</tr>
+									<tr>
+									<td height="10">
+										<div class="style9"><strong>Tipo de Ligação:</strong></div>
+									</td>
+									<td><html:text property="tipoLigacao"
+										readonly="true"
+										style="background-color:#EFEFEF; border:0; color: #000000"
+										size="15" maxlength="15" />
+									</td>
+									<td width="90"></td>
+									<td width="120"></td>
 								</tr>								
 							</table>
 							</td>
@@ -404,8 +476,8 @@ function abrirManterRegistroAtendimentoIncompleto(){
 								<tr bgcolor="#99CCFF">
 									<td height="18" colspan="4" align="center">
 										<span class="style2"> 
-											<a href="javascript:extendeTabela('Comentarios',true);" /> 
-												<b>Comentários de Atendimento</b>
+											<a href="javascript:extendeTabela('Comentarios',true);"> 
+												<b>Comentários do Imóvel</b>
 											</a>
 										</span>
 									</td>
@@ -417,8 +489,8 @@ function abrirManterRegistroAtendimentoIncompleto(){
 								<tr bgcolor="#99CCFF">
 									<td height="18" colspan="4" align="center">
 										<span class="style2"> 
-											<a href="javascript:extendeTabela('Comentarios',false);" /> 
-												<b>Comentários de Atendimento</b>
+											<a href="javascript:extendeTabela('Comentarios',false);"> 
+												<b>Comentários do Imóvel</b>
 											</a>
 										</span>
 									</td>
@@ -427,39 +499,127 @@ function abrirManterRegistroAtendimentoIncompleto(){
 									<td width="50%" bgcolor="#90c7fc">
 										<div align="center"><strong>Comentário</strong></div>
 									</td>
+									
+									<td width="12%" bgcolor="#90c7fc">
+										<div align="center"><strong>Sequencial Inc.</strong></div>
+									</td>
 		
-									<td width="20%" bgcolor="#90c7fc">
+									<td width="12%" bgcolor="#90c7fc">
 										<div align="center"><strong>Data Inclusão</strong></div>
 									</td>
 								
-									<td width="30%" bgcolor="#90c7fc">
+									<td width="26%" bgcolor="#90c7fc">
 										<div align="center"><strong>Usuário</strong></div>
 									</td>
 								</tr>
-								</table>
-								<div style="width: 100%; height: 100; overflow: auto;">
-									<table width="100%" border="0" bgcolor="#99CCFF">
-										<logic:present name="colecaoImovelComentarioHelper">
-										<%int cont = 0;%>
-										<logic:iterate name="colecaoImovelComentarioHelper" id="imovelComentarioHelper">
-											<%cont = cont + 1;
-											if (cont % 2 == 0) {%>
-											<tr bgcolor="#cbe5fe">
-												<%} else {
-			
-											%>
-											<tr bgcolor="#FFFFFF">
-											<%}%>
-												<td width="50%" align="left">${imovelComentarioHelper.descricao}</td>
-												<td width="20%" align="center">${imovelComentarioHelper.ultimaAlteracao}</td>
-												<td width="30%" align="center">${imovelComentarioHelper.usuario}</td>		
-											</tr>
-										</logic:iterate>
-										</logic:present>
-									</table>
-								</div>
+								<logic:present name="colecaoImovelComentarioHelper">
+								<%int cont = 0;%>
+								<logic:iterate name="colecaoImovelComentarioHelper" id="imovelComentarioHelper">
+									<%cont = cont + 1;
+									if (cont % 2 == 0) {%>
+									<tr bgcolor="#cbe5fe">
+										<%} else {
+	
+									%>
+									<tr bgcolor="#FFFFFF">
+									<%}%>
+										<td width="50%" align="left">${imovelComentarioHelper.descricao}</td>
+										<td width="12%" align="center">${imovelComentarioHelper.sequencialInclusao}</td>
+										<td width="12%" align="center">${imovelComentarioHelper.dataInclusao}</td>
+										<td width="26%" align="center">${imovelComentarioHelper.usuario}</td>		
+									</tr>
+								</logic:iterate>
+								</logic:present>
+									
+							</table>
+						</div>
 					</td>
 				</tr>
+				
+				
+				<tr>
+					<td>
+						 &nbsp;
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div id="layerHideAtendimentos" style="display:block">
+							<table width="100%" border="0" bgcolor="#99CCFF">
+								<tr bgcolor="#99CCFF">
+									<td height="18" colspan="4" align="center">
+										<span class="style2"> 
+											<a href="javascript:extendeTabela('Atendimentos',true);" /> 
+												<b>Atendimentos</b>
+											</a>
+										</span>
+									</td>
+								</tr>
+							</table>
+						</div>
+						<div id="layerShowAtendimentos" style="display:none">
+							<table width="100%" border="0" bgcolor="#99CCFF">
+								<tr bgcolor="#99CCFF">
+									<td height="18" colspan="4" align="center">
+										<span class="style2"> 
+											<a href="javascript:extendeTabela('Atendimentos',false);" /> 
+												<b>Atendimentos</b>
+											</a>
+										</span>
+									</td>
+								</tr>
+								<tr bordercolor="#FFFFFF" bgcolor="#79BBFD"> 
+	                  				<td width="32%"><div align="center"><strong>Procedimento de Atedimento</strong></div></td>
+	                  				<td width="32%"><div align="center"><strong>Funcionalidade</strong></div></td>
+	                  				<td width="18%"><div align="center"><strong>Usuário</strong></div></td>
+	                  				<td width="18%"><div align="center"><strong>Data Atendimento</strong></div></td>
+	                			</tr>
+							</table>
+							<div style="width: 100%; height: 100; overflow: auto;">
+								<table width="100%" align="center" bgcolor="#99CCFF">
+									<c:set var="count" value="0"/>
+										<logic:present name="ConsultarImovelActionForm" property="colecaoAtendimento">
+											<logic:iterate id="atendimento" name="ConsultarImovelActionForm" property="colecaoAtendimento" type="gcom.cadastro.atendimento.Atendimento" scope="session">
+				  			                	<c:set var="count" value="${count+1}"/>
+								                	<c:choose>
+								                    	<c:when test="${count%2 == '1'}">
+								                        	<tr bgcolor="#FFFFFF">
+								                        </c:when>
+								                        <c:otherwise>
+								                        	<tr bgcolor="#cbe5fe">
+								                        </c:otherwise>
+								                	</c:choose>
+											        <td bordercolor="#90c7fc" width="32%">
+											        	<div align="center">
+									                    	<a href="javascript:abrirPopup('exibirConsultarDadosAtendimentoPopupAction.do?idAtendimento='+${atendimento.id}, 400, 800);">
+										                    	<bean:write name="atendimento" property="atendimentoProcedimento.descricao"/>
+											                </a>											        	
+											            </div>
+											        </td>
+											        <td bordercolor="#90c7fc" width="32%">
+											        	<div align="center">
+											            	<bean:write name="atendimento" property="atendimentoProcedimento.funcionalidade.descricao"/>
+											           	</div>
+											       	</td>
+											      	<td bordercolor="#90c7fc" width="18%">
+											         	<div align="center">
+											         		<bean:write name="atendimento" property="usuario.login"/>
+											          	</div>											      	
+											       	</td>
+											       	<td bordercolor="#90c7fc" width="18%">
+											         	<div align="center">								                        
+									                      	<bean:write name="atendimento" property="dataInicioAtendimento" format="dd/MM/yyyy HH:mm"/>
+											         	</div>											       	
+											     	</td>
+											    </tr>
+									      	</logic:iterate>
+								      	</logic:present>
+						       	</table>
+					       	</div>
+						</div>
+					</td>
+				</tr>				
+				
 			</table>
 		<p>&nbsp;</p>
 		

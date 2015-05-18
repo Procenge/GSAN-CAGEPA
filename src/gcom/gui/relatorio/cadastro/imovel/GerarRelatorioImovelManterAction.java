@@ -1207,6 +1207,13 @@ public class GerarRelatorioImovelManterAction
 			relatorioManterImovelOutrosCriterios.addParametro("consumoMinimoFixadoEsgotoFinal", imovelOutrosCriteriosActionForm
 							.getConsumoMinimoFixadoEsgotoFinal());
 
+			// consumo Fixado Esgoto do Poço Inicial
+			relatorioManterImovelOutrosCriterios.addParametro("consumoFixadoEsgotoPocoInicial",
+							imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoInicial());
+			// consumo Fixado Esgoto do Poço Final
+			relatorioManterImovelOutrosCriterios.addParametro("consumoFixadoEsgotoPocoFinal",
+							imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoFinal());
+
 			// intervalo Percentual Esgoto Inicial
 			relatorioManterImovelOutrosCriterios.addParametro("intervaloPercentualEsgotoInicial", imovelOutrosCriteriosActionForm
 							.getIntervaloPercentualEsgotoInicial());
@@ -1365,7 +1372,9 @@ public class GerarRelatorioImovelManterAction
 							imovelOutrosCriteriosActionForm.getSequencialRotaInicial(), imovelOutrosCriteriosActionForm
 											.getSequencialRotaFinal(), imovelOutrosCriteriosActionForm.getSegmentoInicial(),
 							imovelOutrosCriteriosActionForm.getSegmentoFinal(), imovelOutrosCriteriosActionForm.getSubloteInicial(),
-							imovelOutrosCriteriosActionForm.getSubloteFinal());
+							imovelOutrosCriteriosActionForm.getSubloteFinal(),
+							imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoInicial(),
+							imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoFinal());
 
 			if(quantidadeRegistros == 0){
 				throw new ActionServletException("atencao.filtro_consumo_tarifa_sem_records");

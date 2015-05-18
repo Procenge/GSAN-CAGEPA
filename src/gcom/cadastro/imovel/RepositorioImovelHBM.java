@@ -942,60 +942,60 @@ public class RepositorioImovelHBM
 		SQLQuery sqlQuery = null;
 
 		try{
-			
-			if(construirObjetoCompleto) {
-				
+
+			if(construirObjetoCompleto){
+
 				consulta.append("select c.catg_id, c.catg_dscategoria, c.catg_nnconsumoestouro, ");
 				// 0,1,2,
-				
+
 				consulta.append("c.catg_nnvezesmediaestouro, sum(isb.imsb_qteconomia) as qteconomia, ");
 				// 3,4
-				
+
 				consulta.append("isb.imov_id, ");
 				// 5
-				
+
 				consulta.append("c.catg_nnconsumoalto, ");
 				// 6
-				
+
 				consulta.append("c.catg_nnmediabaixoconsumo, ");
 				// 7
-				
+
 				consulta.append("c.catg_nnvezesmediaaltoconsumo, ");
 				// 8
-				
+
 				consulta.append("c.catg_pcmediabaixoconsumo, ");
 				// 9
-				
+
 				consulta.append("c.catg_dsabreviado, ");
 				// 10
-				
+
 				consulta.append("c.catg_nnconsumomaximoec, ");
 				// 11
-				
+
 				consulta.append("c.catg_iccobrancaacrescimos, ");
 				// 12
-				
+
 				consulta.append("ctipo.cgtp_id, ");
 				// 13
-				
+
 				consulta.append("c.catg_nnconsumomedioecomes, ");
 				// 14
-				
+
 				consulta.append("c.catg_nnconsumominimo, ");
 				// 15
-				
+
 				consulta.append("c.catg_nnmaxeconomiasvalidacao, ");
 				// 16
-				
+
 				consulta.append("c.catg_nnconsumoviradahd, ");
 				// 17
-				
+
 				consulta.append("c.catg_nnvezesmediaviradahd, ");
 				// 18
-				
+
 				consulta.append("c.catg_icvalidanormalviradahd ");
 				// 19
-				
+
 				consulta.append("from imovel_subcategoria isb ");
 				consulta.append("inner join subcategoria sb on sb.scat_id = isb.scat_id ");
 				consulta.append("inner join categoria c on c.catg_id = sb.catg_id ");
@@ -1007,7 +1007,7 @@ public class RepositorioImovelHBM
 				consulta.append("c.catg_nnconsumomaximoec, c.catg_iccobrancaacrescimos, ctipo.cgtp_id, c.catg_nnconsumomedioecomes, ");
 				consulta.append("c.catg_nnconsumominimo, c.catg_nnmaxeconomiasvalidacao, c.catg_nnconsumoviradahd, ");
 				consulta.append("c.catg_nnvezesmediaviradahd, c.catg_icvalidanormalviradahd order by c.catg_id ");
-				
+
 				sqlQuery = session.createSQLQuery(consulta.toString()).addScalar("catg_id", Hibernate.INTEGER) //
 								.addScalar("catg_dscategoria", Hibernate.STRING) //
 								.addScalar("catg_nnconsumoestouro", Hibernate.INTEGER) //
@@ -1028,9 +1028,9 @@ public class RepositorioImovelHBM
 								.addScalar("catg_nnconsumoviradahd", Hibernate.INTEGER) //
 								.addScalar("catg_nnvezesmediaviradahd", Hibernate.INTEGER) //
 								.addScalar("catg_icvalidanormalviradahd", Hibernate.SHORT);
-				
+
 			}else{
-				
+
 				consulta.append("select isb.catg_id, sum(isb.imsb_qteconomia) as qteconomia ");
 				consulta.append("from imovel_subcategoria isb ");
 				consulta.append("where isb.imov_id = :imovelId ");
@@ -1043,7 +1043,6 @@ public class RepositorioImovelHBM
 			}
 
 			retorno = sqlQuery.setInteger("imovelId", imovel.intValue()).list();
-
 
 		}catch(HibernateException e){
 
@@ -1075,8 +1074,7 @@ public class RepositorioImovelHBM
 		StringBuffer consulta = new StringBuffer();
 
 		try{
-			consulta
-							.append("select c.id, c.descricao, c.consumoEstouro, ")
+			consulta.append("select c.id, c.descricao, c.consumoEstouro, ")
 							.append("c.vezesMediaEstouro, sum(isb.quantidadeEconomia), ")
 							.append("isb.comp_id.conta.id, ")
 							.append("c.consumoAlto, ")
@@ -1089,8 +1087,7 @@ public class RepositorioImovelHBM
 							.append("inner join isb.comp_id.categoria c ")
 							.append("where isb.comp_id.conta.id = :contaId ")
 							// + "inner join sb.categoria c "
-							.append(
-											"group by c.id, c.descricao, c.consumoEstouro, c.vezesMediaEstouro, isb.comp_id.conta.id, c.consumoAlto, ")
+							.append("group by c.id, c.descricao, c.consumoEstouro, c.vezesMediaEstouro, isb.comp_id.conta.id, c.consumoAlto, ")
 							.append("c.mediaBaixoConsumo, c.vezesMediaAltoConsumo, c.porcentagemMediaBaixoConsumo, c.descricaoAbreviada");
 			// + " having isb.comp_id.conta.id = :contaId ";
 
@@ -1793,8 +1790,7 @@ public class RepositorioImovelHBM
 						imovelRelatorioHelperTarifa
 										.setNumeroMesesAdesao(arrayTarifaEconomia[3] != null
 														&& !arrayTarifaEconomia[3].toString().trim().equalsIgnoreCase("") ? ((Short) arrayTarifaEconomia[3])
-														.shortValue()
-														: 0);
+														.shortValue() : 0);
 
 						imovelRelatorioHelperTarifa
 										.setConsumoCelpe(arrayTarifaEconomia[4] != null
@@ -1826,8 +1822,7 @@ public class RepositorioImovelHBM
 						imovelRelatorioHelperTarifa
 										.setNumeroRecadastramento(arrayTarifaEconomia[10] != null
 														&& !arrayTarifaEconomia[10].toString().trim().equalsIgnoreCase("") ? ((Short) arrayTarifaEconomia[10])
-														.shortValue()
-														: 0);
+														.shortValue() : 0);
 
 						tarifasEconomias.add(imovelRelatorioHelperTarifa);
 
@@ -4190,8 +4185,8 @@ public class RepositorioImovelHBM
 					consultaIteracao = consultaIteracao + item + ",";
 					if(qtdIteracoes == 100){
 						consultaIteracao = consultaIteracao.substring(0, consultaIteracao.length() - 1) + " ) and ";
-						retorno.addAll(session.createQuery(Util.formatarHQL(consultaIteracao, 4)).setShort("idExclusao",
-										Imovel.IMOVEL_EXCLUIDO).list());
+						retorno.addAll(session.createQuery(Util.formatarHQL(consultaIteracao, 4))
+										.setShort("idExclusao", Imovel.IMOVEL_EXCLUIDO).list());
 						qtdIteracoes = 0;
 						consultaIteracao = consulta + " imovel.id in (";
 					}
@@ -4469,8 +4464,8 @@ public class RepositorioImovelHBM
 
 			+ "where imovel.id = :idImovel and (imovel.indicadorExclusao is null OR imovel.indicadorExclusao <> :idExclusao)";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setShort("idExclusao",
-							Imovel.IMOVEL_EXCLUIDO).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setShort("idExclusao", Imovel.IMOVEL_EXCLUIDO).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -4810,6 +4805,18 @@ public class RepositorioImovelHBM
 							+ intervaloMediaMinimaHidrometroInicial + "   and " + intervaloMediaMinimaHidrometroFinal + "	and mt.id = "
 							+ medicaoTipo + "	and la.numeroConsumoMinimoAgua " + "	between " + intervaloMediaMinimaImovelInicio + "   and"
 							+ intervaloMediaMinimaImovelFinal + ") and";
+		}
+
+		// Consumo Fixado de Esgoto do Poço
+		if(filtrarImovelOutrosCriteriosHelper.getConsumoFixadoEsgotoPocoInicial() != null
+						&& !filtrarImovelOutrosCriteriosHelper.getConsumoFixadoEsgotoPocoInicial().equals("")
+						&& filtrarImovelOutrosCriteriosHelper.getConsumoFixadoEsgotoPocoFinal() != null
+						&& !filtrarImovelOutrosCriteriosHelper.getConsumoFixadoEsgotoPocoFinal().equals("")){
+
+			composicaoHql += " im.ligacaoEsgoto.numeroConsumoFixoPoco >= "
+							+ filtrarImovelOutrosCriteriosHelper.getConsumoFixadoEsgotoPocoInicial()
+							+ " and im.ligacaoEsgoto.numeroConsumoFixoPoco <= "
+							+ filtrarImovelOutrosCriteriosHelper.getConsumoFixadoEsgotoPocoFinal() + " and";
 		}
 
 		if(numeroPontosInicial != null && !numeroPontosInicial.trim().equalsIgnoreCase("") && numeroPontosFinal != null
@@ -5240,8 +5247,8 @@ public class RepositorioImovelHBM
 
 			Integer retorno = null;
 
-			if(!Util.isVazioOuBranco(((Number) session.createQuery(Util.formatarHQL(consulta, 4)).setShort("idExclusao",
-							Imovel.IMOVEL_EXCLUIDO).uniqueResult()))){
+			if(!Util.isVazioOuBranco(((Number) session.createQuery(Util.formatarHQL(consulta, 4))
+							.setShort("idExclusao", Imovel.IMOVEL_EXCLUIDO).uniqueResult()))){
 				retorno = ((Number) session.createQuery(Util.formatarHQL(consulta, 4)).setShort("idExclusao", Imovel.IMOVEL_EXCLUIDO)
 								.uniqueResult()).intValue();
 			}
@@ -5583,8 +5590,8 @@ public class RepositorioImovelHBM
 			consulta.append("inner join ct.imovel im ");
 			consulta.append("where im.id = :imovelId and ct.referencia = :anoMesReferencia");
 
-			retorno = session.createQuery(consulta.toString()).setInteger("imovelId", imovelId.intValue()).setInteger("anoMesReferencia",
-							anoMesReferencia).setMaxResults(1).uniqueResult();
+			retorno = session.createQuery(consulta.toString()).setInteger("imovelId", imovelId.intValue())
+							.setInteger("anoMesReferencia", anoMesReferencia).setMaxResults(1).uniqueResult();
 		}catch(HibernateException e){
 
 			// levanta a exceção para a próxima camada
@@ -6708,7 +6715,8 @@ public class RepositorioImovelHBM
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String cdRotaInicial,
 					String cdRotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal){
+					String segmentoFinal, String subloteInicial, String subloteFinal, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal){
 
 		// gerencia regional
 		if(idGerenciaRegional != null && !idGerenciaRegional.equals("")
@@ -6840,6 +6848,14 @@ public class RepositorioImovelHBM
 			query.setInteger("consumoMinimoFinalEsgoto", Integer.valueOf(consumoMinimoFinalEsgoto).intValue());
 		}
 
+		// consumo fixado esgoto do poço inicial e final
+		if(consumoFixadoEsgotoPocoInicial != null && !consumoFixadoEsgotoPocoInicial.toString().equals("")
+						&& consumoFixadoEsgotoPocoFinal != null && !consumoFixadoEsgotoPocoFinal.toString().equals("")){
+
+			query.setInteger("consumoFixadoEsgotoPocoInicial", Integer.valueOf(consumoFixadoEsgotoPocoInicial).intValue());
+			query.setInteger("consumoFixadoEsgotoPocoFinal", Integer.valueOf(consumoFixadoEsgotoPocoFinal).intValue());
+		}
+
 		// percentual esgoto inicial e final
 		if((intervaloValorPercentualEsgotoInicial != null && !intervaloValorPercentualEsgotoInicial.equals("") && !intervaloValorPercentualEsgotoInicial
 						.trim().equalsIgnoreCase(Integer.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO).toString()))
@@ -6862,14 +6878,12 @@ public class RepositorioImovelHBM
 		}
 
 		// Situacao Ligacao Agua
-		if(idSituacaoLigacaoAgua != null
- && !idSituacaoLigacaoAgua.equals("")){
+		if(idSituacaoLigacaoAgua != null && !idSituacaoLigacaoAgua.equals("")){
 			query.setParameterList("idSituacaoLigacaoAgua", idSituacaoLigacaoAgua);
 		}
 
 		// situação ligação de esgoto
-		if(idSituacaoLigacaoEsgoto != null
- && !idSituacaoLigacaoEsgoto.equals("")){
+		if(idSituacaoLigacaoEsgoto != null && !idSituacaoLigacaoEsgoto.equals("")){
 			query.setParameterList("idSituacaoLigacaoEsgoto", idSituacaoLigacaoEsgoto);
 		}
 
@@ -7109,7 +7123,8 @@ public class RepositorioImovelHBM
 	String numeroMoradoresFinal, String idAreaConstruidaFaixa,
 
 	String idUnidadeNegocio, Integer relatorio, String cdRotaInicial, String cdRotaFinal, String sequencialRotaInicial,
-					String sequencialRotaFinal, String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal)
+					String sequencialRotaFinal, String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal)
 
 	throws ErroRepositorioException{
 
@@ -7289,7 +7304,8 @@ public class RepositorioImovelHBM
 							numeroMoradoresInicial, numeroMoradoresFinal,
 
 							idAreaConstruidaFaixa, idUnidadeNegocio, relatorio, cdRotaInicial, cdRotaFinal, sequencialRotaInicial,
-											sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+											sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
+											consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 			/*
 			 * # COLOCANDO O VALOR NAS CONDIÇÕES#
@@ -7348,7 +7364,7 @@ public class RepositorioImovelHBM
 			numeroMoradoresFinal, idAreaConstruidaFaixa,
 
 			idUnidadeNegocio, cdRotaInicial, cdRotaFinal, sequencialRotaInicial, sequencialRotaFinal, segmentoInicial, segmentoFinal,
-							subloteInicial, subloteFinal);
+							subloteInicial, subloteFinal, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 			retorno = (Integer) query
 
@@ -7435,7 +7451,8 @@ public class RepositorioImovelHBM
 	String numeroMoradoresFinal, String idAreaConstruidaFaixa,
 
 	String idUnidadeNegocio, Integer relatorio, String cdRotaInicial, String cdRotaFinal, String sequencialRotaInicial,
-					String sequencialRotaFinal, String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal){
+					String sequencialRotaFinal, String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal){
 
 		String consulta = "";
 
@@ -7782,6 +7799,14 @@ public class RepositorioImovelHBM
 			consulta = consulta
 
 							+ " ligacao_esgoto.lesg_nnconsumominimoesgoto >= :consumoMinimoInicialEsgoto and ligacao_esgoto.lesg_nnconsumominimoesgoto <= :consumoMinimoFinalEsgoto  and  ";
+
+		}
+
+		// consumo fixado esgoto do poço inicial e final
+		if(consumoFixadoEsgotoPocoInicial != null && !consumoFixadoEsgotoPocoInicial.toString().equals("")
+						&& consumoFixadoEsgotoPocoFinal != null && !consumoFixadoEsgotoPocoFinal.toString().equals("")){
+
+			consulta += " ligacao_esgoto.lesg_nnconsumofixopoco >= :consumoFixadoEsgotoPocoInicial and ligacao_esgoto.lesg_nnconsumofixopoco <= :consumoFixadoEsgotoPocoFinal  and  ";
 
 		}
 
@@ -8531,8 +8556,8 @@ public class RepositorioImovelHBM
 	String numeroMoradoresFinal, String idAreaConstruidaFaixa,
 
 	String idUnidadeNegocio, String cdRotaInicial, String cdRotaFinal, String sequencialRotaInicial, String sequencialRotaFinal,
-					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal)
-					throws ErroRepositorioException{
+					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal) throws ErroRepositorioException{
 
 		Collection retorno = null;
 
@@ -8669,11 +8694,12 @@ public class RepositorioImovelHBM
 							"unidadeNegocio.uneg_id, "
 
 							+ // nome unidade negocio
-							"unidadeNegocio.uneg_nmunidadenegocio "
+							"unidadeNegocio.uneg_nmunidadenegocio, "
 
-							+
+							+ // consumo fixado poço
+							"ligacao_esgoto.lesg_nnconsumofixopoco "
 
-							// From
+							+ // From
 							"from imovel_subcategoria imovelSubcategoria "
 							+ "inner join imovel on imovelSubcategoria.imov_id = imovel.imov_id "
 							+ "inner join localidade on imovel.loca_id = localidade.loca_id "
@@ -8800,7 +8826,8 @@ public class RepositorioImovelHBM
 											idClienteTipo, idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal,
 											numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa, idUnidadeNegocio,
 											ConstantesSistema.GERAR_RELATORIO_IMOVEL, cdRotaInicial, cdRotaFinal, sequencialRotaInicial,
-											sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+											sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
+											consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 			/*
 			 * # COLOCANDO O VALOR NAS CONDIÇÕES#
@@ -8819,57 +8846,61 @@ public class RepositorioImovelHBM
 							quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 							idAreaConstruidaFaixa, idUnidadeNegocio, cdRotaInicial, cdRotaFinal, sequencialRotaInicial,
-							sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+							sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
+							consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
-			retorno = query.addScalar("greg_id", Hibernate.INTEGER).addScalar("greg_nmabreviado", Hibernate.STRING).addScalar("loca_id",
-							Hibernate.INTEGER).addScalar("loca_nmlocalidade", Hibernate.STRING).addScalar("imov_id", Hibernate.INTEGER)
-							.addScalar("imov_qteconomia", Hibernate.SHORT).addScalar("stcm_cdsetorcomercial", Hibernate.INTEGER).addScalar(
-											"stcm_nmsetorcomercial", Hibernate.STRING).addScalar("qdra_nnquadra", Hibernate.INTEGER)
-							.addScalar("imov_nnlote", Hibernate.SHORT).addScalar("imov_nnsublote", Hibernate.SHORT).addScalar(
-											"last_dsabreviado", Hibernate.STRING).addScalar("lest_dsabreviado", Hibernate.STRING)
-							.addScalar("lesg_pcesgoto", Hibernate.BIG_DECIMAL).addScalar("lesg_dtligacao", Hibernate.DATE).addScalar(
-											"lagu_dtligacaoagua", Hibernate.DATE).addScalar("idClienteUsuario", Hibernate.INTEGER)
-							.addScalar("nomeClienteUsuario", Hibernate.STRING).addScalar("idClienteResponsavel", Hibernate.INTEGER)
-							.addScalar("nomeClienteResponsavel", Hibernate.STRING).addScalar("logr_nmlogradouro", Hibernate.STRING)
-							.addScalar("lgtp_dslogradourotipo", Hibernate.STRING).addScalar("lgtt_dslogradourotitulo", Hibernate.STRING)
-							.addScalar("cep_cdcep", Hibernate.INTEGER).addScalar("edrf_dsenderecoreferencia", Hibernate.STRING).addScalar(
-											"imov_dscomplementoendereco", Hibernate.STRING).addScalar("imov_nnimovel", Hibernate.STRING)
-							.addScalar("bair_nmbairro", Hibernate.STRING).addScalar("muni_nmmunicipio", Hibernate.STRING).addScalar(
-											"unfe_dsufsigla", Hibernate.STRING).addScalar("imov_icimovelcondominio", Hibernate.INTEGER)
+			retorno = query.addScalar("greg_id", Hibernate.INTEGER).addScalar("greg_nmabreviado", Hibernate.STRING)
+							.addScalar("loca_id", Hibernate.INTEGER).addScalar("loca_nmlocalidade", Hibernate.STRING)
+							.addScalar("imov_id", Hibernate.INTEGER).addScalar("imov_qteconomia", Hibernate.SHORT)
+							.addScalar("stcm_cdsetorcomercial", Hibernate.INTEGER).addScalar("stcm_nmsetorcomercial", Hibernate.STRING)
+							.addScalar("qdra_nnquadra", Hibernate.INTEGER).addScalar("imov_nnlote", Hibernate.SHORT)
+							.addScalar("imov_nnsublote", Hibernate.SHORT).addScalar("last_dsabreviado", Hibernate.STRING)
+							.addScalar("lest_dsabreviado", Hibernate.STRING).addScalar("lesg_pcesgoto", Hibernate.BIG_DECIMAL)
+							.addScalar("lesg_dtligacao", Hibernate.DATE).addScalar("lagu_dtligacaoagua", Hibernate.DATE)
+							.addScalar("idClienteUsuario", Hibernate.INTEGER).addScalar("nomeClienteUsuario", Hibernate.STRING)
+							.addScalar("idClienteResponsavel", Hibernate.INTEGER).addScalar("nomeClienteResponsavel", Hibernate.STRING)
+							.addScalar("logr_nmlogradouro", Hibernate.STRING).addScalar("lgtp_dslogradourotipo", Hibernate.STRING)
+							.addScalar("lgtt_dslogradourotitulo", Hibernate.STRING).addScalar("cep_cdcep", Hibernate.INTEGER)
+							.addScalar("edrf_dsenderecoreferencia", Hibernate.STRING)
+							.addScalar("imov_dscomplementoendereco", Hibernate.STRING).addScalar("imov_nnimovel", Hibernate.STRING)
+							.addScalar("bair_nmbairro", Hibernate.STRING).addScalar("muni_nmmunicipio", Hibernate.STRING)
+							.addScalar("unfe_dsufsigla", Hibernate.STRING).addScalar("imov_icimovelcondominio", Hibernate.INTEGER)
 							.addScalar("imov_nnmorador", Hibernate.INTEGER).addScalar("imov_idimovelcondominio", Hibernate.INTEGER)
 							.addScalar("imov_idimovelprincipal", Hibernate.INTEGER).addScalar("imov_nnpontosutilizacao", Hibernate.INTEGER)
 							.addScalar("iper_dsimovelperfil", Hibernate.STRING).addScalar("acon_nnmaiorfaixa", Hibernate.INTEGER)
 							.addScalar("acon_nnmenorfaixa", Hibernate.INTEGER).addScalar("imov_nnareaconstruida", Hibernate.BIG_DECIMAL)
 							.addScalar("pcal_dspavimentocalcada", Hibernate.STRING).addScalar("prua_dspavimentorua", Hibernate.STRING)
-							.addScalar("depj_dsdespejo", Hibernate.STRING).addScalar("resv_vomenorfaixa", Hibernate.BIG_DECIMAL).addScalar(
-											"resv_vomaiorfaixa", Hibernate.BIG_DECIMAL).addScalar("imov_voreservatoriosuperior",
-											Hibernate.BIG_DECIMAL).addScalar("resv_vomenorfaixa", Hibernate.BIG_DECIMAL).addScalar(
-											"resv_vomaiorfaixa", Hibernate.BIG_DECIMAL).addScalar("imov_voreservatorioinferior",
-											Hibernate.BIG_DECIMAL).addScalar("pisc_vomenorfaixa", Hibernate.BIG_DECIMAL).addScalar(
-											"pisc_vomaiorfaixa", Hibernate.BIG_DECIMAL).addScalar("imov_vopiscina", Hibernate.BIG_DECIMAL)
-							.addScalar("poco_dspocotipo", Hibernate.STRING).addScalar("descLigAguaDiametroAgua", Hibernate.STRING)
-							.addScalar("descLigAguaMaterialAgua", Hibernate.STRING).addScalar("descLigEsgotoDiametroEsgoto",
-											Hibernate.STRING).addScalar("descLigESgotoMaterialEsgoto", Hibernate.STRING).addScalar(
-											"lesg_nnconsumominimoesgoto", Hibernate.INTEGER).addScalar("lesg_pccoleta",
-											Hibernate.BIG_DECIMAL).addScalar("lesg_pcesgoto", Hibernate.BIG_DECIMAL).addScalar(
-											"idHidrometroAgua", Hibernate.STRING).addScalar("anoFabricancaoHidrometroAgua",
-											Hibernate.INTEGER).addScalar("descHidromCapacidadeAgua", Hibernate.STRING).addScalar(
-											"descHidromMarcaAgua", Hibernate.STRING).addScalar("descHidromDiametroAgua", Hibernate.STRING)
-							.addScalar("descHidromTipoAgua", Hibernate.STRING).addScalar("dataHidromInstHistoricoAgua", Hibernate.DATE)
+							.addScalar("depj_dsdespejo", Hibernate.STRING).addScalar("resv_vomenorfaixa", Hibernate.BIG_DECIMAL)
+							.addScalar("resv_vomaiorfaixa", Hibernate.BIG_DECIMAL)
+							.addScalar("imov_voreservatoriosuperior", Hibernate.BIG_DECIMAL)
+							.addScalar("resv_vomenorfaixa", Hibernate.BIG_DECIMAL).addScalar("resv_vomaiorfaixa", Hibernate.BIG_DECIMAL)
+							.addScalar("imov_voreservatorioinferior", Hibernate.BIG_DECIMAL)
+							.addScalar("pisc_vomenorfaixa", Hibernate.BIG_DECIMAL).addScalar("pisc_vomaiorfaixa", Hibernate.BIG_DECIMAL)
+							.addScalar("imov_vopiscina", Hibernate.BIG_DECIMAL).addScalar("poco_dspocotipo", Hibernate.STRING)
+							.addScalar("descLigAguaDiametroAgua", Hibernate.STRING).addScalar("descLigAguaMaterialAgua", Hibernate.STRING)
+							.addScalar("descLigEsgotoDiametroEsgoto", Hibernate.STRING)
+							.addScalar("descLigESgotoMaterialEsgoto", Hibernate.STRING)
+							.addScalar("lesg_nnconsumominimoesgoto", Hibernate.INTEGER).addScalar("lesg_pccoleta", Hibernate.BIG_DECIMAL)
+							.addScalar("lesg_pcesgoto", Hibernate.BIG_DECIMAL).addScalar("idHidrometroAgua", Hibernate.STRING)
+							.addScalar("anoFabricancaoHidrometroAgua", Hibernate.INTEGER)
+							.addScalar("descHidromCapacidadeAgua", Hibernate.STRING).addScalar("descHidromMarcaAgua", Hibernate.STRING)
+							.addScalar("descHidromDiametroAgua", Hibernate.STRING).addScalar("descHidromTipoAgua", Hibernate.STRING)
+							.addScalar("dataHidromInstHistoricoAgua", Hibernate.DATE)
 							.addScalar("descHidromLocalInstAgua", Hibernate.STRING).addScalar("descHidromProtecaoAgua", Hibernate.STRING)
 							.addScalar("indHidromInstHistoricoAgua", Hibernate.INTEGER).addScalar("idHidrometroEsgoto", Hibernate.STRING)
-							.addScalar("anoFabricacaoHidrometroEsgoto", Hibernate.INTEGER).addScalar("descHidromCapacidadeEsgoto",
-											Hibernate.STRING).addScalar("descHidromMarcaEsgoto", Hibernate.STRING).addScalar(
-											"descHidromDiametroEsgoto", Hibernate.STRING).addScalar("descHidromTipoEsgoto",
-											Hibernate.STRING).addScalar("dataHidromInstHistoricoEsgoto", Hibernate.DATE).addScalar(
-											"descHidtromLocalInstEsgoto", Hibernate.STRING).addScalar("descHidromProtecaoEsgoto",
-											Hibernate.STRING).addScalar("indHidromInstEsgoto", Hibernate.INTEGER).addScalar(
-											"lagu_nnconsumominimoagua", Hibernate.INTEGER).addScalar("lesg_nnconsumominimoesgoto",
-											Hibernate.INTEGER).addScalar("imov_icjardim", Hibernate.SHORT).addScalar("rota_cdrota",
-											Hibernate.SHORT).addScalar("imov_nnsequencialrota", Hibernate.INTEGER).addScalar("logr_id",
-											Hibernate.INTEGER).addScalar("imov_nnsegmento", Hibernate.SHORT).addScalar("rota_id",
-											Hibernate.INTEGER).addScalar("uneg_id", Hibernate.INTEGER).addScalar("uneg_nmunidadenegocio",
-											Hibernate.STRING).list();
+							.addScalar("anoFabricacaoHidrometroEsgoto", Hibernate.INTEGER)
+							.addScalar("descHidromCapacidadeEsgoto", Hibernate.STRING).addScalar("descHidromMarcaEsgoto", Hibernate.STRING)
+							.addScalar("descHidromDiametroEsgoto", Hibernate.STRING).addScalar("descHidromTipoEsgoto", Hibernate.STRING)
+							.addScalar("dataHidromInstHistoricoEsgoto", Hibernate.DATE)
+							.addScalar("descHidtromLocalInstEsgoto", Hibernate.STRING)
+							.addScalar("descHidromProtecaoEsgoto", Hibernate.STRING).addScalar("indHidromInstEsgoto", Hibernate.INTEGER)
+							.addScalar("lagu_nnconsumominimoagua", Hibernate.INTEGER)
+							.addScalar("lesg_nnconsumominimoesgoto", Hibernate.INTEGER).addScalar("imov_icjardim", Hibernate.SHORT)
+							.addScalar("rota_cdrota", Hibernate.SHORT).addScalar("imov_nnsequencialrota", Hibernate.INTEGER)
+							.addScalar("logr_id", Hibernate.INTEGER).addScalar("imov_nnsegmento", Hibernate.SHORT)
+							.addScalar("rota_id", Hibernate.INTEGER).addScalar("uneg_id", Hibernate.INTEGER)
+							.addScalar("uneg_nmunidadenegocio", Hibernate.STRING).addScalar("lesg_nnconsumofixopoco", Hibernate.INTEGER)
+							.list();
 
 		}catch(HibernateException e){
 
@@ -8943,10 +8974,10 @@ public class RepositorioImovelHBM
 
 			"numeroQuadra", Hibernate.INTEGER).addScalar("lote",
 
-			Hibernate.SHORT).addScalar("subLote", Hibernate.SHORT).addScalar("rota", Hibernate.INTEGER).addScalar("segmento",
-							Hibernate.SHORT)
+			Hibernate.SHORT).addScalar("subLote", Hibernate.SHORT).addScalar("rota", Hibernate.INTEGER)
+							.addScalar("segmento", Hibernate.SHORT)
 
-			.list();
+							.list();
 
 			retorno = (Object[]) Util.retonarObjetoDeColecao(colecaoConsulta);
 
@@ -9094,8 +9125,8 @@ public class RepositorioImovelHBM
 	String numeroMoradoresFinal, String idAreaConstruidaFaixa,
 
 	String idUnidadeNegocio, String segmentoInicial, String segmentoFinal, String rotaInicial, String rotaFinal,
-					String sequencialRotaInicial, String sequencialRotaFinal, String subloteInicial, String subloteFinal)
-					throws ErroRepositorioException{
+					String sequencialRotaInicial, String sequencialRotaFinal, String subloteInicial, String subloteFinal,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal) throws ErroRepositorioException{
 
 		Collection retorno = null;
 
@@ -9357,7 +9388,8 @@ public class RepositorioImovelHBM
 							idUnidadeNegocio,
 
 							ConstantesSistema.GERAR_RELATORIO_DADOS_ECONOMIA_IMOVEL, rotaInicial, rotaFinal, sequencialRotaInicial,
-											sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+											sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
+											consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 			/*
 			 * # COLOCANDO O VALOR NAS CONDIÇÕES#
@@ -9416,7 +9448,7 @@ public class RepositorioImovelHBM
 			numeroMoradoresFinal, idAreaConstruidaFaixa,
 
 			idUnidadeNegocio, rotaInicial, rotaFinal, sequencialRotaInicial, sequencialRotaFinal, segmentoInicial, segmentoFinal,
-							subloteInicial, subloteFinal);
+							subloteInicial, subloteFinal, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 			retorno = query.addScalar("imov_id", Hibernate.INTEGER).addScalar(
 
@@ -11406,8 +11438,10 @@ public class RepositorioImovelHBM
 							+ // 6
 							"imovelCobSit.escritorio.nome, "
 							+ // 7
-							"imovelCobSit.advogado.nome "
+							"imovelCobSit.advogado.nome, "
 							+ // 8
+							"imovelCobSit.numeroProcessoAdministrativoExecucaoFiscal "
+							+ // 9
 
 							"from ImovelCobrancaSituacao imovelCobSit " + "left join imovelCobSit.escritorio "
 							+ "left join imovelCobSit.advogado " +
@@ -11705,11 +11739,8 @@ public class RepositorioImovelHBM
 			consulta = "SELECT faturamentoSituacaoHistorico FROM FaturamentoSituacaoHistorico faturamentoSituacaoHistorico"
 							+ " inner join fetch faturamentoSituacaoHistorico.faturamentoSituacaoTipo"
 							+ " inner join fetch faturamentoSituacaoHistorico.faturamentoSituacaoMotivo"
-							+ " inner join faturamentoSituacaoHistorico.imovel imovel "
-							+ " INNER JOIN imovel.localidade lo "
-							+ " INNER JOIN imovel.setorComercial sc "
-							+ " INNER JOIN imovel.quadra qu "
-							+ " INNER JOIN qu.rota rota "
+							+ " inner join faturamentoSituacaoHistorico.imovel imovel " + " INNER JOIN imovel.localidade lo "
+							+ " INNER JOIN imovel.setorComercial sc " + " INNER JOIN imovel.quadra qu " + " INNER JOIN qu.rota rota "
 							+ " where faturamentoSituacaoHistorico.faturamentoSituacaoTipo.id =:idFaturamentoSituacaoTipo AND"
 							+ " faturamentoSituacaoHistorico.faturamentoSituacaoMotivo.id =:idFaturamentoSituacaoMotivo AND "
 							+ " faturamentoSituacaoHistorico.anoMesFaturamentoSituacaoInicio >=:anoMesFaturamentoSituacaoInicio AND "
@@ -11739,7 +11770,7 @@ public class RepositorioImovelHBM
 							.getMesAnoReferenciaFaturamentoInicial());
 			int anoMesFaturamentoSituacaoFim = Util.formatarMesAnoComBarraParaAnoMes(situacaoEspecialFaturamentoHelper
 							.getMesAnoReferenciaFaturamentoFinal());
-			
+
 			String volume = situacaoEspecialFaturamentoHelper.getVolume();
 
 			String percentualEsgoto = situacaoEspecialFaturamentoHelper.getPercentualEsgoto();
@@ -11851,64 +11882,42 @@ public class RepositorioImovelHBM
 		try{
 
 			consulta = "SELECT cobrancaSituacaoTipo.descricao,"
-
-			+ // 0
-
+							+ // 0
 							"cobrancaSituacaoMotivo.descricao,"
-
 							+ // 1
-
 							"cobrancaSituacaoHistorico.anoMesCobrancaSituacaoInicio, "
-
 							+ // 2
-
 							"cobrancaSituacaoHistorico.anoMesCobrancaSituacaoFim, "
-
 							+ // 3
-
 							"cobrancaSituacaoHistorico.anoMesCobrancaRetirada, "
-
 							+ // 4
-
 							"usarioInclusao.nomeUsuario, "
-
 							+ // 5
-
 							"cobrancaSituacaoHistorico.dataHoraInclusao, "
-
 							+ // 6
-
 							"usarioExclusao.nomeUsuario, "
-
 							+ // 7
-
 							"cobrancaSituacaoHistorico.dataHoraExclusao, "
-
 							+ // 8
-
 							"cobrancaSituacaoTipo.id,"
-
 							+ // 9
-
-							"cobrancaSituacaoMotivo.id "
-
+							"cobrancaSituacaoMotivo.id, "
 							+ // 10
-
+							"orgaoExterno.id, "
+							+ // 11
+							"orgaoExterno.descricao, "
+							+ // 12
+							"cobrancaSituacaoHistorico.numeroProcesso "
+							+ // 13
 							"from CobrancaSituacaoHistorico cobrancaSituacaoHistorico "
-
 							+ "left join cobrancaSituacaoHistorico.cobrancaSituacaoTipo cobrancaSituacaoTipo "
-
 							+ "left join cobrancaSituacaoHistorico.cobrancaSituacaoMotivo cobrancaSituacaoMotivo "
-
 							+ "left join cobrancaSituacaoHistorico.usuarioLogadoInclusao usarioInclusao "
-
 							+ "left join cobrancaSituacaoHistorico.usuarioLogadoExclusao usarioExclusao "
-
+							+ "left join cobrancaSituacaoHistorico.orgaoExterno orgaoExterno "
 							+ "where cobrancaSituacaoHistorico.imovel.id = :idImovel ";
 
-			retorno = session.createQuery(consulta).setInteger("idImovel",
-
-			idImovel.intValue()).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).list();
 
 			// erro no hibernate
 
@@ -12291,8 +12300,8 @@ public class RepositorioImovelHBM
 			consulta = "SELECT conta.id, " + "conta.referencia, " + "conta.dataVencimentoConta, " + "conta.valorAgua, "
 							+ "conta.valorEsgoto, " + "conta.debitos, " + "conta.valorCreditos, "
 							+ "debitoCreditoSituacaoAtual.descricaoAbreviada, " + "contaMotivoRevisao.id, " + "conta.valorImposto, "
-							+ "debitoCreditoSituacaoAtual.id "
-							+ "FROM Conta conta " + "LEFT JOIN conta.debitoCreditoSituacaoAtual debitoCreditoSituacaoAtual "
+							+ "debitoCreditoSituacaoAtual.id " + "FROM Conta conta "
+							+ "LEFT JOIN conta.debitoCreditoSituacaoAtual debitoCreditoSituacaoAtual "
 							+ "LEFT JOIN conta.contaMotivoRevisao contaMotivoRevisao " + "WHERE conta.imovel.id = :idImovel ";
 
 			if(ordemAscendente){
@@ -13566,20 +13575,11 @@ public class RepositorioImovelHBM
 	 * @return
 	 * @throws ErroRepositorioException
 	 */
-
-	public Object pesquisarQuantidadeImovel(String idImovel,
-
-	String idLocalidade, String codigoSetorComercial,
-
-	String numeroQuadra, String idHidrometroHistInst, String lote, String subLote,
-
-	String codigoCliente, String idMunicipio, String cep,
-
-	String idBairro, String idLogradouro,
-
-	boolean pesquisarImovelManterVinculo,
-
-	boolean pesquisarImovelCondominio, String numeroHidrometroImovel, String numeroImovel) throws ErroRepositorioException{
+	public Object pesquisarQuantidadeImovel(String idImovel, String idLocalidade, String codigoSetorComercial, String numeroQuadra,
+					String idHidrometroHistInst, String lote, String subLote, String codigoCliente, String idMunicipio, String cep,
+					String idBairro, String idLogradouro, boolean pesquisarImovelManterVinculo, boolean pesquisarImovelCondominio,
+					String numeroHidrometroImovel, String numeroImovel, String pCriterioSelecaoVinculoRateio)
+					throws ErroRepositorioException{
 
 		Object retorno = null;
 
@@ -13859,18 +13859,17 @@ public class RepositorioImovelHBM
 
 			// quadra
 
-			if((numeroQuadra != null && !numeroQuadra.equals("") && !numeroQuadra
+			if((numeroQuadra != null && !numeroQuadra.equals("") && !numeroQuadra.trim().equalsIgnoreCase(
+							new Integer(ConstantesSistema.NUMERO_NAO_INFORMADO).toString()))){
 
-			.trim().equalsIgnoreCase(
+				consulta = consulta + " quadra.numeroQuadra = :numeroQuadra and  ";
 
-			new Integer(ConstantesSistema.NUMERO_NAO_INFORMADO)
+			}
 
-			.toString()))){
+			if(pesquisarImovelManterVinculo && pCriterioSelecaoVinculoRateio != null
+							&& pCriterioSelecaoVinculoRateio.equals(ConstantesSistema.VINCULO_CONDOMINIO_CRITERIO_ROTA)){
 
-				consulta = consulta
-
-				+ " quadra.numeroQuadra = :numeroQuadra and  ";
-
+				consulta = consulta + " imovel.quadra.rota.id = imovel.rota.id and  ";
 			}
 
 			// hidrometro instalação historico
@@ -16264,8 +16263,7 @@ public class RepositorioImovelHBM
 			consulta.append("   and q.stcm_id = sc.stcm_id");
 			consulta.append("   and r.rota_id = :idRota");
 			consulta.append("   and cc.cbct_id = :idCriterioCobranca");
-			consulta
-							.append("   and ((cbct_ictelefone <> 1) or (cbct_ictelefone = 1 and exists (select ci.clie_id from cliente_imovel ci, cliente_fone cf where ci.imov_id = i.imov_id and cf.clie_id = ci.clie_id and clim_dtrelacaofim is null and crtp_id = 2)))");
+			consulta.append("   and ((cbct_ictelefone <> 1) or (cbct_ictelefone = 1 and exists (select ci.clie_id from cliente_imovel ci, cliente_fone cf where ci.imov_id = i.imov_id and cf.clie_id = ci.clie_id and clim_dtrelacaofim is null and crtp_id = 2)))");
 			// consulta.append("   and ((cbct_iccpf <> 1) or (cbct_iccpf = 1 and exists (select ci.clie_id from cliente_imovel ci, cliente cl where ci.imov_id = i.imov_id and cl.clie_id = ci.clie_id and clim_dtrelacaofim is null and crtp_id = 2 and not (clie_nncpf is null and clie_nncnpj is null))))");
 			consulta.append("   and exists");
 			consulta.append(" (select sub.catg_id");
@@ -16274,12 +16272,9 @@ public class RepositorioImovelHBM
 			consulta.append("     and isub.scat_id = sub.scat_id");
 			consulta.append("     and ccl.catg_id  = sub.catg_id");
 			consulta.append("     and ccl.cbct_id = cc.cbct_id)");
-			consulta
-							.append(" and i.iper_id in (select nvl(ccl.iper_id,i.iper_id) from cobranca_criterio_linha ccl where ccl.cbct_id = cc.cbct_id )");
-			consulta
-							.append(" and i.last_id in (select nvl(ccl.last_id,i.last_id) from cobranca_criterio_linha ccl where ccl.cbct_id = cc.cbct_id )");
-			consulta
-							.append(" and i.lest_id in (select nvl(ccl.lest_id,i.lest_id) from cobranca_criterio_linha ccl where ccl.cbct_id = cc.cbct_id )");
+			consulta.append(" and i.iper_id in (select nvl(ccl.iper_id,i.iper_id) from cobranca_criterio_linha ccl where ccl.cbct_id = cc.cbct_id )");
+			consulta.append(" and i.last_id in (select nvl(ccl.last_id,i.last_id) from cobranca_criterio_linha ccl where ccl.cbct_id = cc.cbct_id )");
+			consulta.append(" and i.lest_id in (select nvl(ccl.lest_id,i.lest_id) from cobranca_criterio_linha ccl where ccl.cbct_id = cc.cbct_id )");
 
 			// abre a conexao
 			// st = jdbcCon.prepareStatement(consulta.toString());
@@ -16308,8 +16303,7 @@ public class RepositorioImovelHBM
 	 */
 	public Collection<Object[]> pesquisarImoveisPorSetorComercialCriterioCobranca(Integer idSetorComercial, Integer idCriterioCobranca,
 					Date dataCortado, Integer idGrupoCobranca, Integer[] idsTipoDocumentoAIgnorar, Integer idAcaoCobranca,
-					CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComando)
-					throws ErroRepositorioException{
+					CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComando) throws ErroRepositorioException{
 
 		Session session = HibernateUtil.getSession();
 		Collection retorno = null;
@@ -16323,7 +16317,7 @@ public class RepositorioImovelHBM
 				consulta.append("   and i.imov_id = la.lagu_id");
 				consulta.append("   and r.stcm_id = :idSetorComercial");
 				consulta.append("   and cc.cbct_id = :idCriterioCobranca");
-				//consulta.append("   and ((cbct_ictelefone <> 1) or (cbct_ictelefone = 1 and exists (select ci.clie_id from cliente_imovel ci, cliente_fone cf where ci.imov_id = i.imov_id and cf.clie_id = ci.clie_id and clim_dtrelacaofim is null and crtp_id = :idClienteRelacaoTipo )))");
+				// consulta.append("   and ((cbct_ictelefone <> 1) or (cbct_ictelefone = 1 and exists (select ci.clie_id from cliente_imovel ci, cliente_fone cf where ci.imov_id = i.imov_id and cf.clie_id = ci.clie_id and clim_dtrelacaofim is null and crtp_id = :idClienteRelacaoTipo )))");
 				// consulta
 				// .append("   and ((cbct_iccpf <> 1) or (cbct_iccpf = 1 and exists (select ci.clie_id from cliente_imovel ci, cliente cl where ci.imov_id = i.imov_id and cl.clie_id = ci.clie_id and clim_dtrelacaofim is null and crtp_id = :idClienteRelacaoTipo and not (clie_nncpf is null and clie_nncnpj is null))))");
 				consulta.append("   and exists");
@@ -16333,12 +16327,9 @@ public class RepositorioImovelHBM
 				consulta.append("     and isub.scat_id = sub.scat_id");
 				consulta.append("     and ccl.catg_id  = sub.catg_id");
 				consulta.append("     and ccl.cbct_id = cc.cbct_id)");
-				consulta
-								.append(" and i.iper_id in (select nvl(ccl.iper_id,i.iper_id) from cobranca_criterio_linha ccl where ccl.cbct_id = cc.cbct_id )");
-				consulta
-								.append(" and i.last_id in (select nvl(csla.last_id,i.last_id) from criterio_situacao_ligacao_agua csla where csla.cbct_id = cc.cbct_id )");
-				consulta
-								.append(" and i.lest_id in (select nvl(csle.lest_id,i.lest_id) from criterio_situacao_ligacao_esgo csle where csle.cbct_id = cc.cbct_id )");
+				consulta.append(" and i.iper_id in (select nvl(ccl.iper_id,i.iper_id) from cobranca_criterio_linha ccl where ccl.cbct_id = cc.cbct_id )");
+				consulta.append(" and i.last_id in (select nvl(csla.last_id,i.last_id) from criterio_situacao_ligacao_agua csla where csla.cbct_id = cc.cbct_id )");
+				consulta.append(" and i.lest_id in (select nvl(csle.lest_id,i.lest_id) from criterio_situacao_ligacao_esgo csle where csle.cbct_id = cc.cbct_id )");
 				consulta.append(" and i.last_id = :situacao  ");
 				consulta.append(" and la.lagu_dtcorte <= :dataCortado ");
 
@@ -16348,8 +16339,7 @@ public class RepositorioImovelHBM
 								&& idAcaoCobranca.intValue() != CobrancaAcao.COBRANCA_BANCARIA.intValue()
 								&& idAcaoCobranca.intValue() != CobrancaAcao.COBRANCA_ADMINISTRATIVA.intValue()){
 					// imovel nao esteja com documento de cobranca valida
-					consulta
-									.append(" and not exists ( select imov_id from cobranca_documento where imov_id = i.imov_id and (cast_id is null or cast_id <> :idCobrancaAcaoSituacao ) and dotp_id IN(:idsTipoDocumentoAIgnorar)  and cbdo_tmemissao + (select ca.cbac_nndiasvalidade from cobranca_acao ca where cbac_id = :idAcaoCobranca) >= :dataAtual )");
+					consulta.append(" and not exists ( select imov_id from cobranca_documento where imov_id = i.imov_id and (cast_id is null or cast_id <> :idCobrancaAcaoSituacao ) and dotp_id IN(:idsTipoDocumentoAIgnorar)  and cbdo_tmemissao + (SELECT ca.cbac_nndiasvalidade FROM cobranca_acao ca where ca.cbac_id = :idAcaoCobranca) >= :dataAtual )");
 				}
 
 				if(idGrupoCobranca != null){
@@ -16407,9 +16397,8 @@ public class RepositorioImovelHBM
 				}
 
 				query.setInteger("idSetorComercial", idSetorComercial).setInteger("idCriterioCobranca", idCriterioCobranca)
-								//.setInteger("idClienteRelacaoTipo", clienteRelacaoTipo.getId())
-								.setInteger(
-								"situacao", LigacaoAguaSituacao.CORTADO).setDate("dataCortado", dataCortado);
+				// .setInteger("idClienteRelacaoTipo", clienteRelacaoTipo.getId())
+								.setInteger("situacao", LigacaoAguaSituacao.CORTADO).setDate("dataCortado", dataCortado);
 
 				if(idGrupoCobranca != null){
 					query.setInteger("idGrupoCobranca", idGrupoCobranca);
@@ -16481,7 +16470,7 @@ public class RepositorioImovelHBM
 		montarRelacionamentosBase(consulta);
 		consulta.append("   and r.stcm_id = :idSetorComercial");
 		consulta.append("   and cc.cbct_id = :idCriterioCobranca");
-		//consulta.append("   and ((cbct_ictelefone <> 1) or (cbct_ictelefone = 1 and exists (select ci.clie_id from cliente_imovel ci, cliente_fone cf where ci.imov_id = i.imov_id and cf.clie_id = ci.clie_id and clim_dtrelacaofim is null and crtp_id = :idClienteRelacaoTipo )))");
+		// consulta.append("   and ((cbct_ictelefone <> 1) or (cbct_ictelefone = 1 and exists (select ci.clie_id from cliente_imovel ci, cliente_fone cf where ci.imov_id = i.imov_id and cf.clie_id = ci.clie_id and clim_dtrelacaofim is null and crtp_id = :idClienteRelacaoTipo )))");
 		// consulta.append("   and ((cbct_iccpf <> 1) or (cbct_iccpf = 1 and exists (select ci.clie_id from cliente_imovel ci, cliente cl where ci.imov_id = i.imov_id and cl.clie_id = ci.clie_id and clim_dtrelacaofim is null and crtp_id = :idClienteRelacaoTipo and not (clie_nncpf is null and clie_nncnpj is null))))");
 		consulta.append("   and exists");
 		consulta.append(" (select sub.catg_id");
@@ -16490,12 +16479,9 @@ public class RepositorioImovelHBM
 		consulta.append("     and isub.scat_id = sub.scat_id");
 		consulta.append("     and ccl.catg_id  = sub.catg_id");
 		consulta.append("     and ccl.cbct_id = cc.cbct_id)");
-		consulta
-						.append(" and i.iper_id in (select nvl(ccl.iper_id,i.iper_id) from cobranca_criterio_linha ccl where ccl.cbct_id = cc.cbct_id )");
-		consulta
-						.append(" and i.last_id in (select nvl(csla.last_id,i.last_id) from criterio_situacao_ligacao_agua csla where csla.cbct_id = cc.cbct_id )");
-		consulta
-						.append(" and i.lest_id in (select nvl(csle.lest_id,i.lest_id) from criterio_situacao_ligacao_esgo csle where csle.cbct_id = cc.cbct_id )");
+		consulta.append(" and i.iper_id in (select nvl(ccl.iper_id,i.iper_id) from cobranca_criterio_linha ccl where ccl.cbct_id = cc.cbct_id )");
+		consulta.append(" and i.last_id in (select nvl(csla.last_id,i.last_id) from criterio_situacao_ligacao_agua csla where csla.cbct_id = cc.cbct_id )");
+		consulta.append(" and i.lest_id in (select nvl(csle.lest_id,i.lest_id) from criterio_situacao_ligacao_esgo csle where csle.cbct_id = cc.cbct_id )");
 
 		if(idAcaoCobranca.intValue() != CobrancaAcao.NEGATIVACAO_SPC_BRASIL.intValue()
 						&& idAcaoCobranca.intValue() != CobrancaAcao.NEGATIVACAO_SPC_SP.intValue()
@@ -16503,8 +16489,7 @@ public class RepositorioImovelHBM
 						&& idAcaoCobranca.intValue() != CobrancaAcao.COBRANCA_BANCARIA.intValue()
 						&& idAcaoCobranca.intValue() != CobrancaAcao.COBRANCA_ADMINISTRATIVA.intValue()){
 			// imovel nao esteja com documento de cobranca valida
-			consulta
-							.append(" and not exists ( select imov_id from cobranca_documento where imov_id = i.imov_id and (cast_id is null or cast_id <> :idCobrancaAcaoSituacao ) and dotp_id IN(:idsTipoDocumentoAIgnorar)  and cbdo_tmemissao + (select ca.cbac_nndiasvalidade from cobranca_acao ca where cbac_id = :idAcaoCobranca) > :dataAtual )");
+			consulta.append(" and not exists ( select imov_id from cobranca_documento where imov_id = i.imov_id and (cast_id is null or cast_id <> :idCobrancaAcaoSituacao ) and dotp_id IN(:idsTipoDocumentoAIgnorar)  and cbdo_tmemissao + (SELECT ca.cbac_nndiasvalidade from cobranca_acao ca where cbac_id = :idAcaoCobranca) > :dataAtual )");
 		}
 
 		consulta.append(" and i.imov_icexclusao <> 1");
@@ -16564,7 +16549,6 @@ public class RepositorioImovelHBM
 		}
 
 		query.setInteger("idSetorComercial", idSetorComercial).setInteger("idCriterioCobranca", idCriterioCobranca);
-						
 
 		if(idGrupoCobranca != null){
 			query.setInteger("idGrupoCobranca", idGrupoCobranca);
@@ -16579,109 +16563,6 @@ public class RepositorioImovelHBM
 		consulta.append("   and i.rota_id = r.rota_id");
 		consulta.append("   and q.stcm_id = sc.stcm_id");
 	}
-
-	//
-	// /**
-	// * @author Saulo Lima
-	// * @date 01/10/2010
-	// *
-	// * @param idRota
-	// * @param idCriterioCobranca
-	// * @return
-	// * @throws ErroRepositorioException
-	// */
-	// public Collection<Object[]> pesquisarImoveisPorRotaCriterioCobranca(Integer idRota, Integer
-	// idCriterioCobranca) throws ErroRepositorioException {
-	//
-	// Collection<Object[]> retorno = new ArrayList<Object[]>();
-	//
-	// Session session = HibernateUtil.getSession();
-	//
-	// Connection jdbcCon = session.connection();
-	// PreparedStatement st = null;
-	//
-	// try {
-	// StringBuffer consulta = new StringBuffer();
-	//
-	// consulta.append("select /*+ RULE*/");
-	// consulta.append(" i.imov_id,"); //0
-	// consulta.append(" i.last_id,"); //1
-	// consulta.append(" i.lest_id,"); //2
-	// consulta.append(" i.iper_id,"); //3
-	// consulta.append(" r.empr_id,"); //4
-	// consulta.append(" i.loca_id,"); //5
-	// consulta.append(" sc.stcm_cdsetorcomercial,"); //6
-	// consulta.append(" q.qdra_nnquadra,"); //7
-	// consulta.append(" i.imov_nnlote,"); //8
-	// consulta.append(" i.imov_nnsublote,"); //9
-	// consulta.append(" i.qdra_id,"); //10
-	// consulta.append(" i.CBSP_ID,"); //11
-	// consulta.append(" i.imov_icdebitoconta,"); //12
-	// consulta.append(" r.empr_idcobranca "); //13
-	// consulta.append(" from imovel i,");
-	// consulta.append("   quadra q,");
-	// consulta.append("   rota r,");
-	// consulta.append("   setor_comercial sc,");
-	// consulta.append("   cobranca_criterio cc");
-	// consulta.append(" where i.qdra_id = q.qdra_id");
-	// consulta.append("   and q.rota_id = r.rota_id");
-	// consulta.append("   and q.stcm_id = sc.stcm_id");
-	// consulta.append("   and r.rota_id = ? ");
-	// consulta.append("   and cc.cbct_id = ? ");
-	// consulta.append("   and ((cbct_ictelefone <> 1) or (cbct_ictelefone = 1 and exists (select ci.clie_id from cliente_imovel ci, cliente_fone cf where ci.imov_id = i.imov_id and cf.clie_id = ci.clie_id and clim_dtrelacaofim is null and crtp_id = 2)))");
-	// consulta.append("   and ((cbct_iccpf <> 1) or (cbct_iccpf = 1 and exists (select ci.clie_id from cliente_imovel ci, cliente cl where ci.imov_id = i.imov_id and cl.clie_id = ci.clie_id and clim_dtrelacaofim is null and crtp_id = 2 and not (clie_nncpf is null and clie_nncnpj is null))))");
-	// consulta.append("   and exists");
-	// consulta.append(" (select sub.catg_id");
-	// consulta.append("  from imovel_subcategoria isub, subcategoria sub, cobranca_criterio_linha ccl");
-	// consulta.append("  where isub.imov_id = i.imov_id");
-	// consulta.append("     and isub.scat_id = sub.scat_id");
-	// consulta.append("     and ccl.catg_id  = sub.catg_id");
-	// consulta.append("     and ccl.cbct_id = cc.cbct_id)");
-	// consulta.append(" and i.iper_id in (select nvl(ccl.iper_id,i.iper_id) from cobranca_criterio_linha ccl where ccl.cbct_id = cc.cbct_id )");
-	// consulta.append(" and i.last_id in (select nvl(ccl.last_id,i.last_id) from cobranca_criterio_linha ccl where ccl.cbct_id = cc.cbct_id )");
-	// consulta.append(" and i.lest_id in (select nvl(ccl.lest_id,i.lest_id) from cobranca_criterio_linha ccl where ccl.cbct_id = cc.cbct_id )");
-	//
-	// //abre a conexao
-	// st = jdbcCon.prepareStatement(consulta.toString());
-	// st.setInt(1, idRota);
-	// st.setInt(2, idCriterioCobranca);
-	//
-	// ResultSet rs = st.executeQuery();
-	//
-	// while(rs.next()){
-	// Object[] item = new Object[14];
-	// item[0] = rs.getInt(1);
-	// item[1] = rs.getInt(2);
-	// item[2] = rs.getInt(3);
-	// item[3] = rs.getInt(4);
-	// item[4] = rs.getInt(5);
-	// item[5] = rs.getInt(6);
-	// item[6] = rs.getInt(7);
-	// item[7] = rs.getInt(8);
-	// item[8] = rs.getShort(9);
-	// item[9] = rs.getShort(10);
-	// item[10] = rs.getInt(11);
-	// item[11] = rs.getInt(12);
-	// item[12] = rs.getShort(13);
-	// item[13] = rs.getInt(14);
-	//
-	// retorno.add(item);
-	// }
-	//
-	// jdbcCon.close();
-	//
-	// } catch (HibernateException e) {
-	// // levanta a exceção para a próxima camada
-	// throw new ErroRepositorioException(e, "Erro no Hibernate");
-	// } catch (SQLException e) {
-	// e.printStackTrace();
-	// } finally {
-	// // fecha a sessão
-	// HibernateUtil.closeSession(session);
-	// }
-	//
-	// return retorno;
-	// }
 
 	/**
 	 * Overload do método original que consulta o máximo de registros passado por parâmetro
@@ -16759,7 +16640,7 @@ public class RepositorioImovelHBM
 
 	String quadraFinal, String loteInicial, String loteFinal,
 
-	String subLoteInicial, String subLoteFinal, String idTarifaAnterior){
+	String subLoteInicial, String subLoteFinal, String idTarifaAnterior, String idsCategorias, String idsSubcategorias){
 
 		String hql = " WHERE ";
 
@@ -16829,6 +16710,22 @@ public class RepositorioImovelHBM
 
 		}
 
+		// Categoria
+		if(!Util.isVazioOuBranco(idsCategorias)){
+
+			String condicoesCategoria = " exists ( select 1 from  ImovelSubcategoria isc where isc.comp_id.imovel.id = imov.id and ";
+			condicoesCategoria += " isc.categoria.id in (" + idsCategorias.substring(0, idsCategorias.length() - 1) + ") and";
+
+			// Subcategoria
+			if(!Util.isVazioOuBranco(idsSubcategorias)){
+
+				condicoesCategoria += " isc.comp_id.subcategoria.id in (" + idsSubcategorias.substring(0, idsSubcategorias.length() - 1)
+								+ ") and";
+			}
+
+			hql += condicoesCategoria.substring(0, condicoesCategoria.length() - 3) + ") and ";
+		}
+
 		if(idTarifaAnterior != null && !idTarifaAnterior.equals("")){
 
 			hql = hql + " tarifaConsumo = " + idTarifaAnterior;
@@ -16847,7 +16744,7 @@ public class RepositorioImovelHBM
 
 	String quadraFinal, String loteInicial, String loteFinal,
 
-	String subLoteInicial, String subLoteFinal, String idTarifaAnterior)
+	String subLoteInicial, String subLoteFinal, String idTarifaAnterior, String idsCategorias, String idsSubcategorias)
 
 	throws ErroRepositorioException{
 
@@ -16869,7 +16766,7 @@ public class RepositorioImovelHBM
 
 		quadraInicial, quadraFinal, loteInicial, loteFinal,
 
-		subLoteInicial, subLoteFinal, idTarifaAnterior);
+		subLoteInicial, subLoteFinal, idTarifaAnterior, idsCategorias, idsSubcategorias);
 
 		Session session = HibernateUtil.getSession();
 
@@ -16980,24 +16877,25 @@ public class RepositorioImovelHBM
 						// Caso exista apenas tarifaAtual
 						update = update + " imov.consumoTarifa.id = :idTarifaConsumo, " + " imov.ultimaAlteracao = :ultimaAlteracao "
 										+ " WHERE imov.id in (:idsImovel)";
-						session.createQuery(update).setInteger("idTarifaConsumo", new Integer(tarifaAtual)).setTimestamp("ultimaAlteracao",
-										new Date()).setParameterList("idsImovel", colecao).executeUpdate();
+						session.createQuery(update).setInteger("idTarifaConsumo", new Integer(tarifaAtual))
+										.setTimestamp("ultimaAlteracao", new Date()).setParameterList("idsImovel", colecao).executeUpdate();
 					}else if(isApenasTarifaEspecial){
 						// Caso exista apenas tarifaEspecial
 						update = update + " imov.consumoTarifaTemporaria.id = :idTarifaEspecial, "
 										+ " imov.dataValidadeTarifaTemporaria = :dataValidadeTarifaEspecial, "
 										+ " imov.ultimaAlteracao = :ultimaAlteracao " + " WHERE imov.id in (:idsImovel)";
-						session.createQuery(update).setInteger("idTarifaEspecial", new Integer(tarifaEspecial)).setDate(
-										"dataValidadeTarifaEspecial", dataValidadeTarifaEspecial).setTimestamp("ultimaAlteracao",
-										new Date()).setParameterList("idsImovel", colecao).executeUpdate();
+						session.createQuery(update).setInteger("idTarifaEspecial", new Integer(tarifaEspecial))
+										.setDate("dataValidadeTarifaEspecial", dataValidadeTarifaEspecial)
+										.setTimestamp("ultimaAlteracao", new Date()).setParameterList("idsImovel", colecao).executeUpdate();
 					}else if(isTodosParametrosRecebidos){
 						// Caso todos os parametros tenham vindo preenchidos
 						update = update + " imov.consumoTarifa.id = :idTarifaConsumo, "
 										+ " imov.consumoTarifaTemporaria.id = :idTarifaEspecial, "
 										+ " imov.dataValidadeTarifaTemporaria = :dataValidadeTarifaEspecial, "
 										+ " imov.ultimaAlteracao = :ultimaAlteracao " + " WHERE imov.id in (:idsImovel)";
-						session.createQuery(update).setInteger("idTarifaConsumo", new Integer(tarifaAtual)).setInteger("idTarifaEspecial",
-										new Integer(tarifaEspecial)).setDate("dataValidadeTarifaEspecial", dataValidadeTarifaEspecial)
+						session.createQuery(update).setInteger("idTarifaConsumo", new Integer(tarifaAtual))
+										.setInteger("idTarifaEspecial", new Integer(tarifaEspecial))
+										.setDate("dataValidadeTarifaEspecial", dataValidadeTarifaEspecial)
 										.setTimestamp("ultimaAlteracao", new Date()).setParameterList("idsImovel", colecao).executeUpdate();
 					}
 
@@ -17009,24 +16907,25 @@ public class RepositorioImovelHBM
 						// Caso exista apenas tarifaAtual
 						update = update + " imov.consumoTarifa.id = :idTarifaConsumo, " + " imov.ultimaAlteracao = :ultimaAlteracao "
 										+ " WHERE imov in (:idsImovel)";
-						session.createQuery(update).setInteger("idTarifaConsumo", new Integer(tarifaAtual)).setTimestamp("ultimaAlteracao",
-										new Date()).setParameterList("idsImovel", colecao).executeUpdate();
+						session.createQuery(update).setInteger("idTarifaConsumo", new Integer(tarifaAtual))
+										.setTimestamp("ultimaAlteracao", new Date()).setParameterList("idsImovel", colecao).executeUpdate();
 					}else if(isApenasTarifaEspecial){
 						// Caso exista apenas tarifaEspecial
 						update = update + " imov.consumoTarifaTemporaria.id = :idTarifaEspecial, "
 										+ " imov.dataValidadeTarifaTemporaria = :dataValidadeTarifaEspecial, "
 										+ " imov.ultimaAlteracao = :ultimaAlteracao " + " WHERE imov in (:idsImovel)";
-						session.createQuery(update).setInteger("idTarifaEspecial", new Integer(tarifaEspecial)).setDate(
-										"dataValidadeTarifaEspecial", dataValidadeTarifaEspecial).setTimestamp("ultimaAlteracao",
-										new Date()).setParameterList("idsImovel", colecao).executeUpdate();
+						session.createQuery(update).setInteger("idTarifaEspecial", new Integer(tarifaEspecial))
+										.setDate("dataValidadeTarifaEspecial", dataValidadeTarifaEspecial)
+										.setTimestamp("ultimaAlteracao", new Date()).setParameterList("idsImovel", colecao).executeUpdate();
 					}else if(isTodosParametrosRecebidos){
 						// Caso todos os parametros tenham vindo preenchidos
 						update = update + " imov.consumoTarifa.id = :idTarifaConsumo, "
 										+ " imov.consumoTarifaTemporaria.id = :idTarifaEspecial, "
 										+ " imov.dataValidadeTarifaTemporaria = :dataValidadeTarifaEspecial, "
 										+ " imov.ultimaAlteracao = :ultimaAlteracao " + " WHERE imov in (:idsImovel)";
-						session.createQuery(update).setInteger("idTarifaConsumo", new Integer(tarifaAtual)).setInteger("idTarifaEspecial",
-										new Integer(tarifaEspecial)).setDate("dataValidadeTarifaEspecial", dataValidadeTarifaEspecial)
+						session.createQuery(update).setInteger("idTarifaConsumo", new Integer(tarifaAtual))
+										.setInteger("idTarifaEspecial", new Integer(tarifaEspecial))
+										.setDate("dataValidadeTarifaEspecial", dataValidadeTarifaEspecial)
 										.setTimestamp("ultimaAlteracao", new Date()).setParameterList("idsImovel", colecao).executeUpdate();
 					}
 				}
@@ -17070,8 +16969,6 @@ public class RepositorioImovelHBM
 			update = "UPDATE Imovel imov " + "SET imov.imovelPerfil.id = "
 
 			+ ImovelPerfil.NORMAL.toString() + ",";
-
-
 
 			if(!manter){
 				update = update + " imov.consumoTarifa.id = ";
@@ -17350,9 +17247,9 @@ public class RepositorioImovelHBM
 								+ " INNER JOIN imovel imovel " + " on imovEcon.imov_id = imovel.imov_id " + " WHERE "
 								+ " imovEcon.imec_nncontratoenergia = :numeroCompanhiaEletrica ";
 
-				idImovelRetorno = (Integer) session.createSQLQuery(consulta).addScalar("idImovel", Hibernate.INTEGER).setLong(
-								"numeroCompanhiaEletrica", numeroCompanhiaEletrica).setInteger("idImovel", idImovel).setMaxResults(1)
-								.uniqueResult();
+				idImovelRetorno = (Integer) session.createSQLQuery(consulta).addScalar("idImovel", Hibernate.INTEGER)
+								.setLong("numeroCompanhiaEletrica", numeroCompanhiaEletrica).setInteger("idImovel", idImovel)
+								.setMaxResults(1).uniqueResult();
 
 			}else{
 
@@ -17362,9 +17259,9 @@ public class RepositorioImovelHBM
 								+ " AND imovEcon.imec_id <> :idImovelEconomia " + " UNION " + " SELECT imov.imov_id as idImovel "
 								+ " FROM imovel imov " + " WHERE " + " imov.imov_nncontratoenergia = :numeroCompanhiaEletrica ";
 
-				idImovelRetorno = (Integer) session.createSQLQuery(consulta).addScalar("idImovel", Hibernate.INTEGER).setLong(
-								"numeroCompanhiaEletrica", numeroCompanhiaEletrica).setInteger("idImovelEconomia", idImovelEconomia)
-								.setMaxResults(1).uniqueResult();
+				idImovelRetorno = (Integer) session.createSQLQuery(consulta).addScalar("idImovel", Hibernate.INTEGER)
+								.setLong("numeroCompanhiaEletrica", numeroCompanhiaEletrica)
+								.setInteger("idImovelEconomia", idImovelEconomia).setMaxResults(1).uniqueResult();
 
 			}
 
@@ -18122,7 +18019,15 @@ public class RepositorioImovelHBM
 		 * de manutenção de várias contas.
 		 */
 
-		Integer idGrupoFaturamento = filtro.getIdGrupoFaturamento();
+		Collection colecaoFaturamentoGrupoSelecionada = null;
+		if(filtro.getColecaoFaturamentoGrupo() != null && !filtro.getColecaoFaturamentoGrupo().isEmpty()){
+			colecaoFaturamentoGrupoSelecionada = filtro.getColecaoFaturamentoGrupo();
+		}
+
+		Collection colecaoLogradouroSelecionada = null;
+		if(filtro.getColecaoLogradouro() != null && !filtro.getColecaoLogradouro().isEmpty()){
+			colecaoLogradouroSelecionada = filtro.getColecaoLogradouro();
+		}
 
 		// cria a coleção de retorno
 
@@ -18143,6 +18048,10 @@ public class RepositorioImovelHBM
 			+ "FROM gcom.cadastro.imovel.Imovel  imovel "
 
 			+ "LEFT JOIN imovel.faturamentoSituacaoTipo ftst "
+
+			+ "LEFT JOIN imovel.logradouroCep logradouroCep "
+
+			+ "LEFT JOIN logradouroCep.logradouro logradouro "
 
 			+ "INNER JOIN imovel.rota rota "
 
@@ -18236,11 +18145,15 @@ public class RepositorioImovelHBM
 			 * filtro de manutenção de várias contas.
 			 */
 
-			if(idGrupoFaturamento != null){
+			if(colecaoFaturamentoGrupoSelecionada != null){
 
-				consulta = consulta + " and ftgr.id = "
+				consulta = consulta + " and ftgr.id in (:colecaoFaturamentoGrupoSelecionada)";
 
-				+ idGrupoFaturamento.intValue();
+			}
+
+			if(colecaoLogradouroSelecionada != null){
+
+				consulta = consulta + " and logradouro.id in (:colecaoLogradouroSelecionada)";
 
 			}
 
@@ -18248,20 +18161,35 @@ public class RepositorioImovelHBM
 				consulta += " and imovel.logradouroBairro.bairro.nome like '%" + filtro.getNomeBairro() + "%'";
 			}
 
-			if(colecaoQuadraSelecionada != null
+			if((colecaoQuadraSelecionada != null) && colecaoFaturamentoGrupoSelecionada != null && colecaoLogradouroSelecionada != null){
 
-			&& !colecaoQuadraSelecionada.isEmpty()){
+				retorno = session.createQuery(consulta).setParameterList("colecaoQuadraSelecionada", colecaoQuadraSelecionada)
+								.setParameterList("colecaoFaturamentoGrupoSelecionada", colecaoFaturamentoGrupoSelecionada)
+								.setParameterList("colecaoLogradouroSelecionada", colecaoLogradouroSelecionada).list();
 
-				retorno = session.createQuery(consulta).setParameterList(
+			}else if(colecaoQuadraSelecionada != null && colecaoFaturamentoGrupoSelecionada != null){
 
-				"colecaoQuadraSelecionada", colecaoQuadraSelecionada)
+				retorno = session.createQuery(consulta).setParameterList("colecaoQuadraSelecionada", colecaoQuadraSelecionada)
+								.setParameterList("colecaoFaturamentoGrupoSelecionada", colecaoFaturamentoGrupoSelecionada).list();
+			}else if(colecaoQuadraSelecionada != null && colecaoLogradouroSelecionada != null){
+				retorno = session.createQuery(consulta).setParameterList("colecaoQuadraSelecionada", colecaoQuadraSelecionada)
+								.setParameterList("colecaoLogradouroSelecionada", colecaoLogradouroSelecionada).list();
+			}else if(colecaoFaturamentoGrupoSelecionada != null && colecaoLogradouroSelecionada != null){
 
-				.list();
+				retorno = session.createQuery(consulta)
+								.setParameterList("colecaoFaturamentoGrupoSelecionada", colecaoFaturamentoGrupoSelecionada)
+								.setParameterList("colecaoLogradouroSelecionada", colecaoLogradouroSelecionada).list();
 
+			}else if(colecaoQuadraSelecionada != null){
+				retorno = session.createQuery(consulta).setParameterList("colecaoQuadraSelecionada", colecaoQuadraSelecionada).list();
+			}else if(colecaoFaturamentoGrupoSelecionada != null){
+				retorno = session.createQuery(consulta)
+								.setParameterList("colecaoFaturamentoGrupoSelecionada", colecaoFaturamentoGrupoSelecionada).list();
+			}else if(colecaoLogradouroSelecionada != null){
+				retorno = session.createQuery(consulta).setParameterList("colecaoLogradouroSelecionada", colecaoLogradouroSelecionada)
+								.list();
 			}else{
-
 				retorno = session.createQuery(consulta).list();
-
 			}
 
 			// erro no hibernate
@@ -18403,11 +18331,11 @@ public class RepositorioImovelHBM
 
 	}
 
-	public Collection obterSubCategoriasPorCategoria(Integer idCategoria,
+	public ImovelSubcategoria obterSubCategoriasPorCategoria(Integer idCategoria,
 
 	Integer idImovel) throws ErroRepositorioException{
 
-		Collection retorno = null;
+		ImovelSubcategoria retorno = null;
 
 		Session session = HibernateUtil.getSession();
 
@@ -18431,11 +18359,13 @@ public class RepositorioImovelHBM
 
 			+ "  sub.comp_id.subcategoria.categoria.id = :idCategoria and "
 
-			+ "  sub.comp_id.imovel.id = :idImovel";
+			+ "  sub.comp_id.imovel.id = :idImovel"
 
-			retorno = session.createQuery(hql).setInteger("idCategoria",
+			+ " order by sub.quantidadeEconomias desc, sub.ultimaAlteracao desc ";
 
-			idCategoria).setInteger("idImovel", idImovel).list();
+			retorno = (ImovelSubcategoria) session.createQuery(hql).setInteger("idCategoria", idCategoria).setInteger("idImovel", idImovel)
+							.setMaxResults(1)
+							.uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -20164,8 +20094,8 @@ public class RepositorioImovelHBM
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String rotaInicial,
 					String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal, String indicadorOrdenacao)
-					throws ErroRepositorioException{
+					String segmentoFinal, String subloteInicial, String subloteFinal, String indicadorOrdenacao,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal) throws ErroRepositorioException{
 
 		Collection retorno = null;
 		Session session = HibernateUtil.getSession();
@@ -20484,7 +20414,8 @@ public class RepositorioImovelHBM
 											idClienteTipo, idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal,
 											numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa, idUnidadeNegocio,
 											ConstantesSistema.GERAR_RELATORIO_IMOVEL, rotaInicial, rotaFinal, sequencialRotaInicial,
-											sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+											sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
+											consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 			/*
 			 * # COLOCANDO O VALOR NAS CONDIÇÕES#
@@ -20522,56 +20453,64 @@ public class RepositorioImovelHBM
 							quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 							idAreaConstruidaFaixa, idUnidadeNegocio, rotaInicial, rotaFinal, sequencialRotaInicial, sequencialRotaFinal,
-							segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+							segmentoInicial, segmentoFinal, subloteInicial, subloteFinal, consumoFixadoEsgotoPocoInicial,
+							consumoFixadoEsgotoPocoFinal);
 
-			retorno = query.addScalar("greg_id", Hibernate.INTEGER).addScalar("greg_nmregional", Hibernate.STRING).addScalar("loca_id",
-							Hibernate.INTEGER).addScalar("loca_nmlocalidade", Hibernate.STRING).addScalar("imov_id", Hibernate.INTEGER)
-							.addScalar("imov_qteconomia", Hibernate.SHORT).addScalar("stcm_cdsetorcomercial", Hibernate.INTEGER).addScalar(
-											"stcm_nmsetorcomercial", Hibernate.STRING).addScalar("qdra_nnquadra", Hibernate.INTEGER)
-							.addScalar("imov_nnlote", Hibernate.SHORT).addScalar("imov_nnsublote", Hibernate.SHORT).addScalar(
-											"last_dsabreviado", Hibernate.STRING).addScalar("lest_dsabreviado", Hibernate.STRING)
-							.addScalar("lesg_pcesgoto", Hibernate.BIG_DECIMAL).addScalar("lesg_dtligacao", Hibernate.DATE).addScalar(
-											"lagu_dtligacaoagua", Hibernate.DATE).addScalar("idClienteUsuario", Hibernate.INTEGER)
-							.addScalar("nomeClienteUsuario", Hibernate.STRING).addScalar("idClienteResponsavel", Hibernate.INTEGER)
-							.addScalar("nomeClienteResponsavel", Hibernate.STRING).addScalar("logr_nmlogradouro", Hibernate.STRING)
-							.addScalar("lgtp_dslogradourotipo", Hibernate.STRING).addScalar("lgtt_dslogradourotitulo", Hibernate.STRING)
-							.addScalar("cep_cdcep", Hibernate.INTEGER).addScalar("edrf_dsenderecoreferencia", Hibernate.STRING).addScalar(
-											"imov_dscomplementoendereco", Hibernate.STRING).addScalar("imov_nnimovel", Hibernate.STRING)
-							.addScalar("bair_nmbairro", Hibernate.STRING).addScalar("muni_nmmunicipio", Hibernate.STRING).addScalar(
-											"unfe_dsufsigla", Hibernate.STRING).addScalar("imov_icimovelcondominio", Hibernate.INTEGER)
+			retorno = query.addScalar("greg_id", Hibernate.INTEGER).addScalar("greg_nmregional", Hibernate.STRING)
+							.addScalar("loca_id", Hibernate.INTEGER).addScalar("loca_nmlocalidade", Hibernate.STRING)
+							.addScalar("imov_id", Hibernate.INTEGER).addScalar("imov_qteconomia", Hibernate.SHORT)
+							.addScalar("stcm_cdsetorcomercial", Hibernate.INTEGER).addScalar("stcm_nmsetorcomercial", Hibernate.STRING)
+							.addScalar("qdra_nnquadra", Hibernate.INTEGER).addScalar("imov_nnlote", Hibernate.SHORT)
+							.addScalar("imov_nnsublote", Hibernate.SHORT).addScalar("last_dsabreviado", Hibernate.STRING)
+							.addScalar("lest_dsabreviado", Hibernate.STRING).addScalar("lesg_pcesgoto", Hibernate.BIG_DECIMAL)
+							.addScalar("lesg_dtligacao", Hibernate.DATE).addScalar("lagu_dtligacaoagua", Hibernate.DATE)
+							.addScalar("idClienteUsuario", Hibernate.INTEGER).addScalar("nomeClienteUsuario", Hibernate.STRING)
+							.addScalar("idClienteResponsavel", Hibernate.INTEGER).addScalar("nomeClienteResponsavel", Hibernate.STRING)
+							.addScalar("logr_nmlogradouro", Hibernate.STRING).addScalar("lgtp_dslogradourotipo", Hibernate.STRING)
+							.addScalar("lgtt_dslogradourotitulo", Hibernate.STRING).addScalar("cep_cdcep", Hibernate.INTEGER)
+							.addScalar("edrf_dsenderecoreferencia", Hibernate.STRING)
+							.addScalar("imov_dscomplementoendereco", Hibernate.STRING).addScalar("imov_nnimovel", Hibernate.STRING)
+							.addScalar("bair_nmbairro", Hibernate.STRING).addScalar("muni_nmmunicipio", Hibernate.STRING)
+							.addScalar("unfe_dsufsigla", Hibernate.STRING).addScalar("imov_icimovelcondominio", Hibernate.INTEGER)
 							.addScalar("imov_nnmorador", Hibernate.INTEGER).addScalar("imov_idimovelcondominio", Hibernate.INTEGER)
 							.addScalar("imov_idimovelprincipal", Hibernate.INTEGER).addScalar("imov_nnpontosutilizacao", Hibernate.INTEGER)
 							.addScalar("iper_dsimovelperfil", Hibernate.STRING).addScalar("acon_nnmaiorfaixa", Hibernate.INTEGER)
 							.addScalar("acon_nnmenorfaixa", Hibernate.INTEGER).addScalar("imov_nnareaconstruida", Hibernate.BIG_DECIMAL)
 							.addScalar("pcal_dspavimentocalcada", Hibernate.STRING).addScalar("prua_dspavimentorua", Hibernate.STRING)
-							.addScalar("depj_dsdespejo", Hibernate.STRING).addScalar("resv_vomenorfaixa", Hibernate.BIG_DECIMAL).addScalar(
-											"resv_vomaiorfaixa", Hibernate.BIG_DECIMAL).addScalar("imov_voreservatoriosuperior",
-											Hibernate.BIG_DECIMAL).addScalar("resv_vomenorfaixa", Hibernate.BIG_DECIMAL).addScalar(
-											"resv_vomaiorfaixa", Hibernate.BIG_DECIMAL).addScalar("imov_voreservatorioinferior",
-											Hibernate.BIG_DECIMAL).addScalar("pisc_vomenorfaixa", Hibernate.BIG_DECIMAL).addScalar(
-											"pisc_vomaiorfaixa", Hibernate.BIG_DECIMAL).addScalar("imov_vopiscina", Hibernate.BIG_DECIMAL)
-							.addScalar("poco_dspocotipo", Hibernate.STRING).addScalar("ds_LigacaoAguaDiametroAgua", Hibernate.STRING)
-							.addScalar("ds_LigacaoAguaMaterialAgua", Hibernate.STRING).addScalar("ds_LigacaoEsgotoDiametroEsg",
-											Hibernate.STRING).addScalar("ds_LigacaoESgotoMaterialEsg", Hibernate.STRING).addScalar(
-											"lesg_nnconsumominimoesgoto", Hibernate.INTEGER).addScalar("lesg_pccoleta",
-											Hibernate.BIG_DECIMAL).addScalar("lesg_pcesgoto", Hibernate.BIG_DECIMAL).addScalar(
-											"idHidrometroAgua", Hibernate.STRING).addScalar("anoFabricacaoHidrometroAgua",
-											Hibernate.INTEGER).addScalar("ds_HidrometroCapacidadeAgua", Hibernate.STRING).addScalar(
-											"ds_HidrometroMarcaAgua", Hibernate.STRING).addScalar("ds_HidrometroDiametroAgua",
-											Hibernate.STRING).addScalar("ds_HidrometroTipoAgua", Hibernate.STRING).addScalar(
-											"dt_InstalacaoHistoricoAgua", Hibernate.DATE).addScalar("ds_HidrometroLocalInstalacAgua",
-											Hibernate.STRING).addScalar("ds_HidrometroProtecaoAgua", Hibernate.STRING).addScalar(
-											"ic_HidrometroInstalacHistAgua", Hibernate.INTEGER).addScalar("idHidrometroEsgoto",
-											Hibernate.STRING).addScalar("anoFabricacaoHidrometroEsgoto", Hibernate.INTEGER).addScalar(
-											"ds_HidrometroCapacidadeEsgoto", Hibernate.STRING).addScalar("ds_HidrometroMarcaEsgoto",
-											Hibernate.STRING).addScalar("ds_HidrometroDiametroEsgoto", Hibernate.STRING).addScalar(
-											"ds_HidrometroTipoEsgoto", Hibernate.STRING).addScalar("dtHidroInstalacHistoricoEsg",
-											Hibernate.DATE).addScalar("ds_HidrometroLocalInstalacEsg", Hibernate.STRING).addScalar(
-											"ds_HidrometroProtecaoEsgoto", Hibernate.STRING).addScalar("ic_HidrometroInstalacaoEsg",
-											Hibernate.INTEGER).addScalar("lagu_nnconsumominimoagua", Hibernate.INTEGER).addScalar(
-											"lesg_nnconsumominimoesgoto", Hibernate.INTEGER).addScalar("imov_icjardim", Hibernate.SHORT)
-							.addScalar("rota_cdrota", Hibernate.SHORT).addScalar("imov_nnsequencialrota", Hibernate.INTEGER).addScalar(
-											"rota_id", Hibernate.INTEGER).addScalar("imov_nnsegmento", Hibernate.SHORT).list();
+							.addScalar("depj_dsdespejo", Hibernate.STRING).addScalar("resv_vomenorfaixa", Hibernate.BIG_DECIMAL)
+							.addScalar("resv_vomaiorfaixa", Hibernate.BIG_DECIMAL)
+							.addScalar("imov_voreservatoriosuperior", Hibernate.BIG_DECIMAL)
+							.addScalar("resv_vomenorfaixa", Hibernate.BIG_DECIMAL).addScalar("resv_vomaiorfaixa", Hibernate.BIG_DECIMAL)
+							.addScalar("imov_voreservatorioinferior", Hibernate.BIG_DECIMAL)
+							.addScalar("pisc_vomenorfaixa", Hibernate.BIG_DECIMAL).addScalar("pisc_vomaiorfaixa", Hibernate.BIG_DECIMAL)
+							.addScalar("imov_vopiscina", Hibernate.BIG_DECIMAL).addScalar("poco_dspocotipo", Hibernate.STRING)
+							.addScalar("ds_LigacaoAguaDiametroAgua", Hibernate.STRING)
+							.addScalar("ds_LigacaoAguaMaterialAgua", Hibernate.STRING)
+							.addScalar("ds_LigacaoEsgotoDiametroEsg", Hibernate.STRING)
+							.addScalar("ds_LigacaoESgotoMaterialEsg", Hibernate.STRING)
+							.addScalar("lesg_nnconsumominimoesgoto", Hibernate.INTEGER).addScalar("lesg_pccoleta", Hibernate.BIG_DECIMAL)
+							.addScalar("lesg_pcesgoto", Hibernate.BIG_DECIMAL).addScalar("idHidrometroAgua", Hibernate.STRING)
+							.addScalar("anoFabricacaoHidrometroAgua", Hibernate.INTEGER)
+							.addScalar("ds_HidrometroCapacidadeAgua", Hibernate.STRING)
+							.addScalar("ds_HidrometroMarcaAgua", Hibernate.STRING).addScalar("ds_HidrometroDiametroAgua", Hibernate.STRING)
+							.addScalar("ds_HidrometroTipoAgua", Hibernate.STRING).addScalar("dt_InstalacaoHistoricoAgua", Hibernate.DATE)
+							.addScalar("ds_HidrometroLocalInstalacAgua", Hibernate.STRING)
+							.addScalar("ds_HidrometroProtecaoAgua", Hibernate.STRING)
+							.addScalar("ic_HidrometroInstalacHistAgua", Hibernate.INTEGER)
+							.addScalar("idHidrometroEsgoto", Hibernate.STRING)
+							.addScalar("anoFabricacaoHidrometroEsgoto", Hibernate.INTEGER)
+							.addScalar("ds_HidrometroCapacidadeEsgoto", Hibernate.STRING)
+							.addScalar("ds_HidrometroMarcaEsgoto", Hibernate.STRING)
+							.addScalar("ds_HidrometroDiametroEsgoto", Hibernate.STRING)
+							.addScalar("ds_HidrometroTipoEsgoto", Hibernate.STRING)
+							.addScalar("dtHidroInstalacHistoricoEsg", Hibernate.DATE)
+							.addScalar("ds_HidrometroLocalInstalacEsg", Hibernate.STRING)
+							.addScalar("ds_HidrometroProtecaoEsgoto", Hibernate.STRING)
+							.addScalar("ic_HidrometroInstalacaoEsg", Hibernate.INTEGER)
+							.addScalar("lagu_nnconsumominimoagua", Hibernate.INTEGER)
+							.addScalar("lesg_nnconsumominimoesgoto", Hibernate.INTEGER).addScalar("imov_icjardim", Hibernate.SHORT)
+							.addScalar("rota_cdrota", Hibernate.SHORT).addScalar("imov_nnsequencialrota", Hibernate.INTEGER)
+							.addScalar("rota_id", Hibernate.INTEGER).addScalar("imov_nnsegmento", Hibernate.SHORT).list();
 
 		}catch(HibernateException e){
 
@@ -20755,8 +20694,8 @@ public class RepositorioImovelHBM
 	String numeroMoradoresFinal, String idAreaConstruidaFaixa,
 
 	String idUnidadeNegocio, String rotaInicial, String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal,
-					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal, String indicadorOrdenacao)
-					throws ErroRepositorioException{
+					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal, String indicadorOrdenacao,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal) throws ErroRepositorioException{
 
 		Collection retorno = null;
 
@@ -21281,7 +21220,8 @@ public class RepositorioImovelHBM
 							idAreaConstruidaFaixa, idUnidadeNegocio,
 
 							ConstantesSistema.GERAR_RELATORIO_IMOVEL, rotaInicial, rotaFinal, sequencialRotaInicial, sequencialRotaFinal,
-											segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+											segmentoInicial, segmentoFinal, subloteInicial, subloteFinal, consumoFixadoEsgotoPocoInicial,
+											consumoFixadoEsgotoPocoFinal);
 
 			/*
 			 * # COLOCANDO O VALOR NAS CONDIÇÕES#
@@ -21361,224 +21301,223 @@ public class RepositorioImovelHBM
 			numeroMoradoresFinal, idAreaConstruidaFaixa,
 
 			idUnidadeNegocio, rotaInicial, rotaFinal, sequencialRotaInicial, sequencialRotaFinal, segmentoInicial, segmentoFinal,
-							subloteInicial, subloteFinal);
+							subloteInicial, subloteFinal, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 			retorno = query
 
 			// .addScalar("imov_id",Hibernate.INTEGER)
 
-							.addScalar("uneg_id", Hibernate.INTEGER)
+			.addScalar("uneg_id", Hibernate.INTEGER)
 
-							.addScalar("uneg_nmunidadenegocio", Hibernate.STRING)
+			.addScalar("uneg_nmunidadenegocio", Hibernate.STRING)
 
-							.addScalar("greg_id", Hibernate.INTEGER)
+			.addScalar("greg_id", Hibernate.INTEGER)
 
-							.addScalar("greg_nmregional", Hibernate.STRING)
+			.addScalar("greg_nmregional", Hibernate.STRING)
 
-							.addScalar("loca_id", Hibernate.INTEGER)
+			.addScalar("loca_id", Hibernate.INTEGER)
 
-							.addScalar("loca_nmlocalidade", Hibernate.STRING)
+			.addScalar("loca_nmlocalidade", Hibernate.STRING)
 
-							.addScalar("imov_id", Hibernate.INTEGER)
+			.addScalar("imov_id", Hibernate.INTEGER)
 
-							.addScalar("imov_qteconomia", Hibernate.SHORT)
+			.addScalar("imov_qteconomia", Hibernate.SHORT)
 
-							.addScalar("stcm_cdsetorcomercial", Hibernate.INTEGER)
+			.addScalar("stcm_cdsetorcomercial", Hibernate.INTEGER)
 
-							.addScalar("stcm_nmsetorcomercial", Hibernate.STRING)
+			.addScalar("stcm_nmsetorcomercial", Hibernate.STRING)
 
-							.addScalar("qdra_nnquadra", Hibernate.INTEGER)
+			.addScalar("qdra_nnquadra", Hibernate.INTEGER)
 
-							.addScalar("imov_nnlote", Hibernate.SHORT)
+			.addScalar("imov_nnlote", Hibernate.SHORT)
 
-							.addScalar("imov_nnsublote", Hibernate.SHORT)
+			.addScalar("imov_nnsublote", Hibernate.SHORT)
 
-							.addScalar("last_id", Hibernate.INTEGER)
+			.addScalar("last_id", Hibernate.INTEGER)
 
-							.addScalar("lest_id", Hibernate.INTEGER)
+			.addScalar("lest_id", Hibernate.INTEGER)
 
-							.addScalar("lesg_pcesgoto", Hibernate.BIG_DECIMAL)
+			.addScalar("lesg_pcesgoto", Hibernate.BIG_DECIMAL)
 
-							.addScalar("lesg_dtligacao", Hibernate.DATE)
+			.addScalar("lesg_dtligacao", Hibernate.DATE)
 
-							.addScalar("lagu_dtligacaoagua", Hibernate.DATE)
+			.addScalar("lagu_dtligacaoagua", Hibernate.DATE)
 
-							.addScalar("idClienteUsuario", Hibernate.INTEGER)
+			.addScalar("idClienteUsuario", Hibernate.INTEGER)
 
-							.addScalar("nomeClienteUsuario", Hibernate.STRING)
+			.addScalar("nomeClienteUsuario", Hibernate.STRING)
 
-							.addScalar("idClienteResponsavel", Hibernate.INTEGER)
+			.addScalar("idClienteResponsavel", Hibernate.INTEGER)
 
-							.addScalar("nomeClienteResponsavel", Hibernate.STRING)
+			.addScalar("nomeClienteResponsavel", Hibernate.STRING)
 
-							.addScalar("logr_nmlogradouro", Hibernate.STRING)
+			.addScalar("logr_nmlogradouro", Hibernate.STRING)
 
-							.addScalar("lgtp_dslogradourotipo", Hibernate.STRING)
+			.addScalar("lgtp_dslogradourotipo", Hibernate.STRING)
 
-							.addScalar("lgtt_dslogradourotitulo", Hibernate.STRING)
+			.addScalar("lgtt_dslogradourotitulo", Hibernate.STRING)
 
-							.addScalar("cep_cdcep", Hibernate.INTEGER)
+			.addScalar("cep_cdcep", Hibernate.INTEGER)
 
-							.addScalar("edrf_dsenderecoreferencia", Hibernate.STRING)
+			.addScalar("edrf_dsenderecoreferencia", Hibernate.STRING)
 
-							.addScalar("imov_dscomplementoendereco", Hibernate.STRING)
+			.addScalar("imov_dscomplementoendereco", Hibernate.STRING)
 
-							.addScalar("imov_nnimovel", Hibernate.STRING)
+			.addScalar("imov_nnimovel", Hibernate.STRING)
 
-							.addScalar("bair_nmbairro", Hibernate.STRING)
+			.addScalar("bair_nmbairro", Hibernate.STRING)
 
-							.addScalar("muni_nmmunicipio", Hibernate.STRING)
+			.addScalar("muni_nmmunicipio", Hibernate.STRING)
 
-							.addScalar("unfe_dsufsigla", Hibernate.STRING)
+			.addScalar("unfe_dsufsigla", Hibernate.STRING)
 
-							.addScalar("imov_icimovelcondominio", Hibernate.INTEGER)
+			.addScalar("imov_icimovelcondominio", Hibernate.INTEGER)
 
-							.addScalar("imov_nnmorador", Hibernate.INTEGER)
+			.addScalar("imov_nnmorador", Hibernate.INTEGER)
 
-							.addScalar("imov_idimovelcondominio", Hibernate.INTEGER)
+			.addScalar("imov_idimovelcondominio", Hibernate.INTEGER)
 
-							.addScalar("imov_idimovelprincipal", Hibernate.INTEGER)
+			.addScalar("imov_idimovelprincipal", Hibernate.INTEGER)
 
-							.addScalar("imov_nnpontosutilizacao", Hibernate.INTEGER)
+			.addScalar("imov_nnpontosutilizacao", Hibernate.INTEGER)
 
-							.addScalar("iper_dsimovelperfil", Hibernate.STRING)
+			.addScalar("iper_dsimovelperfil", Hibernate.STRING)
 
-							.addScalar("acon_nnmaiorfaixa", Hibernate.INTEGER)
+			.addScalar("acon_nnmaiorfaixa", Hibernate.INTEGER)
 
-							.addScalar("acon_nnmenorfaixa", Hibernate.INTEGER)
+			.addScalar("acon_nnmenorfaixa", Hibernate.INTEGER)
 
-							.addScalar("imov_nnareaconstruida", Hibernate.BIG_DECIMAL)
+			.addScalar("imov_nnareaconstruida", Hibernate.BIG_DECIMAL)
 
-							.addScalar("pcal_id", Hibernate.INTEGER)
+			.addScalar("pcal_id", Hibernate.INTEGER)
 
-							.addScalar("prua_id", Hibernate.INTEGER)
+			.addScalar("prua_id", Hibernate.INTEGER)
 
-							.addScalar("depj_id", Hibernate.INTEGER)
+			.addScalar("depj_id", Hibernate.INTEGER)
 
-							.addScalar("resv_vomenorfaixa", Hibernate.BIG_DECIMAL)
+			.addScalar("resv_vomenorfaixa", Hibernate.BIG_DECIMAL)
 
-							.addScalar("resv_vomaiorfaixa", Hibernate.BIG_DECIMAL)
+			.addScalar("resv_vomaiorfaixa", Hibernate.BIG_DECIMAL)
 
-							.addScalar("resv_idreservatoriosuperior", Hibernate.INTEGER)
+			.addScalar("resv_idreservatoriosuperior", Hibernate.INTEGER)
 
-							.addScalar("resv_vomenorfaixa", Hibernate.BIG_DECIMAL)
+			.addScalar("resv_vomenorfaixa", Hibernate.BIG_DECIMAL)
 
-							.addScalar("resv_vomaiorfaixa", Hibernate.BIG_DECIMAL)
+			.addScalar("resv_vomaiorfaixa", Hibernate.BIG_DECIMAL)
 
-							.addScalar("resv_idreservatorioinferior", Hibernate.INTEGER)
+			.addScalar("resv_idreservatorioinferior", Hibernate.INTEGER)
 
-							.addScalar("pisc_vomenorfaixa", Hibernate.BIG_DECIMAL)
+			.addScalar("pisc_vomenorfaixa", Hibernate.BIG_DECIMAL)
 
-							.addScalar("pisc_vomaiorfaixa", Hibernate.BIG_DECIMAL)
+			.addScalar("pisc_vomaiorfaixa", Hibernate.BIG_DECIMAL)
 
-							.addScalar("pisc_id", Hibernate.INTEGER).addScalar(
+			.addScalar("pisc_id", Hibernate.INTEGER).addScalar(
 
-							"poco_dspocotipo", Hibernate.STRING).addScalar(
+			"poco_dspocotipo", Hibernate.STRING).addScalar(
 
-							"descLigAguaDiametroAgua",
+			"descLigAguaDiametroAgua",
 
-							Hibernate.INTEGER).addScalar(
+			Hibernate.INTEGER).addScalar(
 
-							"descLigAguaMaterialAgua",
+			"descLigAguaMaterialAgua",
 
-							Hibernate.STRING).addScalar(
+			Hibernate.STRING).addScalar(
 
-							"descLigEsgotoDiametroEsgoto",
+			"descLigEsgotoDiametroEsgoto",
 
-							Hibernate.INTEGER).addScalar(
+			Hibernate.INTEGER).addScalar(
 
-							"descLigEsgotoMatEsgoto",
+			"descLigEsgotoMatEsgoto",
 
-							Hibernate.STRING).addScalar(
+			Hibernate.STRING).addScalar(
 
-							"lesg_nnconsumominimoesgoto", Hibernate.INTEGER)
+			"lesg_nnconsumominimoesgoto", Hibernate.INTEGER)
 
-							.addScalar("lesg_pccoleta", Hibernate.BIG_DECIMAL)
+			.addScalar("lesg_pccoleta", Hibernate.BIG_DECIMAL)
 
-							.addScalar("lesg_pcesgoto", Hibernate.BIG_DECIMAL)
+			.addScalar("lesg_pcesgoto", Hibernate.BIG_DECIMAL)
 
-							.addScalar("idHidrometroAgua", Hibernate.STRING).addScalar(
+			.addScalar("idHidrometroAgua", Hibernate.STRING).addScalar(
 
-							"anoFabricancaoHidrometroAgua", Hibernate.INTEGER)
+			"anoFabricancaoHidrometroAgua", Hibernate.INTEGER)
 
-							.addScalar("descHidromCapacidadeAgua",
+			.addScalar("descHidromCapacidadeAgua",
 
-							Hibernate.INTEGER).addScalar(
+			Hibernate.INTEGER).addScalar(
 
-							"descricaoHidrometroMarcaAgua", Hibernate.INTEGER)
+			"descricaoHidrometroMarcaAgua", Hibernate.INTEGER)
 
-							.addScalar("descHidromDiametroAgua",
+			.addScalar("descHidromDiametroAgua",
 
-							Hibernate.INTEGER).addScalar(
+			Hibernate.INTEGER).addScalar(
 
-							"descricaoHidrometroTipoAgua", Hibernate.INTEGER)
+			"descricaoHidrometroTipoAgua", Hibernate.INTEGER)
 
-							.addScalar("dataHidromInstHistoricoAgua",
+			.addScalar("dataHidromInstHistoricoAgua",
 
-							Hibernate.DATE).addScalar(
+			Hibernate.DATE).addScalar(
 
-							"hidrometroLocalInstalacaoAgua", Hibernate.INTEGER)
+			"hidrometroLocalInstalacaoAgua", Hibernate.INTEGER)
 
-							.addScalar("descHidrometroProtecaoAgua",
+			.addScalar("descHidrometroProtecaoAgua",
 
-							Hibernate.INTEGER).addScalar(
+			Hibernate.INTEGER).addScalar(
 
-							"indHidromInstHistoricoAgua",
+			"indHidromInstHistoricoAgua",
 
-							Hibernate.INTEGER)
+			Hibernate.INTEGER)
 
-							.addScalar("idHidrometroEsgoto", Hibernate.STRING)
+			.addScalar("idHidrometroEsgoto", Hibernate.STRING)
 
-							.addScalar("anoFabricacaoHidrometroEsgoto",
+			.addScalar("anoFabricacaoHidrometroEsgoto",
 
-							Hibernate.INTEGER).addScalar(
+			Hibernate.INTEGER).addScalar(
 
-							"descHidromCapacidadeEsgoto",
+			"descHidromCapacidadeEsgoto",
 
-							Hibernate.STRING).addScalar(
+			Hibernate.STRING).addScalar(
 
-							"descricaoHidrometroMarcaEsgoto", Hibernate.STRING)
+			"descricaoHidrometroMarcaEsgoto", Hibernate.STRING)
 
-							.addScalar("descHidromDiametroEsgoto",
+			.addScalar("descHidromDiametroEsgoto",
 
-							Hibernate.STRING).addScalar(
+			Hibernate.STRING).addScalar(
 
-							"descricaoHidrometroTipoEsgoto", Hibernate.STRING)
+			"descricaoHidrometroTipoEsgoto", Hibernate.STRING)
 
-							.addScalar("dataHidromInstHistoricoEsgoto",
+			.addScalar("dataHidromInstHistoricoEsgoto",
 
-							Hibernate.DATE).addScalar(
+			Hibernate.DATE).addScalar(
 
-							"descHidromLocalInstEsgoto",
+			"descHidromLocalInstEsgoto",
 
-							Hibernate.STRING).addScalar(
+			Hibernate.STRING).addScalar(
 
-							"descHidromProtecaoEsgoto",
+			"descHidromProtecaoEsgoto",
 
-							Hibernate.STRING).addScalar(
+			Hibernate.STRING).addScalar(
 
-							"indHidromInstEsgoto",
+			"indHidromInstEsgoto",
 
-							Hibernate.INTEGER).addScalar(
+			Hibernate.INTEGER).addScalar(
 
-							"lagu_nnconsumominimoagua", Hibernate.INTEGER)
+			"lagu_nnconsumominimoagua", Hibernate.INTEGER)
 
-							.addScalar("lesg_nnconsumominimoesgoto", Hibernate.INTEGER)
+			.addScalar("lesg_nnconsumominimoesgoto", Hibernate.INTEGER)
 
-							.addScalar("imov_icjardim", Hibernate.SHORT).addScalar(
+			.addScalar("imov_icjardim", Hibernate.SHORT).addScalar(
 
-							"rota_cdrota", Hibernate.SHORT).addScalar(
+			"rota_cdrota", Hibernate.SHORT).addScalar(
 
-							"imov_nnsequencialrota", Hibernate.INTEGER)
+			"imov_nnsequencialrota", Hibernate.INTEGER)
 
-							.addScalar("fttp_id", Hibernate.INTEGER).addScalar(
+			.addScalar("fttp_id", Hibernate.INTEGER).addScalar(
 
-							"logr_id", Hibernate.INTEGER).addScalar(
+			"logr_id", Hibernate.INTEGER).addScalar(
 
-							"cfon_cdddd", Hibernate.STRING).addScalar(
+			"cfon_cdddd", Hibernate.STRING).addScalar(
 
-							"cfon_nnfone", Hibernate.STRING).addScalar("imov_nnsegmento", Hibernate.SHORT).addScalar("rota_id",
-											Hibernate.INTEGER).list();
+			"cfon_nnfone", Hibernate.STRING).addScalar("imov_nnsegmento", Hibernate.SHORT).addScalar("rota_id", Hibernate.INTEGER).list();
 
 		}catch(HibernateException e){
 
@@ -21875,8 +21814,8 @@ public class RepositorioImovelHBM
 	 * Gerar Boletim de Cadastro
 	 * 
 	 * @date 20/08/2007
+	 * @deprecated
 	 */
-
 	public Collection<EmitirDocumentoCobrancaBoletimCadastroHelper> pesquisarBoletimCadastro(
 
 	String idImovelCondominio, String idImovelPrincipal,
@@ -22236,7 +22175,7 @@ public class RepositorioImovelHBM
 
 			idAreaConstruidaFaixa, idUnidadeNegocio,
 
-			ConstantesSistema.GERAR_RELATORIO_IMOVEL, null, null, null, null, null, null, null, null);
+			ConstantesSistema.GERAR_RELATORIO_IMOVEL, null, null, null, null, null, null, null, null, null, null);
 
 			consulta = consulta.substring(0,
 
@@ -22300,7 +22239,7 @@ public class RepositorioImovelHBM
 
 			numeroMoradoresFinal, idAreaConstruidaFaixa,
 
-			idUnidadeNegocio, null, null, null, null, null, null, null, null);
+			idUnidadeNegocio, null, null, null, null, null, null, null, null, null, null);
 
 			Collection colecaoImovel = query
 
@@ -22629,8 +22568,8 @@ public class RepositorioImovelHBM
 			consulta = "select sum( imsc.quantidadeEconomias ) " + "from ImovelSubcategoria as imsc " + "where "
 							+ "  imsc.comp_id.imovel.id = :imovelId and " + "  imsc.comp_id.subcategoria.categoria.id = :categoriaId ";
 
-			soma = ((Number) session.createQuery(consulta).setInteger("imovelId", imovel.getId().intValue()).setInteger("categoriaId",
-							categoria.getId().intValue()).uniqueResult());
+			soma = ((Number) session.createQuery(consulta).setInteger("imovelId", imovel.getId().intValue())
+							.setInteger("categoriaId", categoria.getId().intValue()).uniqueResult());
 
 			if(soma != null){
 				retorno = soma.shortValue();
@@ -22959,9 +22898,9 @@ public class RepositorioImovelHBM
 		ClienteImovel clienteImovel = null;
 
 		try{
-			Criteria criteria = session.createCriteria(ClienteImovel.class).add(
-							Expression.eq("clienteRelacaoTipo.id", Integer.valueOf(ClienteRelacaoTipo.PROPRIETARIO))).add(
-							Expression.eq("imovel.id", idImovel)).setFetchMode("cliente", FetchMode.JOIN);
+			Criteria criteria = session.createCriteria(ClienteImovel.class)
+							.add(Expression.eq("clienteRelacaoTipo.id", Integer.valueOf(ClienteRelacaoTipo.PROPRIETARIO)))
+							.add(Expression.eq("imovel.id", idImovel)).setFetchMode("cliente", FetchMode.JOIN);
 
 			List<ClienteImovel> lista = criteria.list();
 			if(lista != null && !lista.isEmpty()){
@@ -23099,13 +23038,13 @@ public class RepositorioImovelHBM
 
 		try{
 
-			consulta.append(" select clim.clie_id as idCliente ").append(" from cliente_imovel clim ").append(
-							" inner join imovel imov on imov.imov_id = clim.imov_id ").append(
-							" where clim.imov_id = :idImovel and imov.imov_icexclusao != 1 and ").append(
-							" clim.crtp_id = :idClienteUsuario and clim.clim_dtrelacaofim is null  ");
+			consulta.append(" select clim.clie_id as idCliente ").append(" from cliente_imovel clim ")
+							.append(" inner join imovel imov on imov.imov_id = clim.imov_id ")
+							.append(" where clim.imov_id = :idImovel and imov.imov_icexclusao != 1 and ")
+							.append(" clim.crtp_id = :idClienteUsuario and clim.clim_dtrelacaofim is null  ");
 
-			retorno = (Integer) session.createSQLQuery(consulta.toString()).addScalar("idCliente", Hibernate.INTEGER).setInteger(
-"idImovel", idImovel).setShort("idClienteUsuario", idClienteRelacaoTipo).setMaxResults(1)
+			retorno = (Integer) session.createSQLQuery(consulta.toString()).addScalar("idCliente", Hibernate.INTEGER)
+							.setInteger("idImovel", idImovel).setShort("idClienteUsuario", idClienteRelacaoTipo).setMaxResults(1)
 							.uniqueResult();
 
 		}catch(HibernateException e){
@@ -24133,7 +24072,8 @@ public class RepositorioImovelHBM
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String rotaInicial,
 					String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal) throws ErroRepositorioException{
+					String segmentoFinal, String subloteInicial, String subloteFinal, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal) throws ErroRepositorioException{
 
 		Integer retorno = 0;
 		Object retornoConsulta = null;
@@ -24259,7 +24199,8 @@ public class RepositorioImovelHBM
 							quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 							idAreaConstruidaFaixa, idUnidadeNegocio, ConstantesSistema.GERAR_RELATORIO_IMOVEL, rotaInicial, rotaFinal,
-							sequencialRotaInicial, sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal));
+							sequencialRotaInicial, sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
+							consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal));
 
 			/*
 			 * # COLOCANDO O VALOR NAS CONDIÇÕES#
@@ -24278,7 +24219,8 @@ public class RepositorioImovelHBM
 							quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 							idAreaConstruidaFaixa, idUnidadeNegocio, rotaInicial, rotaFinal, sequencialRotaInicial, sequencialRotaFinal,
-							segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+							segmentoInicial, segmentoFinal, subloteInicial, subloteFinal, consumoFixadoEsgotoPocoInicial,
+							consumoFixadoEsgotoPocoFinal);
 
 			retornoConsulta = query.addScalar("quantidade", Hibernate.INTEGER).uniqueResult();
 
@@ -24447,25 +24389,25 @@ public class RepositorioImovelHBM
 			consultaBuffer.append(" LEFT OUTER JOIN ligacao_esgoto ligEsgoto ");
 			consultaBuffer.append(" on ligEsgoto.lesg_id = imov.imov_id ");
 
-			String condicionais = this.criarCondicionaisImovelClientesEspeciais(filtro.getIdUnidadeNegocio(), filtro
-							.getIdGerenciaRegional(), filtro.getIdLocalidadeInicial(), filtro.getIdLocalidadeFinal(), filtro
-							.getIdsPerfilImovel(), filtro.getIdsCategoria(), filtro.getIdsSubcategoria(), filtro.getIdSituacaoAgua(),
-							filtro.getIdSituacaoEsgoto(), filtro.getQtdeEconomiasInicial(), filtro.getQtdeEconomiasFinal(), filtro
-											.getIntervaloConsumoAguaInicial(), filtro.getIntervaloConsumoAguaFinal(), filtro
-											.getIntervaloConsumoEsgotoInicial(), filtro.getIntervaloConsumoEsgotoFinal(), filtro
-											.getIdClienteResponsavel(), filtro.getIntervaloConsumoResponsavelInicial(), filtro
-											.getIntervaloConsumoResponsavelFinal(), filtro.getDataInstalacaoHidrometroInicial(), filtro
-											.getDataInstalacaoHidrometroFinal(), filtro.getIdsCapacidadesHidrometro(), filtro
-											.getIdsTarifasConsumo(), filtro.getAnoMesFaturamento(), filtro.getIdLeituraAnormalidade(),
-											filtro.getLeituraAnormalidade(), filtro.getIdConsumoAnormalidade(), filtro.getConsumoAnormalidade(), filtro.getIdsClienteTipoEspecial());
+			String condicionais = this.criarCondicionaisImovelClientesEspeciais(filtro.getIdUnidadeNegocio(),
+							filtro.getIdGerenciaRegional(), filtro.getIdLocalidadeInicial(), filtro.getIdLocalidadeFinal(),
+							filtro.getIdsPerfilImovel(), filtro.getIdsCategoria(), filtro.getIdsSubcategoria(), filtro.getIdSituacaoAgua(),
+							filtro.getIdSituacaoEsgoto(), filtro.getQtdeEconomiasInicial(), filtro.getQtdeEconomiasFinal(),
+							filtro.getIntervaloConsumoAguaInicial(), filtro.getIntervaloConsumoAguaFinal(),
+							filtro.getIntervaloConsumoEsgotoInicial(), filtro.getIntervaloConsumoEsgotoFinal(),
+							filtro.getIdClienteResponsavel(), filtro.getIntervaloConsumoResponsavelInicial(),
+							filtro.getIntervaloConsumoResponsavelFinal(), filtro.getDataInstalacaoHidrometroInicial(),
+							filtro.getDataInstalacaoHidrometroFinal(), filtro.getIdsCapacidadesHidrometro(), filtro.getIdsTarifasConsumo(),
+							filtro.getAnoMesFaturamento(), filtro.getIdLeituraAnormalidade(), filtro.getLeituraAnormalidade(),
+							filtro.getIdConsumoAnormalidade(), filtro.getConsumoAnormalidade(), filtro.getIdsClienteTipoEspecial());
 
 			if(!Util.isVazioOuBranco(condicionais)){
 
 				consultaBuffer.append(condicionais);
 			}
 
-			retornoConsulta = session.createSQLQuery(consultaBuffer.toString()).addScalar("totalRegistros", Hibernate.INTEGER).setInteger(
-							"anoMesFaturamento", filtro.getAnoMesFaturamento()).setMaxResults(1).uniqueResult();
+			retornoConsulta = session.createSQLQuery(consultaBuffer.toString()).addScalar("totalRegistros", Hibernate.INTEGER)
+							.setInteger("anoMesFaturamento", filtro.getAnoMesFaturamento()).setMaxResults(1).uniqueResult();
 
 			if(retornoConsulta != null){
 
@@ -24740,8 +24682,7 @@ public class RepositorioImovelHBM
 
 			consulta.append("   and cc.cbct_id = :idCriterioCobranca");
 
-			consulta
-.append("   and ((cbct_ictelefone <> 1) or (cbct_ictelefone = 1 and exists (select ci.clie_id from cliente_imovel ci, cliente_fone cf where ci.imov_id = i.imov_id and cf.clie_id = ci.clie_id and clim_dtrelacaofim is null and crtp_id = :idClienteRelacaoTipo)))");
+			consulta.append("   and ((cbct_ictelefone <> 1) or (cbct_ictelefone = 1 and exists (select ci.clie_id from cliente_imovel ci, cliente_fone cf where ci.imov_id = i.imov_id and cf.clie_id = ci.clie_id and clim_dtrelacaofim is null and crtp_id = :idClienteRelacaoTipo)))");
 			// consulta.append("   and ((cbct_iccpf <> 1) or (cbct_iccpf = 1 and exists (select ci.clie_id from cliente_imovel ci, cliente cl where ci.imov_id = i.imov_id and cl.clie_id = ci.clie_id and clim_dtrelacaofim is null and crtp_id = :idClienteRelacaoTipo and not (clie_nncpf is null and clie_nncnpj is null))))");
 			consulta.append("   and exists");
 			consulta.append(" (select sub.catg_id");
@@ -24750,12 +24691,9 @@ public class RepositorioImovelHBM
 			consulta.append("     and isub.scat_id = sub.scat_id");
 			consulta.append("     and ccl.catg_id  = sub.catg_id");
 			consulta.append("     and ccl.cbct_id = cc.cbct_id)");
-			consulta
-							.append(" and i.iper_id in (select nvl(ccl.iper_id,i.iper_id) from cobranca_criterio_linha ccl where ccl.cbct_id = cc.cbct_id )");
-			consulta
-							.append(" and i.last_id in (select nvl(csla.last_id,i.last_id) from criterio_situacao_ligacao_agua csla where csla.cbct_id = cc.cbct_id )");
-			consulta
-							.append(" and i.lest_id in (select nvl(csle.lest_id,i.lest_id) from criterio_situacao_ligacao_esgo csle where csle.cbct_id = cc.cbct_id )");
+			consulta.append(" and i.iper_id in (select nvl(ccl.iper_id,i.iper_id) from cobranca_criterio_linha ccl where ccl.cbct_id = cc.cbct_id )");
+			consulta.append(" and i.last_id in (select nvl(csla.last_id,i.last_id) from criterio_situacao_ligacao_agua csla where csla.cbct_id = cc.cbct_id )");
+			consulta.append(" and i.lest_id in (select nvl(csle.lest_id,i.lest_id) from criterio_situacao_ligacao_esgo csle where csle.cbct_id = cc.cbct_id )");
 
 			consulta.append(" and i.imov_icexclusao <> 1");
 			consulta.append(" and sc.stcm_id = :idSetorComercial ");
@@ -24791,8 +24729,8 @@ public class RepositorioImovelHBM
 
 					if(idImoveisAux.size() == 1000){
 
-						query.setParameterList("imoveisId", idImoveisAux).setInteger("idSetorComercial", idSetorComercial).setInteger(
-"idCriterioCobranca", criterioCobranca.getId())
+						query.setParameterList("imoveisId", idImoveisAux).setInteger("idSetorComercial", idSetorComercial)
+										.setInteger("idCriterioCobranca", criterioCobranca.getId())
 										.setInteger("idClienteRelacaoTipo", clienteRelacaoTipo.getId());
 						imoveis.addAll(query.list());
 						idImoveisAux.clear();
@@ -24802,8 +24740,8 @@ public class RepositorioImovelHBM
 				// Ao sair do while, checa se tem imoveis que ainda nao foram processados.
 				if(!Util.isVazioOrNulo(idImoveisAux) && idImoveisAux.size() < 1000){
 
-					query.setParameterList("imoveisId", idImoveisAux).setInteger("idSetorComercial", idSetorComercial).setInteger(
-"idCriterioCobranca", criterioCobranca.getId())
+					query.setParameterList("imoveisId", idImoveisAux).setInteger("idSetorComercial", idSetorComercial)
+									.setInteger("idCriterioCobranca", criterioCobranca.getId())
 									.setInteger("idClienteRelacaoTipo", clienteRelacaoTipo.getId());
 					imoveis.addAll(query.list());
 					idImoveisAux.clear();
@@ -24887,8 +24825,8 @@ public class RepositorioImovelHBM
 			consulta.append("WHERE imov.quadra.id = :idQuadra ");
 			consulta.append("AND imov.rota.id = :idRota");
 
-			retornoConsulta = (Object) session.createQuery(consulta.toString()).setInteger("idQuadra", idQuadra).setInteger("idRota",
-							idRota).setMaxResults(1).uniqueResult();
+			retornoConsulta = (Object) session.createQuery(consulta.toString()).setInteger("idQuadra", idQuadra)
+							.setInteger("idRota", idRota).setMaxResults(1).uniqueResult();
 
 			if(retornoConsulta == null){
 
@@ -24938,8 +24876,8 @@ public class RepositorioImovelHBM
 			consulta.append("WHERE imov.quadra.id = :idQuadra ");
 			consulta.append("AND imov.distritoOperacional.id = :idDistritoOperacional");
 
-			retornoConsulta = (Object) session.createQuery(consulta.toString()).setInteger("idQuadra", idQuadra).setInteger(
-							"idDistritoOperacional", idDistritoOperacional).setMaxResults(1).uniqueResult();
+			retornoConsulta = (Object) session.createQuery(consulta.toString()).setInteger("idQuadra", idQuadra)
+							.setInteger("idDistritoOperacional", idDistritoOperacional).setMaxResults(1).uniqueResult();
 
 			if(retornoConsulta == null){
 
@@ -24987,8 +24925,8 @@ public class RepositorioImovelHBM
 			consulta.append("WHERE imov.quadra.id = :idQuadra ");
 			consulta.append("AND imov.rota.id <> :idRota");
 
-			retornoConsulta = (Object) session.createQuery(consulta.toString()).setInteger("idQuadra", idQuadra).setInteger("idRota",
-							idRota).setMaxResults(1).uniqueResult();
+			retornoConsulta = (Object) session.createQuery(consulta.toString()).setInteger("idQuadra", idQuadra)
+							.setInteger("idRota", idRota).setMaxResults(1).uniqueResult();
 
 			if(retornoConsulta == null){
 
@@ -25038,8 +24976,8 @@ public class RepositorioImovelHBM
 			consulta.append("WHERE imov.quadra.id = :idQuadra ");
 			consulta.append("AND imov.distritoOperacional.id <> :idDistritoOperacional");
 
-			retornoConsulta = (Object) session.createQuery(consulta.toString()).setInteger("idQuadra", idQuadra).setInteger(
-							"idDistritoOperacional", idDistritoOperacional).setMaxResults(1).uniqueResult();
+			retornoConsulta = (Object) session.createQuery(consulta.toString()).setInteger("idQuadra", idQuadra)
+							.setInteger("idDistritoOperacional", idDistritoOperacional).setMaxResults(1).uniqueResult();
 
 			if(retornoConsulta == null){
 
@@ -25090,12 +25028,13 @@ public class RepositorioImovelHBM
 
 				update.append("and imov.rota.id = :idRotaAnterior");
 
-				session.createQuery(update.toString()).setInteger("idRotaAtualizar", idRotaAtualizar).setTimestamp("ultimaAlteracao",
-								new Date()).setInteger("idQuadra", idQuadra).setInteger("idRotaAnterior", idRotaAnterior).executeUpdate();
+				session.createQuery(update.toString()).setInteger("idRotaAtualizar", idRotaAtualizar)
+								.setTimestamp("ultimaAlteracao", new Date()).setInteger("idQuadra", idQuadra)
+								.setInteger("idRotaAnterior", idRotaAnterior).executeUpdate();
 			}else{
 
-				session.createQuery(update.toString()).setInteger("idRotaAtualizar", idRotaAtualizar).setTimestamp("ultimaAlteracao",
-								new Date()).setInteger("idQuadra", idQuadra).executeUpdate();
+				session.createQuery(update.toString()).setInteger("idRotaAtualizar", idRotaAtualizar)
+								.setTimestamp("ultimaAlteracao", new Date()).setInteger("idQuadra", idQuadra).executeUpdate();
 			}
 
 		}catch(HibernateException e){
@@ -25141,8 +25080,8 @@ public class RepositorioImovelHBM
 				update.append("and imov.distritoOperacional.id = :idDistritoOperacionalAnterior");
 
 				session.createQuery(update.toString()).setInteger("idDistritoOperacionalAtualizar", idDistritoOperacionalAtualizar)
-								.setTimestamp("ultimaAlteracao", new Date()).setInteger("idQuadra", idQuadra).setInteger(
-												"idDistritoOperacionalAnterior", idDistritoOperacionalAnterior).executeUpdate();
+								.setTimestamp("ultimaAlteracao", new Date()).setInteger("idQuadra", idQuadra)
+								.setInteger("idDistritoOperacionalAnterior", idDistritoOperacionalAnterior).executeUpdate();
 			}else{
 
 				session.createQuery(update.toString()).setInteger("idDistritoOperacionalAtualizar", idDistritoOperacionalAtualizar)
@@ -25296,8 +25235,7 @@ public class RepositorioImovelHBM
 			consulta.append("  NOT EXISTS   (SELECT ci.clie_id  FROM CLIENTE_IMOVEL ci   ");
 			consulta.append(" LEFT JOIN CLIENTE clie   ON ci.CLIE_ID = clie.CLIE_ID ");
 			consulta.append(" LEFT JOIN CLIENTE_TIPO cltp   ON clie.CLTP_ID   = cltp.CLTP_ID ");
-			consulta
-							.append("  WHERE ci.CRTP_ID  = :clienteRelacaoTipoResp AND (cltp.EPOD_ID = :municipal   OR cltp.EPOD_ID   = :estadual   OR cltp.EPOD_ID   = :federal) AND ci.IMOV_ID = i.IMOV_ID    GROUP BY ci.clie_id ) and ");
+			consulta.append("  WHERE ci.CRTP_ID  = :clienteRelacaoTipoResp AND (cltp.EPOD_ID = :municipal   OR cltp.EPOD_ID   = :estadual   OR cltp.EPOD_ID   = :federal) AND ci.IMOV_ID = i.IMOV_ID    GROUP BY ci.clie_id ) and ");
 
 			consulta.append("NOT EXISTS  ");
 			consulta.append(" (SELECT ");
@@ -25315,15 +25253,17 @@ public class RepositorioImovelHBM
 			// consulta.append("	AND i.LOCA_ID = 27 ");
 			// apenas teste -----retirar
 
-			retorno = session.createSQLQuery(consulta.toString()).addScalar("idImovel", Hibernate.INTEGER).addScalar("idLocalidade",
-							Hibernate.INTEGER).addScalar("cdComercial", Hibernate.INTEGER).addScalar("cdRota", Hibernate.SHORT).addScalar(
-							"numeroSegmento", Hibernate.SHORT).addScalar("lote", Hibernate.SHORT).addScalar("sublote", Hibernate.SHORT)
-							.addScalar("idCliente", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING).addScalar(
-											"numeroHidrometro", Hibernate.STRING).setInteger("clienteRelacaoTipo",
-											ClienteRelacaoTipo.PROPRIETARIO).setInteger("clienteRelacaoTipoResp",
-											ClienteRelacaoTipo.RESPONSAVEL).setInteger("municipal", EsferaPoder.MUNICIPAL).setInteger(
-											"estadual", EsferaPoder.ESTADUAL).setInteger("federal", EsferaPoder.FEDERAL).setInteger(
-											"idCategoria", Categoria.PUBLICO).setInteger("idSetorComercial", idSetorComercial).list();
+			retorno = session.createSQLQuery(consulta.toString()).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("cdComercial", Hibernate.INTEGER)
+							.addScalar("cdRota", Hibernate.SHORT).addScalar("numeroSegmento", Hibernate.SHORT)
+							.addScalar("lote", Hibernate.SHORT).addScalar("sublote", Hibernate.SHORT)
+							.addScalar("idCliente", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING)
+							.addScalar("numeroHidrometro", Hibernate.STRING)
+							.setInteger("clienteRelacaoTipo", ClienteRelacaoTipo.PROPRIETARIO)
+							.setInteger("clienteRelacaoTipoResp", ClienteRelacaoTipo.RESPONSAVEL)
+							.setInteger("municipal", EsferaPoder.MUNICIPAL).setInteger("estadual", EsferaPoder.ESTADUAL)
+							.setInteger("federal", EsferaPoder.FEDERAL).setInteger("idCategoria", Categoria.PUBLICO)
+							.setInteger("idSetorComercial", idSetorComercial).list();
 
 			Object[] list = retorno.toArray();
 
@@ -25362,8 +25302,8 @@ public class RepositorioImovelHBM
 			consulta.append("inner join ct.imovel im ");
 			consulta.append("where im.id = :imovelId and ct.anoMesReferenciaConta = :anoMesReferencia");
 
-			retorno = session.createQuery(consulta.toString()).setInteger("imovelId", imovelId.intValue()).setInteger("anoMesReferencia",
-							anoMesReferencia).setMaxResults(1).uniqueResult();
+			retorno = session.createQuery(consulta.toString()).setInteger("imovelId", imovelId.intValue())
+							.setInteger("anoMesReferencia", anoMesReferencia).setMaxResults(1).uniqueResult();
 		}catch(HibernateException e){
 
 			// levanta a exceção para a próxima camada
@@ -25436,8 +25376,8 @@ public class RepositorioImovelHBM
 			consulta.append("	ci.CRTP_ID = :clienteRelacaoTipo and ");
 			consulta.append("	ci.IMOV_ID = :idImovel ");
 
-			retorno = session.createSQLQuery(consulta.toString()).addScalar("idCliente", Hibernate.INTEGER).setInteger(
-							"clienteRelacaoTipo", ClienteRelacaoTipo.RESPONSAVEL).setInteger("idImovel", idImovel).list();
+			retorno = session.createSQLQuery(consulta.toString()).addScalar("idCliente", Hibernate.INTEGER)
+							.setInteger("clienteRelacaoTipo", ClienteRelacaoTipo.RESPONSAVEL).setInteger("idImovel", idImovel).list();
 
 		}catch(HibernateException e){
 
@@ -25470,8 +25410,8 @@ public class RepositorioImovelHBM
 			consulta.append("where imov_id = :idImovel ");
 			consulta.append("group by CATG_ID ");
 
-			Query query = session.createSQLQuery(consulta.toString()).addScalar("somatorioQtdEconomias", Hibernate.INTEGER).addScalar(
-							"categoria", Hibernate.INTEGER);
+			Query query = session.createSQLQuery(consulta.toString()).addScalar("somatorioQtdEconomias", Hibernate.INTEGER)
+							.addScalar("categoria", Hibernate.INTEGER);
 
 			retorno = (Collection) query.setInteger("idImovel", idImovel).list();
 
@@ -25507,8 +25447,8 @@ public class RepositorioImovelHBM
 			sql.append(" and cliImovel.crtp_id = " + ClienteRelacaoTipo.RESPONSAVEL.toString());
 			sql.append(" and cliImovel.clim_dtrelacaofim is null ");
 
-			retorno = (Object[]) session.createSQLQuery(sql.toString()).addScalar("idCliente", Hibernate.INTEGER).addScalar("nomeCliente",
-							Hibernate.STRING).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createSQLQuery(sql.toString()).addScalar("idCliente", Hibernate.INTEGER)
+							.addScalar("nomeCliente", Hibernate.STRING).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -25799,8 +25739,8 @@ public class RepositorioImovelHBM
 	String numeroMoradoresFinal, String idAreaConstruidaFaixa,
 
 	String idUnidadeNegocio, String cdRotaInicial, String cdRotaFinal, String sequencialRotaInicial, String sequencialRotaFinal,
-					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal)
-					throws ErroRepositorioException{
+					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal) throws ErroRepositorioException{
 
 		Integer retorno = null;
 
@@ -25942,7 +25882,8 @@ public class RepositorioImovelHBM
 											idClienteTipo, idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal,
 											numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa, idUnidadeNegocio,
 											ConstantesSistema.GERAR_RELATORIO_IMOVEL, cdRotaInicial, cdRotaFinal, sequencialRotaInicial,
-											sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+											sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
+											consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 			/*
 			 * # COLOCANDO O VALOR NAS CONDIÇÕES#
@@ -25961,7 +25902,8 @@ public class RepositorioImovelHBM
 							quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 							idAreaConstruidaFaixa, idUnidadeNegocio, cdRotaInicial, cdRotaFinal, sequencialRotaInicial,
-							sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+							sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
+							consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 			retorno = (Integer) query.addScalar("count", Hibernate.INTEGER).setMaxResults(1).uniqueResult();
 
@@ -26124,8 +26066,7 @@ public class RepositorioImovelHBM
 	 * 
 	 * @author Ítalo Almeida
 	 */
-	public Boolean verificarFaturamentoGrupoImovelIniciado(Integer idImovel, String atividadeFaturamento)
-					throws ErroRepositorioException{
+	public Boolean verificarFaturamentoGrupoImovelIniciado(Integer idImovel, String atividadeFaturamento) throws ErroRepositorioException{
 
 		Boolean retorno = false;
 		Session session = HibernateUtil.getSession();
@@ -26312,30 +26253,30 @@ public class RepositorioImovelHBM
 
 			consulta.append("  SELECT ");
 			consulta.append("  LTRIM(to_char(idLocalidade, '000'), ' ') ||'.'|| LTRIM(to_char(codigoSetor, '000'), ' ') ");
-			consulta.append("  ||'.'|| LTRIM(to_char(numeroQuadra, '000'), ' ') ||'.'|| LTRIM(to_char(lote, '0000'), ' ') ||'.'|| LTRIM(to_char(sublote, '000'), ' ') as inscricao, ");
-			consulta.append("  idLocalidade, ");
-			consulta.append("  nomeLocalidade, ");
-			consulta.append("  matricula, ");
-			consulta.append("  situacaoCobranca, ");
-			consulta.append("  usuarioPossuiCPFCNPJ, ");
+			consulta.append("  ||'.'|| LTRIM(to_char(numeroQuadra, '000'), ' ') ||'.'|| LTRIM(to_char(lote, '0000'), ' ') ||'.'|| LTRIM(to_char(sublote, '000'), ' ') as inscricao, ");// 0
+			consulta.append("  idLocalidade, ");// 1
+			consulta.append("  nomeLocalidade, "); // 2
+			consulta.append("  matricula, ");// 3
+			consulta.append("  situacaoCobranca, ");// 4
+			consulta.append("  usuarioPossuiCPFCNPJ, ");// 5
 			consulta.append("  SUM(valorAtrasoAte30Dias)       AS valAtrasoAte30Dias, "); // 6
-			consulta.append("  SUM(valorAtraso31A60Dias)       AS valAtraso31A60Dias, ");
-			consulta.append("  SUM(valorAtraso61A90Dias)       AS valAtraso61A90Dias, ");
-			consulta.append("  SUM(valorAtraso91A120Dias)      AS valAtraso91A120Dias, ");
-			consulta.append("  SUM(valorAtraso121A150Dias)     AS valAtraso121A150Dias, ");
-			consulta.append("  SUM(valorAtraso151A180Dias)     AS valAtraso151A180Dias, ");
-			consulta.append("  SUM(valorAtraso181DiasA5Anos)   AS valAtraso181DiasA5Anos, ");
-			consulta.append("  SUM(valorAtrasoDe5A10Anos)      AS valAtrasoDe5A10Anos, ");
-			consulta.append("  SUM(valorTotal)                 AS valTotalContas, ");
-			consulta.append("  SUM(quantidadeAtrasoAte30Dias)  AS qtdAtrasoAte30Dias, ");
-			consulta.append("  SUM(quantidadeAtraso31A60Dias)  AS qtdAtraso31A60Dias, ");
-			consulta.append("  SUM(quantidadeAtraso61A90Dias)  AS qtdAtraso61A90Dias, ");
-			consulta.append("  SUM(quantidadeAtraso91A120Dias) AS qtdAtraso91A120Dias, ");
-			consulta.append("  SUM(quantidadeAtraso121A150Dias) AS qtdAtraso121A150Dias, ");
-			consulta.append("  SUM(quantidadeAtraso151A180Dias)     AS qtdAtraso151A180Dias, ");
-			consulta.append("  SUM(quantidadeAtraso181DiasA5Anos)   AS qtdAtraso181DiasA5Anos, ");
-			consulta.append("  SUM(quantidadeAtrasoDe5A10Anos)     AS qtdAtrasoDe5A10Anos, ");
-			consulta.append("  SUM(quantidadeTotal)       AS qtdTotalContas ");
+			consulta.append("  SUM(valorAtraso31A90Dias)       AS valAtraso31A90Dias, "); // 7
+			// consulta.append("  SUM(valorAtraso61A90Dias)       AS valAtraso61A90Dias, ");
+			consulta.append("  SUM(valorAtraso91A180Dias)      AS valAtraso91A180Dias, "); // 8
+			consulta.append("  SUM(valorAtraso181A365Dias)     AS valAtraso181A365Dias, "); // 9
+			// consulta.append("  SUM(valorAtraso151A180Dias)     AS valAtraso151A180Dias, ");
+			consulta.append("  SUM(valorAtraso366DiasA5Anos)   AS valAtraso366DiasA5Anos, "); // 10
+			consulta.append("  SUM(valorAtrasoDe5A10Anos)      AS valAtrasoDe5A10Anos, ");// 11
+			consulta.append("  SUM(valorTotal)                 AS valTotalContas, "); // 12
+			consulta.append("  SUM(quantidadeAtrasoAte30Dias)  AS qtdAtrasoAte30Dias, ");// 13
+			consulta.append("  SUM(quantidadeAtraso31A90Dias)  AS qtdAtraso31A90Dias, ");// 14
+			// consulta.append("  SUM(quantidadeAtraso61A90Dias)  AS qtdAtraso61A90Dias, ");
+			consulta.append("  SUM(quantidadeAtraso91A180Dias) AS qtdAtraso91A180Dias, ");// 15
+			consulta.append("  SUM(quantidadeAtraso181A365Dias) AS qtdAtraso181A365Dias, ");// 16
+			// consulta.append("  SUM(quantidadeAtraso151A180Dias)     AS qtdAtraso151A180Dias, ");
+			consulta.append("  SUM(quantidadeAtraso366DiasA5Anos)   AS qtdAtraso366DiasA5Anos, ");// 17
+			consulta.append("  SUM(quantidadeAtrasoDe5A10Anos)     AS qtdAtrasoDe5A10Anos, ");// 18
+			consulta.append("  SUM(quantidadeTotal)       AS qtdTotalContas ");// 19
 			consulta.append("  FROM ");
 			consulta.append("  ( ");
 			consulta.append("  ");
@@ -26367,50 +26308,50 @@ public class RepositorioImovelHBM
 			consulta.append("    CASE ");
 			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                 < CURRENT_TIMESTAMP ");
 			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 31 ");
-			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 60 ");
-			consulta.append("      THEN SUM((NVL(con.cnta_vlagua,0) + NVL(con.cnta_vlesgoto,0) + NVL(con.cnta_vldebitos,0) - (NVL(con.cnta_vlcreditos,0) + NVL(con.cnta_vlimpostos,0)))) ");
-			consulta.append("      ELSE 0 ");
-			consulta.append("    END) AS valorAtraso31A60Dias, ");
-			consulta.append("    ( ");
-			consulta.append("    CASE ");
-			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                 < CURRENT_TIMESTAMP ");
-			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 61 ");
 			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 90 ");
 			consulta.append("      THEN SUM((NVL(con.cnta_vlagua,0) + NVL(con.cnta_vlesgoto,0) + NVL(con.cnta_vldebitos,0) - (NVL(con.cnta_vlcreditos,0) + NVL(con.cnta_vlimpostos,0)))) ");
 			consulta.append("      ELSE 0 ");
-			consulta.append("    END) AS valorAtraso61A90Dias, ");
+			consulta.append("    END) AS valorAtraso31A90Dias, ");
+			// consulta.append("    ( ");
+			// consulta.append("    CASE ");
+			// consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                 < CURRENT_TIMESTAMP ");
+			// consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 61 ");
+			// consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 90 ");
+			// consulta.append("      THEN SUM((NVL(con.cnta_vlagua,0) + NVL(con.cnta_vlesgoto,0) + NVL(con.cnta_vldebitos,0) - (NVL(con.cnta_vlcreditos,0) + NVL(con.cnta_vlimpostos,0)))) ");
+			// consulta.append("      ELSE 0 ");
+			// consulta.append("    END) AS valorAtraso61A90Dias, ");
 			consulta.append("    ( ");
 			consulta.append("    CASE ");
 			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                < CURRENT_TIMESTAMP ");
 			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 91 ");
-			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 120 ");
-			consulta.append("      THEN SUM((NVL(con.cnta_vlagua,0) + NVL(con.cnta_vlesgoto,0) + NVL(con.cnta_vldebitos,0) - (NVL(con.cnta_vlcreditos,0) + NVL(con.cnta_vlimpostos,0)))) ");
-			consulta.append("      ELSE 0 ");
-			consulta.append("    END)                        AS valorAtraso91A120Dias, ");
-			consulta.append("     ( ");
-			consulta.append("    CASE ");
-			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                < CURRENT_TIMESTAMP ");
-			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 121 ");
-			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 150 ");
-			consulta.append("      THEN SUM((NVL(con.cnta_vlagua,0) + NVL(con.cnta_vlesgoto,0) + NVL(con.cnta_vldebitos,0) - (NVL(con.cnta_vlcreditos,0) + NVL(con.cnta_vlimpostos,0)))) ");
-			consulta.append("      ELSE 0 ");
-			consulta.append("    END)                        AS valorAtraso121A150Dias, ");
-			consulta.append("     ( ");
-			consulta.append("    CASE ");
-			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                < CURRENT_TIMESTAMP ");
-			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 151 ");
 			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 180 ");
 			consulta.append("      THEN SUM((NVL(con.cnta_vlagua,0) + NVL(con.cnta_vlesgoto,0) + NVL(con.cnta_vldebitos,0) - (NVL(con.cnta_vlcreditos,0) + NVL(con.cnta_vlimpostos,0)))) ");
 			consulta.append("      ELSE 0 ");
-			consulta.append("    END)                        AS valorAtraso151A180Dias, ");
+			consulta.append("    END)                        AS valorAtraso91A180Dias, ");
 			consulta.append("     ( ");
 			consulta.append("    CASE ");
 			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                < CURRENT_TIMESTAMP ");
 			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 181 ");
+			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 365 ");
+			consulta.append("      THEN SUM((NVL(con.cnta_vlagua,0) + NVL(con.cnta_vlesgoto,0) + NVL(con.cnta_vldebitos,0) - (NVL(con.cnta_vlcreditos,0) + NVL(con.cnta_vlimpostos,0)))) ");
+			consulta.append("      ELSE 0 ");
+			consulta.append("    END)                        AS valorAtraso181A365Dias, ");
+			// consulta.append("     ( ");
+			// consulta.append("    CASE ");
+			// consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                < CURRENT_TIMESTAMP ");
+			// consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 151 ");
+			// consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 180 ");
+			// consulta.append("      THEN SUM((NVL(con.cnta_vlagua,0) + NVL(con.cnta_vlesgoto,0) + NVL(con.cnta_vldebitos,0) - (NVL(con.cnta_vlcreditos,0) + NVL(con.cnta_vlimpostos,0)))) ");
+			// consulta.append("      ELSE 0 ");
+			// consulta.append("    END)                        AS valorAtraso151A180Dias, ");
+			consulta.append("     ( ");
+			consulta.append("    CASE ");
+			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                < CURRENT_TIMESTAMP ");
+			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 366 ");
 			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 1825 ");
 			consulta.append("      THEN SUM((NVL(con.cnta_vlagua,0) + NVL(con.cnta_vlesgoto,0) + NVL(con.cnta_vldebitos,0) - (NVL(con.cnta_vlcreditos,0) + NVL(con.cnta_vlimpostos,0)))) ");
 			consulta.append("      ELSE 0 ");
-			consulta.append("    END)                        AS valorAtraso181DiasA5Anos, ");
+			consulta.append("    END)                        AS valorAtraso366DiasA5Anos, ");
 			consulta.append("     ( ");
 			consulta.append("    CASE ");
 			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                < CURRENT_TIMESTAMP ");
@@ -26431,50 +26372,50 @@ public class RepositorioImovelHBM
 			consulta.append("    CASE ");
 			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                 < CURRENT_TIMESTAMP ");
 			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 31 ");
-			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 60 ");
-			consulta.append("      THEN COUNT(DISTINCT(con.cnta_id)) ");
-			consulta.append("      ELSE 0 ");
-			consulta.append("    END) quantidadeAtraso31A60Dias, ");
-			consulta.append("    ( ");
-			consulta.append("    CASE ");
-			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                 < CURRENT_TIMESTAMP ");
-			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 61 ");
 			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 90 ");
 			consulta.append("      THEN COUNT(DISTINCT(con.cnta_id)) ");
 			consulta.append("      ELSE 0 ");
-			consulta.append("    END) AS quantidadeAtraso61A90Dias, ");
+			consulta.append("    END) quantidadeAtraso31A90Dias, ");
+			// consulta.append("    ( ");
+			// consulta.append("    CASE ");
+			// consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                 < CURRENT_TIMESTAMP ");
+			// consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 61 ");
+			// consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 90 ");
+			// consulta.append("      THEN COUNT(DISTINCT(con.cnta_id)) ");
+			// consulta.append("      ELSE 0 ");
+			// consulta.append("    END) AS quantidadeAtraso61A90Dias, ");
 			consulta.append("    ( ");
 			consulta.append("    CASE ");
 			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                < CURRENT_TIMESTAMP ");
 			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 91 ");
-			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 120 ");
-			consulta.append("      THEN COUNT(DISTINCT(con.cnta_id)) ");
-			consulta.append("      ELSE 0 ");
-			consulta.append("    END)                         AS quantidadeAtraso91A120Dias, ");
-			consulta.append("    ( ");
-			consulta.append("    CASE ");
-			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                < CURRENT_TIMESTAMP ");
-			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 121 ");
-			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 150 ");
-			consulta.append("      THEN COUNT(DISTINCT(con.cnta_id)) ");
-			consulta.append("      ELSE 0 ");
-			consulta.append("    END)                         AS quantidadeAtraso121A150Dias, ");
-			consulta.append("     ( ");
-			consulta.append("    CASE ");
-			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                < CURRENT_TIMESTAMP ");
-			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 151 ");
 			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 180 ");
 			consulta.append("      THEN COUNT(DISTINCT(con.cnta_id)) ");
 			consulta.append("      ELSE 0 ");
-			consulta.append("    END)                        AS quantidadeAtraso151A180Dias, ");
-			consulta.append("     ( ");
+			consulta.append("    END)                         AS quantidadeAtraso91A180Dias, ");
+			consulta.append("    ( ");
 			consulta.append("    CASE ");
 			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                < CURRENT_TIMESTAMP ");
 			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 181 ");
+			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 365 ");
+			consulta.append("      THEN COUNT(DISTINCT(con.cnta_id)) ");
+			consulta.append("      ELSE 0 ");
+			consulta.append("    END)                         AS quantidadeAtraso181A365Dias, ");
+			// consulta.append("     ( ");
+			// consulta.append("    CASE ");
+			// consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                < CURRENT_TIMESTAMP ");
+			// consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 151 ");
+			// consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 180 ");
+			// consulta.append("      THEN COUNT(DISTINCT(con.cnta_id)) ");
+			// consulta.append("      ELSE 0 ");
+			// consulta.append("    END)                        AS quantidadeAtraso151A180Dias, ");
+			consulta.append("     ( ");
+			consulta.append("    CASE ");
+			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                < CURRENT_TIMESTAMP ");
+			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) >= 366 ");
 			consulta.append("      AND (to_date(TO_CHAR(CURRENT_TIMESTAMP, 'dd/mm/yy'), 'dd/mm/yy') - con.cnta_dtvencimentoconta) <= 1825 ");
 			consulta.append("      THEN COUNT(DISTINCT(con.cnta_id)) ");
 			consulta.append("      ELSE 0 ");
-			consulta.append("    END)                        AS quantidadeAtraso181DiasA5Anos, ");
+			consulta.append("    END)                        AS quantidadeAtraso366DiasA5Anos, ");
 			consulta.append("     ( ");
 			consulta.append("    CASE ");
 			consulta.append("      WHEN con.cnta_dtvencimentoconta                                                                < CURRENT_TIMESTAMP ");
@@ -26539,16 +26480,18 @@ public class RepositorioImovelHBM
 							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("nomeLocalidade", Hibernate.STRING)
 							.addScalar("matricula", Hibernate.INTEGER).addScalar("situacaoCobranca", Hibernate.STRING)
 							.addScalar("usuarioPossuiCPFCNPJ", Hibernate.STRING).addScalar("valAtrasoAte30Dias", Hibernate.BIG_DECIMAL)
-							.addScalar("valAtraso31A60Dias", Hibernate.BIG_DECIMAL).addScalar("valAtraso61A90Dias", Hibernate.BIG_DECIMAL)
-							.addScalar("valAtraso91A120Dias", Hibernate.BIG_DECIMAL)
-							.addScalar("valAtraso121A150Dias", Hibernate.BIG_DECIMAL)
-							.addScalar("valAtraso151A180Dias", Hibernate.BIG_DECIMAL)
-							.addScalar("valAtraso181DiasA5Anos", Hibernate.BIG_DECIMAL)
+							.addScalar("valAtraso31A90Dias", Hibernate.BIG_DECIMAL)
+							// .addScalar("valAtraso61A90Dias", Hibernate.BIG_DECIMAL)
+							.addScalar("valAtraso91A180Dias", Hibernate.BIG_DECIMAL)
+							.addScalar("valAtraso181A365Dias", Hibernate.BIG_DECIMAL)
+							// .addScalar("valAtraso151A180Dias", Hibernate.BIG_DECIMAL)
+							.addScalar("valAtraso366DiasA5Anos", Hibernate.BIG_DECIMAL)
 							.addScalar("valAtrasoDe5A10Anos", Hibernate.BIG_DECIMAL).addScalar("valTotalContas", Hibernate.BIG_DECIMAL)
-							.addScalar("qtdAtrasoAte30Dias", Hibernate.INTEGER).addScalar("qtdAtraso31A60Dias", Hibernate.INTEGER)
-							.addScalar("qtdAtraso61A90Dias", Hibernate.INTEGER).addScalar("qtdAtraso91A120Dias", Hibernate.INTEGER)
-							.addScalar("qtdAtraso121A150Dias", Hibernate.INTEGER).addScalar("qtdAtraso151A180Dias", Hibernate.INTEGER)
-							.addScalar("qtdAtraso181DiasA5Anos", Hibernate.INTEGER).addScalar("qtdAtrasoDe5A10Anos", Hibernate.INTEGER)
+							.addScalar("qtdAtrasoAte30Dias", Hibernate.INTEGER).addScalar("qtdAtraso31A90Dias", Hibernate.INTEGER)
+							// .addScalar("qtdAtraso61A90Dias", Hibernate.INTEGER)
+							.addScalar("qtdAtraso91A180Dias", Hibernate.INTEGER).addScalar("qtdAtraso181A365Dias", Hibernate.INTEGER)
+							// .addScalar("qtdAtraso151A180Dias", Hibernate.INTEGER)
+							.addScalar("qtdAtraso366DiasA5Anos", Hibernate.INTEGER).addScalar("qtdAtrasoDe5A10Anos", Hibernate.INTEGER)
 							.addScalar("qtdTotalContas", Hibernate.INTEGER).list();
 
 		}catch(HibernateException e){
@@ -26592,4 +26535,121 @@ public class RepositorioImovelHBM
 
 		return retorno;
 	}
+
+	/**
+	 * Retorna o ImovelSubcategoria principal (O registro com maior quantidade de economias).
+	 * 
+	 * @author Anderson Italo
+	 * @date 14/06/2014
+	 * @param idImovel
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public ImovelSubcategoria pesquisarImovelSubcategoriaPrincipal(Integer idImovel) throws ErroRepositorioException{
+
+		ImovelSubcategoria retorno = null;
+
+		Session session = HibernateUtil.getSession();
+		StringBuilder consulta = new StringBuilder();
+
+		try{
+
+			consulta.append("select imovSub ");
+			consulta.append("from ImovelSubcategoria imovSub ");
+			consulta.append("inner join fetch imovSub.comp_id.subcategoria subcateg ");
+			consulta.append("where imovSub.comp_id.imovel.id = :idImovel ");
+			consulta.append("order by imovSub.quantidadeEconomias desc");
+
+			retorno = (ImovelSubcategoria) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setMaxResults(1)
+							.uniqueResult();
+
+		}catch(HibernateException e){
+
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+
+		}finally{
+
+			HibernateUtil.closeSession(session);
+
+		}
+
+		return retorno;
+
+	}
+
+	/**
+	 * <p>
+	 * [OC1372979]
+	 * </p>
+	 * 
+	 * @author Magno Silveira (magno.silveira@procenge.com.br)
+	 * @since 22/10/2014
+	 * @param imovelCondominioId
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection pesquisarImoveisSubcategoriasParaCondominio(Integer imovelCondominioId) throws ErroRepositorioException{
+
+		Collection retorno = null;
+
+		Session session = HibernateUtil.getSession();
+		StringBuilder consulta = new StringBuilder();
+
+		try{
+
+			// categoria - 0, subcategoria - 1, quantidadeEconomias - 2
+			consulta.append("select isub.CATG_ID AS catg_id, isub.SCAT_ID AS scat_id, sum(isub.IMSB_QTECONOMIA) AS quantidade ");
+			consulta.append("from IMOVEL_SUBCATEGORIA isub ");
+			consulta.append("where isub.imov_id in (select i.imov_id from imovel i where i.IMOV_IDIMOVELCONDOMINIO = :imovelCondominioId) ");
+			consulta.append("group by isub.catg_id, isub.SCAT_ID");
+
+			retorno = session.createSQLQuery(consulta.toString()).addScalar("catg_id", Hibernate.INTEGER)
+							.addScalar("scat_id", Hibernate.INTEGER).addScalar("quantidade", Hibernate.SHORT)
+							.setInteger("imovelCondominioId", imovelCondominioId).list();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+
+	}
+
+	/**
+	 * @author
+	 * @date
+	 * @throws ErroRepositorioException
+	 */
+	public void atualizarRotaImovel(Integer idImovel, Integer idRotaAtualizar) throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+
+		StringBuffer update = new StringBuffer();
+
+		try{
+
+			update.append("update gcom.cadastro.imovel.Imovel imov set ");
+			update.append("imov.rota.id = :idRotaAtualizar,");
+			update.append("imov.ultimaAlteracao = :ultimaAlteracao ");
+			update.append("where imov.id= :idImovel ");
+
+			session.createQuery(update.toString()).setInteger("idRotaAtualizar", idRotaAtualizar)
+							.setTimestamp("ultimaAlteracao", new Date()).setInteger("idImovel", idImovel).executeUpdate();
+
+		}catch(HibernateException e){
+
+			e.printStackTrace();
+			throw new ErroRepositorioException("Erro no Hibernate");
+
+		}catch(Exception e){
+
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			HibernateUtil.closeSession(session);
+		}
+	}
+
 }

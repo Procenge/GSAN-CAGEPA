@@ -41,24 +41,36 @@
 
 package gcom.gui.relatorio.cobranca;
 
-import gcom.cadastro.cliente.Cliente;
+import gcom.cadastro.cliente.*;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
+import gcom.cobranca.DocumentoTipo;
+import gcom.cobranca.bean.ContaValoresHelper;
+import gcom.cobranca.bean.GuiaPagamentoValoresHelper;
 import gcom.fachada.Fachada;
+import gcom.faturamento.debito.DebitoACobrar;
 import gcom.gui.ActionServletException;
 import gcom.gui.cobranca.ConsultarDebitoImovelActionForm;
+import gcom.interceptor.RegistradorOperacao;
 import gcom.relatorio.ExibidorProcessamentoTarefaRelatorio;
-import gcom.relatorio.cobranca.RelatorioCertidaoNegativaModelo1;
-import gcom.relatorio.cobranca.RelatorioCertidaoNegativaModelo2;
-import gcom.relatorio.cobranca.RelatorioCertidaoNegativaModelo3;
+import gcom.relatorio.cobranca.*;
+import gcom.seguranca.acesso.Argumento;
+import gcom.seguranca.acesso.DocumentoEmissaoEfetuada;
+import gcom.seguranca.acesso.Operacao;
 import gcom.seguranca.acesso.usuario.Usuario;
+import gcom.seguranca.acesso.usuario.UsuarioAcao;
+import gcom.seguranca.acesso.usuario.UsuarioAcaoUsuarioHelper;
 import gcom.tarefa.TarefaRelatorio;
+import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
 import gcom.util.Util;
+import gcom.util.filtro.ParametroSimples;
+import gcom.util.filtro.ParametroSimplesDiferenteDe;
 import gcom.util.parametrizacao.cobranca.ModeloRelatorioCertidaoNegativaDebitos;
 import gcom.util.parametrizacao.cobranca.ParametroCobranca;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -93,29 +105,124 @@ public class GerarRelatorioCertidaoNegativaAction
 		ConsultarDebitoImovelActionForm consultarDebitoImovelActionForm = (ConsultarDebitoImovelActionForm) actionForm;
 
 		// Verificar se o valor dos débitos é zero
-		String valorDebitos = httpServletRequest.getParameter("valorDebitos");
+		String valorDebitosRequest = httpServletRequest.getParameter("valorDebitos");
 
-		if(valorDebitos != null && !valorDebitos.equals("")){
-			BigDecimal valor = Util.formatarMoedaRealparaBigDecimal(valorDebitos);
+		// Código do Imóvel
+		String codigoImovel = "";
 
-			// Se o valor for maior do que zero
-			if(valor.compareTo(BigDecimal.ZERO) == 1){
-				throw new ActionServletException("atencao.valor_debitos_deve_ser_zero");
+		if(sessao.getAttribute("codigoImovel") != null){
+
+			codigoImovel = (String) sessao.getAttribute("codigoImovel");
+		}else{
+
+			codigoImovel = consultarDebitoImovelActionForm.getCodigoImovel();
+		}
+
+		Cliente clienteUsuarioAtualImovel = fachada.pesquisarClienteUsuarioImovel(new Integer(codigoImovel));
+
+		// pesquisar cliente usuário
+		String nomeCliente = "";
+		if(clienteUsuarioAtualImovel != null){
+
+			nomeCliente = clienteUsuarioAtualImovel.getNome();
+		}else{
+
+			throw new ActionServletException("atencao.cliente_usuario_nao_encontrado");
+		}
+
+		Collection<ContaValoresHelper> colecaoContaValores = (Collection<ContaValoresHelper>) sessao.getAttribute("colecaoContaValores");
+		Collection<DebitoACobrar> colecaoDebitoACobrar = (Collection<DebitoACobrar>) sessao.getAttribute("colecaoDebitoACobrar");
+		Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores = (Collection<GuiaPagamentoValoresHelper>) sessao
+						.getAttribute("colecaoGuiaPagamentoValores");
+
+		boolean possuiApenasDebitosClienteDiferenteAtual = true;
+
+		if(!Util.isVazioOrNulo(colecaoContaValores)){
+
+			for(ContaValoresHelper contaValoresHelper : colecaoContaValores){
+
+				if(contaValoresHelper.getConta().getDataVencimentoConta() != null
+								&& Util.compararData(contaValoresHelper.getConta().getDataVencimentoConta(), new Date()) == -1){
+
+					ClienteConta clienteContaUsuarioDebito = fachada.pesquisarClienteContaPorTipoRelacao(contaValoresHelper.getConta()
+									.getId(),
+									ClienteRelacaoTipo.USUARIO);
+
+					if(clienteContaUsuarioDebito.getCliente().getId().equals(clienteUsuarioAtualImovel.getId())){
+
+						possuiApenasDebitosClienteDiferenteAtual = false;
+						break;
+					}
+				}
 			}
 		}
 
-		String codigoImovel = "";
-		String nomeCliente = "";
-		String enderecoCliente = "";
+		if(!Util.isVazioOrNulo(colecaoDebitoACobrar)){
+
+			for(DebitoACobrar debitoACobrar : colecaoDebitoACobrar){
+
+				FiltroClienteDebitoACobrar filtroClienteDebitoACobrar = new FiltroClienteDebitoACobrar();
+				filtroClienteDebitoACobrar.adicionarParametro(new ParametroSimples(FiltroClienteDebitoACobrar.DEBITO_A_COBRAR_ID,
+								debitoACobrar.getId()));
+				filtroClienteDebitoACobrar.adicionarParametro(new ParametroSimples(FiltroClienteDebitoACobrar.CLIENTE_ID,
+								clienteUsuarioAtualImovel.getId()));
+
+				Collection<ClienteDebitoACobrar> colecaoClienteDebitoACobrar = fachada.pesquisar(filtroClienteDebitoACobrar,
+								ClienteDebitoACobrar.class.getName());
+
+				if(!Util.isVazioOrNulo(colecaoClienteDebitoACobrar)){
+
+					possuiApenasDebitosClienteDiferenteAtual = false;
+					break;
+				}
+			}
+		}
+
+		if(!Util.isVazioOrNulo(colecaoGuiaPagamentoValores)){
+
+			for(GuiaPagamentoValoresHelper guiaPagamentoValoresHelper : colecaoGuiaPagamentoValores){
+
+				FiltroClienteGuiaPagamento filtroClienteGuiaPagamento = new FiltroClienteGuiaPagamento();
+				filtroClienteGuiaPagamento.adicionarParametro(new ParametroSimples(FiltroClienteGuiaPagamento.GUIA_PAGAMENTO_ID,
+								guiaPagamentoValoresHelper.getIdGuiaPagamento()));
+				filtroClienteGuiaPagamento.adicionarParametro(new ParametroSimples(FiltroClienteGuiaPagamento.CLIENTE_ID,
+								clienteUsuarioAtualImovel.getId()));
+
+				Collection<ClienteGuiaPagamento> colecaoClienteGuia = fachada.pesquisar(filtroClienteGuiaPagamento,
+								ClienteGuiaPagamento.class.getName());
+
+				if(!Util.isVazioOrNulo(colecaoClienteGuia)){
+
+					possuiApenasDebitosClienteDiferenteAtual = false;
+					break;
+				}
+			}
+		}
+
+		boolean permiteGerarCertidaoNegativa = false;
+
+		BigDecimal valorDebitos = BigDecimal.ZERO;
+
+		if(valorDebitosRequest != null && !valorDebitosRequest.equals("")){
+
+			valorDebitos = Util.formatarMoedaRealparaBigDecimal(valorDebitosRequest);
+		}
+
+		// Se o valor zero ou os débitos existentes pertecerem a clientes diferentes do cliente
+		// usuário atual do imóvel
+		if(valorDebitos.compareTo(BigDecimal.ZERO) == 0 || possuiApenasDebitosClienteDiferenteAtual){
+
+			permiteGerarCertidaoNegativa = true;
+		}
+
+		if(!permiteGerarCertidaoNegativa){
+
+			throw new ActionServletException("atencao.emissao_certidao_nao_permitida");
+		}
+
+		String enderecoFormatado = "";
 		String periodoInicial = "";
 		String periodoFinal = "";
-
-		// Código do Imóvel
-		if(sessao.getAttribute("codigoImovel") != null){
-			codigoImovel = (String) sessao.getAttribute("codigoImovel");
-		}else{
-			codigoImovel = consultarDebitoImovelActionForm.getCodigoImovel();
-		}
 
 		Imovel imovelCertidao = fachada.pesquisarImovel(Integer.valueOf(codigoImovel));
 		if(imovelCertidao == null){
@@ -123,18 +230,9 @@ public class GerarRelatorioCertidaoNegativaAction
 		}
 
 		// Endereço do Cliente
-		enderecoCliente = httpServletRequest.getParameter("enderecoFormatado");
+		enderecoFormatado = httpServletRequest.getParameter("enderecoFormatado");
 		periodoInicial = consultarDebitoImovelActionForm.getReferenciaInicial();
 		periodoFinal = consultarDebitoImovelActionForm.getReferenciaFinal();
-
-		Cliente cliente = fachada.pesquisarClienteUsuarioImovel(new Integer(codigoImovel));
-
-		// pesquisar cliente usuário
-		if(cliente != null){
-			nomeCliente = cliente.getNome();
-		}else{
-			throw new ActionServletException("atencao.cliente_usuario_nao_encontrado");
-		}
 
 		Usuario usuario = null;
 
@@ -169,7 +267,7 @@ public class GerarRelatorioCertidaoNegativaAction
 		}
 
 		// Verifica endereço
-		if(enderecoCliente == null){
+		if(enderecoFormatado == null){
 			throw new ActionServletException("atencao.endereco_cliente_nao_encontrado");
 		}
 
@@ -208,12 +306,77 @@ public class GerarRelatorioCertidaoNegativaAction
 			}
 
 			relatorio.addParametro("nomeCliente", nomeCliente);
-			relatorio.addParametro("enderecoCliente", enderecoCliente);
+			relatorio.addParametro("enderecoCliente", enderecoFormatado);
 			relatorio.addParametro("periodoInicial", periodoInicial);
 			relatorio.addParametro("periodoFinal", periodoFinal);
 			relatorio.addParametro("tipoFormatoRelatorio", Integer.parseInt(tipoRelatorio));
 
+			DocumentoEmissaoEfetuada documentoEmissaoEfetuada = new DocumentoEmissaoEfetuada();
+
+			// ------------ REGISTRAR TRANSação----------------------------
+
+			documentoEmissaoEfetuada.setImovel(imovelCertidao);
+			documentoEmissaoEfetuada.setUsuario(usuario);
+			DocumentoTipo documentoTipo = new DocumentoTipo();
+			documentoTipo.setId(DocumentoTipo.CERTIDAO_NEGATIVA);
+			documentoEmissaoEfetuada.setDocumentoTipo(documentoTipo);
+			documentoEmissaoEfetuada.setUltimaAlteracao(new Date());
+
+			if(!Util.isVazioOuBranco(periodoInicial)){
+				documentoEmissaoEfetuada.setReferenciaInicialDebito(periodoInicial);
+			}
+			if(!Util.isVazioOuBranco(periodoFinal)){
+				documentoEmissaoEfetuada.setReferenciaFinalDebito(periodoFinal);
+			}
+
+			Argumento argumento = new Argumento();
+			argumento.setId(Argumento.IMOVEL);
+			
+
+			RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_EMITIR_DOCUMENTO_CERTIDAO_NEGATIVA,
+							imovelCertidao.getId(), argumento, imovelCertidao.getId(), new UsuarioAcaoUsuarioHelper(usuario,
+											UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+			RegistradorOperacao.set(registradorOperacao);
+			documentoEmissaoEfetuada.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+			registradorOperacao.registrarOperacao(documentoEmissaoEfetuada);
+			this.getFachada().inserir(documentoEmissaoEfetuada);
+
+			// ------------ REGISTRAR TRANSAÇÃO ----------------
+
 		}else if(parametroModeloRelatorioCertidao.equals(ModeloRelatorioCertidaoNegativaDebitos.DOIS.getValor())){
+
+			DocumentoEmissaoEfetuada documentoEmissaoEfetuada = new DocumentoEmissaoEfetuada();
+
+			// ------------ REGISTRAR TRANSação----------------------------
+
+			documentoEmissaoEfetuada.setImovel(imovelCertidao);
+			documentoEmissaoEfetuada.setUsuario(usuario);
+			DocumentoTipo documentoTipo = new DocumentoTipo();
+			documentoTipo.setId(DocumentoTipo.CERTIDAO_NEGATIVA);
+			documentoEmissaoEfetuada.setDocumentoTipo(documentoTipo);
+			documentoEmissaoEfetuada.setUltimaAlteracao(new Date());
+
+			if(!Util.isVazioOuBranco(periodoInicial)){
+				documentoEmissaoEfetuada.setReferenciaInicialDebito(periodoInicial);
+			}
+			if(!Util.isVazioOuBranco(periodoFinal)){
+				documentoEmissaoEfetuada.setReferenciaFinalDebito(periodoFinal);
+			}
+
+			Argumento argumento = new Argumento();
+			argumento.setId(Argumento.IMOVEL);
+			
+
+			RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_EMITIR_DOCUMENTO_CERTIDAO_NEGATIVA,
+							imovelCertidao.getId(), argumento, imovelCertidao.getId(), new UsuarioAcaoUsuarioHelper(usuario,
+											UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+			RegistradorOperacao.set(registradorOperacao);
+			documentoEmissaoEfetuada.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+			registradorOperacao.registrarOperacao(documentoEmissaoEfetuada);
+			this.getFachada().inserir(documentoEmissaoEfetuada);
+
+			// ------------ REGISTRAR TRANSAÇÃO ----------------
+
 
 			relatorio = new RelatorioCertidaoNegativaModelo2((Usuario) (httpServletRequest.getSession(false)).getAttribute("usuarioLogado"));
 
@@ -228,7 +391,7 @@ public class GerarRelatorioCertidaoNegativaAction
 			relatorio.addParametro("inscricaoImovel", imovelCertidao.getInscricaoFormatada());
 			relatorio.addParametro("matriculaImovel", imovelCertidao.getId().toString());
 			relatorio.addParametro("nomeCliente", nomeCliente);
-			relatorio.addParametro("enderecoCliente", enderecoCliente);
+			relatorio.addParametro("enderecoCliente", enderecoFormatado);
 			relatorio.addParametro("tipoFormatoRelatorio", Integer.parseInt(tipoRelatorio));
 			relatorio.addParametro("periodoInicial", periodoInicial);
 			relatorio.addParametro("periodoFinal", periodoFinal);
@@ -243,12 +406,43 @@ public class GerarRelatorioCertidaoNegativaAction
 
 		}else if(parametroModeloRelatorioCertidao.equals(ModeloRelatorioCertidaoNegativaDebitos.TRES.getValor())){
 
+			DocumentoEmissaoEfetuada documentoEmissaoEfetuada = new DocumentoEmissaoEfetuada();
+
+			// ------------ REGISTRAR TRANSação----------------------------
+
+			documentoEmissaoEfetuada.setImovel(imovelCertidao);
+			documentoEmissaoEfetuada.setUsuario(usuario);
+			DocumentoTipo documentoTipo = new DocumentoTipo();
+			documentoTipo.setId(DocumentoTipo.CERTIDAO_NEGATIVA);
+			documentoEmissaoEfetuada.setDocumentoTipo(documentoTipo);
+			documentoEmissaoEfetuada.setUltimaAlteracao(new Date());
+
+			if(!Util.isVazioOuBranco(periodoInicial)){
+				documentoEmissaoEfetuada.setReferenciaInicialDebito(periodoInicial);
+			}
+			if(!Util.isVazioOuBranco(periodoFinal)){
+				documentoEmissaoEfetuada.setReferenciaFinalDebito(periodoFinal);
+			}
+
+			Argumento argumento = new Argumento();
+			argumento.setId(Argumento.IMOVEL);
+
+			RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_EMITIR_DOCUMENTO_CERTIDAO_NEGATIVA,
+							imovelCertidao.getId(), argumento, imovelCertidao.getId(), new UsuarioAcaoUsuarioHelper(usuario,
+											UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+			RegistradorOperacao.set(registradorOperacao);
+			documentoEmissaoEfetuada.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+			registradorOperacao.registrarOperacao(documentoEmissaoEfetuada);
+			this.getFachada().inserir(documentoEmissaoEfetuada);
+
+			// ------------ REGISTRAR TRANSAÇÃO ----------------
+
 			relatorio = new RelatorioCertidaoNegativaModelo3((Usuario) (httpServletRequest.getSession(false)).getAttribute("usuarioLogado"));
 
 			relatorio.addParametro("inscricaoImovel", imovelCertidao.getInscricaoFormatada());
 			relatorio.addParametro("matriculaImovel", imovelCertidao.getId().toString());
 			relatorio.addParametro("nomeCliente", nomeCliente);
-			relatorio.addParametro("enderecoCliente", enderecoCliente);
+			relatorio.addParametro("enderecoCliente", enderecoFormatado);
 			String cidade = "";
 			if(imovelCertidao.getLogradouroCep() != null && imovelCertidao.getLogradouroCep().getCep() != null){
 				cidade = imovelCertidao.getLogradouroCep().getCep().getMunicipio();
@@ -263,6 +457,166 @@ public class GerarRelatorioCertidaoNegativaAction
 			}else{
 				relatorio.addParametro("nomeUsuario", usuario.getNomeUsuario());
 				relatorio.addParametro("emissorUsuario", usuario.getId());
+			}
+		}else if(parametroModeloRelatorioCertidao.equals(ModeloRelatorioCertidaoNegativaDebitos.QUATRO.getValor())){
+
+			DocumentoEmissaoEfetuada documentoEmissaoEfetuada = new DocumentoEmissaoEfetuada();
+
+			// ------------ REGISTRAR TRANSação----------------------------
+
+			documentoEmissaoEfetuada.setImovel(imovelCertidao);
+			documentoEmissaoEfetuada.setUsuario(usuario);
+			DocumentoTipo documentoTipo = new DocumentoTipo();
+			documentoTipo.setId(DocumentoTipo.CERTIDAO_NEGATIVA);
+			documentoEmissaoEfetuada.setDocumentoTipo(documentoTipo);
+			documentoEmissaoEfetuada.setUltimaAlteracao(new Date());
+
+			if(!Util.isVazioOuBranco(periodoInicial)){
+				documentoEmissaoEfetuada.setReferenciaInicialDebito(periodoInicial);
+			}
+			if(!Util.isVazioOuBranco(periodoFinal)){
+				documentoEmissaoEfetuada.setReferenciaFinalDebito(periodoFinal);
+			}
+
+			Argumento argumento = new Argumento();
+			argumento.setId(Argumento.IMOVEL);
+
+			RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_EMITIR_DOCUMENTO_CERTIDAO_NEGATIVA,
+							imovelCertidao.getId(), argumento, imovelCertidao.getId(), new UsuarioAcaoUsuarioHelper(usuario,
+											UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+			RegistradorOperacao.set(registradorOperacao);
+			documentoEmissaoEfetuada.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+			registradorOperacao.registrarOperacao(documentoEmissaoEfetuada);
+			this.getFachada().inserir(documentoEmissaoEfetuada);
+
+			// ------------ REGISTRAR TRANSAÇÃO ----------------
+
+			relatorio = new RelatorioCertidaoNegativaModelo4(usuario);
+
+			if(usuario.getFuncionario() != null && usuario.getFuncionario().getId() > 0){
+
+				relatorio.addParametro("usuarioEmissor", usuario.getFuncionario().getId().toString() + "-"
+								+ usuario.getFuncionario().getNome());
+			}else{
+
+				relatorio.addParametro("usuarioEmissor", usuario.getLogin() + "-" + usuario.getNomeUsuario());
+			}
+
+			relatorio.addParametro("enderecoFormatado", enderecoFormatado);
+			relatorio.addParametro("matriculaImovel", imovelCertidao.getId());
+			relatorio.addParametro("tipoFormatoRelatorio", Integer.parseInt(tipoRelatorio));
+		}
+
+		String parametroEmiteCertidaoNegativaComEfeitoPositiva = "";
+		try{
+
+			parametroEmiteCertidaoNegativaComEfeitoPositiva = ParametroCobranca.P_EMITE_CERTIDAO_NEGATIVA_EFEITO_POSITIVA.executar();
+		}catch(ControladorException e){
+
+			e.printStackTrace();
+		}
+
+		// Caso a empresa emita Certidão Negativa de Débito - Com Efeito Positiva
+		if(parametroEmiteCertidaoNegativaComEfeitoPositiva.equals(ConstantesSistema.SIM.toString())){
+
+
+			// E caso o imóvel possua apenas débitos a cobrar de parcelamentos associado ao cliente
+			// usuário atual no imóvel, o sistema gera a Certidão Negativa de Débito - Com Efeito
+			// Positiva para o imóvel
+			boolean possuiApenasDebitosACobrarParcelamentosClienteAtualImovel = true;
+
+			if(!Util.isVazioOrNulo(colecaoContaValores)){
+
+				possuiApenasDebitosACobrarParcelamentosClienteAtualImovel = false;
+			}else if(!Util.isVazioOrNulo(colecaoGuiaPagamentoValores)){
+
+				possuiApenasDebitosACobrarParcelamentosClienteAtualImovel = false;
+			}else if(!Util.isVazioOrNulo(colecaoDebitoACobrar)){
+
+				for(DebitoACobrar debitoACobrar : colecaoDebitoACobrar){
+
+					FiltroClienteDebitoACobrar filtroClienteDebitoACobrar = new FiltroClienteDebitoACobrar();
+					filtroClienteDebitoACobrar.adicionarParametro(new ParametroSimples(FiltroClienteDebitoACobrar.DEBITO_A_COBRAR_ID,
+									debitoACobrar.getId()));
+					filtroClienteDebitoACobrar.adicionarParametro(new ParametroSimplesDiferenteDe(FiltroClienteDebitoACobrar.CLIENTE_ID,
+									clienteUsuarioAtualImovel.getId()));
+					filtroClienteDebitoACobrar
+									.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteDebitoACobrar.DEBITO_A_COBRAR_PARCELAMENTO);
+					filtroClienteDebitoACobrar.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteDebitoACobrar.CLIENTE);
+
+					Collection<ClienteDebitoACobrar> colecaoClienteDebitoACobrar = fachada.pesquisar(filtroClienteDebitoACobrar,
+									ClienteDebitoACobrar.class.getName());
+
+					if(!Util.isVazioOrNulo(colecaoClienteDebitoACobrar)){
+
+						for(ClienteDebitoACobrar clienteDebitoACobrar : colecaoClienteDebitoACobrar){
+
+							if(clienteDebitoACobrar.getDebitoACobrar().getParcelamento() == null){
+
+								possuiApenasDebitosACobrarParcelamentosClienteAtualImovel = false;
+								break;
+							}else if(clienteDebitoACobrar.getDebitoACobrar().getParcelamento() != null
+											&& !clienteDebitoACobrar.getCliente().getId().equals(clienteUsuarioAtualImovel.getId())){
+
+								possuiApenasDebitosACobrarParcelamentosClienteAtualImovel = false;
+								break;
+							}
+						}
+					}
+				}
+			}else{
+
+				possuiApenasDebitosACobrarParcelamentosClienteAtualImovel = false;
+			}
+
+			if(possuiApenasDebitosACobrarParcelamentosClienteAtualImovel){
+
+				relatorio = new RelatorioCertidaoNegativaComEfeitoPositivaModelo4(usuario);
+
+				DocumentoEmissaoEfetuada documentoEmissaoEfetuada = new DocumentoEmissaoEfetuada();
+
+				// ------------ REGISTRAR TRANSação----------------------------
+
+				documentoEmissaoEfetuada.setImovel(imovelCertidao);
+				documentoEmissaoEfetuada.setUsuario(usuario);
+				DocumentoTipo documentoTipo = new DocumentoTipo();
+				documentoTipo.setId(DocumentoTipo.CERTIDAO_NEGATIVAO_COM_EFEITO_POSITIVA);
+				documentoEmissaoEfetuada.setDocumentoTipo(documentoTipo);
+				documentoEmissaoEfetuada.setUltimaAlteracao(new Date());
+
+				if(!Util.isVazioOuBranco(periodoInicial)){
+					documentoEmissaoEfetuada.setReferenciaInicialDebito(periodoInicial);
+				}
+				if(!Util.isVazioOuBranco(periodoFinal)){
+					documentoEmissaoEfetuada.setReferenciaFinalDebito(periodoFinal);
+				}
+
+				Argumento argumento = new Argumento();
+				argumento.setId(Argumento.IMOVEL);
+
+				RegistradorOperacao registradorOperacao = new RegistradorOperacao(
+								Operacao.OPERACAO_EMITIR_DOCUMENTO_CERTIDAO_NEGATIVA_COM_EFEITO_POSITIVA,
+								imovelCertidao.getId(), argumento, imovelCertidao.getId(), new UsuarioAcaoUsuarioHelper(usuario,
+												UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+				RegistradorOperacao.set(registradorOperacao);
+				documentoEmissaoEfetuada.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+				registradorOperacao.registrarOperacao(documentoEmissaoEfetuada);
+				this.getFachada().inserir(documentoEmissaoEfetuada);
+
+				// ------------ REGISTRAR TRANSAÇÃO ----------------
+
+				if(usuario.getFuncionario() != null && usuario.getFuncionario().getId() > 0){
+
+					relatorio.addParametro("usuarioEmissor", usuario.getFuncionario().getId().toString() + "-"
+									+ usuario.getFuncionario().getNome());
+				}else{
+
+					relatorio.addParametro("usuarioEmissor", usuario.getLogin() + "-" + usuario.getNomeUsuario());
+				}
+
+				relatorio.addParametro("enderecoFormatado", enderecoFormatado);
+				relatorio.addParametro("matriculaImovel", imovelCertidao.getId());
+				relatorio.addParametro("tipoFormatoRelatorio", Integer.parseInt(tipoRelatorio));
 			}
 		}
 

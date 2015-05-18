@@ -114,6 +114,8 @@ public class Negativador
 
 	public static final Integer NEGATIVADOR_SPC_BRASIL = new Integer(3);
 
+	public static final Integer NEGATIVADOR_SPC_BOA_VISTA = new Integer(4);
+
 	private static final long serialVersionUID = 1L;
 
 	/** identifier field */

@@ -76,11 +76,7 @@
 
 package gcom.gui.micromedicao;
 
-import gcom.cadastro.imovel.Categoria;
-import gcom.cadastro.imovel.FiltroImovel;
-import gcom.cadastro.imovel.FiltroImovelSubCategoria;
-import gcom.cadastro.imovel.Imovel;
-import gcom.cadastro.imovel.ImovelSubcategoria;
+import gcom.cadastro.imovel.*;
 import gcom.cadastro.imovel.bean.ImovelMicromedicao;
 import gcom.cadastro.sistemaparametro.FiltroSistemaParametro;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
@@ -96,13 +92,7 @@ import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -137,8 +127,30 @@ public class ExibirDadosAnaliseMedicaoConsumoAction
 		sessao.removeAttribute("leituraConsumoActionForm");
 
 		String codigoImovel = httpServletRequest.getParameter("idRegistroAtualizacao");
-
 		String idMedicaoTipo = httpServletRequest.getParameter("medicaoTipo");
+
+		if(idMedicaoTipo != null){
+
+			sessao.setAttribute("idMedicaoTipo", idMedicaoTipo);
+		}
+
+		// Caso o usuário tenha clicado no botão Consistir Leitura e Calcular Consumo
+		if(httpServletRequest.getParameter("idImovelConsistir") != null){
+
+			codigoImovel = httpServletRequest.getParameter("idImovelConsistir");
+
+			/**
+			 * [UC0101] - Consistir Leituras e Calcular Consumos.
+			 * Permite consistir a leitura e calcular o consumo de um único imóvel para referência
+			 * do faturamento de sistemaParametro
+			 */
+			fachada.consistirLeiturasCalcularConsumosPorImovel(Util.obterInteger(codigoImovel));
+		}
+
+		if(idMedicaoTipo == null && sessao.getAttribute("idMedicaoTipo") != null){
+
+			idMedicaoTipo = sessao.getAttribute("idMedicaoTipo").toString();
+		}
 
 		FaturamentoGrupo faturamentoGrupo = (FaturamentoGrupo) sessao.getAttribute("faturamentoGrupo");
 
@@ -462,6 +474,12 @@ public class ExibirDadosAnaliseMedicaoConsumoAction
 				// descrição tipo poço
 				if(parmClienteImovel[37] != null){
 					leituraConsumoActionForm.setIdLigacaoEsgoto(((Integer) parmClienteImovel[37]).toString());
+				}
+
+				// consumo fixo poço
+				if(parmClienteImovel[49] != null){
+
+					leituraConsumoActionForm.setConsumoFixoPoco(parmClienteImovel[49].toString());
 				}
 
 				// id Ligação Agua

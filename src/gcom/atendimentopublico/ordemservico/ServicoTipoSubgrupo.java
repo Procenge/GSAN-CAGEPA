@@ -94,23 +94,9 @@ public class ServicoTipoSubgrupo
 	 */
 	private static final long serialVersionUID = 1L;
 
-	// public final static Short CORTE = Short.valueOf("25");
-	//
-	// public final static Short SUPRESSAO = Short.valueOf("26");
-	//
-	// public final static Short FISCALIZACAO = Short.valueOf("29");
-	//
-	// public final static Short RELIGACAO = Short.valueOf("27");
-	//
-	// public final static Short VERIFICACAO_IRREGULARIDADES = Short.valueOf("30");
-
 	/**
 	 * Valores padrão GSAN PCG
 	 */
-	// public final static Short CORTE = Short.valueOf("1");
-	// public final static Short SUPRESSAO = Short.valueOf("2");
-	// public final static Short FISCALIZACAO = Short.valueOf("3");
-	// public final static Short RELIGACAO = Short.valueOf("25");
 
 	/** identifier field */
 	private Integer id;
@@ -189,6 +175,8 @@ public class ServicoTipoSubgrupo
 	public static Integer MANUTENCAO_HIDROMETRO;
 
 	public static Integer MANUTENCAO_FISCALIZACAO_HIDROMETRO;
+
+	public static Integer CORTE;
 
 	// Indicadores de Situação de Faturamento --
 	public final static Short FATURAMENTO_ATIVO = Short.valueOf("1");
@@ -339,7 +327,7 @@ public class ServicoTipoSubgrupo
 		CORTE_FALTA_PAGAMENTO, CORTE_INFRACAO, CORTE_PEDIDO, RELIGACAO, DESATIVA_ESGOTO_POTENCI, REATIVACAO_ESGOTO, FISCALIZACAO,
 		RESTABELECIMENTO, SUPRESSAO_TOTAL, SUPRESSAO_DEFINITIVA, RELIGACAO_INST_HIDR, RELICAGAO_SUBS_HIDR, NORMAL, LIG_ESGOTO_CONDOMINIAL,
 		DESATIVA_ESGOTO_FACTIVE, CORTE_MEDICAO_INDIVIDUAL, ACERTOS_HSC_HCO, RESTABELECE_INST_HIDR, RESTABELECE_SUBS_HIDR, AVISO_DEBITO,
-		MANUTENCAO_HIDROMETRO, MANUTENCAO_FISCALIZACAO_HIDROMETRO;
+		MANUTENCAO_HIDROMETRO, MANUTENCAO_FISCALIZACAO_HIDROMETRO, CORTE;
 
 		private Integer id = -1;
 
@@ -396,6 +384,7 @@ public class ServicoTipoSubgrupo
 		AVISO_DEBITO = ServicoTipoSubgrupoEnum.AVISO_DEBITO.getId();
 		MANUTENCAO_HIDROMETRO = ServicoTipoSubgrupoEnum.MANUTENCAO_HIDROMETRO.getId();
 		MANUTENCAO_FISCALIZACAO_HIDROMETRO = ServicoTipoSubgrupoEnum.MANUTENCAO_FISCALIZACAO_HIDROMETRO.getId();
+		CORTE = ServicoTipoSubgrupoEnum.CORTE.getId();
 	}
 
 }

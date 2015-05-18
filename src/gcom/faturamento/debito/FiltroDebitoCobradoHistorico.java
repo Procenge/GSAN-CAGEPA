@@ -108,6 +108,8 @@ public class FiltroDebitoCobradoHistorico
 	public final static String DEBITO_TIPO_ID = "debitoTipo.id";
 
 	public final static String INDICADOR_REMUNERA_COBRANCA_ADMINISTRATIVA = "indicadorRemuneraCobrancaAdministrativa";
+
+	public final static String FINANCIAMENTO_TIPO_ID = "financiamentoTipo.id";
 	/**
 	 * Construtor da classe FiltroDebitoCobradoHistorico
 	 */

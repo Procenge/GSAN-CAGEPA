@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+<class
+    name="gcom.cadastro.atendimento.DocumentoEletronico"
+    table="DOCUMENTOS_ELETRONICOS"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="DOCE_ID"
+    >
+
+     <generator class="sequence">
+       <param name="sequence">SQ_DOCUMENTOS_ELETRONICOS</param>
+   	</generator>
+    
+    </id>
+    
+    <property
+        name="nomeArquivo"
+        type="java.lang.String"
+        column="DOCE_NMARQUIVO"
+        length="255"
+    />    
+    
+    <property
+        name="imagemDocumento"
+        type="binary"
+        column="DOCE_IMDOCUMENTO"
+        length="-1"  
+    />  
+
+	<property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="DOCE_TMULTIMAALTERACAO"
+        length="6"
+    />
+    
+    <many-to-one
+        name="atendimentoDocumentacao"
+	    class="gcom.cadastro.atendimento.AtendimentoDocumentacao"
+	>
+    	<column name="ATDC_ID" />
+	</many-to-one> 
+
+     <many-to-one
+        name="cliente"
+        class="gcom.cadastro.cliente.Cliente"
+    >
+        <column name="CLIE_ID" />
+    </many-to-one> 
+    
+     <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+    >
+        <column name="IMOV_ID" />
+    </many-to-one>  
+    
+     <many-to-one
+        name="atendimentoDocumentoTipo"
+        class="gcom.cadastro.atendimento.AtendimentoDocumentoTipo"
+    >
+        <column name="ADTP_ID" />
+    </many-to-one>             
+    
+</class>
+</hibernate-mapping>

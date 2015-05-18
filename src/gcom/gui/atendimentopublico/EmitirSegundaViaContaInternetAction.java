@@ -94,11 +94,7 @@ import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -255,7 +251,7 @@ public class EmitirSegundaViaContaInternetAction
 							.obterDebitoImovelOuCliente(1, form.getMatricula(), null, Integer.valueOf(tipoRelacao),
 											anoMesInicialReferenciaDebito, anoMesFinalReferenciaDebito, aux1, aux2, 1, 1, 1, 1, 1, 1, 1,
 											null, sistemaParametro, null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM,
-											ConstantesSistema.SIM);
+											ConstantesSistema.SIM, 2, null);
 			Collection colecaoContasValores = obterDebitoImovelOuClienteHelper.getColecaoContasValores();
 			if(colecaoContasValores == null || colecaoContasValores.isEmpty()){
 				throw new ActionServletException("atencao.imovel_sem_debitos");
@@ -328,7 +324,13 @@ public class EmitirSegundaViaContaInternetAction
 							1, // Indicador guias de pagamento
 							1, // Indicador acréscimos por impontualidade
 							null,// Indicador Contas
-							sistemaParametro, null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM); // sistemaParametro
+							sistemaParametro, null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM, 2,
+							null // Indicador
+																																		// Calcular
+																																		// Acrescimos
+																																		// Sucumbencia
+																																		// Anterior
+							); // sistemaParametro
 
 			Collection colecaoDebitoACobrar = colecaoDebitoImovel.getColecaoDebitoACobrar();
 

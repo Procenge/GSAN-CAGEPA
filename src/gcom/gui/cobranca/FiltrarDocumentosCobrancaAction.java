@@ -77,11 +77,7 @@
 package gcom.gui.cobranca;
 
 import gcom.atendimentopublico.ordemservico.OrdemServico;
-import gcom.cobranca.CobrancaDocumento;
-import gcom.cobranca.CobrancaDocumentoItem;
-import gcom.cobranca.DocumentoEmissaoForma;
-import gcom.cobranca.FiltroCobrancaDocumento;
-import gcom.cobranca.FiltroCobrancaDocumentoItem;
+import gcom.cobranca.*;
 import gcom.cobranca.bean.CobrancaDocumentoHelper;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
@@ -92,12 +88,7 @@ import gcom.util.filtro.Intervalo;
 import gcom.util.filtro.ParametroSimples;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -499,12 +490,17 @@ public class FiltrarDocumentosCobrancaAction
 			throw new ActionServletException("atencao.pesquisa.nenhumresultado", null, "");
 		}
 
+		FiltroCobrancaDebitoSituacao filtroCobrancaDebitoSituacao = new FiltroCobrancaDebitoSituacao();
+		filtroCobrancaDebitoSituacao.adicionarParametro(new ParametroSimples(FiltroCobrancaDebitoSituacao.ID, CobrancaDebitoSituacao.PAGO));
+		CobrancaDebitoSituacao cobrancaDebitoSituacaoPago = (CobrancaDebitoSituacao) Util.retonarObjetoDeColecao(fachada.pesquisar(
+						filtroCobrancaDebitoSituacao, CobrancaDebitoSituacao.class.getName()));
+
 		Iterator colecaoDocumentoCobrancaIterator = colecaoDocumentoCobranca.iterator();
 		CobrancaDocumentoHelper cobrancaDocumentoHelper = null;
 		CobrancaDocumento cobrancaDocumento = null;
 		FiltroCobrancaDocumentoItem filtroCobrancaDocumentoItem = new FiltroCobrancaDocumentoItem();
-		Collection colecaoCobrancaDocumentoItem = null;
-		Collection colecaoCobrancaDocumentoHelper = new ArrayList();
+		Collection<CobrancaDocumentoItem> colecaoCobrancaDocumentoItem = null;
+		Collection<CobrancaDocumentoHelper> colecaoCobrancaDocumentoHelper = new ArrayList();
 
 		while(colecaoDocumentoCobrancaIterator.hasNext()){
 
@@ -547,7 +543,30 @@ public class FiltrarDocumentosCobrancaAction
 				cobrancaDocumentoHelper.setQuantidadeItensCobrancaDocumento(colecaoCobrancaDocumentoItem.size());
 			}
 			colecaoCobrancaDocumentoHelper.add(cobrancaDocumentoHelper);
+
 			filtroCobrancaDocumentoItem.limparListaParametros();
+
+			// [SB0003] Verificar Documento de Cobrança do Tipo Extrato de Débito
+			if(cobrancaDocumento.getDocumentoTipo().getId().equals(DocumentoTipo.EXTRATO_DE_DEBITO)){
+				boolean todosItensPagos = true;
+				Date maiorDataDebitoSituacao = null;
+				for(CobrancaDocumentoItem cobrancaDocumentoItem : colecaoCobrancaDocumentoItem){
+					if(!cobrancaDocumentoItem.getCobrancaDebitoSituacao().getId().equals(CobrancaDebitoSituacao.PAGO)){
+						todosItensPagos = false;
+						break;
+					}
+
+					if((maiorDataDebitoSituacao == null) || (maiorDataDebitoSituacao.before(cobrancaDocumentoItem.getDataSituacaoDebito()))){
+						maiorDataDebitoSituacao = cobrancaDocumentoItem.getDataSituacaoDebito();
+					}
+				}
+
+				if(todosItensPagos){
+					cobrancaDocumento.setCobrancaDebitoSituacao(cobrancaDebitoSituacaoPago);
+					cobrancaDocumento.setDataSituacaoDebito(maiorDataDebitoSituacao);
+				}
+
+			}
 		}
 
 		sessao.setAttribute("colecaoDocumentoCobranca", colecaoCobrancaDocumentoHelper);

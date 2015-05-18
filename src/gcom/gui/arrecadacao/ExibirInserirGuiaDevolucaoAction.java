@@ -163,6 +163,10 @@ public class ExibirInserirGuiaDevolucaoAction
 			throw new ActionServletException("atencao.naocadastrado", null, "Tipo de Documento");
 		}
 
+		if(httpServletRequest.getParameter("numeroRA") != null){
+			inserirGuiaDevolucaoActionForm.setIdRegistroAtendimento(httpServletRequest.getParameter("numeroRA").toString());
+		}
+
 		// Parte que trata do código quando o usuário tecla enter
 		String idRegistroAtendimento = inserirGuiaDevolucaoActionForm.getIdRegistroAtendimento();
 		String idOrdemServico = inserirGuiaDevolucaoActionForm.getIdOrdemServico();

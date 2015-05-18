@@ -56,6 +56,13 @@
     />
     
     <property
+        name="dataHoraVisita"
+        type="java.sql.Timestamp"
+        column="OSPG_TMVISITA"
+        length="8"
+    />    
+    
+    <property
         name="situacaoFechamento"
         type="java.lang.Short"
         column="ospg_cdsituacaofechamento"

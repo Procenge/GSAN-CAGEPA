@@ -153,6 +153,10 @@ public class AtualizarImovelWizardAction
 
 		// recebe o parametros e consulta o objeto da sessao para chamar outro
 		// metodo desta classe
+
+		// Atualiza parametro de Pagina Origem
+		httpServletRequest.getSession().setAttribute("paginaOrigem", "Localidade");
+
 		// Seta um atributo na sessao para ser utilizado nas abas
 		httpServletRequest.getSession().setAttribute("nomeUnicoWizard", ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
 		// AdicionarAtualizarImovelClienteAction.atualizarColecaoClienteImovelSessao(httpServletRequest);
@@ -174,6 +178,9 @@ public class AtualizarImovelWizardAction
 	 */
 	public ActionForward exibirAtualizarImovelEnderecoAction(ActionMapping actionMapping, ActionForm actionForm,
 					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
+
+		// Atualiza parametro de Pagina Origem
+		httpServletRequest.getSession().setAttribute("paginaOrigem", "Endereco");
 
 		// Seta um atributo na sessao para ser utilizado nas abas
 		httpServletRequest.getSession().setAttribute("nomeUnicoWizard", ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
@@ -224,6 +231,9 @@ public class AtualizarImovelWizardAction
 	public ActionForward exibirAtualizarImovelClienteAction(ActionMapping actionMapping, ActionForm actionForm,
 					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
 
+		// Atualiza parametro de Pagina Origem
+		httpServletRequest.getSession().setAttribute("paginaOrigem", "Cliente");
+
 		// Seta um atributo na sessao para ser utilizado nas abas
 		httpServletRequest.getSession().setAttribute("nomeUnicoWizard", ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
 
@@ -245,10 +255,13 @@ public class AtualizarImovelWizardAction
 	 * @throws ControladorException
 	 */
 	public ActionForward exibirAtualizarImovelSubCategoriaAction(ActionMapping actionMapping, ActionForm actionForm,
-					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ControladorException{
+					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
 
 		// recebe o parametros e consulta o objeto da sessao para chamar outro
 		// metodo desta classe
+
+		// Atualiza parametro de Pagina Origem
+		httpServletRequest.getSession().setAttribute("paginaOrigem", "SubCategoria");
 
 		// Seta um atributo na sessao para ser utilizado nas abas
 		httpServletRequest.getSession().setAttribute("nomeUnicoWizard", ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
@@ -272,6 +285,9 @@ public class AtualizarImovelWizardAction
 	public ActionForward exibirAtualizarImovelCaracteristicasAction(ActionMapping actionMapping, ActionForm actionForm,
 					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
 
+		// Atualiza parametro de Pagina Origem
+		httpServletRequest.getSession().setAttribute("paginaOrigem", "Caracteristicas");
+
 		// Seta um atributo na sessao para ser utilizado nas abas
 		httpServletRequest.getSession().setAttribute("nomeUnicoWizard", ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
 
@@ -293,6 +309,9 @@ public class AtualizarImovelWizardAction
 	 */
 	public ActionForward exibirAtualizarImovelConclusaoAction(ActionMapping actionMapping, ActionForm actionForm,
 					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
+
+		// Atualiza parametro de Pagina Origem
+		httpServletRequest.getSession().setAttribute("paginaOrigem", "Conclusao");
 
 		// Seta um atributo na sessao para ser utilizado nas abas
 		httpServletRequest.getSession().setAttribute("nomeUnicoWizard", ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
@@ -325,8 +344,10 @@ public class AtualizarImovelWizardAction
 		httpServletRequest.getSession().setAttribute("nomeUnicoWizard", ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
 
 		new AtualizarImovelLocalidadeAction().execute(actionMapping, actionForm, httpServletRequest, httpServletResponse);
-		return this.redirecionadorWizard(actionMapping, actionForm, httpServletRequest, httpServletResponse,
-						ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
+		
+		return obterPaginaDestino(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+		
+		//return this.redirecionadorWizard(actionMapping, actionForm, httpServletRequest, httpServletResponse, ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
 	}
 
 	/**
@@ -349,8 +370,10 @@ public class AtualizarImovelWizardAction
 		httpServletRequest.getSession().setAttribute("nomeUnicoWizard", ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
 
 		new AtualizarImovelEnderecoAction().execute(actionMapping, actionForm, httpServletRequest, httpServletResponse);
-		return this.redirecionadorWizard(actionMapping, actionForm, httpServletRequest, httpServletResponse,
-						ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
+
+		return obterPaginaDestino(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+		// return this.redirecionadorWizard(actionMapping, actionForm, httpServletRequest,
+		// httpServletResponse, ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
 	}
 
 	/**
@@ -397,8 +420,12 @@ public class AtualizarImovelWizardAction
 		httpServletRequest.getSession().setAttribute("nomeUnicoWizard", ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
 		// AdicionarAtualizarImovelClienteAction.atualizarColecaoClienteImovelSessao(httpServletRequest);
 		new AtualizarImovelClienteAction().execute(actionMapping, actionForm, httpServletRequest, httpServletResponse);
-		return this.redirecionadorWizard(actionMapping, actionForm, httpServletRequest, httpServletResponse,
-						ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
+
+		return obterPaginaDestino(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+
+		// return this.redirecionadorWizard(actionMapping, actionForm, httpServletRequest,
+		// httpServletResponse,
+		// ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
 	}
 
 	/**
@@ -416,14 +443,18 @@ public class AtualizarImovelWizardAction
 	 * @throws ControladorException
 	 */
 	public ActionForward atualizarImovelSubCategoriaAction(ActionMapping actionMapping, ActionForm actionForm,
-					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws ControladorException{
+					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
 
 		// Seta um atributo na sessao para ser utilizado nas abas
 		httpServletRequest.getSession().setAttribute("nomeUnicoWizard", ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
 
 		new AtualizarImovelSubCategoriaAction().execute(actionMapping, actionForm, httpServletRequest, httpServletResponse);
-		return this.redirecionadorWizard(actionMapping, actionForm, httpServletRequest, httpServletResponse,
-						ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
+
+		return obterPaginaDestino(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+
+		// return this.redirecionadorWizard(actionMapping, actionForm, httpServletRequest,
+		// httpServletResponse,
+		// ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
 	}
 
 	/**
@@ -446,8 +477,11 @@ public class AtualizarImovelWizardAction
 		httpServletRequest.getSession().setAttribute("nomeUnicoWizard", ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
 
 		new AtualizarImovelCaracteristicasAction().execute(actionMapping, actionForm, httpServletRequest, httpServletResponse);
-		return this.redirecionadorWizard(actionMapping, actionForm, httpServletRequest, httpServletResponse,
-						ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
+
+		return obterPaginaDestino(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+		// return this.redirecionadorWizard(actionMapping, actionForm, httpServletRequest,
+		// httpServletResponse,
+		// ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
 	}
 
 	/**
@@ -467,6 +501,7 @@ public class AtualizarImovelWizardAction
 					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
 
 		new AtualizarImovelConclusaoAction().execute(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+
 		return this.redirecionadorWizard(actionMapping, actionForm, httpServletRequest, httpServletResponse,
 						ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
 	}
@@ -497,5 +532,87 @@ public class AtualizarImovelWizardAction
 		// metodo desta classe
 		return new AtualizarImovelAction().execute(actionMapping, actionForm, httpServletRequest, httpServletResponse);
 	}
+
+	public ActionForward exibirManterImovelAction(ActionMapping actionMapping, ActionForm actionForm,
+					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
+
+		if(httpServletRequest.getParameter("destino") != null){
+			if(httpServletRequest.getSession().getAttribute("paginaOrigem").equals("Localidade")){
+				return this.atualizarImovelLocalidadeAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}else if(httpServletRequest.getSession().getAttribute("paginaOrigem").equals("Endereco")){
+				return this.atualizarImovelEnderecoAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}else if(httpServletRequest.getSession().getAttribute("paginaOrigem").equals("Cliente")){
+				return this.atualizarImovelClienteAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}else if(httpServletRequest.getSession().getAttribute("paginaOrigem").equals("SubCategoria")){
+				return this.atualizarImovelSubCategoriaAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}else if(httpServletRequest.getSession().getAttribute("paginaOrigem").equals("Caracteristicas")){
+				return this.atualizarImovelCaracteristicasAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}else if(httpServletRequest.getSession().getAttribute("paginaOrigem").equals("Conclusao")){
+				return this.atualizarImovelConclusaoAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}else{
+				return this.atualizarImovelLocalidadeAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}
+		}else{
+			String numeroPaginaRetorno = null;
+
+			if(httpServletRequest.getParameter("pagina") != null){
+				numeroPaginaRetorno = (String) httpServletRequest.getParameter("pagina");
+			}else if(httpServletRequest.getParameter("paginaAnterior") != null){
+				numeroPaginaRetorno = (String) httpServletRequest.getParameter("paginaAnterior");
+			}
+
+			if(numeroPaginaRetorno != null){
+				if(numeroPaginaRetorno.equals("1")){
+					return this.exibirAtualizarImovelLocalidadeAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+				}else if(numeroPaginaRetorno.equals("2")){
+					return this.exibirAtualizarImovelEnderecoAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+				}else if(numeroPaginaRetorno.equals("3")){
+					return this.exibirAtualizarImovelClienteAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+				}else if(numeroPaginaRetorno.equals("4")){
+					return this.exibirAtualizarImovelSubCategoriaAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+				}else if(numeroPaginaRetorno.equals("5")){
+					return this.exibirAtualizarImovelCaracteristicasAction(actionMapping, actionForm, httpServletRequest,
+									httpServletResponse);
+				}else if(numeroPaginaRetorno.equals("6")){
+					return this.exibirAtualizarImovelConclusaoAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+				}else{
+					return this.exibirAtualizarImovelLocalidadeAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+				}
+			}else{
+				return this.exibirAtualizarImovelLocalidadeAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}
+		}
+		
+	}
+	
+	private ActionForward obterPaginaDestino(ActionMapping actionMapping, ActionForm actionForm,
+					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
+
+		if (httpServletRequest.getParameter("destino") != null) {
+			if(httpServletRequest.getParameter("destino").equals("1")){
+				return this.exibirAtualizarImovelLocalidadeAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}else if(httpServletRequest.getParameter("destino").equals("2")){
+				return this.exibirAtualizarImovelEnderecoAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}else if(httpServletRequest.getParameter("destino").equals("3")){
+				return this.exibirAtualizarImovelClienteAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}else if(httpServletRequest.getParameter("destino").equals("4")){
+				return this.exibirAtualizarImovelSubCategoriaAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}else if(httpServletRequest.getParameter("destino").equals("5")){
+				return this.exibirAtualizarImovelCaracteristicasAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}else if(httpServletRequest.getParameter("destino").equals("6")){
+				return this.exibirAtualizarImovelConclusaoAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}else{
+				return this.exibirAtualizarImovelLocalidadeAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}		
+		} else {
+			if(httpServletRequest.getParameter("concluir") != null){
+				return this.redirecionadorWizard(actionMapping, actionForm, httpServletRequest, httpServletResponse,
+								ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
+			}else{
+				return this.exibirAtualizarImovelLocalidadeAction(actionMapping, actionForm, httpServletRequest, httpServletResponse);
+			}
+		}
+	}
+
 
 }

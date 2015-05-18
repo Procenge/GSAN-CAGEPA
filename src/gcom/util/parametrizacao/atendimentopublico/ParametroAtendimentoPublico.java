@@ -117,6 +117,18 @@ public class ParametroAtendimentoPublico
 	public static final Parametro P_PERMITIR_INFORMAR_PCOLETA_LIGACAO_ESGOTO = new ParametroAtendimentoPublico(
 					"P_PERMITIR_INFORMAR_PCOLETA_LIGACAO_ESGOTO");
 
+	public static final Parametro P_INDICADOR_TRAMITE_RESTRITO_UNIDADES_RESPONSAVEIS = new ParametroAtendimentoPublico(
+					"P_INDICADOR_TRAMITE_RESTRITO_UNIDADES_RESPONSAVEIS");
+
+	public static final Parametro P_SOLICITACAO_TIPO_GRUPO_CORTE = new ParametroAtendimentoPublico("P_SOLICITACAO_TIPO_GRUPO_CORTE");
+
+	public static final Parametro P_PERMITE_COBRAR_MATERIAL_OS = new ParametroAtendimentoPublico("P_PERMITE_COBRAR_MATERIAL_OS");
+
+	public static final Parametro P_PERMITE_COBRAR_HORA_OS = new ParametroAtendimentoPublico("P_PERMITE_COBRAR_HORA_OS");
+
+	public static final Parametro P_TIPO_SOLICITACAO_RA_CANCELAMENTO_CONTAS_ORGAO_PUBLICO = new ParametroAtendimentoPublico(
+					"P_TIPO_SOLICITACAO_RA_CANCELAMENTO_CONTAS_ORGAO_PUBLICO");
+
 	/**
 	 * @param parametro
 	 */

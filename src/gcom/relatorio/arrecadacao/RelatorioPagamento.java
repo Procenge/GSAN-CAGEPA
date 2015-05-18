@@ -78,13 +78,7 @@ package gcom.relatorio.arrecadacao;
 
 import gcom.arrecadacao.aviso.bean.AvisoBancarioHelper;
 import gcom.arrecadacao.bean.PagamentoRelatorioHelper;
-import gcom.arrecadacao.pagamento.FiltroGuiaPagamentoPrestacao;
-import gcom.arrecadacao.pagamento.FiltroGuiaPagamentoPrestacaoHistorico;
-import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao;
-import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacaoHistorico;
-import gcom.arrecadacao.pagamento.Pagamento;
-import gcom.arrecadacao.pagamento.PagamentoHistorico;
-import gcom.arrecadacao.pagamento.PagamentoSituacao;
+import gcom.arrecadacao.pagamento.*;
 import gcom.batch.Relatorio;
 import gcom.cadastro.cliente.ClienteImovelSimplificado;
 import gcom.cadastro.cliente.ClienteRelacaoTipo;
@@ -111,13 +105,7 @@ import gcom.util.parametrizacao.arrecadacao.ParametroArrecadacao;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * classe responsável por criar o relatório de bairro manter de água
@@ -704,9 +692,11 @@ public class RelatorioPagamento
 				String mesAnoAnterior = "";
 
 				// laço para criar a coleção de parâmetros da analise
+
 				while(colecaoPagamentosIterator.hasNext()){
 
 					PagamentoRelatorioHelper pagamentoRelatorioHelper = colecaoPagamentosIterator.next();
+
 					// (pagamento.getGuiaPagamento() == null && pagamento
 					// .getAnoMesReferenciaPagamento() != null)
 					// ||
@@ -999,8 +989,8 @@ public class RelatorioPagamento
 										fachada.pesquisarInscricaoImovel(pagamentoRelatorioHelper.getIdImovel(), true),
 
 										// Data Pagamento
-										pagamentoRelatorioHelper.getDataPagamento() == null ? "" : Util
-														.formatarData(pagamentoRelatorioHelper.getDataPagamento()),
+										pagamentoRelatorioHelper.getDataPagamento() == null ? ""
+														: Util.formatarData(pagamentoRelatorioHelper.getDataPagamento()),
 
 										// Mês/Ano
 										pagamentoRelatorioHelper.getAnoMesReferenciaPagamento() == null ? "" : Util
@@ -1056,9 +1046,9 @@ public class RelatorioPagamento
 						relatorioBean = new RelatorioPagamentoBean(
 
 						// Gerência Regional
-										pagamentoRelatorioHelper.getIdGerenciaRegional() == null ? "" : pagamentoRelatorioHelper
-														.getIdGerenciaRegional()
-														+ " - " + pagamentoRelatorioHelper.getNomeGerenciaRegional(),
+										pagamentoRelatorioHelper.getIdGerenciaRegional() == null ? ""
+														: pagamentoRelatorioHelper.getIdGerenciaRegional() + " - "
+																		+ pagamentoRelatorioHelper.getNomeGerenciaRegional(),
 
 										// Localidade
 										pagamentoRelatorioHelper.getIdLocalidade().toString() + " - "
@@ -1245,8 +1235,9 @@ public class RelatorioPagamento
 			}
 
 			if(pagamentoParametrosInicial.getDataPagamento() != null){
-				parametros.put("periodoPagamento", Util.formatarData(pagamentoParametrosInicial.getDataPagamento()) + " a "
-								+ Util.formatarData(pagamentoParametrosFinal.getDataPagamento()));
+				parametros.put("periodoPagamento",
+								Util.formatarData(pagamentoParametrosInicial.getDataPagamento()) + " a "
+												+ Util.formatarData(pagamentoParametrosFinal.getDataPagamento()));
 			}else{
 				parametros.put("periodoPagamento", "");
 			}
@@ -1302,9 +1293,7 @@ public class RelatorioPagamento
 			parametros.put("qtdePagamentosValorNaoConfereContas", "" + qtdePagamentosValorNaoConfereContas);
 			parametros.put("valorPagamentosValorNaoConfereContas", Util.formatarMoedaReal(valorPagamentosValorNaoConfereContas));
 			parametros.put("qtdePagamentosDuploExcessoDevolvidoContas", "" + qtdePagamentosDuploExcessoDevolvidoContas);
-			parametros
-							.put("valorPagamentosDuploExcessoDevolvidoContas", Util
-											.formatarMoedaReal(valorPagamentosDuploExcessoDevolvidoContas));
+			parametros.put("valorPagamentosDuploExcessoDevolvidoContas", Util.formatarMoedaReal(valorPagamentosDuploExcessoDevolvidoContas));
 			parametros.put("qtdePagamentosContaFaturamentoContas", "" + qtdePagamentosContaFaturamentoContas);
 			parametros.put("valorPagamentosContaFaturamentoContas", Util.formatarMoedaReal(valorPagamentosContaFaturamentoContas));
 
@@ -1313,34 +1302,34 @@ public class RelatorioPagamento
 			parametros.put("qtdePagamentosDuploExcessoGuiasPagamento", "" + qtdePagamentosDuploExcessoGuiasPagamento);
 			parametros.put("valorPagamentosDuploExcessoGuiasPagamento", Util.formatarMoedaReal(valorPagamentosDuploExcessoGuiasPagamento));
 			parametros.put("qtdePagamentosDocumentoInexistenteGuiasPagamento", "" + qtdePagamentosDocumentoInexistenteGuiasPagamento);
-			parametros.put("valorPagamentosDocumentoInexistenteGuiasPagamento", Util
-							.formatarMoedaReal(valorPagamentosDocumentoInexistenteGuiasPagamento));
+			parametros.put("valorPagamentosDocumentoInexistenteGuiasPagamento",
+							Util.formatarMoedaReal(valorPagamentosDocumentoInexistenteGuiasPagamento));
 			parametros.put("qtdePagamentosBaixarValorExcedenteGuiasPagamento", "" + qtdePagamentosBaixarValorExcedenteGuiasPagamento);
-			parametros.put("valorPagamentosBaixarValorExcedenteGuiasPagamento", Util
-							.formatarMoedaReal(valorPagamentosBaixarValorExcedenteGuiasPagamento));
+			parametros.put("valorPagamentosBaixarValorExcedenteGuiasPagamento",
+							Util.formatarMoedaReal(valorPagamentosBaixarValorExcedenteGuiasPagamento));
 			parametros.put("qtdePagamentosValorNaoConfereGuiasPagamento", "" + qtdePagamentosValorNaoConfereGuiasPagamento);
-			parametros.put("valorPagamentosValorNaoConfereGuiasPagamento", Util
-							.formatarMoedaReal(valorPagamentosValorNaoConfereGuiasPagamento));
+			parametros.put("valorPagamentosValorNaoConfereGuiasPagamento",
+							Util.formatarMoedaReal(valorPagamentosValorNaoConfereGuiasPagamento));
 			parametros.put("qtdePagamentosDuploExcessoDevolvidoGuiasPagamento", "" + qtdePagamentosDuploExcessoDevolvidoGuiasPagamento);
-			parametros.put("valorPagamentosDuploExcessoDevolvidoGuiasPagamento", Util
-							.formatarMoedaReal(valorPagamentosDuploExcessoDevolvidoGuiasPagamento));
+			parametros.put("valorPagamentosDuploExcessoDevolvidoGuiasPagamento",
+							Util.formatarMoedaReal(valorPagamentosDuploExcessoDevolvidoGuiasPagamento));
 
 			parametros.put("qtdePagamentosClassificadoDebitosACobrar", "" + qtdePagamentosClassificadoDebitosACobrar);
 			parametros.put("valorPagamentosClassificadoDebitosACobrar", Util.formatarMoedaReal(valorPagamentosClassificadoDebitosACobrar));
 			parametros.put("qtdePagamentosDuploExcessoDebitosACobrar", "" + qtdePagamentosDuploExcessoDebitosACobrar);
 			parametros.put("valorPagamentosDuploExcessoDebitosACobrar", Util.formatarMoedaReal(valorPagamentosDuploExcessoDebitosACobrar));
 			parametros.put("qtdePagamentosDocumentoInexistenteDebitosACobrar", "" + qtdePagamentosDocumentoInexistenteDebitosACobrar);
-			parametros.put("valorPagamentosDocumentoInexistenteDebitosACobrar", Util
-							.formatarMoedaReal(valorPagamentosDocumentoInexistenteDebitosACobrar));
+			parametros.put("valorPagamentosDocumentoInexistenteDebitosACobrar",
+							Util.formatarMoedaReal(valorPagamentosDocumentoInexistenteDebitosACobrar));
 			parametros.put("qtdePagamentosBaixarValorExcedenteDebitosACobrar", "" + qtdePagamentosBaixarValorExcedenteDebitosACobrar);
-			parametros.put("valorPagamentosBaixarValorExcedenteDebitosACobrar", Util
-							.formatarMoedaReal(valorPagamentosBaixarValorExcedenteDebitosACobrar));
+			parametros.put("valorPagamentosBaixarValorExcedenteDebitosACobrar",
+							Util.formatarMoedaReal(valorPagamentosBaixarValorExcedenteDebitosACobrar));
 			parametros.put("qtdePagamentosValorNaoConfereDebitosACobrar", "" + qtdePagamentosValorNaoConfereDebitosACobrar);
-			parametros.put("valorPagamentosValorNaoConfereDebitosACobrar", Util
-							.formatarMoedaReal(valorPagamentosValorNaoConfereDebitosACobrar));
+			parametros.put("valorPagamentosValorNaoConfereDebitosACobrar",
+							Util.formatarMoedaReal(valorPagamentosValorNaoConfereDebitosACobrar));
 			parametros.put("qtdePagamentosDuploExcessoDevolvidoDebitosACobrar", "" + qtdePagamentosDuploExcessoDevolvidoDebitosACobrar);
-			parametros.put("valorPagamentosDuploExcessoDevolvidoDebitosACobrar", Util
-							.formatarMoedaReal(valorPagamentosDuploExcessoDevolvidoDebitosACobrar));
+			parametros.put("valorPagamentosDuploExcessoDevolvidoDebitosACobrar",
+							Util.formatarMoedaReal(valorPagamentosDuploExcessoDevolvidoDebitosACobrar));
 
 			parametros.put("qtdePagamentosClassificado", "" + qtdePagamentosClassificado);
 			parametros.put("valorPagamentosClassificado", Util.formatarMoedaReal(valorPagamentosClassificado));
@@ -1384,14 +1373,10 @@ public class RelatorioPagamento
 
 		}
 
-
-
 		double valorTotal = 0;
 		for(Object pagamento : pagamentos.toArray()){
 
-
-			valorTotal += Double
-.parseDouble(((RelatorioPagamentoBean) pagamento).getValorPagamento().replaceAll("\\.", "")
+			valorTotal += Double.parseDouble(((RelatorioPagamentoBean) pagamento).getValorPagamento().replaceAll("\\.", "")
 							.replaceAll(",", "."));
 		}
 		parametros.put("qtdPagamentos", Integer.toString(pagamentos.size()));
@@ -1413,6 +1398,9 @@ public class RelatorioPagamento
 			retorno = this.gerarRelatorio(ConstantesRelatorios.RELATORIO_PAGAMENTO_CONSULTAR_AVISO_BANCARIO, parametros, ds,
 							tipoFormatoRelatorio);
 		}else if(indicadorTotalizarPorDataPagamento != null && indicadorTotalizarPorDataPagamento.equals(ConstantesSistema.SIM.toString())){
+
+			parametros.put("totalizadorMes", new Boolean(getParametro("totalizadorMes").toString()));
+
 			retorno = this.gerarRelatorio(ConstantesRelatorios.RELATORIO_PAGAMENTO_TOTALIZADO_POR_DATA, parametros, ds,
 							tipoFormatoRelatorio);
 		}else{

@@ -35,6 +35,9 @@ public class FiltrarImovelCobrancaAdministrativaAction
 		Fachada fachada = Fachada.getInstancia();
 		boolean parametroInformado = false;
 
+		
+
+		
 		// Comando de Cobrança
 		if(!Util.isVazioOuBranco(form.getIdComando())){
 
@@ -258,6 +261,8 @@ public class FiltrarImovelCobrancaAdministrativaAction
 			ex.setUrlBotaoVoltar("/gsan/exibirFiltrarImovelCobrancaAdministrativaAction.do");
 			throw ex;
 		}
+
+
 
 		this.getSessao(httpServletRequest).setAttribute("filtroImovelCobrancaAdministrativaHelper", filtro);
 

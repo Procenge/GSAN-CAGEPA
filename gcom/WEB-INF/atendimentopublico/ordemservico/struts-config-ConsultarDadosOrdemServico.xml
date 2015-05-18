@@ -20,6 +20,11 @@
 		</action>
 		
 		<action name="ConsultarDadosOrdemServicoActionForm"
+			type="gcom.gui.relatorio.atendimentopublico.ordemservico.GerarRelatorioOrdemServicoSitDocCobAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioOrdemServicoSitDocCobAction" />
+
+		<action name="ConsultarDadosOrdemServicoActionForm"
 			type="gcom.gui.relatorio.atendimentopublico.GerarRelatorioOrdemServicoAction"
 			validate="true" scope="session"
 			path="/gerarRelatorioOrdemServicoAction" />

@@ -81,10 +81,7 @@ import gcom.atendimentopublico.ligacaoagua.FiltroRamalLocalInstalacao;
 import gcom.atendimentopublico.ligacaoagua.RamalLocalInstalacao;
 import gcom.atendimentopublico.ligacaoesgoto.*;
 import gcom.atendimentopublico.ordemservico.*;
-import gcom.cadastro.cliente.Cliente;
-import gcom.cadastro.cliente.ClienteImovel;
-import gcom.cadastro.cliente.ClienteRelacaoTipo;
-import gcom.cadastro.cliente.FiltroClienteImovel;
+import gcom.cadastro.cliente.*;
 import gcom.cadastro.funcionario.FiltroFuncionario;
 import gcom.cadastro.funcionario.Funcionario;
 import gcom.cadastro.imovel.Imovel;
@@ -510,6 +507,9 @@ public class ExibirEfetuarLigacaoEsgotoAction
 
 		filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade("cliente");
 
+		filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteImovel.CLIENTE_CLIENTE_ATIVIDADE_ECONOMICA);
+		filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteImovel.CLIENTE_CLIENTE_TIPO);
+
 		Collection colecaoClienteImovel = Fachada.getInstancia().pesquisar(filtroClienteImovel, ClienteImovel.class.getName());
 
 		if(colecaoClienteImovel != null && !colecaoClienteImovel.isEmpty()){
@@ -528,6 +528,35 @@ public class ExibirEfetuarLigacaoEsgotoAction
 			// Cliente Nome/CPF-CNPJ
 			ligacaoEsgotoActionForm.setClienteUsuario(cliente.getNome());
 			ligacaoEsgotoActionForm.setCpfCnpjCliente(documento);
+
+			/*
+			 * Caso o cliente usuário seja pessoa jurídica e a atividade econômica seja de
+			 * preenchimento obrigatório (P_CNAE_OBRIGATORIO = 1) e esta possua perfil de ligação de
+			 * esgoto informado, assumir o perfil informado na Atividade Econômica do cliente
+			 * permitindo alteração
+			 */
+			if(cliente.getClienteTipo().getIndicadorPessoaFisicaJuridica().equals(ClienteTipo.INDICADOR_PESSOA_JURIDICA)){
+
+				String pIndicadorAtividadeEconomicaObrigatorio = null;
+
+				try{
+
+					pIndicadorAtividadeEconomicaObrigatorio = (String) ParametroCadastro.P_CNAE_OBRIGATORIO.executar();
+				}catch(ControladorException e){
+
+					throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(
+									new String[e.getParametroMensagem().size()]));
+				}
+
+				if(pIndicadorAtividadeEconomicaObrigatorio.equals(ConstantesSistema.SIM.toString())){
+
+					if(cliente.getAtividadeEconomica() != null && cliente.getAtividadeEconomica().getLigacaoEsgotoPerfil() != null){
+
+						ligacaoEsgotoActionForm.setPerfilLigacao(cliente.getAtividadeEconomica().getLigacaoEsgotoPerfil().getId()
+										.toString());
+					}
+				}
+			}
 
 		}else{
 			throw new ActionServletException("atencao.naocadastrado", null, "Cliente");

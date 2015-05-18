@@ -97,6 +97,7 @@ import gcom.faturamento.debito.DebitoACobrar;
 import gcom.faturamento.debito.DebitoTipo;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.seguranca.acesso.PermissaoEspecial;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesAplicacao;
 import gcom.util.ConstantesSistema;
@@ -108,10 +109,7 @@ import gcom.util.parametrizacao.cobranca.ParametroCobranca;
 import gcom.util.parametrizacao.cobranca.parcelamento.ParametroParcelamento;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -157,6 +155,31 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 			httpServletRequest.setAttribute("popupEfetuarParcelamento", "sim");
 		}
 
+		// Carrega parametro do sistema para visuaizar o botão de Imprimir Termo
+		// antes da conclusão do parcelamento.
+		try{
+			if(ParametroParcelamento.P_INDICADOR_EMISSAO_TERMO_PARCELAMENTO_ANTES_CONCLUSAO.executar().equals("1")){
+				httpServletRequest.setAttribute("HabilitarEmissaoTermoParcelamento", "sim");
+			}else{
+				httpServletRequest.setAttribute("HabilitarEmissaoTermoParcelamento", "nao");
+			}
+		}catch(ControladorException e1){
+			e1.printStackTrace();
+		}
+
+		Short pIndicadorPossuiDividaAtiva = ConstantesSistema.NAO;
+		try{
+
+			pIndicadorPossuiDividaAtiva = Util.converterStringParaShort(ParametroCobranca.P_INDICADOR_POSSUI_DIVIDA_ATIVA.executar()
+							.toString());
+
+		}catch(ControladorException e){
+
+			throw new ActionServletException("atencao.sistemaparametro_inexistente", null, "P_INDICADOR_POSSUI_DIVIDA_ATIVA");
+		}
+
+		sessao.setAttribute("pIndicadorPossuiDividaAtiva", pIndicadorPossuiDividaAtiva);
+
 		// Habilita o uso do campo valor de entrada
 		httpServletRequest.getSession().setAttribute("somenteLeituraValorEntradaInformado", "false");
 
@@ -198,6 +221,7 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 						.get("indicadorParcelamentoCobrancaBancaria");
 		String valorDebitoACobrarParcelamentoImovel = ((String) efetuarParcelamentoDebitosActionForm
 						.get("valorDebitoACobrarParcelamentoImovel"));
+		int indicadorCalcularAcrescimosSucumbenciaAnterior = 1;
 
 		String dataVencimentoEntradaParcelamento = null;
 		if(httpServletRequest.getParameter("idCampoEnviarDados") != null){
@@ -227,6 +251,9 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 		 * (Ex.: 9988-1$9988-2$7766-1)
 		 */
 		String chavesPrestacoes = (String) efetuarParcelamentoDebitosActionForm.get("chavesPrestacoes");
+
+		String chavesSucumbenciasConta = (String) efetuarParcelamentoDebitosActionForm.get("chavesSucumbenciasConta");
+		String chavesSucumbenciasGuia = (String) efetuarParcelamentoDebitosActionForm.get("chavesSucumbenciasGuia");
 
 		BigDecimal valorDebitoACobrarParcelamentoImovelBigDecimal = BigDecimal.ZERO;
 
@@ -311,6 +338,9 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 
 		BigDecimal valorDebitoTotalAtualizado = BigDecimal.ZERO;
 		BigDecimal valorAcrescimosImpontualidade = BigDecimal.ZERO;
+		BigDecimal valorAtualizacaoMonetariaSucumbencia = BigDecimal.ZERO;
+		BigDecimal valorJurosMoraSucumbencia = BigDecimal.ZERO;
+		BigDecimal valorSucumbenciaAnterior = BigDecimal.ZERO;
 
 		if(sessao.getAttribute("colecaoContaValores") != null){
 			colecaoContaValoresNegociacao = (Collection<ContaValoresHelper>) sessao.getAttribute("colecaoContaValores");
@@ -352,25 +382,33 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 			colecaoGuiaPagamentoHelper = (Collection<GuiaPagamentoValoresHelper>) debitosImovel[2];
 			// valorDebitoTotalAtualizado = (BigDecimal) debitosImovel[14];
 
+			String idClienteDebito = null;
+			Integer idRelacaoClienteDebito = null;
+			int indicadorDebito = 1;
+			if(efetuarParcelamentoDebitosActionForm.get("idClienteRelacaoImovelSelecionado") != null
+							&& !((String) efetuarParcelamentoDebitosActionForm.get("idClienteRelacaoImovelSelecionado")).equals("")){
+				String[] dados = ((String) efetuarParcelamentoDebitosActionForm.get("idClienteRelacaoImovelSelecionado")).split("\\.");
+
+				idClienteDebito = (dados[1]).toString();
+				idRelacaoClienteDebito = Integer.valueOf(dados[0]);
+
+				indicadorDebito = 2;
+			}
+
 			Short indicadorNaoConsiderarPagamentoNaoClassificado = 2;
 
 			// Obter todo o débito do imóvel para exibição na ABA 4(Conclusão)
 			// ou para inserir a partir da aba 3
-			ObterDebitoImovelOuClienteHelper colecaoDebitoCliente = fachada.obterDebitoImovelOuCliente(1, // Indicador
-							// de
-							// débito
-							// do
-							// imóvel
+			ObterDebitoImovelOuClienteHelper colecaoDebitoCliente = fachada.obterDebitoImovelOuCliente(
+							indicadorDebito, // Indicador
+							// de débito do imóvel
 							codigoImovel, // Matrícula do imóvel
-							null, // Código do cliente
-							null, // Tipo de relação cliente imóvel
+							idClienteDebito, // Código do cliente
+							idRelacaoClienteDebito, // Tipo de relação cliente imóvel
 							Util.formatarMesAnoParaAnoMesSemBarra(inicioIntervaloParcelamento), // Referência
-							// inicial
-							// do
-							// débito
+							// inicial do débito
 							Util.formatarMesAnoParaAnoMesSemBarra(fimIntervaloParcelamento), // Fim
-							// do
-							// débito
+							// do débito
 							Util.converteStringParaDate("01/01/0001"), // Inicio vencimento
 							Util.converteStringParaDate("31/12/9999"), // Fim vencimento
 							1, // Indicador de pagamento
@@ -382,7 +420,7 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 							Integer.valueOf(indicadorAcrescimosImpotualidade), // acréscimos
 							// impontualidade
 							indicadorContas, null, null, null, indicadorNaoConsiderarPagamentoNaoClassificado, ConstantesSistema.SIM,
-							ConstantesSistema.SIM, ConstantesSistema.SIM);
+							ConstantesSistema.SIM, ConstantesSistema.SIM, indicadorCalcularAcrescimosSucumbenciaAnterior, null);
 
 			// [FS0049] - Verificar retirada de débitos prescritos do débito do parcelamento
 			Short pIndicadorConsiderarDebitoPrescrito = ConstantesSistema.NUMERO_NAO_INFORMADO;
@@ -535,30 +573,17 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 
 						}else{
 
-							valorTotalContas = valorTotalContas.add(contaValoresHelper.getValorTotalConta().setScale(
-											Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
+							BigDecimal[] arrayValores = ContaValoresHelper.retornarArrayValores(contaValoresHelper);
 
-							if(contaValoresHelper.getValorAtualizacaoMonetaria() != null
-											&& !contaValoresHelper.getValorAtualizacaoMonetaria().equals("")){
-								valorAtualizacaoMonetaria.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-								valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.add(contaValoresHelper.getValorAtualizacaoMonetaria()
-												.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
-							}
-							if(contaValoresHelper.getValorJurosMora() != null && !contaValoresHelper.getValorJurosMora().equals("")){
-								valorJurosMora.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-								valorJurosMora = valorJurosMora.add(contaValoresHelper.getValorJurosMora().setScale(
-												Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
-							}
-							if(contaValoresHelper.getValorMulta() != null && !contaValoresHelper.getValorMulta().equals("")){
-								valorMulta.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-								valorMulta = valorMulta.add(contaValoresHelper.getValorMulta().setScale(Parcelamento.CASAS_DECIMAIS,
-												Parcelamento.TIPO_ARREDONDAMENTO));
-							}
+							valorTotalContas = valorTotalContas.add(arrayValores[0]);
+							valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.add(arrayValores[1]).add(arrayValores[4]);
+							valorJurosMora = valorJurosMora.add(arrayValores[2]).add(arrayValores[5]);
+							valorMulta = valorMulta.add(arrayValores[3]);
+							valorAtualizacaoMonetariaSucumbencia = valorAtualizacaoMonetariaSucumbencia.add(arrayValores[4]);
+							valorJurosMoraSucumbencia = valorJurosMoraSucumbencia.add(arrayValores[5]);
+							valorSucumbenciaAnterior = valorSucumbenciaAnterior.add(arrayValores[6]);
+							valorTotalAcrescimoImpontualidadeContas = valorTotalAcrescimoImpontualidadeContas.add(arrayValores[7]);
 
-							// Para cálculo do Acrescimo de Impontualidade
-							valorTotalAcrescimoImpontualidadeContas.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-							valorTotalAcrescimoImpontualidadeContas = valorTotalAcrescimoImpontualidadeContas.add(contaValoresHelper
-											.getValorTotalContaValoresParcelamento());
 						}
 					}else if((indicadorParcelamentoCobrancaBancariaParametro != null && indicadorParcelamentoCobrancaBancariaParametro
 									.equals(2))
@@ -574,59 +599,30 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 							contaValores.remove();
 
 						}else{
-							valorTotalContas.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-							valorTotalContas = valorTotalContas.add(contaValoresHelper.getValorTotalConta().setScale(
-											Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
 
-							if(contaValoresHelper.getValorAtualizacaoMonetaria() != null
-											&& !contaValoresHelper.getValorAtualizacaoMonetaria().equals("")){
-								valorAtualizacaoMonetaria.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-								valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.add(contaValoresHelper.getValorAtualizacaoMonetaria()
-												.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
-							}
-							if(contaValoresHelper.getValorJurosMora() != null && !contaValoresHelper.getValorJurosMora().equals("")){
-								valorJurosMora.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-								valorJurosMora = valorJurosMora.add(contaValoresHelper.getValorJurosMora().setScale(
-												Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
-							}
-							if(contaValoresHelper.getValorMulta() != null && !contaValoresHelper.getValorMulta().equals("")){
-								valorMulta.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-								valorMulta = valorMulta.add(contaValoresHelper.getValorMulta().setScale(Parcelamento.CASAS_DECIMAIS,
-												Parcelamento.TIPO_ARREDONDAMENTO));
-							}
+							BigDecimal[] arrayValores = ContaValoresHelper.retornarArrayValores(contaValoresHelper);
 
-							// Para cálculo do Acrescimo de Impontualidade
-							valorTotalAcrescimoImpontualidadeContas.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-							valorTotalAcrescimoImpontualidadeContas = valorTotalAcrescimoImpontualidadeContas.add(contaValoresHelper
-											.getValorTotalContaValoresParcelamento().setScale(Parcelamento.CASAS_DECIMAIS,
-															Parcelamento.TIPO_ARREDONDAMENTO));
+							valorTotalContas = valorTotalContas.add(arrayValores[0]);
+							valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.add(arrayValores[1]).add(arrayValores[4]);
+							valorJurosMora = valorJurosMora.add(arrayValores[2]).add(arrayValores[5]);
+							valorMulta = valorMulta.add(arrayValores[3]);
+							valorAtualizacaoMonetariaSucumbencia = valorAtualizacaoMonetariaSucumbencia.add(arrayValores[4]);
+							valorJurosMoraSucumbencia = valorJurosMoraSucumbencia.add(arrayValores[5]);
+							valorSucumbenciaAnterior = valorSucumbenciaAnterior.add(arrayValores[6]);
+							valorTotalAcrescimoImpontualidadeContas = valorTotalAcrescimoImpontualidadeContas.add(arrayValores[7]);
 						}
 
 					}else{
-						valorTotalContas = valorTotalContas.add(contaValoresHelper.getValorTotalConta().setScale(
-										Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
+						BigDecimal[] arrayValores = ContaValoresHelper.retornarArrayValores(contaValoresHelper);
 
-						if(contaValoresHelper.getValorAtualizacaoMonetaria() != null
-										&& !contaValoresHelper.getValorAtualizacaoMonetaria().equals("")){
-							valorAtualizacaoMonetaria.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-							valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.add(contaValoresHelper.getValorAtualizacaoMonetaria()
-											.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
-						}
-						if(contaValoresHelper.getValorJurosMora() != null && !contaValoresHelper.getValorJurosMora().equals("")){
-							valorJurosMora.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-							valorJurosMora = valorJurosMora.add(contaValoresHelper.getValorJurosMora().setScale(
-											Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
-						}
-						if(contaValoresHelper.getValorMulta() != null && !contaValoresHelper.getValorMulta().equals("")){
-							valorMulta.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-							valorMulta = valorMulta.add(contaValoresHelper.getValorMulta().setScale(Parcelamento.CASAS_DECIMAIS,
-											Parcelamento.TIPO_ARREDONDAMENTO));
-						}
-
-						// Para cálculo do Acrescimo de Impontualidade
-						valorTotalAcrescimoImpontualidadeContas.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-						valorTotalAcrescimoImpontualidadeContas = valorTotalAcrescimoImpontualidadeContas.add(contaValoresHelper
-										.getValorTotalContaValoresParcelamento());
+						valorTotalContas = valorTotalContas.add(arrayValores[0]);
+						valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.add(arrayValores[1]).add(arrayValores[4]);
+						valorJurosMora = valorJurosMora.add(arrayValores[2]).add(arrayValores[5]);
+						valorMulta = valorMulta.add(arrayValores[3]);
+						valorAtualizacaoMonetariaSucumbencia = valorAtualizacaoMonetariaSucumbencia.add(arrayValores[4]);
+						valorJurosMoraSucumbencia = valorJurosMoraSucumbencia.add(arrayValores[5]);
+						valorSucumbenciaAnterior = valorSucumbenciaAnterior.add(arrayValores[6]);
+						valorTotalAcrescimoImpontualidadeContas = valorTotalAcrescimoImpontualidadeContas.add(arrayValores[7]);
 					}
 
 				}
@@ -661,18 +657,48 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 					Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValoresSelecionadas = fachada
 									.retornarGuiaPagamentoValoresSelecionadas(chavesPrestacoes, colecaoGuiaPagamentoValores);
 
+					BigDecimal atualizacaoSucumbencia = fachada.calcularValoresGuia(colecaoGuiaPagamentoValoresSelecionadas,
+									ConstantesSistema.PARCELAMENTO_VALOR_GUIA_ATUALIZACAO_MONETARIA_SUCUMBENCIA);
+					BigDecimal jurosMoraSucumbencia = fachada.calcularValoresGuia(colecaoGuiaPagamentoValoresSelecionadas,
+									ConstantesSistema.PARCELAMENTO_VALOR_GUIA_JUROS_MORA_SUCUMBENCIA);
+
 					valorTotalGuiasPagamento = valorTotalGuiasPagamento.add(fachada.calcularValoresGuia(
 									colecaoGuiaPagamentoValoresSelecionadas, ConstantesSistema.PARCELAMENTO_VALOR_GUIA_TOTAL));
-					valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.add(fachada.calcularValoresGuia(
-									colecaoGuiaPagamentoValoresSelecionadas,
-									ConstantesSistema.PARCELAMENTO_VALOR_GUIA_ATUALIZACAO_MONETARIA));
+					valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.add(
+									fachada.calcularValoresGuia(colecaoGuiaPagamentoValoresSelecionadas,
+													ConstantesSistema.PARCELAMENTO_VALOR_GUIA_ATUALIZACAO_MONETARIA)).add(
+									atualizacaoSucumbencia);
 					valorJurosMora = valorJurosMora.add(fachada.calcularValoresGuia(colecaoGuiaPagamentoValoresSelecionadas,
-									ConstantesSistema.PARCELAMENTO_VALOR_GUIA_JUROS_MORA));
+													ConstantesSistema.PARCELAMENTO_VALOR_GUIA_JUROS_MORA)).add(jurosMoraSucumbencia);
 					valorMulta = valorMulta.add(fachada.calcularValoresGuia(colecaoGuiaPagamentoValoresSelecionadas,
 									ConstantesSistema.PARCELAMENTO_VALOR_GUIA_MULTA));
 					valorTotalAcrescimoImpontualidadeGuias = valorTotalAcrescimoImpontualidadeGuias.add(fachada.calcularValoresGuia(
 									colecaoGuiaPagamentoValoresSelecionadas,
 									ConstantesSistema.PARCELAMENTO_VALOR_GUIA_ACRESCIMO_IMPONTUALIDADE));
+					valorAtualizacaoMonetariaSucumbencia = valorAtualizacaoMonetariaSucumbencia.add(atualizacaoSucumbencia);
+					valorJurosMoraSucumbencia = valorJurosMoraSucumbencia.add(jurosMoraSucumbencia);
+					valorSucumbenciaAnterior = valorSucumbenciaAnterior.add(fachada.calcularValoresGuia(
+									colecaoGuiaPagamentoValoresSelecionadas,
+									ConstantesSistema.PARCELAMENTO_VALOR_GUIA_SUCUMBENCIA));
+
+					// valorTotalGuiasPagamento =
+					// valorTotalGuiasPagamento.add(fachada.calcularValoresGuia(
+					// colecaoGuiaPagamentoValoresSelecionadas,
+					// ConstantesSistema.PARCELAMENTO_VALOR_GUIA_TOTAL));
+					// valorAtualizacaoMonetaria =
+					// valorAtualizacaoMonetaria.add(fachada.calcularValoresGuia(
+					// colecaoGuiaPagamentoValoresSelecionadas,
+					// ConstantesSistema.PARCELAMENTO_VALOR_GUIA_ATUALIZACAO_MONETARIA));
+					// valorJurosMora =
+					// valorJurosMora.add(fachada.calcularValoresGuia(colecaoGuiaPagamentoValoresSelecionadas,
+					// ConstantesSistema.PARCELAMENTO_VALOR_GUIA_JUROS_MORA));
+					// valorMulta =
+					// valorMulta.add(fachada.calcularValoresGuia(colecaoGuiaPagamentoValoresSelecionadas,
+					// ConstantesSistema.PARCELAMENTO_VALOR_GUIA_MULTA));
+					// valorTotalAcrescimoImpontualidadeGuias =
+					// valorTotalAcrescimoImpontualidadeGuias.add(fachada.calcularValoresGuia(
+					// colecaoGuiaPagamentoValoresSelecionadas,
+					// ConstantesSistema.PARCELAMENTO_VALOR_GUIA_ACRESCIMO_IMPONTUALIDADE));
 
 					efetuarParcelamentoDebitosActionForm.set("valorGuiasPagamento", Util.formatarMoedaReal(valorTotalGuiasPagamento));
 
@@ -790,6 +816,10 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 													.add(valoresDeCurtoELongoPrazo[indiceLongoPrazo]);
 								}
 							}
+
+							if(debitoACobrar.getDebitoTipo().getId().equals(DebitoTipo.SUCUMBENCIA)){
+								valorSucumbenciaAnterior = valorSucumbenciaAnterior.add(debitoACobrar.getValorTotal());
+							}
 						}
 					}
 
@@ -848,6 +878,14 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 				sessao.removeAttribute("colecaoDebitoACobrarImovel");
 			}
 
+			efetuarParcelamentoDebitosActionForm.set("valorAtualizacaoMonetariaSucumbenciaImovel",
+							Util.formatarMoedaReal(valorAtualizacaoMonetariaSucumbencia));
+			efetuarParcelamentoDebitosActionForm.set("valorJurosMoraSucumbenciaImovel", Util.formatarMoedaReal(valorJurosMoraSucumbencia));
+			efetuarParcelamentoDebitosActionForm.set("valorMultaSucumbenciaImovel", "0,00");
+			efetuarParcelamentoDebitosActionForm.set("valorAcrescimosSucumbenciaImovel",
+							Util.formatarMoedaReal(valorJurosMoraSucumbencia.add(valorAtualizacaoMonetariaSucumbencia)));
+			efetuarParcelamentoDebitosActionForm.set("valorTotalSucumbenciaImovel", Util.formatarMoedaReal(valorSucumbenciaAnterior));
+
 			// Crédito A Realizar
 			if(indicadorCreditoARealizar.equals("1")){
 				Collection<CreditoARealizar> colecaoCreditoARealizarInicial = colecaoDebitoCliente.getColecaoCreditoARealizar();
@@ -897,6 +935,22 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 
 		}
 
+		Short pIndicadorPermissaoEspecialEfetivacaoParcelamento = ConstantesSistema.NUMERO_NAO_INFORMADO;
+		try{
+			pIndicadorPermissaoEspecialEfetivacaoParcelamento = Util
+							.converterStringParaShort((String) ParametroParcelamento.P_INDICADOR_PERMISSAO_ESPECIAL_EFETIVACAO_PARCELAMENTO
+											.executar());
+		}catch(ControladorException e){
+			throw new ActionServletException("atencao.sistemaparametro_inexistente", null,
+							"P_INDICADOR_PERMISSAO_ESPECIAL_EFETIVACAO_PARCELAMENTO");
+		}
+
+		if(pIndicadorPermissaoEspecialEfetivacaoParcelamento.equals(ConstantesSistema.SIM)){
+			if(!fachada.verificarPermissaoEspecial(PermissaoEspecial.EFETIVAR_PARCELAMENTO, usuario)){
+				sessao.setAttribute("bloquearEfetivarParcelamento", "S");
+			}
+		}
+
 		// Variáveis
 		BigDecimal valorTotalMultas = BigDecimal.ZERO;
 		BigDecimal valorTotalJurosMora = BigDecimal.ZERO;
@@ -918,6 +972,86 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 		Integer numeroDiasVencimentoDaEntrada = null;
 		boolean existeValorDescontoNaPrestacao = false;
 		BigDecimal valorEstornoDescontos = BigDecimal.ZERO;
+		
+		Map<Integer, BigDecimal> mapProcessos = fachada.determinarValorSucumbenciaAtual(Integer.valueOf(codigoImovel),
+						colecaoContaValoresNegociacao, colecaoGuiaPagamentoHelper, chavesSucumbenciasConta, chavesSucumbenciasGuia);
+		BigDecimal valorSucumbenciaAtualCalculado = Util.somarMapBigDecimal(mapProcessos);
+
+		BigDecimal valorSucumbenciaAtualCalculadoAnterior = (BigDecimal) sessao.getAttribute("valorSucumbenciaAtualCalculadoAnterior");
+
+		boolean indicadorCalculoAlterado = false;
+		if(valorSucumbenciaAtualCalculadoAnterior != null){
+			if(valorSucumbenciaAtualCalculado.compareTo(valorSucumbenciaAtualCalculadoAnterior) != 0){
+				indicadorCalculoAlterado = true;
+			}
+		}
+		sessao.setAttribute("valorSucumbenciaAtualCalculadoAnterior", valorSucumbenciaAtualCalculado);
+
+		BigDecimal valorSucumbenciaAtualTela = null;
+		String valorSucumbenciaAtualStr = (String) efetuarParcelamentoDebitosActionForm.get("valorSucumbenciaAtual");
+		if(Util.isVazioOuBranco(valorSucumbenciaAtualStr)){
+			valorSucumbenciaAtualTela = valorSucumbenciaAtualCalculado;
+		}else{
+			valorSucumbenciaAtualTela = Util.formatarMoedaRealparaBigDecimal(valorSucumbenciaAtualStr);
+		}
+
+		BigDecimal valorSucumbenciaAtual = null;
+		if(indicadorCalculoAlterado){
+			valorSucumbenciaAtual = valorSucumbenciaAtualCalculado;
+		}else{
+			valorSucumbenciaAtual = valorSucumbenciaAtualTela;
+		}
+		efetuarParcelamentoDebitosActionForm.set("valorSucumbenciaAtual", Util.formatarMoedaReal(valorSucumbenciaAtual));
+		
+		sessao.setAttribute("mapProcessos", mapProcessos);
+
+		// Map<Integer, BigDecimal> mapProcessosValorSucumbenciaDistribuido =
+		// fachada.distribuirValorEntreProcessosExecucaoFiscal(valorSucumbenciaAtual, mapProcessos,
+		// Integer.valueOf(codigoImovel));
+
+		BigDecimal valorSucumbenciaTotal = BigDecimal.ZERO;
+		String valorAcrescimosSucumbenciaImovelStr = (String) efetuarParcelamentoDebitosActionForm.get("valorAcrescimosSucumbenciaImovel");
+		if(!Util.isVazioOuBranco(valorAcrescimosSucumbenciaImovelStr)){
+			valorSucumbenciaTotal = valorSucumbenciaTotal.add(Util.formatarMoedaRealparaBigDecimal(valorAcrescimosSucumbenciaImovelStr));
+		}
+		String valorTotalSucumbenciaImovelStr = (String) efetuarParcelamentoDebitosActionForm.get("valorTotalSucumbenciaImovel");
+		if(!Util.isVazioOuBranco(valorTotalSucumbenciaImovelStr)){
+			valorSucumbenciaTotal = valorSucumbenciaTotal.add(Util.formatarMoedaRealparaBigDecimal(valorTotalSucumbenciaImovelStr));
+		}
+		valorSucumbenciaTotal = valorSucumbenciaTotal.add(valorSucumbenciaAtual);
+
+		String quantidadeParcelasSucumbenciaStr = (String) efetuarParcelamentoDebitosActionForm.get("quantidadeParcelasSucumbencia");
+		if(valorSucumbenciaTotal.compareTo(BigDecimal.ZERO) == 0){
+			quantidadeParcelasSucumbenciaStr = "0";
+		}else if(Util.isVazioOuBranco(quantidadeParcelasSucumbenciaStr) || quantidadeParcelasSucumbenciaStr.equals("0")){
+			quantidadeParcelasSucumbenciaStr = "1";
+		}
+
+		Integer quantidadeParcelasSucumbencia = Integer.valueOf(quantidadeParcelasSucumbenciaStr);
+		efetuarParcelamentoDebitosActionForm.set("quantidadeParcelasSucumbencia", quantidadeParcelasSucumbenciaStr);
+
+		if(fachada.verificarPermissaoEspecial(PermissaoEspecial.ALTERAR_VALORES_PADROES_SUCUMBENCIA_EXECUCAO_FISCAL, usuario)
+						&& valorSucumbenciaAtual.compareTo(BigDecimal.ZERO) != 0){
+			sessao.setAttribute("permitirAlterarValoresSucumbenciaExecucaoFiscal", "S");
+		}else{
+			sessao.removeAttribute("permitirAlterarValoresSucumbenciaExecucaoFiscal");
+		}
+
+		String valorDiligenciasStr = (String) efetuarParcelamentoDebitosActionForm.get("valorDiligencias");
+		BigDecimal valorDiligencias = BigDecimal.ZERO;
+		if(Util.isVazioOuBranco(valorDiligenciasStr)){
+			efetuarParcelamentoDebitosActionForm.set("valorDiligencias", Util.formatarMoedaReal(valorDiligencias));
+		}else{
+			valorDiligencias = Util.formatarMoedaRealparaBigDecimal(valorDiligenciasStr);
+		}
+
+		if(fachada.verificarPermissaoEspecial(PermissaoEspecial.INFORMAR_VL_DILIGENCIAS_PARCELAMENTO_EXECUCAO_FISCAL, usuario)
+						&& valorSucumbenciaAtual.compareTo(BigDecimal.ZERO) != 0){
+			sessao.setAttribute("permitirInformarValorDiligenciasExecucaoFiscal", "S");
+		}else{
+			sessao.removeAttribute("permitirInformarValorDiligenciasExecucaoFiscal");
+			efetuarParcelamentoDebitosActionForm.set("valorDiligencias", "0,00");
+		}
 
 		// Quando não é pelo botão Calcular
 		if(calculaOpcaoParcelamento == null){
@@ -1030,7 +1164,8 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 							valorTotalJurosMora, valorTotalAtualizacoesMonetarias, numeroReparcelamentoConsecutivos,
 							colecaoGuiaPagamentoHelper, usuario, valorDebitoACobrarParcelamentoImovelBigDecimal,
 							inicioIntervaloParcelamentoFormatado, fimIntervaloParcelamentoFormatado, indicadoresParcelamentoHelper,
-							dataVencimentoEntradaParcelamento);
+							dataVencimentoEntradaParcelamento, valorSucumbenciaTotal, quantidadeParcelasSucumbencia, valorSucumbenciaAtual,
+							valorDiligencias);
 			colecaoOpcoesParcelamento = opcoesParcelamento.getOpcoesParcelamento();
 
 			if(!Util.isVazioOrNulo(colecaoOpcoesParcelamento)){
@@ -1172,7 +1307,8 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 							valorDebitoTotalAtualizado, valorTotalMultas, valorTotalJurosMora, valorTotalAtualizacoesMonetarias,
 							numeroReparcelamentoConsecutivos, colecaoGuiaPagamentoHelper, usuario,
 							valorDebitoACobrarParcelamentoImovelBigDecimal, inicioIntervaloParcelamentoFormatado,
-							fimIntervaloParcelamentoFormatado, indicadoresParcelamentoHelper, dataVencimentoEntradaParcelamento);
+							fimIntervaloParcelamentoFormatado, indicadoresParcelamentoHelper, dataVencimentoEntradaParcelamento,
+							valorSucumbenciaTotal, quantidadeParcelasSucumbencia, valorSucumbenciaAtual, valorDiligencias);
 
 			descontoAcrescimosImpontualidade = opcoesParcelamento.getValorDescontoAcrecismosImpotualidade();
 			descontoSancoesRDEspecial = opcoesParcelamento.getValorDescontoSancoesRDEspecial();
@@ -1252,6 +1388,17 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 			efetuarParcelamentoDebitosActionForm.set("valorEntradaInformadoAntes", Util.formatarMoedaReal(valorEntradaInformado));
 		}
 
+		// TODO Saulo Lima
+		Short pIndicadorExibirDebitosSituacaoDividaAtivaParcelamento = ConstantesSistema.NUMERO_NAO_INFORMADO;
+		try{
+			pIndicadorExibirDebitosSituacaoDividaAtivaParcelamento = Util
+							.converterStringParaShort((String) ParametroParcelamento.P_INDICADOR_EXIBIR_DEBITOS_SITUACAO_DIVIDAATIVA_PARCELAMENTO
+											.executar());
+		}catch(ControladorException e){
+			throw new ActionServletException("atencao.sistemaparametro_inexistente", null,
+							"P_INDICADOR_EXIBIR_DEBITOS_SITUACAO_DIVIDAATIVA_PARCELAMENTO");
+		}
+
 		// Verifica se o valor do débito menos o valor dos descontos é menor que o valor minimo da
 		// parcela
 		BigDecimal valorTotalDescontos = BigDecimal.ZERO;
@@ -1314,10 +1461,9 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 			}
 		}
 
-
-
 		valorPagamentoAVista.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
 		valorPagamentoAVista = valorDebitoTotalAtualizado.subtract(valorDescontoPagamentoAVista);
+		valorPagamentoAVista = valorPagamentoAVista.add(valorSucumbenciaAtual);
 		valorPagamentoAVista = valorPagamentoAVista.subtract(valorTotalImpostosConta);
 
 		if(valorEstornoDescontos.compareTo(BigDecimal.ZERO) > 0 && valorAtualizarComEstorno.compareTo(valorDebitoTotalAtualizado) < 0){
@@ -1368,7 +1514,7 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 
 		String habilitaPagamentoAVista = "1";
 		if(colecaoContaValoresNegociacao == null || colecaoContaValoresNegociacao.isEmpty()){
-			habilitaPagamentoAVista = "2";
+			// habilitaPagamentoAVista = "2";
 		}
 		sessao.setAttribute("habilitaPagamentoAVista", habilitaPagamentoAVista);
 
@@ -1518,6 +1664,202 @@ public class ExibirEfetuarParcelamentoDebitosProcesso3Action
 
 			sessao.removeAttribute("colecaoParcelamentoConfiguracaoPrestacao");
 		}
+
+		/**
+		 * [UC0214] Efetuar Parcelamento de Débitos
+		 * [SB0052] Exibir Valores dos Débitos por Situação de Dívida Ativa
+		 */
+		try{
+			if(ParametroParcelamento.P_INDICADOR_EXIBIR_DEBITOS_SITUACAO_DIVIDAATIVA_PARCELAMENTO.executar().equals("1")){
+				httpServletRequest.setAttribute("exibirDebitosSituacaoDividaAtivaParc", "S");
+			}else{
+				httpServletRequest.removeAttribute("exibirDebitosSituacaoDividaAtivaParc");
+			}
+		}catch(ControladorException e1){
+			e1.printStackTrace();
+		}
+
+		// Habilita o uso do campo valor de entrada
+		httpServletRequest.getSession().setAttribute("somenteLeituraValorEntradaInformado", "false");
+
+		BigDecimal valorTotalContaNormal = BigDecimal.ZERO;
+		BigDecimal valorTotalContaDividaAtiva = BigDecimal.ZERO;
+		BigDecimal valorTotalContaExecFiscal = BigDecimal.ZERO;
+		BigDecimal valorTotalContaAcresNormal = BigDecimal.ZERO;
+		BigDecimal valorTotalContaAcresDividaAtiva = BigDecimal.ZERO;
+		BigDecimal valorTotalContaAcresExecFiscal = BigDecimal.ZERO;
+
+		BigDecimal valorTotalGuiaNormal = BigDecimal.ZERO;
+		BigDecimal valorTotalGuiaDividaAtiva = BigDecimal.ZERO;
+		BigDecimal valorTotalGuiaExecFiscal = BigDecimal.ZERO;
+		BigDecimal valorTotalGuiaAcresNormal = BigDecimal.ZERO;
+		BigDecimal valorTotalGuiaAcresDividaAtiva = BigDecimal.ZERO;
+		BigDecimal valorTotalGuiaAcresExecFiscal = BigDecimal.ZERO;
+
+		BigDecimal valorTotalDebitoACobrarServicoNormal = BigDecimal.ZERO;
+		BigDecimal valorTotalDebitoACobrarParcelamentoNormal = BigDecimal.ZERO;
+
+		if(sessao.getAttribute("colecaoContaValores") != null){
+			colecaoContaValoresNegociacao = (Collection<ContaValoresHelper>) sessao.getAttribute("colecaoContaValores");
+		}else{
+			colecaoContaValoresNegociacao = (Collection<ContaValoresHelper>) sessao.getAttribute("colecaoContaValoresImovel");
+		}
+
+		if(sessao.getAttribute("colecaoGuiaPagamentoValoresSelecionadas") != null || indicadorGuiasPagamento.equals("2")){
+			colecaoGuiaPagamentoHelper = (Collection<GuiaPagamentoValoresHelper>) sessao
+							.getAttribute("colecaoGuiaPagamentoValoresSelecionadas");
+		}else{
+			colecaoGuiaPagamentoHelper = (Collection<GuiaPagamentoValoresHelper>) sessao.getAttribute("colecaoGuiaPagamentoValoresImovel");
+		}
+
+		Collection<DebitoACobrarValoresHelper> colecaoDebitoACobrarValores = new ArrayList();
+		colecaoDebitoACobrarValores = (Collection<DebitoACobrarValoresHelper>) sessao.getAttribute("colecaoDebitoACobrarValores");
+
+		if(colecaoContaValoresNegociacao != null && !colecaoContaValoresNegociacao.isEmpty()){
+			Iterator<ContaValoresHelper> contaValoresNegociacao = colecaoContaValoresNegociacao.iterator();
+			while(contaValoresNegociacao.hasNext()){
+				ContaValoresHelper contaValoresHelperNegociacao = contaValoresNegociacao.next();
+				if(sessao.getAttribute("colecaoContaValores") != null){
+					// Caso não tenha marcado a conta
+					if(contaValoresHelperNegociacao.getIndicadorContasDebito() == null){
+						BigDecimal valoTotalAcrescimentoAux = BigDecimal.ZERO;
+
+						if(contaValoresHelperNegociacao.getValorMulta() != null){
+							valoTotalAcrescimentoAux = valoTotalAcrescimentoAux.add(contaValoresHelperNegociacao.getValorMulta());
+						}
+
+						if(contaValoresHelperNegociacao.getValorJurosMora() != null){
+							valoTotalAcrescimentoAux = valoTotalAcrescimentoAux.add(contaValoresHelperNegociacao.getValorJurosMora());
+						}
+
+						if(contaValoresHelperNegociacao.getValorAtualizacaoMonetaria() != null){
+							valoTotalAcrescimentoAux = valoTotalAcrescimentoAux.add(contaValoresHelperNegociacao
+											.getValorAtualizacaoMonetaria());
+						}
+
+						// Valores dos Débitos do Imóvel por Situação de Dívida Ativa
+						if(contaValoresHelperNegociacao.getConta().getIndicadorExecucaoFiscal().equals(Short.valueOf("1"))){
+							valorTotalContaExecFiscal = valorTotalContaExecFiscal.add(contaValoresHelperNegociacao.getValorTotalConta());
+							valorTotalContaAcresExecFiscal = valorTotalContaAcresExecFiscal.add(valoTotalAcrescimentoAux);
+						}else if(contaValoresHelperNegociacao.getConta().getIndicadorDividaAtiva().equals(Short.valueOf("1"))){
+							valorTotalContaDividaAtiva = valorTotalContaDividaAtiva.add(contaValoresHelperNegociacao.getValorTotalConta());
+							valorTotalContaAcresDividaAtiva = valorTotalContaAcresDividaAtiva.add(valoTotalAcrescimentoAux);
+						}else{
+							valorTotalContaNormal = valorTotalContaNormal.add(contaValoresHelperNegociacao.getValorTotalConta());
+							valorTotalContaAcresNormal = valorTotalContaAcresNormal.add(valoTotalAcrescimentoAux);
+						}
+					}
+				}
+			}
+		}
+
+		if(colecaoGuiaPagamentoHelper != null && !colecaoGuiaPagamentoHelper.isEmpty()){
+			Iterator<GuiaPagamentoValoresHelper> guiaPagamentoValoresNegociacao = colecaoGuiaPagamentoHelper.iterator();
+			while(guiaPagamentoValoresNegociacao.hasNext()){
+				GuiaPagamentoValoresHelper guiaPagamentoValoresHelperNegociacao = guiaPagamentoValoresNegociacao.next();
+
+				BigDecimal valoTotalAcrescimentoAux = BigDecimal.ZERO;
+
+				if(guiaPagamentoValoresHelperNegociacao.getValorMulta() != null){
+					valoTotalAcrescimentoAux = valoTotalAcrescimentoAux.add(guiaPagamentoValoresHelperNegociacao.getValorMulta());
+				}
+
+				if(guiaPagamentoValoresHelperNegociacao.getValorJurosMora() != null){
+					valoTotalAcrescimentoAux = valoTotalAcrescimentoAux.add(guiaPagamentoValoresHelperNegociacao.getValorJurosMora());
+				}
+
+				if(guiaPagamentoValoresHelperNegociacao.getValorAtualizacaoMonetaria() != null){
+					valoTotalAcrescimentoAux = valoTotalAcrescimentoAux.add(guiaPagamentoValoresHelperNegociacao
+									.getValorAtualizacaoMonetaria());
+				}
+
+				if(guiaPagamentoValoresHelperNegociacao.getIndicadorExecucaoFiscal().equals(Short.valueOf("1"))){
+					valorTotalGuiaExecFiscal = valorTotalGuiaExecFiscal.add(guiaPagamentoValoresHelperNegociacao.getValorTotalPrestacao());
+					valorTotalGuiaAcresExecFiscal = valorTotalGuiaAcresExecFiscal.add(valoTotalAcrescimentoAux);
+				}else if(guiaPagamentoValoresHelperNegociacao.getIndicadorDividaAtiva().equals(Short.valueOf("1"))){
+					valorTotalGuiaDividaAtiva = valorTotalGuiaDividaAtiva
+									.add(guiaPagamentoValoresHelperNegociacao.getValorTotalPrestacao());
+					valorTotalGuiaAcresDividaAtiva = valorTotalGuiaAcresDividaAtiva.add(valoTotalAcrescimentoAux);
+				}else{
+					valorTotalGuiaNormal = valorTotalGuiaNormal.add(guiaPagamentoValoresHelperNegociacao.getValorTotalPrestacao());
+					valorTotalGuiaAcresNormal = valorTotalGuiaAcresNormal.add(valoTotalAcrescimentoAux);
+				}
+			}
+		}
+
+		String chavesDebitosACobrar = (String) efetuarParcelamentoDebitosActionForm.get("chavesDebitosACobrar");
+		Collection<DebitoACobrarValoresHelper> colecaoDebitoACobrarSelecionados = fachada.retornarDebitoACobrarValoresSelecionadas(
+						chavesDebitosACobrar, colecaoDebitoACobrarValores);
+
+		if(colecaoDebitoACobrarSelecionados != null && !colecaoDebitoACobrarSelecionados.isEmpty()){
+			// Parâmetro que contém os tipos de financiamentos de parcelamento
+			String[] parametroFinanciamentoTipoParcelamento = null;
+			ArrayList<Integer> colecaoFinanciamentosTiposParcelamento = new ArrayList<Integer>();
+
+			try{
+				// Recupera os valores do parâmetro
+				parametroFinanciamentoTipoParcelamento = ((String) ParametroParcelamento.P_FINANCIAMENTO_TIPO_PARCELAMENTO.executar())
+								.split(",");
+
+				// carrega valores dos tipos de finaciamentos para parcelamento
+				for(String parametroFinanciamentoTipo : parametroFinanciamentoTipoParcelamento){
+
+					colecaoFinanciamentosTiposParcelamento.add(Integer.valueOf(parametroFinanciamentoTipo));
+				}
+			}catch(ControladorException e){
+				e.printStackTrace();
+			}
+
+			String chavesDebitoACobrarString = (String) efetuarParcelamentoDebitosActionForm.get("chavesDebitosACobrar");
+			Iterator<DebitoACobrarValoresHelper> debitoACobrarValoresNegociacao = colecaoDebitoACobrarSelecionados.iterator();
+			while(debitoACobrarValoresNegociacao.hasNext()){
+				DebitoACobrarValoresHelper debitoACobrarNegociacao = debitoACobrarValoresNegociacao.next();
+
+				// [FS0022]-Verificar existência de juros sobre imóvel
+				if(debitoACobrarNegociacao.getIdDebitoTipo() != null
+								&& !debitoACobrarNegociacao.getIdDebitoTipo().equals(DebitoTipo.JUROS_SOBRE_PARCELAMENTO)
+								&& chavesDebitoACobrarString.toUpperCase().contains(debitoACobrarNegociacao.getIdRegistro().toUpperCase())){
+					if(!Util.isVazioOrNulo(colecaoFinanciamentosTiposParcelamento)){
+
+						// Debitos A Cobrar - Serviço
+						if(!colecaoFinanciamentosTiposParcelamento.contains(debitoACobrarNegociacao.getIdFinanciamentoTipo())){
+							valorTotalDebitoACobrarServicoNormal = valorTotalDebitoACobrarServicoNormal.add(debitoACobrarNegociacao
+											.getValorRestanteASerCobrado());
+						}
+
+						// Debitos A Cobrar - Parcelamento
+						if(colecaoFinanciamentosTiposParcelamento.contains(debitoACobrarNegociacao.getIdFinanciamentoTipo())){
+							// [SB0001] Obter Valores de Curto e Longo Prazo
+							valorTotalDebitoACobrarParcelamentoNormal = valorTotalDebitoACobrarParcelamentoNormal
+											.add(debitoACobrarNegociacao.getValorRestanteASerCobrado());
+						}
+
+					}
+				}
+			}
+		}
+
+		efetuarParcelamentoDebitosActionForm.set("valorTotalContaNormal", Util.formatarMoedaReal(valorTotalContaNormal));
+		efetuarParcelamentoDebitosActionForm.set("valorTotalContaDividaAtiva", Util.formatarMoedaReal(valorTotalContaDividaAtiva));
+		efetuarParcelamentoDebitosActionForm.set("valorTotalContaExecFiscal", Util.formatarMoedaReal(valorTotalContaExecFiscal));
+		efetuarParcelamentoDebitosActionForm.set("valorTotalContaAcresNormal", Util.formatarMoedaReal(valorTotalContaAcresNormal));
+		efetuarParcelamentoDebitosActionForm
+						.set("valorTotalContaAcresDividaAtiva", Util.formatarMoedaReal(valorTotalContaAcresDividaAtiva));
+		efetuarParcelamentoDebitosActionForm.set("valorTotalContaAcresExecFiscal", Util.formatarMoedaReal(valorTotalContaAcresExecFiscal));
+
+		efetuarParcelamentoDebitosActionForm.set("valorTotalGuiaNormal", Util.formatarMoedaReal(valorTotalGuiaNormal));
+		efetuarParcelamentoDebitosActionForm.set("valorTotalGuiaDividaAtiva", Util.formatarMoedaReal(valorTotalGuiaDividaAtiva));
+		efetuarParcelamentoDebitosActionForm.set("valorTotalGuiaExecFiscal", Util.formatarMoedaReal(valorTotalGuiaExecFiscal));
+		efetuarParcelamentoDebitosActionForm.set("valorTotalGuiaAcresNormal", Util.formatarMoedaReal(valorTotalGuiaAcresNormal));
+		efetuarParcelamentoDebitosActionForm.set("valorTotalGuiaAcresDividaAtiva", Util.formatarMoedaReal(valorTotalGuiaAcresDividaAtiva));
+		efetuarParcelamentoDebitosActionForm.set("valorTotalGuiaAcresExecFiscal", Util.formatarMoedaReal(valorTotalGuiaAcresExecFiscal));
+
+		efetuarParcelamentoDebitosActionForm.set("valorTotalDebitoACobrarServicoNormal",
+						Util.formatarMoedaReal(valorTotalDebitoACobrarServicoNormal));
+		efetuarParcelamentoDebitosActionForm.set("valorTotalDebitoACobrarParcelamentoNormal",
+						Util.formatarMoedaReal(valorTotalDebitoACobrarParcelamentoNormal));
+
+		// FIM
 
 		return retorno;
 	}

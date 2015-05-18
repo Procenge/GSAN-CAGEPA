@@ -16,10 +16,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place – Suite 330, Boston, MA 02111-1307, USA
  */
+
 package gcom.integracao.piramide;
 
 import gcom.integracao.piramide.bean.LancamentoDeferimentoAnteriorHelper;
 import gcom.integracao.piramide.bean.LancamentoDeferimentoHelper;
+import gcom.integracao.piramide.bean.TabelaIntegracaoConslDiaNfclHelper;
 import gcom.util.ControladorException;
 import gcom.util.ErroRepositorioException;
 import gcom.util.HibernateUtil;
@@ -44,6 +46,7 @@ public class RepositorioIntegracaoPiramideHBM
 				implements IRepositorioIntegracaoPiramide {
 
 	private static Logger LOGGER = Logger.getLogger(RepositorioIntegracaoPiramideHBM.class);
+
 	private static IRepositorioIntegracaoPiramide instancia;
 
 	/**
@@ -222,12 +225,11 @@ public class RepositorioIntegracaoPiramideHBM
 	 * @since 05/10/2012
 	 */
 	public List<LancamentoDeferimentoHelper> consultarContasDeferimento(String referenciaBase, Integer categoriaConta,
-					Integer[] tiposClienteRelacionamento, Date dataFimDeferimento, Integer[] situacaoConta)
-					throws ErroRepositorioException{
+					Integer[] tiposClienteRelacionamento, Date dataFimDeferimento, Integer[] situacaoConta) throws ErroRepositorioException{
 
 		StringBuffer buffer = new StringBuffer();
 		// [OC827869][UC3067][SB0003.1.1]
-		buffer.append("(SELECT ");
+		buffer.append("SELECT ");
 		buffer.append("   l.GREG_ID codigoRegional, ");
 		buffer.append("   CASE ");
 		buffer.append("   WHEN cl.CLIE_NNCPF  IS NOT NULL  THEN cl.CLIE_NNCPF ");
@@ -244,6 +246,9 @@ public class RepositorioIntegracaoPiramideHBM
 		buffer.append(" ,CLIENTE_TIPO CTP  ");
 		buffer.append("WHERE ");
 		buffer.append(" ct.CNTA_AMREFERENCIACONTA = :referenciaBase ");
+		buffer.append(" AND ( ct.DCST_IDATUAL          = 0 ");
+		buffer.append(" OR  (ct.DCST_IDATUAL          = 1 AND ct.CNTA_AMREFERENCIACONTABIL         =  :referenciaBase ) ");
+		buffer.append(" OR  (ct.DCST_IDATUAL          = 2 AND TO_CHAR(ct.CNTA_DTINCLUSAO,'YYYYMM') =  :referenciaBase ) ) ");
 		buffer.append(" AND ct.CNTA_ID  IN (SELECT ccat.CNTA_ID   FROM  CONTA_CATEGORIA ccat ");
 		buffer.append(" WHERE ccat.CNTA_ID  = ct.CNTA_ID ");
 		buffer.append(" AND ccat.CATG_ID = :categoriaConta ");
@@ -256,14 +261,45 @@ public class RepositorioIntegracaoPiramideHBM
 		buffer.append(" AND  cl.CLIE_NNCNPJ  IS NOT NULL ");
 		buffer.append(" AND  CTP.EPOD_ID IN (1,2,3) ");
 		buffer.append(" AND  cc.CRTP_ID  =  (SELECT NVL(MAX(CC1.CRTP_ID),1) ");
-		buffer.append(" FROM CLIENTE_CONTA CC1, CLIENTE  CLI  WHERE CC1.CNTA_ID = ct.CNTA_ID AND CC1.CLIE_ID = CLI.CLIE_ID  AND CLI.CLIE_NNCNPJ IS NOT NULL )) ");
+		buffer.append(" FROM CLIENTE_CONTA CC1, CLIENTE  CLI  WHERE CC1.CNTA_ID = ct.CNTA_ID AND CC1.CLIE_ID = CLI.CLIE_ID  AND CLI.CLIE_NNCNPJ IS NOT NULL ) ");
 		buffer.append("UNION ");
 		// [OC827869][UC3067][SB0003.1.2]
 		buffer.append("(SELECT l.GREG_ID codigoRegional, ");
 		buffer.append(" CASE WHEN cl.CLIE_NNCPF  IS NOT NULL  THEN cl.CLIE_NNCPF ");
 		buffer.append(" WHEN cl.CLIE_NNCNPJ IS NOT NULL  THEN cl.CLIE_NNCNPJ ");
 		buffer.append(" ELSE NULL ");
-		buffer.append(" END  cnpj_cpf, ");
+		buffer.append(" END  documentoCliente, ");
+		buffer.append(" ch.IMOV_ID     matriculaImovel, ");
+		buffer.append(" ch.CNHI_VLAGUA + ch.CNHI_VLESGOTO + ch.CNHI_VLDEBITOS - ch.CNHI_VLCREDITOS valorLancamento ");
+		buffer.append(" FROM CONTA_HISTORICO ch ");
+		buffer.append("  , LOCALIDADE l ");
+		buffer.append("  , CLIENTE cl ");
+		buffer.append("  , CLIENTE_CONTA_HISTORICO cch ");
+		buffer.append("  , CLIENTE_TIPO CTP  ");
+		buffer.append("  WHERE ch.CNHI_AMREFERENCIACONTA = :referenciaBase ");
+		buffer.append(" AND  ch.CNTA_ID  = (SELECT MIN(CNTA_ID) ");
+		buffer.append("                     FROM   CONTA_HISTORICO ");
+		buffer.append("                     WHERE  IMOV_ID                = ch.IMOV_ID ");
+		buffer.append("                       AND  CNHI_AMREFERENCIACONTA = ch.CNHI_AMREFERENCIACONTA ");
+		buffer.append("                       AND  CNHI_TMULTIMAALTERACAO > (SELECT ENCP_TMENCERRAMENTOARREC ");
+		buffer.append("                                                      FROM   ENCERRAMENTO_CONTABIL_PARM ");
+		buffer.append("                                                      WHERE  ENCP_AMREFERENCIAARREC = :referenciaBase )) ");
+		buffer.append("  AND ch.CNTA_ID  IN (SELECT cch1.CNTA_ID   FROM CONTA_CATEGORIA_HISTORICO cch1 ");
+		buffer.append("  WHERE cch1.CNTA_ID  = ch.CNTA_ID AND cch1.CATG_ID = :categoriaConta ");
+		buffer.append("  GROUP BY    cch1.CNTA_ID  HAVING COUNT(cch1.CNTA_ID) = 1 )  ");
+		buffer.append("  AND  ch.LOCA_ID =  l.LOCA_ID  ");
+		buffer.append("  AND  ch.CNTA_ID = cch.CNTA_ID AND  cch.CLIE_ID = cl.CLIE_ID ");
+		buffer.append("  AND  CTP.CLTP_ID = CL.CLTP_ID ");
+		buffer.append("  AND  cl.CLIE_NNCNPJ  IS NOT NULL ");
+		buffer.append("  AND   cch.CRTP_ID =  (SELECT NVL(MAX(CCH2.CRTP_ID),1) ");
+		buffer.append("  FROM CLIENTE_CONTA_HISTORICO CCH2, CLIENTE CLI  WHERE CCH2.CNTA_ID =  CH.CNTA_ID");
+		buffer.append("  AND CCH2.CLIE_ID =  CLI.CLIE_ID  AND CLI.CLIE_NNCNPJ IS NOT NULL )) ");
+		buffer.append("UNION ");
+		buffer.append("(SELECT l.GREG_ID codigoRegional, ");
+		buffer.append(" CASE WHEN cl.CLIE_NNCPF  IS NOT NULL  THEN cl.CLIE_NNCPF ");
+		buffer.append(" WHEN cl.CLIE_NNCNPJ IS NOT NULL  THEN cl.CLIE_NNCNPJ ");
+		buffer.append(" ELSE NULL ");
+		buffer.append(" END  documentoCliente, ");
 		buffer.append(" ch.IMOV_ID     matriculaImovel, ");
 		buffer.append(" ch.CNHI_VLAGUA + ch.CNHI_VLESGOTO + ch.CNHI_VLDEBITOS - ch.CNHI_VLCREDITOS valorLancamento ");
 		buffer.append(" FROM CONTA_HISTORICO ch ");
@@ -274,10 +310,13 @@ public class RepositorioIntegracaoPiramideHBM
 		buffer.append("  , CLIENTE_TIPO CTP  ");
 		buffer.append("  WHERE ch.CNHI_AMREFERENCIACONTA = :referenciaBase ");
 		buffer.append("  AND ph.PGHI_DTPAGAMENTO  > :dataFimDeferimento ");
+		buffer.append("  AND ch.CNHI_TMULTIMAALTERACAO  < (SELECT ENCP_TMENCERRAMENTOARREC ");
+		buffer.append("                                    FROM   ENCERRAMENTO_CONTABIL_PARM ");
+		buffer.append("                                    WHERE  ENCP_AMREFERENCIAARREC = :referenciaBase ) ");
 		buffer.append("  AND ch.DCST_IDATUAL IN (:situacaoConta) ");
 		buffer.append("  AND ch.CNTA_ID  IN (SELECT cch1.CNTA_ID   FROM CONTA_CATEGORIA_HISTORICO cch1 ");
 		buffer.append("  WHERE cch1.CNTA_ID  = ch.CNTA_ID AND cch1.CATG_ID = :categoriaConta ");
-		buffer.append("  GROUP BY    cch1.CNTA_ID  HAVING COUNT(cch1.CNTA_ID) = 1 )  "); 
+		buffer.append("  GROUP BY    cch1.CNTA_ID  HAVING COUNT(cch1.CNTA_ID) = 1 )  ");
 		buffer.append("  AND  ph.LOCA_ID =  l.LOCA_ID  AND  ph.CNTA_ID = ch.CNTA_ID ");
 		buffer.append("  AND  ch.CNTA_ID = cch.CNTA_ID AND  cch.CLIE_ID = cl.CLIE_ID ");
 		buffer.append("  AND  CTP.CLTP_ID = CL.CLTP_ID ");
@@ -287,14 +326,13 @@ public class RepositorioIntegracaoPiramideHBM
 		buffer.append("  AND CCH2.CLIE_ID =  CLI.CLIE_ID  AND CLI.CLIE_NNCNPJ IS NOT NULL )) ");
 		// [OC827869][UC3067][SB0003.2] - AGRUPAMENTO
 		buffer.append("  ORDER BY codigoRegional,documentoCliente ");
-		
+
 		Session session = HibernateUtil.getSession();
 		List<LancamentoDeferimentoHelper> retorno;
 		try{
 			Query query = session.createSQLQuery(buffer.toString())//
 							.addScalar("codigoRegional", Hibernate.INTEGER)//
-							.addScalar("documentoCliente", Hibernate.STRING)
-							.addScalar("matriculaImovel", Hibernate.INTEGER)//
+							.addScalar("documentoCliente", Hibernate.STRING).addScalar("matriculaImovel", Hibernate.INTEGER)//
 							.addScalar("valorLancamento", Hibernate.BIG_DECIMAL)//
 			;
 			query.setString("referenciaBase", referenciaBase);
@@ -363,37 +401,72 @@ public class RepositorioIntegracaoPiramideHBM
 	 * @since 19/10/2012
 	 */
 	public BigDecimal consultaValorNaoRecebido(Integer gerenciaRegionalID, String clienteDoc, String referenciaBase,
-					Integer[] tiposClienteRelacionamento)
-					throws ErroRepositorioException{
+					Integer[] tiposClienteRelacionamento) throws ErroRepositorioException{
 
 		StringBuffer buffer = new StringBuffer();
-		buffer.append("SELECT ");
-		buffer.append(" SUM (ct.CNTA_VLAGUA + ct.CNTA_VLESGOTO + ct.CNTA_VLDEBITOS - ct.CNTA_VLCREDITOS) ");
-		buffer.append(" FROM CONTA ct, ");
-		buffer.append(" LOCALIDADE l, ");   
-		buffer.append(" CLIENTE cl, ");
-		buffer.append(" CLIENTE_CONTA  cc ");
-		buffer.append(" WHERE ct.CNTA_AMREFERENCIACONTA  =  :referenciaBase ");
-		buffer.append(" AND ct.CNTA_ID IN ( SELECT cc.CNTA_ID   FROM  CONTA_CATEGORIA cc ");
-		buffer.append(" WHERE cc.CNTA_ID  = ct.CNTA_ID ");
-		buffer.append("  AND cc.CATG_ID = 4 ");
-		buffer.append("   GROUP BY cc.CNTA_ID ");
-		buffer.append("   HAVING COUNT (cc.CNTA_ID)  = 1)  ");
-		buffer.append("   AND  ct.LOCA_ID =  l.LOCA_ID  ");
-		buffer.append("   AND  ct.CNTA_ID = cc.CNTA_ID  ");
-		buffer.append("   AND  cc.CLIE_ID = cl.CLIE_ID  ");
-		buffer.append("   AND  (cl.CLIE_NNCPF = :clienteDoc  ");
-		buffer.append("   OR   cl.CLIE_NNCNPJ   = :clienteDoc)  ");
-		buffer.append("   AND   cc.CRTP_ID  =  (SELECT NVL (MAX (CC1.CRTP_ID),1) ");
-		buffer.append("   FROM CLIENTE_CONTA CC1, ");
-		buffer.append("    CLIENTE CLI ");
-		buffer.append("    WHERE CC1.CNTA_ID = CT.CNTA_ID ");
-		buffer.append("	   AND l.GREG_ID = :gerenciaRegionalID ");
-		buffer.append("    AND CC1.CLIE_ID = CLI.CLIE_ID ");                          
-		buffer.append("    AND (CLI.CLIE_NNCPF  IS NOT NULL ");                     
-		buffer.append("    OR  CLI.CLIE_NNCNPJ IS NOT NULL)) ");                       
-		
-                                
+		buffer.append("  SELECT  val_conta  +  val_conta_hist  ");
+		buffer.append("  FROM    ");
+		buffer.append("  (SELECT  ");
+		buffer.append("  NVL(SUM  (ct.CNTA_VLAGUA  +  ct.CNTA_VLESGOTO  +  ct.CNTA_VLDEBITOS  -  ct.CNTA_VLCREDITOS),0)  val_conta  ");
+		buffer.append("  FROM  CONTA  ct,  ");
+		buffer.append("  LOCALIDADE  l,  ");
+		buffer.append("  CLIENTE  cl,  ");
+		buffer.append("  CLIENTE_CONTA    cc  ");
+		buffer.append("  WHERE  ct.CNTA_AMREFERENCIACONTA    =    :referenciaBase  ");
+		buffer.append("  AND  (  ct.DCST_IDATUAL                    =  0  ");
+		buffer.append("  OR    (ct.DCST_IDATUAL                    =  1  AND  ct.CNTA_AMREFERENCIACONTABIL                  =    :referenciaBase  )  ");
+		buffer.append("  OR    (ct.DCST_IDATUAL                    =  2  AND  TO_CHAR(ct.CNTA_DTINCLUSAO,'YYYYMM')  =    :referenciaBase  )  )  ");
+		buffer.append("  AND  ct.CNTA_ID  IN  (  SELECT  cc.CNTA_ID      FROM    CONTA_CATEGORIA  cc  ");
+		buffer.append("  WHERE  cc.CNTA_ID    =  ct.CNTA_ID  ");
+		buffer.append("    AND  cc.CATG_ID  =  4  ");
+		buffer.append("      GROUP  BY  cc.CNTA_ID  ");
+		buffer.append("      HAVING  COUNT  (cc.CNTA_ID)    =  1)    ");
+		buffer.append("      AND    ct.LOCA_ID  =    l.LOCA_ID    ");
+		buffer.append("      AND    ct.CNTA_ID  =  cc.CNTA_ID    ");
+		buffer.append("      AND    cc.CLIE_ID  =  cl.CLIE_ID    ");
+		buffer.append("      AND    (cl.CLIE_NNCPF  =  :clienteDoc    ");
+		buffer.append("      OR      cl.CLIE_NNCNPJ      =  :clienteDoc)    ");
+		buffer.append("              AND  l.GREG_ID  =  :gerenciaRegionalID  ");
+		buffer.append("      AND      cc.CRTP_ID    =    (SELECT  NVL  (MAX  (CC1.CRTP_ID),1)  ");
+		buffer.append("      FROM  CLIENTE_CONTA  CC1,  ");
+		buffer.append("        CLIENTE  CLI  ");
+		buffer.append("        WHERE  CC1.CNTA_ID  =  CT.CNTA_ID  ");
+		buffer.append("        AND  CC1.CLIE_ID  =  CLI.CLIE_ID  ");
+		buffer.append("        AND  (CLI.CLIE_NNCPF    IS  NOT  NULL  ");
+		buffer.append("        OR    CLI.CLIE_NNCNPJ  IS  NOT  NULL)))  CONTA,  ");
+		buffer.append("  (SELECT  ");
+		buffer.append("  NVL(SUM  (ct.CNHI_VLAGUA  +  ct.CNHI_VLESGOTO  +  ct.CNHI_VLDEBITOS  -  ct.CNHI_VLCREDITOS),0)  val_conta_hist  ");
+		buffer.append("  FROM  CONTA_HISTORICO  ct,  ");
+		buffer.append("  LOCALIDADE  l,  ");
+		buffer.append("  CLIENTE  cl,  ");
+		buffer.append("  CLIENTE_CONTA_HISTORICO    cc  ");
+		buffer.append("  WHERE  ct.CNHI_AMREFERENCIACONTA    =    :referenciaBase  ");
+		buffer.append("  AND    ct.CNTA_ID    =  (SELECT  MIN(CNTA_ID)  ");
+		buffer.append("                                          FROM      CONTA_HISTORICO  ");
+		buffer.append("                                          WHERE    IMOV_ID                                =  ct.IMOV_ID  ");
+		buffer.append("                                              AND    CNHI_AMREFERENCIACONTA  =  ct.CNHI_AMREFERENCIACONTA  ");
+		buffer.append("                                              AND    CNHI_TMULTIMAALTERACAO  >  (SELECT  ENCP_TMENCERRAMENTOARREC  ");
+		buffer.append("                                                                                                            FROM      ENCERRAMENTO_CONTABIL_PARM  ");
+		buffer.append("                                                                                                            WHERE    ENCP_AMREFERENCIAARREC  =  :referenciaBase  ))  ");
+		buffer.append("  AND  ct.CNTA_ID  IN  (  SELECT  cc.CNTA_ID      FROM    CONTA_CATEGORIA_HISTORICO  cc  ");
+		buffer.append("  WHERE  cc.CNTA_ID    =  ct.CNTA_ID  ");
+		buffer.append("    AND  cc.CATG_ID  =  4  ");
+		buffer.append("      GROUP  BY  cc.CNTA_ID  ");
+		buffer.append("      HAVING  COUNT  (cc.CNTA_ID)    =  1)    ");
+		buffer.append("      AND    ct.LOCA_ID  =    l.LOCA_ID    ");
+		buffer.append("      AND    ct.CNTA_ID  =  cc.CNTA_ID    ");
+		buffer.append("      AND    cc.CLIE_ID  =  cl.CLIE_ID    ");
+		buffer.append("      AND    (cl.CLIE_NNCPF  =  :clienteDoc    ");
+		buffer.append("      OR      cl.CLIE_NNCNPJ      =  :clienteDoc)    ");
+		buffer.append("              AND  l.GREG_ID  =  :gerenciaRegionalID  ");
+		buffer.append("      AND      cc.CRTP_ID    =    (SELECT  NVL  (MAX  (CC1.CRTP_ID),1)  ");
+		buffer.append("      FROM  CLIENTE_CONTA_HISTORICO  CC1,  ");
+		buffer.append("        CLIENTE  CLI  ");
+		buffer.append("        WHERE  CC1.CNTA_ID  =  CT.CNTA_ID  ");
+		buffer.append("        AND  CC1.CLIE_ID  =  CLI.CLIE_ID  ");
+		buffer.append("        AND  (CLI.CLIE_NNCPF    IS  NOT  NULL  ");
+		buffer.append("        OR    CLI.CLIE_NNCNPJ  IS  NOT  NULL)))  HISTORICO  ");
+
 		Session session = HibernateUtil.getSession();
 		BigDecimal retorno;
 		try{
@@ -443,7 +516,7 @@ public class RepositorioIntegracaoPiramideHBM
 		buffer.append("  ph.PGHI_DTPAGAMENTO dataPagamento, ");
 		buffer.append("  ch.IMOV_ID matriculaImovel, ");
 		buffer.append("  ph.PGHI_VLPAGAMENTO valorPagamento, ");
-		buffer.append("  ch.CNHI_VLAGUA + ch.CNHI_VLESGOTO + ch.CNHI_VLDEBITOS - ch.CNHI_VLCREDITOS  valorLancamento ");   
+		buffer.append("  ch.CNHI_VLAGUA + ch.CNHI_VLESGOTO + ch.CNHI_VLDEBITOS - ch.CNHI_VLCREDITOS  valorLancamento ");
 		buffer.append("  FROM CONTA_HISTORICO CH, ");
 		buffer.append("  PAGAMENTO_HISTORICO PH, ");
 		buffer.append("  CLIENTE  CL, ");
@@ -452,29 +525,29 @@ public class RepositorioIntegracaoPiramideHBM
 		buffer.append("  CLIENTE_TIPO CTP ");
 		buffer.append("  WHERE  ");
 		buffer.append("  PH.CNTA_ID IS NOT  NULL ");
-		buffer.append("  AND   PH.CNTA_ID =  CH.CNTA_ID ");   
-		buffer.append("  AND   PH.LOCA_ID = L.LOCA_ID ");    
+		buffer.append("  AND   PH.CNTA_ID =  CH.CNTA_ID ");
+		buffer.append("  AND   PH.LOCA_ID = L.LOCA_ID ");
 		buffer.append("  AND   CL.CLTP_ID = CTP.CLTP_ID  ");
 		buffer.append("  AND   PH.PGHI_DTPAGAMENTO BETWEEN :dataInicioPeriodo AND :dataFimPeriodo ");
 		buffer.append("  AND   CH.CNHI_AMREFERENCIACONTA < :referenciaBase ");
 		buffer.append("  AND   CH.DCST_IDATUAL IN (:contaSituacao) ");
 		buffer.append("  AND   CTP.EPOD_ID IN (1,2,3)  ");
-		buffer.append("  AND   CH.CNTA_ID IN (SELECT CNTA_ID ");  
-		buffer.append("  FROM CONTA_CATEGORIA_HISTORICO "); 
-		buffer.append("  WHERE CNTA_ID = CH.CNTA_ID ");  
-		buffer.append("  AND CATG_ID = :categoriaConta "); 
-		buffer.append("  GROUP BY CNTA_ID ");   
-		buffer.append("  HAVING COUNT(CNTA_ID) = 1) ");                         
-		buffer.append("  AND CH.CNTA_ID = CCH.CNTA_ID ");                       
+		buffer.append("  AND   CH.CNTA_ID IN (SELECT CNTA_ID ");
+		buffer.append("  FROM CONTA_CATEGORIA_HISTORICO ");
+		buffer.append("  WHERE CNTA_ID = CH.CNTA_ID ");
+		buffer.append("  AND CATG_ID = :categoriaConta ");
+		buffer.append("  GROUP BY CNTA_ID ");
+		buffer.append("  HAVING COUNT(CNTA_ID) = 1) ");
+		buffer.append("  AND CH.CNTA_ID = CCH.CNTA_ID ");
 		buffer.append("  AND CCH.CLIE_ID = CL.CLIE_ID ");
 		buffer.append("  AND CCH.CLIE_ID = CL.CLIE_ID ");
 		buffer.append("  AND CL.CLIE_NNCNPJ IS NOT NULL ");
 		buffer.append("  AND CCH.CRTP_ID = ");
 		buffer.append("  (SELECT NVL(MAX(CCH1.CRTP_ID),1) ");
 		buffer.append("  FROM CLIENTE_CONTA_HISTORICO CCH1, ");
-		buffer.append("  CLIENTE CLI "); 
-		buffer.append("  WHERE CCH1.CNTA_ID = CH.CNTA_ID ");				 
-		buffer.append("  AND CCH1.CLIE_ID  = CLI.CLIE_ID ");					 
+		buffer.append("  CLIENTE CLI ");
+		buffer.append("  WHERE CCH1.CNTA_ID = CH.CNTA_ID ");
+		buffer.append("  AND CCH1.CLIE_ID  = CLI.CLIE_ID ");
 		buffer.append("  AND CLI.CLIE_NNCNPJ IS NOT NULL ) ");
 		// TODO RETIRAR FILTRO DE DOCS NULL
 		buffer.append("ORDER BY 1,2,3,4");
@@ -578,8 +651,7 @@ public class RepositorioIntegracaoPiramideHBM
 	 * @param idsEventos
 	 */
 	public Collection<Object[]> consultarLancamentosContabeis(Date dataContabil, Integer idMunicipio, boolean isFinanceiro,
-					Integer... idsEventos)
-					throws ErroRepositorioException{
+					int tipoAcumulo, Integer... idsEventos) throws ErroRepositorioException{
 
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT LACA.LACA_IDOBJETO idObjeto, ");
@@ -594,6 +666,9 @@ public class RepositorioIntegracaoPiramideHBM
 		sql.append("  AND  LOC.MUNI_ID   = :idMunicipio  ");
 		sql.append("  AND  LACS.EVCO_ID IN (:idsEventos)  ");
 		sql.append("  AND  LACS.LACS_ID   =  LACA.LACS_ID  ");
+
+		if(TabelaIntegracaoConslDiaNfclHelper.MODULO_FATURAMENTO.equals(tipoAcumulo)) sql.append("  AND  LACS.LICT_ID  not in (2 , 5) ");
+
 		sql.append("GROUP  BY  LACA.LACA_IDOBJETO  ");
 		if(isFinanceiro) sql.append(",LACS.LICT_ID ");
 
@@ -621,7 +696,8 @@ public class RepositorioIntegracaoPiramideHBM
 	/**
 	 * {@inheritDoc}
 	 */
-	public Integer consultarClassificacaoLancamento(Date dtVigencia, Integer idCategoria, BigDecimal vlConta) throws ErroRepositorioException{
+	public Integer consultarClassificacaoLancamento(Date dtVigencia, Integer idCategoria, BigDecimal vlConta)
+					throws ErroRepositorioException{
 
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT CSFS_CDCONSUMOSPED faixaConsumo ");
@@ -657,9 +733,9 @@ public class RepositorioIntegracaoPiramideHBM
 		return retorno;
 	}
 
-	public Collection<Object[]> consultarLancamentosContas(Integer idMunicipio, Date dataContabil,
-					Integer[] idsEventosContabil)
+	public Collection<Object[]> consultarLancamentosContas(Integer idMunicipio, Date dataContabil, Integer[] idsEventosContabil)
 					throws ErroRepositorioException{
+
 		StringBuilder sql = new StringBuilder();
 		sql.append("SELECT LACA.LACA_IDOBJETO id_objeto, ");
 		sql.append("       CNHI.CNHI_AMREFERENCIACONTA referencia, ");
@@ -845,11 +921,63 @@ public class RepositorioIntegracaoPiramideHBM
 								+ Arrays.toString(idsEventosContabil));
 			}else{
 				LOGGER.debug("Origem do LACA_IDOBJETO[" + idObjetoContabil + "] = LACS_DTGERACAO[" + Util.formatarData((Date) retorno[0])
-							+ "] CATG_ID[" + retorno[2] + "] com LACA_VL[" + retorno[1] + "]");
+								+ "] CATG_ID[" + retorno[2] + "] com LACA_VL[" + retorno[1] + "]");
 				if(Integer.valueOf(3).equals(retorno[2])){
 					retorno[2] = 2;
 				}
 			}
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+		return retorno;
+	}
+
+	/**
+	 * [SQL0002B]
+	 * 
+	 * @param dataContabil
+	 * @param idMunicipio
+	 * @param isFinanceiro
+	 * @param idsEventos
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+
+	public Collection<Object[]> consultarLancamentosContabeisPorEventoComercial(Date dataContabil, Integer idMunicipio)
+					throws ErroRepositorioException{
+
+		StringBuilder sql = new StringBuilder();
+		sql.append("SELECT LACA.LACA_IDOBJETO idObjeto, ");
+		sql.append("       SUM(LACA.LACA_VL) sumVlLancamento, ");
+		sql.append("       MAX(LACS.CATG_ID) idCategoria  ");
+		sql.append("       , 2  itemContabil ");
+
+		sql.append("FROM   LANCAMENTO_CONTABIL_SINTETICO LACS,  ");
+		sql.append("       LANCAMENTO_CONTABIL_ANALITICO LACA,  ");
+		sql.append("       LOCALIDADE                    LOC  ");
+		sql.append("WHERE  LACS.LACS_DTCONTABIL = :data_contabil  ");
+		sql.append("  AND LOC.MUNI_ID            = :idMunicipio  ");
+		sql.append("  AND  LACS.UNCO_ID   = LOC.LOCA_ID  ");
+		sql.append("  AND  LACS.EVCO_ID IN (3)  ");
+		sql.append("  AND  LACS.LICT_ID        IN (2,5)  ");
+		sql.append("  AND  LACS.LACS_ID   =  LACA.LACS_ID  ");
+
+		sql.append("GROUP  BY  LACA.LACA_IDOBJETO  ");
+
+		Collection<Object[]> retorno;
+		Session session = HibernateUtil.getSession();
+		try{
+			SQLQuery query = session.createSQLQuery(sql.toString());
+			query.setDate("data_contabil", dataContabil);
+			query.setInteger("idMunicipio", idMunicipio);
+			query.addScalar("idObjeto", Hibernate.INTEGER);
+			query.addScalar("sumVlLancamento", Hibernate.BIG_DECIMAL);
+			query.addScalar("idCategoria", Hibernate.INTEGER);
+			query.addScalar("itemContabil", Hibernate.INTEGER);
+
+			retorno = query.list();
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
 		}finally{

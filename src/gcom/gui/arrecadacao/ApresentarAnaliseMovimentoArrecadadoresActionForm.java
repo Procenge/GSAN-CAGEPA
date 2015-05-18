@@ -123,6 +123,11 @@ public class ApresentarAnaliseMovimentoArrecadadoresActionForm
 
 	private String idNomeConcessionaria;
 
+	// OC1388359
+	private String valorCalculado;
+
+	private String diferencaMovimento;
+
 	public String getCodigoNomeArrecadador(){
 
 		return codigoNomeArrecadador;
@@ -271,6 +276,26 @@ public class ApresentarAnaliseMovimentoArrecadadoresActionForm
 	public void setIdNomeConcessionaria(String idNomeConcessionaria){
 
 		this.idNomeConcessionaria = idNomeConcessionaria;
+	}
+
+	public String getValorCalculado(){
+
+		return valorCalculado;
+	}
+
+	public void setValorCalculado(String valorCalculado){
+
+		this.valorCalculado = valorCalculado;
+	}
+
+	public String getDiferencaMovimento(){
+
+		return diferencaMovimento;
+	}
+
+	public void setDiferencaMovimento(String diferencaMovimento){
+
+		this.diferencaMovimento = diferencaMovimento;
 	}
 
 }

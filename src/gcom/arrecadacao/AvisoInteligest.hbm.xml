@@ -41,6 +41,13 @@
         column="aint_nnsequencial"
         length="8"
     />
+    
+        <property
+        name="numeroEmissao"
+        type="java.lang.Integer"
+        column="aint_nnemissao"
+        length="8"
+    />
   		 
   </class>
   

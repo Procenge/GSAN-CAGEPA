@@ -20,6 +20,8 @@ public class FiltroAvisoInteligest
 
 	public final static String NUMERO_SEQUENCIAL = "numeroSequencial";
 
+	public final static String NUMERO_EMISSAO = "numeroEmissao";
+
 	public FiltroAvisoInteligest() {
 
 	}

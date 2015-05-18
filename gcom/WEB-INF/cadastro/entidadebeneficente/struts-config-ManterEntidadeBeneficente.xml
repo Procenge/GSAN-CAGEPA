@@ -6,6 +6,7 @@
 		<form-bean name="InserirEntidadeBeneficenteActionForm" type="gcom.gui.cadastro.entidadebeneficente.InserirEntidadeBeneficenteActionForm" />
 		<form-bean name="FiltrarEntidadeBeneficenteActionForm" type="org.apache.struts.action.DynaActionForm">
 			<form-property name="idCliente" type="java.lang.String" />
+			<form-property name="idEmpresa" type="java.lang.String" />
 			<form-property name="nomeCliente" type="java.lang.String" />
 			<form-property name="idDebitoTipo" type="java.lang.String" />
 			<form-property name="descricaoDebitoTipo" type="java.lang.String" />

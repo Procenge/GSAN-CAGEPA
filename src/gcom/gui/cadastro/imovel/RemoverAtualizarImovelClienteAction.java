@@ -159,7 +159,17 @@ public class RemoverAtualizarImovelClienteAction
 				clienteImovel = (ClienteImovel) clienteImovelIterator.next();
 				for(int i = 0; i < clientesImoveis.length; i++){
 					if(obterTimestampIdObjeto(clienteImovel) == Util.converterStringParaLong(clientesImoveis[i]).longValue()){
-						if(!(colecaoClientesImoveisRemovidos.contains(clienteImovel))){
+						Boolean bFlagClienteImovelRemovido = false;
+
+						for(ClienteImovel clienteImovelAtual : (Collection<ClienteImovel>) colecaoClientesImoveisRemovidos){
+							if(clienteImovel != null && clienteImovelAtual != null && clienteImovel.getId() != null
+											&& clienteImovelAtual.getId() != null
+											&& clienteImovel.getId().equals(clienteImovelAtual.getId())){
+								bFlagClienteImovelRemovido = true;
+							}
+						}
+
+						if(!(bFlagClienteImovelRemovido)){
 							if((imovel.getImovelPerfil().getId().equals(ConstantesSistema.INDICADOR_TARIFA_SOCIAL))
 											&& (clienteImovel.getClienteRelacaoTipo().getId().intValue() == ConstantesSistema.CLIENTE_IMOVEL_TIPO_USUARIO
 															.intValue())){

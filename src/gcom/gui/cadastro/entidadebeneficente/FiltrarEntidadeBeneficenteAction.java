@@ -67,6 +67,7 @@ public class FiltrarEntidadeBeneficenteAction
 		DynaActionForm form = (DynaActionForm) actionForm;
 
 		String idCliente = (String) form.get("idCliente");
+		String idEmpresa = (String) form.get("idEmpresa");
 		String nomeCliente = (String) form.get("nomeCliente");
 		String indicadorUso = (String) form.get("indicadorUso");
 		String idDebitoTipo = (String) form.get("idDebitoTipo");
@@ -90,6 +91,13 @@ public class FiltrarEntidadeBeneficenteAction
 		if(idDebitoTipo != null && !idDebitoTipo.trim().equalsIgnoreCase("")){
 			peloMenosUmParametroInformado = true;
 			filtroEntidadeBeneficente.adicionarParametro(new ParametroSimples(FiltroEntidadeBeneficente.ID_DEBITO_TIPO, idDebitoTipo));
+		}
+
+		// Verifica se idEmpresa foi informado.
+		if(idEmpresa != null && !idEmpresa.trim().equalsIgnoreCase("")){
+			peloMenosUmParametroInformado = true;
+			filtroEntidadeBeneficente.adicionarParametro(new ParametroSimples(FiltroEntidadeBeneficente.ID_EMPRESA, Integer
+							.valueOf(idEmpresa)));
 		}
 
 		// Verifica se o indicador de uso foi informado.

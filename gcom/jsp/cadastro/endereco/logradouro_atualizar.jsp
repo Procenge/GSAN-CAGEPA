@@ -131,6 +131,7 @@ function adicionarObjeto(tipoSelecao){
 	var objMunicipio = form.idMunicipio;
 	var objBairro = form.codigoBairro; 
 	var objCEP = form.codigoCEP;
+	var objLogradouro = form.nome;
 	
 	if (objMunicipio.value.length > 0){
 		
@@ -142,8 +143,8 @@ function adicionarObjeto(tipoSelecao){
 		}
 		//CEP
 		else{
-			
-			abrirPopup('exibirSelecionarCepAction.do?idMunicipio=' + objMunicipio.value + '&limparForm=OK&tipoPesquisaEndereco=logradouro&operacao=2', 450, 700);
+
+			abrirPopup('exibirSelecionarCepAction.do?logradouro=' + objLogradouro.value + '&idMunicipio=' + objMunicipio.value + '&limparForm=OK&tipoPesquisaEndereco=logradouro&operacao=2', 450, 700);
 			
 		}
 	}

@@ -131,16 +131,17 @@ public class ExibirManterEquipeAction
 		String idFuncionario = (String) sessao.getAttribute("idFuncionario");
 		String idPerfilServico = (String) sessao.getAttribute("idPerfilServico");
 		String indicadorUso = (String) sessao.getAttribute("indicadorUso");
+		Integer idEquipeTipo = (Integer) sessao.getAttribute("idEquipeTipo");
 
 		// Aciona o controle de paginação para que sejam pesquisados apenas
 		// os registros que aparecem na página
 		Integer totalRegistros = fachada.pesquisarEquipesCount(idEquipe, nome, placa, cargaTrabalho, idUnidade, idFuncionario,
-						idPerfilServico, indicadorUso);
+						idPerfilServico, indicadorUso, idEquipeTipo);
 
 		retorno = this.controlarPaginacao(httpServletRequest, retorno, totalRegistros);
 
 		Collection colecaoEquipes = fachada.pesquisarEquipes(idEquipe, nome, placa, cargaTrabalho, idUnidade, idFuncionario,
-						idPerfilServico, indicadorUso, (Integer) httpServletRequest.getAttribute("numeroPaginasPesquisa"));
+						idPerfilServico, indicadorUso, idEquipeTipo, (Integer) httpServletRequest.getAttribute("numeroPaginasPesquisa"));
 
 		// Verifica se a coleção retornada pela pesquisa é nula, em caso
 		// afirmativo comunica ao usuário que não existe nenhuma equipe

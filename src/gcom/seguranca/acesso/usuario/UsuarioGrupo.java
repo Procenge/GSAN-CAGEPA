@@ -76,30 +76,46 @@
 
 package gcom.seguranca.acesso.usuario;
 
-import java.util.Date;
-
+import gcom.interceptor.ControleAlteracao;
 import gcom.interceptor.ObjetoTransacao;
 import gcom.seguranca.acesso.Grupo;
 import gcom.util.filtro.Filtro;
 import gcom.util.filtro.ParametroSimples;
+
+import java.util.Date;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
+@ControleAlteracao()
 public class UsuarioGrupo
 				extends ObjetoTransacao {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final int USUARIO_INSERIR = 58; // Operacao.OPERACAO_USUARIO_INSERIR
+
+	public static final int USUARIO_ATUALIZAR = 59; // Operacao.OPERACAO_USUARIO_ATUALIZAR
+
+	public static final int USUARIO_REMOVER = 60; // Operacao.OPERACAO_USUARIO_REMOVER
+
+	public static final int USUARIO_CONTROLAR_ACESSO = 61; // Operacao.OPERACAO_USUARIO_CONTROLAR_ACESSO
+
+	public static final int USUARIO_ATUALIZAR_DADOS_GERAIS = 97; // Operacao.OPERACAO_USUARIO_ATUALIZAR_DADOS_GERAIS
+
+	public static final int USUARIO_ATUALIZAR_ACESSOS = 98; // Operacao.OPERACAO_USUARIO_ATUALIZAR_ACESSOS
+
 	/** identifier field */
 	private UsuarioGrupoPK comp_id;
 
 	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {USUARIO_INSERIR, USUARIO_ATUALIZAR, USUARIO_REMOVER, USUARIO_CONTROLAR_ACESSO, USUARIO_ATUALIZAR_DADOS_GERAIS, USUARIO_ATUALIZAR_ACESSOS})
 	private Usuario usuario;
 
 	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {USUARIO_INSERIR, USUARIO_ATUALIZAR, USUARIO_REMOVER, USUARIO_CONTROLAR_ACESSO, USUARIO_ATUALIZAR_DADOS_GERAIS, USUARIO_ATUALIZAR_ACESSOS})
 	private Grupo grupo;
 
 	/** nullable persistent field */

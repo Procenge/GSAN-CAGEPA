@@ -103,7 +103,8 @@ public interface ControladorUsuarioLocal
 	 *            grupos que o usuario faz parte
 	 * @throws ControladorException
 	 */
-	public void inserirUsuario(Usuario usuario, Integer[] idGrupos) throws ControladorException;
+	public void inserirUsuario(Usuario usuario, Integer[] idGrupos, Collection<UsuarioAcesso> colecaoUsuarioAcesso)
+					throws ControladorException;
 
 	/**
 	 * Atualiza um usuario com seus grupos
@@ -116,7 +117,10 @@ public interface ControladorUsuarioLocal
 	 *            grupos que o usuario faz parte
 	 * @throws ControladorException
 	 */
-	public void atualizarUsuario(Usuario usuario, Integer[] idGrupos, String processo, Usuario usuarioLogado) throws ControladorException;
+	public void atualizarUsuario(Usuario usuario, Integer[] idGrupos, String processo, Usuario usuarioLogado,
+					Collection<UsuarioAcesso> colecaoUsuarioAcesso, String indicadorHorarioAcessoRestrito) throws ControladorException;
+
+	public Collection<UsuarioAcesso> atualizarHorarioAcessoRestrito(Map<String, String[]> mapParametros) throws ControladorException;
 
 	/**
 	 * [UC0291] Bloquear/Desbloquear Acesso Usuario
@@ -192,6 +196,16 @@ public interface ControladorUsuarioLocal
 	 * @throws ControladorException
 	 */
 	public void removerUsuario(String[] idsUsuario, Usuario usuario) throws ControladorException;
+
+	/**
+	 * Ativa/Inativa usuario(s)
+	 * [UC0231] Manter Usuario
+	 * 
+	 * @param idsUsuario
+	 * @param usuario
+	 * @param ativar
+	 */
+	public void ativarInativarUsuario(String[] idsUsuario, Usuario usuario, boolean ativar) throws ControladorException;
 
 	/**
 	 * Método que consulta os grupos funcionários operações passando os ids dos
@@ -327,5 +341,21 @@ public interface ControladorUsuarioLocal
 	public boolean verificarPermissaoFuncionalidadeUsuario(Integer idUsuario, String descricaoCaminhoOperacao,
 					String descricaoCaminhoFuncionalidade)
 					throws ControladorException;
+
+	/**
+	 * Método que cria uma coleção de UsuarioAcesso
+	 * 
+	 * @author Saulo Lima
+	 * @date 16/09/2014
+	 */
+	public Collection<UsuarioAcesso> criarColecaoUsuarioAcesso(int indicadorSelecionado) throws ControladorException;
+
+	/**
+	 * Método que pesquisa as retrições de horário de acesso ao sistema de um usuário
+	 * 
+	 * @author Saulo Lima
+	 * @date 20/09/2014
+	 */
+	public Collection<UsuarioAcesso> pesquisarUsuarioAcesso(Integer idUsuario) throws ControladorException;
 
 }

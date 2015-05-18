@@ -76,15 +76,19 @@
 
 package gcom.gui.faturamento.guiapagamento;
 
+import gcom.arrecadacao.pagamento.FiltroGuiaPagamentoPrestacao;
+import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao;
+import gcom.cobranca.bean.GuiaPagamentoValoresHelper;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.gui.faturamento.bean.GuiaPagamentoPrestacaoHelper;
+import gcom.seguranca.acesso.PermissaoEspecial;
+import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.Util;
+import gcom.util.filtro.ParametroSimples;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -97,7 +101,6 @@ import org.apache.struts.action.ActionMapping;
 /**
  * [UC0188] Manter Guia de Pagamento
  * [SB0009] – Alterar Vencimento Prestações
- * 
  */
 public class AlterarVencimentoPrestacoesGuiaPagamentoAction
 				extends GcomAction {
@@ -109,6 +112,8 @@ public class AlterarVencimentoPrestacoesGuiaPagamentoAction
 		AtualizarGuiaPagamentoActionForm form = (AtualizarGuiaPagamentoActionForm) actionForm;
 		HttpSession sessao = httpServletRequest.getSession(false);
 		Fachada fachada = Fachada.getInstancia();
+		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
+
 		HashMap<GuiaPagamentoPrestacaoHelper, Date> hashMapGuiasPrestacoesVencimentoAlterado = null;
 
 		// Recebe o id da guia de pagamento para fazer a consulta
@@ -146,12 +151,53 @@ public class AlterarVencimentoPrestacoesGuiaPagamentoAction
 		hashMapGuiasPrestacoesVencimentoAlterado = new HashMap<GuiaPagamentoPrestacaoHelper, Date>();
 
 		if(arDtVencimento != null && arDtVencimento.length > 0){
+			StringBuffer parametroPrestacaoExecucaoFiscal = new StringBuffer();
+
 			for(GuiaPagamentoPrestacaoHelper guiaBase : colecaoGuiasPrestacoes){
 				if(!Util.formatarData(guiaBase.getDataVencimento()).equals(arDtVencimento[i])){
 					guiaBase.setIdGuiaPagamento(Integer.parseInt(idGuiaPagamento));
 					hashMapGuiasPrestacoesVencimentoAlterado.put(guiaBase, Util.converterStringParaData(arDtVencimento[i]));
+
+					/*
+					 * [UC0188] Manter Guia de Pagamento
+					 * [SB0011] Verificar Existência de Conta em Execução Fiscal
+					 */
+					boolean temPermissaoAtualizarDebitosExecFiscal = fachada.verificarPermissaoEspecial(
+									PermissaoEspecial.ATUALIZAR_DEBITOS_EXECUCAO_FISCAL, this.getUsuarioLogado(httpServletRequest));
+
+					FiltroGuiaPagamentoPrestacao filtroGuiaPagamentoPrestacao = new FiltroGuiaPagamentoPrestacao();
+					filtroGuiaPagamentoPrestacao.adicionarParametro(new ParametroSimples(FiltroGuiaPagamentoPrestacao.GUIA_PAGAMENTO_ID,
+									guiaBase.getIdGuiaPagamento()));
+					filtroGuiaPagamentoPrestacao.adicionarParametro(new ParametroSimples(FiltroGuiaPagamentoPrestacao.NUMERO_PRESTACAO,
+									guiaBase.getNumeroPrestacao()));
+					filtroGuiaPagamentoPrestacao.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoPrestacao.DEBITO_TIPO);
+
+					Collection<GuiaPagamentoPrestacao> colecaoGuiaPagamentoPrestacao = fachada.pesquisar(filtroGuiaPagamentoPrestacao,
+									GuiaPagamentoPrestacao.class.getName());
+
+					GuiaPagamentoValoresHelper guiaPagamentoValores = new GuiaPagamentoValoresHelper();
+					guiaPagamentoValores.setGuiaPagamentoPrestacoes(new HashSet<GuiaPagamentoPrestacao>(colecaoGuiaPagamentoPrestacao));
+
+					Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores = new ArrayList<GuiaPagamentoValoresHelper>();
+					colecaoGuiaPagamentoValores.add(guiaPagamentoValores);
+
+					if(fachada.verificarExecucaoFiscal(null, colecaoGuiaPagamentoValores, null) && !temPermissaoAtualizarDebitosExecFiscal){
+						parametroPrestacaoExecucaoFiscal.append(guiaBase.getIdGuiaPagamento());
+						parametroPrestacaoExecucaoFiscal.append("/");
+						parametroPrestacaoExecucaoFiscal.append(guiaBase.getNumeroPrestacao());
+						parametroPrestacaoExecucaoFiscal.append(", ");
+					}
 				}
 				i++;
+			}
+
+			String parametroMensagemExecFiscal = parametroPrestacaoExecucaoFiscal.toString();
+
+			if(!Util.isVazioOuBranco(parametroMensagemExecFiscal)){
+				parametroMensagemExecFiscal = parametroMensagemExecFiscal.substring(0, parametroMensagemExecFiscal.length() - 2);
+
+				throw new ActionServletException("atencao.guia.prestacao.debito.execucao.fiscal", usuario.getNomeUsuario().toString(),
+								parametroMensagemExecFiscal);
 			}
 		}
 		

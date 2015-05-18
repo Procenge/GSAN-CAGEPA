@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.seguranca.acesso.DocumentoEmissaoEfetuada" 
+    table="DOCUMENTO_EMISSAO_EFETUADA"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="DOEE_ID"
+    >
+		<generator class="sequence">
+	       <param name="sequence">SQ_DOCUMENTO_EMISSAO_EFETUADA</param>
+	    </generator>
+    </id>
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="DOEE_TMULTIMAALTERACAO"
+        length="8"
+    />
+    
+    <property
+        name="referenciaInicialDebito"
+         type="java.lang.String"
+        column="DOEE_REFINICIAL"
+       
+    />
+    
+    <property
+        name="referenciaFinalDebito"
+          type="java.lang.String"
+        column="DOEE_REFFINAL"
+      
+    />
+   
+ <!-- bi-directional many-to-one association to DocumentoEmissaoEfetuada -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="true"
+    >
+        <column name="IMOV_ID" />
+    </many-to-one>
+    
+   
+     <many-to-one
+        name="cliente"
+        class="gcom.cadastro.cliente.Cliente"
+        not-null="true"
+    >
+        <column name="CLIE_ID" />
+    </many-to-one>
+    
+    
+      <many-to-one
+        name="usuario"
+        class="gcom.seguranca.acesso.usuario.Usuario"
+        not-null="true"
+    >
+        <column name="USUR_ID" />
+    </many-to-one>
+    
+     <many-to-one
+        name="documentoTipo"
+        class="gcom.cobranca.DocumentoTipo"
+        not-null="true"
+    >
+        <column name="DOTP_ID" />
+    </many-to-one>
+    
+
+</class>
+</hibernate-mapping>

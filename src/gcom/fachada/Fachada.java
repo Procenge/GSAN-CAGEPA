@@ -125,6 +125,8 @@ import gcom.cadastro.ControladorCadastroLocalHome;
 import gcom.cadastro.DbVersaoImplementada;
 import gcom.cadastro.EnvioEmail;
 import gcom.cadastro.aguaparatodos.ImovelAguaParaTodos;
+import gcom.cadastro.atendimento.*;
+import gcom.cadastro.atendimento.bean.AtendimentoDocumentacaoInformadaHelper;
 import gcom.cadastro.cliente.*;
 import gcom.cadastro.cliente.bean.ClienteImovelRelacaoHelper;
 import gcom.cadastro.dadocensitario.LocalidadeDadosCensitario;
@@ -213,9 +215,12 @@ import gcom.gui.faturamento.consumotarifa.bean.CategoriaFaixaConsumoTarifaHelper
 import gcom.gui.micromedicao.DadosMovimentacao;
 import gcom.integracao.acquagis.ControladorIntegracaoAcquaGis;
 import gcom.integracao.acquagis.DadosAcquaGis;
+import gcom.interceptor.ObjetoTransacao;
 import gcom.micromedicao.*;
 import gcom.micromedicao.bean.AnaliseConsumoRelatorioOSHelper;
+import gcom.micromedicao.bean.FiltroHidrometroHelper;
 import gcom.micromedicao.bean.HidrometroRelatorioOSHelper;
+import gcom.micromedicao.bean.OrdemServicoManutencaoHidrometroHelper;
 import gcom.micromedicao.consumo.ConsumoHistorico;
 import gcom.micromedicao.hidrometro.*;
 import gcom.micromedicao.leitura.LeituraAnormalidade;
@@ -260,11 +265,13 @@ import gcom.spcserasa.bean.NegativadorMovimentoHelper;
 import gcom.tarefa.TarefaRelatorio;
 import gcom.util.*;
 import gcom.util.filtro.Filtro;
+import gcom.util.filtro.ParametroSimples;
 import gcom.util.tabelaauxiliar.ControladorTabelaAuxiliarLocal;
 import gcom.util.tabelaauxiliar.ControladorTabelaAuxiliarLocalHome;
 import gcom.util.tabelaauxiliar.TabelaAuxiliarAbstrata;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.*;
@@ -283,6 +290,10 @@ import br.com.procenge.util.SpringBeanLocator;
  * 
  * @author Administrador
  * @created 25 de Abril de 2005
+ */
+/**
+ * @author Magno Silveira (magno.silveira@procenge.com.br)
+ * @since 22/10/2014
  */
 public class Fachada {
 
@@ -2489,7 +2500,7 @@ public class Fachada {
 					LigacaoAguaSituacao ligacaoAguaSituacao, LigacaoEsgotoSituacao ligacaoEsgotoSituacao, Collection colecaoCategoria,
 					String consumoAgua, String consumoEsgoto, String percentualEsgoto, Date dataVencimentoConta,
 					Collection<CalcularValoresAguaEsgotoHelper> calcularValoresConta, ContaMotivoInclusao contaMotivoInclusao,
-					Map<String, String[]> requestMap, Usuario usuarioLogado){
+					Map<String, String[]> requestMap, Usuario usuarioLogado, Integer consumoPoco){
 
 		try{
 			/**
@@ -2504,7 +2515,7 @@ public class Fachada {
 			// calcularValoresConta, contaMotivoInclusao, requestMap);
 			Integer id = this.getControladorFaturamento().inserirConta(mesAnoConta, imovel, colecaoDebitoCobrado, ligacaoAguaSituacao,
 							ligacaoEsgotoSituacao, colecaoCategoria, consumoAgua, consumoEsgoto, percentualEsgoto, dataVencimentoConta,
-							calcularValoresConta, contaMotivoInclusao, requestMap, usuarioLogado);
+							calcularValoresConta, contaMotivoInclusao, requestMap, usuarioLogado, consumoPoco);
 			return id;
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -2616,13 +2627,14 @@ public class Fachada {
 					Integer ligacaoSituacaoEsgotoId, Short indicadorFaturamentoAgua, Short indicadorFaturamentoEsgoto,
 					Collection categoriasImovel, Integer consumoFaturadoAguaMes, Integer consumoFaturadoEsgotoMes,
 					int consumoMinimoLigacao, Date dataLeituraAnterior, Date dataLeituraAtual, BigDecimal percentualEsgoto,
-					Integer tarifaImovel, Integer idImovel){
+					Integer tarifaImovel, Integer idImovel, ConsumoTarifaVigencia consumoTarifaVigencia){
 
 		try{
 			Collection<CalcularValoresAguaEsgotoHelper> retorno = this.getControladorFaturamento().calcularValoresAguaEsgoto(
 							anoMesReferencia, ligacaoSituacaoAguaId, ligacaoSituacaoEsgotoId, indicadorFaturamentoAgua,
 							indicadorFaturamentoEsgoto, categoriasImovel, consumoFaturadoAguaMes, consumoFaturadoEsgotoMes,
-							consumoMinimoLigacao, dataLeituraAnterior, dataLeituraAtual, percentualEsgoto, tarifaImovel, idImovel);
+							consumoMinimoLigacao, dataLeituraAnterior, dataLeituraAtual, percentualEsgoto, tarifaImovel, idImovel,
+							consumoTarifaVigencia);
 
 			return retorno;
 		}catch(ControladorException ex){
@@ -2961,45 +2973,6 @@ public class Fachada {
 	}
 
 	/**
-	 * Description of the Method
-	 * 
-	 * @param quadraParametros
-	 *            Descrição do parâmetro
-	 * @return Description of the Return Value
-	 */
-	/*
-	 * public Collection pesquisarQuadraRelatorio(Quadra quadraParametros) { try {
-	 * return
-	 * this.getControladorLocalidade().pesquisarQuadraRelatorio(quadraParametros); }
-	 * catch (EJBException ex) { throw new
-	 * ControladorException(ex.getCausedByException().getMessage(), ex,
-	 * ((ControladorException)
-	 * ex.getCausedByException()).getParametroMensagem()); } }
-	 */
-
-	// *****************************************************************************
-	// *************************---- Métodos
-	// FATURAMENTO-------*********************
-	/**
-	 * < <Descrição do método>>
-	 * 
-	 * @param faturamentoAtividadeCronogramas
-	 *            Descrição do parâmetro
-	 * @param faturamentoGrupoCronogramaMensal
-	 *            Descrição do parâmetro
-	 */
-	public void inserirFaturamentoCronograma(Collection faturamentoAtividadeCronogramas,
-					FaturamentoGrupoCronogramaMensal faturamentoGrupoCronogramaMensal){
-
-		try{
-			getControladorFaturamento().inserirFaturamentoCronograma(faturamentoAtividadeCronogramas, faturamentoGrupoCronogramaMensal,
-							null);
-		}catch(ControladorException ex){
-			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
-		}
-	}
-
-	/**
 	 * O método recebe uma coleção de faturamento atividades acha as que tem
 	 * atividade predecessora e compara a data desta com a data da sua
 	 * predecessora.
@@ -3048,12 +3021,12 @@ public class Fachada {
 	 * @param faturamentoAtividadeCronogramas
 	 *            Descrição do parâmetro
 	 */
-	public void inserirFaturamentoGrupoCronogramaMensal(FaturamentoGrupoCronogramaMensal faturamentoGrupoCronogramaMensal,
-					Collection faturamentoAtividadeCronogramas, Usuario usuarioLogado){
+	public String inserirFaturamentoGrupoCronogramaMensal(FaturamentoGrupoCronogramaMensal faturamentoGrupoCronogramaMensal,
+					Collection faturamentoAtividadeCronogramas, Usuario usuarioLogado, Integer quantidadeCronogramas){
 
 		try{
-			getControladorFaturamento().inserirFaturamentoGrupoCronogramaMensal(faturamentoGrupoCronogramaMensal,
-							faturamentoAtividadeCronogramas, usuarioLogado);
+			return getControladorFaturamento().inserirFaturamentoGrupoCronogramaMensal(faturamentoGrupoCronogramaMensal,
+							faturamentoAtividadeCronogramas, usuarioLogado, quantidadeCronogramas);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -3067,12 +3040,12 @@ public class Fachada {
 	 * @param faturamentoAtividadeCronogramas
 	 *            Descrição do parâmetro
 	 */
-	public void atualizarFaturamentoGrupoCronogramaMensal(FaturamentoGrupoCronogramaMensal faturamentoGrupoCronogramaMensal,
-					Collection faturamentoAtividadeCronogramas, Collection colecaoTodasAtividades, Usuario usuarioLogado){
+	public String atualizarFaturamentoGrupoCronogramaMensal(FaturamentoGrupoCronogramaMensal faturamentoGrupoCronogramaMensal,
+					Collection faturamentoAtividadeCronogramas, Usuario usuarioLogado){
 
 		try{
-			getControladorFaturamento().atualizarFaturamentoGrupoCronogramaMensal(faturamentoGrupoCronogramaMensal,
-							faturamentoAtividadeCronogramas, colecaoTodasAtividades, usuarioLogado);
+			return getControladorFaturamento().atualizarFaturamentoGrupoCronogramaMensal(faturamentoGrupoCronogramaMensal,
+							faturamentoAtividadeCronogramas, usuarioLogado);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -3567,11 +3540,11 @@ public class Fachada {
 	 *            Descrição do parâmetro
 	 */
 	public Collection verificarSituacaoAtividadeRota(Collection colecaoRotasGrupo, FaturamentoAtividade faturamentoAtividade,
-					FaturamentoGrupo faturamentoGrupo, boolean habilitada){
+					Integer anoMesReferencia, boolean habilitada){
 
 		try{
 			return this.getControladorFaturamento().verificarSituacaoAtividadeRota(colecaoRotasGrupo, faturamentoAtividade,
-							faturamentoGrupo, habilitada);
+							anoMesReferencia, habilitada);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -4233,7 +4206,7 @@ public class Fachada {
 			throw new SistemaException(e);
 		}
 	}
-	
+
 	/**
 	 * [UC0178] Religar Automaticamente imóvel Cortado Author: Rafael Santos
 	 * Data: 04/01/2006 Religar automática de Imóveis cortados
@@ -4311,10 +4284,11 @@ public class Fachada {
 	}
 
 	public void atualizarConsumoTarifa(ConsumoTarifaVigencia consumoTarifaVigencia,
-					Collection<CategoriaFaixaConsumoTarifaHelper> colecaoCategoriaFaixaConsumoTarifaHelper){
+					Collection<CategoriaFaixaConsumoTarifaHelper> colecaoCategoriaFaixaConsumoTarifaHelper, Usuario usuarioLogado){
 
 		try{
-			this.getControladorFaturamento().atualizarConsumoTarifa(consumoTarifaVigencia, colecaoCategoriaFaixaConsumoTarifaHelper);
+			this.getControladorFaturamento().atualizarConsumoTarifa(consumoTarifaVigencia, colecaoCategoriaFaixaConsumoTarifaHelper,
+							usuarioLogado);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -4330,10 +4304,11 @@ public class Fachada {
 	 * @throws ControladorException
 	 */
 	public void inserirConsumoTarifa(ConsumoTarifa consumoTarifa, ConsumoTarifaVigencia consumoTarifaVigencia,
-					Collection<ConsumoTarifaCategoria> colecaoConsumoTarifaCategoria){
+					Collection<ConsumoTarifaCategoria> colecaoConsumoTarifaCategoria, Usuario usuarioLogado){
 
 		try{
-			this.getControladorFaturamento().inserirConsumoTarifa(consumoTarifa, consumoTarifaVigencia, colecaoConsumoTarifaCategoria);
+			this.getControladorFaturamento().inserirConsumoTarifa(consumoTarifa, consumoTarifaVigencia, colecaoConsumoTarifaCategoria,
+							usuarioLogado);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -4362,10 +4337,11 @@ public class Fachada {
 		}
 	}
 
-	public void reajustarTarifaConsumo(Map<ConsumoTarifaVigencia, Map<ConsumoTarifaCategoria, BigDecimal>> mapReajuste){
+	public void reajustarTarifaConsumo(Map<ConsumoTarifaVigencia, Map<ConsumoTarifaCategoria, BigDecimal>> mapReajuste,
+					Usuario usuarioLogado){
 
 		try{
-			this.getControladorFaturamento().reajustarTarifaConsumo(mapReajuste);
+			this.getControladorFaturamento().reajustarTarifaConsumo(mapReajuste, usuarioLogado);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -4510,7 +4486,8 @@ public class Fachada {
 					int indicadorDebitoACobrar, int indicadorCreditoARealizar, int indicadorNotasPromissorias, int indicadorGuiasPagamento,
 					int indicadorCalcularAcrescimoImpontualidade, Boolean indicadorContas, SistemaParametro sistemaParametro,
 					Date dataEmissaoDocumento, Short indicadorEmissaoDocumento, Short indicadorConsiderarPagamentoNaoClassificado,
-					Short indicadorMulta, Short indicadorJurosMora, Short indicadorAtualizaoMonetaria){
+					Short indicadorMulta, Short indicadorJurosMora, Short indicadorAtualizaoMonetaria,
+					int indicadorCalcularAcrescimosSucumbenciaAnterior, Integer indicadorDividaAtiva){
 
 		try{
 			return getControladorCobranca().obterDebitoImovelOuCliente(indicadorDebito, idImovel, codigoCliente, clienteRelacaoTipo,
@@ -4519,7 +4496,7 @@ public class Fachada {
 							indicadorCreditoARealizar, indicadorNotasPromissorias, indicadorGuiasPagamento,
 							indicadorCalcularAcrescimoImpontualidade, indicadorContas, sistemaParametro, dataEmissaoDocumento,
 							indicadorEmissaoDocumento, indicadorConsiderarPagamentoNaoClassificado, indicadorMulta, indicadorJurosMora,
-							indicadorAtualizaoMonetaria);
+							indicadorAtualizaoMonetaria, indicadorCalcularAcrescimosSucumbenciaAnterior, indicadorDividaAtiva);
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -4636,13 +4613,13 @@ public class Fachada {
 	 * @param helperParaSeremRemovidos
 	 */
 
-	public void atualizarFaturamentoSituacaoTipo(Collection colecaoIdsImoveis, Integer idFaturamentoTipo,
-					Collection<FaturamentoSituacaoHistorico> collectionFaturmentoSituaoHistorico, Usuario usuarioLogado,
+	public void atualizarFaturamentoSituacaoTipo(Integer idFaturamentoTipo,
+					Collection<SituacaoEspecialFaturamentoHelper> helperParaSeremInserirdos, Usuario usuarioLogado,
 					Collection<SituacaoEspecialFaturamentoHelper> helperParaSeremRemovidos){
 
 		try{
-			this.getControladorImovel().atualizarFaturamentoSituacaoTipo(colecaoIdsImoveis, idFaturamentoTipo,
-							collectionFaturmentoSituaoHistorico, usuarioLogado, helperParaSeremRemovidos);
+			this.getControladorImovel().atualizarFaturamentoSituacaoTipo(idFaturamentoTipo, helperParaSeremInserirdos, usuarioLogado,
+							helperParaSeremRemovidos);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -4703,6 +4680,23 @@ public class Fachada {
 		try{
 			return this.getControladorFaturamento().inserirGuiaPagamento(guiaPagamento, usuarioLogado, dataVencimento, qtdeDiasVencimento,
 							colecaoPrestacoesGuiaPagamento, colecaoListaDadosPrestacoesGuia, numeroContratoParcelOrgaoPublico);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * [UC0187] Inserir Guia de Pagamento
+	 * Processos das execuções especiais pendentes de cobrança do valor de sucumbência
+	 * 
+	 * @date 08/09/2014
+	 * @author Gicevalter Couto
+	 */
+	public Collection<Integer> pesquisarProcessosExecucaoEspeciaisPendentesCobranca(Integer idImovel){
+
+		try{
+			return this.getControladorFaturamento().pesquisarProcessosExecucaoEspeciaisPendentesCobranca(idImovel);
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -5211,6 +5205,16 @@ public class Fachada {
 
 		try{
 			return this.getControladorCobranca().pesquisarCobrancaAcaoAtividadeComando();
+		}catch(ControladorException ex){
+			// levanta o erro para a próxima camada
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public String pesquisarMensagemDocumentoCobrancaAcao(Integer idCobrancaAcao){
+
+		try{
+			return this.getControladorCobranca().pesquisarMensagemDocumentoCobrancaAcao(idCobrancaAcao);
 		}catch(ControladorException ex){
 			// levanta o erro para a próxima camada
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -6584,7 +6588,8 @@ public class Fachada {
 					Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoHelper, Usuario usuarioLogado,
 					BigDecimal valorDebitoACobrarParcelamentoImovel, Integer anoMesInicialReferenciaDebito,
 					Integer anoMesFinalReferenciaDebito, IndicadoresParcelamentoHelper indicadoresParcelamentoHelper,
-					String dataVencimentoEntradaParcelamento){
+					String dataVencimentoEntradaParcelamento, BigDecimal valorTotalSucumbencia, Integer quantidadeParcelasSucumbencia,
+					BigDecimal valorSucumbenciaAtual, BigDecimal valorDiligencias){
 
 		try{
 			return this.getControladorCobranca().obterOpcoesDeParcelamento(resolucaoDiretoria, codigoImovel, valorEntradaInformado,
@@ -6592,8 +6597,41 @@ public class Fachada {
 							colecaoContaValores, valorDebitoAtualizado, valorTotalMultas, valorTotalJurosMora,
 							valorTotalAtualizacoesMonetarias, numeroReparcelamentoConsecutivos, colecaoGuiaPagamentoHelper, usuarioLogado,
 							valorDebitoACobrarParcelamentoImovel, anoMesInicialReferenciaDebito, anoMesFinalReferenciaDebito,
-							indicadoresParcelamentoHelper, dataVencimentoEntradaParcelamento, false, null);
+							indicadoresParcelamentoHelper, dataVencimentoEntradaParcelamento, false, null, valorTotalSucumbencia,
+							quantidadeParcelasSucumbencia, valorSucumbenciaAtual, valorDiligencias);
 
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public Map<Integer, BigDecimal> determinarValorSucumbenciaAtual(Integer idImovel, Collection<ContaValoresHelper> colecaoContaHelper,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoHelper, String chavesSucumbenciasConta,
+					String chavesSucumbenciasGuia){
+
+		try{
+			return this.getControladorCobranca().determinarValorSucumbenciaAtual(idImovel, colecaoContaHelper, colecaoGuiaPagamentoHelper,
+							chavesSucumbenciasConta, chavesSucumbenciasGuia);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * [SB0049] Distribuir Valor de Sucumbência Atual Entre os Processos de Execução Fiscal
+	 * [SB0050] Distribuir Valor de Diligências Entre os Processos de Execução Fiscal
+	 * 
+	 * @author Saulo Lima
+	 * @date 15/07/2014
+	 */
+	public Map<Integer, BigDecimal> distribuirValorEntreProcessosExecucaoFiscal(BigDecimal valorDigitado,
+					Map<Integer, BigDecimal> mapProcessosValorSucumbenciaAtual, Integer idImovel){
+
+		try{
+			return this.getControladorCobranca().distribuirValorEntreProcessosExecucaoFiscal(valorDigitado,
+							mapProcessosValorSucumbenciaAtual, idImovel);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -6677,11 +6715,11 @@ public class Fachada {
 	 * @param usuarioLogado
 	 */
 	public void atualizarPagamento(Pagamento pagamento, Usuario usuarioLogado, String gerarDevolucaoValores, Integer idCreditoTipo,
-					PagamentoSituacao situacaoPagamentoOriginal){
+					PagamentoSituacao situacaoPagamentoOriginal, boolean gerarDebitoACobrar){
 
 		try{
 			this.getControladorArrecadacao().atualizarPagamento(pagamento, usuarioLogado, gerarDevolucaoValores, idCreditoTipo,
-							situacaoPagamentoOriginal);
+							situacaoPagamentoOriginal, gerarDebitoACobrar);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -6716,7 +6754,6 @@ public class Fachada {
 		}
 
 	}
-
 
 	/**
 	 * Permite excluir um comando de atividade de Cobrança do crongrama ou
@@ -7503,21 +7540,19 @@ public class Fachada {
 					String idCobrancaAtividade, String idCobrancaGrupo, String idGerenciaRegional, String localidadeOrigemID,
 					String localidadeDestinoID, String setorComercialOrigemCD, String setorComercialDestinoCD, String idCliente,
 					String clienteRelacaoTipo, String indicador, String quadraInicial, String quadraFinal, String rotaInicial,
-					String rotaFinal, String setorComercialOrigemID,
-					String setorComercialDestinoID, String idComando, String unidadeNegocio, Usuario usuarioLogado, String titulo,
-					String descricaoSolicitacao, String prazoExecucao, String quantidadeMaximaDocumentos, String indicadorImoveisDebito,
-					String indicadorGerarBoletimCadastro, String codigoClienteSuperior, String empresa, String valorLimiteEmissao,
-					byte[] arquivoImoveis, String arrecadador, CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComandoPrecedente,
-					CobrancaCriterio cobrancaCriterio, String indicadorGerarRelacaoDocumento, String idCobrancaAcaoAtividadeComando,
-					String formatoArquivo){
+					String rotaFinal, String setorComercialOrigemID, String setorComercialDestinoID, String idComando,
+					String unidadeNegocio, Usuario usuarioLogado, String titulo, String descricaoSolicitacao, String prazoExecucao,
+					String quantidadeMaximaDocumentos, String indicadorImoveisDebito, String indicadorGerarBoletimCadastro,
+					String codigoClienteSuperior, String empresa, String valorLimiteEmissao, byte[] arquivoImoveis, String arrecadador,
+					CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComandoPrecedente, CobrancaCriterio cobrancaCriterio,
+					String indicadorGerarRelacaoDocumento, String idCobrancaAcaoAtividadeComando, String formatoArquivo){
 
 		try{
 			return this.getControladorCobranca().concluirComandoAcaoCobranca(periodoInicialConta, periodoFinalConta,
 							periodoVencimentoContaInicial, periodoVencimentoContaFinal, idsCobrancaAcao, idCobrancaAtividade,
 							idCobrancaGrupo, idGerenciaRegional, localidadeOrigemID, localidadeDestinoID, setorComercialOrigemCD,
-							setorComercialDestinoCD, idCliente, clienteRelacaoTipo, indicador, quadraInicial, quadraFinal,
-							rotaInicial, rotaFinal,
-							setorComercialOrigemID, setorComercialDestinoID, idComando, unidadeNegocio, usuarioLogado, titulo,
+							setorComercialDestinoCD, idCliente, clienteRelacaoTipo, indicador, quadraInicial, quadraFinal, rotaInicial,
+							rotaFinal, setorComercialOrigemID, setorComercialDestinoID, idComando, unidadeNegocio, usuarioLogado, titulo,
 							descricaoSolicitacao, prazoExecucao, quantidadeMaximaDocumentos, indicadorImoveisDebito,
 							indicadorGerarBoletimCadastro, codigoClienteSuperior, empresa, valorLimiteEmissao, arquivoImoveis, arrecadador,
 							cobrancaAcaoAtividadeComandoPrecedente, cobrancaCriterio, indicadorGerarRelacaoDocumento,
@@ -7842,26 +7877,25 @@ public class Fachada {
 					String idCobrancaAtividade, String idCobrancaGrupo, String idGerenciaRegional, String localidadeOrigemID,
 					String localidadeDestinoID, String setorComercialOrigemCD, String setorComercialDestinoCD, String idCliente,
 					String clienteRelacaoTipo, String indicador, String quadraInicial, String quadraFinal, String rotaInicial,
-					String rotaFinal, String setorComercialOrigemID,
-					String setorComercialDestinoID, String idCobrancaAcaoAtividadeComando, Date realizacao, Date comando,
-					Date ultimaDataAtualizacao, Usuario usuario, Empresa empresa, Integer quantidadeDocumentos, BigDecimal valorDocumentos,
-					Integer quantidadeItensCobrados, String idComando, String unidadeNegocio, String titulo, String descricaoSolicitacao,
-					String prazoExecucao, String quantidadeMaximaDocumentos, String indicadorImoveisDebito,
-					String indicadorGerarBoletimCadastro, String codigoClienteSuperior, String valorLimiteEmissao, byte[] arquivoImoveis,
-					String arrecadador, CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComandoPrecedente,
-					CobrancaCriterio cobrancaCriterio, String indicadorGerarRelacaoDocumento, String formatoArquivo){
+					String rotaFinal, String setorComercialOrigemID, String setorComercialDestinoID, String idCobrancaAcaoAtividadeComando,
+					Date realizacao, Date comando, Date ultimaDataAtualizacao, Usuario usuario, Empresa empresa,
+					Integer quantidadeDocumentos, BigDecimal valorDocumentos, Integer quantidadeItensCobrados, String idComando,
+					String unidadeNegocio, String titulo, String descricaoSolicitacao, String prazoExecucao,
+					String quantidadeMaximaDocumentos, String indicadorImoveisDebito, String indicadorGerarBoletimCadastro,
+					String codigoClienteSuperior, String valorLimiteEmissao, byte[] arquivoImoveis, String arrecadador,
+					CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComandoPrecedente, CobrancaCriterio cobrancaCriterio,
+					String indicadorGerarRelacaoDocumento, String formatoArquivo){
 
 		try{
 			this.getControladorCobranca().concluirManterComandoAcaoCobranca(periodoInicialConta, periodoFinalConta,
 							periodoVencimentoContaInicial, periodoVencimentoContaFinal, idCobrancaAcao, idCobrancaAtividade,
 							idCobrancaGrupo, idGerenciaRegional, localidadeOrigemID, localidadeDestinoID, setorComercialOrigemCD,
 							setorComercialDestinoCD, idCliente, clienteRelacaoTipo, indicador, quadraInicial, quadraFinal, rotaInicial,
-							rotaFinal,
-							setorComercialOrigemID, setorComercialDestinoID, idCobrancaAcaoAtividadeComando, realizacao, comando,
-							ultimaDataAtualizacao, usuario, empresa, quantidadeDocumentos, valorDocumentos, quantidadeItensCobrados,
-							idComando, unidadeNegocio, titulo, descricaoSolicitacao, prazoExecucao, quantidadeMaximaDocumentos,
-							indicadorImoveisDebito, indicadorGerarBoletimCadastro, codigoClienteSuperior, valorLimiteEmissao,
-							arquivoImoveis, arrecadador, cobrancaAcaoAtividadeComandoPrecedente, cobrancaCriterio,
+							rotaFinal, setorComercialOrigemID, setorComercialDestinoID, idCobrancaAcaoAtividadeComando, realizacao,
+							comando, ultimaDataAtualizacao, usuario, empresa, quantidadeDocumentos, valorDocumentos,
+							quantidadeItensCobrados, idComando, unidadeNegocio, titulo, descricaoSolicitacao, prazoExecucao,
+							quantidadeMaximaDocumentos, indicadorImoveisDebito, indicadorGerarBoletimCadastro, codigoClienteSuperior,
+							valorLimiteEmissao, arquivoImoveis, arrecadador, cobrancaAcaoAtividadeComandoPrecedente, cobrancaCriterio,
 							indicadorGerarRelacaoDocumento, formatoArquivo);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -7955,7 +7989,12 @@ public class Fachada {
 					Integer anoMesReferenciaDebitoFinal, BigDecimal percentualDescontoJurosMora, BigDecimal percentualDescontoMulta,
 					BigDecimal percentualDescontoCorrecaoMonetaria, BigDecimal valorDescontoAcrescimosImpontualidadeNaPrestacao,
 					BigDecimal valorFinalFinanciamento,
-					Collection<ParcelamentoConfiguracaoPrestacao> colecaoParcelamentoConfiguracaoPrestacao){
+					Collection<ParcelamentoConfiguracaoPrestacao> colecaoParcelamentoConfiguracaoPrestacao,
+					byte[] conteudoTermoParcelamentoInicial, byte[] conteudoTermoParcelamentoFinal,
+					ParcelamentoTermoTestemunhas parcelamentoTermoTestemunhas, ParcelamentoDadosTermo parcelamentoDadosTermo,
+					BigDecimal valorSucumbenciaAnterior, Map<Integer, BigDecimal> mapProcessosSucumbencias,
+					Short quantidadeParcelasSucumbencia, Map<Integer, BigDecimal> mapProcessosDiligencias,
+					BigDecimal valorAtualizacaoMonetariaSucumbencia, BigDecimal valorJurosMoraSucumbencia){
 
 		try{
 			return this.getControladorCobranca().concluirParcelamentoDebitos(colecaoContaValores, colecaoGuiaPagamentoValores,
@@ -7976,7 +8015,10 @@ public class Fachada {
 							numeroDiasVencimentoEntrada, indicadorPessoaFisicaJuridica, anoMesReferenciaDebitoInicial,
 							anoMesReferenciaDebitoFinal, percentualDescontoJurosMora, percentualDescontoMulta,
 							percentualDescontoCorrecaoMonetaria, valorDescontoAcrescimosImpontualidadeNaPrestacao, valorFinalFinanciamento,
-							colecaoParcelamentoConfiguracaoPrestacao);
+							colecaoParcelamentoConfiguracaoPrestacao, conteudoTermoParcelamentoInicial, conteudoTermoParcelamentoFinal,
+							parcelamentoTermoTestemunhas, parcelamentoDadosTermo, valorSucumbenciaAnterior, mapProcessosSucumbencias,
+							quantidadeParcelasSucumbencia, mapProcessosDiligencias, valorAtualizacaoMonetariaSucumbencia,
+							valorJurosMoraSucumbencia);
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -8574,6 +8616,58 @@ public class Fachada {
 		}
 	}
 
+	public Integer inserirAtendimentoProcedimento(AtendimentoProcedimento atendimentoProcedimento,
+					Collection<AtendProcDocumentoPessoaTipo> colecaoAtendProcDocumentoPessoaTipo,
+					Collection<AtendProcNormaProcedimental> colecaoAtendProcNormaProcedimental, Usuario usuarioLogado){
+
+		try{
+			return getControladorCadastro().inserirAtendimentoProcedimento(atendimentoProcedimento, colecaoAtendProcDocumentoPessoaTipo,
+							colecaoAtendProcNormaProcedimental, usuarioLogado);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public Integer inserirDocumentoTipoLayout(DocumentoTipoLayout documentoTipoLayout,
+					Collection<DocumentoLayoutAssinatura> colecaoDocumentoLayoutAssinatura, Usuario usuarioLogado){
+
+		try{
+			return getControladorCobranca()
+							.inserirDocumentoTipoLayout(documentoTipoLayout, colecaoDocumentoLayoutAssinatura, usuarioLogado);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public void atualizarDocumentoTipoLayout(DocumentoTipoLayout documentoTipoLayout,
+					Collection<DocumentoLayoutAssinatura> colecaoDocumentoLayoutAssinatura, Usuario usuarioLogado){
+
+		try{
+			getControladorCobranca().atualizarDocumentoTipoLayout(documentoTipoLayout, colecaoDocumentoLayoutAssinatura, usuarioLogado);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public Integer inserirAtendimento(Atendimento atendimento,
+					Collection<AtendimentoDocumentacaoInformadaHelper> colecaoAtendimentoDocumentacaoInformadaHelper){
+
+		try{
+			return getControladorCadastro().inserirAtendimento(atendimento, colecaoAtendimentoDocumentacaoInformadaHelper);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public void inserirDocumentoEletronico(Collection<DocumentoEletronico> colecaoDocumentoEletronico){
+
+		try{
+			getControladorCadastro().inserirDocumentoEletronico(colecaoDocumentoEletronico);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
 	/**
 	 * [UC0313] Manter Cronograma Cobrança
 	 * [SB0002] Excluir Cronograma de Cobrança
@@ -8885,10 +8979,10 @@ public class Fachada {
 	 *            grupos que o usuario faz parte
 	 * @throws ControladorException
 	 */
-	public void inserirUsuario(Usuario usuario, Integer[] idGrupos){
+	public void inserirUsuario(Usuario usuario, Integer[] idGrupos, Collection<UsuarioAcesso> colecaoUsuarioAcesso){
 
 		try{
-			this.getControladorUsuario().inserirUsuario(usuario, idGrupos);
+			this.getControladorUsuario().inserirUsuario(usuario, idGrupos, colecaoUsuarioAcesso);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -8905,10 +8999,21 @@ public class Fachada {
 	 *            grupos que o usuario faz parte
 	 * @throws ControladorException
 	 */
-	public void atualizarUsuario(Usuario usuario, Integer[] idGrupos, String processo, Usuario usuarioLogado){
+	public void atualizarUsuario(Usuario usuario, Integer[] idGrupos, String processo, Usuario usuarioLogado,
+					Collection<UsuarioAcesso> colecaoUsuarioAcesso, String indicadorHorarioAcessoRestrito){
 
 		try{
-			this.getControladorUsuario().atualizarUsuario(usuario, idGrupos, processo, usuarioLogado);
+			this.getControladorUsuario().atualizarUsuario(usuario, idGrupos, processo, usuarioLogado, colecaoUsuarioAcesso,
+							indicadorHorarioAcessoRestrito);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public Collection<UsuarioAcesso> atualizarHorarioAcessoRestrito(Map<String, String[]> mapParametros){
+
+		try{
+			return this.getControladorUsuario().atualizarHorarioAcessoRestrito(mapParametros);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -9136,8 +9241,7 @@ public class Fachada {
 							intervaloQuantidadeItensDocumentosInicial, intervaloQuantidadeItensDocumentosFinal, situacaoComando,
 							indicadorCriterio, idGerenciaRegional, idLocalidadeInicial, idLocalidadeFinal, codigoSetorComercialInicial,
 							codigoSetorComercialFinal, nuQuadraInicial, nuQuadraFinal, idRotaInicial, idRotaFinal, idCliente,
-							idClienteRelacaoTipo, criterioCobranca,
-							unidadeNegocio);
+							idClienteRelacaoTipo, criterioCobranca, unidadeNegocio);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -9525,6 +9629,7 @@ public class Fachada {
 		}
 	}
 
+
 	public Collection gerarRelacaoDebitos(String idImovelCondominio, String idImovelPrincipal, String idNomeConta,
 					String[] idSituacaoLigacaoAgua, String consumoMinimoInicialAgua, String consumoMinimoFinalAgua,
 					String[] idSituacaoLigacaoEsgoto, String consumoMinimoInicialEsgoto, String consumoMinimoFinalEsgoto,
@@ -9542,7 +9647,8 @@ public class Fachada {
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String[] tipoDebito, String valorDebitoInicial,
 					String valorDebitoFinal, String qtdContasInicial, String qtdContasFinal, String referenciaFaturaInicial,
 					String referenciaFaturaFinal, String vencimentoInicial, String vencimentoFinal, String qtdImoveis, String qtdMaiores,
-					String indicadorOrdenacao, String idUnidadeNegocio){
+					String indicadorOrdenacao, String idUnidadeNegocio, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal, String indicadorOpcaoAgrupamento, String indicadorOrdenacaoAscDesc){
 
 		try{
 			return getControladorCobranca().gerarRelacaoDebitos(idImovelCondominio, idImovelPrincipal, idNomeConta, idSituacaoLigacaoAgua,
@@ -9558,13 +9664,34 @@ public class Fachada {
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 							idAreaConstruidaFaixa, tipoDebito, valorDebitoInicial, valorDebitoFinal, qtdContasInicial, qtdContasFinal,
 							referenciaFaturaInicial, referenciaFaturaFinal, vencimentoInicial, vencimentoFinal, qtdImoveis, qtdMaiores,
-							indicadorOrdenacao, idUnidadeNegocio
-
-			);
+							indicadorOrdenacao, idUnidadeNegocio, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal,
+							indicadorOpcaoAgrupamento, indicadorOrdenacaoAscDesc);
 		}catch(ControladorException e){
 			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
 
 		}
+	}
+
+	public List<Object[]> gerarRelatorioContasReceberValoresCorrigidos(Integer matriculaImovel, Integer referencia){
+
+		try{
+			return getControladorCobranca().gerarRelatorioContasReceberValoresCorrigidos(matriculaImovel, referencia);
+		}catch(ControladorException e){
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+
+		}
+
+	}
+
+	public Long quantidadeRegistrosRelatorioContasReceberValoresCorrigidos(Integer matriculaImovel, Integer referencia){
+
+		try{
+			return getControladorCobranca().quantidadeRegistrosRelatorioContasReceberValoresCorrigidos(matriculaImovel, referencia);
+		}catch(ControladorException e){
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+
+		}
+
 	}
 
 	/**
@@ -9719,7 +9846,8 @@ public class Fachada {
 					String municipio, String idTipoMedicao, String indicadorMedicao, String idSubCategoria, String idCategoria,
 					String quantidadeEconomiasInicial, String quantidadeEconomiasFinal, String diaVencimento, String idCliente,
 					String idClienteTipo, String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal,
-					String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa, int anoMesReferencia){
+					String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa, int anoMesReferencia,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal){
 
 		try{
 			return getControladorFaturamento().gerarRelacaoAcompanhamentoFaturamento(idImovelCondominio, idImovelPrincipal, idNomeConta,
@@ -9736,7 +9864,8 @@ public class Fachada {
 							quadraInicial, quadraFinal, loteOrigem, loteDestno, cep, logradouro, bairro, municipio, idTipoMedicao,
 							indicadorMedicao, idSubCategoria, idCategoria, quantidadeEconomiasInicial, quantidadeEconomiasFinal,
 							diaVencimento, idCliente, idClienteTipo, idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal,
-							numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa, anoMesReferencia
+							numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa, anoMesReferencia,
+							consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal
 
 			);
 		}catch(ControladorException e){
@@ -9868,6 +9997,12 @@ public class Fachada {
 		}catch(ControladorException e){
 			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
 		}
+	}
+
+	public Collection<Pagamento> pesquisarPagamentoImovel(String idImovel){
+
+		return this.getControladorArrecadacao().pesquisarPagamentoImovel(idImovel);
+
 	}
 
 	/**
@@ -10097,7 +10232,8 @@ public class Fachada {
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, Integer relatorio,
 					String cdRotaInicial, String cdRotaFinal, String sequencialRotaInicial, String sequencialRotaFinal,
-					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal){
+					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal){
 
 		try{
 			return getControladorImovel().obterQuantidadadeRelacaoImoveisDebitos(idImovelCondominio, idImovelPrincipal,
@@ -10112,7 +10248,8 @@ public class Fachada {
 							idCategoria, quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 							idAreaConstruidaFaixa, idUnidadeNegocio, relatorio, cdRotaInicial, cdRotaFinal, sequencialRotaInicial,
-							sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+							sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
+							consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 		}catch(ControladorException e){
 			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
 		}
@@ -10195,6 +10332,22 @@ public class Fachada {
 
 		try{
 			return this.getControladorCadastro().pesquisarProximoIdEmpresa();
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * Método que retorna o próximo id para cadastrar uma Norma Procedimental.
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 22/09/2014
+	 */
+	public int pesquisarProximoIdNormaProcedimental(){
+
+		try{
+			return this.getControladorCadastro().pesquisarProximoIdNormaProcedimental();
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -10356,7 +10509,7 @@ public class Fachada {
 	 * @param url
 	 * @return
 	 */
-	public String verificarTipoURL(String url){
+	public Map<Integer, String> verificarTipoURL(String url){
 
 		try{
 			return this.getControladorAcesso().verificarTipoURL(url);
@@ -10420,11 +10573,12 @@ public class Fachada {
 	 * @author Rafel Santos
 	 * @date 21/07/2006
 	 */
-	public void iniciarProcessoReajustarTarifaConsumo(Map listaParametrosValoresCategoria, Date dataNovaVigencia, String[] idsRecuperados){
+	public void iniciarProcessoReajustarTarifaConsumo(Map listaParametrosValoresCategoria, Date dataNovaVigencia, String[] idsRecuperados,
+					Usuario usuarioLogado, String descricaoAtoAdministrativo){
 
 		try{
 			this.getControladorFaturamento().iniciarProcessoReajustarTarifaConsumo(listaParametrosValoresCategoria, dataNovaVigencia,
-							idsRecuperados);
+							idsRecuperados, usuarioLogado, descricaoAtoAdministrativo);
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -10511,7 +10665,8 @@ public class Fachada {
 					String idClienteTipo, String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal,
 					String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio,
 					String cdRotaInicial, String cdRotaFinal, String sequencialRotaInicial, String sequencialRotaFinal,
-					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal){
+					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal){
 
 		try{
 
@@ -10530,7 +10685,7 @@ public class Fachada {
 							diaVencimento, idCliente, idClienteTipo, idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal,
 							numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa, idUnidadeNegocio, cdRotaInicial,
 							cdRotaFinal, sequencialRotaInicial, sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial,
-							subloteFinal);
+							subloteFinal, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 		}catch(ControladorException e){
 			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
 
@@ -10762,21 +10917,21 @@ public class Fachada {
 	 */
 	public Collection gerarRelatorioDadosEconomiaImovel(String idImovelCondominio, String idImovelPrincipal,
 					String[] idSituacaoLigacaoAgua, String consumoMinimoInicialAgua, String consumoMinimoFinalAgua,
-					String[] idSituacaoLigacaoEsgoto,
-					String consumoMinimoInicialEsgoto, String consumoMinimoFinalEsgoto, String intervaloValorPercentualEsgotoInicial,
-					String intervaloValorPercentualEsgotoFinal, String intervaloMediaMinimaImovelInicial,
-					String intervaloMediaMinimaImovelFinal, String intervaloMediaMinimaHidrometroInicial,
-					String intervaloMediaMinimaHidrometroFinal, String idImovelPerfil, String idPocoTipo, String idFaturamentoSituacaoTipo,
-					String idCobrancaSituacaoTipo, String idSituacaoEspecialCobranca, String idEloAnormalidade,
-					String areaConstruidaInicial, String areaConstruidaFinal, String idCadastroOcorrencia, String idConsumoTarifa,
-					String idGerenciaRegional, String idLocalidadeInicial, String idLocalidadeFinal, String setorComercialInicial,
-					String setorComercialFinal, String quadraInicial, String quadraFinal, String loteOrigem, String loteDestno, String cep,
-					String logradouro, String bairro, String municipio, String idTipoMedicao, String indicadorMedicao,
-					String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial, String quantidadeEconomiasFinal,
-					String diaVencimento, String idCliente, String idClienteTipo, String idClienteRelacaoTipo, String numeroPontosInicial,
-					String numeroPontosFinal, String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa,
-					String idUnidadeNegocio, String segmentoInicial, String segmentoFinal, String rotaInicial, String rotaFinal,
-					String sequencialRotaInicial, String sequencialRotaFinal, String subloteInicial, String subloteFinal){
+					String[] idSituacaoLigacaoEsgoto, String consumoMinimoInicialEsgoto, String consumoMinimoFinalEsgoto,
+					String intervaloValorPercentualEsgotoInicial, String intervaloValorPercentualEsgotoFinal,
+					String intervaloMediaMinimaImovelInicial, String intervaloMediaMinimaImovelFinal,
+					String intervaloMediaMinimaHidrometroInicial, String intervaloMediaMinimaHidrometroFinal, String idImovelPerfil,
+					String idPocoTipo, String idFaturamentoSituacaoTipo, String idCobrancaSituacaoTipo, String idSituacaoEspecialCobranca,
+					String idEloAnormalidade, String areaConstruidaInicial, String areaConstruidaFinal, String idCadastroOcorrencia,
+					String idConsumoTarifa, String idGerenciaRegional, String idLocalidadeInicial, String idLocalidadeFinal,
+					String setorComercialInicial, String setorComercialFinal, String quadraInicial, String quadraFinal, String loteOrigem,
+					String loteDestno, String cep, String logradouro, String bairro, String municipio, String idTipoMedicao,
+					String indicadorMedicao, String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial,
+					String quantidadeEconomiasFinal, String diaVencimento, String idCliente, String idClienteTipo,
+					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
+					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String segmentoInicial,
+					String segmentoFinal, String rotaInicial, String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal,
+					String subloteInicial, String subloteFinal, String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal){
 
 		try{
 
@@ -10792,7 +10947,8 @@ public class Fachada {
 							quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 							idAreaConstruidaFaixa, idUnidadeNegocio, segmentoInicial, segmentoFinal, rotaInicial, rotaFinal,
-							sequencialRotaInicial, sequencialRotaFinal, subloteInicial, subloteFinal);
+							sequencialRotaInicial, sequencialRotaFinal, subloteInicial, subloteFinal, consumoFixadoEsgotoPocoInicial,
+							consumoFixadoEsgotoPocoFinal);
 
 		}catch(ControladorException e){
 			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
@@ -10815,6 +10971,18 @@ public class Fachada {
 
 		try{
 			this.getControladorAcesso().atualizarOperacao(operacao, colecaoOperacaoTabela, usuarioLogado);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public void atualizarAtendimentoProcedimento(AtendimentoProcedimento atendimentoProcedimento,
+					Collection<AtendProcDocumentoPessoaTipo> colecaoAtendProcDocumentoPessoaTipo,
+					Collection<AtendProcNormaProcedimental> colecaoAtendProcNormaProcedimental, Usuario usuarioLogado){
+
+		try{
+			getControladorCadastro().atualizarAtendimentoProcedimento(atendimentoProcedimento, colecaoAtendProcDocumentoPessoaTipo,
+							colecaoAtendProcNormaProcedimental, usuarioLogado);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -11053,8 +11221,7 @@ public class Fachada {
 
 		try{
 			this.getControladorBatch().inserirProcessoIniciadoFaturamentoComandado(idsFaturamentoAtividadeCronograma,
-							idsFaturamentoSimulacaoComando, dataHoraAgendamento,
-							usuario);
+							idsFaturamentoSimulacaoComando, dataHoraAgendamento, usuario);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -11423,16 +11590,16 @@ public class Fachada {
 	 * @param idImovel
 	 *            -
 	 *            Código do imóvel
-	 * @param idEntidadeBeneficente
+	 * @param idEntidadeBeneficenteContrato
 	 *            -
-	 *            Código da entidade beneficente
+	 *            Código do Contrato da Entidade Beneficente
 	 * @return ImovelDoacao - retorna o imóvel doação correspondente à
 	 *         combinação de imóvel e entidade beneficente
 	 */
-	public ImovelDoacao verificarExistenciaImovelDoacao(Integer idImovel, Integer idEntidadeBeneficente){
+	public ImovelDoacao verificarExistenciaImovelDoacao(Integer idImovel, Integer idEntidadeBeneficenteContrato){
 
 		try{
-			return this.getControladorImovel().verificarExistenciaImovelDoacao(idImovel, idEntidadeBeneficente);
+			return this.getControladorImovel().verificarExistenciaImovelDoacao(idImovel, idEntidadeBeneficenteContrato);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -12029,10 +12196,10 @@ public class Fachada {
 	 * @param equipeComponentes
 	 * @throws ControladorException
 	 */
-	public void validarInsercaoEquipeComponentes(Collection colecaoEquipeComponentes){
+	public void validarInsercaoEquipeComponentes(Collection colecaoEquipeComponentes, Equipe equipe){
 
 		try{
-			this.getControladorOrdemServico().validarInsercaoEquipeComponentes(colecaoEquipeComponentes);
+			this.getControladorOrdemServico().validarInsercaoEquipeComponentes(colecaoEquipeComponentes, equipe);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -12302,6 +12469,23 @@ public class Fachada {
 
 		try{
 			this.getControladorUsuario().removerUsuario(idsUsuario, usuario);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * Ativa/Inativa usuario(s)
+	 * [UC0231] Manter Usuario
+	 * 
+	 * @param idsUsuario
+	 * @param usuario
+	 * @param ativar
+	 */
+	public void ativarInativarUsuario(String[] idsUsuario, Usuario usuario, boolean ativar){
+
+		try{
+			this.getControladorUsuario().ativarInativarUsuario(idsUsuario, usuario, ativar);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -13155,11 +13339,13 @@ public class Fachada {
 	 * @throws ControladorException
 	 */
 
-	public Integer inserirMaterial(String descricao, String descricaoAbreviada, String unidadeMaterial, Usuario usuarioLogado){
+	public Integer inserirMaterial(String descricao, String descricaoAbreviada, String unidadeMaterial, BigDecimal materialValor,
+					Usuario usuarioLogado){
 
 		try{
 
-			return this.getControladorAtendimentoPublico().inserirMaterial(descricao, descricaoAbreviada, unidadeMaterial, usuarioLogado);
+			return this.getControladorAtendimentoPublico().inserirMaterial(descricao, descricaoAbreviada, unidadeMaterial, materialValor,
+							usuarioLogado);
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -14322,6 +14508,22 @@ public class Fachada {
 	}
 
 	/**
+	 * Pesquisar ordem de serviço.
+	 * 
+	 * @author Genival Barbosa
+	 * @date 30/09/2014
+	 * @return Ordem Servico
+	 */
+	public OrdemServico pesquisarOrdemServicoPrincipal(Integer idOrdemServico) throws ControladorException{
+
+		try{
+			return this.getControladorOrdemServico().pesquisarOrdemServicoPrincipal(idOrdemServico);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
 	 * [UC0450] Pesquisar Ordem de Servico
 	 * [SB001] Selecionar Ordem de Servico por Situação [SB002] Selecionar Ordem
 	 * de Servico por Situação da Programação [SB003] Selecionar Ordem de
@@ -14793,12 +14995,13 @@ public class Fachada {
 	 */
 	public Integer gerarOrdemServico(OrdemServico ordemServico, Usuario usuario,
 					Map<Integer, ServicoAssociadoAutorizacaoHelper> mapServicosAutorizados, Integer idLocalidade, Integer idSetorComercial,
-					Integer idBairro, Integer idUnidadeOrigem, Integer idUnidadeDestino, String parecerUnidadeDestino)
-					throws FachadaException{
+					Integer idBairro, Integer idUnidadeOrigem, Integer idUnidadeDestino, String parecerUnidadeDestino,
+					String idOSPrincipal, Short qtdPrestacaoGuiaPagamento) throws FachadaException{
 
 		try{
 			return this.getControladorOrdemServico().gerarOrdemServico(ordemServico, usuario, mapServicosAutorizados, idLocalidade,
-							idSetorComercial, idBairro, idUnidadeOrigem, idUnidadeDestino, parecerUnidadeDestino);
+							idSetorComercial, idBairro, idUnidadeOrigem, idUnidadeDestino, parecerUnidadeDestino, idOSPrincipal, false,
+							qtdPrestacaoGuiaPagamento);
 		}catch(ControladorException e){
 			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
 		}
@@ -15061,6 +15264,27 @@ public class Fachada {
 	}
 
 	/**
+	 * [UC0435] Encerrar Registro de Atendimento
+	 * 
+	 * @author Leonardo Regis
+	 * @date 26/08/2006
+	 * @param registroAtendimento
+	 * @param registroAtendimentoUnidade
+	 * @param usuarioLogado
+	 * @throws ControladorException
+	 */
+	public void encerrarRegistroAtendimento(Collection<RegistroAtendimento> colecaoRegistroAtendimento,
+					Collection<RegistroAtendimentoUnidade> colecaoRegistroAtendimentoUnidade, Usuario usuarioLogado){
+
+		try{
+			this.getControladorRegistroAtendimento().encerrarRegistroAtendimento(colecaoRegistroAtendimento,
+							colecaoRegistroAtendimentoUnidade, usuarioLogado);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
 	 * [UC0366] Inserir Registro de Atendimento
 	 * [SB0028] é Inclui Registro de Atendimento
 	 * 
@@ -15083,7 +15307,7 @@ public class Fachada {
 					BigDecimal coordenadaNorte, BigDecimal coordenadaLeste, Integer sequenceRA, Integer idRaReiterada, String tipoCliente,
 					String numeroCpf, String numeroRg, String orgaoExpedidorRg, String unidadeFederacaoRG, String numeroCnpj,
 					Collection<Conta> colecaoContas, String identificadores, ContaMotivoRevisao contaMotivoRevisao,
-					String indicadorProcessoAdmJud, String numeroProcessoAgencia){
+					String indicadorProcessoAdmJud, String numeroProcessoAgencia, Short quantidadePrestacoesGuiaPagamento){
 
 		try{
 			return this.getControladorRegistroAtendimento().inserirRegistroAtendimento(indicadorAtendimentoOnLine, dataAtendimento,
@@ -15095,7 +15319,8 @@ public class Fachada {
 							idUnidadeSolicitante, idFuncionario, colecaoFone, colecaoEnderecoSolicitante, idUnidadeDestino,
 							parecerUnidadeDestino, colecaoIdServicoTipo, numeroRAManual, idRAJAGerado, coordenadaNorte, coordenadaLeste,
 							sequenceRA, idRaReiterada, tipoCliente, numeroCpf, numeroRg, orgaoExpedidorRg, unidadeFederacaoRG, numeroCnpj,
-							colecaoContas, identificadores, contaMotivoRevisao, indicadorProcessoAdmJud, numeroProcessoAgencia);
+							colecaoContas, identificadores, contaMotivoRevisao, indicadorProcessoAdmJud, numeroProcessoAgencia,
+							quantidadePrestacoesGuiaPagamento);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -16427,12 +16652,13 @@ public class Fachada {
 					Collection colecaoContas, Collection colecaoGuiasPagamento, Collection colecaoDebitosACobrar,
 					BigDecimal valorAcrescimosImpontualidade, BigDecimal valorDesconto, BigDecimal valorDocumento,
 					Collection<CreditoARealizar> colecaoCreditoARealizar, Cliente cliente,
-					NegociacaoOpcoesParcelamentoHelper opcoesParcelamento, Integer idResolucaoDiretoria){
+					NegociacaoOpcoesParcelamentoHelper opcoesParcelamento, Integer idResolucaoDiretoria,
+					Map<Integer, BigDecimal> mapProcessosExecFiscal){
 
 		try{
 			return this.getControladorCobranca().gerarEmitirExtratoDebito(imovel, indicadorGeracaoTaxaCobranca, colecaoContas,
 							colecaoGuiasPagamento, colecaoDebitosACobrar, valorAcrescimosImpontualidade, valorDesconto, valorDocumento,
-							colecaoCreditoARealizar, cliente, opcoesParcelamento, idResolucaoDiretoria);
+							colecaoCreditoARealizar, cliente, opcoesParcelamento, idResolucaoDiretoria, mapProcessosExecFiscal);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -17647,11 +17873,11 @@ public class Fachada {
 	 */
 
 	public void atualizarOrdemServicoProgramacaoSituacaoOs(Integer numeroOS, Date dataRoteiro, short situacaoFechamento,
-					Integer idOsProgramNaoEncerMotivo){
+					Integer idOsProgramNaoEncerMotivo, Date dataHoraVisita, Usuario usuario){
 
 		try{
 			this.getControladorOrdemServico().atualizarOrdemServicoProgramacaoSituacaoOs(numeroOS, dataRoteiro, situacaoFechamento,
-							idOsProgramNaoEncerMotivo);
+							idOsProgramNaoEncerMotivo, dataHoraVisita, usuario);
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -17818,13 +18044,16 @@ public class Fachada {
 	public void validarCamposEncerrarOS(String indicadorExecucao, String numeroOS, String motivoEncerramento, String dataEncerramento,
 					String tipoServicoReferenciaId, String indicadorPavimento, String pavimento, String idTipoRetornoOSReferida,
 					String indicadorDeferimento, String indicadorTrocaServicoTipo, String idServicoTipo, String dataRoteiro, String idRA,
-					String indicadorVistoriaServicoTipo, String codigoRetornoVistoriaOs, String horaEncerramento, Usuario usuarioLogado){
+					String indicadorVistoriaServicoTipo, String codigoRetornoVistoriaOs, String horaEncerramento, Usuario usuarioLogado,
+					String indicadorAfericaoHidrometro, String idHidrometroCondicao, String indicadorResultado, String idFuncionario,
+					String indicadorClienteAcompanhou){
 
 		try{
 			this.getControladorOrdemServico().validarCamposEncerrarOS(indicadorExecucao, numeroOS, motivoEncerramento, dataEncerramento,
 							tipoServicoReferenciaId, indicadorPavimento, pavimento, idTipoRetornoOSReferida, indicadorDeferimento,
 							indicadorTrocaServicoTipo, idServicoTipo, dataRoteiro, idRA, indicadorVistoriaServicoTipo,
-							codigoRetornoVistoriaOs, horaEncerramento, usuarioLogado);
+							codigoRetornoVistoriaOs, horaEncerramento, usuarioLogado, indicadorAfericaoHidrometro, idHidrometroCondicao,
+							indicadorResultado, idFuncionario, indicadorClienteAcompanhou);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -18070,6 +18299,11 @@ public class Fachada {
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
+	}
+
+	public Collection<PagamentoHistorico> pesquisarPagamentoHistoricoImovel(String idImovel){
+
+		return this.getControladorArrecadacao().pesquisarPagamentoHistoricoImovel(idImovel);
 	}
 
 	/**
@@ -19422,11 +19656,11 @@ public class Fachada {
 	 * @return Collection
 	 */
 	public Collection pesquisarEquipes(String idEquipe, String nome, String placa, String cargaTrabalho, String idUnidade,
-					String idFuncionario, String idPerfilServico, String indicadorUso, Integer numeroPagina){
+					String idFuncionario, String idPerfilServico, String indicadorUso, Integer idEquipeTipo, Integer numeroPagina){
 
 		try{
 			return this.getControladorOrdemServico().pesquisarEquipes(idEquipe, nome, placa, cargaTrabalho, idUnidade, idFuncionario,
-							idPerfilServico, indicadorUso, numeroPagina);
+							idPerfilServico, indicadorUso, idEquipeTipo, numeroPagina);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -19449,11 +19683,11 @@ public class Fachada {
 	 * @return int
 	 */
 	public int pesquisarEquipesCount(String idEquipe, String nome, String placa, String cargaTrabalho, String idUnidade,
-					String idFuncionario, String idPerfilServico, String indicadorUso){
+					String idFuncionario, String idPerfilServico, String indicadorUso, Integer idEquipeTipo){
 
 		try{
 			return this.getControladorOrdemServico().pesquisarEquipesCount(idEquipe, nome, placa, cargaTrabalho, idUnidade, idFuncionario,
-							idPerfilServico, indicadorUso);
+							idPerfilServico, indicadorUso, idEquipeTipo);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -20271,12 +20505,12 @@ public class Fachada {
 	public Collection filtrarCliente(String codigo, String cpf, String rg, String cnpj, String nome, String nomeMae, String cep,
 					String idMunicipio, String idBairro, String idLogradouro, String indicadorUso, String tipoPesquisa,
 					String tipoPesquisaNomeMae, String clienteTipo, Integer numeroPagina, String inscricaoEstadual,
-					String indicadorContaBraille){
+					String indicadorContaBraille, String documentoValidado, String numeroBeneficio){
 
 		try{
 			return this.getControladorCliente().filtrarCliente(codigo, cpf, rg, cnpj, nome, nomeMae, cep, idMunicipio, idBairro,
 							idLogradouro, indicadorUso, tipoPesquisa, tipoPesquisaNomeMae, clienteTipo, numeroPagina, inscricaoEstadual,
-							indicadorContaBraille);
+							indicadorContaBraille, documentoValidado, numeroBeneficio);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -20296,12 +20530,13 @@ public class Fachada {
 	 */
 	public Object filtrarQuantidadeCliente(String codigo, String cpf, String rg, String cnpj, String nome, String nomeMae, String cep,
 					String idMunicipio, String idBairro, String idLogradouro, String indicadorUso, String tipoPesquisa,
-					String tipoPesquisaNomeMae, String clienteTipo, String inscricaoEstadual, String indicadorContaBraille){
+					String tipoPesquisaNomeMae, String clienteTipo, String inscricaoEstadual, String indicadorContaBraille,
+					String documentoValidado, String numeroBeneficio){
 
 		try{
 			return this.getControladorCliente().filtrarQuantidadeCliente(codigo, cpf, rg, cnpj, nome, nomeMae, cep, idMunicipio, idBairro,
 							idLogradouro, indicadorUso, tipoPesquisa, tipoPesquisaNomeMae, clienteTipo, inscricaoEstadual,
-							indicadorContaBraille);
+							indicadorContaBraille, documentoValidado, numeroBeneficio);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -20401,10 +20636,9 @@ public class Fachada {
 	 * @throws ErroRepositorioException
 	 */
 	public Collection<FiltrarMovimentoArrecadadoresHelper> filtrarMovimentoArrecadadorParaPaginacao(String codigoBanco,
-					String codigoRemessa,
-					String descricaoIdentificacaoServico, String idImovel, String numeroSequencialArquivo, Date dataGeracaoInicio,
-					Date dataGeracaoFim, Date ultimaAlteracaoInicio, Date ultimaAlteracaoFim, String descricaoOcorrencia,
-					String indicadorAceitacao, Integer numeroPagina, String idConcessionaria){
+					String codigoRemessa, String descricaoIdentificacaoServico, String idImovel, String numeroSequencialArquivo,
+					Date dataGeracaoInicio, Date dataGeracaoFim, Date ultimaAlteracaoInicio, Date ultimaAlteracaoFim,
+					String descricaoOcorrencia, String indicadorAceitacao, Integer numeroPagina, String idConcessionaria){
 
 		try{
 			return this.getControladorArrecadacao().filtrarMovimentoArrecadadorParaPaginacao(codigoBanco, codigoRemessa,
@@ -20812,12 +21046,13 @@ public class Fachada {
 
 	public Collection pesquisarImoveisTarifaConsumo(String idLocalidadeInicial, String idLocalidadeFinal,
 					String codigoSetorComercialInicial, String codigoSetorComercialFinal, String quadraInicial, String quadraFinal,
-					String loteInicial, String loteFinal, String subLoteInicial, String subLoteFinal, String idTarifaAnterior){
+					String loteInicial, String loteFinal, String subLoteInicial, String subLoteFinal, String idTarifaAnterior,
+					String idsCategorias, String idsSubcategorias){
 
 		try{
 			return this.getControladorImovel().pesquisarImoveisTarifaConsumo(idLocalidadeInicial, idLocalidadeFinal,
 							codigoSetorComercialInicial, codigoSetorComercialFinal, quadraInicial, quadraFinal, loteInicial, loteFinal,
-							subLoteInicial, subLoteFinal, idTarifaAnterior);
+							subLoteInicial, subLoteFinal, idTarifaAnterior, idsCategorias, idsSubcategorias);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -23551,10 +23786,12 @@ public class Fachada {
 	 * @return
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarConsumoTarifaRelatorio(String descricao, Date dataVigenciaInicial, Date dataVigenciaFinal){
+	public Collection pesquisarConsumoTarifaRelatorio(String descricao, Date dataVigenciaInicial, Date dataVigenciaFinal,
+					String descricaoAtoAdministrativo){
 
 		try{
-			return getControladorFaturamento().pesquisarConsumoTarifaRelatorio(descricao, dataVigenciaInicial, dataVigenciaFinal);
+			return getControladorFaturamento().pesquisarConsumoTarifaRelatorio(descricao, dataVigenciaInicial, dataVigenciaFinal,
+							descricaoAtoAdministrativo);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -23649,12 +23886,12 @@ public class Fachada {
 	 * @throws ErroRepositorioException
 	 */
 	public Integer obterContasConjuntoImoveis(Integer anoMes, Collection idsImovel, Integer codigoCliente, Integer relacaoTipo,
-					Date dataVencimentoContaInicio, Date dataVencimentoContaFim, Integer idGrupoFaturamento, Integer anoMesFim,
+					Date dataVencimentoContaInicio, Date dataVencimentoContaFim, Collection colecaoFaturamentoGrupo, Integer anoMesFim,
 					String inContasRevisao, Integer[] motivosRevisaoDisponiveis){
 
 		try{
 			return this.getControladorFaturamento().obterContasConjuntoImoveis(anoMes, idsImovel, codigoCliente, relacaoTipo,
-							dataVencimentoContaInicio, dataVencimentoContaFim, idGrupoFaturamento, anoMesFim, inContasRevisao,
+							dataVencimentoContaInicio, dataVencimentoContaFim, colecaoFaturamentoGrupo, anoMesFim, inContasRevisao,
 							motivosRevisaoDisponiveis);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -23671,12 +23908,12 @@ public class Fachada {
 	 * @throws ErroRepositorioException
 	 */
 	public Collection recuperarContasConjuntoImoveis(Integer anoMes, Collection idsImovel, Integer codigoCliente, Integer relacaoTipo,
-					Date dataVencimentoContaInicio, Date dataVencimentoContaFim, Integer idGrupoFaturamento, Integer anoMesFinal,
+					Date dataVencimentoContaInicio, Date dataVencimentoContaFim, Collection colecaoFaturamentoGrupo, Integer anoMesFinal,
 					String inContasRevisao, Integer[] motivosRevisaoDisponiveis){
 
 		try{
 			return this.getControladorFaturamento().recuperarContasConjuntoImoveis(anoMes, idsImovel, codigoCliente, relacaoTipo,
-							dataVencimentoContaInicio, dataVencimentoContaFim, idGrupoFaturamento, anoMesFinal, inContasRevisao,
+							dataVencimentoContaInicio, dataVencimentoContaFim, colecaoFaturamentoGrupo, anoMesFinal, inContasRevisao,
 							motivosRevisaoDisponiveis);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -24429,11 +24666,13 @@ public class Fachada {
 	 * @param idImovelOrigem
 	 * @exception ControladorException
 	 */
-	public ObterDebitoImovelOuClienteHelper apresentarDebitoCreditoImovelOrigem(Integer idImovelOrigem){
+	public ObterDebitoImovelOuClienteHelper apresentarDebitoCreditoImovelOrigem(Integer idImovelOrigem, Integer idClienteOrigem,
+					Integer idClienteRelacaoOrigem){
 
 		try{
 
-			return this.getControladorCobranca().apresentarDebitoCreditoImovelOrigem(idImovelOrigem);
+			return this.getControladorCobranca().apresentarDebitoCreditoImovelOrigem(idImovelOrigem, idClienteOrigem,
+							idClienteRelacaoOrigem);
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -24528,7 +24767,8 @@ public class Fachada {
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String rotaInicial,
 					String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal, Short tipoEmpresa, String indicadorOrdenacao){
+					String segmentoFinal, String subloteInicial, String subloteFinal, Short tipoEmpresa, String indicadorOrdenacao,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal){
 
 		try{
 
@@ -24548,7 +24788,7 @@ public class Fachada {
 							diaVencimento, idCliente, idClienteTipo, idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal,
 							numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa, idUnidadeNegocio, rotaInicial, rotaFinal,
 							sequencialRotaInicial, sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
-							tipoEmpresa, indicadorOrdenacao);
+							tipoEmpresa, indicadorOrdenacao, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 		}catch(ControladorException e){
 			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
 
@@ -24614,14 +24854,39 @@ public class Fachada {
 	 * @param colecaoGuiasPagamento
 	 * @throws ControladorException
 	 */
-	public void transferirDebitosCreditos(Integer idImovelDestino, Collection colecaoContas, Collection colecaoDebitosACobrar,
-					Collection colecaoCreditosARealizar, Collection colecaoGuiasPagamento, Usuario usuarioLogado,
+	public Integer transferirDebitosCreditos(Integer idImovelOrigem, Integer idImovelDestino, Collection<Conta> colecaoContas,
+					Collection<DebitoACobrar> colecaoDebitosACobrar, Collection<CreditoARealizar> colecaoCreditosARealizar,
+					Collection<GuiaPagamento> colecaoGuiasPagamento, Usuario usuarioLogado,
 					Integer idRegistroAtendimento, String identificadoresConta){
 
 		try{
 
-			this.getControladorCobranca().transferirDebitosCreditos(idImovelDestino, colecaoContas, colecaoDebitosACobrar,
+			return this.getControladorCobranca().transferirDebitosCreditos(idImovelOrigem, idImovelDestino, colecaoContas,
+							colecaoDebitosACobrar,
 							colecaoCreditosARealizar, colecaoGuiasPagamento, usuarioLogado, idRegistroAtendimento, identificadoresConta);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * [UC0609] Transferência de Débitos/Créditos
+	 * [SB00002] Transferência dos Débitos/Créditos selecionados para o imóvel
+	 * destino
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 19/09/2014
+	 */
+	public Integer transferirDebitosCreditosCliente(Integer idRegistroAtendimento, Integer idImovelOrigem, List<Integer> idClienteOrigem,
+					List<Integer> idRelacaoClienteOrigem, Integer idClienteDestino, List<String> idsContas, List<String> idsDebitosACobrar,
+					List<String> idsCreditosARealizar, List<String> idsGuiasPagamento, Usuario usuarioLogado){
+
+		try{
+
+			return this.getControladorCobranca().transferirDebitosCreditosCliente(idRegistroAtendimento, idImovelOrigem, idClienteOrigem,
+							idRelacaoClienteOrigem, idClienteDestino, idsContas, idsDebitosACobrar, idsCreditosARealizar,
+							idsGuiasPagamento, usuarioLogado);
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -24762,6 +25027,20 @@ public class Fachada {
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
 	}
+
+	// Relatorio Analitico de Contas
+
+	public Collection<RelatorioAnaliticoContasHelper> pesquisarDadosRelatorioAnaliticoContas(Integer idGerenciaRegional,
+					Integer idLocalidade, Integer idCategoria, Integer idCliente, Integer IdImovel, Integer idSituacao,
+					Integer motivoRetificacao, Integer referencia, Integer faturamentoGrupo, Integer setorComercial, Integer quadra){
+
+		try{
+			return this.getControladorFaturamento().pesquisarDadosRelatorioAnaliticoContas(idGerenciaRegional, idLocalidade, idCategoria,
+							idCliente, IdImovel, idSituacao, motivoRetificacao, referencia, faturamentoGrupo, setorComercial, quadra);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	};
 
 	/**
 	 * Pesquisa os dados necessário para a geração do relatório resumido
@@ -25185,10 +25464,10 @@ public class Fachada {
 	 * @param idFaturamentoGrupo
 	 * @return
 	 */
-	public Date obterDataVencimentoGrupo(Integer idFaturamentoGrupo){
+	public Date obterDataVencimentoGrupo(Integer idFaturamentoGrupo, Integer anoMesReferencia){
 
 		try{
-			return this.getControladorFaturamento().obterDataVencimentoGrupo(idFaturamentoGrupo);
+			return this.getControladorFaturamento().obterDataVencimentoGrupo(idFaturamentoGrupo, anoMesReferencia);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -25281,7 +25560,8 @@ public class Fachada {
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String rotaInicial,
 					String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal, String indicadorOrdenacao){
+					String segmentoFinal, String subloteInicial, String subloteFinal, String indicadorOrdenacao,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal){
 
 		try{
 			return getControladorImovel().gerarRelatorioCadastroConsumidoresInscricao(idImovelCondominio, idImovelPrincipal,
@@ -25300,7 +25580,7 @@ public class Fachada {
 							diaVencimento, idCliente, idClienteTipo, idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal,
 							numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa, idUnidadeNegocio, rotaInicial, rotaFinal,
 							sequencialRotaInicial, sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
-							indicadorOrdenacao);
+							indicadorOrdenacao, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 		}catch(ControladorException e){
 			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
 
@@ -26167,26 +26447,6 @@ public class Fachada {
 	}
 
 	/**
-	 * [UC0155] Encerrar Faturamento do Mês
-	 * Para cada conta transferida para o histórico, atualiza o indicador de que
-	 * a conta está no histórico na tabela ContaGeral.
-	 * 
-	 * @author Pedro Alexandre
-	 * @date 11/10/2006
-	 * @param colecaoContas
-	 * @throws ControladorException
-	 */
-	public void atualizarIndicadorContaNoHistorico(Collection colecaoContas){
-
-		try{
-			this.getControladorFaturamento().atualizarIndicadorContaNoHistorico(colecaoContas);
-
-		}catch(ControladorException ex){
-			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
-		}
-	}
-
-	/**
 	 * Alterar Vencimento do Conjunto de Conta
 	 * 
 	 * @author Raphael Rossiter
@@ -26234,7 +26494,7 @@ public class Fachada {
 	 * @date 21/08/2007
 	 * @throws ControladorException
 	 */
-	public Collection pesquisarConjuntoContaEmitir2Via(Integer idGrupoFaturamento, Integer anoMes, Date dataVencimentoContaInicio,
+	public Collection pesquisarConjuntoContaEmitir2Via(String idGrupoFaturamento, Integer anoMes, Date dataVencimentoContaInicio,
 					Date dataVencimentoContaFim, Integer anoMesFim){
 
 		try{
@@ -26256,11 +26516,12 @@ public class Fachada {
 	 * @param idImovel
 	 * @exception ControladorException
 	 */
-	public ObterDebitoImovelOuClienteHelper apresentarDebitoCreditoImovelExtratoDebito(Integer idImovel, boolean indicadorParcelamento,
-					Short multa, Short jurosMora, Short atualizacaoTarifaria){
+	public ObterDebitoImovelOuClienteHelper apresentarDebitoCreditoImovelExtratoDebito(Integer idImovel, Integer idClienteDebito,
+					Integer idRelacaoClienteDebito, boolean indicadorParcelamento, Short multa, Short jurosMora, Short atualizacaoTarifaria){
 
 		try{
-			return this.getControladorCobranca().apresentarDebitoCreditoImovelExtratoDebito(idImovel, indicadorParcelamento, multa, jurosMora, atualizacaoTarifaria);
+			return this.getControladorCobranca().apresentarDebitoCreditoImovelExtratoDebito(idImovel, idClienteDebito,
+							idRelacaoClienteDebito, indicadorParcelamento, multa, jurosMora, atualizacaoTarifaria);
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -26410,32 +26671,6 @@ public class Fachada {
 
 		try{
 			return getControladorEndereco().pesquisarEnderecoAbreviadoCAER(idImovel);
-		}catch(ControladorException e){
-			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
-
-		}
-	}
-
-	/**
-	 * [UC00082] Registrar Leituras e Anormalidades
-	 * 
-	 * @author Sávio Luiz
-	 * @date 29/08/2007
-	 * @author eduardo henrique
-	 * @date 10/12/2008
-	 *       Inclusão do ano/mês referência na consulta dos Movimentos que serão processados.
-	 * @param idGrupoFaturamento
-	 * @param anoMesReferencia
-	 * @throws ErroRepositorioException
-	 */
-	public Collection<MedicaoHistorico> criarMedicoesHistoricoRegistrarLeituraAnormalidade(Integer idGrupoFaturamento,
-					Integer anoMesReferencia, Collection<Rota> colecaoRota){
-
-		try{
-
-			return getControladorMicromedicao().criarMedicoesHistoricoRegistrarLeituraAnormalidade(idGrupoFaturamento, anoMesReferencia,
-							colecaoRota);
-
 		}catch(ControladorException e){
 			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
 
@@ -27063,8 +27298,7 @@ public class Fachada {
 	 * @throws ControladorException
 	 */
 	public Integer inserirPagamentos(Collection<Pagamento> colecaoPagamento, Usuario usuarioLogado, AvisoBancario avisoBancario,
-					boolean usuarioConfirmou)
-					throws InserirPagamentoException{
+					boolean usuarioConfirmou) throws InserirPagamentoException{
 
 		try{
 
@@ -28754,6 +28988,7 @@ public class Fachada {
 		}
 
 	}
+
 	//
 	// /**
 	// * Atualizar Cobrança Contrato
@@ -28828,24 +29063,6 @@ public class Fachada {
 
 		try{
 			return getControladorArrecadacao().pesquisarIdDaContaGeralNoPagamento(idPagamento);
-		}catch(ControladorException ex){
-			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
-		}
-	}
-
-	/**
-	 * Consultar comentários do imóvel.
-	 * 
-	 * @author Virgínia Melo
-	 * @date 01/02/2009
-	 * @param idImovel
-	 *            - id do imóvel
-	 * @return coleção com os comentários do imóvel.
-	 */
-	public Collection consultarImovelComentario(Integer idImovel){
-
-		try{
-			return this.getControladorRegistroAtendimento().consultarImovelComentario(idImovel);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -28944,8 +29161,7 @@ public class Fachada {
 	 * @throws PCGException
 	 *             Caso ocorra algum erro na invocação do método.
 	 */
-	public void alterarParametroSistema(ParametroSistema parametroSistema, Usuario usuarioLogado)
-					throws PCGException{
+	public void alterarParametroSistema(ParametroSistema parametroSistema, Usuario usuarioLogado) throws PCGException{
 
 		try{
 			this.getControladorParametroSistema().atualizarParametroSistema(parametroSistema, usuarioLogado);
@@ -32847,10 +33063,12 @@ public class Fachada {
 	 * @return
 	 * @throws ControladorException
 	 */
-	public Collection<UnidadeOrganizacional> obterUnidadeDestinoPorEspecificacao(EspecificacaoTramite especificacaoTramite){
+	public Collection<UnidadeOrganizacional> obterUnidadeDestinoPorEspecificacao(EspecificacaoTramite especificacaoTramite,
+					boolean checarIndicadorPrimeiroTramite){
 
 		try{
-			return this.getControladorRegistroAtendimento().obterUnidadeDestinoPorEspecificacao(especificacaoTramite);
+			return this.getControladorRegistroAtendimento().obterUnidadeDestinoPorEspecificacao(especificacaoTramite,
+							checarIndicadorPrimeiroTramite);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -33259,7 +33477,8 @@ public class Fachada {
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String rotaInicial,
 					String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal){
+					String segmentoFinal, String subloteInicial, String subloteFinal, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal){
 
 		try{
 
@@ -33275,7 +33494,8 @@ public class Fachada {
 							idCategoria, quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 							idAreaConstruidaFaixa, idUnidadeNegocio, rotaInicial, rotaFinal, sequencialRotaInicial, sequencialRotaFinal,
-							segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+							segmentoInicial, segmentoFinal, subloteInicial, subloteFinal, consumoFixadoEsgotoPocoInicial,
+							consumoFixadoEsgotoPocoFinal);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -33490,7 +33710,6 @@ public class Fachada {
 		}
 	}
 
-
 	public void inserirParametroSistemaValor(ParametroSistemaValor paramValor, Usuario usuarioLogado){
 
 		try{
@@ -33500,7 +33719,6 @@ public class Fachada {
 		}
 	}
 
-
 	public void excluirParametroSistemaValor(ParametroSistemaValor paramValor, Usuario usuarioLogado){
 
 		try{
@@ -33509,7 +33727,6 @@ public class Fachada {
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
 	}
-
 
 	public List<ParametroSistemaValor> obterParametroSistemaValor(ParametroSistema paramSist){
 
@@ -33581,6 +33798,7 @@ public class Fachada {
 	 * @date 06/07/2011
 	 */
 	public Collection<LancamentoContabilSinteticoConsultaHelper> consultarLancamentoContabilSintetico(Map<String, Object> filtro){
+
 		try{
 
 			return getControladorContabil().consultarLancamentoContabilSintetico(filtro);
@@ -34091,14 +34309,15 @@ public class Fachada {
 					BigDecimal valorDebitosACobrar, BigDecimal valorAcrescimosImpontualidade, BigDecimal valorCreditos,
 					BigDecimal valorDesconto, BigDecimal valorDocumento, Usuario usuario, String inscricao, String nomeUsuario,
 					String matricula, String enderecoImovel, String quantidadeParcelas, String mensagemPagamentoAVista,
-					String quantidadeParcelasDebitos, Integer quantidadeDebitoACobrar, Integer quantidadeParcelamento){
+					String quantidadeParcelasDebitos, Integer quantidadeDebitoACobrar, Integer quantidadeParcelamento,
+					BigDecimal valorTotalSucumbencia){
 
 		try{
 
 			return this.getControladorCobranca().obterRelatorioExtratoDebito(extratoDebitoRelatorioHelper, imovel, valorDebitosACobrar,
 							valorAcrescimosImpontualidade, valorCreditos, valorDesconto, valorDocumento, usuario, inscricao, nomeUsuario,
 							matricula, enderecoImovel, quantidadeParcelas, mensagemPagamentoAVista, quantidadeParcelasDebitos,
-							quantidadeDebitoACobrar, quantidadeParcelamento);
+							quantidadeDebitoACobrar, quantidadeParcelamento, valorTotalSucumbencia);
 		}catch(ControladorException ex){
 
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -34178,19 +34397,6 @@ public class Fachada {
 							valorDebitoTotalAtualizado, negociacaoValorDescontoAntiguidade, negociacaoValorDescontoInatividade,
 							negociacaoNumeroMesesEntreParcelas, negociacaoNumeroParcelasALancar, negociacaoNumeroMesesInicioCobranca,
 							negociacaoNumeroDiasVencimentoDaEntrada, negociacaoTaxaJuros, negociacaoIdRD);
-		}catch(ControladorException ex){
-			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
-		}
-
-	}
-
-	/**
-	 * Método extraído da classe GerarRelatorioExtratoDebitoAction
-	 */
-	public Collection obterColecaoDebitosACobrarDoParcelamento(Collection<DebitoACobrar> colecaoDebitosACobrar) throws FachadaException{
-
-		try{
-			return this.getControladorCobranca().obterColecaoDebitosACobrarDoParcelamento(colecaoDebitosACobrar);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -34283,6 +34489,24 @@ public class Fachada {
 		try{
 
 			return getControladorFaturamento().pesquisarGuiasPagamentoPrestacaoFiltrar(guiaPagamentoId, idConsulta);
+		}catch(ControladorException ex){
+
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * Pesquisar Prestações de Guia de Pagamento
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 06/05/2013
+	 */
+	public Collection<GuiaPagamentoPrestacaoHelper> pesquisarGuiasPagamentoPrestacaoPorParcelamento(Integer parcelamentoId){
+
+		try{
+
+			return getControladorFaturamento().pesquisarGuiasPagamentoPrestacaoPorParcelamento(parcelamentoId);
+
 		}catch(ControladorException ex){
 
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -35065,8 +35289,7 @@ public class Fachada {
 	 * @date 16/03/2012, 20/05/2012
 	 */
 
-	public CobrancaAcaoIndividualHelper gerarEmitirAvisoDeCorteOrdemDeCorteIndividual(Integer idImovel,
-					BigDecimal valorDocumento,
+	public CobrancaAcaoIndividualHelper gerarEmitirAvisoDeCorteOrdemDeCorteIndividual(Integer idImovel, BigDecimal valorDocumento,
 					Collection<ContaValoresHelper> colecaoContas, Collection<DebitoACobrar> colecaoDebitosACobrar,
 					Collection<GuiaPagamentoValoresHelper> colecaoGuiasPagamento, Collection<CreditoARealizar> colecaoCreditoARealizar,
 					Usuario usuario, Collection<CobrancaAcaoIndividualHelper> colecaoCobrancaAcaoHelper, Short indicadorAtividade){
@@ -36075,6 +36298,27 @@ public class Fachada {
 	}
 
 	/**
+	 * Verifica se um cliente tem relação ativa com o imóvel representado
+	 * pela matrícula.
+	 * 
+	 * @author Yara Souza
+	 * @param matriculaImovel
+	 * @exception ControladorException
+	 *                se o cliente nao tiver relações com o imóvel.
+	 */
+	public void validarPermissaoClienteImovel(String matriculaImovel){
+
+		try{
+			ServiceLocator.getInstancia().getControladorImovel().validarPermissaoClienteImovel(matriculaImovel);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}catch(NegocioException ex){
+			throw new FachadaException(ex.getMessage(), ex);
+		}
+
+	}
+
+	/**
 	 * Consulta o historico de mediçoes de um imovel.
 	 * 
 	 * @author Marlos Ribeiro
@@ -36243,7 +36487,8 @@ public class Fachada {
 					String municipio, String idTipoMedicao, String indicadorMedicao, String idSubCategoria, String idCategoria,
 					String quantidadeEconomiasInicial, String quantidadeEconomiasFinal, String diaVencimento, String idCliente,
 					String idClienteTipo, String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal,
-					String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa, int anoMesReferencia
+					String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa, int anoMesReferencia,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal
 
 	){
 
@@ -36259,7 +36504,7 @@ public class Fachada {
 							loteOrigem, loteDestno, cep, logradouro, bairro, municipio, idTipoMedicao, indicadorMedicao, idSubCategoria,
 							idCategoria, quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
-							idAreaConstruidaFaixa, anoMesReferencia);
+							idAreaConstruidaFaixa, anoMesReferencia, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -36881,8 +37126,7 @@ public class Fachada {
 		try{
 
 			return this.getControladorCobranca().calcularAcrescimoPorImpontualidadeBancoDeDados(anoMesReferenciaDebito, dataVencimento,
-							dataPagamento, valorDebito, valorMultasCobradas, indicadorMulta, anoMesArrecadacao, idConta, null, null
-,
+							dataPagamento, valorDebito, valorMultasCobradas, indicadorMulta, anoMesArrecadacao, idConta, null, null,
 							indicadorMultaAcrescimo, indicadorJurosMora, indicadorAtualizaoMonetaria);
 
 		}catch(ControladorException ex){
@@ -37002,6 +37246,21 @@ public class Fachada {
 
 		try{
 			return this.getControladorCobranca().pesquisarResolucaoDiretoriaParametrosPagamentoAVista(idResolucaoDiretoria, dataPagamento);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * Pesquisar Resolução de Diretoria Parâmetros Pagamento À Vista
+	 * 
+	 * @author Hebert Falcão
+	 * @date 31/10/2012
+	 */
+	public Collection pesquisarResolucaoDiretoriaParametrosPagamentoAVista(Integer idResolucaoDiretoria){
+
+		try{
+			return this.getControladorCobranca().pesquisarResolucaoDiretoriaParametrosPagamentoAVista(idResolucaoDiretoria);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -37430,21 +37689,22 @@ public class Fachada {
 	 */
 	public int gerarRelatorioImovelOutrosCriteriosCount(String idImovelCondominio, String idImovelPrincipal,
 					String[] idSituacaoLigacaoAgua, String consumoMinimoInicialAgua, String consumoMinimoFinalAgua,
-					String[] idSituacaoLigacaoEsgoto,
-					String consumoMinimoInicialEsgoto, String consumoMinimoFinalEsgoto, String intervaloValorPercentualEsgotoInicial,
-					String intervaloValorPercentualEsgotoFinal, String intervaloMediaMinimaImovelInicial,
-					String intervaloMediaMinimaImovelFinal, String intervaloMediaMinimaHidrometroInicial,
-					String intervaloMediaMinimaHidrometroFinal, String idImovelPerfil, String idPocoTipo, String idFaturamentoSituacaoTipo,
-					String idCobrancaSituacaoTipo, String idSituacaoEspecialCobranca, String idEloAnormalidade,
-					String areaConstruidaInicial, String areaConstruidaFinal, String idCadastroOcorrencia, String idConsumoTarifa,
-					String idGerenciaRegional, String idLocalidadeInicial, String idLocalidadeFinal, String setorComercialInicial,
-					String setorComercialFinal, String quadraInicial, String quadraFinal, String loteOrigem, String loteDestno, String cep,
-					String logradouro, String bairro, String municipio, String idTipoMedicao, String indicadorMedicao,
-					String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial, String quantidadeEconomiasFinal,
-					String diaVencimento, String idCliente, String idClienteTipo, String idClienteRelacaoTipo, String numeroPontosInicial,
-					String numeroPontosFinal, String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa,
-					String idUnidadeNegocio, String cdRotaInicial, String cdRotaFinal, String sequencialRotaInicial,
-					String sequencialRotaFinal, String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal){
+					String[] idSituacaoLigacaoEsgoto, String consumoMinimoInicialEsgoto, String consumoMinimoFinalEsgoto,
+					String intervaloValorPercentualEsgotoInicial, String intervaloValorPercentualEsgotoFinal,
+					String intervaloMediaMinimaImovelInicial, String intervaloMediaMinimaImovelFinal,
+					String intervaloMediaMinimaHidrometroInicial, String intervaloMediaMinimaHidrometroFinal, String idImovelPerfil,
+					String idPocoTipo, String idFaturamentoSituacaoTipo, String idCobrancaSituacaoTipo, String idSituacaoEspecialCobranca,
+					String idEloAnormalidade, String areaConstruidaInicial, String areaConstruidaFinal, String idCadastroOcorrencia,
+					String idConsumoTarifa, String idGerenciaRegional, String idLocalidadeInicial, String idLocalidadeFinal,
+					String setorComercialInicial, String setorComercialFinal, String quadraInicial, String quadraFinal, String loteOrigem,
+					String loteDestno, String cep, String logradouro, String bairro, String municipio, String idTipoMedicao,
+					String indicadorMedicao, String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial,
+					String quantidadeEconomiasFinal, String diaVencimento, String idCliente, String idClienteTipo,
+					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
+					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String cdRotaInicial,
+					String cdRotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
+					String segmentoFinal, String subloteInicial, String subloteFinal, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal){
 
 		try{
 
@@ -37460,7 +37720,8 @@ public class Fachada {
 							idCategoria, quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 							idAreaConstruidaFaixa, idUnidadeNegocio, cdRotaInicial, cdRotaFinal, sequencialRotaInicial,
-							sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+							sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
+							consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 		}catch(ControladorException e){
 
@@ -37528,10 +37789,12 @@ public class Fachada {
 						ConstantesJNDI.QUEUE_CONTROLADOR_FATURAMENTO_MDB, new Object[] {limite});
 	}
 
-	public void executarAjustarRegistrosContaEGuiaDeso(){
+	public void executarConversaoContasParaGuiaDePagamento(Integer idClienteResponsavel, Integer idImovel,
+					Collection<IntervaloReferenciaHelper> colecaoReferencias, BigDecimal valorJuros){
 
-		this.enviarMensagemControladorBatch(MetodosBatch.AJUSTAR_REGISTROS_CONTA_E_GUIA_DESO,
-						ConstantesJNDI.QUEUE_CONTROLADOR_FATURAMENTO_MDB, new Object[] {});
+		this.enviarMensagemControladorBatch(MetodosBatch.EXECUTAR_CONVERSAO_CONTAS_PARA_GUIA_DE_PAGAMENTO,
+						ConstantesJNDI.QUEUE_CONTROLADOR_FATURAMENTO_MDB,
+						new Object[] {idClienteResponsavel, idImovel, colecaoReferencias, valorJuros});
 	}
 
 	public void gerarResumoLigacoesEconomias(Integer referenciaFaturamento, Usuario usuario){
@@ -37805,13 +38068,14 @@ public class Fachada {
 	 * [UC3080] Classificar em Lote Pagamentos Não Classificados.
 	 * 
 	 * @author Josenildo Neves
+	 * @param gerarDebitoACobrar
 	 * @date 30/11/2012
 	 */
 	public Collection<ClassificarPagamentosNaoClassificadosHelper> classificarLotePagamentosNaoClassificados(
-					ClassificarLotePagamentosNaoClassificadosHelper helper, Usuario usuario){
+					ClassificarLotePagamentosNaoClassificadosHelper helper, Usuario usuario, boolean gerarDebitoACobrar){
 
 		try{
-			return this.getControladorArrecadacao().classificarLotePagamentosNaoClassificados(helper, usuario);
+			return this.getControladorArrecadacao().classificarLotePagamentosNaoClassificados(helper, usuario, gerarDebitoACobrar);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -37877,8 +38141,7 @@ public class Fachada {
 
 	public void executarInserirDebitos(){
 
-		this.enviarMensagemControladorBatch(MetodosBatch.INSERIR_DEBITOS, ConstantesJNDI.QUEUE_CONTROLADOR_FATURAMENTO_MDB,
- new Object[] {});
+		this.enviarMensagemControladorBatch(MetodosBatch.INSERIR_DEBITOS, ConstantesJNDI.QUEUE_CONTROLADOR_FATURAMENTO_MDB, new Object[] {});
 	}
 
 	/**
@@ -37977,7 +38240,6 @@ public class Fachada {
 
 	}
 
-
 	public Object[] listarSomatorioEValorFaturasDebito(Integer idImovel) throws ControladorException{
 
 		try{
@@ -38009,11 +38271,11 @@ public class Fachada {
 
 	public ConsumoHistorico obterUltimoConsumoHistoricoImovel(String idImovel) throws ControladorException{
 
-		ConsumoHistorico consumoHistorico=null;
+		ConsumoHistorico consumoHistorico = null;
 
 		try{
 
-			consumoHistorico=this.getControladorMicromedicao().obterUltimoConsumoHistoricoImovel(idImovel);
+			consumoHistorico = this.getControladorMicromedicao().obterUltimoConsumoHistoricoImovel(idImovel);
 		}catch(ControladorException ex){
 
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -38080,7 +38342,7 @@ public class Fachada {
 		}
 
 	}
-	
+
 	/**
 	 * [UC3014] Emitir Declaração Anual Quitação Débitos
 	 * [SB0001] Emitir Declaração Anual de Quitação de Débitos
@@ -38111,7 +38373,6 @@ public class Fachada {
 		this.enviarMensagemControladorBatch(MetodosBatch.DESFAZER_PRE_FATURAMENTO_POR_GRUPO_REF,
 						ConstantesJNDI.QUEUE_CONTROLADOR_FATURAMENTO_MDB, new Object[] {});
 	}
-
 
 	/**
 	 * [UC3095] Apresentar Quadro Comparativo Faturamento e Arrecadação
@@ -38285,6 +38546,7 @@ public class Fachada {
 		}
 
 	}
+
 	public void removerCep(String[] ids, String pacoteNomeObjeto, OperacaoEfetuada operacaoEfetuada,
 					Collection<UsuarioAcaoUsuarioHelper> acaoUsuarioHelper){
 
@@ -38325,7 +38587,7 @@ public class Fachada {
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
 	}
-	
+
 	/**
 	 * [UC3096] AcquaGIS GetDetalheOS
 	 * 
@@ -38341,7 +38603,6 @@ public class Fachada {
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
 	}
-
 
 	/**
 	 * [UC0098] – Manter Vinculos Rateio Consumo
@@ -38382,8 +38643,6 @@ public class Fachada {
 
 	}
 
-	
-	
 	/**
 	 * Verifica permissão especial para optar por não cobrar taxa ao emitir extrato de débito.
 	 * 
@@ -38473,7 +38732,6 @@ public class Fachada {
 		}
 	}
 
-
 	/**
 	 * [UC0146] Manter Conta
 	 * [FS0035] Verificar vencimento débito automático
@@ -38489,7 +38747,6 @@ public class Fachada {
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
 	}
-
 
 	/**
 	 * [UC0352] - Emitir Contas
@@ -38509,7 +38766,7 @@ public class Fachada {
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
 	}
-	
+
 	/**
 	 * Retorna <true> se existir alteração de inscrição pendente para o imóvel ou para o imóvel
 	 * condomínio do dado imóvel, caso exista. Retorna <false> caso contrário.
@@ -38565,7 +38822,7 @@ public class Fachada {
 			throw new FachadaException("erro.sistema", e);
 		}
 	}
-	
+
 	/**
 	 * @author Felipe rosacruz
 	 * @date 23/08/2013
@@ -38575,7 +38832,7 @@ public class Fachada {
 
 		Object retorno = null;
 		try{
-			
+
 			retorno = this.getControladorParametroSistema().obterValorDoParametroPorCodigo(codigo);
 		}catch(NegocioException e){
 			// TODO Auto-generated catch block
@@ -38584,7 +38841,7 @@ public class Fachada {
 		}
 		return retorno;
 	}
-	
+
 	/**
 	 * [UC3103] Cancelar Débito a Cobrar de Rateio por Macromedidor.
 	 * 6. O sistema apresenta os dados do imóvel Condomínio.
@@ -38597,8 +38854,7 @@ public class Fachada {
 					Integer anoMesRefFaturamento) throws FachadaException{
 
 		try{
-			return this.getControladorFaturamento().pesquisarClienteImovelCondominioHelper(idImovel, idLigacaoTipo,
-							anoMesRefFaturamento);
+			return this.getControladorFaturamento().pesquisarClienteImovelCondominioHelper(idImovel, idLigacaoTipo, anoMesRefFaturamento);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
@@ -38614,8 +38870,8 @@ public class Fachada {
 	 * @return
 	 * @throws ErroRepositorioException
 	 */
-	public HistoricoMedicaoIndividualizadaHelper pesquisarHistoricoMedicaoIndividualizadaHelper(Integer idImovel,
-					Integer idLigacaoTipo, Integer anoMesRefFaturamento) throws FachadaException{
+	public HistoricoMedicaoIndividualizadaHelper pesquisarHistoricoMedicaoIndividualizadaHelper(Integer idImovel, Integer idLigacaoTipo,
+					Integer anoMesRefFaturamento) throws FachadaException{
 
 		try{
 			return this.getControladorFaturamento().pesquisarHistoricoMedicaoIndividualizadaHelper(idImovel, idLigacaoTipo,
@@ -38637,8 +38893,7 @@ public class Fachada {
 	 * @throws ErroRepositorioException
 	 */
 	public List<DebitosACobrarRateioImoveisVinculadosHelper> pesquisarDebitosACobrarRateioImoveisVinculadosHelper(
-					List<Integer> listaIdImovel,
-					Integer idLigacaoTipo, Integer anoMesRefFaturamento) throws FachadaException{
+					List<Integer> listaIdImovel, Integer idLigacaoTipo, Integer anoMesRefFaturamento) throws FachadaException{
 
 		try{
 			return this.getControladorFaturamento().pesquisarDebitosACobrarRateioImoveisVinculadosHelper(listaIdImovel, idLigacaoTipo,
@@ -38648,7 +38903,6 @@ public class Fachada {
 		}
 	}
 
-	
 	/**
 	 * Método responsável por agrupar e ordenar os débitos cobrados
 	 * 
@@ -38698,6 +38952,7 @@ public class Fachada {
 	 * @return
 	 */
 	public List<ItensRemuradosHelper> selecionarItensRemureraveis(ImovelCobrancaSituacao imovelCobrancaSituacao) throws FachadaException{
+
 		try{
 			return this.getControladorCobranca().selecionarItensRemureraveis(imovelCobrancaSituacao);
 		}catch(ControladorException ex){
@@ -38801,6 +39056,34 @@ public class Fachada {
 
 	}
 
+	public int obterCaracteristicaParcelamento(Collection<ContaValoresHelper> colecaoConta,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuias, Integer idCobrancaForma, String indicadorCobrancaBancaria,
+					Collection<DebitoACobrar> colecaoDebitoACobrarItem) throws FachadaException{
+
+		try{
+
+			return this.getControladorCobranca().obterCaracteristicaParcelamento(colecaoConta, colecaoGuias, idCobrancaForma,
+							indicadorCobrancaBancaria, colecaoDebitoACobrarItem);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+
+	}
+
+	public boolean validaCobrancaAdministrativa(Collection<ContaValoresHelper> colecaoConta,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuias, Integer idCobrancaForma,
+					Collection<DebitoACobrar> colecaoDebitoACobrarItem) throws FachadaException{
+
+		try{
+			return this.getControladorCobranca().validaCobrancaAdministrativa(colecaoConta, colecaoGuias, idCobrancaForma,
+							colecaoDebitoACobrarItem);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+
+	}
+
 	/**
 	 * Pesquisas todas as Situações Especiais de Cobrança ativas de um determinado imóvel
 	 * 
@@ -38864,8 +39147,7 @@ public class Fachada {
 
 		try{
 
-			return this.getControladorFaturamento().calcularValorPrestacaoParcelasAntecipadas(debitoACobrar,
-							totalParcelasAntecipadas);
+			return this.getControladorFaturamento().calcularValorPrestacaoParcelasAntecipadas(debitoACobrar, totalParcelasAntecipadas);
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -38987,9 +39269,10 @@ public class Fachada {
 		}
 
 	}
-	
+
 	public CampanhaCadastro efetuarInscricaoCampanhaPremiacaoAction(Usuario usuario, CampanhaCadastro campanhaCadastro,
 					Collection<CampanhaCadastroFone> colecaoCampanhaCadastroFone){
+
 		try{
 
 			return this.getControladorCadastro().efetuarInscricaoCampanhaPremiacaoAction(usuario, campanhaCadastro,
@@ -39149,8 +39432,7 @@ public class Fachada {
 	 * @author Victon Malcolm
 	 * @since 04/10/2013
 	 */
-	public Collection pesquisarAtualizacaoCadastralColetorDados(Integer referenciaInicial,
-					Integer referenciaFinal, Integer matricula,
+	public Collection pesquisarAtualizacaoCadastralColetorDados(Integer referenciaInicial, Integer referenciaFinal, Integer matricula,
 					Integer localidade, Integer setorComercial, Integer rota, Boolean relatorio){
 
 		try{
@@ -39329,7 +39611,6 @@ public class Fachada {
 		}
 	}
 
-
 	/**
 	 * <Breve descrição sobre o caso de uso>
 	 * [UCxxxx] - Retirar Valor Agua Esgoto Conta
@@ -39389,7 +39670,7 @@ public class Fachada {
 	 * @param idImovel
 	 */
 	public void verificarExistenciaServicoReligacaoRestabelecimento(Integer idImovel, Integer idSolicitacaoTipo){
-		
+
 		try{
 
 			this.getControladorRegistroAtendimento().verificarExistenciaServicoReligacaoRestabelecimento(idImovel, idSolicitacaoTipo);
@@ -39398,7 +39679,7 @@ public class Fachada {
 
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
-		
+
 	}
 
 	/**
@@ -39449,7 +39730,6 @@ public class Fachada {
 		}
 	}
 
-
 	/**
 	 * [UC0630] Solicitar Emissão do Extrato de Débitos
 	 * Verifica se existem ocorrencias de um imovel em situação de cobranca
@@ -39473,6 +39753,7 @@ public class Fachada {
 
 		return retorno;
 	}
+
 	/**
 	 * [] - Gerar Relatórios Maiores Consumidores
 	 * 
@@ -39495,15 +39776,15 @@ public class Fachada {
 	 * @author Victon Santos
 	 * @date
 	 */
-	public Collection<RelatorioMaioresDevedoresHelper> pesquisarDadosRelatorioMaioresDevedores(Integer localidade, Integer registros){
+	public Collection<RelatorioMaioresDevedoresHelper> pesquisarDadosRelatorioMaioresDevedores(Integer localidade, Integer registros,
+					Integer[] idsTipoCliente){
 
 		try{
-			return this.getControladorFaturamento().pesquisarDadosRelatorioMaioresDevedores(localidade, registros);
+			return this.getControladorFaturamento().pesquisarDadosRelatorioMaioresDevedores(localidade, registros, idsTipoCliente);
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
 	}
-
 
 	public String retornarEnderecoCompletoEmpresa(SistemaParametro sistemaParametro){
 
@@ -39522,7 +39803,23 @@ public class Fachada {
 
 		return this.getControladorParcelamento().obterResolucaoDiretoriaLayoutParcCobrancaAdministrativa();
 	}
-	
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * [FS0054] Verificar quantidade de parcelas da sucumbência
+	 * 
+	 * @author Saulo Lima
+	 * @date 15/08/2014
+	 */
+	public void verificarQuantidadeParcelasSucumbencia(Integer quantidadeParcelasSucumbencia, Usuario usuario){
+
+		try{
+			this.getControladorParcelamento().verificarQuantidadeParcelasSucumbencia(quantidadeParcelasSucumbencia, usuario);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
 	/**
 	 * [UC3128] GerarRelatorioImóveiscomLigaçãoCortadacomConsumo
 	 * 
@@ -39539,7 +39836,6 @@ public class Fachada {
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
 	}
-
 
 	/**
 	 * 
@@ -39574,10 +39870,12 @@ public class Fachada {
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Collection pesquisarQuadroHidrometros(Date dataReferencia){
+	public Collection pesquisarQuadroHidrometros(Date dataReferencia, Integer idLocalidade, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio){
 
 		try{
-			return getControladorMicromedicao().pesquisarQuadroHidrometros(dataReferencia);
+			return getControladorMicromedicao().pesquisarQuadroHidrometros(dataReferencia, idLocalidade, idGerenciaRegional,
+							idUnidadeNegocio);
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -39592,10 +39890,12 @@ public class Fachada {
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Integer pesquisarQuadroHidrometrosCount(Date dataReferencia){
+	public Integer pesquisarQuadroHidrometrosCount(Date dataReferencia, Integer idLocalidade, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio){
 
 		try{
-			return getControladorMicromedicao().pesquisarQuadroHidrometrosCount(dataReferencia);
+			return getControladorMicromedicao().pesquisarQuadroHidrometrosCount(dataReferencia, idLocalidade, idGerenciaRegional,
+							idUnidadeNegocio);
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -39648,10 +39948,14 @@ public class Fachada {
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Integer pesquisarQuadroHidrometrosSituacaoCount(Date dataInicial, Date dataFinal){
+	public Integer pesquisarQuadroHidrometrosSituacaoCount(Date dataInicial, Date dataFinal, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio, Integer idUnidadeFederacao, Integer idLocalidade, Integer idHidrometroCapacidade,
+					Integer idHidrometroMarca, Integer idHidrometroDiametro){
 
 		try{
-			return getControladorMicromedicao().pesquisarQuadroHidrometrosSituacaoCount(dataInicial, dataFinal);
+			return getControladorMicromedicao().pesquisarQuadroHidrometrosSituacaoCount(dataInicial, dataFinal, idGerenciaRegional,
+							idUnidadeNegocio, idUnidadeFederacao, idLocalidade, idHidrometroCapacidade, idHidrometroMarca,
+							idHidrometroDiametro);
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -39667,10 +39971,14 @@ public class Fachada {
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Collection pesquisarQuadroHidrometrosSituacao(Date dataInicial, Date dataFinal){
+	public Collection pesquisarQuadroHidrometrosSituacao(Date dataInicial, Date dataFinal, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio, Integer idUnidadeFederacao, Integer idLocalidade, Integer idHidrometroCapacidade,
+					Integer idHidrometroMarca, Integer idHidrometroDiametro){
 
 		try{
-			return getControladorMicromedicao().pesquisarQuadroHidrometrosSituacao(dataInicial, dataFinal);
+			return getControladorMicromedicao().pesquisarQuadroHidrometrosSituacao(dataInicial, dataFinal, idGerenciaRegional,
+							idUnidadeNegocio, idUnidadeFederacao, idLocalidade, idHidrometroCapacidade, idHidrometroMarca,
+							idHidrometroDiametro);
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -39750,6 +40058,7 @@ public class Fachada {
 		this.enviarMensagemControladorBatch(MetodosBatch.AJUSTAR_COORDENADAS_RA, ConstantesJNDI.QUEUE_CONTROLADOR_FATURAMENTO_MDB,
 						new Object[] {colecao});
 	}
+
 	/**
 	 * [UC3118] Inserir Comando de Simulação de Faturamento
 	 * 
@@ -39873,8 +40182,7 @@ public class Fachada {
 
 		try{
 
-			this.getControladorFaturamento().alterarClienteResponsavelConjuntoContas(colecaoContas, clienteResponsavel,
-							usuarioLogado);
+			this.getControladorFaturamento().alterarClienteResponsavelConjuntoContas(colecaoContas, clienteResponsavel, usuarioLogado);
 		}catch(ControladorException ex){
 
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
@@ -39900,8 +40208,8 @@ public class Fachada {
 
 	}
 
-	public RelatorioArquivoDeclaracaoAnualQuitacaoDebitos emitirDeclaracaoAnualQuitacaoDebitos(
-					Integer idFaturamentoGrupo, Integer idImovel, Usuario usuario, Integer anoBaseDeclaracaoInformado){
+	public RelatorioArquivoDeclaracaoAnualQuitacaoDebitos emitirDeclaracaoAnualQuitacaoDebitos(Integer idFaturamentoGrupo,
+					Integer idImovel, Usuario usuario, Integer anoBaseDeclaracaoInformado){
 
 		try{
 			return getControladorFaturamento().emitirDeclaracaoAnualQuitacaoDebitos(null, idFaturamentoGrupo, idImovel, usuario,
@@ -39910,7 +40218,6 @@ public class Fachada {
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
 	}
-
 
 	/**
 	 * [UC3134] Manter Comando de Simulação de Faturamento
@@ -39969,6 +40276,7 @@ public class Fachada {
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
 	}
+
 	/**
 	 * [UC3135] Gerar Relatório de Materiais Aplicados
 	 * 
@@ -39988,7 +40296,6 @@ public class Fachada {
 		}
 
 	}
-
 
 	/**
 	 * Verifica permissão especial para alterar o indicador para inserir processo
@@ -40063,6 +40370,7 @@ public class Fachada {
 			throw new FachadaException(e.getMessage(), e);
 		}
 	}
+
 	/**
 	 * [UC0146] Manter Conta
 	 * [FS0001 - Verificar valor total da conta negativo].
@@ -40102,7 +40410,6 @@ public class Fachada {
 		}
 	}
 
-
 	/**
 	 * Atauliza a tabela de consumo_historico com o consumo médio correto
 	 * 
@@ -40112,9 +40419,9 @@ public class Fachada {
 	public void executarAjusteErroCalculoConsumoMedioPercentualColeta(Collection colecao){
 
 		this.enviarMensagemControladorBatch(MetodosBatch.AJUSTAR_MEDIAS_ERRADAS_CONSUMO_HISTORICO,
-						ConstantesJNDI.QUEUE_CONTROLADOR_FATURAMENTO_MDB,
-						new Object[] {colecao});
+						ConstantesJNDI.QUEUE_CONTROLADOR_FATURAMENTO_MDB, new Object[] {colecao});
 	}
+
 	/**
 	 * Este método de pesquisa serve para localizar qualquer objeto no sistema.
 	 * Ele aceita como parâmetro um offset que indica a página desejada no
@@ -40143,15 +40450,13 @@ public class Fachada {
 		}
 	}
 
-
 	/**
 	 * @author Hiroshi Gonçalves
 	 * @return
 	 */
 
 	public List<RelatorioEstatisticoAtendimentoPorRacaCorBean> pesquisarDadosRelatorioEstatisticoAtendimentoPorRacaCor(
-					GerarRelatorioEstatisticoAtendimentoPorRacaCorActionForm form)
-					throws FachadaException{
+					GerarRelatorioEstatisticoAtendimentoPorRacaCorActionForm form) throws FachadaException{
 
 		try{
 
@@ -40162,6 +40467,7 @@ public class Fachada {
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
 	}
+
 	public Integer pesquisarIdDocumentoCobrancaEntregaDevolucao(Integer idImovel, Integer idDocumentoTipo){
 
 		try{
@@ -40172,6 +40478,7 @@ public class Fachada {
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
 	}
+
 	/**
 	 * [UC3132] Gerar Relatório de Contratos de Demanda de Consumo
 	 * 
@@ -40237,22 +40544,19 @@ public class Fachada {
 	 * @date 05/03/2014
 	 */
 	public void inserirDebitoACobrarRateioCondominio(RegistroAtendimento registroAtendimento, Usuario usuarioLogado, String[] ids,
-					Integer numeroPrestacoes,
-					BigDecimal valorTotalServico,
-					BigDecimal valorEntrada, BigDecimal percentualAbatimento, Integer anoMesCobrancaDebito, DebitoTipo debitoTipo,
- CobrancaForma cobrancaForma, String parametroDebitoTipoRateio){
+					Integer numeroPrestacoes, BigDecimal valorTotalServico, BigDecimal valorEntrada, BigDecimal percentualAbatimento,
+					Integer anoMesCobrancaDebito, DebitoTipo debitoTipo, CobrancaForma cobrancaForma, String parametroDebitoTipoRateio){
 
 		try{
 			this.getControladorFaturamento().inserirDebitoACobrarRateioCondominio(registroAtendimento, usuarioLogado, ids,
-							numeroPrestacoes, valorTotalServico,
-							valorEntrada,
- percentualAbatimento, anoMesCobrancaDebito, debitoTipo, cobrancaForma, parametroDebitoTipoRateio);
+							numeroPrestacoes, valorTotalServico, valorEntrada, percentualAbatimento, anoMesCobrancaDebito, debitoTipo,
+							cobrancaForma, parametroDebitoTipoRateio);
 
 		}catch(ControladorException ex){
 			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
 	}
-	
+
 	/**
 	 * [UC3124] - Auditoria de Cancelamento/Revisão de Contas
 	 * 
@@ -40446,7 +40750,6 @@ public class Fachada {
 		}
 	}
 
-
 	/**
 	 * [XYZ] Gerar Relatório Situação Especial de Faturamento
 	 * 
@@ -40514,7 +40817,6 @@ public class Fachada {
 		return retorno;
 	}
 
-
 	/**
 	 * [UC3127] - Auditoria de Transferencia de Debitos
 	 * [SB0001] - Apresenta Dados da Auditoria
@@ -40572,7 +40874,6 @@ public class Fachada {
 	// }
 	// }
 
-
 	/**
 	 * [UC3126] Auditoria de Serviços a Cobrar
 	 * 
@@ -40591,8 +40892,8 @@ public class Fachada {
 
 	public void executarAjusteErroGeracaoContaCategoriaConsumoFaixa(Integer anoMesReferencia, String idsGrupos){
 
-		this.enviarMensagemControladorBatch(MetodosBatch.AJUSTAR_FAIXAS_CONTAS_ERRADAS,
-						ConstantesJNDI.QUEUE_CONTROLADOR_FATURAMENTO_MDB, new Object[] {anoMesReferencia, idsGrupos});
+		this.enviarMensagemControladorBatch(MetodosBatch.AJUSTAR_FAIXAS_CONTAS_ERRADAS, ConstantesJNDI.QUEUE_CONTROLADOR_FATURAMENTO_MDB,
+						new Object[] {anoMesReferencia, idsGrupos});
 	}
 
 	public void executarAjusteContaZeradasEnviarHistorico(Integer anoMesReferencia){
@@ -41084,6 +41385,969 @@ public class Fachada {
 
 		}catch(Exception e){
 			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * [UC3149] Inserir Atividade Econômica
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/06/2014
+	 */
+	public Object inserirAtividadeEconomica(AtividadeEconomica atividadeEconomica, Usuario usuario){
+
+		try{
+
+			Integer id = (Integer) this.getControladorCliente().inserirAtividadeEconomica(atividadeEconomica, usuario);
+			return id;
+		}catch(ControladorException ex){
+
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * [UC3150] Manter Atividade Econômica
+	 * [SB0001] - Atualizar Atividade Econômica
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/06/2014
+	 */
+	public void atualizarAtividadeEconomica(AtividadeEconomica atividadeEconomica, Usuario usuario){
+
+		try{
+
+			this.getControladorCliente().atualizarAtividadeEconomica(atividadeEconomica, usuario);
+		}catch(ControladorException ex){
+
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * [UC3150] Manter Atividade Econômica
+	 * [SB0002] - Excluir Atividade Econômica
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/06/2014
+	 */
+	public void removerAtividadeEconomica(String[] ids, Usuario usuarioLogado){
+
+		try{
+
+			this.getControladorCliente().removerAtividadeEconomica(ids, usuarioLogado);
+		}catch(ControladorException ex){
+
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * <p>
+	 * [OC1348276] [NF] Refaturar todas as contas da localidade 062 com referência de 10/2009 a
+	 * 08/2014
+	 * </p>
+	 * <p>
+	 * Refaturar todas as contas geradas para o municipio de Siriri, para atendermos ao trabalho que
+	 * a Deso está desenvolvendo naquele município e a RDE 12/2014. Parâmetros:
+	 * <ul>
+	 * <li>Localidade: 062</li>
+	 * <li>Período de referência das faturas: 10/2009 a 08/2014</li>
+	 * <li>Refaturar consumo de todas as matrículas de categoria Residencial e Comercial para 10m³ e
+	 * categoria Industrial para 30m³</li>
+	 * </ul>
+	 * </p>
+	 * 
+	 * @author Magno Silveira { @literal <magno.silveira@procenge.com.br> }
+	 * @since 2014-09-02
+	 * @param anoMesReferenciaInicial
+	 * @param anoMesReferenciaFinal
+	 */
+	public void refaturarContasDESOLocalidade062(Integer anoMesReferencia){
+
+		try{
+			this.getControladorFaturamento().refaturarContasDESOLocalidade062(anoMesReferencia);
+		}catch(ControladorException ce){
+			throw new FachadaException(ce.getMessage(), ce, ce.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * OC1307375 - Criado rotina de ajuste para testar alteração no calcular valores de água e
+	 * esgoto cascata
+	 * 
+	 * @author Anderson Italo
+	 * @date 03/07/2014
+	 **/
+	public void executarAjusteVerificarBatimentoCalculoValorConta(Integer anoMesReferencia){
+
+		this.enviarMensagemControladorBatch(MetodosBatch.AJUSTE_BATIMENTO_VALORES_CALCULAR_CONTA,
+						ConstantesJNDI.QUEUE_CONTROLADOR_FATURAMENTO_MDB, new Object[] {anoMesReferencia});
+
+	}
+
+	/**
+	 * [UC0084] - Gerar Faturamento Imediato
+	 * [SB0007] - Gerar Movimento Roteiro de Empresa
+	 * 
+	 * @author Anderson Italo
+	 * @date 12/04/2013
+	 * @throws ControladorException
+	 */
+	public Object[] obterDadosLeituraAnterior(Integer anoMesReferenciaFaturamento, Integer idMedicaoTipo, Imovel imovel){
+
+		Object[] dadosLeituraAnterior = null;
+		try{
+
+			dadosLeituraAnterior = getControladorFaturamento()
+							.obterDadosLeituraAnterior(anoMesReferenciaFaturamento, idMedicaoTipo, imovel);
+		}catch(ControladorException ex){
+
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+
+		return dadosLeituraAnterior;
+	}
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * [FS0050] Verificar imóvel em execução fiscal
+	 * 
+	 * @author Hebert Falcão
+	 * @date 21/05/2014
+	 */
+	public Short verificarImovelEmExecucaoFiscal(Integer idImovel){
+
+		try{
+			return this.getControladorCobranca().verificarImovelEmExecucaoFiscal(idImovel);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public void validarEntidadesDebitoParcelamentoImovel(Parcelamento parcelamento, Collection<ContaValoresHelper> colecaoContaValores,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores, Collection<DebitoACobrar> colecaoDebitoACobrar,
+					Collection<CreditoARealizar> colecaoCreditoARealizar){
+
+		try{
+
+			this.getControladorCobranca().validarEntidadesDebitoParcelamentoImovel(parcelamento, colecaoContaValores,
+							colecaoGuiaPagamentoValores, colecaoDebitoACobrar, colecaoCreditoARealizar);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public Collection<Conta> classificarContasParaHistorico(Collection<ContaValoresHelper> colecaoContaValores, Usuario usuarioLogado,
+					String indicadorContasRevisao){
+
+		try{
+
+			return this.getControladorCobranca().classificarContasParaHistorico(colecaoContaValores, usuarioLogado, indicadorContasRevisao);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public void criarTabelaTemporariaRelatorioTotalContasEmitidasLocalidade(){
+
+		try{
+			this.getControladorFaturamento().criarTabelaTemporariaRelatorioTotalContasEmitidasLocalidade();
+		}catch(Exception e){
+			throw new FachadaException("erro.sistema", e);
+		}
+	}
+
+	public Parcelamento carregarDadosParcelamento(Date dataParcelamento, BigDecimal valorConta, BigDecimal valorGuiaPapagamento,
+					BigDecimal valorServicosACobrar, BigDecimal valorParcelamentosACobrar, BigDecimal valorCreditoARealizar,
+					BigDecimal valorAtualizacaoMonetaria, BigDecimal valorJurosMora, BigDecimal valorMulta,
+					BigDecimal valorDebitoAtualizado, BigDecimal valorDescontoAcrescimos, BigDecimal valorDescontoAntiguidade,
+					BigDecimal valorDescontoInatividade, BigDecimal valorEntrada, BigDecimal valorJurosParcelamento,
+					Short numeroPrestacoes, BigDecimal valorPrestacao, Short indicadorRestabelecimento, Short indicadorContasRevisao,
+					Short indicadorGuiasPagamento, Short indicadorAcrescimosImpotualidade, Short indicadorDebitosACobrar,
+					Short indicadorCreditoARealizar, BigDecimal percentualDescontoAcrescimos, BigDecimal percentualDescontoAntiguidade,
+					BigDecimal percentualDescontoInatividadeLigacaoAgua, Imovel imovel, Usuario usuario, Integer parcelamentoPerfilId,
+					Collection<ContaValoresHelper> colecaoContaValores, Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores,
+					Collection<DebitoACobrar> colecaoDebitoACobrar, Collection<CreditoARealizar> colecaoCreditoARealizar,
+					BigDecimal taxaJuros, Short indicadorConfirmacaoParcelamento, Cliente cliente, BigDecimal descontoSancoesRDEspecial,
+					BigDecimal descontoTarifaSocialRDEspecial, Date dataEntradaParcelamento, String indicadorCobrancaParcelamento,
+					Integer anoMesReferenciaDebitoInicial, Integer anoMesReferenciaDebitoFinal, BigDecimal percentualDescontoJurosMora,
+					BigDecimal percentualDescontoMulta, BigDecimal percentualDescontoCorrecaoMonetaria,
+					BigDecimal valorDescontoAcrescimosImpontualidadeNaPrestacao,
+					Collection<ParcelamentoConfiguracaoPrestacao> colecaoParcelamentoConfiguracaoPrestacao,
+					byte[] conteudoTermoParcelamentoInicial, byte[] conteudoTermoParcelamentoFinal, BigDecimal valorSucumbenciaAnterior,
+					BigDecimal valorSucumbenciaAtual, Short quantidadeParcelasSucumbencia, BigDecimal valorDiligencias,
+					BigDecimal valorAtualizacaoMonetariaSucumbencia, BigDecimal valorJurosMoraSucumbencia, BigDecimal valorASerNegociado,
+					BigDecimal valorASerParcelado){
+
+		try{
+
+			return this.getControladorCobranca().gerarDadosParcelamento(dataParcelamento, valorConta, valorGuiaPapagamento,
+							valorServicosACobrar, valorParcelamentosACobrar, valorCreditoARealizar, valorAtualizacaoMonetaria,
+							valorJurosMora, valorMulta, valorDebitoAtualizado, valorDescontoAcrescimos, valorDescontoAntiguidade,
+							valorDescontoInatividade, valorEntrada, valorJurosParcelamento, numeroPrestacoes, valorPrestacao,
+							indicadorRestabelecimento, indicadorContasRevisao, indicadorGuiasPagamento, indicadorAcrescimosImpotualidade,
+							indicadorDebitosACobrar, indicadorCreditoARealizar, percentualDescontoAcrescimos,
+							percentualDescontoAntiguidade, percentualDescontoInatividadeLigacaoAgua, imovel, usuario, parcelamentoPerfilId,
+							colecaoContaValores, colecaoGuiaPagamentoValores, colecaoDebitoACobrar, colecaoCreditoARealizar, taxaJuros,
+							indicadorConfirmacaoParcelamento, cliente, descontoSancoesRDEspecial, descontoTarifaSocialRDEspecial,
+							dataEntradaParcelamento, indicadorCobrancaParcelamento, anoMesReferenciaDebitoInicial,
+							anoMesReferenciaDebitoFinal, percentualDescontoJurosMora, percentualDescontoMulta,
+							percentualDescontoCorrecaoMonetaria, valorDescontoAcrescimosImpontualidadeNaPrestacao,
+							colecaoParcelamentoConfiguracaoPrestacao, conteudoTermoParcelamentoInicial, conteudoTermoParcelamentoFinal,
+							false, valorSucumbenciaAnterior, valorSucumbenciaAtual, quantidadeParcelasSucumbencia, valorDiligencias,
+							valorAtualizacaoMonetariaSucumbencia, valorJurosMoraSucumbencia, valorASerNegociado, valorASerParcelado);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+
+	}
+
+	public String pesquisarEnderecoClienteAbreviado(Integer idCliente, boolean indicadorAbreviado){
+
+		try{
+
+			return getControladorEndereco().pesquisarEnderecoClienteAbreviado(idCliente, indicadorAbreviado);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public boolean verificarExecucaoFiscal(Collection<ContaValoresHelper> colecaoContaValores,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoHelper, Collection<DebitoACobrar> colecaoDebitoACobrar){
+
+		try{
+
+			return getControladorCobranca().verificarExecucaoFiscal(colecaoContaValores, colecaoGuiaPagamentoHelper, colecaoDebitoACobrar);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public Short verificarParcelamentoExecucaoFiscal(Parcelamento parcelamento){
+
+		try{
+
+			return this.getControladorCobranca().verificarParcelamentoExecucaoFiscal(parcelamento);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public Date obterDataVencimentoGuiaEntradaParcelamento(Date data, Integer numeroDias){
+
+		try{
+
+			return this.getControladorCobranca().obterDataVencimentoGuiaEntradaParcelamento(data, numeroDias);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public Short verificarContaExecucaoFiscal(Conta conta){
+
+		try{
+
+			return this.getControladorCobranca().verificarContaExecucaoFiscal(conta);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * @author Yara Souza
+	 * @date 29/07/2014
+	 **/
+	public void executarAjusteClienteDebitoACobrar(){
+
+		this.enviarMensagemControladorBatch(MetodosBatch.AJUSTE_CLIENTE_DEBITO_A_COBRAR, ConstantesJNDI.QUEUE_CONTROLADOR_FATURAMENTO_MDB,
+						new Object[] {});
+
+	}
+
+	/**
+	 * @param cliente
+	 * @return
+	 */
+	public Collection pesquisarClienteDebitoACobrar(Cliente cliente){
+
+		try{
+			return getControladorCadastro().pesquisarClienteDebitoACobrar(cliente);
+		}catch(ControladorException ex){
+
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+
+	}
+
+	/**
+	 * @param cliente
+	 * @return
+	 */
+
+	public Collection pesquisarClienteGuiaPagamento(Cliente cliente){
+
+		try{
+			return getControladorCadastro().pesquisarClienteGuiaPagamento(cliente);
+		}catch(ControladorException ex){
+
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+
+	}
+
+	/**
+	 * @param debitoACobrar
+	 */
+
+	public void inserirClienteDebitoACobrar(DebitoACobrar debitoACobrar){
+
+		try{
+			getControladorCobranca().inserirClienteDebitoACobrar(debitoACobrar);
+		}catch(ControladorException ex){
+
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+
+	}
+
+	/**
+	 * [UC0366] Inserir Registro de Atendimento
+	 * [UC0408] Atualizar Registro de Atendimento
+	 * 
+	 * @author Yara Souza
+	 * @date 08/08/2014
+	 */
+
+	public List<ServicoAssociadoValorHelper> pesquisarServicoAssociado(Integer idSolicitacaoTipoEspecificacao){
+
+		try{
+
+			return this.getControladorRegistroAtendimento().pesquisarServicoAssociado(idSolicitacaoTipoEspecificacao);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public Short verificarDebitoACobrarExecucaoFiscal(DebitoACobrar debitoACobrar){
+
+		try{
+
+			return this.getControladorCobranca().verificarDebitoACobrarExecucaoFiscal(debitoACobrar);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public Short verificarGuiaPagamentoPrestacaoExecucaoFiscal(GuiaPagamentoPrestacao guiaPagamentoPrestacao){
+
+		try{
+
+			return this.getControladorCobranca().verificarGuiaPagamentoPrestacaoExecucaoFiscal(guiaPagamentoPrestacao);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public Short verificarImovelDebitoExecucaoFiscal(Collection<DebitoACobrar> colecaoDebitoACobrar,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamento, Collection<ContaValoresHelper> colecaoConta){
+
+		try{
+
+			return this.getControladorCobranca().verificarImovelDebitoExecucaoFiscal(colecaoDebitoACobrar, colecaoGuiaPagamento,
+							colecaoConta);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * [UC0534] Inserir Feriado
+	 * [SB0002] - Importar Feriado
+	 * 
+	 * @author Anderson Italo
+	 * @throws IOException
+	 * @throws ControladorException
+	 * @date 18/08/2014
+	 */
+	public File importarFeriado(File arquivoFeriados, Usuario usuarioLogado){
+
+		File retorno = null;
+		try{
+
+			retorno = getControladorCadastro().importarFeriado(arquivoFeriados, usuarioLogado);
+		}catch(ControladorException ex){
+
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}catch(IOException ex1){
+
+			throw new FachadaException(ex1.getMessage(), ex1, ex1.getMessage());
+		}
+
+		return retorno;
+
+	}
+
+	/**
+	 * 'chavesDebitosACobrar' (Ex.: 9988-1$9988-2$7766-1)
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * 
+	 * @author Gicevaler Couto
+	 * @date 01/08/2014
+	 */
+	public Collection<DebitoACobrarValoresHelper> retornarDebitoACobrarValoresSelecionadas(String chavesDebitosACobrar,
+					Collection<DebitoACobrarValoresHelper> colecaoDebitoACobrarValores){
+
+		try{
+			return this.getControladorCobranca()
+							.retornarDebitoACobrarValoresSelecionadas(chavesDebitosACobrar, colecaoDebitoACobrarValores);
+		}catch(ControladorException e){
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * [UC0077] Manter Hidrômetro
+	 * Método que obém Dados das Ordens de Serviço relacionadas ao hidrômetro
+	 * 
+	 * @author Anderson Italo
+	 * @date 03/09/2014
+	 */
+	public Collection<OrdemServicoManutencaoHidrometroHelper> pesquisarDadosOrdensServicoManutencaoHidrometro(Integer idHidrometro){
+
+		Collection<OrdemServicoManutencaoHidrometroHelper> retorno = null;
+
+		try{
+
+			retorno = getControladorMicromedicao().pesquisarDadosOrdensServicoManutencaoHidrometro(idHidrometro);
+		}catch(ControladorException ex){
+
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC0078] Filtrar Hidrômetro
+	 * 
+	 * @author Anderson Italo
+	 * @date 04/09/2014
+	 */
+	public Collection pesquisarHidrometroFiltro(FiltroHidrometroHelper filtroHidrometroHelper, Integer numeroPagina){
+
+		Collection retorno = null;
+
+		try{
+
+			retorno = getControladorMicromedicao().pesquisarHidrometroFiltro(filtroHidrometroHelper, numeroPagina);
+		}catch(ControladorException ex){
+
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC0078] Filtrar Hidrômetro
+	 * 
+	 * @author Anderson Italo
+	 * @date 04/09/2014
+	 */
+	public Integer pesquisarHidrometroFiltroTotalRegistros(FiltroHidrometroHelper filtroHidrometroHelper){
+
+		Integer retorno = null;
+
+		try{
+
+			retorno = getControladorMicromedicao().pesquisarHidrometroFiltroTotalRegistros(filtroHidrometroHelper);
+		}catch(ControladorException ex){
+
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+
+		return retorno;
+	}
+
+	public Short existeProcessoExecucaoFiscal(){
+
+		try{
+			return this.getControladorCadastro().existeProcessoExecucaoFiscal();
+		}catch(ControladorException e){
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * @param imovelEmissaoOrdensSeletivaHelper
+	 * @param usuarioLogado
+	 * @return
+	 */
+	public Object[] gerarRelatorioOrdemSeletiva(ImovelEmissaoOrdensSeletivaHelper imovelEmissaoOrdensSeletivaHelper, Usuario usuarioLogado){
+
+		try{
+			return this.getControladorOrdemServico().gerarRelatorioOrdemSeletiva(imovelEmissaoOrdensSeletivaHelper, usuarioLogado);
+		}catch(ControladorException e){
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+		}
+	}
+
+	public boolean verificarTipoRelacaoUsuariaAtivo(Collection<ClienteImovel> colecaoClientesImovel){
+
+		try{
+			return this.getControladorImovel().verificarTipoRelacaoUsuariaAtivo(colecaoClientesImovel);
+		}catch(ControladorException e){
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+		}
+	}
+
+	public Collection<ClienteImovel> obterListaClientesRelacaoDevedor(Integer idImovelOrigem, Integer anoMesInicialReferenciaDebito,
+					Integer anoMesFinalReferenciaDebito, Integer indicadorPagamento, Integer indicadorContasRevisao,
+					Integer indicadorDebitosACobrar, Integer indicadorCreditoARealizar, Integer indicadorNotasPromissorias,
+					Integer indicadorGuiasPagamento, Integer indicadorAcrescimosImpotualidade,
+					Short indicadorNaoConsiderarPagamentoNaoClassificado, Short indicadorMulta, Short indicadorJurosMora,
+					Short indicadorAtualizacaoMonetaria, Integer indicadorCalcularAcrescimosSucumbenciaAnterior,
+					Short indicadorEmissaoDocumento, Integer tipoRelacaoCliente){
+
+		try{
+			return this.getControladorCobranca().obterListaClientesRelacaoDevedor(idImovelOrigem, anoMesInicialReferenciaDebito,
+							anoMesFinalReferenciaDebito, indicadorPagamento, indicadorContasRevisao, indicadorDebitosACobrar,
+							indicadorCreditoARealizar, indicadorNotasPromissorias, indicadorGuiasPagamento,
+							indicadorAcrescimosImpotualidade, indicadorNaoConsiderarPagamentoNaoClassificado, indicadorMulta,
+							indicadorJurosMora, indicadorAtualizacaoMonetaria, indicadorCalcularAcrescimosSucumbenciaAnterior,
+							indicadorEmissaoDocumento, tipoRelacaoCliente);
+		}catch(ControladorException e){
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+		}
+
+	}
+
+	/**
+	 * Método que cria uma coleção de UsuarioAcesso
+	 * 
+	 * @author Saulo Lima
+	 * @date 16/09/2014
+	 */
+	public Collection<UsuarioAcesso> criarColecaoUsuarioAcesso(int indicadorSelecionado){
+
+		try{
+			return this.getControladorUsuario().criarColecaoUsuarioAcesso(indicadorSelecionado);
+		}catch(ControladorException e){
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * Método que pesquisa as retrições de horário de acesso ao sistema de um usuário
+	 * 
+	 * @author Saulo Lima
+	 * @date 20/09/2014
+	 */
+	public Collection<UsuarioAcesso> pesquisarUsuarioAcesso(Integer idUsuario){
+
+		try{
+			return this.getControladorUsuario().pesquisarUsuarioAcesso(idUsuario);
+		}catch(ControladorException e){
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * [UC3156] Simular Cálculo da Conta Dados Reais
+	 * 
+	 * @author Anderson Italo
+	 * @date 22/09/2014
+	 */
+	public Collection pesquisarContasSimularCalculoDadosReais(FiltroContaSimularCalculoHelper helper, Integer numeroPagina){
+
+		try{
+
+			return this.getControladorFaturamento().pesquisarContasSimularCalculoDadosReais(helper, numeroPagina);
+		}catch(ControladorException e){
+
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * /**
+	 * [UC3156] Simular Cálculo da Conta Dados Reais
+	 * 
+	 * @author Anderson Italo
+	 * @date 22/09/2014
+	 */
+	public Integer pesquisarTotalRegistrosContasSimularCalculoDadosReais(FiltroContaSimularCalculoHelper helper){
+
+		try{
+
+			return this.getControladorFaturamento().pesquisarTotalRegistrosContasSimularCalculoDadosReais(helper);
+		}catch(ControladorException e){
+
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+		}
+	}
+
+	public void executarAjusteConversaoAcordoTac(){
+
+		this.enviarMensagemControladorBatch(MetodosBatch.AJUSTE_CONVERSAO_ACORDO_TAC, ConstantesJNDI.QUEUE_CONTROLADOR_FATURAMENTO_MDB,
+						new Object[] {});
+	};
+
+	/**
+	 * Recupera a coleção Entulho Medida.
+	 * 
+	 * @author Genival Barbosa
+	 * @date 20/09/2014
+	 * @return Coleção de EntuhoMedida
+	 */
+	public Collection<EntulhoMedida> pesquisarEntulhoMedida(){
+
+		Collection<EntulhoMedida> retorno = null;
+
+		try{
+
+			retorno = getControladorOrdemServico().pesquisarEntulhoMedida();
+		}catch(ControladorException ex){
+
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * Recupera Entulho Medida.
+	 * 
+	 * @author Genival Barbosa
+	 * @date 20/09/2014
+	 * @return EntulhoMedida
+	 */
+	public EntulhoMedida pesquisarEntulhoMedida(Integer idEntulhoMedida){
+
+		try{
+			return this.getControladorOrdemServico().pesquisarEntulhoMedida(idEntulhoMedida);
+		}catch(ControladorException e){
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+		}
+	}
+
+	public ObterIndicadorExistenciaHidrometroHelper obterIndicadorExistenciaHidrometroLigacaoAguaPoco(Integer idImovel,
+					boolean considerarSituacaoLigacao){
+
+		try{
+			return this.getControladorRegistroAtendimento().obterIndicadorExistenciaHidrometroLigacaoAguaPoco(idImovel,
+							considerarSituacaoLigacao);
+
+		}catch(ControladorException e){
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+		}
+
+	}
+
+	public OrdemServicoProgramacao pesquisarOrdemServicoProgramacaoPorOS(Integer idOrdemServico){
+
+		try{
+			return this.getControladorOrdemServico().pesquisarOSProgramacaoAtivaPorOS(idOrdemServico);
+		}catch(ControladorException e){
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+		}
+	}
+
+	public Integer recuperaQuantidadeDiasUnidade(Integer idOS, Short permiteTramiteIndependente){
+
+		try{
+			return this.getControladorOrdemServico().recuperaQuantidadeDiasUnidade(idOS, permiteTramiteIndependente);
+		}catch(ControladorException e){
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+		}
+	}
+
+	public Boolean validarGerarGuiaPagamentoOS(Integer idServicoTipo, Integer idRegistroAtendimento){
+
+		try{
+			return this.getControladorOrdemServico().validarGerarGuiaPagamentoOS(idServicoTipo, idRegistroAtendimento);
+		}catch(ControladorException e){
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * @param objetoTransacao
+	 */
+
+	public void registrarTransacao(ObjetoTransacao objetoTransacao){
+
+		try{
+
+			this.getControladorTransacao().registrarTransacao(objetoTransacao);
+		}catch(ControladorException e){
+			throw new FachadaException(e.getMessage(), e, e.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * <p>
+	 * [OC1372979]
+	 * </p>
+	 * 
+	 * @author Magno Silveira (magno.silveira@procenge.com.br)
+	 * @since 22/10/2014
+	 * @param imovelCondominio
+	 * @return
+	 */
+	public Collection pesquisarImoveisSubcategoriasParaCondominio(Integer imovelCondominioId){
+
+		try{
+			return this.getControladorImovel().pesquisarImoveisSubcategoriasParaCondominio(imovelCondominioId);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * <p>
+	 * [OC1381720]
+	 * </p>
+	 * 
+	 * @author Magno Silveira (magno.silveira@procenge.com.br)
+	 * @since 22/10/2014
+	 * @param boletoBancarioId
+	 * @return true caso o boleto o cancelamento do boleto seja permitido
+	 */
+	public boolean boletoBancarioPodeSerCancelado(Integer boletoBancarioId){
+
+		try{
+			return this.getControladorCobranca().boletoBancarioPodeSerCancelado(boletoBancarioId);
+		}catch(ControladorException e){
+			throw new FachadaException("erro.sistema", e);
+		}
+	}
+
+	/**
+	 * [UC0101] - Consistir Leituras e Calcular Consumos.
+	 * Permite consistir a leitura e calcular o consumo de um único imóvel para referência do
+	 * faturamento de sistemaParametro
+	 * 
+	 * @author Anderson Italo
+	 * @date 28/10/2014
+	 */
+	public void consistirLeiturasCalcularConsumosPorImovel(Integer IdImovel){
+
+		try{
+
+			this.getControladorMicromedicao().consistirLeiturasCalcularConsumosPorImovel(IdImovel);
+		}catch(ControladorException e){
+			throw new FachadaException("erro.sistema", e);
+		}
+	}
+
+	/**
+	 * [UC0187] Inserir Guia de Pagamento
+	 * Processos das execuções especiais pendentes de cobrança do valor de sucumbência
+	 */
+	public Collection<Integer> pesquisarProcessosExecucaoEspeciaisPendentesCobrancaPorCliente(Integer idCliente){
+
+		try{
+			return this.getControladorFaturamento().pesquisarProcessosExecucaoEspeciaisPendentesCobrancaPorCliente(idCliente);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+
+
+	public void inserirRegistrosTabelaTemporariaRelatorioTotalContasEmitidasLocalidade(Integer anoMesReferencia){
+
+		try{
+			this.getControladorFaturamento().inserirRegistrosTabelaTemporariaRelatorioTotalContasEmitidasLocalidade(anoMesReferencia);
+		}catch(Exception e){
+			throw new FachadaException("erro.sistema", e);
+		}
+	}
+
+	public List<Object[]> gerarRelatorioTotalContasEmitidasLocalidade(Integer anoMesReferencia){
+
+		try{
+			return this.getControladorFaturamento().gerarRelatorioTotalContasEmitidasLocalidade(anoMesReferencia);
+		}catch(ControladorException e){
+			throw new FachadaException("erro.sistema", e);
+		}
+
+	}
+
+	public Long gerarQuantidadeRelatorioTotalContasEmitidasLocalidade(Integer anoMesReferencia){
+
+		try{
+			return this.getControladorFaturamento().gerarQuantidadeRelatorioTotalContasEmitidasLocalidade(anoMesReferencia);
+		}catch(ControladorException e){
+			throw new FachadaException("erro.sistema", e);
+		}
+	}
+
+	public List<Object[]> pesquisarRotasComAlteracaoNasLigacoesEconomiasComReferencia(){
+
+		try{
+			return this.getControladorBatch().pesquisarRotasComAlteracaoNasLigacoesEconomiasComReferencia();
+		}catch(ControladorException e){
+			throw new FachadaException("erro.sistema", e);
+		}
+
+	}
+
+	/**
+	 * @param idClienteResponsavel
+	 * @param colecaoReferencias
+	 * @return
+	 */
+	public BigDecimal obterValorTotalContasParaCancelamento(Integer idClienteResponsavel,
+					Collection<IntervaloReferenciaHelper> colecaoReferencias){
+
+		try{
+			return this.getControladorArrecadacao().obterValorTotalContasParaCancelamento(idClienteResponsavel, colecaoReferencias);
+		}catch(ControladorException e){
+			throw new FachadaException("erro.sistema", e);
+		}
+
+	}
+
+	/**
+	 * @author Yara Souza
+	 * @date 04/03/2014
+	 */
+	public void gerarCreditoARealizarAjuste(Integer referencia, String idGrupos){
+
+		this.enviarMensagemControladorBatch(MetodosBatch.GERAR_CREDITO_A_REALIZAR_AJUSTE, ConstantesJNDI.QUEUE_CONTROLADOR_FATURAMENTO_MDB,
+						new Object[] {referencia, idGrupos});
+	}
+
+	public RegistroAtendimentoUnidade consultarRegistroAtendimentoUnidadeEncerramento(Integer idRA, Integer idUnidade){
+
+		RegistroAtendimentoUnidade retorno = null;
+
+		Collection colecaoRegistroAtendimentoUnidade = null;
+
+		FiltroRegistroAtendimentoUnidade filtroRegistroAtendimentoUnidade = new FiltroRegistroAtendimentoUnidade();
+
+		filtroRegistroAtendimentoUnidade.adicionarParametro(new ParametroSimples(FiltroRegistroAtendimentoUnidade.REGISTRO_ATENDIMENTO_ID,
+						idRA));
+
+		filtroRegistroAtendimentoUnidade.adicionarParametro(new ParametroSimples(
+						FiltroRegistroAtendimentoUnidade.UNIDADE_ORGANIZACIONAL_ID, idUnidade));
+		filtroRegistroAtendimentoUnidade.adicionarParametro(new ParametroSimples(
+						FiltroRegistroAtendimentoUnidade.ATENDIMENTO_RELACAO_TIPO_ID, AtendimentoRelacaoTipo.ENCERRAR));
+
+		filtroRegistroAtendimentoUnidade.adicionarCaminhoParaCarregamentoEntidade(FiltroRegistroAtendimentoUnidade.USUARIO);
+
+		colecaoRegistroAtendimentoUnidade = pesquisar(filtroRegistroAtendimentoUnidade, RegistroAtendimentoUnidade.class.getName());
+
+		if(colecaoRegistroAtendimentoUnidade != null && !colecaoRegistroAtendimentoUnidade.isEmpty()){
+			retorno = (RegistroAtendimentoUnidade) Util.retonarObjetoDeColecao(colecaoRegistroAtendimentoUnidade);
+
+		}
+
+		return retorno;
+	}
+
+	public Collection<DocumentoTipo> pesquisarDocumentoTipoModelo(){
+
+		try{
+			return this.getControladorCobranca().pesquisarDocumentoTipoModelo();
+		}catch(ControladorException e){
+			throw new FachadaException("erro.sistema", e);
+		}
+
+	}
+
+	public Collection<DocumentoTipoLayoutCobrancaAcaoHelper> pesquisarDocumentoTipoLayoutPorAcaoCobranca(Integer idAcaoCobranca,
+					Short indicadorUsoDocumentoTipoLayout){
+
+		try{
+			return this.getControladorCobranca().pesquisarDocumentoTipoLayoutPorAcaoCobranca(idAcaoCobranca,
+							indicadorUsoDocumentoTipoLayout);
+		}catch(ControladorException e){
+			throw new FachadaException("erro.sistema", e);
+		}
+
+	}
+
+	/**
+	 * [UC3165] Gerar Relatório Posição do Débito da Negativação - Legado CAGEPA
+	 * Pesquisar as contas em processo de negativação e já transferidas para o histórico
+	 * 
+	 * @date 07/03/2015
+	 * @author Luciano Galvão
+	 */
+	public Collection<ContaHistorico> pesquisarContaEmProcessoNegativacaoCagepa(Integer anoMesFaturamento){
+
+		try{
+			return getControladorFaturamento().pesquisarContaEmProcessoNegativacaoCagepa(anoMesFaturamento);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+	/**
+	 * Efetua a instalaçao de varios hidrometros em lote
+	 * 
+	 * @author
+	 * @param
+	 * @date
+	 */
+
+	public Collection[] efetuarInstalacaoHidrometrosComLigacaoAguaEmLote(InputStream inputStream, Usuario usuario){
+
+		try{
+			return getControladorAtendimentoPublico().efetuarInstalacaoHidrometrosComLigacaoAguaEmLote(inputStream, usuario);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	/**
+	 * @author Magno Silveira <magno.silveira@procenge.com.br>
+	 * @since 16/04/2015
+	 * @param idImovel
+	 * @param paramMotivoRetificaoOcorrenciaConsumo
+	 * @return
+	 */
+	public int obterQtdContasRetificadasPorMotivoRetificacao(Integer idImovel, Integer paramMotivoRetificaoOcorrenciaConsumo){
+
+		try{
+			return this.getControladorFaturamento().obterQtdContasRetificadasPorMotivoRetificacao(idImovel,
+							paramMotivoRetificaoOcorrenciaConsumo);
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
+		}
+	}
+
+	public Collection<Categoria> obterCategorias(Integer idImovel, Integer anoMesMovimento){
+
+		return this.getControladorImovel().obterCategorias(idImovel, anoMesMovimento);
+
+	}
+
+	public Integer retornarAnoMesReferenciaFaturamentoGrupoImovel(Integer idImovel){
+
+		try{
+
+			return this.getControladorImovel().retornarAnoMesReferenciaFaturamentoGrupoImovel(idImovel);
+
+		}catch(ControladorException ex){
+			throw new FachadaException(ex.getMessage(), ex, ex.getParametroMensagem());
 		}
 
 	}

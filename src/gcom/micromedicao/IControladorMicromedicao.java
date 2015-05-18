@@ -86,9 +86,7 @@ import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.faturamento.FaturamentoAtividadeCriterio;
 import gcom.faturamento.FaturamentoGrupo;
 import gcom.gui.micromedicao.DadosMovimentacao;
-import gcom.micromedicao.bean.AnaliseConsumoRelatorioOSHelper;
-import gcom.micromedicao.bean.GerarDadosParaLeituraHelper;
-import gcom.micromedicao.bean.HidrometroRelatorioOSHelper;
+import gcom.micromedicao.bean.*;
 import gcom.micromedicao.consumo.ConsumoHistorico;
 import gcom.micromedicao.consumo.ConsumoTipo;
 import gcom.micromedicao.consumo.LigacaoTipo;
@@ -400,11 +398,28 @@ public interface IControladorMicromedicao {
 	public void desfazerVinculo(Imovel imovel, String[] ids, boolean desvincular, Usuario usuarioLogado) throws ControladorException;
 
 	/**
-	 * [UC0082] - Registrar Leituras e Anormalidades Autor: Sávio Luiz Data:
-	 * 04/01/2006
+	 * [UC0082] / [UC0712] - Registrar Leituras e Anormalidades Autor: Sávio
+	 * Luiz Data: 04/01/2006
+	 * 
+	 * @author eduardo henrique
+	 * @date 11/09/2008 Alterações na geração da Medição Histórico, adição da
+	 *       informação de Créditos de Consumo.
+	 * @author eduardo henrique
+	 * @date 07/01/2009 Alteração no método para somente marcar a atividade como
+	 *       concluída, quando não existir nenhhum MovimentRoteiroEmpresa com
+	 *       indicador de Fase <> '2'
+	 * @author eduardo henrique
+	 * @date 17/01/2009 Aumento do nr. de imóveis por consulta de medição, para
+	 *       otimização de performance Oracle.
+	 * @author eduardo henrique
+	 * @date 19/01/2009 Alteração na definição de confirmação de Leitura
+	 *       Realizada.
+	 * @author eduardo henrique
+	 * @date 21/01/2009 Alteração no critério de considerar Leitura
+	 *       Realizada/Não Realizada.
 	 */
-	public void registrarLeiturasAnormalidades(Collection<MedicaoHistorico> colecaoMedicaoHistorico, Integer idFaturamentoGrupo,
-					Integer anoMesReferencia, Usuario usuario) throws ControladorException;
+	public void registrarLeiturasAnormalidades(Collection<Rota> colecaoRota, Integer idFaturamentoGrupo, Integer anoMesReferenciaGrupo,
+					Usuario usuario, int idFuncionalidadeIniciada) throws ControladorException;
 
 	public Collection pesquisarHidrometroPorHidrometroMovimentacao(Filtro filtro) throws ControladorException;
 
@@ -1419,24 +1434,6 @@ public interface IControladorMicromedicao {
 					throws ControladorException;
 
 	/**
-	 * [UC00082] Registrar Leituras e Anormalidades
-	 * 
-	 * @author Sávio Luiz
-	 * @date 29/08/2007
-	 * @author eduardo henrique
-	 * @date 11/09/2008
-	 *       Alteração na forma de Consulta dos Registros de Movimento a serem processados.(v0.05)
-	 * @author eduardo henrique
-	 * @date 10/12/2008
-	 *       Inclusão do ano/mês referência na consulta dos Movimentos que serão processados.
-	 * @param idGrupoFaturamento
-	 * @param anoMesReferencia
-	 * @throws ErroRepositorioException
-	 */
-	public Collection<MedicaoHistorico> criarMedicoesHistoricoRegistrarLeituraAnormalidade(Integer idGrupoFaturamento,
-					Integer anoMesReferencia, Collection<Rota> colecaoRota) throws ControladorException;
-
-	/**
 	 * [UC0631] Processar Requisições do Dispositivo Móvel.
 	 * [SB0001] Baixar Arquivo Texto para o Leiturista.
 	 * 
@@ -1841,7 +1838,8 @@ public interface IControladorMicromedicao {
 	 * @throws ControladorException
 	 */
 	public void atualizarConsumosMedioHistoricoConsumos(Integer idImovel, Integer anoMesGrupoFaturamento, int consumoMedioImovel,
-					int consumoMedioHidrometroAgua, int consumoMedioHidrometroEsgoto, Usuario usuario) throws ControladorException;
+					int consumoMedioHidrometroAgua, int consumoMedioHidrometroEsgoto, Usuario usuario, int consumoMedioMedidoImovel)
+					throws ControladorException;
 
 	/**
 	 * Consultar última medição histórico do imóvel
@@ -1917,7 +1915,7 @@ public interface IControladorMicromedicao {
 	 * @date 17/08/2011
 	 */
 	public void inserirMovimentoRoteiroEmpresa(SistemaParametro sistemaParametro, Imovel imovelParaSerGerado, Integer anoMesCorrente,
-					FuncionalidadeIniciada funcionalidade, Date dataPrevistaAtividadeLeitura, Integer idGrupoFaturamentoRota)
+					Integer idUsuarioGeracao, Date dataPrevistaAtividadeLeitura, Integer idGrupoFaturamentoRota)
 					throws ControladorException, ErroRepositorioException;
 
 	/**
@@ -2244,7 +2242,8 @@ public interface IControladorMicromedicao {
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Collection pesquisarQuadroHidrometros(Date dataReferencia) throws ControladorException;
+	public Collection pesquisarQuadroHidrometros(Date dataReferencia, Integer idLocalidade, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio) throws ControladorException;
 
 	/**
 	 * [OC0791503] - Count Relatório Quadro de Hidrômetros
@@ -2254,7 +2253,8 @@ public interface IControladorMicromedicao {
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Integer pesquisarQuadroHidrometrosCount(Date dataReferencia) throws ControladorException;
+	public Integer pesquisarQuadroHidrometrosCount(Date dataReferencia, Integer idLocalidade, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio) throws ControladorException;
 
 	/**
 	 * [OC0791503] - Relatório Quadro de Hidrômetros por Ano de Instalação
@@ -2284,7 +2284,9 @@ public interface IControladorMicromedicao {
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Integer pesquisarQuadroHidrometrosSituacaoCount(Date dataInicial, Date dataFinal) throws ControladorException;
+	public Integer pesquisarQuadroHidrometrosSituacaoCount(Date dataInicial, Date dataFinal, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio, Integer idUnidadeFederacao, Integer idLocalidade, Integer idHidrometroCapacidade,
+					Integer idHidrometroMarca, Integer idHidrometroDiametro) throws ControladorException;
 
 	/**
 	 * [OC0791503] - Count Relatório Quadro de Hidrômetros Situação
@@ -2294,6 +2296,57 @@ public interface IControladorMicromedicao {
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Collection pesquisarQuadroHidrometrosSituacao(Date dataInicial, Date dataFinal) throws ControladorException;
+	public Collection pesquisarQuadroHidrometrosSituacao(Date dataInicial, Date dataFinal, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio, Integer idUnidadeFederacao, Integer idLocalidade, Integer idHidrometroCapacidade,
+					Integer idHidrometroMarca, Integer idHidrometroDiametro) throws ControladorException;
+	
+	/**
+	 * [UC0103] Efetuar Rateio de Consumo
+	 * [SB0009] - Determinar Rateio de Valor de Água por Imóvel
+	 * 
+	 * @author Anderson Italo
+	 * @date 16/07/2014
+	 */
+	public Object[] calcularValorRateioAguaEsgotoImovelCondominio(Imovel imovelCondominio, Integer anoMesFaturamento,
+					Integer consumoAguaSerRateado, Integer quantidadeLigacaoesFilhas) throws ControladorException;
+
+	/**
+	 * [UC0077] Manter Hidrômetro
+	 * Método que obém Dados das Ordens de Serviço relacionadas ao hidrômetro
+	 * 
+	 * @author Anderson Italo
+	 * @date 03/09/2014
+	 */
+	public Collection<OrdemServicoManutencaoHidrometroHelper> pesquisarDadosOrdensServicoManutencaoHidrometro(Integer idHidrometro)
+					throws ControladorException;
+
+	/**
+	 * [UC0078] Filtrar Hidrômetro
+	 * 
+	 * @author Anderson Italo
+	 * @date 04/09/2014
+	 */
+	public Collection pesquisarHidrometroFiltro(FiltroHidrometroHelper filtroHidrometroHelper, Integer numeroPagina)
+					throws ControladorException;
+
+	/**
+	 * [UC0078] Filtrar Hidrômetro
+	 * 
+	 * @author Anderson Italo
+	 * @date 04/09/2014
+	 */
+	public Integer pesquisarHidrometroFiltroTotalRegistros(FiltroHidrometroHelper filtroHidrometroHelper) throws ControladorException;
+
+	/**
+	 * [UC0101] - Consistir Leituras e Calcular Consumos.
+	 * Permite consistir a leitura e calcular o consumo de um único imóvel para referência do
+	 * faturamento de sistemaParametro
+	 * 
+	 * @author Anderson Italo
+	 * @date 28/10/2014
+	 */
+	public void consistirLeiturasCalcularConsumosPorImovel(Integer IdImovel) throws ControladorException;
+
+
 
 }

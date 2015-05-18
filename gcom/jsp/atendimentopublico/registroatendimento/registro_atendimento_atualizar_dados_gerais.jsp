@@ -230,6 +230,21 @@
 		}
 	}
 
+	   
+	function consultarServicosAssociados(){
+			
+			var form = document.forms[0];
+			var especificacao = form.especificacao.value;
+			
+			if (!isNaN(especificacao) && especificacao.length > 0 && especificacao.indexOf(',') == -1 &&
+					especificacao.indexOf('.') == -1 && ((especificacao * 1) > 0)){
+				
+				abrirPopup("/gsan/exibirConsultarServicoAssociadoAction.do?idSolicitacaoTipoEspecificacao=" + especificacao, 400, 690);
+			}
+		
+	}
+	
+	
 //-->
 </SCRIPT>
 
@@ -493,6 +508,21 @@
 							<html:option value="">&nbsp;</html:option>
 						</html:select>
 					</logic:notPresent></td>
+					
+					
+						<td>		
+		  				<logic:present name="exibirBotaoServicoAssociado">
+	       				 <tr>
+	         				  <td colspan="3" HEIGHT="10" align="right">
+	         					<input type="button" class="bottonRightCol" value="Consultar Serviços Associados à Especificação" id="botaoRecuperarDados" align="right" onclick="consultarServicosAssociados();">	
+	        				 </td>
+	      				 </tr>
+           				</logic:present>
+						</td>
+					
+					
+					
+					
 				</tr>
 				<tr>
 					<td HEIGHT="30"><strong>Data Prevista:</strong></td>

@@ -42,6 +42,18 @@ public class AtualizarGuiaPagamentoActionForm
 
 	private String[] numeroPrestacao;
 
+	private String idRegistroAtendimento;
+
+	public String getIdRegistroAtendimento(){
+
+		return idRegistroAtendimento;
+	}
+
+	public void setIdRegistroAtendimento(String idRegistroAtendimento){
+
+		this.idRegistroAtendimento = idRegistroAtendimento;
+	}
+
 	public String getCodigoCliente(){
 
 		return codigoCliente;

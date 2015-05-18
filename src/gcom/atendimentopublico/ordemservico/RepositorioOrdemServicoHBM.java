@@ -83,6 +83,7 @@ import gcom.atendimentopublico.ordemservico.bean.OrdemServicoSeletivaComandoHelp
 import gcom.atendimentopublico.ordemservico.bean.PesquisarOrdemServicoHelper;
 import gcom.atendimentopublico.registroatendimento.*;
 import gcom.cadastro.empresa.Empresa;
+import gcom.cadastro.geografico.Bairro;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.imovel.PavimentoCalcada;
 import gcom.cadastro.imovel.PavimentoRua;
@@ -110,6 +111,8 @@ import gcom.util.*;
 import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.hibernate.*;
@@ -160,7 +163,7 @@ public class RepositorioOrdemServicoHBM
 	 * @return Collection<OrdemServico>
 	 * @throws ControladorException
 	 */
-	public Collection<OrdemServico> pesquisarOrdemServico(PesquisarOrdemServicoHelper filtro, Integer permiteTramiteIndependente)
+	public Collection<OrdemServico> pesquisarOrdemServico(PesquisarOrdemServicoHelper filtro, Short permiteTramiteIndependente)
 					throws ErroRepositorioException{
 
 		Collection<OrdemServico> retorno = null;
@@ -202,6 +205,14 @@ public class RepositorioOrdemServicoHBM
 		Integer bairro = filtro.getBairro();
 		Integer areaBairro = filtro.getAreaBairro();
 		Integer logradouro = filtro.getLogradouro();
+		String situacaoDocumentoCobranca = filtro.getSituacaoDocumentoCobranca();
+
+		Date dataPrevisaoClienteInicial = filtro.getDataPrevisaoClienteInicial();
+		Date dataPrevisaoClienteFinal = filtro.getDataPrevisaoClienteFinal();
+
+		String indicadorReparo = filtro.getIndicadorReparo();
+
+		Integer quantidadeDiasUnidade = filtro.getQuantidadeDiasUnidade();
 
 		int numeroPagina = filtro.getNumeroPaginasPesquisa();
 
@@ -230,7 +241,8 @@ public class RepositorioOrdemServicoHBM
 							+ "os.dataEmissao, " // 8
 							+ "cobrancaDocumento.imovel.id, " // 9
 							+ "ra.imovel.id, " // 10
-							+ "os.dataExecucao "; // 11
+							+ "os.dataExecucao, " // 11
+							+ "cobDeb.descricao"; // 12
 
 			if(equipe != null || (programado != null && programado.intValue() != ConstantesSistema.TODOS.intValue())){
 				from = " FROM OrdemServicoUnidade osUnidade, OrdemServicoProgramacao osp ";
@@ -241,9 +253,52 @@ public class RepositorioOrdemServicoHBM
 			from += " INNER JOIN osUnidade.ordemServico os INNER JOIN os.servicoTipo servicotipo "
 							+ " LEFT JOIN os.registroAtendimento ra " + " LEFT JOIN os.cobrancaDocumento cobra "
 							+ " LEFT JOIN os.imovel imovel  LEFT JOIN os.cobrancaDocumento cobrancaDocumento "
+							+ " LEFT JOIN cobrancaDocumento.cobrancaDebitoSituacao cobDeb "
 							+ " LEFT JOIN os.registroAtendimento ra ";
 
+			if(situacaoDocumentoCobranca != null && !situacaoDocumentoCobranca.equals("") && !situacaoDocumentoCobranca.equals("-1")){
+				from += " INNER JOIN os.cobrancaDocumento cobDoc ";
+			}
+
 			where = " WHERE 1 = 1 ";
+
+			if(indicadorReparo != null){
+				from += " LEFT JOIN os.ordemServicoReparo ordemServicoReparo ";
+				if(indicadorReparo.equals("1")){
+					where += " AND servicotipo.indicadorVala = 1 ";
+					where += " AND ordemServicoReparo is not null ";
+				}else if(indicadorReparo.equals("2")){
+					where += " AND servicotipo.indicadorVala = 1 ";
+					where += " AND ordemServicoReparo is null ";
+				}else{
+					where += " AND servicotipo.indicadorVala = 1 ";
+				}
+			}
+
+			// SITUACAO PENDENTE
+			if(situacaoDocumentoCobranca != null && !situacaoDocumentoCobranca.equals("") && situacaoDocumentoCobranca.equals("1")){
+				where += " AND cobDoc.cobrancaDebitoSituacao.descricao = (:cobrancaDebitoSituacao) ";
+				parameters.put("cobrancaDebitoSituacao", "PENDENTE");
+			//DIFERENTE DE PENDENTE	
+			}else if(situacaoDocumentoCobranca != null && !situacaoDocumentoCobranca.equals("") && situacaoDocumentoCobranca.equals("2")){
+				where += " AND cobDoc.cobrancaDebitoSituacao.descricao <> (:cobrancaDebitoSituacao) ";
+				parameters.put("cobrancaDebitoSituacao", "PENDENTE");
+				//AMBOS
+			}else if(situacaoDocumentoCobranca != null && !situacaoDocumentoCobranca.equals("") && situacaoDocumentoCobranca.equals("0")){
+				where += " AND cobDoc is not null ";
+			}
+
+			// Período de Previsão para Cliente
+			if(dataPrevisaoClienteInicial != null && dataPrevisaoClienteFinal != null){
+
+				where += " AND os.registroAtendimento.dataPrevistaAtual BETWEEN (:dataPrevisaoClienteInicial) AND (:dataPrevisaoClienteFinal) ";
+
+				dataPrevisaoClienteInicial = Util.formatarDataInicial(dataPrevisaoClienteInicial);
+				dataPrevisaoClienteFinal = Util.adaptarDataFinalComparacaoBetween(dataPrevisaoClienteFinal);
+
+				parameters.put("dataPrevisaoClienteInicial", dataPrevisaoClienteInicial);
+				parameters.put("dataPrevisaoClienteFinal", dataPrevisaoClienteFinal);
+			}
 
 			if(numeroRA != null){
 				where += " AND os.registroAtendimento.id = (:numeroRA) ";
@@ -517,6 +572,22 @@ public class RepositorioOrdemServicoHBM
 				parameters.put("logradouroId", new Integer(logradouro));
 			}
 
+			if(quantidadeDiasUnidade != null && quantidadeDiasUnidade >= 0){
+
+				if(permiteTramiteIndependente.intValue() == 1){
+					from += "left join os.tramites tramites ";
+					where += " and trunc(CURRENT_DATE()) - trunc(tramites.dataTramite) >= :quantidadeDiasUnidade ";
+					parameters.put("quantidadeDiasUnidade", quantidadeDiasUnidade);
+				}else{
+					from += "left join os.registroAtendimento.tramites tramites ";
+					where += " and trunc(CURRENT_DATE()) - trunc(tramites.dataTramite) >= :quantidadeDiasUnidade ";
+					parameters.put("quantidadeDiasUnidade", quantidadeDiasUnidade);
+				}
+			}
+
+			where += "order by os.id asc";
+
+
 			query = session.createQuery(select + from + where);
 
 			Set set = parameters.keySet();
@@ -589,11 +660,18 @@ public class RepositorioOrdemServicoHBM
 
 					os.setDataGeracao((Date) element[6]);
 					os.setDataEncerramento((Date) element[7]);
-					os.setDataExecucao((Date) element[11]);
+
+					if(element[11] != null){
+						os.setDataExecucao((Date) element[11]);
+					}
+
 					os.setDataEmissao((Date) element[8]);
 					os.setCobrancaDocumento(cobranca);
 					os.setRegistroAtendimento(registro);
 					os.setServicoTipo(servicoTipo);
+					if(element[12] != null){
+						os.setSituacaoDocumentoDebito((String) element[12]);
+					}
 
 					retorno.add(os);
 				}
@@ -2291,8 +2369,14 @@ public class RepositorioOrdemServicoHBM
 							+ " servTip.indicadorVala, " // 51
 							+ " servTip.indicadorCausaOcorrencia, " // 52
 							+ " servTip.indicadorFiscalizacaoSituacao, "// 53
-							+ " orse.dataExecucao " // 54
+							+ " orse.dataExecucao, " // 54
+							+ " servTip.indicadorAfericaoHidrometro, " // 55
+							+ " orre.id, " // 56
+							+ " orse.valorHorasTrabalhadas, " // 57
+							+ " orse.valorMateriais, " // 58
+							+ " rgat.dataPrevistaAtual " // 59
 							+ " FROM OrdemServico orse "
+							+ " LEFT JOIN orse.ordemServicoReparo orre "
 							+ " LEFT JOIN orse.registroAtendimento rgat "
 							+ " LEFT JOIN orse.cobrancaDocumento doc "
 							+ " LEFT JOIN orse.servicoTipo servTip "
@@ -2324,6 +2408,7 @@ public class RepositorioOrdemServicoHBM
 					registroAtendimento = new RegistroAtendimento();
 					registroAtendimento.setId((Integer) retornoConsulta[2]);
 					registroAtendimento.setCodigoSituacao((Short) retornoConsulta[3]);
+					registroAtendimento.setDataPrevistaAtual((Date) retornoConsulta[59]);
 				}
 				retorno.setRegistroAtendimento(registroAtendimento);
 				CobrancaDocumento cobranca = null;
@@ -2387,6 +2472,11 @@ public class RepositorioOrdemServicoHBM
 					if(retornoConsulta[35] != null){
 						servicoTipo.setIndicadorVistoria((Short) retornoConsulta[35]);
 
+					}
+
+					if(retornoConsulta[55] != null){
+
+						servicoTipo.setIndicadorAfericaoHidrometro((Short) retornoConsulta[55]);
 					}
 				}
 				retorno.setServicoTipo(servicoTipo);
@@ -2488,6 +2578,24 @@ public class RepositorioOrdemServicoHBM
 
 					retorno.setDataExecucao((Date) retornoConsulta[54]);
 				}
+
+				OrdemServico osReparo = null;
+				if((Integer) retornoConsulta[56] != null){
+					osReparo = new OrdemServico();
+					osReparo.setId((Integer) retornoConsulta[56]);
+				}
+				retorno.setOrdemServicoReparo(osReparo);
+				
+				if(retornoConsulta[57] != null){
+
+					retorno.setValorHorasTrabalhadas((BigDecimal) retornoConsulta[57]);
+				}
+
+				if(retornoConsulta[58] != null){
+
+					retorno.setValorMateriais((BigDecimal) retornoConsulta[58]);
+				}
+				
 
 			}
 		}catch(HibernateException e){
@@ -2811,7 +2919,7 @@ public class RepositorioOrdemServicoHBM
 	 * @date 04/09/2006
 	 */
 	public Collection<ServicoPerfilTipo> pesquisarServicoPerfilTipoPorUnidade(Integer unidadeLotacao, Integer origemServico,
-					Integer permiteTramiteIndependente) throws ErroRepositorioException{
+					Short permiteTramiteIndependente) throws ErroRepositorioException{
 
 		Collection<ServicoPerfilTipo> retorno = new ArrayList<ServicoPerfilTipo>();
 
@@ -3448,7 +3556,7 @@ public class RepositorioOrdemServicoHBM
 	 * @date 16/02/2012
 	 *       Mudança para desvincular a OS do RA
 	 */
-	public Collection<ServicoTipo> pesquisarServicoTipoPorRA(Integer idUnidadeDestino, Integer permiteTramiteIndependente)
+	public Collection<ServicoTipo> pesquisarServicoTipoPorRA(Integer idUnidadeDestino, Short permiteTramiteIndependente)
 					throws ErroRepositorioException{
 
 		Collection<ServicoTipo> retornoConsulta = new ArrayList();
@@ -3500,7 +3608,7 @@ public class RepositorioOrdemServicoHBM
 	 * @date 16/02/2012
 	 *       Mudança para desvincular a OS do RA
 	 */
-	public Collection<Localidade> pesquisarLocalidadePorRA(Integer idUnidadeDestino, Integer permiteTramiteIndependente)
+	public Collection<Localidade> pesquisarLocalidadePorRA(Integer idUnidadeDestino, Short permiteTramiteIndependente)
 					throws ErroRepositorioException{
 
 		Collection<Localidade> retornoConsulta = new ArrayList<Localidade>();
@@ -3649,7 +3757,7 @@ public class RepositorioOrdemServicoHBM
 	 * @date 16/02/2012
 	 *       Mudança para desvincular a OS do RA
 	 */
-	public Collection<SetorComercial> pesquisarSetorComercialPorRA(Integer idUnidadeDestino, Integer permiteTramiteIndependente)
+	public Collection<SetorComercial> pesquisarSetorComercialPorRA(Integer idUnidadeDestino, Short permiteTramiteIndependente)
 					throws ErroRepositorioException{
 
 		Collection<SetorComercial> retornoConsulta = new ArrayList();
@@ -3702,7 +3810,7 @@ public class RepositorioOrdemServicoHBM
 	 * @date 16/02/2012
 	 *       Mudança para desvincular a OS do RA
 	 */
-	public Collection<DistritoOperacional> pesquisarDistritoOperacionalPorRA(Integer idUnidadeDestino, Integer permiteTramiteIndependente)
+	public Collection<DistritoOperacional> pesquisarDistritoOperacionalPorRA(Integer idUnidadeDestino, Short permiteTramiteIndependente)
 					throws ErroRepositorioException{
 
 		Collection<Object[]> retornoConsulta = new ArrayList();
@@ -3769,7 +3877,8 @@ public class RepositorioOrdemServicoHBM
 	 *       Mudança para desvincular a OS do RA
 	 */
 	public Collection<UnidadeOrganizacional> pesquisarUnidadeOrganizacionalPorRA(Integer idUnidadeDestino,
-					Integer permiteTramiteIndependente) throws ErroRepositorioException{
+ Short permiteTramiteIndependente)
+					throws ErroRepositorioException{
 
 		Collection<Object[]> retornoConsulta = null;
 		Collection<UnidadeOrganizacional> retorno = new ArrayList();
@@ -3924,8 +4033,9 @@ public class RepositorioOrdemServicoHBM
 
 		try{
 			consulta = " SELECT eqpe.id, eqpe.nome, eqpe.placaVeiculo, eqpe.cargaTrabalho, "
-							+ " unid.id, unid.descricao, sptp.id, sptp.descricao" + " FROM Equipe eqpe "
+							+ " unid.id, unid.descricao, sptp.id, sptp.descricao, eqtp.id, eqtp.descricao " + " FROM Equipe eqpe "
 							+ " INNER JOIN eqpe.unidadeOrganizacional unid " + " INNER JOIN eqpe.servicoPerfilTipo sptp "
+							+ " LEFT JOIN eqpe.equipeTipo eqtp "
 							+ " WHERE eqpe.id = :idEquipe ";
 
 			retorno = session.createQuery(consulta).setInteger("idEquipe", idEquipe).setMaxResults(1).list();
@@ -4040,7 +4150,7 @@ public class RepositorioOrdemServicoHBM
 	 * @throws ErroRepositorioException
 	 */
 	public Collection<OrdemServico> pesquisarOrdemServicoElaborarProgramacao(PesquisarOrdemServicoHelper filtro,
-					Integer permiteTramiteIndependente) throws ErroRepositorioException{
+					Short permiteTramiteIndependente) throws ErroRepositorioException{
 
 		Collection<OrdemServico> retorno = new ArrayList();
 		Collection<Object[]> retornoConsulta = new ArrayList();
@@ -4069,6 +4179,8 @@ public class RepositorioOrdemServicoHBM
 		Date dataPrevisaoAgenciaFinal = filtro.getDataPrevisaoAgenciaFinal();
 
 		String indicadorProcessoAdmJud = filtro.getIndicadorProcessoAdmJud();
+
+		Integer quantidadeDiasUnidade = filtro.getQuantidadeDiasUnidade();
 
 		Integer[] unidadeLotacao = new Integer[1];
 		unidadeLotacao[0] = filtro.getUnidadeLotacao();
@@ -4163,7 +4275,27 @@ public class RepositorioOrdemServicoHBM
 				}
 			}
 
+			if(quantidadeDiasUnidade != null && quantidadeDiasUnidade > 0){
+
+				if(permiteTramiteIndependente.intValue() == 1){
+					consulta += "left join os.tramites tramites ";
+
+				}else{
+					consulta += "left join os.registroAtendimento.tramites tramites ";
+
+				}
+			}
+
 			consulta += " WHERE os.situacao in (1,3) ";
+			if(quantidadeDiasUnidade != null && quantidadeDiasUnidade > 0){
+				if(permiteTramiteIndependente.intValue() == 1){
+					consulta += " and trunc(CURRENT_DATE()) - trunc(tramites.dataTramite) >= :quantidadeDiasUnidade ";
+				parameters.put("quantidadeDiasUnidade", Double.valueOf(quantidadeDiasUnidade));
+			}else{
+					consulta += " and trunc(CURRENT_DATE()) - trunc(tramites.dataTramite) >= :quantidadeDiasUnidade ";
+				parameters.put("quantidadeDiasUnidade", Double.valueOf(quantidadeDiasUnidade));
+			}
+			}
 
 			consulta += "AND os.indicadorProgramada = :naoProgramada ";
 			parameters.put("naoProgramada", OrdemServico.NAO_PROGRAMADA);
@@ -4273,6 +4405,51 @@ public class RepositorioOrdemServicoHBM
 
 							consulta += " AND ( raDistrito.id in (:idServicoTipo) OR ";
 							consulta += " imovDistrito.id in (:idServicoTipo) ) ";
+						}
+
+						break;
+					case 7:
+
+						// Bairro
+						// Solicitados
+						if(origemServico == 1){
+
+							consulta += " AND  exists( select 1 from LogradouroBairro logBairr "
+											+ " where ra.logradouroBairro.id = logBairr.id and logBairr.bairro.id in (:idServicoTipo) )";
+
+							// Selecionados
+						}else if(origemServico == 2){
+							consulta += " AND  exists( select 1 from LogradouroBairro logBairr "
+											+ " where imov.logradouroBairro.id = logBairr.id and logBairr.bairro.id in (:idServicoTipo) )";
+
+							// Ambos
+						}else{
+
+							consulta += " AND  ( exists( select 1 from LogradouroBairro logBairr "
+											+ " where ra.logradouroBairro.id = logBairr.id and logBairr.bairro.id in (:idServicoTipo)) OR ";
+							consulta += " exists( select 1 from LogradouroBairro logBairr "
+											+ " where imov.logradouroBairro.id = logBairr.id and logBairr.bairro.id in (:idServicoTipo) ) ) ";
+						}
+
+						break;
+					case 8:
+
+						// Prioridade
+						// Solicitados
+						if(origemServico == 1){
+
+							consulta += " AND  ra.id is not null and os.servicoTipoPrioridadeAtual.id in (:idServicoTipo) ";
+
+							// Selecionados
+						}else if(origemServico == 2){
+
+							consulta += " AND  ra.id is null and os.servicoTipoPrioridadeAtual.id in (:idServicoTipo) ";
+
+							// Ambos
+						}else{
+
+							consulta += " AND  ( (ra.id is not null and os.servicoTipoPrioridadeAtual.id in (:idServicoTipo)) OR ";
+							consulta += " (ra.id is null and os.servicoTipoPrioridadeAtual.id in (:idServicoTipo)) ) ";
 						}
 
 						break;
@@ -4435,7 +4612,7 @@ public class RepositorioOrdemServicoHBM
 			}
 
 			// if(origemServico == 3){
-			consulta += " ORDER BY imovLocal.id, imovSetor.id, imovQuadra.id ";
+			consulta += " ORDER BY imovLocal.id, imovSetor.id, imovQuadra.id, servicoTipoPrioridadeAtual.id ";
 			// }
 
 			query = session.createQuery(consulta);
@@ -4540,7 +4717,11 @@ public class RepositorioOrdemServicoHBM
 
 					os.setDataGeracao((Date) element[5]);
 					os.setDataEncerramento((Date) element[6]);
-					os.setDataExecucao((Date) element[17]);
+
+					if(element[11] != null){
+						os.setDataExecucao((Date) element[17]);
+					}
+
 					os.setSituacao((Short) element[8]);
 
 					os.setCobrancaDocumento(cobranca);
@@ -5241,7 +5422,8 @@ public class RepositorioOrdemServicoHBM
 							+ " m.id, " // 4
 							+ " m.descricao, " // 5
 							+ " mu.id, " // 6
-							+ " mu.descricao " // 7
+							+ " mu.descricao, " // 7
+							+ " osame.valorMaterial " // 8
 							+ "FROM OsAtividadeMaterialExecucao osame "
 							+ "INNER JOIN osame.material m  "
 							+ "INNER JOIN m.materialUnidade mu  "
@@ -5272,6 +5454,7 @@ public class RepositorioOrdemServicoHBM
 					material.setId((Integer) execucao[4]);
 					material.setDescricao((String) execucao[5]);
 					osAtividadeMaterialExecucao.setMaterial(material);
+					osAtividadeMaterialExecucao.setValorMaterial((BigDecimal) execucao[8]);
 					MaterialUnidade materialUnidade = new MaterialUnidade();
 					materialUnidade.setId((Integer) execucao[6]);
 					materialUnidade.setDescricao((String) execucao[7]);
@@ -5312,7 +5495,8 @@ public class RepositorioOrdemServicoHBM
 							+ " a.id, " // 3
 							+ " a.descricao, " // 4
 							+ " e.id, " // 5
-							+ " e.nome " // 6
+							+ " e.nome, " // 6
+							+ " osape.valorAtividadePeriodo " // 7
 							+ "FROM OsExecucaoEquipe osee "
 							+ "INNER JOIN osee.equipe e "
 							+ "INNER JOIN osee.osAtividadePeriodoExecucao osape  "
@@ -5336,6 +5520,7 @@ public class RepositorioOrdemServicoHBM
 					osAtividadePeriodoExecucao.setId((Integer) periodo[0]);
 					osAtividadePeriodoExecucao.setDataInicio((Date) periodo[1]);
 					osAtividadePeriodoExecucao.setDataFim((Date) periodo[2]);
+					osAtividadePeriodoExecucao.setValorAtividadePeriodo((BigDecimal) periodo[7]);
 					OrdemServicoAtividade ordemServicoAtividade = new OrdemServicoAtividade();
 					Atividade atividade = new Atividade();
 					atividade.setId((Integer) periodo[3]);
@@ -7089,7 +7274,7 @@ public class RepositorioOrdemServicoHBM
 	 * @date 16/02/2012
 	 *       Mudança para desvincular a OS do RA
 	 */
-	public String criarQueryRegistroAtendimentoPorMaiorTramiteUnidadeDestino(Integer idUnidadeDestino, Integer permiteTramiteIndependente){
+	public String criarQueryRegistroAtendimentoPorMaiorTramiteUnidadeDestino(Integer idUnidadeDestino, Short permiteTramiteIndependente){
 
 		String consulta = "";
 		if(permiteTramiteIndependente.intValue() == ConstantesSistema.SIM.intValue()){
@@ -7223,7 +7408,7 @@ public class RepositorioOrdemServicoHBM
 								+ " unidade_organizacional unidadeAtendimento " + " on unidadeAtendimento.unid_id = raUnidade.unid_id "
 								+ " INNER JOIN " + " solicitacao_tipo_especificacao solTpEsp " + " on solTpEsp.step_id = ra.step_id ";
 
-				if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().equals(ConstantesSistema.SIM.toString())){
+				if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().toString().equals(ConstantesSistema.SIM.toString())){
 					consulta = consulta + " INNER JOIN " + " tramite tr " + " on tr.orse_id = os.orse_id ";
 				}
 
@@ -7355,7 +7540,7 @@ public class RepositorioOrdemServicoHBM
 		}
 
 		try{
-			if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().equals(ConstantesSistema.SIM.toString())){
+			if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().toString().equals(ConstantesSistema.SIM.toString())){
 
 				if(idUnidadeAtual != null && !idUnidadeAtual.equals("")){
 					sql = sql + " tr.unid_iddestino = " + idUnidadeAtual
@@ -7639,7 +7824,7 @@ public class RepositorioOrdemServicoHBM
 								+ " raUnidade.attp_id = " + AtendimentoRelacaoTipo.ABRIR_REGISTRAR + " INNER JOIN "
 								+ " unidade_organizacional unidadeAtendimento " + " on unidadeAtendimento.unid_id = raUnidade.unid_id ";
 
-				if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().equals(ConstantesSistema.SIM.toString())){
+				if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().toString().equals(ConstantesSistema.SIM.toString())){
 
 					consulta = consulta + " INNER JOIN " + " tramite tr " + " on tr.orse_id = os.orse_id ";
 
@@ -7709,7 +7894,7 @@ public class RepositorioOrdemServicoHBM
 	 * @return Collection
 	 */
 	public Collection pesquisarEquipes(String idEquipe, String nome, String placa, String cargaTrabalho, String idUnidade,
-					String idFuncionario, String idPerfilServico, String indicadorUso, Integer numeroPagina)
+					String idFuncionario, String idPerfilServico, String indicadorUso, Integer idEquipeTipo, Integer numeroPagina)
 					throws ErroRepositorioException{
 
 		Collection retorno = new ArrayList();
@@ -7722,11 +7907,12 @@ public class RepositorioOrdemServicoHBM
 
 			consulta = "SELECT DISTINCT equipe " + "FROM EquipeComponentes eqpCom " + "LEFT JOIN eqpCom.funcionario func "
 							+ "INNER JOIN eqpCom.equipe equipe " + "INNER JOIN FETCH equipe.unidadeOrganizacional unidade "
-							+ "INNER JOIN FETCH equipe.servicoPerfilTipo servicoPerfilTp ";
+							+ "INNER JOIN FETCH equipe.servicoPerfilTipo servicoPerfilTp "
+							+ "LEFT JOIN FETCH equipe.equipeTipo equipeTipo ";
 
 			consulta = consulta
 							+ criarCondicionaisPesquisarEquipes(idEquipe, nome, placa, cargaTrabalho, idUnidade, idFuncionario,
-											idPerfilServico, indicadorUso);
+											idPerfilServico, indicadorUso, idEquipeTipo);
 
 			retorno = session.createQuery(consulta).setFirstResult(10 * numeroPagina).setMaxResults(10).list();
 
@@ -7768,7 +7954,7 @@ public class RepositorioOrdemServicoHBM
 	 * @return Collection
 	 */
 	public String criarCondicionaisPesquisarEquipes(String idEquipe, String nome, String placa, String cargaTrabalho, String idUnidade,
-					String idFuncionario, String idPerfilServico, String indicadorUso){
+					String idFuncionario, String idPerfilServico, String indicadorUso, Integer idEquipeTipo){
 
 		String hql = " WHERE ";
 
@@ -7804,6 +7990,10 @@ public class RepositorioOrdemServicoHBM
 			hql = hql + " equipe.indicadorUso = " + indicadorUso + " AND ";
 		}
 
+		if(idEquipeTipo != null && idEquipeTipo != ConstantesSistema.NUMERO_NAO_INFORMADO){
+			hql = hql + " equipeTipo.id = " + idEquipeTipo + " AND ";
+		}
+
 		// retira o " and " q fica sobrando no final da query
 		hql = Util.formatarHQL(hql, 4);
 
@@ -7828,7 +8018,8 @@ public class RepositorioOrdemServicoHBM
 	 * @return int
 	 */
 	public int pesquisarEquipesCount(String idEquipe, String nome, String placa, String cargaTrabalho, String idUnidade,
-					String idFuncionario, String idPerfilServico, String indicadorUso) throws ErroRepositorioException{
+					String idFuncionario, String idPerfilServico, String indicadorUso, Integer idEquipeTipo)
+					throws ErroRepositorioException{
 
 		int retorno = 0;
 
@@ -7840,11 +8031,11 @@ public class RepositorioOrdemServicoHBM
 
 			consulta = "SELECT COUNT(DISTINCT equipe.id) " + "FROM EquipeComponentes eqpCom " + "LEFT JOIN eqpCom.funcionario func "
 							+ "INNER JOIN eqpCom.equipe equipe " + "INNER JOIN equipe.unidadeOrganizacional unidade "
-							+ "INNER JOIN equipe.servicoPerfilTipo servicoPerfilTp ";
+							+ "INNER JOIN equipe.servicoPerfilTipo servicoPerfilTp " + "LEFT JOIN equipe.equipeTipo equipeTipo ";
 
 			consulta = consulta
 							+ criarCondicionaisPesquisarEquipes(idEquipe, nome, placa, cargaTrabalho, idUnidade, idFuncionario,
-											idPerfilServico, indicadorUso);
+											idPerfilServico, indicadorUso, idEquipeTipo);
 
 			retorno = ((Number) session.createQuery(consulta).setMaxResults(1).uniqueResult()).intValue();
 
@@ -8371,7 +8562,7 @@ public class RepositorioOrdemServicoHBM
 	 * @return Integer
 	 * @throws ControladorException
 	 */
-	public Integer pesquisarOrdemServicoTamanho(PesquisarOrdemServicoHelper filtro, Integer permiteTramiteIndependente)
+	public Integer pesquisarOrdemServicoTamanho(PesquisarOrdemServicoHelper filtro, Short permiteTramiteIndependente)
 					throws ErroRepositorioException{
 
 		Integer retorno = null;
@@ -8414,6 +8605,13 @@ public class RepositorioOrdemServicoHBM
 		Integer areaBairro = filtro.getAreaBairro();
 		Integer logradouro = filtro.getLogradouro();
 
+		String situacaoDocumentoCobranca = filtro.getSituacaoDocumentoCobranca();
+
+		Date dataPrevisaoClienteInicial = filtro.getDataPrevisaoClienteInicial();
+		Date dataPrevisaoClienteFinal = filtro.getDataPrevisaoClienteFinal();
+
+		String indicadorReparo = filtro.getIndicadorReparo();
+
 		if(dataProgramacaoInicial != null || dataProgramacaoFinal != null && situacaoProgramacao != ConstantesSistema.SIM.shortValue()){
 
 			situacaoProgramacao = ConstantesSistema.SIM.shortValue();
@@ -8434,7 +8632,48 @@ public class RepositorioOrdemServicoHBM
 			from = " FROM OrdemServicoUnidade osUnidade " + (equipe != null ? ", OrdemServicoProgramacao osp " : "")
 							+ " INNER JOIN osUnidade.ordemServico os  " + " INNER JOIN os.servicoTipo servicotipo ";
 
+			if(situacaoDocumentoCobranca != null && !situacaoDocumentoCobranca.equals("") && !situacaoDocumentoCobranca.equals("-1")){
+				from += " INNER JOIN os.cobrancaDocumento cobDoc";
+			}
 			where = " WHERE 1 = 1 ";
+
+			if(indicadorReparo != null){
+				from += " LEFT JOIN os.ordemServicoReparo ordemServicoReparo ";
+				if(indicadorReparo.equals("1")){
+					where += " AND servicotipo.indicadorVala = 1 ";
+					where += " AND ordemServicoReparo is not null ";
+				}else if(indicadorReparo.equals("2")){
+					where += " AND servicotipo.indicadorVala = 1 ";
+					where += " AND ordemServicoReparo is null ";
+				}else{
+					where += " AND servicotipo.indicadorVala = 1 ";
+				}
+			}
+
+			// SITUACAO PENDENTE
+			if(situacaoDocumentoCobranca != null && !situacaoDocumentoCobranca.equals("") && situacaoDocumentoCobranca.equals("1")){
+				where += " AND cobDoc.cobrancaDebitoSituacao.descricao = (:cobrancaDebitoSituacao) ";
+				parameters.put("cobrancaDebitoSituacao", "PENDENTE");
+				// DIFERENTE DE PENDENTE
+			}else if(situacaoDocumentoCobranca != null && !situacaoDocumentoCobranca.equals("") && situacaoDocumentoCobranca.equals("2")){
+				where += " AND cobDoc.cobrancaDebitoSituacao.descricao <> (:cobrancaDebitoSituacao) ";
+				parameters.put("cobrancaDebitoSituacao", "PENDENTE");
+				// AMBOS
+			}else if(situacaoDocumentoCobranca != null && !situacaoDocumentoCobranca.equals("") && situacaoDocumentoCobranca.equals("0")){
+				where += " AND cobDoc is not null ";
+			}
+
+			// Período de Previsão para Cliente
+			if(dataPrevisaoClienteInicial != null && dataPrevisaoClienteFinal != null){
+
+				where += " AND os.registroAtendimento.dataPrevistaAtual BETWEEN (:dataPrevisaoClienteInicial) AND (:dataPrevisaoClienteFinal) ";
+
+				dataPrevisaoClienteInicial = Util.formatarDataInicial(dataPrevisaoClienteInicial);
+				dataPrevisaoClienteFinal = Util.adaptarDataFinalComparacaoBetween(dataPrevisaoClienteFinal);
+
+				parameters.put("dataPrevisaoClienteInicial", dataPrevisaoClienteInicial);
+				parameters.put("dataPrevisaoClienteFinal", dataPrevisaoClienteFinal);
+			}
 
 			if(numeroRA != null){
 				where += " AND os.registroAtendimento.id = (:numeroRA) ";
@@ -9054,227 +9293,6 @@ public class RepositorioOrdemServicoHBM
 	}
 
 	/**
-	 * Metodo para filtrar caracteristicas do imovel
-	 * Emissao de Ordens Seletivas
-	 * 
-	 * @author anishimura
-	 * @date 17/01/2010
-	 */
-	public List filtrarEmissaoOrdensSeletivasImovel(OrdemServicoSeletivaHelper ordemSeletivaHelper, String anormalidadeHidrometro,
-					Date dataInstalacaoHidrometro, Boolean substituicaoHidrometro, Integer anoMesFaturamentoAtual)
-					throws ErroRepositorioException{
-
-		List retorno = null;
-		Session session = HibernateUtil.getSession();
-		StringBuilder hql = new StringBuilder();
-		hql.append(" select imovel.id, ");
-		hql.append(" imovel.localidade.id, ");
-		hql.append(" imovel.setorComercial.codigo, ");
-		hql.append(" imovel.quadra.numeroQuadra, ");
-		hql.append(" imovel.lote, ");
-		hql.append(" imovel.subLote ");
-		hql.append(" from Imovel imovel ");
-
-		/* WHERE */
-
-		hql.append("WHERE ");
-
-		if(ordemSeletivaHelper.getElo() != null & !ordemSeletivaHelper.getElo().equals("")){
-			hql.append(" imovel.localidade.localidade = ");
-			hql.append(ordemSeletivaHelper.getElo());
-			hql.append(" and ");
-			// finaliza = true;
-		}
-
-		// Grupo de Faturamento
-		String faturamentoGrupo = ordemSeletivaHelper.getFaturamentoGrupo();
-
-		if(!Util.isVazioOuBranco(faturamentoGrupo)){
-			hql.append(" imovel.rota.faturamentoGrupo.id = ");
-			hql.append(faturamentoGrupo);
-			hql.append(" and ");
-		}
-
-		// Regional
-		String gerenciaRegional = ordemSeletivaHelper.getGerenciaRegional();
-
-		if(!Util.isVazioOuBranco(gerenciaRegional)){
-			hql.append(" imovel.localidade.gerenciaRegional.id = ");
-			hql.append(gerenciaRegional);
-			hql.append(" and ");
-		}
-
-		// Localidade
-		if(ordemSeletivaHelper.getLocalidade() != null && !(ordemSeletivaHelper.getLocalidade().length == 0)){
-			hql.append("(imovel.localidade.id in( ");
-			for(String object : ordemSeletivaHelper.getLocalidade()){
-				hql.append(object);
-				hql.append(",");
-			}
-			hql = new StringBuilder(hql.substring(0, hql.length() - 1)); // remove a ultima virgula
-			hql.append(")) and ");
-			// finaliza = true;
-		}
-
-		// Setor Comercial
-		if(ordemSeletivaHelper.getSetor() != null && !(ordemSeletivaHelper.getSetor().length == 0)){
-			hql.append("(imovel.setorComercial.id in ( ");
-			for(String object : ordemSeletivaHelper.getSetor()){
-				hql.append(object);
-				hql.append(",");
-			}
-			hql = new StringBuilder(hql.substring(0, hql.length() - 1)); // remove a ultima virgula
-			hql.append(")) and ");
-		}
-
-		// Quadra
-		if(ordemSeletivaHelper.getQuadra() != null && !(ordemSeletivaHelper.getQuadra().length == 0)){
-			hql.append("(imovel.quadra.id in ( ");
-			for(String object : ordemSeletivaHelper.getQuadra()){
-				hql.append(object);
-				hql.append(",");
-			}
-			hql = new StringBuilder(hql.substring(0, hql.length() - 1)); // remove a ultima virgula
-			hql.append(")) and ");
-			// finaliza = true;
-		}
-
-		// Lote
-		String[] lote = ordemSeletivaHelper.getLote();
-
-		if(!Util.isVazioOrNulo(lote)){
-			hql.append("(imovel.lote in (");
-
-			for(String object : lote){
-				hql.append(object);
-				hql.append(",");
-			}
-
-			hql = new StringBuilder(hql.substring(0, hql.length() - 1)); // remove a ultima virgula
-			hql.append(")) and ");
-		}
-
-		/*
-		 * // Rota
-		 * if (ordemSeletivaHelper.getRota() != null && !(ordemSeletivaHelper.getRota().length ==
-		 * 0)) {
-		 * hql.append("(imovel.rota.id in (");
-		 * for (String object : ordemSeletivaHelper.getRota()){
-		 * hql.append(object);
-		 * hql.append(",");
-		 * }
-		 * hql.append(hql.substring(0, hql.length()-1)); //remove a ultima virgula
-		 * hql.append(")) and ");
-		 * // finaliza = true;
-		 * }
-		 * //Bairro
-		 * if (ordemSeletivaHelper.getBairro() != null && ordemSeletivaHelper.getBairro().length !=
-		 * 0) {
-		 * hql.append("(imovel.logradouroBairro.bairro.id in (");
-		 * for (String object : ordemSeletivaHelper.getBairro()){
-		 * hql.append(object);
-		 * hql.append(",");
-		 * }
-		 * hql.append(hql.substring(0, hql.length()-1)); //remove a ultima virgula
-		 * hql.append(")) and ");
-		 * // finaliza = true;
-		 * }
-		 * //Logradouro
-		 * if (ordemSeletivaHelper.getLogradouro() != null &&
-		 * ordemSeletivaHelper.getLogradouro().length != 0) {
-		 * hql.append("(imovel.logradouroBairro.logradouro.id in (");
-		 * for (String object : ordemSeletivaHelper.getLogradouro()){
-		 * hql.append(object);
-		 * hql.append(",");;
-		 * }
-		 * hql.append(hql.substring(0, hql.length()-1)); //remove a ultima virgula
-		 * hql.append(")) and ");
-		 * // finaliza = true;
-		 * }
-		 * // Categoria
-		 * if (ordemSeletivaHelper.getCategoria() != null) {
-		 * hql.append("categoria.id = " + ordemSeletivaHelper.getCategoria());
-		 * hql.append(" and ");
-		 * // finaliza = true;
-		 * }
-		 */
-		// Perfil Imovel
-		if(ordemSeletivaHelper.getPerfilImovel() != null){
-			hql.append("imovel.imovelPerfil.id = ");
-			hql.append(ordemSeletivaHelper.getPerfilImovel());
-			hql.append(" and ");
-			// finaliza = true;
-		}
-		// Subcategoria
-		if(ordemSeletivaHelper.getSubCategoria() != null){
-			hql.append("imovel.imovelSubcategorias.id = ");
-			hql.append(ordemSeletivaHelper.getSubCategoria());
-			hql.append(" and ");
-			// finaliza = true;
-		}
-		// Quantidade de Economias
-		if(ordemSeletivaHelper.getIntervaloQuantidadeEconomiasInicial() != null
-						&& !ordemSeletivaHelper.getIntervaloQuantidadeEconomiasInicial().equals("")
-						&& ordemSeletivaHelper.getIntervaloQuantidadeEconomiasFinal() != null
-						&& !ordemSeletivaHelper.getIntervaloQuantidadeEconomiasFinal().equals("")){
-			hql.append("(imovel.quantidadeEconomias between ");
-			hql.append(ordemSeletivaHelper.getIntervaloQuantidadeEconomiasInicial());
-			hql.append(" and ");
-			hql.append(ordemSeletivaHelper.getIntervaloQuantidadeEconomiasFinal());
-			hql.append(")) and ");
-			// finaliza = true;
-		}
-		// Numero Moradores
-		if(ordemSeletivaHelper.getIntervaloNumeroMoradoresInicial() != null
-						&& !ordemSeletivaHelper.getIntervaloNumeroMoradoresInicial().equals("")
-						&& ordemSeletivaHelper.getIntervaloNumeroMoradoresFinal() != null
-						&& !ordemSeletivaHelper.getIntervaloNumeroMoradoresFinal().equals("")){
-			hql.append("(imovel.numeroMorador between ");
-			hql.append(ordemSeletivaHelper.getIntervaloNumeroMoradoresInicial());
-			hql.append(" and ");
-			hql.append(ordemSeletivaHelper.getIntervaloNumeroMoradoresFinal());
-			hql.append(")) and ");
-			// finaliza = true;
-		}
-		// Area Construida
-		if(ordemSeletivaHelper.getIntervaloAreaConstruidaInicial() != null
-						&& !ordemSeletivaHelper.getIntervaloAreaConstruidaInicial().equals("")
-						&& ordemSeletivaHelper.getIntervaloAreaConstruidaFinal() != null
-						&& !ordemSeletivaHelper.getIntervaloAreaConstruidaFinal().equals("")){
-			hql.append("(imovel.areaConstruida between ");
-			hql.append(ordemSeletivaHelper.getIntervaloAreaConstruidaInicial());
-			hql.append(" and ");
-			hql.append(ordemSeletivaHelper.getIntervaloAreaConstruidaFinal());
-			hql.append(")) and ");
-			// finaliza = true;
-		}
-		// Imovel Condominio
-		if(ordemSeletivaHelper.getImovelCondominio().equals("1")){
-			hql.append("imovel.indicadorImovelCondominio = ");
-			hql.append(Imovel.IMOVEL_CONDOMINIO);
-			hql.append(" and ");
-			// finaliza = true;
-		}
-
-		hql = new StringBuilder(hql.substring(0, hql.length() - 5));
-		hql.append(" order by ");
-		hql.append(" imovel.localidade.id, ");
-		hql.append(" imovel.setorComercial.codigo, ");
-		hql.append(" imovel.quadra.numeroQuadra, ");
-		hql.append(" imovel.lote, ");
-		hql.append(" imovel.subLote ");
-
-		try{
-			retorno = session.createQuery(hql.toString()).list();
-		}catch(HibernateException e){
-			throw new ErroRepositorioException(e, "Erro no Hibernate");
-		}finally{
-			HibernateUtil.closeSession(session);
-		}
-		return retorno;
-	}
-
-	/**
 	 * [UC0711] Filtro para Emissao de Ordens Seletivas
 	 * 
 	 * @author Ivan Sérgio
@@ -9298,7 +9316,8 @@ public class RepositorioOrdemServicoHBM
 	 *       de filtro
 	 */
 	public List filtrarImovelEmissaoOrdensSeletivas(OrdemServicoSeletivaHelper ordemSeletivaHelper, String anormalidadeHidrometro,
-					Boolean substituicaoHidrometro, Integer anoMesFaturamentoAtual, String situacaLigacaoAguaPermitidaManutencao)
+					Boolean substituicaoHidrometro, Boolean corte, Integer anoMesFaturamentoAtual,
+					String situacaLigacaoAguaPermitidaManutencao, String situacaLigacaoAguaPermitidaCorte)
 					throws ErroRepositorioException{
 
 		List retorno = null;
@@ -9321,7 +9340,9 @@ public class RepositorioOrdemServicoHBM
 				hql += "	inner join imovel.ligacaoAgua ligacaoAgua ";
 
 			}
-			if(substituicaoHidrometro != null && substituicaoHidrometro){
+			if((substituicaoHidrometro != null && substituicaoHidrometro)
+							|| ordemSeletivaHelper.getReferenciaUltimaAfericaoAnterior() != null){
+
 				hql += " inner  join ligacaoAgua.hidrometroInstalacaoHistorico hidrometroInstalacaoHistoricoAgua "
 								+ " inner  join hidrometroInstalacaoHistoricoAgua.hidrometro hidrometroAgua ";
 				// " left  join imovel.hidrometroInstalacaoHistorico hidrometroInstalacaoHistorico "
@@ -9376,6 +9397,12 @@ public class RepositorioOrdemServicoHBM
 			}
 
 			hql += " where ";
+
+			if((!Util.isVazioOuBrancoOuZero(ordemSeletivaHelper.getServicoTipo()))
+							&& (Util.converterStringParaInteger(ordemSeletivaHelper.getServicoTipo()).equals(Util
+											.retonarObjetoDeColecao(ServicoTipo.INSTALACAO_HIDROMETRO)))){
+				hql += " ligacaoAgua.hidrometroInstalacaoHistorico.id is null and ";
+			}
 
 			if(adicionarANDLigacaoAgua){
 				hqlAux += " ligacaoAgua.hidrometroInstalacaoHistorico.id = hidrometroInstalacaoHistoricoAgua.id and ";
@@ -9551,6 +9578,20 @@ public class RepositorioOrdemServicoHBM
 
 				}
 
+				// Última Aferição anterior a
+				if(ordemSeletivaHelper.getReferenciaUltimaAfericaoAnterior() != null && adicionarANDLigacaoAgua){
+
+					String anoMesUltimaAfericao = Util.formatarMesAnoParaAnoMes(ordemSeletivaHelper
+									.getReferenciaUltimaAfericaoAnterior());
+
+					Date dataUltimaAfericaoAnterior = Util.converterAnoMesParaDataInicial(anoMesUltimaAfericao);
+					parameters.put("dataUltimaAfericaoAnterior", dataUltimaAfericaoAnterior);
+
+					hqlAux += " (hidrometroAgua.dataUltimaRevisao is null or hidrometroAgua.dataUltimaRevisao < :dataUltimaAfericaoAnterior) and ";
+
+					finaliza = true;
+				}
+
 				// Dados do Hidrômetro
 				Collection<DadosDoHidrometroHelper> colecaoDadosDoHidrometro = ordemSeletivaHelper.getColecaoDadosDoHidrometro();
 
@@ -9636,7 +9677,12 @@ public class RepositorioOrdemServicoHBM
 					finaliza = true;
 
 				}
+			}else if(corte){
+				hqlAux += "imovel.ligacaoAguaSituacao.id in( " + situacaLigacaoAguaPermitidaCorte + ") and ";
+
+				finaliza = true;
 			}
+
 
 			// Condição de Medicao Tipo
 			if(ordemSeletivaHelper.getTipoMedicao() != null){
@@ -10060,7 +10106,11 @@ public class RepositorioOrdemServicoHBM
 		Collection retorno = null;
 		Session session = HibernateUtil.getSession();
 		String hql = null;
+
+		
+
 		try{
+			
 
 			if(Util.converterStringParaInteger(tipoRelatorio).equals(
 							RelatorioResumoOrdensServicoEncerradasPendentes.TIPO_RELATORIO_ANALITICO)
@@ -10092,8 +10142,8 @@ public class RepositorioOrdemServicoHBM
 
 				if(dataEncerramentoInicial != null && !dataEncerramentoInicial.equals("") && dataEncerramentoFinal != null
 								&& !dataEncerramentoFinal.equals("")){
-					hql += "	and os.dataEncerramento between '" + dataEncerramentoInicial + " 00:00:00' and '" + dataEncerramentoFinal
-									+ " 23:59:59') ";
+					hql += " and os.dataEncerramento between to_date('" + dataEncerramentoInicial + "', 'dd/mm/yyyy')  and to_date('"
+									+ dataEncerramentoFinal + "', 'dd/mm/yyyy') ";
 				}
 
 				hql += "order by " + "	os.id";
@@ -10125,13 +10175,15 @@ public class RepositorioOrdemServicoHBM
 
 				if(dataEncerramentoInicial != null && !dataEncerramentoInicial.equals("") && dataEncerramentoFinal != null
 								&& !dataEncerramentoFinal.equals("")){
-					hql += "	and os.dataEncerramento between '" + dataEncerramentoInicial + " 00:00:00' and '" + dataEncerramentoFinal
-									+ " 23:59:59' ";
+					hql += " and os.dataEncerramento between to_date('" + dataEncerramentoInicial + "', 'dd/mm/yyyy')  and to_date('"
+									+ dataEncerramentoFinal + "', 'dd/mm/yyyy') ";
 				}
 
 				hql = hql + "group by motivo.descricao";
 
 			}
+
+
 
 			retorno = session.createQuery(hql).list();
 
@@ -10696,7 +10748,7 @@ public class RepositorioOrdemServicoHBM
 		try{
 			return session.createCriteria(OrdemServicoValaPavimento.class).add(Expression.eq("ordemServico.id", idOrdemServico))
 							.setFetchMode("localOcorrencia", FetchMode.JOIN).setFetchMode("pavimentoRua", FetchMode.JOIN)
-							.setFetchMode("pavimentoCalcada", FetchMode.JOIN).list();
+							.setFetchMode("pavimentoCalcada", FetchMode.JOIN).setFetchMode("entulhoMedida", FetchMode.JOIN).list();
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
 		}finally{
@@ -11289,7 +11341,8 @@ public class RepositorioOrdemServicoHBM
 	 *       Pesquisar o total de registros a serem processados
 	 */
 	public Integer filtrarImovelEmissaoOrdensSeletivasCount(OrdemServicoSeletivaHelper ordemSeletivaHelper, String anormalidadeHidrometro,
-					Boolean substituicaoHidrometro, Integer anoMesFaturamentoAtual, String situacaLigacaoAguaPermitidaManutencao)
+					Boolean substituicaoHidrometro, Boolean corte, Integer anoMesFaturamentoAtual,
+					String situacaLigacaoAguaPermitidaManutencao, String situacaLigacaoAguaPermitidaCorte)
 					throws ErroRepositorioException{
 
 		Integer retorno = 0;
@@ -11311,7 +11364,8 @@ public class RepositorioOrdemServicoHBM
 				hql += "	inner join imovel.ligacaoAgua ligacaoAgua ";
 
 			}
-			if(substituicaoHidrometro != null && substituicaoHidrometro){
+			if((substituicaoHidrometro != null && substituicaoHidrometro)
+							|| ordemSeletivaHelper.getReferenciaUltimaAfericaoAnterior() != null){
 				hql += " inner  join ligacaoAgua.hidrometroInstalacaoHistorico hidrometroInstalacaoHistoricoAgua "
 								+ " inner  join hidrometroInstalacaoHistoricoAgua.hidrometro hidrometroAgua ";
 				// " left  join imovel.hidrometroInstalacaoHistorico hidrometroInstalacaoHistorico "
@@ -11365,6 +11419,18 @@ public class RepositorioOrdemServicoHBM
 			}
 
 			hql += " where ";
+
+			if((!Util.isVazioOuBrancoOuZero(ordemSeletivaHelper.getServicoTipo()))
+							&& (Util.converterStringParaInteger(ordemSeletivaHelper.getServicoTipo()).equals(Util
+											.retonarObjetoDeColecao(ServicoTipo.INSTALACAO_HIDROMETRO)))){
+
+				if(ordemSeletivaHelper.getTipoMedicao().equals(MedicaoTipo.LIGACAO_AGUA.toString())){
+					hql += " ligacaoAgua.hidrometroInstalacaoHistorico.id is null and ";
+				}else if(ordemSeletivaHelper.getTipoMedicao().equals(MedicaoTipo.POCO.toString())){
+					hql += " imovel.hidrometroInstalacaoHistorico.id is null and ";
+				}
+
+			}
 
 			if(adicionarANDLigacaoAgua){
 				hqlAux += " ligacaoAgua.hidrometroInstalacaoHistorico.id = hidrometroInstalacaoHistoricoAgua.id and ";
@@ -11512,6 +11578,19 @@ public class RepositorioOrdemServicoHBM
 
 				}
 
+				// Última Aferição anterior a
+				if(ordemSeletivaHelper.getReferenciaUltimaAfericaoAnterior() != null && adicionarANDLigacaoAgua){
+
+					String anoMesUltimaAfericao = Util.formatarMesAnoParaAnoMes(ordemSeletivaHelper.getReferenciaUltimaAfericaoAnterior());
+
+					Date dataUltimaAfericaoAnterior = Util.converterAnoMesParaDataInicial(anoMesUltimaAfericao);
+					parameters.put("dataUltimaAfericaoAnterior", dataUltimaAfericaoAnterior);
+
+					hqlAux += " (hidrometroAgua.dataUltimaRevisao is null or hidrometroAgua.dataUltimaRevisao < :dataUltimaAfericaoAnterior) and ";
+
+					finaliza = true;
+				}
+
 				// Dados do Hidrômetro
 				Collection<DadosDoHidrometroHelper> colecaoDadosDoHidrometro = ordemSeletivaHelper.getColecaoDadosDoHidrometro();
 
@@ -11596,6 +11675,10 @@ public class RepositorioOrdemServicoHBM
 
 					finaliza = true;
 				}
+			}else if(corte){
+				hqlAux += "imovel.ligacaoAguaSituacao.id in( " + situacaLigacaoAguaPermitidaCorte + ") and ";
+
+				finaliza = true;
 			}
 
 			// Condição de Medicao Tipo
@@ -12165,7 +12248,7 @@ public class RepositorioOrdemServicoHBM
 		}
 
 		try{
-			if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().equals(ConstantesSistema.SIM.toString())){
+			if(ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar().toString().equals(ConstantesSistema.SIM.toString())){
 
 				if(idUnidadeAtual != null && !idUnidadeAtual.equals("")
 								&& origemServico.equals(ConstantesSistema.ORIGEM_SERVICO_SELETIVO.toString())){
@@ -14786,7 +14869,7 @@ public class RepositorioOrdemServicoHBM
 	 * @throws ErroRepositorioException
 	 */
 	public Integer pesquisarUnidadeTramiteOS(Integer idServicoTipoTramite, Integer idLocalidade, Integer idSetorComercial,
-					Integer idBairro, Integer idUnidadeOrigem) throws ErroRepositorioException{
+					Integer idBairro, Integer idUnidadeOrigem, Short indicadorPrimeiroTramite) throws ErroRepositorioException{
 
 		Integer retorno = null;
 
@@ -14803,7 +14886,12 @@ public class RepositorioOrdemServicoHBM
 			consulta.append(" where ");
 
 			consulta.append(" servicoTipoTramite.servicoTipo.id = :idServicoTipoTramite ");
+
+			consulta.append(" AND servicoTipoTramite.indicadorPrimeiroTramite = :indicadorPrimeiroTramite ");
+
 			parameters.put("idServicoTipoTramite", idServicoTipoTramite);
+
+			parameters.put("indicadorPrimeiroTramite", ConstantesSistema.SIM);
 
 			if(!Util.isVazioOuBranco(idLocalidade) && !Util.isVazioOuBranco(idSetorComercial)){
 				// Informou Localidade e Setor Comercial
@@ -14824,10 +14912,14 @@ public class RepositorioOrdemServicoHBM
 			}
 
 			if(!Util.isVazioOuBranco(idUnidadeOrigem)){
-				consulta.append(" and (servicoTipoTramite.unidadeOrganizacionalOrigem.id = :idUnidadeOrigem or servicoTipoTramite.unidadeOrganizacionalOrigem.id is null) ");
+				consulta.append(" and servicoTipoTramite.unidadeOrganizacionalOrigem.id = :idUnidadeOrigem  ");
 				parameters.put("idUnidadeOrigem", idUnidadeOrigem);
 			}else{
-				consulta.append(" and servicoTipoTramite.unidadeOrganizacionalOrigem.id is null ");
+				consulta.append(" and servicoTipoTramite.indicadorPrimeiroTramite = 1 ");
+			}
+
+			if(!Util.isVazioOuBranco(indicadorPrimeiroTramite)){
+				consulta.append(" and servicoTipoTramite.indicadorPrimeiroTramite = 1 ");
 			}
 
 			consulta.append(" order by  ");
@@ -14866,7 +14958,12 @@ public class RepositorioOrdemServicoHBM
 				}
 			}
 
-			retorno = (Integer) query.setMaxResults(1).uniqueResult();
+			Collection<Integer> colecaoIds = query.list();
+			if(colecaoIds != null && colecaoIds.size() > 0){
+				Iterator interatorIds = colecaoIds.iterator();
+
+				retorno = (Integer) interatorIds.next();
+			}
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -15272,7 +15369,6 @@ public class RepositorioOrdemServicoHBM
 
 		// cria uma sessão com o hibernate
 		Session session = HibernateUtil.getSession();
-		String criterioTitulo = null;
 		Query query = null;
 		Map parameters = new HashMap();
 
@@ -15280,8 +15376,8 @@ public class RepositorioOrdemServicoHBM
 
 		try{
 
-			StringBuilder hql = new StringBuilder("select DISTINCT osSC");
-			hql.append("  from OsSeletivaComando osSC ");
+			StringBuilder hql = new StringBuilder("select Distinct osSC ");
+			hql.append(" from OsSeletivaComando osSC ");
 			hql.append(" LEFT JOIN FETCH osSC.osSeletivaComandoLocalGeo ossclg ");
 			hql.append(" LEFT JOIN FETCH osSC.osSeletivaComandoImovelPerfil osscip ");
 			hql.append(" LEFT JOIN FETCH osSC.osSeletivaComandoCategoriaSubcategoria osccs ");
@@ -15290,32 +15386,30 @@ public class RepositorioOrdemServicoHBM
 			hql.append(" LEFT JOIN FETCH osSC.empresa emp ");
 			hql.append(" LEFT JOIN FETCH osSC.servicoTipo svtp ");
 			hql.append(" LEFT JOIN FETCH osSC.faturamentoGrupo fat ");
-			hql.append("  Where ");
+
+			hql.append("  Where 1=1 ");
 
 			if(filtro.getTitulo() != null && filtro.getTipoPesquisa() != null
 							&& filtro.getTipoPesquisa().equals(ConstantesSistema.TIPO_PESQUISA_INICIAL.toString())){
 
-				criterioTitulo = " osSC.descricaoTitulo like '" + filtro.getTitulo() + "%' AND ";
-				hql.append(criterioTitulo);
+				hql.append(" AND osSC.descricaoTitulo like '" + filtro.getTitulo() + "%' ");
 
 			}else if(filtro.getTitulo() != null && filtro.getTipoPesquisa() != null
 							&& filtro.getTipoPesquisa().equals(ConstantesSistema.TIPO_PESQUISA_COMPLETA.toString())){
 
-				criterioTitulo = "osSC.descricaoTitulo like '%" + filtro.getTitulo() + "%' AND ";
-
-				hql.append(criterioTitulo);
+				hql.append(" AND osSC.descricaoTitulo like '%" + filtro.getTitulo() + "%'  ");
 
 			}
 			if(filtro.getFirma() != null){
 
-				hql.append(" emp.id in (:colecaoEmpresa) AND ");
+				hql.append(" AND emp.id in (:colecaoEmpresa)  ");
 
 				parameters.put("colecaoEmpresa", filtro.getFirma());
 
 			}
 			if(filtro.getServicoTipo() != null){
 
-				hql.append(" svtp.id in (:colecaoServicoTipo) AND ");
+				hql.append(" AND svtp.id in (:colecaoServicoTipo)  ");
 				parameters.put("colecaoServicoTipo", filtro.getServicoTipo());
 
 			}
@@ -15327,8 +15421,9 @@ public class RepositorioOrdemServicoHBM
 				dataInicial = dataInicial.substring(6, 10) + "-" + dataInicial.substring(3, 5) + "-" + dataInicial.substring(0, 2);
 				dataFinal = dataFinal.substring(6, 10) + "-" + dataFinal.substring(3, 5) + "-" + dataFinal.substring(0, 2);
 
-				hql.append("  osSC.tempoComando >= to_timestamp('" + dataInicial + " 00:00:00.000000000', 'YYYY-MM-DD HH24:MI:SS.FF') AND ");
-				hql.append("  osSC.tempoComando <= to_timestamp('" + dataFinal + " 23:59:59.999999999', 'YYYY-MM-DD HH24:MI:SS.FF') AND ");
+				hql.append(" AND  osSC.tempoComando >= to_timestamp('" + dataInicial
+								+ " 00:00:00.000000000', 'YYYY-MM-DD HH24:MI:SS.FF')  ");
+				hql.append(" AND  osSC.tempoComando <= to_timestamp('" + dataFinal + " 23:59:59.999999999', 'YYYY-MM-DD HH24:MI:SS.FF')  ");
 			}
 			if(filtro.getDataRealizacaoComandoInicial() != null && filtro.getDataRealizacaoComandoFinal() != null){
 
@@ -15338,106 +15433,104 @@ public class RepositorioOrdemServicoHBM
 				dataInicial = dataInicial.substring(6, 10) + "-" + dataInicial.substring(3, 5) + "-" + dataInicial.substring(0, 2);
 				dataFinal = dataFinal.substring(6, 10) + "-" + dataFinal.substring(3, 5) + "-" + dataFinal.substring(0, 2);
 
-				hql.append("  osSC.tempoRealizacao >= to_timestamp('" + dataInicial
-								+ " 00:00:00.000000000', 'YYYY-MM-DD HH24:MI:SS.FF') AND ");
-				hql.append("  osSC.tempoRealizacao <= to_timestamp('" + dataFinal
-								+ " 23:59:59.999999999', 'YYYY-MM-DD HH24:MI:SS.FF') AND ");
+				hql.append(" AND  osSC.tempoRealizacao >= to_timestamp('" + dataInicial
+								+ " 00:00:00.000000000', 'YYYY-MM-DD HH24:MI:SS.FF')  ");
+				hql.append(" AND  osSC.tempoRealizacao <= to_timestamp('" + dataFinal
+								+ " 23:59:59.999999999', 'YYYY-MM-DD HH24:MI:SS.FF')  ");
 
 			}
 			if(filtro.getSituacaoComando() != null && filtro.getSituacaoComando().equals(ConstantesSistema.SIM)){
 
-				hql.append(" osSC.tempoRealizacao IS NOT NULL AND ");
+				hql.append(" AND osSC.tempoRealizacao IS NOT NULL  ");
 
 			}
 			if(filtro.getSituacaoComando() != null && filtro.getSituacaoComando().equals(ConstantesSistema.NAO)){
 
-				hql.append(" osSC.tempoRealizacao IS NULL AND ");
+				hql.append(" AND osSC.tempoRealizacao IS NULL  ");
 
 			}
 			if(filtro.getElo() != null){
 
 				parameters.put("colecaoElo", filtro.getElo());
-				hql.append(" osSC.codigoElo.id in (:colecaoElo) AND ");
+				hql.append(" AND osSC.codigoElo.id in (:colecaoElo)  ");
 
 			}
 			if(filtro.getFaturamentoGrupo() != null){
 
 				parameters.put("colecaoFaturamentoGrupo", filtro.getFaturamentoGrupo());
-				hql.append(" fat.id in (:colecaoFaturamentoGrupo) AND ");
+				hql.append(" AND fat.id in (:colecaoFaturamentoGrupo)  ");
 
 			}
 			if(filtro.getGerenciaRegional() != null){
 
 				parameters.put("colecaoGereciaRegioanl", filtro.getGerenciaRegional());
-				hql.append(" ossclg.gerenciaRegional.id in (:colecaoGereciaRegioanl) AND ");
+				hql.append(" AND ossclg.gerenciaRegional.id in (:colecaoGereciaRegioanl)  ");
 
 			}
 			if(filtro.getLocalidade() != null){
 
 				parameters.put("colecaoLocalidade", filtro.getLocalidade());
-				hql.append(" ossclg.localidade.id in (:colecaoLocalidade) AND ");
+				hql.append(" AND ossclg.localidade.id in (:colecaoLocalidade)  ");
 
 			}
 			if(filtro.getSetor() != null){
 
 				parameters.put("colecaoSetor", filtro.getSetor());
-				hql.append(" ossclg.setorComercial.id in (:colecaoSetor) AND ");
+				hql.append(" AND ossclg.setorComercial.id in (:colecaoSetor)  ");
 
 			}
 			if(filtro.getQuadra() != null){
 
 				parameters.put("colecaoQuadra", filtro.getQuadra());
-				hql.append(" ossclg.quadra.id in (:colecaoQuadra) AND ");
+				hql.append(" AND ossclg.quadra.id in (:colecaoQuadra)  ");
 			}
 			if(filtro.getRota() != null){
 
 				parameters.put("colecaoRota", filtro.getRota());
-				hql.append(" ossclg.rota.id in (:colecaoRota) AND ");
+				hql.append(" AND ossclg.rota.id in (:colecaoRota)  ");
 			}
 			if(filtro.getLote() != null){
 
 				parameters.put("colecaoLote", filtro.getLote());
-				hql.append(" ossclg.numeroLote in (:colecaoLote) AND ");
+				hql.append(" AND ossclg.numeroLote in (:colecaoLote)  ");
 			}
 			if(filtro.getBairro() != null){
 
 				parameters.put("colecaoBairro", filtro.getBairro());
-				hql.append(" ossclg.bairro.id in (:colecaoBairro) AND ");
+				hql.append(" AND ossclg.bairro.id in (:colecaoBairro)  ");
 			}
 			if(filtro.getLogradouro() != null){
 
 				parameters.put("colecaoLogradouro", filtro.getLogradouro());
-				hql.append(" ossclg.logradouro.id in (:colecaoLogradouro) AND ");
+				hql.append(" AND ossclg.logradouro.id in (:colecaoLogradouro)  ");
 			}
 			if(filtro.getPerfilImovel() != null){
 
 				parameters.put("colecaoPerfilImovel", filtro.getPerfilImovel());
-				hql.append(" osscip.imovelPerfil.id in (:colecaoPerfilImovel) AND ");
+				hql.append(" AND osscip.imovelPerfil.id in (:colecaoPerfilImovel)  ");
 			}
 			if(filtro.getCategoria() != null){
 
 				parameters.put("colecaoCategoria", filtro.getCategoria());
-				hql.append(" osccs.categoria.id in (:colecaoCategoria) AND ");
+				hql.append(" AND osccs.categoria.id in (:colecaoCategoria)  ");
 			}
 			if(filtro.getSubCategoria() != null){
 
 				parameters.put("colecaoSubCategoria", filtro.getSubCategoria());
-				hql.append(" osccs.subCategoria.id in (:colecaoSubCategoria) AND ");
+				hql.append(" AND osccs.subCategoria.id in (:colecaoSubCategoria)  ");
 			}
 			if(filtro.getLigacaoAguaSituacao() != null){
 
 				parameters.put("colecaoLigacaoAguaSituacao", filtro.getLigacaoAguaSituacao());
-				hql.append(" osscla.ligacaoAguaSituacao.id in (:colecaoLigacaoAguaSituacao) AND ");
+				hql.append(" AND osscla.ligacaoAguaSituacao.id in (:colecaoLigacaoAguaSituacao)  ");
 			}
 			if(filtro.getLigacaoEsgotoSituacao() != null){
 
 				parameters.put("colecaoLigacaoEsgotoSituacao", filtro.getLigacaoEsgotoSituacao());
-				hql.append(" osscle.ligacaoEsgotoSituacao.id in (:colecaoLigacaoEsgotoSituacao) AND ");
+				hql.append(" AND osscle.ligacaoEsgotoSituacao.id in (:colecaoLigacaoEsgotoSituacao)  ");
 			}
 
-			String hqlFormatado = Util.formatarHQL(hql.toString(), 4);
-
-			query = session.createQuery(hqlFormatado);
+			query = session.createQuery(hql.toString());
 
 			Set set = parameters.keySet();
 			Iterator iterMap = set.iterator();
@@ -15839,7 +15932,7 @@ public class RepositorioOrdemServicoHBM
 
 		sql = sql + " os.orse_cdsituacao = " + OrdemServico.SITUACAO_ENCERRADO + " and ";
 
-		if(origemServico != null && !origemServico.equals("")){
+		if(origemServico != null && !origemServico.equals("") && origemServico.equals(ConstantesSistema.ORIGEM_SERVICO_SELETIVO.toString())){
 			/*
 			 * if(origemServico.equals(ConstantesSistema.ORIGEM_SERVICO_SELETIVO.toString())){
 			 * sql = sql + " os.cbdo_id  is not null " + " and ";
@@ -16090,4 +16183,379 @@ public class RepositorioOrdemServicoHBM
 		return retorno;
 	}
 
+	/**
+	 * Recupera uma coleção de Entulho Medida.
+	 * 
+	 * @author Genival Barbosa
+	 * @date 20/09/2014
+	 * @return Coleção de EntulhoMedida
+	 */
+	public Collection<EntulhoMedida> pesquisarEntulhoMedida() throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+
+		try{
+			return session.createCriteria(EntulhoMedida.class).add(Expression.eq("indicadorUso", ConstantesSistema.INDICADOR_USO_ATIVO))
+							.list();
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+	}
+
+	/**
+	 * Recupera um Entulho Medida.
+	 * 
+	 * @author Genival Barbosa
+	 * @date 20/09/2014
+	 * @return Entulho Medida
+	 */
+	public EntulhoMedida pesquisarEntulhoMedida(Integer idEntulhoMedida) throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+		EntulhoMedida retorno = null;
+
+		try{
+
+			Criteria criteria = session.createCriteria(EntulhoMedida.class).add(Expression.eq("id", idEntulhoMedida))
+							.add(Expression.eq("indicadorUso", ConstantesSistema.INDICADOR_USO_ATIVO));
+
+			List<EntulhoMedida> lista = criteria.list();
+			if(lista != null && !lista.isEmpty()){
+				retorno = lista.get(0);
+			}
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+
+	}
+
+	/**
+	 * Pesquisar ordem de serviço.
+	 * 
+	 * @author Genival Barbosa
+	 * @date 30/09/2014
+	 * @return Ordem Servico
+	 */
+	public OrdemServico pesquisarOrdemServicoPrincipal(Integer idOrdemServico) throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+		OrdemServico retorno = null;
+
+		try{
+
+			Criteria criteria = session.createCriteria(OrdemServico.class).add(Expression.eq("ordemServicoReparo.id", idOrdemServico));
+
+			List<OrdemServico> lista = criteria.list();
+			if(lista != null && !lista.isEmpty()){
+				retorno = lista.get(0);
+			}
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+
+	}
+
+	/**
+	 * [UC0456] Elaborar Roteiro de Programação de Ordens de Serviço
+	 * 
+	 * @author Anderson Italo
+	 * @date 09/10/2014
+	 */
+	public Collection<Bairro> pesquisarBairroPorRA(Integer idUnidadeDestino, Short permiteTramiteIndependente)
+					throws ErroRepositorioException{
+
+		Collection<Object[]> retornoConsulta = new ArrayList();
+		Collection<Bairro> retorno = new ArrayList();
+
+		Session session = HibernateUtil.getSession();
+		String consulta = "";
+
+		try{
+
+			String subQuery = this.criarQueryRegistroAtendimentoPorMaiorTramiteUnidadeDestino(idUnidadeDestino, permiteTramiteIndependente);
+
+			consulta = "SELECT DISTINCT bairr.id," // 0
+							+ "bairr.nome, count(os) " // 1,2
+							+ "FROM OrdemServico os INNER JOIN os.registroAtendimento ragt  "
+							+ "INNER JOIN ragt.logradouroBairro logBairr "
+							+ "INNER JOIN logBairr.bairro bairr "
+							+ "WHERE os.situacao in (1,3) and os.indicadorProgramada = 2 "
+							+ "AND os.id in (" + subQuery + ") GROUP BY bairr.id, bairr.nome ORDER BY bairr.nome";
+
+			retornoConsulta = session.createQuery(consulta).list();
+
+			if(retornoConsulta.size() > 0){
+
+				retorno = new ArrayList();
+
+				Bairro bairro = null;
+
+				for(Iterator iter = retornoConsulta.iterator(); iter.hasNext();){
+
+					Object[] element = (Object[]) iter.next();
+
+					bairro = new Bairro();
+
+					bairro.setId((Integer) element[0]);
+					bairro.setNome((String) element[1]);
+					bairro.setQtidadeOs(((Number) element[2]).intValue());
+					retorno.add(bairro);
+				}
+
+			}
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC0456] Elaborar Roteiro de Programação de Ordens de Serviço
+	 * 
+	 * @author Anderson Italo
+	 * @date 09/10/2014
+	 */
+	public Collection<Bairro> pesquisarBairroPorUnidade(Integer idUnidade) throws ErroRepositorioException{
+
+		Collection<Object[]> retornoConsulta = new ArrayList();
+		Collection<Bairro> retorno = new ArrayList();
+
+		Session session = HibernateUtil.getSession();
+		String consulta = "";
+
+		try{
+
+			consulta = "SELECT DISTINCT bairr.id," // 0
+							+ "bairr.nome, count(os) " // 1,2
+							+ "FROM OrdemServicoUnidade osUnidade "
+							+ "INNER JOIN osUnidade.atendimentoRelacaoTipo art  "
+							+ "INNER JOIN osUnidade.ordemServico os  "
+							+ "INNER JOIN osUnidade.unidadeOrganizacional unid  "
+							+ "LEFT JOIN os.registroAtendimento ra  "
+							+ "INNER JOIN os.imovel imov  "
+							+ "INNER JOIN imov.logradouroBairro logBairr "
+							+ "INNER JOIN logBairr.bairro bairr "
+							+ "WHERE ra IS NULL AND os.situacao in (1,3) and os.indicadorProgramada = 2 "
+							+ "AND unid.id = :unidade "
+							+ "AND art.id = :idAtendimentoTipo GROUP BY bairr.id, bairr.nome ORDER BY bairr.nome";
+
+			retornoConsulta = session.createQuery(consulta).setInteger("unidade", idUnidade)
+							.setInteger("idAtendimentoTipo", AtendimentoRelacaoTipo.ABRIR_REGISTRAR).list();
+
+			if(retornoConsulta.size() > 0){
+
+				retorno = new ArrayList();
+
+				Bairro bairro = null;
+
+				for(Iterator iter = retornoConsulta.iterator(); iter.hasNext();){
+
+					Object[] element = (Object[]) iter.next();
+
+					bairro = new Bairro();
+
+					bairro.setId((Integer) element[0]);
+					bairro.setNome((String) element[1]);
+					bairro.setQtidadeOs(((Number) element[2]).intValue());
+					retorno.add(bairro);
+				}
+
+			}
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC0456] Elaborar Roteiro de Programação de Ordens de Serviço
+	 * 
+	 * @author Anderson Italo
+	 * @date 09/10/2014
+	 */
+	public Collection<ServicoTipoPrioridade> pesquisarServicoTipoPrioridadePorRA(Integer idUnidadeDestino,
+ Short permiteTramiteIndependente)
+					throws ErroRepositorioException{
+
+		Collection<Object[]> retornoConsulta = new ArrayList();
+		Collection<ServicoTipoPrioridade> retorno = new ArrayList();
+
+		Session session = HibernateUtil.getSession();
+		String consulta = "";
+
+		try{
+
+			String subQuery = this.criarQueryRegistroAtendimentoPorMaiorTramiteUnidadeDestino(idUnidadeDestino, permiteTramiteIndependente);
+
+			consulta = "SELECT DISTINCT stp.id," // 0
+							+ "stp.descricao, count(os) " // 1,2
+							+ "FROM OrdemServico os INNER JOIN os.registroAtendimento ragt  "
+							+ "INNER JOIN os.servicoTipoPrioridadeAtual stp "
+							+ "WHERE os.situacao in (1,3) and os.indicadorProgramada = 2 " + "AND os.id in ("
+							+ subQuery
+							+ ") GROUP BY stp.id, stp.descricao ORDER BY stp.descricao";
+
+			retornoConsulta = session.createQuery(consulta).list();
+
+			if(retornoConsulta.size() > 0){
+
+				retorno = new ArrayList();
+
+				ServicoTipoPrioridade servicoTipoPrioridade = null;
+
+				for(Iterator iter = retornoConsulta.iterator(); iter.hasNext();){
+
+					Object[] element = (Object[]) iter.next();
+
+					servicoTipoPrioridade = new ServicoTipoPrioridade();
+
+					servicoTipoPrioridade.setId((Integer) element[0]);
+					servicoTipoPrioridade.setDescricao((String) element[1]);
+					servicoTipoPrioridade.setQtidadeOs(((Number) element[2]).intValue());
+					retorno.add(servicoTipoPrioridade);
+				}
+
+			}
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC0456] Elaborar Roteiro de Programação de Ordens de Serviço
+	 * 
+	 * @author Anderson Italo
+	 * @date 09/10/2014
+	 */
+	public Collection<ServicoTipoPrioridade> pesquisarServicoTipoPrioridadePorUnidade(Integer idUnidade) throws ErroRepositorioException{
+
+		Collection<Object[]> retornoConsulta = new ArrayList();
+		Collection<ServicoTipoPrioridade> retorno = new ArrayList();
+
+		Session session = HibernateUtil.getSession();
+		String consulta = "";
+
+		try{
+
+			consulta = "SELECT DISTINCT stp.id," // 0
+							+ "stp.descricao, count(os) " // 1,2
+							+ "FROM OrdemServicoUnidade osUnidade "
+							+ "INNER JOIN osUnidade.atendimentoRelacaoTipo art  "
+							+ "INNER JOIN osUnidade.ordemServico os  "
+							+ "INNER JOIN osUnidade.unidadeOrganizacional unid  "
+							+ "LEFT JOIN os.registroAtendimento ra  "
+							+ "INNER JOIN os.servicoTipoPrioridadeAtual stp "
+							+ "WHERE ra IS NULL AND os.situacao in (1,3) and os.indicadorProgramada = 2 "
+							+ "AND unid.id = :unidade "
+							+ "AND art.id = :idAtendimentoTipo GROUP BY stp.id, stp.descricao ORDER BY stp.descricao";
+
+			retornoConsulta = session.createQuery(consulta).setInteger("unidade", idUnidade)
+							.setInteger("idAtendimentoTipo", AtendimentoRelacaoTipo.ABRIR_REGISTRAR).list();
+
+			if(retornoConsulta.size() > 0){
+
+				retorno = new ArrayList();
+
+				ServicoTipoPrioridade servicoTipoPrioridade = null;
+
+				for(Iterator iter = retornoConsulta.iterator(); iter.hasNext();){
+
+					Object[] element = (Object[]) iter.next();
+
+					servicoTipoPrioridade = new ServicoTipoPrioridade();
+
+					servicoTipoPrioridade.setId((Integer) element[0]);
+					servicoTipoPrioridade.setDescricao((String) element[1]);
+					servicoTipoPrioridade.setQtidadeOs(((Number) element[2]).intValue());
+					retorno.add(servicoTipoPrioridade);
+				}
+
+			}
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	public Integer recuperaQuantidadeDiasUnidade(Integer idOS, Short permiteTramiteIndependente) throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+
+		int retorno = 0;
+		try{
+			StringBuffer hql = new StringBuffer();
+
+			hql.append("select trunc(max(tramites.dataTramite)) ");
+			hql.append("from OrdemServico os ");
+			if(permiteTramiteIndependente.intValue() == 2){
+				hql.append("inner join os.registroAtendimento rgat ");
+				hql.append("inner join rgat.tramites tramites ");
+			}else{
+				hql.append("inner join os.tramites tramites ");
+			}
+
+			hql.append("where os.id = :idOS ");
+			Query query = session.createQuery(hql.toString());
+			query.setInteger("idOS", idOS);
+			
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			Date data1 = new Date();
+			Date data2;
+
+			if(query.uniqueResult() != null){
+				data2 = (Date) query.uniqueResult();
+				retorno = Util.diferencaEntreDatas(sdf.format(data1), sdf.format(data2));
+			}else{
+				hql = new StringBuffer();
+				hql.append("select trunc(os.dataGeracao) ");
+				hql.append("from OrdemServico os ");
+				hql.append("where os.id = :idOS ");
+
+				query = session.createQuery(hql.toString());
+				query.setInteger("idOS", idOS);
+
+				if(query.uniqueResult() != null){
+					data2 = (Date) query.uniqueResult();
+					retorno = Util.diferencaEntreDatas(sdf.format(data1), sdf.format(data2));
+				}
+			}
+
+		}catch(ParseException pe){
+			throw new ErroRepositorioException(pe, "Erro ao calcular data");
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}		
+		return retorno;
+	}
 }

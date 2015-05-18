@@ -78,6 +78,44 @@
 			}
 		}
 	}
+	
+	function limparPesquisaMunicipio() {
+		var form = document.forms[0];
+
+	    form.idMunicipio.value = "";
+	    form.descricaoMunicipio.value = "";
+	    limparPesquisaBairro();
+
+	  }
+
+	function limparPesquisaBairro() {
+		var form = document.forms[0];
+
+	    form.codigoBairro.value = "";
+	    form.descricaoBairro.value = "";
+	   
+	}
+	
+	
+	function verificarSituacaoMunicipioPesquisarMunicipio(){
+		var form = document.forms[0];
+		if(form.idMunicipio.disabled == false){
+		    limparPesquisaBairro();
+			redirecionarSubmit('exibirPesquisarMunicipioAction.do?caminhoRetornoTelaPesquisaMunicipio=exibirPesquisarServicoTipoTramiteAction');
+		}
+
+	}
+
+	function verificarSituacaoMunicipioLimparMunicipio(){
+
+		var form = document.forms[0];
+		if(form.idMunicipio.disabled == false){
+			limparPesquisaMunicipio();limparPesquisaBairro();
+		}
+
+	}
+
+	
 </script>
 </head>
 
@@ -156,6 +194,95 @@
 					</td>
 		       	</tr>
 
+
+
+				<tr>
+					<td width="18%"><strong>Munic&iacute;pio:</strong></td>
+					<td width="82%"><html:text maxlength="4" tabindex="7"
+						property="idMunicipio" size="4"
+						onkeypress="validaEnter(event, 'exibirPesquisarServicoTipoTramiteAction.do?objetoConsulta=5','idMunicipio');"  />		
+				
+					<a href="javascript:redirecionarSubmit('exibirPesquisarMunicipioAction.do?caminhoRetornoTelaPesquisaMunicipio=exibirPesquisarServicoTipoTramiteAction');">
+					
+					<img width="23" height="21" border="0"
+						src="<bean:message key="caminho.imagens"/>pesquisa.gif"
+						title="Pesquisar Municipio" /></a> <logic:present
+						name="idMunicipioNaoEncontrado">
+						<logic:equal name="idMunicipioNaoEncontrado"
+							value="exception">
+							<html:text property="descricaoMunicipio" size="40"
+								maxlength="30" readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #ff0000" />
+						</logic:equal>
+						<logic:notEqual name="idMunicipioNaoEncontrado"
+							value="exception">
+							<html:text property="descricaoMunicipio" size="40"
+								maxlength="30" readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #000000" />
+						</logic:notEqual>
+					</logic:present> <logic:notPresent
+						name="idMunicipioNaoEncontrado">
+						<logic:empty name="PesquisarServicoTipoTramiteActionForm"
+							property="idMunicipio">
+							<html:text property="descricaoMunicipio" value="" size="40"
+								maxlength="30" readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #ff0000" />
+						</logic:empty>
+						<logic:notEmpty name="PesquisarServicoTipoTramiteActionForm"
+							property="idMunicipio">
+							<html:text property="descricaoMunicipio" size="40"
+								maxlength="30" readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #000000" />
+						</logic:notEmpty>
+					</logic:notPresent> <a href="javascript:limparPesquisaMunicipio();">  <img
+						src="<bean:message key="caminho.imagens"/>limparcampo.gif"
+						border="0" title="Apagar" /></a></td>
+				</tr>
+				<tr>
+					<td width="18%"><strong>Bairro:</strong></td>
+					<td width="82%"><html:text maxlength="4"
+						property="codigoBairro" size="4" tabindex="8"
+				       onkeypress="validaEnter(event, 'exibirPesquisarServicoTipoTramiteAction.do?objetoConsulta=6','codigoBairro');"  />
+					<a
+						href="javascript:redirecionarSubmit('exibirPesquisarBairroAction.do?caminhoRetornoTelaPesquisaBairro=exibirPesquisarServicoTipoTramiteAction&tipo=1&idMunicipio='+document.forms[0].idMunicipio.value);">
+
+					<img width="23" height="21" border="0"
+						src="<bean:message key="caminho.imagens"/>pesquisa.gif"
+						title="Pesquisar Bairro" /></a> <logic:present
+						name="codigoBairroImovelNaoEncontrado">
+						<logic:equal name="codigoBairroImovelNaoEncontrado"
+							value="exception">
+							<html:text property="descricaoBairro" size="40"
+								maxlength="30" readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #ff0000" />
+						</logic:equal>
+						<logic:notEqual name="codigoBairroImovelNaoEncontrado"
+							value="exception">
+							<html:text property="descricaoBairro" size="40"
+								maxlength="30" readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #000000" />
+						</logic:notEqual>
+					</logic:present> <logic:notPresent
+						name="codigoBairroImovelNaoEncontrado">
+						<logic:empty name="PesquisarServicoTipoTramiteActionForm"
+							property="codigoBairro">
+							<html:text property="descricaoBairro" value="" size="40"
+								maxlength="30" readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #ff0000" />
+						</logic:empty>
+						<logic:notEmpty name="PesquisarServicoTipoTramiteActionForm"
+							property="codigoBairro">
+							<html:text property="descricaoBairro" size="40"
+								maxlength="30" readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #000000" />
+						</logic:notEmpty>
+					</logic:notPresent> <a href="javascript:limparPesquisaBairro();"> <img
+						src="<bean:message key="caminho.imagens"/>limparcampo.gif"
+						border="0" title="Apagar" /></a></td>
+				</tr>
+
+
+
         		<tr>
 			       	<td width="25%" height="24">
 			       		<strong>Unidade de Origem:<span class="style3"></span></strong>
@@ -203,6 +330,14 @@
 						</a>
 					</td>
 		       	</tr>
+		       	
+		       	<tr>
+			       	<td width="25%" height="24">
+			       		<strong>Unidade do Primeiro Trâmite?<span class="style3"><font color="#FF0000">*</font></span></strong>
+			       	</td>
+			       	<td align="left"><label> <html:radio property="indicadorPrimeiroTramite" value="1" /> <strong>Sim</strong></label>
+					<label> <html:radio property="indicadorPrimeiroTramite" value="2" /> <strong>Não</strong></label></td>
+			     </tr>
 
         		<tr>
           			<td height="24"><strong></strong></td>

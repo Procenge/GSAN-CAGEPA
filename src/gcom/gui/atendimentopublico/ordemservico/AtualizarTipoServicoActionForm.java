@@ -127,6 +127,8 @@ public class AtualizarTipoServicoActionForm
 
 	private String indicadorVistoria;
 
+	private String indicadorAfericaoHidrometro;
+
 	private String tempoMedioIncial;
 
 	private String tempoMedioFinal;
@@ -213,18 +215,21 @@ public class AtualizarTipoServicoActionForm
 
 	private String indicadorServicoCritico;
 
+	private String indicadorPagamentoAntecipado;
+
+	private String numeroMaximoVisitasImprodutivasPermitidas;
+
+	private String indicadorPermiteAlterarValor;
+
 	Collection servicoTipoAtividades = new ArrayList();
 
 	Collection servicoTipoMateriais = new ArrayList();
 
 	Collection<ServicoTipoValorLocalidade> servicoTipoValorLocalidade = new ArrayList<ServicoTipoValorLocalidade>();
 	
-	
-	
-	
-
-
 	private Short indicadorGerarHistoricoImovel;
+
+	private String numeroMaximoGuiaPrestacaoAntecipadaPermitidas;
 
 	public void addServicoTipoAtividade(){
 
@@ -311,6 +316,26 @@ public class AtualizarTipoServicoActionForm
 		}
 	}
 
+	public String getNumeroMaximoVisitasImprodutivasPermitidas(){
+
+		return numeroMaximoVisitasImprodutivasPermitidas;
+	}
+
+	public void setNumeroMaximoVisitasImprodutivasPermitidas(String numeroMaximoVisitasImprodutivasPermitidas){
+
+		this.numeroMaximoVisitasImprodutivasPermitidas = numeroMaximoVisitasImprodutivasPermitidas;
+	}
+
+	public String getIndicadorPagamentoAntecipado(){
+
+		return indicadorPagamentoAntecipado;
+	}
+
+	public void setIndicadorPagamentoAntecipado(String indicadorPagamentoAntecipado){
+
+		this.indicadorPagamentoAntecipado = indicadorPagamentoAntecipado;
+	}
+
 	public String getDescricaoTipoCredito(){
 
 		return descricaoTipoCredito;
@@ -334,6 +359,16 @@ public class AtualizarTipoServicoActionForm
 
 		// data da retirada
 		return servicoPerfilTipo;
+	}
+
+	public String getNumeroMaximoGuiaPrestacaoAntecipadaPermitidas(){
+
+		return numeroMaximoGuiaPrestacaoAntecipadaPermitidas;
+	}
+
+	public void setNumeroMaximoGuiaPrestacaoAntecipadaPermitidas(String numeroMaximoGuiaPrestacaoAntecipadaPermitidas){
+
+		this.numeroMaximoGuiaPrestacaoAntecipadaPermitidas = numeroMaximoGuiaPrestacaoAntecipadaPermitidas;
 	}
 
 	public String getAbreviada(){
@@ -907,5 +942,23 @@ public class AtualizarTipoServicoActionForm
 		this.indicadorGerarHistoricoImovel = indicadorGerarHistoricoImovel;
 	}
 
+	public String getIndicadorAfericaoHidrometro(){
+
+		return indicadorAfericaoHidrometro;
+	}
+
+	public void setIndicadorAfericaoHidrometro(String indicadorAfericaoHidrometro){
+
+		this.indicadorAfericaoHidrometro = indicadorAfericaoHidrometro;
+	}
+	public String getIndicadorPermiteAlterarValor(){
+
+		return indicadorPermiteAlterarValor;
+	}
+
+	public void setIndicadorPermiteAlterarValor(String indicadorPermiteAlterarValor){
+
+		this.indicadorPermiteAlterarValor = indicadorPermiteAlterarValor;
+	}
 
 }

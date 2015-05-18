@@ -308,6 +308,8 @@ public class LeituraConsumoActionForm
 
 	private String descricaoPocoTipo;
 
+	private String consumoFixoPoco;
+
 	private String idGrupoFaturamentoFiltro;
 
 	private String idEmpresaFiltro;
@@ -387,6 +389,8 @@ public class LeituraConsumoActionForm
 	private String seqRota;
 
 	private String creditoFaturado;
+
+	private String creditoGerado;
 
 	private String[] idRegistrosImovel;
 
@@ -1952,6 +1956,26 @@ public class LeituraConsumoActionForm
 	public void setIndicadorRateio(String indicadorRateio){
 
 		this.indicadorRateio = indicadorRateio;
+	}
+
+	public String getConsumoFixoPoco(){
+
+		return consumoFixoPoco;
+	}
+
+	public void setConsumoFixoPoco(String consumoFixoPoco){
+
+		this.consumoFixoPoco = consumoFixoPoco;
+	}
+
+	public String getCreditoGerado(){
+
+		return creditoGerado;
+	}
+
+	public void setCreditoGerado(String creditoGerado){
+
+		this.creditoGerado = creditoGerado;
 	}
 
 }

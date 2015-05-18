@@ -122,4 +122,8 @@ public class FiltroClienteGuiaPagamento
 
 	public final static String CLIENTE = "cliente";
 
+	public final static String GUIA_PAGAMENTO = "guiaPagamento";
+
+	public final static String CLIENTE_RELACAO_TIPO = "clienteRelacaoTipo";
+
 }

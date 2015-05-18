@@ -327,6 +327,23 @@
 						src="<bean:message key="caminho.imagens"/>limparcampo.gif"
 						border="0" title="Apagar" /></a></td>
 				</tr>
+				
+				<tr> 
+ 					<td>
+ 						<strong>
+ 							Tipo de Equipe :
+ 						</strong>
+ 					</td>
+ 					<td colspan="3" align="right">
+ 						<div align="left"> 
+     						<html:select property="idEquipeTipo" tabindex="3">
+								<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+								<html:options collection="colecaoEquipeTipo" labelProperty="descricao" property="id" />
+							</html:select>
+     					</div>
+     				</td>
+				</tr>
+				
 				<tr>
 					<td><strong>Indicador de Uso:</strong></td>
 					<td align="right" colspan="2">

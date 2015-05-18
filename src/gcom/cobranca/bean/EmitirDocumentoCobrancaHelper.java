@@ -142,6 +142,44 @@ public class EmitirDocumentoCobrancaHelper
 
 	private Integer numeroSequencialRota;
 
+	private Integer idCliente;
+
+	private String nomeCliente;
+
+	/**
+	 * @return Retorna o campo descricaoLeitAnormalidade.
+	 */
+	public String getNomeCliente(){
+
+		return nomeCliente;
+	}
+
+	/**
+	 * @param nomeCliente
+	 *            O nomeCliente a ser setado.
+	 */
+	public void setNomeCliente(String nomeCliente){
+
+		this.nomeCliente = nomeCliente;
+	}
+
+	/**
+	 * @return Retorna o campo idCliente.
+	 */
+	public Integer getIdCliente(){
+
+		return idCliente;
+	}
+
+	/**
+	 * @param idCliente
+	 *            O idCliente a ser setado.
+	 */
+	public void setIdCliente(Integer idCliente){
+
+		this.idCliente = idCliente;
+	}
+
 	/**
 	 * @return Retorna o campo descricaoLeitAnormalidade.
 	 */
@@ -466,6 +504,89 @@ public class EmitirDocumentoCobrancaHelper
 		this.descricaoLeitAnormalidade = descricaoLeitAnormalidade;
 		this.codigoRota = codigoRota;
 		this.numeroSequencialRota = numeroSequencialRota;
+	}
+
+	public EmitirDocumentoCobrancaHelper(Integer idDocumentoCobranca, Integer idLocalidade, String descricaoLocalidade,
+											Integer codigoSetorComercial, int numeroQuadra, short lote, short subLote, Integer idImovel,
+											Short numeroDiasValidade, int numeroSequenciaDocumento, String descricaoImovelPerfil,
+											Date emissao, Integer idCobrancaGrupo, BigDecimal valorDocumento, Integer idEmpresa,
+											String descricaoEmpresa, String nomeAbreviadoGerencia, String nomeGerencia,
+											Integer idLigacaoAguaSituacao, Integer idLigacaoEsgotoSituacao, Integer idGerencia,
+											Date dtImovelUltimaAlteracao, String descricaoSituacaoLigacaoAgua,
+											String descricaoSituacaoLigacaoEsgoto, Integer idLeituraAnormalidade,
+											String descricaoLeitAnormalidade, Integer idCliente, String nomeCliente) {
+
+		this.idDocumentoCobranca = idDocumentoCobranca;
+		this.idLocalidade = idLocalidade;
+		this.descricaoLocalidade = descricaoLocalidade;
+		this.codigoSetorComercial = codigoSetorComercial;
+		this.numeroQuadra = numeroQuadra;
+		this.lote = lote;
+		this.subLote = subLote;
+		this.idImovel = idImovel;
+		this.numeroDiasValidade = numeroDiasValidade;
+		this.numeroSequenciaDocumento = numeroSequenciaDocumento;
+		this.descricaoImovelPerfil = descricaoImovelPerfil;
+		this.emissao = emissao;
+		this.idCobrancaGrupo = idCobrancaGrupo;
+		this.valorDocumento = valorDocumento;
+		this.idEmpresa = idEmpresa;
+		this.descricaoEmpresa = descricaoEmpresa;
+		this.nomeAbreviadoGerencia = nomeAbreviadoGerencia;
+		this.nomeGerencia = nomeGerencia;
+		this.idLigacaoAguaSituacao = idLigacaoAguaSituacao;
+		this.idLigacaoEsgotoSituacao = idLigacaoEsgotoSituacao;
+		this.idGerencia = idGerencia;
+		this.dtImovelUltimaAlteracao = dtImovelUltimaAlteracao;
+		this.descricaoSituacaoLigacaoAgua = descricaoSituacaoLigacaoAgua;
+		this.descricaoSituacaoLigacaoEsgoto = descricaoSituacaoLigacaoEsgoto;
+		this.idLeituraAnormalidade = idLeituraAnormalidade;
+		this.descricaoLeitAnormalidade = descricaoLeitAnormalidade;
+		this.idCliente = idCliente;
+		this.nomeCliente = nomeCliente;
+	}
+
+	public EmitirDocumentoCobrancaHelper(Integer idDocumentoCobranca, Integer idLocalidade, String descricaoLocalidade,
+											Integer codigoSetorComercial, int numeroQuadra, short lote, short subLote, Integer idImovel,
+											Short numeroDiasValidade, int numeroSequenciaDocumento, String descricaoImovelPerfil,
+											Date emissao, Integer idCobrancaGrupo, BigDecimal valorDocumento, Integer idEmpresa,
+											String descricaoEmpresa, String nomeAbreviadoGerencia, String nomeGerencia,
+											Integer idLigacaoAguaSituacao, Integer idLigacaoEsgotoSituacao, Integer idGerencia,
+											Date dtImovelUltimaAlteracao, String descricaoSituacaoLigacaoAgua,
+											String descricaoSituacaoLigacaoEsgoto, Integer idLeituraAnormalidade,
+											String descricaoLeitAnormalidade, Short codigoRota, Integer numeroSequencialRota,
+											Integer idCliente, String nomeCliente) {
+
+		this.idDocumentoCobranca = idDocumentoCobranca;
+		this.idLocalidade = idLocalidade;
+		this.descricaoLocalidade = descricaoLocalidade;
+		this.codigoSetorComercial = codigoSetorComercial;
+		this.numeroQuadra = numeroQuadra;
+		this.lote = lote;
+		this.subLote = subLote;
+		this.idImovel = idImovel;
+		this.numeroDiasValidade = numeroDiasValidade;
+		this.numeroSequenciaDocumento = numeroSequenciaDocumento;
+		this.descricaoImovelPerfil = descricaoImovelPerfil;
+		this.emissao = emissao;
+		this.idCobrancaGrupo = idCobrancaGrupo;
+		this.valorDocumento = valorDocumento;
+		this.idEmpresa = idEmpresa;
+		this.descricaoEmpresa = descricaoEmpresa;
+		this.nomeAbreviadoGerencia = nomeAbreviadoGerencia;
+		this.nomeGerencia = nomeGerencia;
+		this.idLigacaoAguaSituacao = idLigacaoAguaSituacao;
+		this.idLigacaoEsgotoSituacao = idLigacaoEsgotoSituacao;
+		this.idGerencia = idGerencia;
+		this.dtImovelUltimaAlteracao = dtImovelUltimaAlteracao;
+		this.descricaoSituacaoLigacaoAgua = descricaoSituacaoLigacaoAgua;
+		this.descricaoSituacaoLigacaoEsgoto = descricaoSituacaoLigacaoEsgoto;
+		this.idLeituraAnormalidade = idLeituraAnormalidade;
+		this.descricaoLeitAnormalidade = descricaoLeitAnormalidade;
+		this.codigoRota = codigoRota;
+		this.numeroSequencialRota = numeroSequencialRota;
+		this.idCliente = idCliente;
+		this.nomeCliente = nomeCliente;
 	}
 
 	/**

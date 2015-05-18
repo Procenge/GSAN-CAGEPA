@@ -131,6 +131,8 @@ public class OrdemServicoSeletivaHelper
 
 	private String numeroOcorrenciasConsecutivas;
 
+	private String referenciaUltimaAfericaoAnterior;
+
 	private String mesAnoInstalacao;
 
 	private String[] hidrometroProtecao;
@@ -891,6 +893,16 @@ public class OrdemServicoSeletivaHelper
 	public void setIdComandoOsSeletiva(Integer idComandoOsSeletiva){
 
 		this.idComandoOsSeletiva = idComandoOsSeletiva;
+	}
+
+	public String getReferenciaUltimaAfericaoAnterior(){
+
+		return referenciaUltimaAfericaoAnterior;
+	}
+
+	public void setReferenciaUltimaAfericaoAnterior(String referenciaUltimaAfericaoAnterior){
+
+		this.referenciaUltimaAfericaoAnterior = referenciaUltimaAfericaoAnterior;
 	}
 
 }

@@ -76,6 +76,7 @@
 
 package gcom.cadastro.funcionario;
 
+import gcom.atendimentopublico.ordemservico.EquipeTipo;
 import gcom.cadastro.empresa.Empresa;
 import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.interceptor.ControleAlteracao;
@@ -112,15 +113,22 @@ public class Funcionario
 	/** persistent field */
 	private UnidadeOrganizacional unidadeOrganizacional;
 
+	private EquipeTipo equipeTipo;
+
+	private String nomeResumido;
+
+	private Integer jornadaTipo;
+
 	/** full constructor */
 	public Funcionario(String descricaoCargo, String nome, Date ultimaAlteracao, Empresa empresa,
-						UnidadeOrganizacional unidadeOrganizacional) {
+						UnidadeOrganizacional unidadeOrganizacional, EquipeTipo equipeTipo) {
 
 		this.descricaoCargo = descricaoCargo;
 		this.nome = nome;
 		this.ultimaAlteracao = ultimaAlteracao;
 		this.empresa = empresa;
 		this.unidadeOrganizacional = unidadeOrganizacional;
+		this.equipeTipo = equipeTipo;
 	}
 
 	/** default constructor */
@@ -234,5 +242,35 @@ public class Funcionario
 	public String getDescricaoParaRegistroTransacao(){
 
 		return getId() + " " + getNome();
+	}
+
+	public EquipeTipo getEquipeTipo(){
+
+		return equipeTipo;
+	}
+
+	public void setEquipeTipo(EquipeTipo equipeTipo){
+
+		this.equipeTipo = equipeTipo;
+	}
+
+	public String getNomeResumido(){
+
+		return nomeResumido;
+	}
+
+	public void setNomeResumido(String nomeResumido){
+
+		this.nomeResumido = nomeResumido;
+	}
+
+	public Integer getJornadaTipo(){
+
+		return jornadaTipo;
+	}
+
+	public void setJornadaTipo(Integer jornadaTipo){
+
+		this.jornadaTipo = jornadaTipo;
 	}
 }

@@ -5,6 +5,7 @@
 <%@ taglib uri="/WEB-INF/gcomLib.tld" prefix="gcom"%>
 
 <%@ page import="gcom.micromedicao.hidrometro.Hidrometro"%>
+<%@ page import="gcom.micromedicao.hidrometro.HidrometroSituacao"%>
 <%@ page import="gcom.util.ConstantesSistema" %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -25,6 +26,17 @@
 	src="<bean:message key="caminho.js"/>validacao/regras_validator.js"></script>
 <html:javascript staticJavascript="false"
 	formName="HidrometroActionForm" dynamicJavascript="false" />
+	
+<style type="text/css">
+
+.desabilitar {
+ background-color:#EFEFEF;
+ border:0;
+ color: #000000;
+}
+
+</style>
+
 <script type="text/javascript" language="Javascript">
 <!-- Begin
      var bCancel = false;
@@ -44,6 +56,8 @@
      this.ae = new Array("fixo", "Fixo da Numeração dos Hidrômetros possui caracteres especiais.", new Function ("varName", " return this[varName];"));
      this.af = new Array("faixaInicial", "Faixa Inicial da Numeração dos Hidrômetros possui caracteres especiais.", new Function ("varName", " return this[varName];"));
      this.ag = new Array("faixaFinal", "Faixa Final da Numeração dos Hidrômetros possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+     this.ah = new Array("dataInstalacao", "Data de Instalação possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+     this.ai = new Array("numeroNotaFiscal", "Número da Nota Fiscal possui caracteres especiais.", new Function ("varName", " return this[varName];"));
     }
 
 	function DateValidations () {
@@ -55,6 +69,7 @@
      this.ab = new Array("idLocalArmazenagem", "Local de Armazenagem deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
      this.ac = new Array("faixaInicial", "Faixa Inicial da Numeração dos Hidrômetros deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
      this.ad = new Array("faixaFinal", "Faixa Final da Numeração dos Hidrômetros deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+     this.ae = new Array("numeroNotaFiscal", "Número da Nota Fiscal deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
     }
 
 
@@ -159,12 +174,14 @@ function limparForm(){
 	form.idHidrometroTipo.value = -1;
 	form.idLocalArmazenagem.value = "";
 	form.localArmazenagemDescricao.value = "";
-    form.idHidrometroSituacao.value = -1;
+    form.idHidrometroSituacao.selectedIndex = 0;
 	form.fixo.value = "";
 	form.faixaInicial.value = "";
 	form.faixaFinal.value = "";
 	form.numeroHidrometro.focus();
 	form.idHidrometroTipoTurbina.value = -1;
+	form.dataInstalacao.value = "";
+	form.dataInstalacao.disabled = false;
 }
 
 	function atualizarSelecaoFormato(){
@@ -182,6 +199,43 @@ function limparForm(){
 		form.action = "/gsan/exibirFiltrarHidrometroAction.do?codigoFormatoNumeracao="+ codigoFormatoNumeracao;
 		submeterFormPadrao(form);
 	}
+	
+	function desabilitarDataInstalacao(idSituacaoInstalado){
+
+		var form = document.forms[0];
+  		var informouSituacaoPermiteInformarData = false;
+  		
+  		if (form.idHidrometroSituacao.selectedIndex == 0 || form.idHidrometroSituacao.value == idSituacaoInstalado){
+  			
+  			informouSituacaoPermiteInformarData = true;
+  		}
+  		
+  		if (informouSituacaoPermiteInformarData){
+  			
+  			form.dataInstalacao.disabled = false;
+  		}else{
+  			
+  			form.dataInstalacao.disabled = true;
+  			form.dataInstalacao.value = "";
+  		}
+	}
+	
+	function verificarPermissaoInformarDataInstalacao(idSituacaoInstalado){
+
+		var form = document.forms[0];
+  		var informouSituacaoPermiteInformarData = false;
+  		
+  		
+  		if (form.idHidrometroSituacao.selectedIndex == 0 || form.idHidrometroSituacao.value == idSituacaoInstalado){
+  			
+  			informouSituacaoPermiteInformarData = true;
+  		}
+  		
+  		if (informouSituacaoPermiteInformarData){
+  			
+  			abrirCalendario('HidrometroActionForm', 'dataInstalacao');
+  		}
+	}
 -->
 </script>
 
@@ -189,7 +243,7 @@ function limparForm(){
 </head>
 
 <body leftmargin="5" topmargin="5"
-	onload="javascript:setarFoco('${requestScope.nomeCampo}');">
+	onload="javascript:setarFoco('${requestScope.nomeCampo}');desabilitarDataInstalacao('${requestScope.idSituacaoHidrometroInstalado}');">
 <html:form action="/filtrarHidrometroAction.do"
 	name="HidrometroActionForm"
 	type="gcom.gui.micromedicao.hidrometro.HidrometroActionForm"
@@ -363,6 +417,11 @@ function limparForm(){
 				</tr>
 				
 				<tr>
+					<td><strong>Número da Nota Fiscal:</strong></td>
+					<td><html:text property="numeroNotaFiscal" size="9" maxlength="9"/></td>
+				</tr>
+				
+				<tr>
 					<td><strong>Finalidade:</strong></td>
 					<td><html:radio tabindex="4" property="indicadorMacromedidor"
 						value="<%=(Hidrometro.INDICADOR_COMERCIAL).toString()%>"
@@ -401,6 +460,11 @@ function limparForm(){
 							labelProperty="descricao" property="id" />
 					</html:select></td>
 				</tr>
+				<tr>
+					<td><strong>Lote de Entrega:</strong></td>
+					<td><html:text maxlength="10" property="loteEntrega" size="6" tabindex="2"/></td>
+				</tr>
+				
 				<tr>
 					<td><strong>Local de Armazenagem:</strong></td>
 					<td><html:text property="idLocalArmazenagem" tabindex="11" size="4"
@@ -442,13 +506,26 @@ function limparForm(){
 				<tr>
 					<td><strong>Situação:</strong></td>
 					<td>
-						<html:select property="idHidrometroSituacao" tabindex="10">
-						<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+						<html:select property="idHidrometroSituacao" tabindex="10" 
+							onchange="javascript:desabilitarDataInstalacao('${requestScope.idSituacaoHidrometroInstalado}');">
+							
+						<html:option value="">&nbsp;</html:option>
 						<logic:present name="colecaoHidrometroSituacao">
-							<html:options collection="colecaoHidrometroSituacao" labelProperty="descricao" property="id" />
+							<html:options collection="colecaoHidrometroSituacao" labelProperty="descricao" property="id"/>
 						</logic:present>
 						</html:select>
 					</td>
+				</tr>
+				
+				<tr>
+					<td><strong>Data de Instalação:</strong></td>
+					<td><html:text property="dataInstalacao" size="10" maxlength="10"
+						onkeyup="mascaraData(this,event)"/> <a
+						href="javascript:verificarPermissaoInformarDataInstalacao('${requestScope.idSituacaoHidrometroInstalado}')">
+					<img border="0"
+						src="<bean:message key="caminho.imagens"/>calendario.gif"
+						width="20" border="0" align="absmiddle" alt="Exibir Calendário" /></a>
+					dd/mm/aaaa</td>
 				</tr>
 
 				<tr>

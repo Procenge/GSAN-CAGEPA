@@ -136,6 +136,10 @@ public class ConsultarClienteActionForm
 
 	private String siglaUnidadeFederacao;
 
+	private String atividadeEconomicaCliente;
+
+	private String numeroBeneficio;
+
 	/**
 	 * Description of the Method
 	 * 
@@ -336,6 +340,26 @@ public class ConsultarClienteActionForm
 	public void setSiglaUnidadeFederacao(String siglaUnidadeFederacao){
 
 		this.siglaUnidadeFederacao = siglaUnidadeFederacao;
+	}
+
+	public String getAtividadeEconomicaCliente(){
+
+		return atividadeEconomicaCliente;
+	}
+
+	public void setAtividadeEconomicaCliente(String atividadeEconomicaCliente){
+
+		this.atividadeEconomicaCliente = atividadeEconomicaCliente;
+	}
+
+	public String getNumeroBeneficio(){
+
+		return numeroBeneficio;
+	}
+
+	public void setNumeroBeneficio(String numeroBeneficio){
+
+		this.numeroBeneficio = numeroBeneficio;
 	}
 
 }

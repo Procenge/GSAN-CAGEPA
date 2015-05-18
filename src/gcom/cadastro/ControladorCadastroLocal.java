@@ -77,6 +77,9 @@
 package gcom.cadastro;
 
 import gcom.cadastro.aguaparatodos.ImovelAguaParaTodos;
+import gcom.cadastro.atendimento.*;
+import gcom.cadastro.atendimento.bean.AtendimentoDocumentacaoInformadaHelper;
+import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.cliente.ClienteResponsavel;
 import gcom.cadastro.cliente.ClienteTipo;
 import gcom.cadastro.cliente.Profissao;
@@ -105,6 +108,8 @@ import gcom.util.ControladorException;
 import gcom.util.ErroRepositorioException;
 import gcom.util.FachadaException;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -989,4 +994,59 @@ public interface ControladorCadastroLocal
 	 * @date 30/10/2013
 	 */
 	public Integer obterNextValSequence(String sequence) throws ControladorException;
+
+	/**
+	 * @param cliente
+	 * @return
+	 * @throws ControladorException
+	 */
+	public Collection pesquisarClienteDebitoACobrar(Cliente cliente) throws ControladorException;
+
+	/**
+	 * @param cliente
+	 * @return
+	 * @throws ControladorException
+	 */
+	public Collection pesquisarClienteGuiaPagamento(Cliente cliente) throws ControladorException;
+
+	/**
+	 * [UC0534] Inserir Feriado
+	 * [SB0002] - Importar Feriado
+	 * 
+	 * @author Anderson Italo
+	 * @throws IOException
+	 * @throws ControladorException
+	 * @date 18/08/2014
+	 */
+	public File importarFeriado(File arquivoFeriados, Usuario usuarioLogado) throws IOException, ControladorException;
+
+	/**
+	 * [UC0203] Consultar Débitos
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 05/09/2014
+	 */
+	public Short existeProcessoExecucaoFiscal() throws ControladorException;
+
+	/**
+	 * @author Gicevalter Couto
+	 * @date 05/09/2014
+	 */
+	public int pesquisarProximoIdNormaProcedimental() throws ControladorException;
+	
+	public Integer inserirAtendimentoProcedimento(AtendimentoProcedimento atendimentoProcedimento,
+					Collection<AtendProcDocumentoPessoaTipo> colecaoAtendProcDocumentoPessoaTipo,
+					Collection<AtendProcNormaProcedimental> colecaoAtendProcNormaProcedimental, Usuario usuarioLogado)
+					throws ControladorException;
+	
+	public void atualizarAtendimentoProcedimento(AtendimentoProcedimento atendimentoProcedimento,
+					Collection<AtendProcDocumentoPessoaTipo> colecaoAtendProcDocumentoPessoaTipo,
+					Collection<AtendProcNormaProcedimental> colecaoAtendProcNormaProcedimental, Usuario usuarioLogado)
+					throws ControladorException;
+
+	public Integer inserirAtendimento(Atendimento atendimento,
+					Collection<AtendimentoDocumentacaoInformadaHelper> colecaoAtendimentoDocumentacaoInformadaHelper)
+					throws ControladorException;
+
+	public void inserirDocumentoEletronico(Collection<DocumentoEletronico> colecaoDocumentoEletronico) throws ControladorException;
 }

@@ -87,21 +87,14 @@ import gcom.micromedicao.leitura.LeituraAnormalidade;
 import gcom.micromedicao.leitura.LeituraSituacao;
 import gcom.micromedicao.medicao.FiltroMedicaoTipo;
 import gcom.micromedicao.medicao.MedicaoHistorico;
-import gcom.seguranca.acesso.Operacao;
-import gcom.seguranca.acesso.OperacaoEfetuada;
 import gcom.seguranca.acesso.usuario.Usuario;
-import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -206,11 +199,11 @@ public class AtualizarConsumosResumoAction
 			Date dataLeituraAtual = null;
 			Date dataLeituraAnterior = null;
 
-			String anoMesReferencia = "" + medicaoHistorico.getAnoMesReferencia();
 
 			if(imovel.getHidrometroInstalacaoHistorico() != null
 							|| (imovel.getLigacaoAgua() != null && imovel.getLigacaoAgua().getHidrometroInstalacaoHistorico() != null)){
 
+				String anoMesReferencia = "" + medicaoHistorico.getAnoMesReferencia();
 				if(dataLeituraAtualInformada != null && !dataLeituraAtualInformada.equals("")){
 
 					try{
@@ -498,9 +491,13 @@ public class AtualizarConsumosResumoAction
 			}
 			// //////////////////////////////////////////////////////////////////////////////
 
-			fachada.atualizarLeituraConsumoResumido(Integer.valueOf(idImovel), medicaoHistorico.getMesAno().toString(),
-							dataLeituraAnteriorInformada, leituraAnterior, dataLeituraAtualInformada, leituraAtual, consumoInformado,
-							ligacaoAgua, idLeituraAnormalidade, Integer.valueOf(indicadorConfirmacao), usuarioLogado);
+			if(medicaoHistorico != null){
+				fachada.atualizarLeituraConsumoResumido(Integer.valueOf(idImovel), medicaoHistorico.getMesAno().toString(),
+								dataLeituraAnteriorInformada, leituraAnterior, dataLeituraAtualInformada, leituraAtual, consumoInformado,
+								ligacaoAgua, idLeituraAnormalidade, Integer.valueOf(indicadorConfirmacao), usuarioLogado);
+			}
+
+			fachada.consistirLeiturasCalcularConsumosPorImovel(Util.obterInteger(idImovel));
 
 			httpServletRequest.setAttribute("sucesso", true);
 

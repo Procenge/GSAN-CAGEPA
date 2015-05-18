@@ -131,6 +131,9 @@ public class EfetuarRestabelecimentoLigacaoAguaActionForm
 
 	private String descricaoFuncionario;
 
+	private String submitAutomatico2;
+
+
 	/*
 	 * Colocado por Raphael Rossiter em 20/04/2007
 	 * [FS0013 - Alteração de Valor]
@@ -398,6 +401,16 @@ public class EfetuarRestabelecimentoLigacaoAguaActionForm
 	public String getDescricaoFuncionario(){
 
 		return descricaoFuncionario;
+	}
+
+	public String getSubmitAutomatico2(){
+
+		return submitAutomatico2;
+	}
+
+	public void setSubmitAutomatico2(String submitAutomatico2){
+
+		this.submitAutomatico2 = submitAutomatico2;
 	}
 
 }

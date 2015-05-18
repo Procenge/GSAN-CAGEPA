@@ -174,6 +174,8 @@ public class ExibirAcompanharRoteiroProgramacaoOrdemServicoRemanejarEquipeAction
 
 		filtroEquipe.adicionarParametro(new ParametroSimples(FiltroEquipe.INDICADOR_USO, ConstantesSistema.SIM));
 
+		filtroEquipe.adicionarCaminhoParaCarregamentoEntidade("equipeTipo");
+
 		filtroEquipe.setCampoOrderBy(FiltroEquipe.NOME);
 
 		retorno = Fachada.getInstancia().pesquisar(filtroEquipe, Equipe.class.getName());

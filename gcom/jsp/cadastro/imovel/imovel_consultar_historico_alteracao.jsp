@@ -78,6 +78,21 @@ function consultarDocCobranca(idDocCobranca){
 	abrirPopup(url, 400, 800);
 }
 
+function limparImovelTecla() {
+
+	var form = document.forms[0];
+	
+	form.matriculaImovelHistoricoAlteracao.value = "";
+
+	if (form.digitoVerificadorImovelHistoricoAlteracao != undefined) {
+		form.digitoVerificadorImovelHistoricoAlteracao.value = "";
+	}
+		
+	form.situacaoAguaHistoricoAlteracao.value = "";
+	form.situacaoEsgotoHistoricoAlteracao.value = "";
+	form.tipoLigacao.value = "";
+
+}	
 	
 </script>
 
@@ -188,30 +203,72 @@ function consultarDocCobranca(idDocCobranca){
 										color="#FF0000">*</font></strong></td>
 									<td width="75%" colspan="3"><html:text
 										property="idImovelHistoricoAlteracao" maxlength="9" size="9"
-										onkeypress="validaEnterComMensagem(event, 'consultarImovelWizardAction.do?action=exibirConsultarImovelHistoricoAlteracaoAction&indicadorNovo=OK&limparForm=S','idImovelHistoricoAlteracao','Im&oacute;vel');"/> 
+										onkeypress="validaEnterComMensagem(event, 'consultarImovelWizardAction.do?action=exibirConsultarImovelHistoricoAlteracaoAction&indicadorNovo=OK&limparForm=S','idImovelHistoricoAlteracao','Im&oacute;vel');"
+										onkeyup="limparImovelTecla();"/> 
 									<a
 										href="javascript:abrirPopup('exibirPesquisarImovelAction.do', 400, 800);">
 									<img width="23" height="21"
 										src="<bean:message key="caminho.imagens"/>pesquisa.gif"
 										border="0" /></a> <logic:present
 										name="idImovelHistoricoAlteracaoNaoEncontrado" scope="request">
-										<html:text property="matriculaImovelHistoricoAlteracao" size="40"
-											readonly="true"
-											style="background-color:#EFEFEF; border:0; color: #ff0000" />
-
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+											<html:text property="matriculaImovelHistoricoAlteracao" size="40"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										</logic:equal>
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+											<html:text property="digitoVerificadorImovelHistoricoAlteracao" size="2"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+												
+											<html:text property="matriculaImovelHistoricoAlteracao" size="31"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />												
+										</logic:equal>										
+										
 									</logic:present> <logic:notPresent
 										name="idImovelHistoricoAlteracaoNaoEncontrado" scope="request">
 										<logic:present name="valorMatriculaImovelHistoricoAlteracao"
 											scope="request">
-											<html:text property="matriculaImovelHistoricoAlteracao"
-												size="40" readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+												<html:text property="matriculaImovelHistoricoAlteracao"
+													size="40" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelHistoricoAlteracao"
+													size="2" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+													
+												<html:text property="matriculaImovelHistoricoAlteracao"
+													size="31" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />													
+											</logic:equal>											
+													
 										</logic:present>
 										<logic:notPresent name="valorMatriculaImovelHistoricoAlteracao"
 											scope="request">
-											<html:text property="matriculaImovelHistoricoAlteracao"
-												size="40" readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+												<html:text property="matriculaImovelHistoricoAlteracao"
+													size="40" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelHistoricoAlteracao"
+													size="2" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+													
+												<html:text property="matriculaImovelHistoricoAlteracao"
+													size="31" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />													
+											</logic:equal>											
+												
 										</logic:notPresent>
 									</logic:notPresent> <a href="javascript:limparForm();"> <img
 										src="<bean:message key="caminho.imagens"/>limparcampo.gif"
@@ -231,7 +288,20 @@ function consultarDocCobranca(idDocCobranca){
 										property="situacaoEsgotoHistoricoAlteracao" readonly="true"
 										style="background-color:#EFEFEF; border:0; color: #000000"
 										size="15" maxlength="15" /></td>
-								</tr>								
+								</tr>	
+								</tr>
+									<tr>
+									<td height="10">
+										<div class="style9"><strong>Tipo de Ligação:</strong></div>
+									</td>
+									<td><html:text property="tipoLigacao"
+										readonly="true"
+										style="background-color:#EFEFEF; border:0; color: #000000"
+										size="15" maxlength="15" />
+									</td>
+									<td width="90"></td>
+									<td width="120"></td>
+								</tr>										
 							</table>
 							</td>
 						</tr>

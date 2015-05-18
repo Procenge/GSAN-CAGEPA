@@ -76,6 +76,8 @@
 
 package gcom.gui.atendimentopublico.ordemservico;
 
+import gcom.atendimentopublico.ordemservico.EquipeTipo;
+import gcom.atendimentopublico.ordemservico.FiltroEquipeTipo;
 import gcom.atendimentopublico.ordemservico.FiltroServicoPerfilTipo;
 import gcom.atendimentopublico.ordemservico.ServicoPerfilTipo;
 import gcom.cadastro.funcionario.FiltroFuncionario;
@@ -251,6 +253,12 @@ public class ExibirFiltrarEquipeAction
 						&& (idPerfilServico == null || idPerfilServico.trim().equals(""))){
 			filtrarEquipeActionForm.setDescricaoPerfilServico("");
 		}
+
+		FiltroEquipeTipo filtroEquipeTipo = new FiltroEquipeTipo();
+		filtroEquipeTipo.setCampoOrderBy(FiltroEquipeTipo.DESCRICAO);
+
+		httpServletRequest
+						.setAttribute("colecaoEquipeTipo", Fachada.getInstancia().pesquisar(filtroEquipeTipo, EquipeTipo.class.getName()));
 
 		return retorno;
 

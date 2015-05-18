@@ -80,6 +80,7 @@ import gcom.cadastro.endereco.EnderecoReferencia;
 import gcom.cadastro.endereco.EnderecoTipo;
 import gcom.cadastro.endereco.LogradouroBairro;
 import gcom.cadastro.endereco.LogradouroCep;
+import gcom.cadastro.imovel.Imovel;
 import gcom.interceptor.ControleAlteracao;
 import gcom.interceptor.ObjetoTransacao;
 import gcom.util.filtro.Filtro;
@@ -139,6 +140,8 @@ public class ClienteEndereco
 
 	@ControleAlteracao(funcionalidade = {ATRIBUTOS_CLIENTE_ENDERECO_INSERIR, ATRIBUTOS_CLIENTE_ENDERECO_ATUALIZAR, ATRIBUTOS_INSIRIR_CLIENTE_ENDERECO_REMOVER, ATRIBUTOS_ATUALIZAR_CLIENTE_ENDERECO_REMOVER})
 	private Integer logradouro;
+
+	private Imovel imovel;
 
 	/** full constructor */
 	public ClienteEndereco(String numero, String complemento, Short indicadorEnderecoCorrespondencia, Date ultimaAlteracao,
@@ -770,6 +773,129 @@ public class ClienteEndereco
 		}
 
 		return endereco;
+	}
+
+	/**
+	 * Retorna o valor do endereco Completo
+	 * - Descricao do tipo do logradouro
+	 * - Descricao do título do logradouro
+	 * - Nome do logradouro
+	 * - Referência
+	 * - Número
+	 * - Complemento
+	 * - Bairro
+	 * - Municipio
+	 * - Estado
+	 * - CEP
+	 * 
+	 * @return String
+	 *         Endereço Formatado
+	 */
+	public String getEnderecoFormatadoSemCep(){
+
+		String endereco = "";
+
+		// verifica se o logradouro do imovel é diferente de null
+		if(this.getLogradouroCep() != null && this.getLogradouroCep().getLogradouro() != null
+						&& !this.getLogradouroCep().getLogradouro().getId().equals(new Integer("0"))){
+
+			// verifica se o logradouro tipo do imovel é diferente de null
+			if(this.getLogradouroCep().getLogradouro().getLogradouroTipo() != null
+							&& !this.getLogradouroCep().getLogradouro().getLogradouroTipo().equals("")){
+				// concatena o logradouro tipo do imovel
+				if(this.getLogradouroCep().getLogradouro().getLogradouroTipo().getDescricao() != null){
+					endereco = this.getLogradouroCep().getLogradouro().getLogradouroTipo().getDescricao().trim();
+				}
+			}
+			// verifica se o logradouro titulo do imovel é diferente de null
+			if(this.getLogradouroCep().getLogradouro().getLogradouroTitulo() != null
+							&& !this.getLogradouroCep().getLogradouro().getLogradouroTitulo().equals("")){
+				// concatena o logradouro titulo do imovel
+				if(this.getLogradouroCep().getLogradouro().getLogradouroTitulo().getDescricao() != null){
+					endereco = endereco + " " + this.getLogradouroCep().getLogradouro().getLogradouroTitulo().getDescricao().trim();
+				}
+			}
+
+			// concatena o logradouro do imovel
+			endereco = endereco + " " + this.getLogradouroCep().getLogradouro().getNome().trim();
+
+		}else if(this.getLogradouroBairro() != null && this.getLogradouroBairro().getLogradouro() != null
+						&& !this.getLogradouroBairro().getLogradouro().getId().equals(new Integer("0"))){
+
+			// verifica se o logradouro tipo do imovel é diferente de null
+			if(this.getLogradouroBairro().getLogradouro().getLogradouroTipo() != null
+							&& !this.getLogradouroBairro().getLogradouro().getLogradouroTipo().equals("")){
+				// concatena o logradouro tipo do imovel
+				if(this.getLogradouroBairro().getLogradouro().getLogradouroTipo().getDescricao() != null){
+					endereco = this.getLogradouroBairro().getLogradouro().getLogradouroTipo().getDescricao().trim();
+				}
+			}
+			// verifica se o logradouro titulo do imovel é diferente de null
+			if(this.getLogradouroBairro().getLogradouro().getLogradouroTitulo() != null
+							&& !this.getLogradouroBairro().getLogradouro().getLogradouroTitulo().equals("")){
+				// concatena o logradouro titulo do imovel
+				if(this.getLogradouroBairro().getLogradouro().getLogradouroTitulo().getDescricao() != null){
+					endereco = endereco + " " + this.getLogradouroBairro().getLogradouro().getLogradouroTitulo().getDescricao().trim();
+				}
+			}
+
+			// concatena o logradouro do imovel
+			endereco = endereco + " " + this.getLogradouroBairro().getLogradouro().getNome().trim();
+		}
+
+		if(this.getEnderecoReferencia() != null && !this.getEnderecoReferencia().equals("")){
+			if(this.getEnderecoReferencia().getDescricao() != null && !this.getEnderecoReferencia().getDescricao().equals("")){
+				endereco = endereco + " - " + this.getEnderecoReferencia().getDescricao().trim();
+			}
+		}
+
+		// concate o numero do imovel
+		if(this.getNumero() != null){
+			endereco = endereco + " - " + this.getNumero().trim();
+		}
+
+		if(this.getComplemento() != null && !this.getComplemento().trim().equalsIgnoreCase("")){
+			endereco = endereco + " - " + this.getComplemento().trim();
+		}
+
+		if(this.getLogradouroBairro() != null && this.getLogradouroBairro().getBairro() != null
+						&& this.getLogradouroBairro().getBairro().getId().intValue() != 0){
+			endereco = endereco + " - " + this.getLogradouroBairro().getBairro().getNome().trim();
+
+			if(this.getLogradouroBairro().getBairro().getMunicipio() != null
+							&& this.getLogradouroBairro().getBairro().getMunicipio().getId().intValue() != 0){
+				if(this.getLogradouroBairro().getBairro().getMunicipio().getNome() != null){
+					endereco = endereco + " " + this.getLogradouroBairro().getBairro().getMunicipio().getNome().trim();
+				}
+			}
+
+			if(this.getLogradouroBairro().getBairro().getMunicipio().getUnidadeFederacao() != null
+							&& this.getLogradouroBairro().getBairro().getMunicipio().getUnidadeFederacao().getId().intValue() != 0){
+				if(this.getLogradouroBairro().getBairro().getMunicipio().getUnidadeFederacao().getSigla() != null){
+					endereco = endereco + " "
+									+ this.getLogradouroBairro().getBairro().getMunicipio().getUnidadeFederacao().getSigla().trim();
+				}
+			}
+		}
+
+		if(this.getLogradouroCep() != null && this.getLogradouroCep().getCep() != null){
+			// concatena o cep formatado do imóvel
+			if(this.getLogradouroCep().getCep().getCepFormatado() != null){
+				endereco = endereco + " " + this.getLogradouroCep().getCep().getCepFormatado().trim();
+			}
+		}
+
+		return endereco;
+	}
+
+	public Imovel getImovel(){
+
+		return imovel;
+	}
+
+	public void setImovel(Imovel imovel){
+
+		this.imovel = imovel;
 	}
 
 }

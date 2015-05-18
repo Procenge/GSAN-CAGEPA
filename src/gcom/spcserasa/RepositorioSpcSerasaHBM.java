@@ -322,10 +322,10 @@ public class RepositorioSpcSerasaHBM
 		List retorno = null;
 		Session session = HibernateUtil.getSession();
 		try{
-			StringBuffer hql = new StringBuffer("select ").append(" imov ").append(" from gcom.cadastro.imovel.Imovel imov ").append(
-							" inner join fetch imov.localidade loca ").append(" inner join fetch imov.quadra quand ").append(
-							" inner join fetch imov.imovelPerfil iper ").append(" inner join fetch quand.setorComercial stcom ").append(
-							" where imov.id = :idImovel ");
+			StringBuffer hql = new StringBuffer("select ").append(" imov ").append(" from gcom.cadastro.imovel.Imovel imov ")
+							.append(" inner join fetch imov.localidade loca ").append(" inner join fetch imov.quadra quand ")
+							.append(" inner join fetch imov.imovelPerfil iper ").append(" inner join fetch quand.setorComercial stcom ")
+							.append(" where imov.id = :idImovel ");
 
 			retorno = session.createQuery(hql.toString()).setInteger("idImovel", idImovel).list();
 		}catch(HibernateException e){
@@ -350,8 +350,8 @@ public class RepositorioSpcSerasaHBM
 		List retorno = null;
 		Session session = HibernateUtil.getSession();
 		try{
-			StringBuffer hql = new StringBuffer("select ").append(" cli ").append(" from gcom.cadastro.cliente.Cliente cli ").append(
-" left join cli.clienteEnderecos cli_ender ").append(" where cli.id = :idCliente ");
+			StringBuffer hql = new StringBuffer("select ").append(" cli ").append(" from gcom.cadastro.cliente.Cliente cli ")
+							.append(" left join cli.clienteEnderecos cli_ender ").append(" where cli.id = :idCliente ");
 
 			retorno = session.createQuery(hql.toString()).setInteger("idCliente", idCliente).list();
 		}catch(HibernateException e){
@@ -775,8 +775,8 @@ public class RepositorioSpcSerasaHBM
 							+ "	left join negMovReg.usuario usur"
 							+ "	where negCom.id = :idComandoNegativacao and imovNegMovReg.id is not null";
 
-			retorno = session.createQuery(consulta).setInteger("idComandoNegativacao", idComandoNegativacao).setFirstResult(
-							10 * numeroPagina).setMaxResults(10).list();
+			retorno = session.createQuery(consulta).setInteger("idComandoNegativacao", idComandoNegativacao)
+							.setFirstResult(10 * numeroPagina).setMaxResults(10).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -865,28 +865,30 @@ public class RepositorioSpcSerasaHBM
 							+ " left join setor_comercial setorFinal on locFinal.loca_id = setorFinal.loca_id"
 							+ " where negCom.ngcm_id = :id";
 
-			retorno = (Object[]) session.createSQLQuery(consulta).addScalar("negativador", Hibernate.STRING).addScalar(
-							"quantidadeInclusoes", Hibernate.INTEGER).addScalar("valorTotalDebito", Hibernate.BIG_DECIMAL).addScalar(
-							"quantidadeItensIncluidos", Hibernate.INTEGER).addScalar("tituloComando", Hibernate.STRING).addScalar(
-							"descricaoSolicitacao", Hibernate.STRING).addScalar("indicadorSimulacao", Hibernate.SHORT).addScalar(
-							"dataPrevistaExecucao", Hibernate.DATE).addScalar("nomeUsuario", Hibernate.STRING).addScalar(
-							"quantidadeMaximaInclusoes", Hibernate.INTEGER)
+			retorno = (Object[]) session.createSQLQuery(consulta).addScalar("negativador", Hibernate.STRING)
+							.addScalar("quantidadeInclusoes", Hibernate.INTEGER).addScalar("valorTotalDebito", Hibernate.BIG_DECIMAL)
+							.addScalar("quantidadeItensIncluidos", Hibernate.INTEGER).addScalar("tituloComando", Hibernate.STRING)
+							.addScalar("descricaoSolicitacao", Hibernate.STRING).addScalar("indicadorSimulacao", Hibernate.SHORT)
+							.addScalar("dataPrevistaExecucao", Hibernate.DATE).addScalar("nomeUsuario", Hibernate.STRING)
+							.addScalar("quantidadeMaximaInclusoes", Hibernate.INTEGER)
 
-			.addScalar("referenciaInicial", Hibernate.INTEGER).addScalar("referenciaFinal", Hibernate.INTEGER).addScalar(
-							"vencimentoInicial", Hibernate.DATE).addScalar("vencimentoFinal", Hibernate.DATE).addScalar("valoMinimoDebito",
-							Hibernate.BIG_DECIMAL).addScalar("valoMaximoDebito", Hibernate.BIG_DECIMAL).addScalar("qtdMinimaContas",
-							Hibernate.INTEGER).addScalar("qtdMaximaContas", Hibernate.INTEGER).addScalar("indicadorContaRevisao",
-							Hibernate.SHORT).addScalar("indicadorGuiaPagamento", Hibernate.SHORT).addScalar("indicadorParcelamentoAtraso",
-							Hibernate.SHORT).addScalar("numDiasAtrasoParcelamento", Hibernate.INTEGER).addScalar(
-							"indicadorCartaParcAtraso", Hibernate.SHORT).addScalar("numDiasAtrasoAposRecCarta", Hibernate.INTEGER)
+							.addScalar("referenciaInicial", Hibernate.INTEGER).addScalar("referenciaFinal", Hibernate.INTEGER)
+							.addScalar("vencimentoInicial", Hibernate.DATE).addScalar("vencimentoFinal", Hibernate.DATE)
+							.addScalar("valoMinimoDebito", Hibernate.BIG_DECIMAL).addScalar("valoMaximoDebito", Hibernate.BIG_DECIMAL)
+							.addScalar("qtdMinimaContas", Hibernate.INTEGER).addScalar("qtdMaximaContas", Hibernate.INTEGER)
+							.addScalar("indicadorContaRevisao", Hibernate.SHORT).addScalar("indicadorGuiaPagamento", Hibernate.SHORT)
+							.addScalar("indicadorParcelamentoAtraso", Hibernate.SHORT)
+							.addScalar("numDiasAtrasoParcelamento", Hibernate.INTEGER)
+							.addScalar("indicadorCartaParcAtraso", Hibernate.SHORT)
+							.addScalar("numDiasAtrasoAposRecCarta", Hibernate.INTEGER)
 
-			.addScalar("idCliente", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING)
-							.addScalar("tipoRelClie", Hibernate.STRING).addScalar("indicadorEspCobranca", Hibernate.SHORT).addScalar(
-											"indicadorSitCobranca", Hibernate.SHORT)
+							.addScalar("idCliente", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING)
+							.addScalar("tipoRelClie", Hibernate.STRING).addScalar("indicadorEspCobranca", Hibernate.SHORT)
+							.addScalar("indicadorSitCobranca", Hibernate.SHORT)
 
-							.addScalar("locInicial", Hibernate.STRING).addScalar("locFinal", Hibernate.STRING).addScalar("setComInicial",
-											Hibernate.STRING).addScalar("setComFinal", Hibernate.STRING).setInteger("id",
-											new Integer(idComandoNegativacao).intValue()).setMaxResults(1).uniqueResult();
+							.addScalar("locInicial", Hibernate.STRING).addScalar("locFinal", Hibernate.STRING)
+							.addScalar("setComInicial", Hibernate.STRING).addScalar("setComFinal", Hibernate.STRING)
+							.setInteger("id", new Integer(idComandoNegativacao).intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -925,8 +927,8 @@ public class RepositorioSpcSerasaHBM
 							+ "inner join cpf_tipo cpfTipo on negCriTipo.cpft_id = cpfTipo.cpft_id " + "where negCom.ngcm_id = :id";
 
 			retorno = session.createSQLQuery(consulta).addScalar("titularidadeNeg", Hibernate.STRING).addScalar("ordem", Hibernate.SHORT)
-							.addScalar("coincidente", Hibernate.SHORT).addScalar("idTitularidadeNeg", Hibernate.INTEGER).setInteger("id",
-											new Integer(idComandoNegativacao).intValue()).list();
+							.addScalar("coincidente", Hibernate.SHORT).addScalar("idTitularidadeNeg", Hibernate.INTEGER)
+							.setInteger("id", new Integer(idComandoNegativacao).intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1000,8 +1002,9 @@ public class RepositorioSpcSerasaHBM
 							+ "inner join gerencia_regional gerReg on gerReg.greg_id = negCriGerReg.greg_id "
 							+ "where negCom.ngcm_id = :id";
 
-			retorno = session.createSQLQuery(consulta).addScalar("nomeRegional", Hibernate.STRING).addScalar("idRegional",
-							Hibernate.INTEGER).setInteger("id", new Integer(idComandoNegativacao).intValue()).list();
+			retorno = session.createSQLQuery(consulta).addScalar("nomeRegional", Hibernate.STRING)
+							.addScalar("idRegional", Hibernate.INTEGER).setInteger("id", new Integer(idComandoNegativacao).intValue())
+							.list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1037,8 +1040,9 @@ public class RepositorioSpcSerasaHBM
 							+ "inner join negativ_crit_und_neg negCriUnNeg  on negCriUnNeg.ngct_id = negCri.ngct_id "
 							+ "inner join unidade_negocio uniNeg on uniNeg.uneg_id = negCriUnNeg.uneg_id " + "where negCom.ngcm_id = :id";
 
-			retorno = session.createSQLQuery(consulta).addScalar("unidadeNegocio", Hibernate.STRING).addScalar("idUnidadeNegocio",
-							Hibernate.INTEGER).setInteger("id", new Integer(idComandoNegativacao).intValue()).list();
+			retorno = session.createSQLQuery(consulta).addScalar("unidadeNegocio", Hibernate.STRING)
+							.addScalar("idUnidadeNegocio", Hibernate.INTEGER)
+							.setInteger("id", new Integer(idComandoNegativacao).intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1074,8 +1078,9 @@ public class RepositorioSpcSerasaHBM
 							+ "inner join negativ_crit_elo negCriElo on negCriElo.ngct_id= negCri.ngct_id "
 							+ "inner join localidade loc on loc.loca_id = negCriElo.loca_id " + "where negCom.ngcm_id = :id";
 
-			retorno = session.createSQLQuery(consulta).addScalar("nomeLocalidade", Hibernate.STRING).addScalar("idLocalidade",
-							Hibernate.INTEGER).setInteger("id", new Integer(idComandoNegativacao).intValue()).list();
+			retorno = session.createSQLQuery(consulta).addScalar("nomeLocalidade", Hibernate.STRING)
+							.addScalar("idLocalidade", Hibernate.INTEGER).setInteger("id", new Integer(idComandoNegativacao).intValue())
+							.list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1112,8 +1117,9 @@ public class RepositorioSpcSerasaHBM
 							+ "inner join negativacao_criterio_subcatg negCriSub on negCriSub.ngct_id = negCri.ngct_id "
 							+ "inner join subcategoria sub on sub.scat_id = negCriSub.scat_id " + "where negCom.ngcm_id = :id";
 
-			retorno = session.createSQLQuery(consulta).addScalar("decricaoSubcategoria", Hibernate.STRING).addScalar("idSubcategoria",
-							Hibernate.INTEGER).setInteger("id", new Integer(idComandoNegativacao).intValue()).list();
+			retorno = session.createSQLQuery(consulta).addScalar("decricaoSubcategoria", Hibernate.STRING)
+							.addScalar("idSubcategoria", Hibernate.INTEGER).setInteger("id", new Integer(idComandoNegativacao).intValue())
+							.list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1149,8 +1155,9 @@ public class RepositorioSpcSerasaHBM
 							+ "inner join negativacao_crit_imov_perfil negCriImPer on negCriImPer.ngct_id = negCri.ngct_id "
 							+ "inner join imovel_perfil imvPerf on imvPerf.iper_id = negCriImPer.iper_id " + "where negCom.ngcm_id = :id";
 
-			retorno = session.createSQLQuery(consulta).addScalar("decricaoPerfilImovel", Hibernate.STRING).addScalar("idPerfilImovel",
-							Hibernate.INTEGER).setInteger("id", new Integer(idComandoNegativacao).intValue()).list();
+			retorno = session.createSQLQuery(consulta).addScalar("decricaoPerfilImovel", Hibernate.STRING)
+							.addScalar("idPerfilImovel", Hibernate.INTEGER).setInteger("id", new Integer(idComandoNegativacao).intValue())
+							.list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1199,9 +1206,9 @@ public class RepositorioSpcSerasaHBM
 		Integer retorno = null;
 		Session session = HibernateUtil.getSession();
 		try{
-			StringBuffer hql = new StringBuffer(" select ").append(" negTp.id ").append(
-							" from gcom.cobranca.NegativadorRegistroTipo negTp ").append(" inner join negTp.negativador neg ").append(
-							" where neg.id = :idNegativador ");
+			StringBuffer hql = new StringBuffer(" select ").append(" negTp.id ")
+							.append(" from gcom.cobranca.NegativadorRegistroTipo negTp ").append(" inner join negTp.negativador neg ")
+							.append(" where neg.id = :idNegativador ");
 
 			retorno = (Integer) session.createQuery(hql.toString()).setInteger("idNegativador", idNegativador).uniqueResult();
 		}catch(HibernateException e){
@@ -1224,8 +1231,9 @@ public class RepositorioSpcSerasaHBM
 		Integer retorno = null;
 		Session session = HibernateUtil.getSession();
 		try{
-			StringBuffer hql = new StringBuffer("select ").append("   max(negCon.numeroSequencialEnvio) ").append(
-							" from gcom.cobranca.NegativadorContrato negCon ").append(" where negCon.negativador.id = :idNegativador ")
+			StringBuffer hql = new StringBuffer("select ").append("   max(negCon.numeroSequencialEnvio) ")
+							.append(" from gcom.cobranca.NegativadorContrato negCon ")
+							.append(" where negCon.negativador.id = :idNegativador ")
 							.append(" and  (negCon.dataContratoEncerramento = null or negCon.dataContratoEncerramento > now()) ");
 			retorno = (Integer) session.createQuery(hql.toString()).setInteger("idNegativador", idNegativador).uniqueResult();
 		}catch(HibernateException e){
@@ -1807,8 +1815,9 @@ public class RepositorioSpcSerasaHBM
 		Session session = HibernateUtil.getSession();
 		try{
 
-			StringBuffer hql = new StringBuffer("select ").append(" negComando ").append(
-							" from gcom.cobranca.NegativacaoComando negComando ").append(" where negComando.id = :idNegativacaoComando ");
+			StringBuffer hql = new StringBuffer("select ").append(" negComando ")
+							.append(" from gcom.cobranca.NegativacaoComando negComando ")
+							.append(" where negComando.id = :idNegativacaoComando ");
 
 			retorno = session.createQuery(hql.toString()).setInteger("idNegativacaoComando", idNegativacaoComando).list();
 
@@ -1835,10 +1844,10 @@ public class RepositorioSpcSerasaHBM
 		Session session = HibernateUtil.getSession();
 		try{
 
-			StringBuffer hql = new StringBuffer("select ").append(" negCriterio ").append(
-							" from gcom.cobranca.NegativacaoCriterio negCriterio ").append(
-							" inner join fetch negCriterio.negativacaoComando negComando ").append(
-							" where negComando.id = :idNegativacaoComando ");
+			StringBuffer hql = new StringBuffer("select ").append(" negCriterio ")
+							.append(" from gcom.cobranca.NegativacaoCriterio negCriterio ")
+							.append(" inner join fetch negCriterio.negativacaoComando negComando ")
+							.append(" where negComando.id = :idNegativacaoComando ");
 
 			retorno = session.createQuery(hql.toString()).setInteger("idNegativacaoComando", idNegativacaoComando).list();
 
@@ -1865,11 +1874,11 @@ public class RepositorioSpcSerasaHBM
 		Session session = HibernateUtil.getSession();
 		try{
 
-			StringBuffer hql = new StringBuffer(" select ").append("   imov ").append(" from gcom.cadastro.imovel.Imovel imov, ").append(
-							"      gcom.cobranca.NegativacaoCriterio negCriterio ").append(
-							"   inner join fetch imov.clienteImoveis clienteImov ").append(
-							"   inner join fetch imov.imovelPerfil imovPerf ").append("   inner join fetch negCriterio.cliente cli ")
-							.append(" where cli.id = :idCliente ");
+			StringBuffer hql = new StringBuffer(" select ").append("   imov ").append(" from gcom.cadastro.imovel.Imovel imov, ")
+							.append("      gcom.cobranca.NegativacaoCriterio negCriterio ")
+							.append("   inner join fetch imov.clienteImoveis clienteImov ")
+							.append("   inner join fetch imov.imovelPerfil imovPerf ")
+							.append("   inner join fetch negCriterio.cliente cli ").append(" where cli.id = :idCliente ");
 
 			retorno = session.createQuery(hql.toString()).setInteger("idCliente", idCliente).list();
 
@@ -1904,8 +1913,9 @@ public class RepositorioSpcSerasaHBM
 							+ "inner join negativacao_criterio_cli_tipo criCliTip on criCliTip.ngct_id = negCri.ngct_id "
 							+ "inner join cliente_tipo clTipo on  clTipo.cltp_id = criCliTip.cltp_id " + "where negCom.ngcm_id = :id";
 
-			retorno = session.createSQLQuery(consulta).addScalar("descricaoClienteTipo", Hibernate.STRING).addScalar("idClienteTipo",
-							Hibernate.INTEGER).setInteger("id", new Integer(idComandoNegativacao).intValue()).list();
+			retorno = session.createSQLQuery(consulta).addScalar("descricaoClienteTipo", Hibernate.STRING)
+							.addScalar("idClienteTipo", Hibernate.INTEGER).setInteger("id", new Integer(idComandoNegativacao).intValue())
+							.list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1933,14 +1943,14 @@ public class RepositorioSpcSerasaHBM
 		Session session = HibernateUtil.getSession();
 		try{
 
-			StringBuffer hql = new StringBuffer(" select ").append("  count(negImovel.id) ").append(
-							" from gcom.cobranca.NegativacaoImovei negImovel ").append("   inner join negImovel.imovel imov ").append(
-							"   inner join negImovel.negativacaoComando negCom ").append("   inner join negCom.negativador neg ").append(
-							" where negImovel.indicadorExcluido = 2 ").append(" and negImovel.imovel.id = :idImovel ").append(
-							" and neg.id = :idNegativador ");
+			StringBuffer hql = new StringBuffer(" select ").append("  count(negImovel.id) ")
+							.append(" from gcom.cobranca.NegativacaoImovei negImovel ").append("   inner join negImovel.imovel imov ")
+							.append("   inner join negImovel.negativacaoComando negCom ").append("   inner join negCom.negativador neg ")
+							.append(" where negImovel.indicadorExcluido = 2 ").append(" and negImovel.imovel.id = :idImovel ")
+							.append(" and neg.id = :idNegativador ");
 
-			retorno = ((Number) session.createQuery(hql.toString()).setInteger("idImovel", idImovel).setInteger("idNegativadorComando",
-							idNegativador).uniqueResult()).intValue();
+			retorno = ((Number) session.createQuery(hql.toString()).setInteger("idImovel", idImovel)
+							.setInteger("idNegativadorComando", idNegativador).uniqueResult()).intValue();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate verificaExistenciaNegativacao");
@@ -1965,12 +1975,12 @@ public class RepositorioSpcSerasaHBM
 		Session session = HibernateUtil.getSession();
 		try{
 
-			StringBuffer hql = new StringBuffer(" select ").append("  negCritCpfTp ").append(
-							" from gcom.cobranca.NegativacaoCriterioCpfTipo negCritCpfTp ").append(
-							"   inner join fetch negCritCpfTp.negativacaoCriterio negCrit ").append(
-							"   inner join fetch negCritCpfTp.cpfTipo cpfTipo ").append(
-							" where negCritCpfTp.negativacaoCriterio.id = :idNegativadorCriterio ").append(
-							" order by negCritCpfTp.numeroOrdemSelecao ");
+			StringBuffer hql = new StringBuffer(" select ").append("  negCritCpfTp ")
+							.append(" from gcom.cobranca.NegativacaoCriterioCpfTipo negCritCpfTp ")
+							.append("   inner join fetch negCritCpfTp.negativacaoCriterio negCrit ")
+							.append("   inner join fetch negCritCpfTp.cpfTipo cpfTipo ")
+							.append(" where negCritCpfTp.negativacaoCriterio.id = :idNegativadorCriterio ")
+							.append(" order by negCritCpfTp.numeroOrdemSelecao ");
 
 			retorno = session.createQuery(hql.toString()).setInteger("idNegativadorCriterio", idNegativadorCriterio).list();
 
@@ -1999,10 +2009,9 @@ public class RepositorioSpcSerasaHBM
 
 			if(idTitularidade == 1 || idTitularidade == 2 || idTitularidade == 3){
 				StringBuffer hql = new StringBuffer(" select ").append("  cliente ").append(" from gcom.cadastro.cliente.Cliente cliente ")
-								.append("   inner join fetch cliente.clienteImoveis cliImov ").append(
-												"   inner join fetch cliImov.imovel imov ")
-								.append(" where cliImov.dataFimRelacao is null ").append(" and imov.id = :idImovel ").append(
-												" and cliImov.clienteRelacaoTipo = :idTitularidade ");
+								.append("   inner join fetch cliente.clienteImoveis cliImov ")
+								.append("   inner join fetch cliImov.imovel imov ").append(" where cliImov.dataFimRelacao is null ")
+								.append(" and imov.id = :idImovel ").append(" and cliImov.clienteRelacaoTipo = :idTitularidade ");
 
 				retorno = session.createQuery(hql.toString()).setInteger("idImovel", idImovel).setInteger("idTitularidade", idTitularidade)
 								.list();
@@ -2035,10 +2044,10 @@ public class RepositorioSpcSerasaHBM
 		Session session = HibernateUtil.getSession();
 		try{
 
-			StringBuffer hql = new StringBuffer(" select ").append("  count(imoCobSit.id) ").append(
-							" from gcom.cadastro.imovel.ImovelCobrancaSituacao imoCobSit ").append(
-							"   inner join fetch imoCobSit.imovel imov ").append(" where imoCobSit.imovel.id = :idImovel ").append(
-							" and imoCobSit.dataRetiradaCobranca is null ");
+			StringBuffer hql = new StringBuffer(" select ").append("  count(imoCobSit.id) ")
+							.append(" from gcom.cadastro.imovel.ImovelCobrancaSituacao imoCobSit ")
+							.append("   inner join fetch imoCobSit.imovel imov ").append(" where imoCobSit.imovel.id = :idImovel ")
+							.append(" and imoCobSit.dataRetiradaCobranca is null ");
 
 			retorno = ((Number) session.createQuery(hql.toString()).setInteger("idImovel", idImovel).uniqueResult()).intValue();
 
@@ -2066,13 +2075,13 @@ public class RepositorioSpcSerasaHBM
 		Session session = HibernateUtil.getSession();
 		try{
 
-			StringBuffer hql = new StringBuffer(" select ").append("   count( negCriSubCat.comp_id.subcategoria.id) ").append(
-							" from gcom.cobranca.NegativacaoCriterioSubcategoria negCriSubCat ").append(
-							" where negCriSubCat.comp_id.subcategoria.id in (select ").append(
-							" 	  											subCat.comp_id.subcategoria.id ").append(
-							" 												from gcom.cadastro.imovel.ImovelSubcategoria subCat ").append(
-							" 												where subCat.comp_id.imovel.id = :idImovel) ").append(" and ").append(
-							" negCriSubCat.comp_id.negativacaoCriterio.id = :idCriterio ");
+			StringBuffer hql = new StringBuffer(" select ").append("   count( negCriSubCat.comp_id.subcategoria.id) ")
+							.append(" from gcom.cobranca.NegativacaoCriterioSubcategoria negCriSubCat ")
+							.append(" where negCriSubCat.comp_id.subcategoria.id in (select ")
+							.append(" 	  											subCat.comp_id.subcategoria.id ")
+							.append(" 												from gcom.cadastro.imovel.ImovelSubcategoria subCat ")
+							.append(" 												where subCat.comp_id.imovel.id = :idImovel) ").append(" and ")
+							.append(" negCriSubCat.comp_id.negativacaoCriterio.id = :idCriterio ");
 
 			retorno = ((Number) session.createQuery(hql.toString()).setInteger("idImovel", idImovel).setInteger("idCriterio", idCriterio)
 							.uniqueResult()).intValue();
@@ -2100,13 +2109,13 @@ public class RepositorioSpcSerasaHBM
 		Session session = HibernateUtil.getSession();
 		try{
 
-			StringBuffer hql = new StringBuffer(" select ").append(" count( negCriImoPer.comp_id.imovelPerfil) ").append(
-							" from gcom.cobranca.NegativacaoCriterioImovelPerfil negCriImoPer ").append(
-							" where negCriImoPer.comp_id.negativacaoCriterio.id = :idCriterio ").append(
-							" and negCriImoPer.comp_id.imovelPerfil = :imovelPerfil ");
+			StringBuffer hql = new StringBuffer(" select ").append(" count( negCriImoPer.comp_id.imovelPerfil) ")
+							.append(" from gcom.cobranca.NegativacaoCriterioImovelPerfil negCriImoPer ")
+							.append(" where negCriImoPer.comp_id.negativacaoCriterio.id = :idCriterio ")
+							.append(" and negCriImoPer.comp_id.imovelPerfil = :imovelPerfil ");
 
-			retorno = ((Number) session.createQuery(hql.toString()).setInteger("idCriterio", idCriterio).setInteger("imovelPerfil",
-							imovelPerfil).uniqueResult()).intValue();
+			retorno = ((Number) session.createQuery(hql.toString()).setInteger("idCriterio", idCriterio)
+							.setInteger("imovelPerfil", imovelPerfil).uniqueResult()).intValue();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate verificaPerfilImovelNegativacaoCriterio");
@@ -2131,14 +2140,14 @@ public class RepositorioSpcSerasaHBM
 		Session session = HibernateUtil.getSession();
 		try{
 
-			StringBuffer hql = new StringBuffer(" select ").append("  count(negCriCliTip.comp_id.clienteTipo) ").append(
-							" from gcom.cobranca.NegativacaoCriterioClienteTipo negCriCliTip ").append(
-							" where negCriCliTip.comp_id.clienteTipo = (select ").append("   case when (").append(
-							"     cliente.clienteTipo.id is null ) then").append("     0").append("   else").append(
-							"     cliente.clienteTipo.id").append("   end").append(" from gcom.cadastro.cliente.Cliente cliente ").append(
-							"   inner join cliente.clienteImoveis cliImov ").append("   inner join cliImov.imovel imov ").append(
-							" where cliImov.dataFimRelacao is null ").append(" and imov.id = :idImovel ").append(
-							" and cliImov.clienteRelacaoTipo = 2)") // cliente
+			StringBuffer hql = new StringBuffer(" select ").append("  count(negCriCliTip.comp_id.clienteTipo) ")
+							.append(" from gcom.cobranca.NegativacaoCriterioClienteTipo negCriCliTip ")
+							.append(" where negCriCliTip.comp_id.clienteTipo = (select ").append("   case when (")
+							.append("     cliente.clienteTipo.id is null ) then").append("     0").append("   else")
+							.append("     cliente.clienteTipo.id").append("   end").append(" from gcom.cadastro.cliente.Cliente cliente ")
+							.append("   inner join cliente.clienteImoveis cliImov ").append("   inner join cliImov.imovel imov ")
+							.append(" where cliImov.dataFimRelacao is null ").append(" and imov.id = :idImovel ")
+							.append(" and cliImov.clienteRelacaoTipo = 2)") // cliente
 							// usuário = 2
 							.append(" and negCriCliTip.comp_id.negativacaoCriterio = :idCriterio ");
 
@@ -2168,10 +2177,10 @@ public class RepositorioSpcSerasaHBM
 		Session session = HibernateUtil.getSession();
 		try{
 
-			StringBuffer hql = new StringBuffer(" select ").append("  imov.id ").append(
-							" from gcom.faturamento.debito.DebitoCobrado debCob ").append("  inner join debCob.conta conta ").append(
-							"  inner join debCob.financiamentoTipo finTipo ").append("  inner join conta.imovel imov ").append(
-							" where finTipo.id in (2,3,4,8) ").append("  and conta.id = :idConta ");
+			StringBuffer hql = new StringBuffer(" select ").append("  imov.id ")
+							.append(" from gcom.faturamento.debito.DebitoCobrado debCob ").append("  inner join debCob.conta conta ")
+							.append("  inner join debCob.financiamentoTipo finTipo ").append("  inner join conta.imovel imov ")
+							.append(" where finTipo.id in (2,3,4,8) ").append("  and conta.id = :idConta ");
 
 			retorno = (Integer) session.createQuery(hql.toString()).setInteger("idConta", idConta).uniqueResult();
 
@@ -2198,9 +2207,9 @@ public class RepositorioSpcSerasaHBM
 		Session session = HibernateUtil.getSession();
 		try{
 
-			StringBuffer hql = new StringBuffer(" select parc ").append(" from gcom.cobranca.parcelamento.Parcelamento as parc ").append(
-							" inner join parc.imovel as imov ").append(" inner join fetch parc.cliente as cli ").append(
-							" where  imov.id = :idImovel ").append(" order by parc.parcelamento desc ");
+			StringBuffer hql = new StringBuffer(" select parc ").append(" from gcom.cobranca.parcelamento.Parcelamento as parc ")
+							.append(" inner join parc.imovel as imov ").append(" inner join fetch parc.cliente as cli ")
+							.append(" where  imov.id = :idImovel ").append(" order by parc.parcelamento desc ");
 
 			retorno = (List) session.createQuery(hql.toString()).setInteger("idImovel", idImovel).list();
 
@@ -2227,11 +2236,11 @@ public class RepositorioSpcSerasaHBM
 		Session session = HibernateUtil.getSession();
 		try{
 
-			StringBuffer hql = new StringBuffer(" select ").append("  count(docCob.id) ").append(
-							" from gcom.cobranca.CobrancaDocumento docCob ").append("  inner join docCob.documentoTipo docTipo ").append(
-							"  inner join docCob.imovel imov ").append(" where  imov.id = :idImovel ").append(
-							" and docCob.emissao < (now()-").append(numeroDiasAtrasoRecebCartaParcel).append(") ").append(
-							" and docTipo.id = 26 ");
+			StringBuffer hql = new StringBuffer(" select ").append("  count(docCob.id) ")
+							.append(" from gcom.cobranca.CobrancaDocumento docCob ").append("  inner join docCob.documentoTipo docTipo ")
+							.append("  inner join docCob.imovel imov ").append(" where  imov.id = :idImovel ")
+							.append(" and docCob.emissao < (now()-").append(numeroDiasAtrasoRecebCartaParcel).append(") ")
+							.append(" and docTipo.id = 26 ");
 
 			retorno = ((Number) session.createQuery(hql.toString()).setInteger("idImovel", idImovel).uniqueResult()).intValue();
 
@@ -2262,8 +2271,7 @@ public class RepositorioSpcSerasaHBM
 			switch(tipoCondicao){
 				case 1:
 					// condicao 1
-					hql
-									.append(" select ")
+					hql.append(" select ")
 									.append("  imov ")
 									.append(" from gcom.cadastro.imovel.Imovel imov ")
 									.append("  inner join fetch imov.quadra quad ")
@@ -2271,13 +2279,11 @@ public class RepositorioSpcSerasaHBM
 									.append(" where  rot.cobrancaGrupo.id in (select ")
 									.append("                                  negCritGrupo.comp_id.cobrancaGrupo")
 									.append("                                 from gcom.cobranca.NegativCritCobrGrupo negCritGrupo ")
-									.append(
-													"                                 where negCritGrupo.comp_id.negativacaoCriterio = :idNegativacaoCriterio)");
+									.append("                                 where negCritGrupo.comp_id.negativacaoCriterio = :idNegativacaoCriterio)");
 					break;
 				case 2:
 					// condicao 2
-					hql
-									.append(" select ")
+					hql.append(" select ")
 									.append("  imov ")
 									.append(" from gcom.cadastro.imovel.Imovel imov ")
 									.append(" inner join fetch imov.localidade loc ")
@@ -2285,13 +2291,11 @@ public class RepositorioSpcSerasaHBM
 									.append(" where undNeg.gerenciaRegional.id in (select ")
 									.append("                                       negCriGerReg.comp_id.gerenciaRegional ")
 									.append("                                      from gcom.cobranca.NegativCritGerReg negCriGerReg ")
-									.append(
-													"                                      where negCriGerReg.comp_id.negativacaoCriterio = :idNegativacaoCriterio)");
+									.append("                                      where negCriGerReg.comp_id.negativacaoCriterio = :idNegativacaoCriterio)");
 					break;
 				case 3:
 					// condicao 3
-					hql
-									.append(" select ")
+					hql.append(" select ")
 									.append("  imov ")
 									.append(" from gcom.cadastro.imovel.Imovel imov ")
 									.append(" inner join fetch imov.localidade loc ")
@@ -2303,51 +2307,49 @@ public class RepositorioSpcSerasaHBM
 					break;
 				case 4:
 					// condicao 4
-					hql.append(" select ").append("  imov ").append(" from gcom.cadastro.imovel.Imovel imov ").append(
-									" inner join fetch imov.localidade loc ").append(" where loc.id in (select ").append(
-									"                  negCriElo.comp_id.localidade ").append(
-									"                  from gcom.cobranca.NegativCritElo negCriElo ").append(
-									"                  where negCriElo.comp_id.negativacaoCriterio = :idNegativacaoCriterio)");
+					hql.append(" select ").append("  imov ").append(" from gcom.cadastro.imovel.Imovel imov ")
+									.append(" inner join fetch imov.localidade loc ").append(" where loc.id in (select ")
+									.append("                  negCriElo.comp_id.localidade ")
+									.append("                  from gcom.cobranca.NegativCritElo negCriElo ")
+									.append("                  where negCriElo.comp_id.negativacaoCriterio = :idNegativacaoCriterio)");
 					break;
 				case 5:
 					// condicao 5
-					hql.append(" select ").append("  imov ").append(" from gcom.cadastro.imovel.Imovel imov ").append(
-									" inner join fetch imov.localidade loc ").append(" where ( loc.id in (select ").append(
-									"                    negCri.localidadeInicial.id   ").append(
-									"                    from gcom.cobranca.NegativacaoCriterio negCri ").append(
-									"                    where negCri.id = :idNegativacaoCriterio ").append(
-									"                    and negCri.localidadeInicial.id is not null").append(
-									"                    and negCri.codigoSetorComercialInicial is null)").append(
-									" or      loc.id in (select ").append("                    negCri.localidadeFinal.id ").append(
-									"                    from gcom.cobranca.NegativacaoCriterio negCri ").append(
-									"                    where negCri.id = :idNegativacaoCriterio ").append(
-									"                    and negCri.localidadeInicial.id is not null ").append(
-									"                    and negCri.codigoSetorComercialInicial is null)").append("         ) ");
+					hql.append(" select ").append("  imov ").append(" from gcom.cadastro.imovel.Imovel imov ")
+									.append(" inner join fetch imov.localidade loc ").append(" where ( loc.id in (select ")
+									.append("                    negCri.localidadeInicial.id   ")
+									.append("                    from gcom.cobranca.NegativacaoCriterio negCri ")
+									.append("                    where negCri.id = :idNegativacaoCriterio ")
+									.append("                    and negCri.localidadeInicial.id is not null")
+									.append("                    and negCri.codigoSetorComercialInicial is null)")
+									.append(" or      loc.id in (select ").append("                    negCri.localidadeFinal.id ")
+									.append("                    from gcom.cobranca.NegativacaoCriterio negCri ")
+									.append("                    where negCri.id = :idNegativacaoCriterio ")
+									.append("                    and negCri.localidadeInicial.id is not null ")
+									.append("                    and negCri.codigoSetorComercialInicial is null)").append("         ) ");
 					break;
 				case 6:
 					// condicao 6
-					hql.append(" select ").append(" imov ").append(" from gcom.cadastro.imovel.Imovel imov ").append(
-									" inner join fetch imov.setorComercial setCom ").append(" inner join fetch setCom.localidade loc  ")
-									.append(" where ( loc.id in (select ").append("                    negCri.localidadeInicial.id ")
-									.append("                    from gcom.cobranca.NegativacaoCriterio negCri ").append(
-													"                    inner join negCri.localidadeInicial locIni ").append(
-													"                    where negCri.id = :idNegativacaoCriterio ").append(
-													"                    and locIni.id is not null)) ").append(
-													" and (setCom.id in (select ").append(
-													"                     negCri.codigoSetorComercialInicial ").append(
-													"                     from gcom.cobranca.NegativacaoCriterio negCri ").append(
-													"                     inner join negCri.localidadeInicial locIni ").append(
-													"                     where negCri.id = :idNegativacaoCriterio ").append(
-													"                     and locIni.id is not null ").append(
-													"                     and negCri.codigoSetorComercialInicial is not null) ").append(
-													"   or setCom.id in (select  ").append(
-													"                    negCri.codigoSetorComercialFinal ").append(
-													"                    from gcom.cobranca.NegativacaoCriterio negCri ").append(
-													"                    inner join negCri.localidadeInicial locIni ").append(
-													"                    where negCri.id = :idNegativacaoCriterio ").append(
-													"                    and locIni.id is not null ").append(
-													"                    and negCri.codigoSetorComercialInicial is not null) ").append(
-													"     ) ");
+					hql.append(" select ").append(" imov ").append(" from gcom.cadastro.imovel.Imovel imov ")
+									.append(" inner join fetch imov.setorComercial setCom ")
+									.append(" inner join fetch setCom.localidade loc  ").append(" where ( loc.id in (select ")
+									.append("                    negCri.localidadeInicial.id ")
+									.append("                    from gcom.cobranca.NegativacaoCriterio negCri ")
+									.append("                    inner join negCri.localidadeInicial locIni ")
+									.append("                    where negCri.id = :idNegativacaoCriterio ")
+									.append("                    and locIni.id is not null)) ").append(" and (setCom.id in (select ")
+									.append("                     negCri.codigoSetorComercialInicial ")
+									.append("                     from gcom.cobranca.NegativacaoCriterio negCri ")
+									.append("                     inner join negCri.localidadeInicial locIni ")
+									.append("                     where negCri.id = :idNegativacaoCriterio ")
+									.append("                     and locIni.id is not null ")
+									.append("                     and negCri.codigoSetorComercialInicial is not null) ")
+									.append("   or setCom.id in (select  ").append("                    negCri.codigoSetorComercialFinal ")
+									.append("                    from gcom.cobranca.NegativacaoCriterio negCri ")
+									.append("                    inner join negCri.localidadeInicial locIni ")
+									.append("                    where negCri.id = :idNegativacaoCriterio ")
+									.append("                    and locIni.id is not null ")
+									.append("                    and negCri.codigoSetorComercialInicial is not null) ").append("     ) ");
 					break;
 
 				default:
@@ -2421,8 +2423,8 @@ public class RepositorioSpcSerasaHBM
 							// " nmr.nmrg_id in(select nmrg_id from negativador_movimento_reg_item where cdst_id <> 1 ) and "
 							+ " nm.negt_id in (select nc.negt_id from negativador_contrato nc where nc.ngcn_dtcontratoencerramento is null) ";
 
-			Collection coll = (Collection) session.createSQLQuery(consulta).addScalar("idNegativador", Hibernate.INTEGER).addScalar(
-							"idCliente", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING).list();
+			Collection coll = (Collection) session.createSQLQuery(consulta).addScalar("idNegativador", Hibernate.INTEGER)
+							.addScalar("idCliente", Hibernate.INTEGER).addScalar("nomeCliente", Hibernate.STRING).list();
 
 			if(coll != null){
 
@@ -2458,27 +2460,44 @@ public class RepositorioSpcSerasaHBM
 	 * @param ids
 	 *            -id do negativador
 	 * @return Colecao de negativadorMovimentoReg
-	 * @author Thiago Toscano
-	 * @date 21/12/2007
+	 * @author Luciano Galvão
+	 * @date 21/02/2015
 	 */
 	public Collection consultarNegativacoesParaExclusaoMovimento(Integer[] ids) throws ErroRepositorioException{
 
 		List retorno = new ArrayList();
-		Session session = HibernateUtil.getSession();
-		try{
-			String restricao = "";
+		Collection negativacoes = null;
+
 			if(!Util.isVazioOrNulo(ids)){
-				for(int i = 0; i < ids.length; i++){
-					if(!Util.isVazioOuBranco(restricao)){
-						restricao = restricao + " or ";
+			for(Integer negativadorId : ids){
+
+				negativacoes = consultarNegativacoesParaExclusaoMovimentoPorNegativador(negativadorId);
+
+				if(!Util.isVazioOrNulo(negativacoes)){
+					retorno.addAll(negativacoes);
+				}
+			}
 					}
 
-					restricao = restricao + " negt.negt_id = " + ids[i];
+		return retorno;
 				}
 
-				restricao = " (" + restricao + ") and ";
-			}
+	/**
+	 * Método consuta os NegativadoresMovimentoReg que tenham movimento de Exclusão do spc ou serasa
+	 * [UC0673] - Gerar Movimento da Exclusão de Negativação
+	 * [SB0003] - Selecionar Negativadores
+	 * 
+	 * @param ids
+	 *            -id do negativador
+	 * @return Colecao de negativadorMovimentoReg
+	 * @author Thiago Toscano
+	 * @date 21/12/2007
+	 */
+	private Collection consultarNegativacoesParaExclusaoMovimentoPorNegativador(Integer negativadorId) throws ErroRepositorioException{
 
+		List retorno = new ArrayList();
+		Session session = HibernateUtil.getSession();
+		try{
 			StringBuffer consulta = new StringBuffer();
 
 			consulta.append(" select nmrg.nmrg_id as codigo ");
@@ -2486,8 +2505,8 @@ public class RepositorioSpcSerasaHBM
 			consulta.append("      negativador_movimento ngmv, ");
 			consulta.append("      negativador negt, ");
 			consulta.append("      negativador_registro_tipo nrtp ");
-			consulta.append(" where " + restricao);
-			consulta.append("       negt.negt_id = ngmv.negt_id ");
+			consulta.append(" where  negt.negt_id = " + negativadorId);
+			consulta.append("   and negt.negt_id = ngmv.negt_id ");
 			consulta.append("   and negt.negt_id = nrtp.negt_id ");
 			consulta.append("   and nmrg.nrtp_id = nrtp.nrtp_id ");
 			consulta.append("   and nmrg.ngmv_id = ngmv.ngmv_id ");
@@ -2498,6 +2517,12 @@ public class RepositorioSpcSerasaHBM
 			consulta.append("   and nmrg.cdst_id <> " + CobrancaDebitoSituacao.PENDENTE);
 			consulta.append("   and nrtp.nrtp_cdregistro = 'D' ");
 			consulta.append(" order by nmrg.nmrg_id, nmrg.nmrg_nnregistro ");
+
+			// Ordena pelas posições 15 a 16 de NMRG_CNREGISTRO, caso o negativador seja o
+			// SPC-BOA_VISTA
+			if(Negativador.NEGATIVADOR_SPC_BOA_VISTA.equals(negativadorId)){
+				consulta.append(", substring(nmrg_cnregistro, 15, 2)");
+			}
 
 			Collection coll = (Collection) session.createSQLQuery(consulta.toString()).addScalar("codigo", Hibernate.INTEGER).list();
 
@@ -2859,11 +2884,11 @@ public class RepositorioSpcSerasaHBM
 							+ " and ngcm.indicadorSimulacao = :icSimulacao" + " and ngcm.dataPrevista = :dataPrevista"
 							+ " and ngcm.dataHoraRealizacao is null";
 
-			retorno = (String) session.createQuery(consulta).setInteger("idNegativador",
-							helper.getNegativacaoComando().getNegativador().getId()).setShort("icComandoCriterio",
-							helper.getNegativacaoComando().getIndicadorComandoCriterio()).setShort("icSimulacao",
-							helper.getNegativacaoComando().getIndicadorSimulacao()).setDate("dataPrevista",
-							helper.getNegativacaoComando().getDataPrevista()).uniqueResult();
+			retorno = (String) session.createQuery(consulta)
+							.setInteger("idNegativador", helper.getNegativacaoComando().getNegativador().getId())
+							.setShort("icComandoCriterio", helper.getNegativacaoComando().getIndicadorComandoCriterio())
+							.setShort("icSimulacao", helper.getNegativacaoComando().getIndicadorSimulacao())
+							.setDate("dataPrevista", helper.getNegativacaoComando().getDataPrevista()).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -3350,8 +3375,8 @@ public class RepositorioSpcSerasaHBM
 							+ "(select q.id from Quadra q where q.rota.id = :idRota)";
 
 			long t1 = System.currentTimeMillis();
-			session.createQuery(hql).setInteger("numeroExecucaoResumoNegativacao", numeroExecucaoResumoNegativacao).setInteger("idRota",
-							idRota).executeUpdate();
+			session.createQuery(hql).setInteger("numeroExecucaoResumoNegativacao", numeroExecucaoResumoNegativacao)
+							.setInteger("idRota", idRota).executeUpdate();
 			long t2 = System.currentTimeMillis();
 			System.out.println("[UC0688]apagarResumoNegativacao " + (t2 - t1));
 		}catch(HibernateException e){
@@ -3422,19 +3447,19 @@ public class RepositorioSpcSerasaHBM
 							+ "     nmrg.nmrg_icaceito=1" + " and ngmv.ngmv_cdmovimento=1 " + " and nmrg.imov_id is not null"
 							+ " and rota.rota_id = :idRota" + " group by" + " 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18";
 
-			retorno = (List) session.createSQLQuery(sql).addScalar("idNegativador", Hibernate.INTEGER).addScalar("idNegativadorComando",
-							Hibernate.INTEGER).addScalar("dataProcessamento", Hibernate.DATE).addScalar("confirmada", Hibernate.INTEGER)
-							.addScalar("idCobrancaDebitoSituacao", Hibernate.INTEGER).addScalar("idCobrancaGrupo", Hibernate.INTEGER)
-							.addScalar("idGerenciaRegional", Hibernate.INTEGER).addScalar("idUnidadeNegocio", Hibernate.INTEGER).addScalar(
-											"codigoElo", Hibernate.INTEGER).addScalar("idLocalidade", Hibernate.INTEGER).addScalar(
-											"idSetorComercil", Hibernate.INTEGER).addScalar("idQuadra", Hibernate.INTEGER).addScalar(
-											"codigoSetorComercial", Hibernate.INTEGER).addScalar("numeroQuadra", Hibernate.INTEGER)
-							.addScalar("idImovelPerfil", Hibernate.INTEGER).addScalar("idCategoria", Hibernate.INTEGER).addScalar(
-											"idClienteTipo", Hibernate.INTEGER).addScalar("idEsferaPoder", Hibernate.INTEGER).addScalar(
-											"qtdeNegativadorMovimentoReg", Hibernate.INTEGER).addScalar("valorDebito",
-											Hibernate.BIG_DECIMAL).addScalar("valorPendente", Hibernate.BIG_DECIMAL).addScalar("valorPago",
-											Hibernate.BIG_DECIMAL).addScalar("valorParcelado", Hibernate.BIG_DECIMAL).addScalar(
-											"valorCancelado", Hibernate.BIG_DECIMAL).setInteger("idRota", idRota).list();
+			retorno = (List) session.createSQLQuery(sql).addScalar("idNegativador", Hibernate.INTEGER)
+							.addScalar("idNegativadorComando", Hibernate.INTEGER).addScalar("dataProcessamento", Hibernate.DATE)
+							.addScalar("confirmada", Hibernate.INTEGER).addScalar("idCobrancaDebitoSituacao", Hibernate.INTEGER)
+							.addScalar("idCobrancaGrupo", Hibernate.INTEGER).addScalar("idGerenciaRegional", Hibernate.INTEGER)
+							.addScalar("idUnidadeNegocio", Hibernate.INTEGER).addScalar("codigoElo", Hibernate.INTEGER)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("idSetorComercil", Hibernate.INTEGER)
+							.addScalar("idQuadra", Hibernate.INTEGER).addScalar("codigoSetorComercial", Hibernate.INTEGER)
+							.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("idImovelPerfil", Hibernate.INTEGER)
+							.addScalar("idCategoria", Hibernate.INTEGER).addScalar("idClienteTipo", Hibernate.INTEGER)
+							.addScalar("idEsferaPoder", Hibernate.INTEGER).addScalar("qtdeNegativadorMovimentoReg", Hibernate.INTEGER)
+							.addScalar("valorDebito", Hibernate.BIG_DECIMAL).addScalar("valorPendente", Hibernate.BIG_DECIMAL)
+							.addScalar("valorPago", Hibernate.BIG_DECIMAL).addScalar("valorParcelado", Hibernate.BIG_DECIMAL)
+							.addScalar("valorCancelado", Hibernate.BIG_DECIMAL).setInteger("idRota", idRota).list();
 			// alterada por Vivianne Sousa,30/10/2009
 			// query feita por Fatiam Sampaio e Francisco
 			// String hql = " select nmr"
@@ -3580,10 +3605,10 @@ public class RepositorioSpcSerasaHBM
 							+ " and ngcm.dataPrevista = :dataPrevista" + " and ngcm.dataHoraRealizacao is null";
 
 			retorno = (String) session.createQuery(consulta).setInteger("idNegativadoComando", helper.getNegativacaoComando().getId())
-							.setInteger("idNegativador", helper.getNegativacaoComando().getNegativador().getId()).setShort(
-											"icComandoCriterio", helper.getNegativacaoComando().getIndicadorComandoCriterio()).setShort(
-											"icSimulacao", helper.getNegativacaoComando().getIndicadorSimulacao()).setDate("dataPrevista",
-											helper.getNegativacaoComando().getDataPrevista()).uniqueResult();
+							.setInteger("idNegativador", helper.getNegativacaoComando().getNegativador().getId())
+							.setShort("icComandoCriterio", helper.getNegativacaoComando().getIndicadorComandoCriterio())
+							.setShort("icSimulacao", helper.getNegativacaoComando().getIndicadorSimulacao())
+							.setDate("dataPrevista", helper.getNegativacaoComando().getDataPrevista()).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -4030,9 +4055,9 @@ public class RepositorioSpcSerasaHBM
 							+ " from negativacao_comando negCom"
 							+ " inner join negativacao_criterio negCri on negCom.ngcm_id = negCri.ngcm_id" + " where negCom.ngcm_id = :id";
 
-			retorno = (Object[]) session.createSQLQuery(consulta).addScalar("descricaoTitulo", Hibernate.STRING).addScalar(
-							"indicadorSimulacao", Hibernate.SHORT).addScalar("dataHoraRealizacao", Hibernate.DATE).setInteger("id",
-							new Integer(idComandoNegativacao)).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createSQLQuery(consulta).addScalar("descricaoTitulo", Hibernate.STRING)
+							.addScalar("indicadorSimulacao", Hibernate.SHORT).addScalar("dataHoraRealizacao", Hibernate.DATE)
+							.setInteger("id", new Integer(idComandoNegativacao)).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -4671,12 +4696,12 @@ public class RepositorioSpcSerasaHBM
 		try{
 
 			String hql = " select " + "  negImovel.dataExclusao" + " from gcom.cobranca.NegativacaoImovei as negImovel "
-							+ "   inner join negImovel.imovel as imov " + "   inner join negImovel.negativacaoComando as negCom "
-							+ "   inner join negCom.negativador as neg " + " where " + " imov.id = :idImovel  "
+							+ "   inner join negImovel.imovel as imov " + "   inner join negImovel.cobrancaAcaoAtividadeComando as negCom "
+							+ "   where " + " imov.id = :idImovel  "
 							+ " and negCom.id = :idNegativacaoComando " + " and negImovel.dataExclusao is not null ";
 
-			retorno = (Date) session.createQuery(hql).setInteger("idImovel", idImovel).setInteger("idNegativacaoComando",
-							idNegativacaoComando).uniqueResult();
+			retorno = (Date) session.createQuery(hql).setInteger("idImovel", idImovel)
+							.setInteger("idNegativacaoComando", idNegativacaoComando).uniqueResult();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate verificaExistenciaNegativacao");
@@ -5123,7 +5148,9 @@ public class RepositorioSpcSerasaHBM
 				}
 			}
 
-			Query query = session.createQuery(hql + restricao);
+			String orderBy = " order by nmrg.numeroRegistro, nrtp.id ";
+
+			Query query = session.createQuery(hql + restricao + orderBy);
 			retorno = (List) query.list();
 
 		}catch(HibernateException e){
@@ -5224,19 +5251,9 @@ public class RepositorioSpcSerasaHBM
 				}
 			}
 
-			// ---------------------------------------------------------------------23/05/2008
-			// alteração da consulta
-			// String hql = " select nmrg "
-			// + " from gcom.cobranca.NegativadorMovimentoReg nmrg "
-			// + " inner join fetch nmrg.negativadorRegistroTipo as nrtp "
-			// + " inner join fetch nmrg.negativadorMovimento as ngmv "
-			// + " where nmrg.negativadorMovimento.id = " + idNegativadorMovimento
-			// + " and   nmrg.ultimaAlteracao > 2008-01-01 "
-			// + " order by nmrg.numeroRegistro";
-			// ---------------------------------------------------------------------------------------------------------
+			String orderBy = " order by nmrg.numeroRegistro, nrtp.id ";
+			Query query = session.createQuery(hql + restricao + orderBy);
 
-			Query query = session.createQuery(hql + restricao);
-			// retorno = (List) query.list();
 			retorno = (List) query.setFirstResult(10 * numeroPagina).setMaxResults(10).list();
 
 		}catch(HibernateException e){
@@ -5271,8 +5288,8 @@ public class RepositorioSpcSerasaHBM
 							+ "(select nmrg.nmrg_nnregistro  as registroAnterior " + " from negativador_movimento_reg nmrg "
 							+ "  where  nmrg.imov_id =:idImovel and nmrg.ngmv_id  = :idNegativadorMovimento )  ";
 
-			retorno = (Integer) session.createSQLQuery(consulta).addScalar("numeroRegistro", Hibernate.INTEGER).setInteger(
-							"idNegativadorMovimento", idNegativadorMovimento).setInteger("idImovel", idImovel).setMaxResults(1)
+			retorno = (Integer) session.createSQLQuery(consulta).addScalar("numeroRegistro", Hibernate.INTEGER)
+							.setInteger("idNegativadorMovimento", idNegativadorMovimento).setInteger("idImovel", idImovel).setMaxResults(1)
 							.uniqueResult();
 
 		}catch(HibernateException e){
@@ -5359,8 +5376,6 @@ public class RepositorioSpcSerasaHBM
 
 		boolean compararDatas = false;
 
-		Map parameters = new HashMap();
-
 		try{
 
 			String sql = " select "
@@ -5383,8 +5398,9 @@ public class RepositorioSpcSerasaHBM
 							+ " nmrg.nmrg_nncontrato as numeroContrato "// 16
 							+ " from negativador_movimento_reg nmrg "
 							+ " inner join negativador_movimento ngmv on nmrg.ngmv_id=ngmv.ngmv_id "
-							+ " inner join negativacao_comando ngcm on ngmv.ngcm_id=ngcm.ngcm_id  "
-							+ " inner join negativacao_imoveis ngim on ngmv.ngcm_id=ngim.ngcm_id and nmrg.imov_id=ngim.imov_id "
+							// +
+							// " inner join negativacao_comando ngcm on ngmv.ngcm_id=ngcm.ngcm_id  "
+							+ " inner join negativacao_imoveis ngim on ngmv.cacm_id=ngim.cacm_id and nmrg.imov_id=ngim.imov_id "
 							+ " inner join negativador negt on ngmv.negt_id=negt.negt_id "
 							+ " inner join cliente clie on negt.clie_id=clie.clie_id "
 							+ " inner join quadra qdra on nmrg.qdra_id=qdra.qdra_id "
@@ -5652,13 +5668,14 @@ public class RepositorioSpcSerasaHBM
 			// retorno = (Integer) query.uniqueResult();
 
 			retorno = (List) querySQL.addScalar("idNegativadorMovReg", Hibernate.INTEGER).addScalar("indicadorAceito", Hibernate.SHORT)
-							.addScalar("cpf", Hibernate.STRING).addScalar("cnpj", Hibernate.STRING).addScalar("valorDebitoReg",
-											Hibernate.BIG_DECIMAL).addScalar("nomeClienteReg", Hibernate.STRING).addScalar("idLocalidade",
-											Hibernate.INTEGER).addScalar("nomeLocalidade", Hibernate.STRING).addScalar("idNegativadorMov",
-											Hibernate.INTEGER).addScalar("dataProcEnvio", Hibernate.DATE).addScalar("idNegativador",
-											Hibernate.INTEGER).addScalar("nomeClienteNegativador", Hibernate.STRING).addScalar(
-											"indicadorExcluido", Hibernate.SHORT).addScalar("cobrancaSituacaoReg", Hibernate.INTEGER)
-							.addScalar("descCobrancaSituacaoReg", Hibernate.STRING).addScalar("idImovel", Hibernate.INTEGER).list();
+							.addScalar("cpf", Hibernate.STRING).addScalar("cnpj", Hibernate.STRING)
+							.addScalar("valorDebitoReg", Hibernate.BIG_DECIMAL).addScalar("nomeClienteReg", Hibernate.STRING)
+							.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("nomeLocalidade", Hibernate.STRING)
+							.addScalar("idNegativadorMov", Hibernate.INTEGER).addScalar("dataProcEnvio", Hibernate.DATE)
+							.addScalar("idNegativador", Hibernate.INTEGER).addScalar("nomeClienteNegativador", Hibernate.STRING)
+							.addScalar("indicadorExcluido", Hibernate.SHORT).addScalar("cobrancaSituacaoReg", Hibernate.INTEGER)
+							.addScalar("descCobrancaSituacaoReg", Hibernate.STRING).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("numeroContrato", Hibernate.STRING).list();
 
 			if(retorno != null){
 				colecaoHelper = new ArrayList();
@@ -6067,7 +6084,7 @@ public class RepositorioSpcSerasaHBM
 			String hql = " select nmrg " + " from gcom.cobranca.NegativadorMovimentoReg nmrg "
 							+ " left join fetch nmrg.negativadorMovimento as ngmv "
 							+ " left join fetch nmrg.negativadorExclusaoMotivo as nemt "
-							+ " left join fetch ngmv.negativacaoComando as ngcm " + " left join fetch ngmv.negativador as negt "
+							+ " left join fetch ngmv.negativador as negt "
 							+ " left join fetch negt.cliente as clie " + " left join fetch nmrg.quadra as quad "
 							+ " left join fetch quad.rota as rota " + " left join fetch rota.cobrancaGrupo as cbgr "
 							+ " left join fetch nmrg.localidade as loca " + " left join fetch loca.gerenciaRegional as greg "
@@ -6088,7 +6105,8 @@ public class RepositorioSpcSerasaHBM
 			}
 
 			if(helper.getPeriodoExclusaoNegativacaoInicio() != null && helper.getPeriodoExclusaoNegativacaoFim() != null){
-				restricao = restricao + " and ngcm.id in " + "(select negativacaoComando.id from gcom.cobranca.NegativacaoImovei"
+				restricao = restricao + " and ngmv.cobrancaAcaoAtividadeComando.id in "
+								+ "(select cobrancaAcaoAtividadeComando.id from gcom.cobranca.NegativacaoImovei"
 								+ " where dataExclusao  between  :periodoExclusaoNegativacaoInicio and :periodoExclusaoNegativacaoFim) ";
 			}
 
@@ -6096,9 +6114,6 @@ public class RepositorioSpcSerasaHBM
 				restricao = restricao + " and nmrg.negativadorExclusaoMotivo.id = :idNegativadorExclusaoMotivo ";
 			}
 
-			if(helper.getIdNegativacaoComando() != null && helper.getIdNegativacaoComando() > 0){
-				restricao = restricao + " and ngmv.negativacaoComando.id = :idNegativacaoComando ";
-			}
 			if(helper.getIdQuadra() != null && helper.getIdQuadra() > 0){
 				restricao = restricao + " and nmrg.quadra.id = :idQuadra";
 			}
@@ -6302,9 +6317,6 @@ public class RepositorioSpcSerasaHBM
 			if(helper.getIdNegativadorExclusaoMotivo() != null && helper.getIdNegativadorExclusaoMotivo() > 0){
 				query.setInteger("idNegativadorExclusaoMotivo", helper.getIdNegativadorExclusaoMotivo());
 			}
-			if(helper.getIdNegativacaoComando() != null && helper.getIdNegativacaoComando() > 0){
-				query.setInteger("idNegativacaoComando", helper.getIdNegativacaoComando());
-			}
 			if(helper.getIdQuadra() != null && helper.getIdQuadra() > 0){
 				query.setInteger("idQuadra", helper.getIdQuadra());
 			}
@@ -6354,8 +6366,8 @@ public class RepositorioSpcSerasaHBM
 			}
 
 			if(helper.getPeriodoExclusaoNegativacaoInicio() != null && helper.getPeriodoExclusaoNegativacaoFim() != null){
-				restricao = restricao + " and nmrg.negativadorMovimento.negativacaoComando.id in "
-								+ "(select negativacaoComando.id from gcom.cobranca.NegativacaoImovei"
+				restricao = restricao + " and nmrg.negativadorMovimento.cobrancaAcaoAtividadeComando.id in "
+								+ "(select cobrancaAcaoAtividadeComando.id from gcom.cobranca.NegativacaoImovei"
 								+ " where dataExclusao  between  :periodoExclusaoNegativacaoInicio and :periodoExclusaoNegativacaoFim ) ";
 			}
 
@@ -6363,9 +6375,6 @@ public class RepositorioSpcSerasaHBM
 				restricao = restricao + " and nmrg.negativadorExclusaoMotivo.id = :idNegativadorExclusaoMotivo ";
 			}
 
-			if(helper.getIdNegativacaoComando() != null && helper.getIdNegativacaoComando() > 0){
-				restricao = restricao + " and nmrg.negativadorMovimento.negativacaoComando.id = :idNegativacaoComando ";
-			}
 			if(helper.getIdQuadra() != null && helper.getIdQuadra() > 0){
 				restricao = restricao + " and nmrg.quadra.id = :idQuadra ";
 			}
@@ -6574,10 +6583,6 @@ public class RepositorioSpcSerasaHBM
 				query.setInteger("idNegativadorExclusaoMotivo", helper.getIdNegativadorExclusaoMotivo());
 			}
 
-			if(helper.getIdNegativacaoComando() != null && helper.getIdNegativacaoComando() > 0){
-				query.setInteger("idNegativacaoComando", helper.getIdNegativacaoComando());
-			}
-
 			if(helper.getIdQuadra() != null && helper.getIdQuadra() > 0){
 				query.setInteger("idQuadra", helper.getIdQuadra());
 			}
@@ -6616,19 +6621,33 @@ public class RepositorioSpcSerasaHBM
 		BigDecimal retorno = null;
 		Session session = HibernateUtil.getSession();
 
+		if(!idCobrancaDebitoSituacao.equals(CobrancaDebitoSituacao.PARCELADO)
+						&& !idCobrancaDebitoSituacao.equals(CobrancaDebitoSituacao.PAGO)
+						&& !idCobrancaDebitoSituacao.equals(CobrancaDebitoSituacao.CANCELADO)){
+			throw new IllegalArgumentException("Situacao diferente de parcelado, pago e cancelado");
+		}
+
 		try{
-			String hql1 = "";
-			String hql2 = "";
+
+			StringBuilder string = new StringBuilder();
+
 			if(idCobrancaDebitoSituacao.equals(CobrancaDebitoSituacao.PARCELADO)){
-				hql1 = " select sum(nmri.valorDebito) ";
+				string.append(" select sum(nmri.valorDebito) ");
 			}else if(idCobrancaDebitoSituacao.equals(CobrancaDebitoSituacao.PAGO)){
-				hql1 = " select sum(nmri.valorPago) ";
+				string.append(" select sum(nmri.valorPago) ");
+			}else if(idCobrancaDebitoSituacao.equals(CobrancaDebitoSituacao.CANCELADO)){
+
+				string.append(" select sum(nmri.valorCancelado) ");
 			}
 
-			hql2 = " from gcom.cobranca.NegativadorMovimentoRegItem nmri" + " where " + " nmri.negativadorMovimentoReg.id = "
-							+ idNegativadorMovimentoReg;
+			string.append(" from gcom.cobranca.NegativadorMovimentoRegItem nmri" + " where " + " nmri.negativadorMovimentoReg.id = "
+							+ idNegativadorMovimentoReg);
 
-			retorno = (BigDecimal) session.createQuery(hql1 + hql2).uniqueResult();
+			if(idCobrancaDebitoSituacao.equals(CobrancaDebitoSituacao.PARCELADO)){
+				string.append(" and nmri.cobrancaDebitoSituacao.id = " + idCobrancaDebitoSituacao);
+			}
+
+			retorno = (BigDecimal) session.createQuery(string.toString()).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -6841,9 +6860,9 @@ public class RepositorioSpcSerasaHBM
 							+ " inner join negativador_retorno_motivo nrmt on nrmt.nrmt_id = nmrr.nrmt_id "
 							+ " where  nmrr.nmrg_id  = :idNegativadorMovimentoReg " + " and nmrr.nrmt_id = :idNegativadorRetornoMotivo  ";
 
-			retorno = (Integer) session.createSQLQuery(consulta).addScalar("id", Hibernate.INTEGER).setInteger("idNegativadorMovimentoReg",
-							idNegativadorMovimentoReg).setInteger("idNegativadorRetornoMotivo", idNegativadorRetornoMotivo)
-							.setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createSQLQuery(consulta).addScalar("id", Hibernate.INTEGER)
+							.setInteger("idNegativadorMovimentoReg", idNegativadorMovimentoReg)
+							.setInteger("idNegativadorRetornoMotivo", idNegativadorRetornoMotivo).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -7404,8 +7423,8 @@ public class RepositorioSpcSerasaHBM
 							+ " where negCriLigAgua.comp_id.negativacaoCriterio.id = :idCriterio "
 							+ " and negCriLigAgua.comp_id.ligacaoAguaSituacao = :idLigacaoAguaSituacao ";
 
-			retorno = ((Number) session.createQuery(hql).setInteger("idCriterio", idCriterio).setInteger("idLigacaoAguaSituacao",
-							idLigacaoAguaSituacao).uniqueResult()).intValue();
+			retorno = ((Number) session.createQuery(hql).setInteger("idCriterio", idCriterio)
+							.setInteger("idLigacaoAguaSituacao", idLigacaoAguaSituacao).uniqueResult()).intValue();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate verificaPerfilImovelNegativacaoCriterio");
@@ -7439,8 +7458,8 @@ public class RepositorioSpcSerasaHBM
 							+ " where negCriLigEsgoto.comp_id.negativacaoCriterio.id = :idCriterio "
 							+ " and negCriLigEsgoto.comp_id.ligacaoEsgotoSituacao = :idLigacaoEsgotoSituacao ";
 
-			retorno = ((Number) session.createQuery(hql).setInteger("idCriterio", idCriterio).setInteger("idLigacaoEsgotoSituacao",
-							idLigacaoEsgotoSituacao).uniqueResult()).intValue();
+			retorno = ((Number) session.createQuery(hql).setInteger("idCriterio", idCriterio)
+							.setInteger("idLigacaoEsgotoSituacao", idLigacaoEsgotoSituacao).uniqueResult()).intValue();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate verificaPerfilImovelNegativacaoCriterio");
@@ -7459,8 +7478,8 @@ public class RepositorioSpcSerasaHBM
 							+ " imov.last_id as idLigacaoAgua," + " imov.lest_id as idLigacaoEsgoto" + " from imovel imov "
 							+ " where imov.imov_id = " + idImovel;
 
-			retorno = (Object[]) session.createSQLQuery(sql).addScalar("idCobracaSituacao", Hibernate.INTEGER).addScalar("idImovelPerfil",
-							Hibernate.INTEGER).addScalar("idLigacaoAgua", Hibernate.INTEGER)
+			retorno = (Object[]) session.createSQLQuery(sql).addScalar("idCobracaSituacao", Hibernate.INTEGER)
+							.addScalar("idImovelPerfil", Hibernate.INTEGER).addScalar("idLigacaoAgua", Hibernate.INTEGER)
 							.addScalar("idLigacaoEsgoto", Hibernate.INTEGER).setMaxResults(1).uniqueResult();
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -7618,10 +7637,11 @@ public class RepositorioSpcSerasaHBM
 							+ " left join cobranca.negativ_crit_und_neg ncun on (ncun.ngct_id = ngct.ngct_id) "
 							+ " left join cobranca.negativ_crit_elo ncep on (ncep.ngct_id = ngct.ngct_id) " + " where ngct.ngct_id = :id ";
 
-			retorno = (Object[]) session.createSQLQuery(consulta).addScalar("idNegCriCobGrp", Hibernate.INTEGER).addScalar("idNegCriGere",
-							Hibernate.INTEGER).addScalar("idNegCriUneg", Hibernate.INTEGER).addScalar("idNegCriElo", Hibernate.INTEGER)
-							.addScalar("idNegCriLocInic", Hibernate.INTEGER).addScalar("idNegCriLocFinal", Hibernate.INTEGER).setInteger(
-											"id", idNegativacaoCriterio.intValue()).uniqueResult();
+			retorno = (Object[]) session.createSQLQuery(consulta).addScalar("idNegCriCobGrp", Hibernate.INTEGER)
+							.addScalar("idNegCriGere", Hibernate.INTEGER).addScalar("idNegCriUneg", Hibernate.INTEGER)
+							.addScalar("idNegCriElo", Hibernate.INTEGER).addScalar("idNegCriLocInic", Hibernate.INTEGER)
+							.addScalar("idNegCriLocFinal", Hibernate.INTEGER).setInteger("id", idNegativacaoCriterio.intValue())
+							.uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -7921,10 +7941,10 @@ public class RepositorioSpcSerasaHBM
 		// Cria a variável que vai conter o hql
 		StringBuilder consulta = new StringBuilder();
 		try{
-			consulta.append("select nmri from NegativadorMovimentoRegItem nmri ").append(
-							"inner join fetch nmri.negativadorMovimentoReg  nmrg ").append("inner join fetch nmri.documentoTipo  dctp ")
-							.append("inner join fetch nmri.contaGeral  cg ").append(" where nmrg.id = :idNegativadorMovimentoReg ").append(
-											" and dctp.id = :idDocumentoTipo ");
+			consulta.append("select nmri from NegativadorMovimentoRegItem nmri ")
+							.append("inner join fetch nmri.negativadorMovimentoReg  nmrg ")
+							.append("inner join fetch nmri.documentoTipo  dctp ").append("inner join fetch nmri.contaGeral  cg ")
+							.append(" where nmrg.id = :idNegativadorMovimentoReg ").append(" and dctp.id = :idDocumentoTipo ");
 			retorno = session.createQuery(consulta.toString()).setInteger("idNegativadorMovimentoReg", idNegativadorMovimentoReg)
 							.setInteger("idDocumentoTipo", idDocumentoTipo).list();
 
@@ -8081,14 +8101,14 @@ public class RepositorioSpcSerasaHBM
 			 */
 
 			consulta.append("select nmrg from NegativadorMovimentoReg nmrg ").append("inner join fetch nmrg.negativadorMovimento  ngmv ")
-							.append("inner join ngmv.negativador  ngtv ").append(" where nmrg.id in ( ").append(
-											" select nmri.negativadorMovimentoReg.id from NegativadorMovimentoRegItem nmri ").append(
-											" inner join nmri.documentoTipo dctp ").append(" inner join nmri.contaGeral  cg ").append(
-											" where cg.id = :idConta ").append(" and dctp.id = :idDocumentoTipo ").append(" ) ").append(
-											" and ngtv.id = :idNegativador ").append(" and nmrg.indicadorAceito = :indicadorAceito ");
+							.append("inner join ngmv.negativador  ngtv ").append(" where nmrg.id in ( ")
+							.append(" select nmri.negativadorMovimentoReg.id from NegativadorMovimentoRegItem nmri ")
+							.append(" inner join nmri.documentoTipo dctp ").append(" inner join nmri.contaGeral  cg ")
+							.append(" where cg.id = :idConta ").append(" and dctp.id = :idDocumentoTipo ").append(" ) ")
+							.append(" and ngtv.id = :idNegativador ").append(" and nmrg.indicadorAceito = :indicadorAceito ");
 			retorno = session.createQuery(consulta.toString()).setInteger("idConta", idConta)
-							.setInteger("idDocumentoTipo", idDocumentoTipo).setInteger("idNegativador", idNegativador).setInteger(
-											"indicadorAceito", ConstantesSistema.SIM).list();
+							.setInteger("idDocumentoTipo", idDocumentoTipo).setInteger("idNegativador", idNegativador)
+							.setInteger("indicadorAceito", ConstantesSistema.SIM).list();
 
 			// Erro no hibernate
 		}catch(HibernateException e){
@@ -8124,8 +8144,9 @@ public class RepositorioSpcSerasaHBM
 			hql.append("where nemt.cobrancaDebitoSituacao.id = :idCobrancaDebitoSituacao ");
 			hql.append("  and nemt.negativador.id = :idNegativador ");
 
-			retorno = (NegativadorExclusaoMotivo) session.createQuery(hql.toString()).setInteger("idCobrancaDebitoSituacao",
-							idCobrancaDebitoSituacao).setInteger("idNegativador", idNegativador).uniqueResult();
+			retorno = (NegativadorExclusaoMotivo) session.createQuery(hql.toString())
+							.setInteger("idCobrancaDebitoSituacao", idCobrancaDebitoSituacao).setInteger("idNegativador", idNegativador)
+							.uniqueResult();
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate getDadosContratoNegativador");
 		}finally{
@@ -8154,8 +8175,8 @@ public class RepositorioSpcSerasaHBM
 			String hql = " select nrmt" + " from NegativadorRetornoMotivo nrmt"
 							+ " where nrmt.codigoRetornoMotivo = :codigoRetorno and nrmt.negativador.id = :idNegativador";
 
-			retorno = (NegativadorRetornoMotivo) session.createQuery(hql).setInteger("codigoRetorno", codigoRetorno).setInteger(
-							"idNegativador", idNegativador).uniqueResult();
+			retorno = (NegativadorRetornoMotivo) session.createQuery(hql).setInteger("codigoRetorno", codigoRetorno)
+							.setInteger("idNegativador", idNegativador).uniqueResult();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate NegativadorMovimentoRegRetMot");
@@ -8175,8 +8196,8 @@ public class RepositorioSpcSerasaHBM
 			String hql = " select nmrg" + " from NegativadorMovimentoReg nmrg" + " where nmrg.numeroRegistro = :numeroRegistro"
 							+ " and nmrg.negativadorMovimento.id = :idNegMovimento";
 
-			retorno = (NegativadorMovimentoReg) session.createQuery(hql).setInteger("numeroRegistro", numeroRegistro).setInteger(
-							"idNegMovimento", idNegMovimento).uniqueResult();
+			retorno = (NegativadorMovimentoReg) session.createQuery(hql).setInteger("numeroRegistro", numeroRegistro)
+							.setInteger("idNegMovimento", idNegMovimento).uniqueResult();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate getDadosContratoNegativador");
@@ -8307,9 +8328,9 @@ public class RepositorioSpcSerasaHBM
 			consulta.append("and nmrg_cdexclusaotipo is null ");
 			consulta.append("and nmrg_idreginclusao is null ");
 
-			retorno = (Collection) session.createSQLQuery(consulta.toString()).addScalar("nmrg_id", Hibernate.INTEGER).setInteger(
-							"idImovel", idImovel).setInteger("idCliente", idCliente).setShort("indicadorAceito", ConstantesSistema.SIM)
-							.list();
+			retorno = (Collection) session.createSQLQuery(consulta.toString()).addScalar("nmrg_id", Hibernate.INTEGER)
+							.setInteger("idImovel", idImovel).setInteger("idCliente", idCliente)
+							.setShort("indicadorAceito", ConstantesSistema.SIM).list();
 
 			if(Util.isVazioOrNulo(retorno)){
 				return false;
@@ -8358,13 +8379,14 @@ public class RepositorioSpcSerasaHBM
 							+ " and (nmrg_icaceito = :indicadorAceito or nmrg_icaceito is null)";
 
 			if(ignorarSituacaoDefinitiva){
-				retorno = (Collection) session.createSQLQuery(consulta).addScalar("idNmri", Hibernate.INTEGER).setInteger("idImovel",
-								idImovel).setInteger("referencia", referencia).setShort("indicadorAceito", ConstantesSistema.SIM).list();
+				retorno = (Collection) session.createSQLQuery(consulta).addScalar("idNmri", Hibernate.INTEGER)
+								.setInteger("idImovel", idImovel).setInteger("referencia", referencia)
+								.setShort("indicadorAceito", ConstantesSistema.SIM).list();
 			}else{
 				consulta = consulta + " and nmri_icsitdefinitiva = :indicadorSituacaoDefinitiva ";
-				retorno = (Collection) session.createSQLQuery(consulta).addScalar("idNmri", Hibernate.INTEGER).setShort(
-								"indicadorSituacaoDefinitiva", ConstantesSistema.NAO).setInteger("idImovel", idImovel).setInteger(
-								"referencia", referencia).setShort("indicadorAceito", ConstantesSistema.SIM).list();
+				retorno = (Collection) session.createSQLQuery(consulta).addScalar("idNmri", Hibernate.INTEGER)
+								.setShort("indicadorSituacaoDefinitiva", ConstantesSistema.NAO).setInteger("idImovel", idImovel)
+								.setInteger("referencia", referencia).setShort("indicadorAceito", ConstantesSistema.SIM).list();
 			}
 
 			// long t2 = System.currentTimeMillis();
@@ -8414,13 +8436,14 @@ public class RepositorioSpcSerasaHBM
 							+ " and (nmrg_icaceito = :indicadorAceito or nmrg_icaceito is null) ";
 
 			if(ignorarSituacaoDefinitiva){
-				retorno = (Collection) session.createSQLQuery(consulta).addScalar("idNmri", Hibernate.INTEGER).setInteger("idImovel",
-								idImovel).setInteger("referencia", referencia).setShort("indicadorAceito", ConstantesSistema.SIM).list();
+				retorno = (Collection) session.createSQLQuery(consulta).addScalar("idNmri", Hibernate.INTEGER)
+								.setInteger("idImovel", idImovel).setInteger("referencia", referencia)
+								.setShort("indicadorAceito", ConstantesSistema.SIM).list();
 			}else{
 				consulta = consulta + " and nmri_icsitdefinitiva = :indicadorSituacaoDefinitiva ";
-				retorno = (Collection) session.createSQLQuery(consulta).addScalar("idNmri", Hibernate.INTEGER).setShort(
-								"indicadorSituacaoDefinitiva", ConstantesSistema.NAO).setInteger("idImovel", idImovel).setInteger(
-								"referencia", referencia).setShort("indicadorAceito", ConstantesSistema.SIM).list();
+				retorno = (Collection) session.createSQLQuery(consulta).addScalar("idNmri", Hibernate.INTEGER)
+								.setShort("indicadorSituacaoDefinitiva", ConstantesSistema.NAO).setInteger("idImovel", idImovel)
+								.setInteger("referencia", referencia).setShort("indicadorAceito", ConstantesSistema.SIM).list();
 			}
 
 			// long t2 = System.currentTimeMillis();
@@ -8598,9 +8621,9 @@ public class RepositorioSpcSerasaHBM
 			sql.append(" and (select nm.negt_id from negativador_movimento nm where nm.ngmv_id = ngm.ngmv_id) ");
 			sql.append(" = (select ca.negt_id  from cobranca_acao ca where ca.cbac_id = :idCobrancaAcao) ");
 
-			Integer retornoConsulta = (Integer) session.createSQLQuery(sql.toString()).addScalar("qtde", Hibernate.INTEGER).setInteger(
-							"idImovel", idImovel).setShort("indicadorAceito", ConstantesSistema.SIM).setInteger("idCobrancaAcao",
-							idCobrancaAcao).uniqueResult();
+			Integer retornoConsulta = (Integer) session.createSQLQuery(sql.toString()).addScalar("qtde", Hibernate.INTEGER)
+							.setInteger("idImovel", idImovel).setShort("indicadorAceito", ConstantesSistema.SIM)
+							.setInteger("idCobrancaAcao", idCobrancaAcao).uniqueResult();
 
 			if(retornoConsulta.intValue() > 0){
 				return true;
@@ -8628,6 +8651,7 @@ public class RepositorioSpcSerasaHBM
 
 		StringBuilder consulta = new StringBuilder();
 		try{
+
 			consulta.append(" SELECT NMRG.id,                                                                               ");
 			consulta.append("   NMRG.imovel.id,                                                                             ");
 			consulta.append("   NMRG.codigoExclusaoTipo,                                                                    ");
@@ -8649,17 +8673,22 @@ public class RepositorioSpcSerasaHBM
 			consulta.append("   NegativadorContrato NGCN                                                                    ");
 			consulta.append(" INNER JOIN NMRG.negativadorMovimento NGMV                                                     ");
 			consulta.append(" WHERE NMRG.imovel.id                              IS NOT NULL                                 ");
-			consulta.append(" AND NMRG.indicadorAceito                           =1                                         ");
+			consulta.append(" AND NMRG.indicadorAceito                           = 1                                         ");
 			consulta.append(" AND ( (NMRG.codigoExclusaoTipo                    IS NULL                                     ");
-			consulta.append(" AND :data - NGMV.dataProcessamentoEnvio            > NGCN.numeroPrazoInclusao)                ");
+			consulta.append(" AND cast(extract(day from (:data - NGMV.dataProcessamentoEnvio)) as short) > NGCN.numeroPrazoInclusao) ");
 			consulta.append(" OR (NMRG.codigoExclusaoTipo                       IS NOT NULL                                 ");
-			consulta.append(" AND NGIM.dataExclusao - NGMV.dataProcessamentoEnvio>NGCN.numeroPrazoInclusao) )               ");
-			consulta.append(" AND NGMV.codigoMovimento                           =1                                         ");
-			consulta.append(" AND (NGIM.cobrancaAcaoAtividadeComando.id          =NGMV.cobrancaAcaoAtividadeComando.id      ");
-			consulta.append(" OR NGIM.cobrancaAcaoAtividadeCronograma.id         =NGMV.cobrancaAcaoAtividadeCronograma.id)  ");
-			consulta.append(" AND NGIM.imovel.id                                 =NMRG.imovel.id                            ");
+			consulta.append("  AND CASE ");
+			consulta.append("  			WHEN NGIM.dataExclusao is null THEN ");
+			consulta.append("  				0 ");
+			consulta.append("	    	ELSE ");
+			consulta.append("	    		cast(extract(day from (NGIM.dataExclusao - NGMV.dataProcessamentoEnvio)) as short) ");
+			consulta.append("	   END > NGCN.numeroPrazoInclusao) ) ");
+			consulta.append(" AND NGMV.codigoMovimento                           = 1                                         ");
+			consulta.append(" AND (NGIM.cobrancaAcaoAtividadeComando.id          = NGMV.cobrancaAcaoAtividadeComando.id      ");
+			consulta.append(" OR NGIM.cobrancaAcaoAtividadeCronograma.id         = NGMV.cobrancaAcaoAtividadeCronograma.id)  ");
+			consulta.append(" AND NGIM.imovel.id                                 = NMRG.imovel.id                            ");
 			consulta.append(" AND NGIM.dataConfirmacao                          IS NULL                                     ");
-			consulta.append(" AND NGCN.negativador.id                            =NGMV.negativador.id                       ");
+			consulta.append(" AND NGCN.negativador.id                            = NGMV.negativador.id                       ");
 			consulta.append(" AND (NGCN.dataContratoEncerramento                IS NULL                                     ");
 			consulta.append(" OR NGCN.dataContratoFim                           >= :data1)                                  ");
 
@@ -8708,8 +8737,7 @@ public class RepositorioSpcSerasaHBM
 			hql.append(ConstantesSistema.NAO);
 			hql.append(" and ( ");
 			hql.append(" negativacaoImovei.cobrancaAcaoAtividadeComando.id = negativadorMovimento.cobrancaAcaoAtividadeComando.id or ");
-			hql
-							.append(" negativacaoImovei.cobrancaAcaoAtividadeCronograma.id = negativadorMovimento.cobrancaAcaoAtividadeCronograma.id ) ");
+			hql.append(" negativacaoImovei.cobrancaAcaoAtividadeCronograma.id = negativadorMovimento.cobrancaAcaoAtividadeCronograma.id ) ");
 
 			query = session.createQuery(hql.toString());
 			retorno = query.list();
@@ -8742,10 +8770,10 @@ public class RepositorioSpcSerasaHBM
 		// Cria a variável que vai conter o hql
 		StringBuilder consulta = new StringBuilder();
 		try{
-			consulta.append("select nmri from NegativadorMovimentoRegItem nmri ").append(
-							"inner join fetch nmri.negativadorMovimentoReg  nmrg ").append(
-							"inner join fetch nmri.cobrancaDebitoSituacao  cdst ").append(
-							" where nmrg.id = :idNegativadorMovimentoReg and cdst.id = :idCobrancaDebitoSituacao");
+			consulta.append("select nmri from NegativadorMovimentoRegItem nmri ")
+							.append("inner join fetch nmri.negativadorMovimentoReg  nmrg ")
+							.append("inner join fetch nmri.cobrancaDebitoSituacao  cdst ")
+							.append(" where nmrg.id = :idNegativadorMovimentoReg and cdst.id = :idCobrancaDebitoSituacao");
 			retorno = session.createQuery(consulta.toString()).setInteger("idNegativadorMovimentoReg", idNegativadorMovimentoReg)
 							.setInteger("idCobrancaDebitoSituacao", idCobrancaDebitoSituacao).list();
 
@@ -8800,6 +8828,60 @@ public class RepositorioSpcSerasaHBM
 			// Fecha a sessão com o hibernate
 			HibernateUtil.closeSession(session);
 		}
+		return retorno;
+	}
+
+	public Date pesquisaMaiorDataVencimentoDosDebitos(int idImovel) throws ErroRepositorioException{
+
+		Date retorno;
+		Session session = HibernateUtil.getSession();
+		String consulta = null;
+		try{
+			consulta = "select max(cnta_dtvencimentoconta) as cnta_dtvencimentoconta from conta "
+							+ "where cnta_id in (select cnta_id from cobranca_documento_item  where cbdo_id = (select cbdo_id from cobranca_documento where imov_id=:idImovel))";
+
+			retorno = ((Date) session.createSQLQuery(consulta.toString()).setInteger("idImovel", idImovel).uniqueResult());
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+		return retorno;
+	}
+
+	/**
+	 * Retorna o ImovelCobrancaSituacao pelo imovel do NegativadorMovimentoReg
+	 * [UC0693] Gerar Relatório Acompanhamaneto de Clientes Negativados
+	 * 
+	 * @author Yara Taciane
+	 * @date 17/03/2008
+	 */
+	public Collection getNegativadorMovimentoRegSpcBoaVista(NegativadorMovimento negativadorMovimento, Integer numeroRegistro)
+					throws ErroRepositorioException{
+
+		Collection retorno = null;
+		Session session = HibernateUtil.getSession();
+
+		try{
+
+			String hql = " select nmrg" + " from gcom.cobranca.NegativadorMovimentoReg nmrg "
+							+ " inner join fetch nmrg.negativadorMovimento nmrv " + " where nmrv.id = :idNegativadorMovimento "
+							+ " and   nmrg.numeroRegistro = :numeroRegistro ";
+
+			retorno = (Collection) session.createQuery(hql).setInteger("idNegativadorMovimento", negativadorMovimento.getId())
+							.setInteger("numeroRegistro", numeroRegistro).list();
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
 		return retorno;
 	}
 }

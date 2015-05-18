@@ -78,6 +78,7 @@ package gcom.gui.atendimentopublico.ordemservico;
 
 import gcom.atendimentopublico.ordemservico.Equipe;
 import gcom.atendimentopublico.ordemservico.EquipeComponentes;
+import gcom.atendimentopublico.ordemservico.EquipeTipo;
 import gcom.atendimentopublico.ordemservico.ServicoPerfilTipo;
 import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.fachada.Fachada;
@@ -157,7 +158,7 @@ public class InserirEquipeAction
 			fachada.validarInsercaoEquipe(equipe);
 
 			// Faz as validações de inserção de equipe componentes
-			fachada.validarInsercaoEquipeComponentes(inserirEquipeActionForm.getEquipeComponentes());
+			fachada.validarInsercaoEquipeComponentes(inserirEquipeActionForm.getEquipeComponentes(), equipe);
 
 			// Insere Equipe
 			long idEquipe = fachada.inserirEquipe(equipe);
@@ -236,6 +237,12 @@ public class InserirEquipeAction
 		equipe.setServicoPerfilTipo(servicoPerfilTipo);
 		equipe.setUltimaAlteracao(new Date());
 		equipe.setIndicadorUso(ConstantesSistema.INDICADOR_USO_ATIVO);
+		if(inserirEquipeActionForm.getIdEquipeTipo() != null
+						&& !inserirEquipeActionForm.getIdEquipeTipo().equals(ConstantesSistema.NUMERO_NAO_INFORMADO)){
+			EquipeTipo equipeTipo = new EquipeTipo();
+			equipeTipo.setId(inserirEquipeActionForm.getIdEquipeTipo());
+			equipe.setEquipeTipo(equipeTipo);
+		}
 		return equipe;
 	}
 }

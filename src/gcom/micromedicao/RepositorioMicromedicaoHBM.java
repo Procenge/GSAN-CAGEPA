@@ -86,18 +86,23 @@ import gcom.cadastro.imovel.Subcategoria;
 import gcom.cadastro.imovel.bean.ImovelCobrarDoacaoHelper;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.cobranca.RotaAcaoCriterio;
+import gcom.cobranca.parcelamento.Parcelamento;
 import gcom.faturamento.FaturamentoAtividade;
 import gcom.faturamento.FaturamentoAtividadeCriterio;
 import gcom.faturamento.FaturamentoGrupo;
 import gcom.faturamento.FaturamentoSituacaoTipo;
 import gcom.faturamento.consumotarifa.ConsumoTarifa;
 import gcom.faturamento.consumotarifa.ConsumoTarifaVigencia;
+import gcom.faturamento.credito.CreditoRealizado;
 import gcom.faturamento.credito.CreditoTipo;
+import gcom.faturamento.debito.DebitoCobrado;
 import gcom.faturamento.debito.DebitoCreditoSituacao;
 import gcom.faturamento.debito.DebitoTipo;
 import gcom.gerencial.cadastro.bean.ResumoLigacaoEconomiaHelper;
+import gcom.gui.ActionServletException;
 import gcom.gui.micromedicao.DadosMovimentacao;
 import gcom.interceptor.ObjetoTransacao;
+import gcom.micromedicao.bean.FiltroHidrometroHelper;
 import gcom.micromedicao.bean.LigacaoMedicaoIndividualizadaHelper;
 import gcom.micromedicao.consumo.*;
 import gcom.micromedicao.hidrometro.*;
@@ -106,10 +111,12 @@ import gcom.micromedicao.leitura.LeituraTipo;
 import gcom.micromedicao.medicao.FiltroMedicaoHistoricoSql;
 import gcom.micromedicao.medicao.MedicaoHistorico;
 import gcom.micromedicao.medicao.MedicaoTipo;
+import gcom.relatorio.faturamento.conta.DadosConsumoAnteriorHelper;
 import gcom.seguranca.acesso.OperacaoEfetuada;
 import gcom.seguranca.acesso.usuario.UsuarioAcaoUsuarioHelper;
 import gcom.util.*;
 import gcom.util.filtro.*;
+import gcom.util.parametrizacao.micromedicao.ParametroMicromedicao;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -178,8 +185,7 @@ public class RepositorioMicromedicaoHBM
 			consulta.append(" and mre.imovel.id not in (:colecaoDeDebitosCobrados) ");
 			consulta.append("order by rot.id ");
 
-			query = session
-							.createQuery(consulta.toString())
+			query = session.createQuery(consulta.toString())
 							// .setInteger("idLeituraTipo",
 							// LeituraTipo.LEITURA_E_ENTRADA_SIMULTANEA)
 							.setInteger("idFaturamentoGrupo", idFaturamentoGrupo).setInteger("anoMesFaturamento", anoMesFaturamento)
@@ -222,8 +228,8 @@ public class RepositorioMicromedicaoHBM
 							+ "left join fetch hidrometro.hidrometroSituacao " + "left join fetch hidrometro.hidrometroLocalArmazenagem "
 							+ "where hidrometro.numero between :fi and :ff " + "order by hidrometro.numero";
 
-			hidrometros = session.createQuery(consulta).setString("fi", faixaInicial).setString("ff", faixaFinal).setFirstResult(
-							10 * numeroPagina).setMaxResults(10).list();
+			hidrometros = session.createQuery(consulta).setString("fi", faixaInicial).setString("ff", faixaFinal)
+							.setFirstResult(10 * numeroPagina).setMaxResults(10).list();
 
 			/**
 			 * alterado por pedro alexandre dia 23/01/2007
@@ -492,8 +498,8 @@ public class RepositorioMicromedicaoHBM
 							+ "from MedicaoHistorico mh " + "right join mh.ligacaoAgua " + "right join mh.ligacaoAgua.imovel "
 							+ "where mh.ligacaoAgua.imovel.id = :id and mh.anoMesReferencia = :anoMes ";
 
-			retorno = session.createQuery(consulta).setInteger("id", imovel.getId().intValue()).setInteger("anoMes",
-							faturamentoGrupo.getAnoMesReferencia().intValue()).list();
+			retorno = session.createQuery(consulta).setInteger("id", imovel.getId().intValue())
+							.setInteger("anoMes", faturamentoGrupo.getAnoMesReferencia().intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -535,8 +541,8 @@ public class RepositorioMicromedicaoHBM
 							+ "mh.imovel.hidrometroInstalacaoHistorico.hidrometro.hidrometroCapacidade.id) " + "from MedicaoHistorico mh "
 							+ "right join mh.imovel " + "where mh.imovel.id = :id and mh.anoMesReferencia = :anoMes ";
 
-			retorno = session.createQuery(consulta).setInteger("id", imovel.getId().intValue()).setInteger("anoMes",
-							faturamentoGrupo.getAnoMesReferencia().intValue()).list();
+			retorno = session.createQuery(consulta).setInteger("id", imovel.getId().intValue())
+							.setInteger("anoMes", faturamentoGrupo.getAnoMesReferencia().intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -642,8 +648,8 @@ public class RepositorioMicromedicaoHBM
 							+ " AND ("
 							+ condicaoFormatada + ") ORDER BY mh.anoMesReferencia desc";
 
-			retorno = session.createQuery(consulta).setInteger("imovelId", imovel.getId().intValue()).setInteger("ligacaoTipoId",
-							ligacaoTipo.getId().intValue()).list();
+			retorno = session.createQuery(consulta).setInteger("imovelId", imovel.getId().intValue())
+							.setInteger("ligacaoTipoId", ligacaoTipo.getId().intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -708,8 +714,8 @@ public class RepositorioMicromedicaoHBM
 							+ ")"
 							+ " ORDER BY mh.anoMesReferencia desc ";
 
-			retorno = session.createQuery(consulta).setInteger("imovelId", imovel.getId().intValue()).setInteger("ligacaoTipoId",
-							LigacaoTipo.LIGACAO_ESGOTO).list();
+			retorno = session.createQuery(consulta).setInteger("imovelId", imovel.getId().intValue())
+							.setInteger("ligacaoTipoId", LigacaoTipo.LIGACAO_ESGOTO).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -784,12 +790,29 @@ public class RepositorioMicromedicaoHBM
 		String consulta;
 
 		try{
-			consulta = "select ch.id, " + "ch.ligacaoTipo.id, " + "ch.consumoTipo.id, " + "ch.consumoAnormalidade.id, "
-							+ "ch.numeroConsumoFaturadoMes, " + "ch.percentualColeta " + "from ConsumoHistorico ch "
-							+ "inner join ch.imovel imov " + "where imov.id = :id and ch.referenciaFaturamento = :anoMes ";
+			consulta = "select consumoHistorico.cshi_id, " // 0
+							+ "	consumoHistorico.lgti_id, " // 1
+							+ " consumoHistorico.cstp_id, " // 2
+							+ " consumoHistorico.csan_id, " // 3
+							+ "	consumoHistorico.cshi_nnconsumofaturadomes, " // 4
+							+ " consumoHistorico.cshi_pccoleta, " // 5
+							+ " medicaoHistorico.MDHI_NNCONSUMOMEDIOMEDIDO " // 6
+							+ "	from consumo_historico consumoHistorico "
+							+ "  left join medicao_historico medicaoHistorico  on "
+							+ "    (consumoHistorico.imov_id=medicaoHistorico.lagu_id and medicaoHistorico.medt_id= "
+							+ MedicaoTipo.LIGACAO_AGUA.toString()
+							+ "      and consumoHistorico.lgti_id= "
+							+ LigacaoTipo.LIGACAO_AGUA
+							+ "    ) or (consumoHistorico.imov_id=medicaoHistorico.imov_id and medicaoHistorico.medt_id= "
+							+ MedicaoTipo.POCO.toString() + " and consumoHistorico.lgti_id= " + LigacaoTipo.LIGACAO_ESGOTO
+							+ " ) "
+							+ " where consumoHistorico.cshi_amfaturamento = "
+							+ anoMesReferencia
+							+ "   and medicaoHistorico.mdhi_amleitura = " + anoMesReferencia
+							+ "   and consumoHistorico.imov_id = " + imovel.getId().toString();
 
-			retorno = session.createQuery(consulta).setInteger("id", imovel.getId().intValue()).setInteger("anoMes", anoMesReferencia)
-							.list();
+			retorno = session.createSQLQuery(consulta).list();
+
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -801,6 +824,8 @@ public class RepositorioMicromedicaoHBM
 
 		return retorno;
 	}
+
+
 
 	/**
 	 * < <Descrição do método>>
@@ -902,8 +927,9 @@ public class RepositorioMicromedicaoHBM
 							+ "mh.hidrometroInstalacaoHistorico.id, " // 17
 							+ "mh.leituraAtualFaturamento, " // 18
 							+ "mh.leituraProcessamentoMovimento, " // 19
-							+ "mh.consumoCreditoAnterior, " // 20
-							+ "mh.funcionario.id " // 21
+							+ "coalesce(mh.consumoCreditoAnterior, 0), " // 20
+							+ "mh.funcionario.id, " // 21
+							+ "coalesce(mh.consumoCreditoGerado, 0) " // 22
 							+ "from MedicaoHistorico mh " + "left join mh.imovel "
 							+ "left join mh.ligacaoAgua "
 							+ "inner join mh.medicaoTipo "
@@ -936,52 +962,53 @@ public class RepositorioMicromedicaoHBM
 	 * @date 29/09/2008
 	 *       Adicionado na consulta o campo de Crédito de Consumo Anterior
 	 */
-
-	public Object pesquisarObterDadosMaiorHistoricoMedicao(Imovel imovel, MedicaoTipo medicaoTipo, SistemaParametro sistemaParametro)
+	public Object pesquisarObterDadosMaiorHistoricoMedicaoAnterior(Imovel imovel, MedicaoTipo medicaoTipo, SistemaParametro sistemaParametro)
 					throws ErroRepositorioException{
 
 		Object retorno = null;
 
 		Session session = HibernateUtil.getSession();
-		String consulta;
+		StringBuilder consulta = new StringBuilder();
 
 		String composicao = null;
 		String composicaoInner = null;
 
 		// Caso seja ligação de água
 		if(medicaoTipo.getId().intValue() == MedicaoTipo.LIGACAO_AGUA.intValue()){
+
 			composicao = "where mt.id = :medicaoTipoId  and la.id = :imovelId ";
 			composicaoInner = "where mti.id = :medicaoTipoId and lai.id = :imovelId ";
 
 		}else if(medicaoTipo.getId().intValue() == MedicaoTipo.POCO.intValue()){
+
 			composicao = "where mt.id = :medicaoTipoId and im.id = :imovelId ";
 			composicaoInner = "where mti.id = :medicaoTipoId and imi.id = :imovelId ";
 		}
 
 		try{
-			consulta = " select mh.dataLeituraAtualFaturamento, "
-							+ // 0
-							"mh.leituraAtualFaturamento, "
-							+ // 1
-							"mh.leituraAtualInformada, "
-							+ // 2
-							"mh.consumoCreditoAnterior, "
-							+ // 3
-							"mh.leituraSituacaoAtual.id "
-							+ // 4
-							"from MedicaoHistorico mh " + "inner join mh.medicaoTipo mt " + "left join mh.ligacaoAgua la "
-							+ "left join mh.imovel im " + composicao
-							+ " and mh.anoMesReferencia in (select max(mhi.anoMesReferencia) from MedicaoHistorico mhi "
-							+ " inner join mhi.medicaoTipo mti " + " left join mhi.ligacaoAgua lai " + " left join mhi.imovel imi "
-							+ composicaoInner + ")";
 
-			retorno = session.createQuery(consulta).setInteger("medicaoTipoId", medicaoTipo.getId()).setInteger("imovelId", imovel.getId())
-							.uniqueResult();
+			consulta.append(" select mh.dataLeituraAtualFaturamento, "); // 0
+			consulta.append(" mh.leituraAtualFaturamento, "); // 1
+			consulta.append(" mh.leituraAtualInformada, "); // 2
+			consulta.append(" coalesce(mh.consumoCreditoAnterior, 0), ");// 3
+			consulta.append(" mh.leituraSituacaoAtual.id, "); // 4
+			consulta.append(" coalesce(mh.consumoCreditoGerado,0), "); // 5
+			consulta.append(" mh.anoMesReferencia "); // 6
+			consulta.append(" from MedicaoHistorico mh inner join mh.medicaoTipo mt left join mh.ligacaoAgua la ");
+			consulta.append(" left join mh.imovel im " + composicao);
+			consulta.append(" and mh.anoMesReferencia in (select max(mhi.anoMesReferencia) from MedicaoHistorico mhi ");
+			consulta.append(" inner join mhi.medicaoTipo mti left join mhi.ligacaoAgua lai left join mhi.imovel imi ");
+			consulta.append(composicaoInner + " and mhi.anoMesReferencia < " + sistemaParametro.getAnoMesFaturamento().toString() + ")");
+
+			retorno = session.createQuery(consulta.toString()).setInteger("medicaoTipoId", medicaoTipo.getId())
+							.setInteger("imovelId", imovel.getId()).uniqueResult();
 
 		}catch(HibernateException e){
+
 			// levanta a exceção para a próxima camada
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
 		}finally{
+
 			// fecha a sessão
 			HibernateUtil.closeSession(session);
 		}
@@ -1091,13 +1118,15 @@ public class RepositorioMicromedicaoHBM
 							// "and (im.ligacaoAguaSituacao.id = :ligacaoAguaSituacaoId1 or im.ligacaoAguaSituacao = :ligacaoAguaSituacaoId2 or im.ligacaoEsgotoSituacao.id = :ligacaoAguaSituacaoId3) ";
 							+ "and (las.indicadorFaturamentoSituacao = :indicadorFaturamentoSituacaoLigacaoAgua or les.indicadorFaturamentoSituacao = :indicadorFaturamentoSituacaoLigacaoEsgoto) ";
 
-			retorno = session.createQuery(consulta).setInteger("anoMes", anoMesReferencia)
-			// .setInteger("ligacaoAguaSituacaoId1",ligacaoAguaSituacaoLigado.intValue())
+			retorno = session
+							.createQuery(consulta)
+							.setInteger("anoMes", anoMesReferencia)
+							// .setInteger("ligacaoAguaSituacaoId1",ligacaoAguaSituacaoLigado.intValue())
 							// .setInteger("ligacaoAguaSituacaoId2",ligacaoAguaSituacaoCortado.intValue())
 							// .setInteger("ligacaoAguaSituacaoId3", ligacaoEsgotoLigado.intValue())
-							.setInteger("rota", rota.getId()).setShort("indicadorFaturamentoSituacaoLigacaoAgua",
-											LigacaoAguaSituacao.FATURAMENTO_ATIVO).setShort("indicadorFaturamentoSituacaoLigacaoEsgoto",
-											LigacaoEsgotoSituacao.FATURAMENTO_ATIVO).list();
+							.setInteger("rota", rota.getId())
+							.setShort("indicadorFaturamentoSituacaoLigacaoAgua", LigacaoAguaSituacao.FATURAMENTO_ATIVO)
+							.setShort("indicadorFaturamentoSituacaoLigacaoEsgoto", LigacaoEsgotoSituacao.FATURAMENTO_ATIVO).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1169,9 +1198,9 @@ public class RepositorioMicromedicaoHBM
 							+ "and im.rota.id = :rota "
 							+ "and (im.ligacaoAguaSituacao.id = :ligacaoAguaSituacaoId1 or im.ligacaoEsgotoSituacao.id = :ligacaoAguaSituacaoId3) ";
 
-			retorno = session.createQuery(consulta).setInteger("anoMes", anoMesReferencia).setInteger("ligacaoAguaSituacaoId1",
-							ligacaoAguaSituacaoLigado.intValue()).setInteger("ligacaoAguaSituacaoId3", ligacaoEsgotoLigado.intValue())
-							.setInteger("rota", rota.getId()).list();
+			retorno = session.createQuery(consulta).setInteger("anoMes", anoMesReferencia)
+							.setInteger("ligacaoAguaSituacaoId1", ligacaoAguaSituacaoLigado.intValue())
+							.setInteger("ligacaoAguaSituacaoId3", ligacaoEsgotoLigado.intValue()).setInteger("rota", rota.getId()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1209,8 +1238,8 @@ public class RepositorioMicromedicaoHBM
 							+ "inner join ch.consumoAnormalidade ca " + "inner join ch.ligacaoTipo lt " + "inner join ch.imovel im "
 							+ "where im.id = :id and lt.id = :ligacaoTipoId and ch.referenciaFaturamento = :anoMes ";
 
-			retorno = session.createQuery(consulta).setInteger("id", imovel.getId().intValue()).setInteger("ligacaoTipoId",
-							ligacaoTipo.getId().intValue()).setInteger("anoMes", anoMesReferencia).list();
+			retorno = session.createQuery(consulta).setInteger("id", imovel.getId().intValue())
+							.setInteger("ligacaoTipoId", ligacaoTipo.getId().intValue()).setInteger("anoMes", anoMesReferencia).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1240,8 +1269,8 @@ public class RepositorioMicromedicaoHBM
 							+ "ch.pocoTipo.id, ch.faturamentoSituacaoTipo.id, ch.indicadorFaturamento " + "from ConsumoHistorico ch "
 							+ "where ch.imovel.id = :id and ch.referenciaFaturamento = :anoMes and ch.ligacaoTipo.id = :ligacaoTipoId ";
 
-			retorno = session.createQuery(consulta).setInteger("id", imovel.getId().intValue()).setInteger("ligacaoTipoId",
-							ligacaoTipo.getId().intValue()).setInteger("anoMes", anoMesReferencia).list();
+			retorno = session.createQuery(consulta).setInteger("id", imovel.getId().intValue())
+							.setInteger("ligacaoTipoId", ligacaoTipo.getId().intValue()).setInteger("anoMes", anoMesReferencia).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1274,8 +1303,8 @@ public class RepositorioMicromedicaoHBM
 							+ "left join la.leituraAnormalidadeConsumoComleitura " + "left join la.leituraAnormalidadeLeituraSemleitura "
 							+ "left join la.leituraAnormalidadeLeituraComleitura " + "where la.id = :idLeituraAnormalidadeFaturamento";
 
-			retorno = session.createQuery(consulta).setInteger("idLeituraAnormalidadeFaturamento",
-							leituraAnormalidadeFaturamento.getId().intValue()).list();
+			retorno = session.createQuery(consulta)
+							.setInteger("idLeituraAnormalidadeFaturamento", leituraAnormalidadeFaturamento.getId().intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1330,8 +1359,8 @@ public class RepositorioMicromedicaoHBM
 							+ "(select max(ctv2.dataVigencia) from ConsumoTarifaVigencia ctv2 " + "inner join ctv2.consumoTarifa ct2 "
 							+ "where ct2.id = :consumoTarifaId and ctv2.dataVigencia  <= :dataCorrente)";
 
-			retorno = session.createQuery(consulta).setDate("dataCorrente", dataCorrente).setInteger("consumoTarifaId",
- idConsumoTarifa.intValue()).list();
+			retorno = session.createQuery(consulta).setDate("dataCorrente", dataCorrente)
+							.setInteger("consumoTarifaId", idConsumoTarifa.intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1358,8 +1387,8 @@ public class RepositorioMicromedicaoHBM
 							+ "(select max(ctv2.dataVigencia) from ConsumoTarifaVigencia ctv2 " + "inner join ctv2.consumoTarifa ct2 "
 							+ "where ct2.id = :consumoTarifaId and ctv2.dataVigencia  <= :dataCorrente)";
 
-			retorno = session.createQuery(consulta).setDate("dataCorrente", dataCorrente).setInteger("consumoTarifaId",
-							idConsumoTarifaConta.intValue()).list();
+			retorno = session.createQuery(consulta).setDate("dataCorrente", dataCorrente)
+							.setInteger("consumoTarifaId", idConsumoTarifaConta.intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1385,9 +1414,9 @@ public class RepositorioMicromedicaoHBM
 							+ "where ct.consumoTarifaVigencia.id = :consumoTarifaVigenciaId " + "and ct.categoria.id = :categoriaId "
 							+ "and ct.subCategoria.id = :subCategoriaId ";
 
-			retorno = session.createQuery(consulta).setInteger("consumoTarifaVigenciaId", consumoTarifaVigencia.getId()).setInteger(
-							"categoriaId", categoria.getId()).setInteger("subCategoriaId", Subcategoria.SUBCATEGORIA_ZERO.getId())
-							.uniqueResult();
+			retorno = session.createQuery(consulta).setInteger("consumoTarifaVigenciaId", consumoTarifaVigencia.getId())
+							.setInteger("categoriaId", categoria.getId())
+							.setInteger("subCategoriaId", Subcategoria.SUBCATEGORIA_ZERO.getId()).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1601,8 +1630,8 @@ public class RepositorioMicromedicaoHBM
 							+ "left join hid.hidrometroCapacidade hc " + "left join hih.hidrometroProtecao hp "
 							+ "left join hih.hidrometroLocalInstalacao hli " + "left join hih.medicaoTipo mt "
 							+ "where imovel.id = :idImovel and " + "mt.id = :idMedicaoTipo";
-			retorno = session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger("idMedicaoTipo",
-							MedicaoTipo.LIGACAO_AGUA.intValue()).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.LIGACAO_AGUA.intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1646,8 +1675,8 @@ public class RepositorioMicromedicaoHBM
 							+ "left join hid.hidrometroMarca hm " + "left join hid.hidrometroCapacidade hc "
 							+ "left join hih.hidrometroProtecao hp " + "left join hih.hidrometroLocalInstalacao hli "
 							+ "left join hih.medicaoTipo mt " + "where imovel.id = :idImovel and " + "mt.id = :idMedicaoTipo";
-			retorno = session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger("idMedicaoTipo",
-							MedicaoTipo.POCO.intValue()).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.POCO.intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1679,8 +1708,9 @@ public class RepositorioMicromedicaoHBM
 							+ "where md.ligacaoAgua.id = :idImovel and " + "md.medicaoTipo.id = :idMedicaoTipo and "
 							+ "md.anoMesReferencia = :anoMes ";
 
-			retorno = session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger("idMedicaoTipo",
-							MedicaoTipo.LIGACAO_AGUA.intValue()).setInteger("anoMes", anoMes.intValue()).setMaxResults(1).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.LIGACAO_AGUA.intValue()).setInteger("anoMes", anoMes.intValue())
+							.setMaxResults(1).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1711,8 +1741,9 @@ public class RepositorioMicromedicaoHBM
 							+ "where md.imovel.id = :idImovel and " + "md.medicaoTipo.id = :idMedicaoTipo and "
 							+ "md.anoMesReferencia = :anoMes ";
 
-			retorno = session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger("idMedicaoTipo",
-							MedicaoTipo.POCO.intValue()).setMaxResults(1).setInteger("anoMes", anoMes.intValue()).setMaxResults(1).list();
+			retorno = session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.POCO.intValue()).setMaxResults(1)
+							.setInteger("anoMes", anoMes.intValue()).setMaxResults(1).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1805,8 +1836,8 @@ public class RepositorioMicromedicaoHBM
 			consulta = "select hih.id " + "from HidrometroInstalacaoHistorico hih " + "where hih.ligacaoAgua.id = :idImovel and "
 							+ "hih.medicaoTipo.id = :idMedicaoTipo ";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger("idMedicaoTipo",
-							MedicaoTipo.LIGACAO_AGUA.intValue()).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.LIGACAO_AGUA.intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1827,8 +1858,8 @@ public class RepositorioMicromedicaoHBM
 			consulta = "select hih.id " + "from HidrometroInstalacaoHistorico hih " + "where hih.imovel.id = :idImovel and "
 							+ "hih.medicaoTipo.id = :idMedicaoTipo ";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger("idMedicaoTipo",
-							MedicaoTipo.POCO.intValue()).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.POCO.intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1854,13 +1885,12 @@ public class RepositorioMicromedicaoHBM
 			consulta = "select mh " + "from MedicaoHistorico mh " + "left join fetch mh.ligacaoAgua la "
 							+ "left join fetch la.hidrometroInstalacaoHistorico hih " + "left join fetch hih.hidrometro hid "
 							+ "left join fetch hih.hidrometroLocalInstalacao hiLocalInst " + "left join fetch hid.hidrometroMarca him "
-							+ "left join fetch hid.hidrometroCapacidade hic "
-							+ "where la.id = :idImovel and "
+							+ "left join fetch hid.hidrometroCapacidade hic " + "where la.id = :idImovel and "
 							+ "mh.medicaoTipo.id = :idMedicaoTipo and " + "mh.anoMesReferencia = :anoMesReferencia";
 
-			retorno = (MedicaoHistorico) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger(
-							"idMedicaoTipo", MedicaoTipo.LIGACAO_AGUA.intValue()).setInteger("anoMesReferencia", anoMes.intValue())
-							.setMaxResults(1).uniqueResult();
+			retorno = (MedicaoHistorico) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.LIGACAO_AGUA.intValue())
+							.setInteger("anoMesReferencia", anoMes.intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1888,8 +1918,8 @@ public class RepositorioMicromedicaoHBM
 							+ "where imovel.id = :idImovel and " + "mh.medicaoTipo.id = :idMedicaoTipo and "
 							+ "mh.anoMesReferencia = :anoMesReferencia";
 
-			retorno = (MedicaoHistorico) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger(
-							"idMedicaoTipo", MedicaoTipo.POCO.intValue()).setInteger("anoMesReferencia", anoMes.intValue())
+			retorno = (MedicaoHistorico) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.POCO.intValue()).setInteger("anoMesReferencia", anoMes.intValue())
 							.setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
@@ -1978,8 +2008,9 @@ public class RepositorioMicromedicaoHBM
 							+ "where md.imovel.id = :idImovel and " + "md.medicaoTipo.id = :idMedicaoTipo and "
 							+ "md.anoMesReferencia = :anoMes ";
 
-			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger("idMedicaoTipo",
-							MedicaoTipo.POCO.intValue()).setInteger("anoMes", anoMes.intValue()).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.POCO.intValue()).setInteger("anoMes", anoMes.intValue())
+							.setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -2005,8 +2036,9 @@ public class RepositorioMicromedicaoHBM
 			consulta = "select hih.dataInstalacao " + "from HidrometroInstalacaoHistorico hih "
 							+ "where hih.id = :idHidrometroInstalacaoHistorico ";
 
-			retorno = (Date) session.createQuery(consulta).setInteger("idHidrometroInstalacaoHistorico",
-							idHidrometroInstalacaoHistorico.intValue()).setMaxResults(1).uniqueResult();
+			retorno = (Date) session.createQuery(consulta)
+							.setInteger("idHidrometroInstalacaoHistorico", idHidrometroInstalacaoHistorico.intValue()).setMaxResults(1)
+							.uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -2084,8 +2116,8 @@ public class RepositorioMicromedicaoHBM
 							+ "where imovel.id = :id and clienteRelacaoTipo.id = :usuario "
 							+ "and clienteImovel.clienteImovelFimRelacaoMotivo is null";
 
-			retorno = (Object[]) session.createQuery(consulta).setInteger("id", imovel.getId().intValue()).setInteger("usuario",
-							ClienteRelacaoTipo.USUARIO).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta).setInteger("id", imovel.getId().intValue())
+							.setInteger("usuario", ClienteRelacaoTipo.USUARIO).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -2186,7 +2218,8 @@ public class RepositorioMicromedicaoHBM
 		String consulta = null;
 		try{
 			consulta = "select ch.id,ch.consumoRateio, "
-							+ "ch.numeroConsumoFaturadoMes,consumoTipo.id,ch.indicadorFaturamento,consumoAnormalidade.id "
+							+ "ch.numeroConsumoFaturadoMes,consumoTipo.id,ch.indicadorFaturamento,consumoAnormalidade.id, "
+							+ "ch.consumoPoco "
 							+ "from ConsumoHistorico ch " + "left join ch.consumoAnormalidade consumoAnormalidade "
 							+ "left join ch.consumoTipo consumoTipo " + "where  " + "ch.imovel.id = :id  "
 							+ "and ch.referenciaFaturamento = :anoMes " + "and ch.ligacaoTipo.id = :ligacao";
@@ -2229,9 +2262,9 @@ public class RepositorioMicromedicaoHBM
 							+ " or (les.id = 3 and im.hidrometroInstalacaoHistorico != null) ";
 
 			retorno = session.createQuery(consulta).setInteger("indicadorImovelCondominio", indicadorImovelCondominio.intValue())
-							.setInteger("ligacaoAguaSituacaoLigado", ligacaoAguaSituacaoLigado.intValue()).setInteger(
-											"ligacaoAguaSituacaoCortado", ligacaoAguaSituacaoCortado.intValue()).setInteger(
-											"ligacaoEsgotoSituacaoCortado", ligacaoEsgotoSituacaoCortado.intValue()).list();
+							.setInteger("ligacaoAguaSituacaoLigado", ligacaoAguaSituacaoLigado.intValue())
+							.setInteger("ligacaoAguaSituacaoCortado", ligacaoAguaSituacaoCortado.intValue())
+							.setInteger("ligacaoEsgotoSituacaoCortado", ligacaoEsgotoSituacaoCortado.intValue()).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -2266,8 +2299,8 @@ public class RepositorioMicromedicaoHBM
 							+ "and ch.referenciaFaturamento = :anoMes " + " and consumoAnormalidade.id = :idAnormalidade "
 							+ "and ch.ligacaoTipo.id = :ligacao";
 
-			retorno = session.createQuery(consulta).setInteger("id", idImovel.intValue()).setInteger("anoMes", anoMes).setInteger(
-							"idAnormalidade", idAnormalidade.intValue()).setMaxResults(1).uniqueResult();
+			retorno = session.createQuery(consulta).setInteger("id", idImovel.intValue()).setInteger("anoMes", anoMes)
+							.setInteger("idAnormalidade", idAnormalidade.intValue()).setMaxResults(1).uniqueResult();
 
 			if(retorno != null){
 				retornoDados = (Object[]) retorno;
@@ -2368,13 +2401,15 @@ public class RepositorioMicromedicaoHBM
 							+ " leituraAnormalidadeFaturamento.ltan_dsleituraanormalidade 	as dsLeituraAnormFaturamento,"// 09
 							+ " consumoAnormalidade.csan_dsconsumoanormalidade 				as dsConsumoAnormalidade," // 10
 							+ " medicaoTipo.medt_id 										as idMedicaoTipo,"// 11
-							+ " rota.rota_cdrota 									    	as cdRota"// 12
+							+ " rota.rota_cdrota 									    	as cdRota,"// 12
+							+ " imovel.imov_icimovelcondominio icImovelCondominio, " // 13
+							+ " medicaoHistorico.MDHI_NNCONSUMOCREDITOGERADO MDHI_NNCONSUMOCREDITOGERADO " // 14
 							+ " from imovel imovel"
 							+ " inner join consumo_historico consumoHistorico on imovel.imov_id=consumoHistorico.imov_id and consumoHistorico.cshi_amfaturamento = "
 							+ anoMesReferencia
 							+ " and consumoHistorico.lgti_id = "
 							+ LigacaoTipo.LIGACAO_AGUA
-							+ " inner join medicao_historico medicaoHistorico on  consumoHistorico.imov_id=medicaoHistorico.lagu_id and medicaoHistorico.mdhi_amleitura = "
+							+ " left outer join medicao_historico medicaoHistorico on  consumoHistorico.imov_id=medicaoHistorico.lagu_id and medicaoHistorico.mdhi_amleitura = "
 							+ anoMesReferencia
 							+ " and medicaoHistorico.medt_id = "
 							+ LigacaoTipo.LIGACAO_AGUA
@@ -2403,13 +2438,15 @@ public class RepositorioMicromedicaoHBM
 							+ " leituraAnormalidadeFaturamento.ltan_dsleituraanormalidade 	as dsLeituraAnormFaturamento,"
 							+ " consumoAnormalidade.csan_dsconsumoanormalidade 				as dsConsumoAnormalidade,"
 							+ " medicaoTipo.medt_id 										as idMedicaoTipo,"
-							+ " rota.rota_cdrota 									    	as cdRota"// 12
+							+ " rota.rota_cdrota 									    	as cdRota, "// 12
+							+ " imovel.imov_icimovelcondominio icImovelCondominio, " // 13
+							+ " medicaoHistorico.MDHI_NNCONSUMOCREDITOGERADO MDHI_NNCONSUMOCREDITOGERADO " // 14
 							+ " from imovel imovel"
 							+ " inner join consumo_historico consumoHistorico on imovel.imov_id=consumoHistorico.imov_id and consumoHistorico.cshi_amfaturamento =  "
 							+ anoMesReferencia
 							+ "  and consumoHistorico.lgti_id = "
 							+ LigacaoTipo.LIGACAO_ESGOTO
-							+ " inner join medicao_historico medicaoHistorico on  consumoHistorico.imov_id=medicaoHistorico.imov_id and medicaoHistorico.mdhi_amleitura =  "
+							+ " left outer join medicao_historico medicaoHistorico on  consumoHistorico.imov_id=medicaoHistorico.imov_id and medicaoHistorico.mdhi_amleitura =  "
 							+ anoMesReferencia
 							+ " and medicaoHistorico.medt_id = "
 							+ LigacaoTipo.LIGACAO_ESGOTO
@@ -2500,19 +2537,23 @@ public class RepositorioMicromedicaoHBM
 			if(todosRegistros){
 				retorno = session.createSQLQuery(sql).addScalar("idImovel", Hibernate.INTEGER).addScalar("idLocalidade", Hibernate.INTEGER)
 								.addScalar("codigoSetorComercial", Hibernate.INTEGER).addScalar("numeroQuadra", Hibernate.INTEGER)
-								.addScalar("lote", Hibernate.SHORT).addScalar("subLote", Hibernate.SHORT).addScalar("dsImovelPerfil",
-												Hibernate.STRING).addScalar("dsMedicaoTipo", Hibernate.STRING).addScalar(
-												"numeroConsumoFaturadoMes", Hibernate.INTEGER).addScalar("dsLeituraAnormFaturamento",
-												Hibernate.STRING).addScalar("dsConsumoAnormalidade", Hibernate.STRING).addScalar(
-												"idMedicaoTipo", Hibernate.INTEGER).addScalar("cdRota", Hibernate.INTEGER).list();
-			}else{
-				List list = session.createSQLQuery(sql).addScalar("idImovel", Hibernate.INTEGER).addScalar("idLocalidade",
-								Hibernate.INTEGER).addScalar("codigoSetorComercial", Hibernate.INTEGER).addScalar("numeroQuadra",
-								Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT).addScalar("subLote", Hibernate.SHORT).addScalar(
-								"dsImovelPerfil", Hibernate.STRING).addScalar("dsMedicaoTipo", Hibernate.STRING).addScalar(
-								"numeroConsumoFaturadoMes", Hibernate.INTEGER).addScalar("dsLeituraAnormFaturamento", Hibernate.STRING)
+								.addScalar("lote", Hibernate.SHORT).addScalar("subLote", Hibernate.SHORT)
+								.addScalar("dsImovelPerfil", Hibernate.STRING).addScalar("dsMedicaoTipo", Hibernate.STRING)
+								.addScalar("numeroConsumoFaturadoMes", Hibernate.INTEGER)
+								.addScalar("dsLeituraAnormFaturamento", Hibernate.STRING)
 								.addScalar("dsConsumoAnormalidade", Hibernate.STRING).addScalar("idMedicaoTipo", Hibernate.INTEGER)
-								.addScalar("cdRota", Hibernate.INTEGER).setFirstResult(10 * numeroPagina).list();
+								.addScalar("cdRota", Hibernate.INTEGER).addScalar("icImovelCondominio", Hibernate.SHORT)
+								.addScalar("MDHI_NNCONSUMOCREDITOGERADO", Hibernate.INTEGER).list();
+			}else{
+				List list = session.createSQLQuery(sql).addScalar("idImovel", Hibernate.INTEGER)
+								.addScalar("idLocalidade", Hibernate.INTEGER).addScalar("codigoSetorComercial", Hibernate.INTEGER)
+								.addScalar("numeroQuadra", Hibernate.INTEGER).addScalar("lote", Hibernate.SHORT)
+								.addScalar("subLote", Hibernate.SHORT).addScalar("dsImovelPerfil", Hibernate.STRING)
+								.addScalar("dsMedicaoTipo", Hibernate.STRING).addScalar("numeroConsumoFaturadoMes", Hibernate.INTEGER)
+								.addScalar("dsLeituraAnormFaturamento", Hibernate.STRING)
+								.addScalar("dsConsumoAnormalidade", Hibernate.STRING).addScalar("idMedicaoTipo", Hibernate.INTEGER)
+								.addScalar("cdRota", Hibernate.INTEGER).addScalar("icImovelCondominio", Hibernate.SHORT)
+								.addScalar("MDHI_NNCONSUMOCREDITOGERADO", Hibernate.INTEGER).setFirstResult(10 * numeroPagina).list();
 				/* Alternativa para paginaçao devido á um bug no metodo setMaxResult do hibernate */
 				if(list.size() > 10){
 					retorno = list.subList(0, 10);
@@ -2761,7 +2802,8 @@ public class RepositorioMicromedicaoHBM
 						+ " ligacaoAgua.lagu_idfuncreligacaoagua as idFuncionarioReligacaoAgua, "// 45
 						+ " funcionario.func_nmfuncionario as nomeFuncionarioReligacaoAgua, "// 46
 						+ " hidrometroIstalacaoHistorico.hidi_nnleiturainstalacaohidrom as numeroLeituraInstalacao, "// 47
-						+ " ramalLocalInstalacao.rlin_dsramallocalinstalcao as descricaoRamalLocalInstalacao "// 48
+						+ " ramalLocalInstalacao.rlin_dsramallocalinstalcao as descricaoRamalLocalInstalacao, "// 48
+						+ " ligacaoEsgoto.lesg_nnconsumofixopoco as consumoFixoPoco "// 49
 						+ " from cliente_imovel clienteImovel "
 						+ " inner join imovel imovel on clienteImovel.imov_id=imovel.imov_id "
 						+ "	left outer join ligacao_agua ligacaoAgua on imovel.imov_id=ligacaoAgua.lagu_id "
@@ -2798,31 +2840,34 @@ public class RepositorioMicromedicaoHBM
 						+ ConstantesSistema.CLIENTE_IMOVEL_TIPO_USUARIO;
 
 		try{
-			retorno = session.createSQLQuery(sql).addScalar("idFaturamentoGrupo", Hibernate.INTEGER).addScalar("amFaturamentoGrupo",
-							Hibernate.INTEGER).addScalar("nomeEmpresa", Hibernate.STRING).addScalar("icCondominio", Hibernate.SHORT)
-							.addScalar("descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgSit", Hibernate.STRING)
-							.addScalar("nomeCliente", Hibernate.STRING).addScalar("cpf", Hibernate.STRING).addScalar("cnpj",
-											Hibernate.STRING).addScalar("numerohidrometro", Hibernate.STRING).addScalar("dtInstHidrometro",
-											Hibernate.DATE).addScalar("descricaoHidCapacidade", Hibernate.STRING).addScalar(
-											"descricaoHidTipo", Hibernate.STRING).addScalar("descricaoHidMarca", Hibernate.STRING)
-							.addScalar("descricaoHidLocInst", Hibernate.STRING).addScalar("descricaoHidDiamentro", Hibernate.STRING)
-							.addScalar("descricaoHidProtecao", Hibernate.STRING).addScalar("descricaoIcCavalete", Hibernate.SHORT)
-							.addScalar("anoFabricacao", Hibernate.SHORT).addScalar("descricaoImovelPerfil", Hibernate.STRING).addScalar(
-											"dataLigacaoAgua", Hibernate.DATE).addScalar("dataCorte", Hibernate.DATE).addScalar(
-											"dataReligAgua", Hibernate.DATE).addScalar("dataSupAgua", Hibernate.DATE).addScalar(
-											"descricaoAguaDia", Hibernate.STRING).addScalar("descricaoLigAguaMat", Hibernate.STRING)
-							.addScalar("numeroConsumoMinAgua", Hibernate.INTEGER).addScalar("dataLigacao", Hibernate.DATE).addScalar(
-											"descricaoLigEsgDia", Hibernate.STRING).addScalar("descricaoLigEsgMat", Hibernate.STRING)
-							.addScalar("descricaoLigEsgPerfil", Hibernate.STRING).addScalar("numeroConsumoMinEsgo", Hibernate.INTEGER)
-							.addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL).addScalar("percentualColeta", Hibernate.BIG_DECIMAL)
-							.addScalar("descricaoPocoTipo", Hibernate.STRING).addScalar("dataRestabelecimentoAgua", Hibernate.DATE)
+			retorno = session.createSQLQuery(sql).addScalar("idFaturamentoGrupo", Hibernate.INTEGER)
+							.addScalar("amFaturamentoGrupo", Hibernate.INTEGER).addScalar("nomeEmpresa", Hibernate.STRING)
+							.addScalar("icCondominio", Hibernate.SHORT).addScalar("descricaoLigAguaSit", Hibernate.STRING)
+							.addScalar("descricaoLigEsgSit", Hibernate.STRING).addScalar("nomeCliente", Hibernate.STRING)
+							.addScalar("cpf", Hibernate.STRING).addScalar("cnpj", Hibernate.STRING)
+							.addScalar("numerohidrometro", Hibernate.STRING).addScalar("dtInstHidrometro", Hibernate.DATE)
+							.addScalar("descricaoHidCapacidade", Hibernate.STRING).addScalar("descricaoHidTipo", Hibernate.STRING)
+							.addScalar("descricaoHidMarca", Hibernate.STRING).addScalar("descricaoHidLocInst", Hibernate.STRING)
+							.addScalar("descricaoHidDiamentro", Hibernate.STRING).addScalar("descricaoHidProtecao", Hibernate.STRING)
+							.addScalar("descricaoIcCavalete", Hibernate.SHORT).addScalar("anoFabricacao", Hibernate.SHORT)
+							.addScalar("descricaoImovelPerfil", Hibernate.STRING).addScalar("dataLigacaoAgua", Hibernate.DATE)
+							.addScalar("dataCorte", Hibernate.DATE).addScalar("dataReligAgua", Hibernate.DATE)
+							.addScalar("dataSupAgua", Hibernate.DATE).addScalar("descricaoAguaDia", Hibernate.STRING)
+							.addScalar("descricaoLigAguaMat", Hibernate.STRING).addScalar("numeroConsumoMinAgua", Hibernate.INTEGER)
+							.addScalar("dataLigacao", Hibernate.DATE).addScalar("descricaoLigEsgDia", Hibernate.STRING)
+							.addScalar("descricaoLigEsgMat", Hibernate.STRING).addScalar("descricaoLigEsgPerfil", Hibernate.STRING)
+							.addScalar("numeroConsumoMinEsgo", Hibernate.INTEGER).addScalar("percentualEsgoto", Hibernate.BIG_DECIMAL)
+							.addScalar("percentualColeta", Hibernate.BIG_DECIMAL).addScalar("descricaoPocoTipo", Hibernate.STRING)
+							.addScalar("dataRestabelecimentoAgua", Hibernate.DATE)
 							.addScalar("descricaoLigacaoAguaPerfil", Hibernate.STRING).addScalar("idLigacaoEsgoto", Hibernate.INTEGER)
-							.addScalar("idLigacaoAgua", Hibernate.INTEGER).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER).addScalar(
-											"idImovelCondominio", Hibernate.INTEGER).addScalar("diaVencimento", Hibernate.SHORT).addScalar(
-											"codigoRota", Hibernate.SHORT).addScalar("sequencialRota", Hibernate.INTEGER).addScalar(
-											"idHidrometro", Hibernate.INTEGER).addScalar("idFuncionarioReligacaoAgua", Hibernate.INTEGER)
-							.addScalar("nomeFuncionarioReligacaoAgua", Hibernate.STRING).addScalar("numeroLeituraInstalacao",
-											Hibernate.INTEGER).addScalar("descricaoRamalLocalInstalacao", Hibernate.STRING).list();
+							.addScalar("idLigacaoAgua", Hibernate.INTEGER).addScalar("idLigacaoAguaSituacao", Hibernate.INTEGER)
+							.addScalar("idImovelCondominio", Hibernate.INTEGER).addScalar("diaVencimento", Hibernate.SHORT)
+							.addScalar("codigoRota", Hibernate.SHORT).addScalar("sequencialRota", Hibernate.INTEGER)
+							.addScalar("idHidrometro", Hibernate.INTEGER).addScalar("idFuncionarioReligacaoAgua", Hibernate.INTEGER)
+							.addScalar("nomeFuncionarioReligacaoAgua", Hibernate.STRING)
+							.addScalar("numeroLeituraInstalacao", Hibernate.INTEGER)
+							.addScalar("descricaoRamalLocalInstalacao", Hibernate.STRING).addScalar("consumoFixoPoco", Hibernate.INTEGER)
+							.list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -2869,7 +2914,9 @@ public class RepositorioMicromedicaoHBM
 						+ " imovel.imov_idimovelcondominio as idImovelCondominio,"// 9
 						+ " imovel.imov_qteconomia as qtdEconomias,"// 10
 						+ " imovel.hidi_id as idHidrometroHistoricoImovel,"// 11
-						+ " hidrometro.hidr_nndigitosleitura as numeroDigitosLeitura"// 12
+						+ " hidrometro.hidr_nndigitosleitura as numeroDigitosLeitura, "// 12
+						+ " pocoTipo.poco_id as idPocoTipo, "// 13
+						+ " pocoTipo.POCO_DSPOCOTIPO as descricaoPocoTipo "// 14
 						+ " from cliente_imovel clienteImovel "
 						+ " inner join imovel imovel on clienteImovel.imov_id=imovel.imov_id and imovel.imov_id = "
 						+ idImovel
@@ -2892,14 +2939,16 @@ public class RepositorioMicromedicaoHBM
 		// System.out.println(sql);
 
 		try{
-			retorno = session.createSQLQuery(sql).addScalar("idFaturamentoGrupo", Hibernate.INTEGER).addScalar("amFaturamentoGrupo",
-							Hibernate.INTEGER).addScalar("icCondominio", Hibernate.SHORT)
+			retorno = session.createSQLQuery(sql).addScalar("idFaturamentoGrupo", Hibernate.INTEGER)
+							.addScalar("amFaturamentoGrupo", Hibernate.INTEGER).addScalar("icCondominio", Hibernate.SHORT)
 							.addScalar("descricaoLigAguaSit", Hibernate.STRING).addScalar("descricaoLigEsgSit", Hibernate.STRING)
 							.addScalar("numerohidrometro", Hibernate.STRING).addScalar("dtInstHidrometro", Hibernate.DATE).addScalar(
 											"descricaoHidCapacidade", Hibernate.STRING)
 							.addScalar("descricaoImovelPerfil", Hibernate.STRING).addScalar("idImovelCondominio", Hibernate.INTEGER)
 							.addScalar("qtdEconomias", Hibernate.SHORT).addScalar("idHidrometroHistoricoImovel", Hibernate.INTEGER)
-							.addScalar("numeroDigitosLeitura", Hibernate.SHORT).list();
+.addScalar("numeroDigitosLeitura", Hibernate.SHORT)
+							.addScalar("idPocoTipo", Hibernate.INTEGER)							
+							.addScalar("descricaoPocoTipo", Hibernate.STRING).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -2990,20 +3039,20 @@ public class RepositorioMicromedicaoHBM
 
 		try{
 			retorno = session.createSQLQuery(sql).addScalar("descricaoMedTipo", Hibernate.STRING).addScalar("idMedTipo", Hibernate.INTEGER)
-							.addScalar("dataLeituraAnteriorFaturame", Hibernate.DATE).addScalar("dataLeituraAtualFaturamento",
-											Hibernate.DATE).addScalar("numeroLeituraAnteriorFaturame", Hibernate.INTEGER).addScalar(
-											"numeroLeituraAnteriorFaturame", Hibernate.INTEGER).addScalar("dataLeituraAtualInformada",
-											Hibernate.DATE).addScalar("numeroLeituraInformada", Hibernate.INTEGER).addScalar(
-											"descricaoLeituraSituacao", Hibernate.STRING).addScalar("dataLeituraFaturamento",
-											Hibernate.DATE).addScalar("numeroLeituraFaturamento", Hibernate.INTEGER).addScalar(
-											"idFuncionario", Hibernate.INTEGER)
-							.addScalar("descLeituraAnormalidadeInform", Hibernate.STRING).addScalar("descLeituraAnormalidadeFat",
-											Hibernate.STRING).addScalar("numeroConsumoMes", Hibernate.INTEGER).addScalar(
-											"numeroConsumoFaturadoMes", Hibernate.INTEGER).addScalar("numeroConsumoRateio",
-											Hibernate.INTEGER).addScalar("descAbreviadaConsumoAnormal", Hibernate.STRING).addScalar(
-											"descricaoAbreviadaConsumoTipo", Hibernate.STRING).addScalar("consumoMedioHidrometro",
-											Hibernate.INTEGER).addScalar("consumoMedioImovel", Hibernate.INTEGER).addScalar(
-											"consumoFaturadoEsgoto", Hibernate.INTEGER).addScalar("nomeFuncionarioHint", Hibernate.STRING)
+							.addScalar("dataLeituraAnteriorFaturame", Hibernate.DATE)
+							.addScalar("dataLeituraAtualFaturamento", Hibernate.DATE)
+							.addScalar("numeroLeituraAnteriorFaturame", Hibernate.INTEGER)
+							.addScalar("numeroLeituraAnteriorFaturame", Hibernate.INTEGER)
+							.addScalar("dataLeituraAtualInformada", Hibernate.DATE).addScalar("numeroLeituraInformada", Hibernate.INTEGER)
+							.addScalar("descricaoLeituraSituacao", Hibernate.STRING).addScalar("dataLeituraFaturamento", Hibernate.DATE)
+							.addScalar("numeroLeituraFaturamento", Hibernate.INTEGER).addScalar("idFuncionario", Hibernate.INTEGER)
+							.addScalar("descLeituraAnormalidadeInform", Hibernate.STRING)
+							.addScalar("descLeituraAnormalidadeFat", Hibernate.STRING).addScalar("numeroConsumoMes", Hibernate.INTEGER)
+							.addScalar("numeroConsumoFaturadoMes", Hibernate.INTEGER).addScalar("numeroConsumoRateio", Hibernate.INTEGER)
+							.addScalar("descAbreviadaConsumoAnormal", Hibernate.STRING)
+							.addScalar("descricaoAbreviadaConsumoTipo", Hibernate.STRING)
+							.addScalar("consumoMedioHidrometro", Hibernate.INTEGER).addScalar("consumoMedioImovel", Hibernate.INTEGER)
+							.addScalar("consumoFaturadoEsgoto", Hibernate.INTEGER).addScalar("nomeFuncionarioHint", Hibernate.STRING)
 							.list();
 
 		}catch(HibernateException e){
@@ -3075,7 +3124,8 @@ public class RepositorioMicromedicaoHBM
 						+ "medicaoHistorico.mdhi_nnconsumocreditoanterior as consumoCreditoAnterior, " // 22
 						+ "funcionario.func_nmfuncionario as nomeFuncionarioHintPoco, " // 23
 						+ "consumoAnormalidade.csan_dsconsumoanormalidade as descConsumoAnormal, " // 24
-						+ "consumoTipo.cstp_dsconsumotipo as descricaoConsumoTipo " // 25
+						+ "consumoTipo.cstp_dsconsumotipo as descricaoConsumoTipo, " // 25
+						+ "medicaoHistorico.mdhi_nnconsumocreditogerado as consumoCreditoGerado " // 26
 						+ "from imovel imovel "
 						+ " inner join consumo_historico consumoHistorico on imovel.imov_id=consumoHistorico.imov_id "
 						+ " left outer join medicao_historico medicaoHistorico on medicaoHistorico.mdhi_amleitura = "
@@ -3125,7 +3175,8 @@ public class RepositorioMicromedicaoHBM
 											Hibernate.INTEGER).addScalar("consumoMedioImovel", Hibernate.INTEGER).addScalar(
 											"consumoMinimoCredito", Hibernate.INTEGER).addScalar("consumoCreditoAnterior",
 											Hibernate.INTEGER).addScalar("nomeFuncionarioHintPoco", Hibernate.STRING).addScalar(
-											"descConsumoAnormal", Hibernate.STRING).addScalar("descricaoConsumoTipo", Hibernate.STRING)
+"descConsumoAnormal", Hibernate.STRING)
+							.addScalar("descricaoConsumoTipo", Hibernate.STRING).addScalar("consumoCreditoGerado", Hibernate.INTEGER)
 							.list();
 
 		}catch(HibernateException e){
@@ -3171,7 +3222,8 @@ public class RepositorioMicromedicaoHBM
 							+ " leituraAnormalidadeFaturamento.ltan_id as idAnormalidadeLeituraFaturada,"// 10
 							+ " medicaoHistorico.mdhi_nnconsumocreditoanterior as creditoConsumoAnterior, "// 11
 							+ " medicaoHistorico.func_id  as idFuncionario, "// 12
-							+ " funcionario.func_nmfuncionario  as nomeFuncionario "// 13
+							+ " funcionario.func_nmfuncionario  as nomeFuncionario, "// 13
+							+ " medicaoHistorico.MDHI_NNCONSUMOMEDIOMEDIDO as consumoMedioMedido " // 14
 							+ " from medicao_historico medicaoHistorico "
 							+ " left outer join leitura_situacao leituraSituacao on medicaoHistorico.ltst_idleiturasituacaoatual = leituraSituacao.ltst_id "
 							+ "	left outer join leitura_anormalidade leituraAnormalidadeInformada on medicaoHistorico.ltan_idleituraanormalidadeinfo=leituraAnormalidadeInformada.ltan_id "
@@ -3193,7 +3245,8 @@ public class RepositorioMicromedicaoHBM
 							.addScalar("leituraSituacao", Hibernate.STRING).addScalar("consumoMedioHidrometro", Hibernate.INTEGER)
 							.addScalar("idAnormalidadeLeituraInformada", Hibernate.INTEGER).addScalar("idAnormalidadeLeituraFaturada",
 											Hibernate.INTEGER).addScalar("creditoConsumoAnterior", Hibernate.INTEGER).addScalar(
-											"idFuncionario", Hibernate.INTEGER).addScalar("nomeFuncionario", Hibernate.STRING).list();
+"idFuncionario", Hibernate.INTEGER)
+							.addScalar("nomeFuncionario", Hibernate.STRING).addScalar("consumoMedioMedido", Hibernate.INTEGER).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -3216,36 +3269,38 @@ public class RepositorioMicromedicaoHBM
 		Session session = HibernateUtil.getSession();
 		String consulta;
 		try{
-			consulta = "select medicaoHistorico.mdhi_amleitura as mesAno,"
-							+ " medicaoHistorico.mdhi_dtleituraatualinformada as dataLeituraInformada,"
-							+ " medicaoHistorico.mdhi_nnleituraatualinformada as numeroLeituraInformada,"
-							+ " medicaoHistorico.mdhi_dtleituraatualfaturamento as dataLeituraFaturada,"
-							+ " medicaoHistorico.mdhi_nnleituraatualfaturamento as numeroLeituraFaturada,"
-							+ " leituraAnormalidadeInformada.ltan_id as idAnormalidadeLeituraInformada,"
-							+ " leituraAnormalidadeFaturamento.ltan_id as idAnormalidadeLeituraFaturada,"
-							+ " leituraSituacao.ltst_dsleiturasituacao as leituraSituacao, "
-							+ " leituraAnormalidadeInformada.ltan_dcabreviadaleituraanormal as descAnormalidadeLeituraInf, "
-							+ " leituraAnormalidadeFaturamento.ltan_dcabreviadaleituraanormal as descAnormalidadeLeituraFat "
+			consulta = "select medicaoHistorico.mdhi_amleitura                                as mesAno,"// 0
+							+ " medicaoHistorico.mdhi_dtleituraatualinformada                 as dataLeituraInformada,"// 1
+							+ " medicaoHistorico.mdhi_nnleituraatualinformada                 as numeroLeituraInformada,"// 2
+							+ " medicaoHistorico.mdhi_dtleituraatualfaturamento               as dataLeituraFaturada,"// 3
+							+ " medicaoHistorico.mdhi_nnleituraatualfaturamento               as numeroLeituraFaturada,"// 4
+							+ " leituraAnormalidadeInformada.ltan_id                          as idAnormalidadeLeituraInformada,"// 5
+							+ " leituraAnormalidadeFaturamento.ltan_id                        as idAnormalidadeLeituraFaturada,"// 6
+							+ " leituraSituacao.ltst_dsleiturasituacao                        as leituraSituacao, "// 7
+							+ " leituraAnormalidadeInformada.ltan_dcabreviadaleituraanormal   as descAnormalidadeLeituraInf, "// 8
+							+ " leituraAnormalidadeFaturamento.ltan_dcabreviadaleituraanormal as descAnormalidadeLeituraFat, "// 9
+							+ "  hidrometroHistorico.hidi_nnhidrometro                        as numeroHidrometro "// 10
 							+ " from medicao_historico medicaoHistorico "
 							+ " left outer join leitura_situacao leituraSituacao on medicaoHistorico.ltst_idleiturasituacaoatual = leituraSituacao.ltst_id "
 							+ "	left outer join leitura_anormalidade leituraAnormalidadeInformada on medicaoHistorico.ltan_idleituraanormalidadeinfo=leituraAnormalidadeInformada.ltan_id "
-							+ "	left outer join leitura_anormalidade leituraAnormalidadeFaturamento on medicaoHistorico.ltan_idleituraanormalidadefatu=leituraAnormalidadeFaturamento.ltan_id ";
+							+ "	left outer join leitura_anormalidade leituraAnormalidadeFaturamento on medicaoHistorico.ltan_idleituraanormalidadefatu=leituraAnormalidadeFaturamento.ltan_id "
+							+ " left outer join hidrometro_instalacao_hist hidrometroHistorico  on medicaoHistorico.hidi_id = hidrometroHistorico.hidi_id ";
+
 			if(ligacaoAgua){
 				consulta = consulta + " where medicaoHistorico.lagu_id = " + idImovel + " order by medicaoHistorico.mdhi_amleitura";
 			}else{
-				consulta = consulta + " where medicaoHistorico.imov_id = " + idImovel + " order by medicaoHistorico.mdhi_amleitura";
+				consulta = consulta + " where medicaoHistorico.imov_id = " + idImovel + "  order by medicaoHistorico.mdhi_amleitura";
 			}
 
 			// System.out.println(consulta);
 
-			retorno = session.createSQLQuery(consulta).addScalar("mesAno", Hibernate.INTEGER).addScalar("dataLeituraInformada",
-							Hibernate.DATE).addScalar("numeroLeituraInformada", Hibernate.INTEGER).addScalar("dataLeituraFaturada",
-							Hibernate.DATE).addScalar("numeroLeituraFaturada", Hibernate.INTEGER).addScalar(
-							"idAnormalidadeLeituraInformada", Hibernate.INTEGER).addScalar("idAnormalidadeLeituraFaturada",
- Hibernate.INTEGER).addScalar("leituraSituacao", Hibernate.STRING)
+			retorno = session.createSQLQuery(consulta).addScalar("mesAno", Hibernate.INTEGER)
+							.addScalar("dataLeituraInformada", Hibernate.DATE).addScalar("numeroLeituraInformada", Hibernate.INTEGER)
+							.addScalar("dataLeituraFaturada", Hibernate.DATE).addScalar("numeroLeituraFaturada", Hibernate.INTEGER)
+							.addScalar("idAnormalidadeLeituraInformada", Hibernate.INTEGER)
+							.addScalar("idAnormalidadeLeituraFaturada", Hibernate.INTEGER).addScalar("leituraSituacao", Hibernate.STRING)
 							.addScalar("descAnormalidadeLeituraInf", Hibernate.STRING)
-							.addScalar("descAnormalidadeLeituraFat", Hibernate.STRING)
-
+							.addScalar("descAnormalidadeLeituraFat", Hibernate.STRING).addScalar("numeroHidrometro", Hibernate.STRING)
 							.list();
 
 		}catch(HibernateException e){
@@ -3287,7 +3342,8 @@ public class RepositorioMicromedicaoHBM
 							+ " medicaoHistorico.mdhi_nnconsumomediohidrometro as consumoMedioHidrometro, "
 							+ " medicaoHistorico.ltan_idleituraanormalidadeinfo as idAnormalidadeInformada, "
 							+ " leituraAnormalidadeInformada.ltan_dcabreviadaleituraanormal as descAnormalidadeInf, "
-							+ " leituraAnormalidadeFaturamento.ltan_dcabreviadaleituraanormal as descAnormalidadeFat "
+							+ " leituraAnormalidadeFaturamento.ltan_dcabreviadaleituraanormal as descAnormalidadeFat, "
+							+ " medicaoHistorico.MDHI_NNCONSUMOMEDIOMEDIDO as consumoMedioMedido "
 							+ " from medicao_historico medicaoHistorico "
 							+ " left outer join leitura_situacao leituraSituacao on medicaoHistorico.ltst_idleiturasituacaoatual = leituraSituacao.ltst_id "
 							+ "	left outer join leitura_anormalidade leituraAnormalidadeInformada on medicaoHistorico.ltan_idleituraanormalidadeinfo=leituraAnormalidadeInformada.ltan_id "
@@ -3320,6 +3376,7 @@ public class RepositorioMicromedicaoHBM
 							.addScalar("idAnormalidadeInformada", Hibernate.INTEGER)// 15
 							.addScalar("descAnormalidadeInf", Hibernate.STRING)// 16
 							.addScalar("descAnormalidadeFat", Hibernate.STRING)// 17
+							.addScalar("consumoMedioMedido", Hibernate.INTEGER) // 18
 							.setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
@@ -3369,21 +3426,37 @@ public class RepositorioMicromedicaoHBM
 							+ " consumoAnormalidade.csan_dsabreviadaconsumoanormal as consumoAnormalidadeAbreviada, "// 12
 							+ " consumoHistorico.cshi_nnconsumorateio as rateio, "// 13
 							+ " consumoHistorico.cshi_nnconsumocredito as consumoMinimoCreditado, " // 14
-							+ " consumoHistoricoEsgoto.cshi_nnconsumofaturadomes as consumoFaturadoEsgoto " // 15
+							+ " consumoHistoricoEsgoto.cshi_nnconsumofaturadomes as consumoFaturadoEsgoto, " // 15
+							+ " consumoHistoricoEsgoto.cshi_nnconsumopoco as consumoPoco, " // 16
+							+ " hidrometroInstalacaoHist.HIDI_NNHIDROMETRO                    as hidrometroNumero, "// 17
+							+ " medicaoHistorico.MDHI_NNCONSUMOCREDITOGERADO as MDHI_NNCONSUMOCREDITOGERADO " // 18
 							+ " from consumo_historico consumoHistorico"
 							+ " left outer join medicao_historico medicaoHistorico on consumoHistorico.imov_id = medicaoHistorico.lagu_id and consumoHistorico.cshi_amfaturamento = medicaoHistorico.mdhi_amleitura"
 							+ " left outer join consumo_anormalidade consumoAnormalidade on consumoHistorico.csan_id = consumoAnormalidade.csan_id"
 							+ " left outer join consumo_tipo consumoTipo on consumoHistorico.cstp_id=consumoTipo.cstp_id"
 							+ " left outer join consumo_historico consumoHistoricoEsgoto on consumoHistorico.imov_id = consumoHistoricoEsgoto.imov_id and consumoHistorico.cshi_amfaturamento = consumoHistoricoEsgoto.cshi_amfaturamento and consumoHistoricoEsgoto.lgti_id = "
-							+ LigacaoTipo.LIGACAO_ESGOTO;
+							+ LigacaoTipo.LIGACAO_ESGOTO
+							+ " LEFT OUTER JOIN HIDROMETRO_INSTALACAO_HIST hidrometroInstalacaoHist on medicaoHistorico.lagu_id  = hidrometroInstalacaoHist.lagu_id";
 			if(ligacaoAgua){
-				consulta += " where consumoHistorico.cshi_amfaturamento = " + anoMes + " and  consumoHistorico.imov_id =" + idImovel
-								+ " and consumoHistorico.lgti_id = " + LigacaoTipo.LIGACAO_AGUA
+				consulta += " where consumoHistorico.cshi_amfaturamento = "
+								+ anoMes
+								+ " and  consumoHistorico.imov_id ="
+								+ idImovel
+								+ " and consumoHistorico.lgti_id = "
+								+ LigacaoTipo.LIGACAO_AGUA
+								// +
+								// " AND hidrometroInstalacaoHist.HIDI_DTRETIRADAHIDROMETRO is null "
 								+ " order by consumoHistorico.cshi_amfaturamento";
 
 			}else{
-				consulta += " where  consumoHistorico.cshi_amfaturamento = " + anoMes + " and consumoHistorico.imov_id = " + idImovel
-								+ " and consumoHistorico.lgti_id = " + LigacaoTipo.LIGACAO_ESGOTO
+				consulta += " where  consumoHistorico.cshi_amfaturamento = "
+								+ anoMes
+								+ " and consumoHistorico.imov_id = "
+								+ idImovel
+								+ " and consumoHistorico.lgti_id = "
+								+ LigacaoTipo.LIGACAO_ESGOTO
+								// +
+								// " and hidrometroInstalacaoHist.HIDI_DTRETIRADAHIDROMETRO is null "
 								+ " order by consumoHistorico.cshi_amfaturamento";
 
 			}
@@ -3396,7 +3469,11 @@ public class RepositorioMicromedicaoHBM
 							.addScalar("idAnormalidade", Hibernate.INTEGER).addScalar("consumoInformado", Hibernate.INTEGER).addScalar(
 											"consumoAnormalidadeAbreviada", Hibernate.STRING).addScalar("rateio", Hibernate.INTEGER)
 							.addScalar("consumoMinimoCreditado", Hibernate.INTEGER).addScalar("consumoFaturadoEsgoto", Hibernate.INTEGER)
+							.addScalar("consumoPoco", Hibernate.INTEGER)
+							.addScalar("hidrometroNumero", Hibernate.STRING)
+							.addScalar("MDHI_NNCONSUMOCREDITOGERADO", Hibernate.INTEGER)
 							.list();
+
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -3448,8 +3525,12 @@ public class RepositorioMicromedicaoHBM
 								+ " consumoAnormalidade.csan_dsabreviadaconsumoanormal as consumoAnormalidadeAbreviada, "// 12
 								+ " consumoHistorico.cshi_nnconsumorateio as rateio, "// 13
 								+ " consumoHistorico.cshi_nnconsumocredito as consumoMinimoCreditado, " // 14
-								+ " consumoHistoricoEsgoto.cshi_nnconsumofaturadomes as consumoFaturadoEsgoto " // 15
+								+ " consumoHistoricoEsgoto.cshi_nnconsumofaturadomes as consumoFaturadoEsgoto, " // 15
+								+ " consumoHistorico.cshi_nnconsumopoco as consumoPoco, " // 16
+								+ " hidrometroInstalacaoHist.HIDI_NNHIDROMETRO                    as hidrometroNumero, "// 17
+								+ " medicaoHistorico.MDHI_NNCONSUMOCREDITOGERADO as MDHI_NNCONSUMOCREDITOGERADO " // 18
 								+ " from consumo_historico consumoHistorico";
+
 
 				if(tipoLigacao.equals(LigacaoTipo.LIGACAO_AGUA)){
 					consulta += " left outer join medicao_historico medicaoHistorico on consumoHistorico.imov_id = medicaoHistorico.lagu_id and consumoHistorico.cshi_amfaturamento = medicaoHistorico.mdhi_amleitura";
@@ -3460,7 +3541,8 @@ public class RepositorioMicromedicaoHBM
 				consulta += " left outer join consumo_anormalidade consumoAnormalidade on consumoHistorico.csan_id = consumoAnormalidade.csan_id"
 								+ " left outer join consumo_tipo consumoTipo on consumoHistorico.cstp_id=consumoTipo.cstp_id "
 								+ " left outer join consumo_historico consumoHistoricoEsgoto on consumoHistorico.imov_id = consumoHistoricoEsgoto.imov_id and consumoHistorico.cshi_amfaturamento = consumoHistoricoEsgoto.cshi_amfaturamento and consumoHistoricoEsgoto.lgti_id = "
-								+ LigacaoTipo.LIGACAO_ESGOTO;
+								+ LigacaoTipo.LIGACAO_ESGOTO
+								+ " LEFT OUTER JOIN HIDROMETRO_INSTALACAO_HIST hidrometroInstalacaoHist on medicaoHistorico.lagu_id  = hidrometroInstalacaoHist.lagu_id";
 
 				if(tipoLigacao.equals(LigacaoTipo.LIGACAO_AGUA)){
 					consulta += " where consumoHistorico.imov_id =" + idImovel + " and consumoHistorico.cshi_amfaturamento = "
@@ -3481,7 +3563,9 @@ public class RepositorioMicromedicaoHBM
 								Hibernate.INTEGER).addScalar("idAnormalidade", Hibernate.INTEGER).addScalar("consumoInformado",
 								Hibernate.INTEGER).addScalar("consumoAnormalidadeAbreviada", Hibernate.STRING).addScalar("rateio",
 								Hibernate.INTEGER).addScalar("consumoMinimoCreditado", Hibernate.INTEGER).addScalar(
-								"consumoFaturadoEsgoto", Hibernate.INTEGER).list());
+								"consumoFaturadoEsgoto", Hibernate.INTEGER).addScalar("consumoPoco", Hibernate.INTEGER)
+								.addScalar("hidrometroNumero", Hibernate.STRING)
+								.addScalar("MDHI_NNCONSUMOCREDITOGERADO", Hibernate.INTEGER).list());
 			}
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -3518,9 +3602,9 @@ public class RepositorioMicromedicaoHBM
 								+ " and consumoHistorico.lgti_id = " + LigacaoTipo.LIGACAO_AGUA
 								+ " and consumoHistorico.cshi_amfaturamento = " + anoMes + " order by consumoHistorico.cshi_amfaturamento";
 
-				retorno = (Object[]) session.createSQLQuery(consulta).addScalar("mesAno", Hibernate.INTEGER).addScalar("consumoMedio",
-								Hibernate.INTEGER).addScalar("consumoFaturado", Hibernate.INTEGER).addScalar("consumoTipo",
-								Hibernate.STRING).uniqueResult();
+				retorno = (Object[]) session.createSQLQuery(consulta).addScalar("mesAno", Hibernate.INTEGER)
+								.addScalar("consumoMedio", Hibernate.INTEGER).addScalar("consumoFaturado", Hibernate.INTEGER)
+								.addScalar("consumoTipo", Hibernate.STRING).uniqueResult();
 			}else{
 				consulta = "select consumoHistorico.cshi_amfaturamento as mesAno,"
 								+ " consumoHistorico.cshi_nnconsumofaturadomes as consumoFaturado,"
@@ -3534,9 +3618,9 @@ public class RepositorioMicromedicaoHBM
 								+ LigacaoTipo.LIGACAO_ESGOTO + " and consumoHistorico.cshi_amfaturamento = " + anoMes
 								+ " order by consumoHistorico.cshi_amfaturamento";
 
-				retorno = (Object[]) session.createSQLQuery(consulta).addScalar("mesAno", Hibernate.INTEGER).addScalar("consumoMedio",
-								Hibernate.INTEGER).addScalar("consumoFaturado", Hibernate.INTEGER).addScalar("consumoTipo",
-								Hibernate.STRING).uniqueResult();
+				retorno = (Object[]) session.createSQLQuery(consulta).addScalar("mesAno", Hibernate.INTEGER)
+								.addScalar("consumoMedio", Hibernate.INTEGER).addScalar("consumoFaturado", Hibernate.INTEGER)
+								.addScalar("consumoTipo", Hibernate.STRING).uniqueResult();
 
 			}
 
@@ -3643,10 +3727,8 @@ public class RepositorioMicromedicaoHBM
 							+ "left join imov.ligacaoEsgotoSituacao lest " + "left join imov.imovelCondominio imovelCondominio "
 							+ "left join imov.ligacaoAgua lagu " + "left join lagu.hidrometroInstalacaoHistorico hidi "
 							+ "where imovelCondominio.id = :idImovelCondominio and imov.indicadorExclusao =  " + ConstantesSistema.NAO
-							+ " and ((last.id in(" + LigacaoAguaSituacao.LIGADO + ","
-							+ LigacaoAguaSituacao.CORTADO + "," + LigacaoAguaSituacao.CORTADO_PEDIDO + ","
-							+ LigacaoAguaSituacao.CORT_MED_INDIVIDUAL + ", " + LigacaoAguaSituacao.SUPRIMIDO + ")) or " + "(lest.id = "
-							+ LigacaoEsgotoSituacao.LIGADO + "))";
+							+ " and ((last.id not in(" + LigacaoAguaSituacao.POTENCIAL + "," + LigacaoAguaSituacao.FACTIVEL + ","
+							+ LigacaoAguaSituacao.SUPRIMIDO_DEFINITIVO + ")) or " + "(lest.id = " + LigacaoEsgotoSituacao.LIGADO + "))";
 
 			retorno = session.createQuery(consulta).setInteger("idImovelCondominio", idImovelCondominio).list();
 
@@ -3857,9 +3939,9 @@ public class RepositorioMicromedicaoHBM
 							+ "left join mh.ligacaoAgua la " + "where la.id = :idImovel and " + "mh.medicaoTipo.id = :idMedicaoTipo and "
 							+ "mh.anoMesReferencia = :anoMesReferencia";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger("idMedicaoTipo",
-							MedicaoTipo.LIGACAO_AGUA.intValue()).setInteger("anoMesReferencia", anoMes.intValue()).setMaxResults(1)
-							.uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.LIGACAO_AGUA.intValue())
+							.setInteger("anoMesReferencia", anoMes.intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -3894,9 +3976,9 @@ public class RepositorioMicromedicaoHBM
 							+ "left join mh.imovel imov " + "where imov.id = :idImovel and " + "mh.medicaoTipo.id = :idMedicaoTipo and "
 							+ "mh.anoMesReferencia = :anoMesReferencia";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger("idMedicaoTipo",
-							MedicaoTipo.LIGACAO_AGUA.intValue()).setInteger("anoMesReferencia", anoMes.intValue()).setMaxResults(1)
-							.uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.LIGACAO_AGUA.intValue())
+							.setInteger("anoMesReferencia", anoMes.intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -3962,8 +4044,9 @@ public class RepositorioMicromedicaoHBM
 							+ "WHERE md.ligacaoAgua.id = :idImovel "
 							+ "AND md.medicaoTipo.id = :idMedicaoTipo " + "AND md.anoMesReferencia = :anoMes";
 
-			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger("idMedicaoTipo",
-							MedicaoTipo.LIGACAO_AGUA.intValue()).setInteger("anoMes", anoMes.intValue()).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.LIGACAO_AGUA.intValue()).setInteger("anoMes", anoMes.intValue())
+							.setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -4034,8 +4117,9 @@ public class RepositorioMicromedicaoHBM
 							+ "FROM MedicaoHistorico md	" + "WHERE md.imovel.id = :idImovel AND "
 							+ "md.medicaoTipo.id = :idMedicaoTipo AND " + "md.anoMesReferencia = :anoMes ";
 
-			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger("idMedicaoTipo",
-							MedicaoTipo.POCO.intValue()).setInteger("anoMes", anoMes.intValue()).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.POCO.intValue()).setInteger("anoMes", anoMes.intValue())
+							.setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -4451,10 +4535,11 @@ public class RepositorioMicromedicaoHBM
 
 			session.createQuery(sql).setTimestamp("data", new Date()).executeUpdate();
 
-			session.createQuery(sqlMedicao).setTimestamp("dataLeituraAnteriorFaturamento",
-							medicaoHistorico.getDataLeituraAnteriorFaturamento()).setTimestamp("dataLeituraAtualInformada",
-							medicaoHistorico.getDataLeituraAtualInformada()).setTimestamp("data", new Date()).setInteger(
-							"idleituraSituacaoAtual", medicaoHistorico.getLeituraSituacaoAtual().getId()).executeUpdate();
+			session.createQuery(sqlMedicao)
+							.setTimestamp("dataLeituraAnteriorFaturamento", medicaoHistorico.getDataLeituraAnteriorFaturamento())
+							.setTimestamp("dataLeituraAtualInformada", medicaoHistorico.getDataLeituraAtualInformada())
+							.setTimestamp("data", new Date())
+							.setInteger("idleituraSituacaoAtual", medicaoHistorico.getLeituraSituacaoAtual().getId()).executeUpdate();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException("Erro no Hibernate");
@@ -4510,9 +4595,9 @@ public class RepositorioMicromedicaoHBM
 									+ " medicaohis0_.medt_id= :idMedicaoTipo and " + " ligacaoagu1_.lagu_id = (:idImovel) ";
 
 				}
-				retorno.addAll(session.createSQLQuery(consulta).addScalar("idMedicaoHistorico", Hibernate.INTEGER).addScalar("idImovel",
-								Hibernate.INTEGER).setInteger("idImovel", idImovel).setInteger("idMedicaoTipo", idMedicaoTipo).setInteger(
-								"anoMesReferencia", anoMes.intValue()).list());
+				retorno.addAll(session.createSQLQuery(consulta).addScalar("idMedicaoHistorico", Hibernate.INTEGER)
+								.addScalar("idImovel", Hibernate.INTEGER).setInteger("idImovel", idImovel)
+								.setInteger("idMedicaoTipo", idMedicaoTipo).setInteger("anoMesReferencia", anoMes.intValue()).list());
 			}
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -4570,7 +4655,9 @@ public class RepositorioMicromedicaoHBM
 									+ // 5
 									" medicaohis0_.imov_id as idImovel, "
 									+ // 6
-									" medicaohis0_.mdhi_nnconsumocreditoanterior as consumoCreditoAnterior  " // 7
+									" medicaohis0_.mdhi_nnconsumocreditoanterior as consumoCreditoAnterior,  "
+									+ // 7
+									" medicaohis0_.mdhi_nnconsumocreditogerado as consumoCreditoGerado  " // 8
 									+ " from  medicao_historico medicaohis0_ "
 									+ " inner join  imovel imovel2_ on medicaohis0_.imov_id=imovel2_.imov_id "
 									+ " left outer join  hidrometro_instalacao_hist hidrometro3_  on imovel2_.hidi_id=hidrometro3_.hidi_id "
@@ -4594,7 +4681,9 @@ public class RepositorioMicromedicaoHBM
 									+ // 5
 									" medicaohis0_.lagu_id as idImovel, "
 									+ // 6
-									" medicaohis0_.mdhi_nnconsumocreditoanterior as consumoCreditoAnterior  " // 7
+									" medicaohis0_.mdhi_nnconsumocreditoanterior as consumoCreditoAnterior,  "
+									+ // 7
+									" medicaohis0_.mdhi_nnconsumocreditogerado as consumoCreditoGerado  " // 8
 									+ " from  medicao_historico medicaohis0_ "
 									+ " inner join  ligacao_agua ligacaoagu1_   on medicaohis0_.lagu_id=ligacaoagu1_.lagu_id "
 									+ " left outer join  hidrometro_instalacao_hist hidrometro3_  on ligacaoagu1_.hidi_id=hidrometro3_.hidi_id "
@@ -4603,12 +4692,13 @@ public class RepositorioMicromedicaoHBM
 
 				}
 
-				retorno.addAll(session.createSQLQuery(consulta).addScalar("dataLeituraAtualFat", Hibernate.DATE).addScalar(
-								"leituraAtualFat", Hibernate.INTEGER).addScalar("leituraAtualInf", Hibernate.INTEGER).addScalar(
-								"idLeituraSitAtual", Hibernate.INTEGER).addScalar("idHidrometroInstHist", Hibernate.INTEGER).addScalar(
-								"dataInstalacao", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER).addScalar(
-								"consumoCreditoAnterior", Hibernate.INTEGER).setInteger("idImovel", idImovel).setInteger("idMedicaoTipo",
-								idMedicaoTipo).setInteger("anoMesReferencia", anoMes.intValue()).list());
+				retorno.addAll(session.createSQLQuery(consulta).addScalar("dataLeituraAtualFat", Hibernate.DATE)
+								.addScalar("leituraAtualFat", Hibernate.INTEGER).addScalar("leituraAtualInf", Hibernate.INTEGER)
+								.addScalar("idLeituraSitAtual", Hibernate.INTEGER).addScalar("idHidrometroInstHist", Hibernate.INTEGER)
+								.addScalar("dataInstalacao", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER)
+								.addScalar("consumoCreditoAnterior", Hibernate.INTEGER)
+								.addScalar("consumoCreditoGerado", Hibernate.INTEGER).setInteger("idImovel", idImovel)
+								.setInteger("idMedicaoTipo", idMedicaoTipo).setInteger("anoMesReferencia", anoMes.intValue()).list());
 			}
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -4702,13 +4792,14 @@ public class RepositorioMicromedicaoHBM
 				atualizarMedicaoHistorico = atualizarMedicaoHistorico + " where mdhi_id = :idMedicaoHistorico";
 
 				if(medicaoHistorico.getDataLeituraAtualInformada() != null && !medicaoHistorico.getDataLeituraAtualInformada().equals("")){
-					session.createQuery(atualizarMedicaoHistorico).setInteger("idMedicaoHistorico", medicaoHistorico.getId()).setTimestamp(
-									"ultimaAlteracao", medicaoHistorico.getUltimaAlteracao()).setTimestamp("dataLeituraAtualInformada",
-									medicaoHistorico.getDataLeituraAtualInformada()).setTimestamp("dataLeituraAtualFaturamento",
-									medicaoHistorico.getDataLeituraAtualInformada()).executeUpdate();
+					session.createQuery(atualizarMedicaoHistorico).setInteger("idMedicaoHistorico", medicaoHistorico.getId())
+									.setTimestamp("ultimaAlteracao", medicaoHistorico.getUltimaAlteracao())
+									.setTimestamp("dataLeituraAtualInformada", medicaoHistorico.getDataLeituraAtualInformada())
+									.setTimestamp("dataLeituraAtualFaturamento", medicaoHistorico.getDataLeituraAtualInformada())
+									.executeUpdate();
 				}else{
-					session.createQuery(atualizarMedicaoHistorico).setInteger("idMedicaoHistorico", medicaoHistorico.getId()).setTimestamp(
-									"ultimaAlteracao", medicaoHistorico.getUltimaAlteracao()).executeUpdate();
+					session.createQuery(atualizarMedicaoHistorico).setInteger("idMedicaoHistorico", medicaoHistorico.getId())
+									.setTimestamp("ultimaAlteracao", medicaoHistorico.getUltimaAlteracao()).executeUpdate();
 				}
 			}
 
@@ -4899,8 +4990,8 @@ public class RepositorioMicromedicaoHBM
 							+ "fgcm.anoMesReferencia = :amReferencia AND " + "fgcm.faturamentoGrupo.id = :idGrupoFaturamento)";
 
 			session.createQuery(atualizar).setTimestamp("dataCorrente", new Date()).setInteger("idGrupoFaturamento", idGrupoFaturamento)
-							.setInteger("idFaturamentoAtividade", FaturamentoAtividade.GERAR_ARQUIVO_LEITURA).setInteger("amReferencia",
-											amReferencia).executeUpdate();
+							.setInteger("idFaturamentoAtividade", FaturamentoAtividade.GERAR_ARQUIVO_LEITURA)
+							.setInteger("amReferencia", amReferencia).executeUpdate();
 
 		}catch(Exception e){
 
@@ -4938,8 +5029,8 @@ public class RepositorioMicromedicaoHBM
 							+ "where cshi.imovel.id = :idImovel and cshi.ligacaoTipo.id = :tipoLigacao "
 							+ "order by cshi.referenciaFaturamento desc";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel).setInteger("tipoLigacao",
-							LigacaoTipo.LIGACAO_AGUA).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel)
+							.setInteger("tipoLigacao", LigacaoTipo.LIGACAO_AGUA).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException("Erro no Hibernate");
@@ -5003,8 +5094,8 @@ public class RepositorioMicromedicaoHBM
 							+ " where imovel = :idImovel and referenciaFaturamento = :amFaturamento"
 							+ " and not exists(select conta.id from Conta conta where conta.referencia = :referenciaConta and conta.imovel.id = :idImovelConta) ";
 
-			session.createQuery(delete).setInteger("idImovel", idImovel).setInteger("amFaturamento", amFaturamento).setInteger(
-							"idImovelConta", idImovel).setInteger("referenciaConta", amFaturamento).executeUpdate();
+			session.createQuery(delete).setInteger("idImovel", idImovel).setInteger("amFaturamento", amFaturamento)
+							.setInteger("idImovelConta", idImovel).setInteger("referenciaConta", amFaturamento).executeUpdate();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -5023,8 +5114,8 @@ public class RepositorioMicromedicaoHBM
 							+ " where imovel = :idImovel and referenciaFaturamento = :amFaturamento and consumoImovelCondominio is not null "
 							+ " and not exists(select conta.id from Conta conta where conta.referencia = :referenciaConta and conta.imovel.id = :idImovelConta) ";
 
-			session.createQuery(delete).setInteger("idImovel", idImovel).setInteger("amFaturamento", amFaturamento).setInteger(
-							"idImovelConta", idImovel).setInteger("referenciaConta", amFaturamento).executeUpdate();
+			session.createQuery(delete).setInteger("idImovel", idImovel).setInteger("amFaturamento", amFaturamento)
+							.setInteger("idImovelConta", idImovel).setInteger("referenciaConta", amFaturamento).executeUpdate();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -5295,8 +5386,8 @@ public class RepositorioMicromedicaoHBM
 							+ "left join ch.imovel imov " + "where ligTipo.id = :idLigacaoTipo and ch.referenciaFaturamento = :anoMes AND "
 							+ "imov.id = :idImovel";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idLigacaoTipo", idMedicaoTipo).setInteger("anoMes",
-							anoMesReferencia).setInteger("idImovel", idImovel).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idLigacaoTipo", idMedicaoTipo)
+							.setInteger("anoMes", anoMesReferencia).setInteger("idImovel", idImovel).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -5365,16 +5456,17 @@ public class RepositorioMicromedicaoHBM
 
 			// System.out.println(consulta);
 
-			retorno = (Collection) session.createSQLQuery(consulta).addScalar("idImovel", Hibernate.INTEGER).addScalar("qtdEconomias",
-							Hibernate.INTEGER).addScalar("idMedicaoHistorico", Hibernate.INTEGER).addScalar("dataLeituraAnterior",
-							Hibernate.DATE).addScalar("leituraAnterior", Hibernate.INTEGER).addScalar("dataLeituraAtualFaturamento",
-							Hibernate.DATE).addScalar("leituraAtualFaturamento", Hibernate.INTEGER).addScalar("consumoMedido",
-							Hibernate.INTEGER).addScalar("idAnormalidadeLeitura", Hibernate.INTEGER).addScalar("idConsumoHistorico",
-							Hibernate.INTEGER).addScalar("consumoMedio", Hibernate.INTEGER).addScalar("consumoFaturado", Hibernate.INTEGER)
+			retorno = (Collection) session.createSQLQuery(consulta).addScalar("idImovel", Hibernate.INTEGER)
+							.addScalar("qtdEconomias", Hibernate.INTEGER).addScalar("idMedicaoHistorico", Hibernate.INTEGER)
+							.addScalar("dataLeituraAnterior", Hibernate.DATE).addScalar("leituraAnterior", Hibernate.INTEGER)
+							.addScalar("dataLeituraAtualFaturamento", Hibernate.DATE)
+							.addScalar("leituraAtualFaturamento", Hibernate.INTEGER).addScalar("consumoMedido", Hibernate.INTEGER)
+							.addScalar("idAnormalidadeLeitura", Hibernate.INTEGER).addScalar("idConsumoHistorico", Hibernate.INTEGER)
+							.addScalar("consumoMedio", Hibernate.INTEGER).addScalar("consumoFaturado", Hibernate.INTEGER)
 							.addScalar("rateio", Hibernate.INTEGER).addScalar("dsAbreviadaAnormalidadeConsumo", Hibernate.STRING)
-							.addScalar("dsAbreviadaTipoConsumo", Hibernate.STRING).addScalar("tipoMedicao", Hibernate.INTEGER).addScalar(
-											"consumoEsgoto", Hibernate.INTEGER).addScalar("consumoInformado", Hibernate.INTEGER).addScalar(
-											"consumosVinculados", Hibernate.INTEGER).list();
+							.addScalar("dsAbreviadaTipoConsumo", Hibernate.STRING).addScalar("tipoMedicao", Hibernate.INTEGER)
+							.addScalar("consumoEsgoto", Hibernate.INTEGER).addScalar("consumoInformado", Hibernate.INTEGER)
+							.addScalar("consumosVinculados", Hibernate.INTEGER).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -5481,11 +5573,12 @@ public class RepositorioMicromedicaoHBM
 							+ ligacaoMedicaoIndividualizadaHelper.getConsumoInformado() + " where medicao.id = "
 							+ ligacaoMedicaoIndividualizadaHelper.getIdMedicaoHistorico() + " and medicao.anoMesReferencia = " + anoMes;
 
-			session.createQuery(update).setInteger("leituraAnteriorFaturamento", ligacaoMedicaoIndividualizadaHelper.getLeituraAnterior())
+			session.createQuery(update)
+							.setInteger("leituraAnteriorFaturamento", ligacaoMedicaoIndividualizadaHelper.getLeituraAnterior())
 							.setDate("dataLeituraAnteriorFaturamento",
 											Util.converteStringParaDate(ligacaoMedicaoIndividualizadaHelper.getDataLeituraAnterior()))
-							.setInteger("leituraAtualFaturamento", ligacaoMedicaoIndividualizadaHelper.getLeituraAtual()).setDate(
-											"dataLeituraAtualFaturamento",
+							.setInteger("leituraAtualFaturamento", ligacaoMedicaoIndividualizadaHelper.getLeituraAtual())
+							.setDate("dataLeituraAtualFaturamento",
 											Util.converteStringParaDate(ligacaoMedicaoIndividualizadaHelper.getDataLeituraAtual()))
 							.executeUpdate();
 
@@ -5587,9 +5680,10 @@ public class RepositorioMicromedicaoHBM
 							+ ",consumoImovelVinculadosCondominio = :consumoImovelVinculadosCondominio " + ",ultimaAlteracao = :data "
 							+ "where id = :idConsumoHistoricoImovelCondominio";
 
-			session.createQuery(sql).setInteger("consumoRateio", consumoRateio).setInteger("consumoImovelVinculadosCondominio",
-							consumoImovelVinculadosCondominio).setTimestamp("data", new Date()).setInteger(
-							"idConsumoHistoricoImovelCondominio", idConsumoHistoricoImovelCondominio).executeUpdate();
+			session.createQuery(sql).setInteger("consumoRateio", consumoRateio)
+							.setInteger("consumoImovelVinculadosCondominio", consumoImovelVinculadosCondominio)
+							.setTimestamp("data", new Date())
+							.setInteger("idConsumoHistoricoImovelCondominio", idConsumoHistoricoImovelCondominio).executeUpdate();
 		}catch(HibernateException e){
 			throw new ErroRepositorioException("Erro no Hibernate");
 		}finally{
@@ -5620,7 +5714,18 @@ public class RepositorioMicromedicaoHBM
 		try{
 			String orderBy;
 
-			if(SistemaParametro.INDICADOR_EMPRESA_DESO == sistemaParametro.getParmId().shortValue()){
+			String pOrdenacao = null;
+
+			try{
+
+				pOrdenacao = ((String) ParametroMicromedicao.P_ORDENACAO_IMOVEIS_RELACAO_LEITURA.executar());
+
+			}catch(ControladorException e){
+
+				throw new ActionServletException("atencao.sistemaparametro_inexistente", "P_ORDENACAO_IMOVEIS_RELACAO_LEITURA");
+			}
+
+			if(pOrdenacao.equals(ConstantesSistema.DOIS.toString())){
 				orderBy = " order by gerenciaRegional.id, localidade.localidade, localidade.id, "
 								+ " setorComercial.codigo, rota.codigo, quadra.numeroQuadra, imovel.numeroSequencialRota, imovel.lote, imovel.subLote ";
 			}else{
@@ -5705,7 +5810,9 @@ public class RepositorioMicromedicaoHBM
 								+ "imovel.numeroImovel, " // 70
 								+ "logtit.descricaoAbreviada, " // 71
 								+ "logtip.descricaoAbreviada, " // 72
-								+ "faturamentoGrupo.anoMesReferencia "// 73
+								+ "faturamentoGrupo.anoMesReferencia, "// 73
+								+ "ligacaoEsgoto.id, "// 74
+								+ "ligacaoEsgoto.numeroConsumoFixoPoco "// 75
 								+ "from Imovel imovel "
 								+ "left join imovel.localidade localidade "
 								+ "left join localidade.localidade elo "
@@ -5713,6 +5820,7 @@ public class RepositorioMicromedicaoHBM
 								+ "left join imovel.quadra quadra "
 								+ "left join imovel.imovelPerfil imovelPerfil "
 								+ "left join imovel.ligacaoAgua ligacaoAgua "
+								+ "left join imovel.ligacaoEsgoto ligacaoEsgoto "
 								+ "left join imovel.hidrometroInstalacaoHistorico hidInstHistoricoPoco "
 								+ "left join ligacaoAgua.hidrometroInstalacaoHistorico hidInstHistoricoAgua "
 								+ "left join hidInstHistoricoAgua.hidrometro hidroAgua "
@@ -5808,8 +5916,8 @@ public class RepositorioMicromedicaoHBM
 							+ "INNER JOIN ch.ligacaoTipo ligacaoTipo " + "WHERE imov.id = :id " + "AND ch.referenciaFaturamento = :anoMes "
 							+ "AND ligacaoTipo.id = :idLigacaoTipo ";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("id", idImovel).setInteger("anoMes", anoMesReferencia).setInteger(
-							"idLigacaoTipo", idLigacaoTipo).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("id", idImovel).setInteger("anoMes", anoMesReferencia)
+							.setInteger("idLigacaoTipo", idLigacaoTipo).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -5846,8 +5954,8 @@ public class RepositorioMicromedicaoHBM
 							+ "INNER JOIN consumoHistorico.consumoTipo consumoTipo " + "WHERE imovel.id = :idImovel "
 							+ "AND ligacaoTipo.id = :idTipoLigacao " + "GROUP BY consumoTipo.id,consumoTipo.descricao";
 
-			retornoConsulta = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel).setInteger("idTipoLigacao",
-							idTipoLigacao).setMaxResults(1).uniqueResult();
+			retornoConsulta = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel)
+							.setInteger("idTipoLigacao", idTipoLigacao).setMaxResults(1).uniqueResult();
 
 			if(retornoConsulta != null && retornoConsulta.length > 0){
 				retorno = (String) retornoConsulta[1];
@@ -5882,7 +5990,7 @@ public class RepositorioMicromedicaoHBM
 	 * @date 06/02/2009
 	 *       Alteração no método para retirada do Param. de Tipo de Leitura.
 	 */
-	public Collection pesquisarImoveisPorRotaOrdenadoPorInscricao(Collection colecaoRota) throws ErroRepositorioException{
+	public Collection pesquisarImoveisPorRotaOrdenadoPorMatricula(Collection colecaoRota) throws ErroRepositorioException{
 
 		Collection retorno = null;
 		Collection idsRotas = new ArrayList();
@@ -5960,18 +6068,25 @@ public class RepositorioMicromedicaoHBM
 							+ "areaTipo.descricao, " // 37
 							+ "pocoTipo.id, " // 38
 							+ "rota.codigo, " // 39
-							+ "quadra " // 40
+							+ "quadra, " // 40
+							+ "imovel.imovelContaEnvio.id, " // 41
+							+ "imovel.indicadorDebitoConta, " // 42
+							+ "faturamentoGrupo.anoMesReferencia, " // 43
+							+ "ligacaoEsgoto.id, " // 44
+							+ "ligacaoEsgoto.numeroConsumoFixoPoco, " // 45
+							+ "imovel.indicadorEnvioCorreio,  " // 46
+							+ "imovel.indicadorEmissaoExtratoFaturamento " // 47
 							+ "from Imovel imovel " + "left join imovel.localidade localidade "
 							+ "left join imovel.setorComercial setorComercial " + "left join imovel.quadra quadra "
 							+ "left join quadra.areaTipo areaTipo " + "left join imovel.imovelPerfil imovelPerfil "
-							+ "left join imovel.ligacaoAgua ligacaoAgua "
+							+ "left join imovel.ligacaoAgua ligacaoAgua " + "left join imovel.ligacaoEsgoto ligacaoEsgoto "
 							+ "left join imovel.hidrometroInstalacaoHistorico hidInstHistoricoPoco "
 							+ "left join imovel.consumoTarifa consumoTarifa " + "left join imovel.pocoTipo pocoTipo "
 							+ "left join ligacaoAgua.hidrometroInstalacaoHistorico hidInstHistoricoAgua "
 							+ "left join hidInstHistoricoAgua.hidrometroProtecao "
-							+ "left join hidInstHistoricoAgua.hidrometroLocalInstalacao "
+							+ "left join fetch hidInstHistoricoAgua.hidrometroLocalInstalacao "
 							+ "left join hidInstHistoricoPoco.hidrometroProtecao "
-							+ "left join hidInstHistoricoPoco.hidrometroLocalInstalacao "
+							+ "left join fetch hidInstHistoricoPoco.hidrometroLocalInstalacao "
 							+ "left join hidInstHistoricoAgua.medicaoTipo medTipoAgua "
 							+ "left join hidInstHistoricoPoco.medicaoTipo medTipoPoco " + "left join imovel.rota rota "
 							+ "left join rota.leiturista leituristaRota " + "left join rota.empresa empresa "
@@ -5981,7 +6096,7 @@ public class RepositorioMicromedicaoHBM
 							+ "left join imovel.ligacaoEsgotoSituacao ligacaoEsgotoSituacao "
 							+ "left join imovel.faturamentoSituacaoTipo faturamentoSituacaoTipo "
 							+ "left join rota.leituraTipo leituraTipo " + "where rota.id in (:idsRotas) "
-							+ "order by empresa.id,localidade.id,setorComercial.codigo,quadra.numeroQuadra,imovel.lote,imovel.subLote";
+							+ "  and imovel.indicadorExclusao = 2 " + "order by imovel.id";
 
 			retorno = session.createQuery(consulta).setParameterList("idsRotas", idsRotas).list();
 
@@ -6052,8 +6167,8 @@ public class RepositorioMicromedicaoHBM
 							+ "inner join ct.consumoTarifaVigencia.consumoTarifa " + "inner join ct.subCategoria scat "
 							+ "where ct.consumoTarifaVigencia.id = :consumoTarifaVigenciaId " + "and ct.subCategoria.id = :subCategoriaId ";
 
-			retorno = session.createQuery(consulta).setInteger("consumoTarifaVigenciaId", consumoTarifaVigencia.getId()).setInteger(
-							"subCategoriaId", subcategoria.getId()).setMaxResults(1).uniqueResult();
+			retorno = session.createQuery(consulta).setInteger("consumoTarifaVigenciaId", consumoTarifaVigencia.getId())
+							.setInteger("subCategoriaId", subcategoria.getId()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -6082,18 +6197,11 @@ public class RepositorioMicromedicaoHBM
 		Session session = HibernateUtil.getSession();
 
 		try{
-			String consulta = "select "
-							+ " imovel.loca_id as idLocalidade, "
-							+ " setor.stcm_id as idSetor, "
-							+ " setor.stcm_cdsetorcomercial as codigoSetor, "
-							+ " rota.ftgr_id as idGrupo, "
-							+ " empresa.empr_id as idEmpresa, "
-							+ " empresa.empr_nmempresa as nomeEmpresa, "
-							+ " count(medi.mdhi_id) as recebidos, "
-							+ " (select "
-							+ " count(medi1.mdhi_id) "
-							+ " from medicao_historico medi1 "
-							+ " inner join imovel imovel1 on imovel1.imov_id = medi1.lagu_id "
+			String consulta = "select " + " imovel.loca_id as idLocalidade, " + " setor.stcm_id as idSetor, "
+							+ " setor.stcm_cdsetorcomercial as codigoSetor, " + " rota.ftgr_id as idGrupo, "
+							+ " empresa.empr_id as idEmpresa, " + " empresa.empr_nmempresa as nomeEmpresa, "
+							+ " count(medi.mdhi_id) as recebidos, " + " (select " + " count(medi1.mdhi_id) "
+							+ " from medicao_historico medi1 " + " inner join imovel imovel1 on imovel1.imov_id = medi1.lagu_id "
 							+ " inner join quadra quadra1 on imovel1.qdra_id = quadra1.qdra_id "
 							+ " inner join rota rota1 on imovel1.rota_id = rota1.rota_id "
 							+ " inner join setor_comercial setor1 on setor1.stcm_id = imovel1.stcm_id "
@@ -6101,15 +6209,10 @@ public class RepositorioMicromedicaoHBM
 			if(idEmpresa != null){
 				consulta += " and rota1.empr_id = :idEmpresa ";
 			}
-			consulta += " and rota1.ftgr_id = :idGrupoFaturamento "
-							+ " and medi1.mdhi_nnleituraatualinformada is not null "
-							+ " and medi1.mdhi_nnleituraatualinformada <> 0 "
-							+ " and medi1.ltan_idleituraanormalidadeinfo is null "
-							+ " and imovel1.loca_id = imovel.loca_id and setor1.stcm_id = setor.stcm_id "
-							+ " ) as comLeitura, "
-							+ " (select "
-							+ " count(medi2.mdhi_id) "
-							+ " from medicao_historico medi2 "
+			consulta += " and rota1.ftgr_id = :idGrupoFaturamento " + " and medi1.mdhi_nnleituraatualinformada is not null "
+							+ " and medi1.mdhi_nnleituraatualinformada <> 0 " + " and medi1.ltan_idleituraanormalidadeinfo is null "
+							+ " and imovel1.loca_id = imovel.loca_id and setor1.stcm_id = setor.stcm_id " + " ) as comLeitura, "
+							+ " (select " + " count(medi2.mdhi_id) " + " from medicao_historico medi2 "
 							+ " inner join imovel imovel2 on imovel2.imov_id = medi2.lagu_id "
 							+ " inner join quadra quadra2 on imovel2.qdra_id = quadra2.qdra_id "
 							+ " inner join rota rota2 on imovel2.rota_id = rota2.rota_id "
@@ -6118,14 +6221,10 @@ public class RepositorioMicromedicaoHBM
 			if(idEmpresa != null){
 				consulta += " and rota2.empr_id = :idEmpresa ";
 			}
-			consulta += " and rota2.ftgr_id = :idGrupoFaturamento"
- + " and medi2.ltan_idleituraanormalidadeinfo is not null "
+			consulta += " and rota2.ftgr_id = :idGrupoFaturamento" + " and medi2.ltan_idleituraanormalidadeinfo is not null "
 							+ "  and (medi2.mdhi_nnleituraatualinformada is null or medi2.mdhi_nnleituraatualinformada = 0) "
-							+ " and imovel2.loca_id = imovel.loca_id and setor2.stcm_id = setor.stcm_id "
-							+ " ) as comAnormalidade, "
-							+ " (select "
-							+ " count(medi3.mdhi_id) "
-							+ " from medicao_historico medi3 "
+							+ " and imovel2.loca_id = imovel.loca_id and setor2.stcm_id = setor.stcm_id " + " ) as comAnormalidade, "
+							+ " (select " + " count(medi3.mdhi_id) " + " from medicao_historico medi3 "
 							+ " inner join imovel imovel3 on imovel3.imov_id = medi3.lagu_id "
 							+ " inner join quadra quadra3 on imovel3.qdra_id = quadra3.qdra_id "
 							+ " inner join rota rota3 on imovel3.rota_id = rota3.rota_id "
@@ -6134,14 +6233,10 @@ public class RepositorioMicromedicaoHBM
 			if(idEmpresa != null){
 				consulta += " and rota3.empr_id = :idEmpresa ";
 			}
-			consulta += " and rota3.ftgr_id = :idGrupoFaturamento "
-							+ " and medi3.mdhi_nnleituraatualinformada is not null "
-							+ " and medi3.mdhi_nnleituraatualinformada <> 0 "
-							+ " and medi3.ltan_idleituraanormalidadeinfo is not null "
-							+ " and imovel3.loca_id = imovel.loca_id and setor3.stcm_id = setor.stcm_id "
-							+ " ) as comLeituraAnormalidade "
-							+ " from medicao_historico medi "
-							+ " inner join imovel imovel on imovel.imov_id = medi.lagu_id "
+			consulta += " and rota3.ftgr_id = :idGrupoFaturamento " + " and medi3.mdhi_nnleituraatualinformada is not null "
+							+ " and medi3.mdhi_nnleituraatualinformada <> 0 " + " and medi3.ltan_idleituraanormalidadeinfo is not null "
+							+ " and imovel3.loca_id = imovel.loca_id and setor3.stcm_id = setor.stcm_id " + " ) as comLeituraAnormalidade "
+							+ " from medicao_historico medi " + " inner join imovel imovel on imovel.imov_id = medi.lagu_id "
 							+ " inner join quadra quadra on imovel.qdra_id = quadra.qdra_id "
 							+ " inner join rota rota on imovel.rota_id = rota.rota_id "
 							+ " inner join empresa empresa on rota.empr_id = empresa.empr_id "
@@ -6150,19 +6245,16 @@ public class RepositorioMicromedicaoHBM
 			if(idEmpresa != null){
 				consulta += " and rota.empr_id = :idEmpresa ";
 			}
-			consulta += " and rota.ftgr_id = :idGrupoFaturamento "
-							+ " and (medi.mdhi_nnleituraatualinformada is not null "
-							+ " or medi.ltan_idleituraanormalidadeinfo is not null) "
-							+ " group by rota.ftgr_id, empresa.empr_id, "
+			consulta += " and rota.ftgr_id = :idGrupoFaturamento " + " and (medi.mdhi_nnleituraatualinformada is not null "
+							+ " or medi.ltan_idleituraanormalidadeinfo is not null) " + " group by rota.ftgr_id, empresa.empr_id, "
 							+ " empresa.empr_nmempresa, imovel.loca_id, setor.stcm_id, setor.stcm_cdsetorcomercial "
 							+ " order by imovel.loca_id, setor.stcm_cdsetorcomercial ";
 
 			Query queryRetorno = session.createSQLQuery(consulta).addScalar("idLocalidade", Hibernate.INTEGER)
-							.addScalar("idSetor", Hibernate.INTEGER)
-							.addScalar("codigoSetor", Hibernate.INTEGER).addScalar("idGrupo", Hibernate.INTEGER).addScalar("idEmpresa",
-											Hibernate.INTEGER).addScalar("nomeEmpresa", Hibernate.STRING).addScalar("recebidos",
-											Hibernate.INTEGER).addScalar("comLeitura", Hibernate.INTEGER).addScalar("comAnormalidade",
- Hibernate.INTEGER)
+							.addScalar("idSetor", Hibernate.INTEGER).addScalar("codigoSetor", Hibernate.INTEGER)
+							.addScalar("idGrupo", Hibernate.INTEGER).addScalar("idEmpresa", Hibernate.INTEGER)
+							.addScalar("nomeEmpresa", Hibernate.STRING).addScalar("recebidos", Hibernate.INTEGER)
+							.addScalar("comLeitura", Hibernate.INTEGER).addScalar("comAnormalidade", Hibernate.INTEGER)
 							.addScalar("comLeituraAnormalidade", Hibernate.INTEGER).setInteger("anoMes", anoMes)
 							.setInteger("idGrupoFaturamento", idGrupoFaturamento);
 
@@ -6211,8 +6303,7 @@ public class RepositorioMicromedicaoHBM
 							+ " inner join imovel imovel on imovel.imov_id = medi.lagu_id "
 							+ " inner join quadra quadra on imovel.qdra_id = quadra.qdra_id "
 							+ " inner join rota rota on imovel.rota_id = rota.rota_id "
-							+ " inner join empresa empresa on rota.empr_id = empresa.empr_id "
- + " where medi.mdhi_amleitura = :anoMes ";
+							+ " inner join empresa empresa on rota.empr_id = empresa.empr_id " + " where medi.mdhi_amleitura = :anoMes ";
 			if(idEmpresa != null){
 				consulta += " and rota.empr_id = :idEmpresa";
 			}
@@ -6223,10 +6314,9 @@ public class RepositorioMicromedicaoHBM
 							+ " order by anormalidade.ltan_dsleituraanormalidade ";
 
 			Query queryRetorno = session.createSQLQuery(consulta).addScalar("idLeitura", Hibernate.INTEGER)
-							.addScalar("descricao", Hibernate.STRING)
-							.addScalar("grupoFaturamento", Hibernate.INTEGER).addScalar("idEmpresa", Hibernate.INTEGER).addScalar(
-											"nomeEmpresa", Hibernate.STRING).addScalar("qtd", Hibernate.INTEGER).setInteger("anoMes",
- anoMes)
+							.addScalar("descricao", Hibernate.STRING).addScalar("grupoFaturamento", Hibernate.INTEGER)
+							.addScalar("idEmpresa", Hibernate.INTEGER).addScalar("nomeEmpresa", Hibernate.STRING)
+							.addScalar("qtd", Hibernate.INTEGER).setInteger("anoMes", anoMes)
 							.setInteger("idGrupoFaturamento", idGrupoFaturamento);
 			if(idEmpresa != null){
 				queryRetorno.setInteger("idEmpresa", idEmpresa);
@@ -6267,8 +6357,9 @@ public class RepositorioMicromedicaoHBM
 							+ "where imovel.id = :idImovel " + "and ligacaoTipo.id = :idLigacaoTipo "
 							+ "and consumoHistorico.referenciaFaturamento = :anoMes ";
 
-			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel).setInteger("idLigacaoTipo",
-							LigacaoTipo.LIGACAO_AGUA).setInteger("anoMes", anoMes).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel)
+							.setInteger("idLigacaoTipo", LigacaoTipo.LIGACAO_AGUA).setInteger("anoMes", anoMes).setMaxResults(1)
+							.uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -6301,9 +6392,9 @@ public class RepositorioMicromedicaoHBM
 							+ "left join mh.ligacaoAgua ligacaoAgua where ligacaoAgua.id = :idImovel and "
 							+ "mh.medicaoTipo.id = :idMedicaoTipo and mh.anoMesReferencia = :anoMesReferencia";
 
-			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger("idMedicaoTipo",
-							MedicaoTipo.LIGACAO_AGUA.intValue()).setInteger("anoMesReferencia", anoMes.intValue()).setMaxResults(1)
-							.uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.LIGACAO_AGUA.intValue())
+							.setInteger("anoMesReferencia", anoMes.intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -6372,18 +6463,17 @@ public class RepositorioMicromedicaoHBM
 							+ " ORDER BY idGrupo, idEmpresa, idLocalidade, codSetor, numeroQuadra, lote, sublote ";
 
 			retorno = session.createSQLQuery(consulta).addScalar("idGrupo", Hibernate.INTEGER)
-							.addScalar("descricaoGrupo", Hibernate.STRING).addScalar("idEmpresa", Hibernate.INTEGER).addScalar(
-											"nomeEmpresa", Hibernate.STRING).addScalar("idLocalidade", Hibernate.INTEGER).addScalar(
-											"nomeLocalidade", Hibernate.STRING).addScalar("idSetor", Hibernate.INTEGER).addScalar(
-											"codSetor", Hibernate.INTEGER).addScalar("nomeSetor", Hibernate.STRING).addScalar(
-											"leituraFalsaInferior", Hibernate.INTEGER).addScalar("leituraInformada", Hibernate.INTEGER)
-							.addScalar("leituraFalsaSuperior", Hibernate.INTEGER).addScalar("numeroQuadra", Hibernate.INTEGER).addScalar(
-											"lote", Hibernate.SHORT).addScalar("sublote", Hibernate.SHORT).addScalar("idImovel",
-											Hibernate.INTEGER).addScalar("idLeiturista", Hibernate.INTEGER).addScalar(
-											"leituraCorretaInferior", Hibernate.INTEGER).addScalar("leituraCorretaSuperior",
-											Hibernate.INTEGER).addScalar("dataLeitura", Hibernate.DATE).addScalar("leituraAnormalidade",
-											Hibernate.STRING).addScalar("situacaoLeitura", Hibernate.STRING).setInteger("anoMesReferencia",
-											anoMesReferencia).list();
+							.addScalar("descricaoGrupo", Hibernate.STRING).addScalar("idEmpresa", Hibernate.INTEGER)
+							.addScalar("nomeEmpresa", Hibernate.STRING).addScalar("idLocalidade", Hibernate.INTEGER)
+							.addScalar("nomeLocalidade", Hibernate.STRING).addScalar("idSetor", Hibernate.INTEGER)
+							.addScalar("codSetor", Hibernate.INTEGER).addScalar("nomeSetor", Hibernate.STRING)
+							.addScalar("leituraFalsaInferior", Hibernate.INTEGER).addScalar("leituraInformada", Hibernate.INTEGER)
+							.addScalar("leituraFalsaSuperior", Hibernate.INTEGER).addScalar("numeroQuadra", Hibernate.INTEGER)
+							.addScalar("lote", Hibernate.SHORT).addScalar("sublote", Hibernate.SHORT)
+							.addScalar("idImovel", Hibernate.INTEGER).addScalar("idLeiturista", Hibernate.INTEGER)
+							.addScalar("leituraCorretaInferior", Hibernate.INTEGER).addScalar("leituraCorretaSuperior", Hibernate.INTEGER)
+							.addScalar("dataLeitura", Hibernate.DATE).addScalar("leituraAnormalidade", Hibernate.STRING)
+							.addScalar("situacaoLeitura", Hibernate.STRING).setInteger("anoMesReferencia", anoMesReferencia).list();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -6414,8 +6504,8 @@ public class RepositorioMicromedicaoHBM
 							+ " INNER JOIN medicao_historico mdhi " + " on mdhi.mdhi_id = leitFaixaFalsa.mdhi_id "
 							+ " WHERE mdhi.mdhi_amleitura = :anoMesReferencia ";
 
-			retorno = (Integer) session.createSQLQuery(consulta).addScalar("count", Hibernate.INTEGER).setInteger("anoMesReferencia",
-							anoMesReferencia).uniqueResult();
+			retorno = (Integer) session.createSQLQuery(consulta).addScalar("count", Hibernate.INTEGER)
+							.setInteger("anoMesReferencia", anoMesReferencia).uniqueResult();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -6446,8 +6536,8 @@ public class RepositorioMicromedicaoHBM
 							+ "left join consumoHistorico.ligacaoTipo ligacaoTipo " + "left join consumoHistorico.imovel imovel "
 							+ "where imovel.id = :idImovel " + "and ligacaoTipo.id = :idLigacaoTipo ";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel).setInteger("idLigacaoTipo",
-							LigacaoTipo.LIGACAO_AGUA).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel)
+							.setInteger("idLigacaoTipo", LigacaoTipo.LIGACAO_AGUA).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -6615,8 +6705,8 @@ public class RepositorioMicromedicaoHBM
 							+ "where roem.id = :idRoteiroEmpresa and " + "mrem.anoMesMovimento = :anoMesFaturamento and "
 							+ "ftgr.id = :idFaturamentoGrupo " + "order by mrem.codigoSetorComercial, mrem.numeroQuadra";
 
-			retorno = session.createQuery(consulta).setInteger("idRoteiroEmpresa", idRoteiroEmpresa).setInteger("anoMesFaturamento",
-							anoMesFaturamento).setInteger("idFaturamentoGrupo", idFaturamentoGrupo).list();
+			retorno = session.createQuery(consulta).setInteger("idRoteiroEmpresa", idRoteiroEmpresa)
+							.setInteger("anoMesFaturamento", anoMesFaturamento).setInteger("idFaturamentoGrupo", idFaturamentoGrupo).list();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException("Erro no Hibernate");
@@ -6655,8 +6745,8 @@ public class RepositorioMicromedicaoHBM
 							+ "where roem.id = :idRoteiroEmpresa and " + "mrem.anoMesMovimento = :anoMesFaturamento and "
 							+ "ftgr.id = :idFaturamentoGrupo";
 
-			retorno = session.createQuery(consulta).setInteger("idRoteiroEmpresa", idRoteiroEmpresa).setInteger("anoMesFaturamento",
-							anoMesFaturamento).setInteger("idFaturamentoGrupo", idFaturamentoGrupo).list();
+			retorno = session.createQuery(consulta).setInteger("idRoteiroEmpresa", idRoteiroEmpresa)
+							.setInteger("anoMesFaturamento", anoMesFaturamento).setInteger("idFaturamentoGrupo", idFaturamentoGrupo).list();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException("Erro no Hibernate");
@@ -6807,8 +6897,8 @@ public class RepositorioMicromedicaoHBM
 							+ "left join la.hidrometroInstalacaoHistorico hih " + "left join hih.hidrometroLocalInstalacao hli "
 							+ "left join hih.hidrometroProtecao hp " + "left join hih.medicaoTipo mt " + "where imovel.id = :idImovel and "
 							+ "mt.id = :idMedicaoTipo";
-			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger("idMedicaoTipo",
-							MedicaoTipo.LIGACAO_AGUA.intValue()).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.LIGACAO_AGUA.intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -6844,8 +6934,8 @@ public class RepositorioMicromedicaoHBM
 							+ "from Imovel imovel " + "left join imovel.hidrometroInstalacaoHistorico hih "
 							+ "left join hih.hidrometroLocalInstalacao hli " + "left join hih.hidrometroProtecao hp "
 							+ "left join hih.medicaoTipo mt " + "where imovel.id = :idImovel and " + "mt.id = :idMedicaoTipo";
-			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger("idMedicaoTipo",
-							MedicaoTipo.POCO.intValue()).setMaxResults(1).uniqueResult();
+			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", MedicaoTipo.POCO.intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -6896,21 +6986,22 @@ public class RepositorioMicromedicaoHBM
 				for(Object id : idRotas){
 					colecaoAuxiliar.add(id);
 					if(colecaoAuxiliar.size() == 1000){
-						retorno.addAll(session.createQuery(consulta).setInteger("idGrupoFaturamento", idGrupoFaturamento).setShort(
-										"indicadorFase", MovimentoRoteiroEmpresa.FASE_LEITURA_RETORNADA).setInteger("anoMesReferencia",
-										anoMesReferencia).setParameterList("idRotas", colecaoAuxiliar).list());
+						retorno.addAll(session.createQuery(consulta).setInteger("idGrupoFaturamento", idGrupoFaturamento)
+										.setShort("indicadorFase", MovimentoRoteiroEmpresa.FASE_LEITURA_RETORNADA)
+										.setInteger("anoMesReferencia", anoMesReferencia).setParameterList("idRotas", colecaoAuxiliar)
+										.list());
 						colecaoAuxiliar.clear();
 					}
 				}
 				if(!colecaoAuxiliar.isEmpty()){
-					retorno.addAll(session.createQuery(consulta).setInteger("idGrupoFaturamento", idGrupoFaturamento).setShort(
-									"indicadorFase", MovimentoRoteiroEmpresa.FASE_LEITURA_RETORNADA).setInteger("anoMesReferencia",
-									anoMesReferencia).setParameterList("idRotas", colecaoAuxiliar).list());
+					retorno.addAll(session.createQuery(consulta).setInteger("idGrupoFaturamento", idGrupoFaturamento)
+									.setShort("indicadorFase", MovimentoRoteiroEmpresa.FASE_LEITURA_RETORNADA)
+									.setInteger("anoMesReferencia", anoMesReferencia).setParameterList("idRotas", colecaoAuxiliar).list());
 				}
 			}else{
-				retorno = session.createQuery(consulta).setInteger("idGrupoFaturamento", idGrupoFaturamento).setShort("indicadorFase",
-								MovimentoRoteiroEmpresa.FASE_LEITURA_RETORNADA).setInteger("anoMesReferencia", anoMesReferencia)
-								.setParameterList("idRotas", idRotas).list();
+				retorno = session.createQuery(consulta).setInteger("idGrupoFaturamento", idGrupoFaturamento)
+								.setShort("indicadorFase", MovimentoRoteiroEmpresa.FASE_LEITURA_RETORNADA)
+								.setInteger("anoMesReferencia", anoMesReferencia).setParameterList("idRotas", idRotas).list();
 			}
 
 		}catch(HibernateException e){
@@ -6989,10 +7080,10 @@ public class RepositorioMicromedicaoHBM
 											.equals("" + ConstantesSistema.NUMERO_NAO_INFORMADO)) ? " and re.empr_id = " + idEmpresa : "");
 
 			roteirosEmpresa = session.createSQLQuery(consulta).addScalar("id", Hibernate.INTEGER).addScalar("idEmpresa", Hibernate.INTEGER)
-							.addScalar("nomeEmpresa", Hibernate.STRING).addScalar("idLocalidade", Hibernate.INTEGER).addScalar(
-											"nomeLocalidade", Hibernate.STRING).addScalar("idLeiturista", Hibernate.INTEGER).addScalar(
-											"nomeCliente", Hibernate.STRING).addScalar("nomeFuncionario", Hibernate.STRING).addScalar(
-											"codigoSetor", Hibernate.INTEGER).list();
+							.addScalar("nomeEmpresa", Hibernate.STRING).addScalar("idLocalidade", Hibernate.INTEGER)
+							.addScalar("nomeLocalidade", Hibernate.STRING).addScalar("idLeiturista", Hibernate.INTEGER)
+							.addScalar("nomeCliente", Hibernate.STRING).addScalar("nomeFuncionario", Hibernate.STRING)
+							.addScalar("codigoSetor", Hibernate.INTEGER).list();
 
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -7293,7 +7384,7 @@ public class RepositorioMicromedicaoHBM
 	 * @date 17/09/2007
 	 * @exception ErroRepositorioException
 	 */
-	public Collection pesquisarImoveisParaFaturamento(Rota rota, int anoMesReferencia) throws ErroRepositorioException{
+	public Collection pesquisarImoveisParaFaturamento(Rota rota, int anoMesReferencia, Integer idImovel) throws ErroRepositorioException{
 
 		Collection retorno = null;
 		Session session = HibernateUtil.getSession();
@@ -7379,7 +7470,10 @@ public class RepositorioMicromedicaoHBM
 			consulta.append("li.dataLigacao, "); // 75
 			consulta.append("loca.descricao, "); // 76
 			consulta.append("elo.id, "); // 77
-			consulta.append("elo.descricao "); // 78
+			consulta.append("elo.descricao, "); // 78
+			consulta.append("rattiphila, "); // 79
+			consulta.append("rattiphie, "); // 80
+			consulta.append("le.numeroConsumoFixoPoco "); // 81
 			consulta.append("from Imovel im ");
 			consulta.append("inner join im.rota rot ");
 			consulta.append("inner join im.consumoTarifa ct ");
@@ -7387,9 +7481,11 @@ public class RepositorioMicromedicaoHBM
 			consulta.append("left join im.ligacaoAgua li ");
 			consulta.append("left join li.hidrometroInstalacaoHistorico hia ");
 			consulta.append("left join hia.hidrometroLocalInstalacao hila ");
+			consulta.append("left join hia.rateioTipo rattiphila ");
 			consulta.append("left join hia.hidrometro hdra ");
 			consulta.append("left join hdra.hidrometroCapacidade hcpa ");
 			consulta.append("left join im.hidrometroInstalacaoHistorico hie ");
+			consulta.append("left join hie.rateioTipo rattiphie ");
 			consulta.append("left join hie.hidrometroLocalInstalacao hile ");
 			consulta.append("left join hie.hidrometro hdre ");
 			consulta.append("left join hdre.hidrometroCapacidade hcpe ");
@@ -7407,9 +7503,22 @@ public class RepositorioMicromedicaoHBM
 			consulta.append(" and rot.id = :rota ");
 			consulta.append(" and im.indicadorExclusao = :indicadorExclusao");
 
-			retorno = session.createQuery(consulta.toString()).setInteger("anoMes", anoMesReferencia).setInteger("rota", rota.getId())
-							.setInteger("clienteResponsavel", ClienteRelacaoTipo.RESPONSAVEL.intValue()).setInteger("indicadorExclusao",
-											ConstantesSistema.NAO.intValue()).list();
+			if(idImovel != null){
+
+				consulta.append(" and im.id = :idImovel");
+			}
+
+			if(idImovel == null){
+
+				retorno = session.createQuery(consulta.toString()).setInteger("anoMes", anoMesReferencia).setInteger("rota", rota.getId())
+							.setInteger("clienteResponsavel", ClienteRelacaoTipo.RESPONSAVEL.intValue())
+							.setInteger("indicadorExclusao", ConstantesSistema.NAO.intValue()).list();
+			}else{
+
+				retorno = session.createQuery(consulta.toString()).setInteger("anoMes", anoMesReferencia).setInteger("rota", rota.getId())
+								.setInteger("clienteResponsavel", ClienteRelacaoTipo.RESPONSAVEL.intValue())
+								.setInteger("indicadorExclusao", ConstantesSistema.NAO.intValue()).setInteger("idImovel", idImovel).list();
+			}
 
 		}catch(HibernateException e){
 
@@ -7456,8 +7565,8 @@ public class RepositorioMicromedicaoHBM
 
 			// Executa o hql
 			session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idRoteiroEmpresa", idRoteiroEmpresa)
-							.setInteger("idFaturamentoGrupo", idGrupoFaturamento).setInteger("situacao",
-											SituacaoTransmissaoLeitura.LIBERADO).executeUpdate();
+							.setInteger("idFaturamentoGrupo", idGrupoFaturamento)
+							.setInteger("situacao", SituacaoTransmissaoLeitura.LIBERADO).executeUpdate();
 
 			// Erro no hibernate
 		}catch(HibernateException e){
@@ -7485,8 +7594,9 @@ public class RepositorioMicromedicaoHBM
 							+ " and setor.codigo = :setorComercial " + " and localidade.id = :idLocalidade";
 
 			// Executa o hql
-			Integer qtdRotas = ((Number) session.createQuery(consulta).setInteger("rotaInicial", new Integer(rotaInicial)).setInteger(
-							"rotaFinal", new Integer(rotaFinal)).setInteger("setorComercial", new Integer(codigoSetorComercial))
+			Integer qtdRotas = ((Number) session.createQuery(consulta).setInteger("rotaInicial", new Integer(rotaInicial))
+							.setInteger("rotaFinal", new Integer(rotaFinal))
+							.setInteger("setorComercial", new Integer(codigoSetorComercial))
 							.setInteger("idLocalidade", new Integer(idLocalidade)).setMaxResults(1).uniqueResult()).intValue();
 
 			String consultaComCriterio = "select count(rota.id) from RotaAcaoCriterio rotaCriterio " + " inner join rotaCriterio.rota rota"
@@ -7495,10 +7605,11 @@ public class RepositorioMicromedicaoHBM
 							+ " and rota.id between :rotaInicial and :rotaFinal " + " and setor.codigo = :setorComercial "
 							+ " and localidade.id = :idLocalidade";
 
-			Integer qtdComCriterio = ((Number) session.createQuery(consultaComCriterio).setInteger("idLocalidade",
-							new Integer(idLocalidade)).setInteger("setorComercial", new Integer(codigoSetorComercial)).setInteger(
-							"rotaInicial", new Integer(rotaInicial)).setInteger("rotaFinal", new Integer(rotaFinal)).setInteger(
-							"idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
+			Integer qtdComCriterio = ((Number) session.createQuery(consultaComCriterio)
+							.setInteger("idLocalidade", new Integer(idLocalidade))
+							.setInteger("setorComercial", new Integer(codigoSetorComercial))
+							.setInteger("rotaInicial", new Integer(rotaInicial)).setInteger("rotaFinal", new Integer(rotaFinal))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
 
 			consulta = "select distinct(rota.id) from Rota rota " + " inner join rota.setorComercial setor "
 							+ " inner join setor.localidade localidade" + " where rota.id between :rotaInicial and :rotaFinal "
@@ -7510,10 +7621,11 @@ public class RepositorioMicromedicaoHBM
 							+ " and rota.id in (" + consulta + ") and setor.codigo = :setorComercial "
 							+ " and localidade.id = :idLocalidade";
 
-			Integer qtdSemCriterio = ((Number) session.createQuery(consultaSemCriterio).setInteger("idLocalidade",
-							new Integer(idLocalidade)).setInteger("setorComercial", new Integer(codigoSetorComercial)).setInteger(
-							"rotaInicial", new Integer(rotaInicial)).setInteger("rotaFinal", new Integer(rotaFinal)).setInteger(
-							"idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
+			Integer qtdSemCriterio = ((Number) session.createQuery(consultaSemCriterio)
+							.setInteger("idLocalidade", new Integer(idLocalidade))
+							.setInteger("setorComercial", new Integer(codigoSetorComercial))
+							.setInteger("rotaInicial", new Integer(rotaInicial)).setInteger("rotaFinal", new Integer(rotaFinal))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
 
 			retorno[0] = "" + qtdRotas;
 			retorno[1] = "" + qtdComCriterio;
@@ -7548,10 +7660,10 @@ public class RepositorioMicromedicaoHBM
 							+ " and localidade.id = :idLocalidade";
 
 			// Executa o hql
-			Integer qtdRotas = ((Number) session.createQuery(consulta).setInteger("idLocalidade", new Integer(idLocalidade)).setInteger(
-							"codigoSetorComercialInicial", new Integer(codigoSetorComercialInicial)).setInteger(
-							"codigoSetorComercialFinal", new Integer(codigoSetorComercialFinal)).setMaxResults(1).uniqueResult())
-							.intValue();
+			Integer qtdRotas = ((Number) session.createQuery(consulta).setInteger("idLocalidade", new Integer(idLocalidade))
+							.setInteger("codigoSetorComercialInicial", new Integer(codigoSetorComercialInicial))
+							.setInteger("codigoSetorComercialFinal", new Integer(codigoSetorComercialFinal)).setMaxResults(1)
+							.uniqueResult()).intValue();
 
 			String consultaComCriterio = "select count(rota.id) from RotaAcaoCriterio rotaCriterio " + " inner join rotaCriterio.rota rota"
 							+ " inner join rota.setorComercial setor " + " inner join setor.localidade localidade"
@@ -7559,10 +7671,11 @@ public class RepositorioMicromedicaoHBM
 							+ " and setor.codigo between :codigoSetorComercialInicial and :codigoSetorComercialFinal "
 							+ " and localidade.id = :idLocalidade";
 
-			Integer qtdComCriterio = ((Number) session.createQuery(consultaComCriterio).setInteger("idLocalidade",
-							new Integer(idLocalidade)).setInteger("codigoSetorComercialInicial", new Integer(codigoSetorComercialInicial))
-							.setInteger("codigoSetorComercialFinal", new Integer(codigoSetorComercialFinal)).setInteger("idCobrancaAcao",
-											new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
+			Integer qtdComCriterio = ((Number) session.createQuery(consultaComCriterio)
+							.setInteger("idLocalidade", new Integer(idLocalidade))
+							.setInteger("codigoSetorComercialInicial", new Integer(codigoSetorComercialInicial))
+							.setInteger("codigoSetorComercialFinal", new Integer(codigoSetorComercialFinal))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
 
 			consulta = "select distinct(rota.id) from Rota rota " + " inner join rota.setorComercial setor "
 							+ " inner join setor.localidade localidade"
@@ -7575,10 +7688,11 @@ public class RepositorioMicromedicaoHBM
 							+ " and setor.codigo between :codigoSetorComercialInicial and :codigoSetorComercialFinal "
 							+ " and localidade.id = :idLocalidade and" + " rota.id in (" + consulta + ")";
 
-			Integer qtdSemCriterio = ((Number) session.createQuery(consultaSemCriterio).setInteger("idLocalidade",
-							new Integer(idLocalidade)).setInteger("codigoSetorComercialInicial", new Integer(codigoSetorComercialInicial))
-							.setInteger("codigoSetorComercialFinal", new Integer(codigoSetorComercialFinal)).setInteger("idCobrancaAcao",
-											new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
+			Integer qtdSemCriterio = ((Number) session.createQuery(consultaSemCriterio)
+							.setInteger("idLocalidade", new Integer(idLocalidade))
+							.setInteger("codigoSetorComercialInicial", new Integer(codigoSetorComercialInicial))
+							.setInteger("codigoSetorComercialFinal", new Integer(codigoSetorComercialFinal))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
 
 			retorno[0] = "" + qtdRotas;
 			retorno[1] = "" + qtdComCriterio;
@@ -7620,9 +7734,10 @@ public class RepositorioMicromedicaoHBM
 							+ " inner join rotaCriterio.cobrancaAcao cobrancaAcao " + " where cobrancaAcao.id = :idCobrancaAcao"
 							+ " and localidade.id between :idLocalidadeInicial and :idLocalidadeFinal";
 
-			Integer qtdComCriterio = ((Number) session.createQuery(consultaComCriterio).setInteger("idLocalidadeInicial",
-							new Integer(idLocalidadeInicial)).setInteger("idLocalidadeFinal", new Integer(idLocalidadeFinal)).setInteger(
-							"idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
+			Integer qtdComCriterio = ((Number) session.createQuery(consultaComCriterio)
+							.setInteger("idLocalidadeInicial", new Integer(idLocalidadeInicial))
+							.setInteger("idLocalidadeFinal", new Integer(idLocalidadeFinal))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
 
 			consulta = "select distinct(rota.id) from Rota rota " + " inner join rota.setorComercial setor "
 							+ " inner join setor.localidade localidade"
@@ -7634,9 +7749,10 @@ public class RepositorioMicromedicaoHBM
 							+ " and localidade.id between :idLocalidadeInicial and :idLocalidadeFinal" + " and rota.id in (" + consulta
 							+ ")";
 
-			Integer qtdSemCriterio = ((Number) session.createQuery(consultaSemCriterio).setInteger("idLocalidadeInicial",
-							new Integer(idLocalidadeInicial)).setInteger("idLocalidadeFinal", new Integer(idLocalidadeFinal)).setInteger(
-							"idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
+			Integer qtdSemCriterio = ((Number) session.createQuery(consultaSemCriterio)
+							.setInteger("idLocalidadeInicial", new Integer(idLocalidadeInicial))
+							.setInteger("idLocalidadeFinal", new Integer(idLocalidadeFinal))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
 
 			retorno[0] = "" + qtdRotas;
 			retorno[1] = "" + qtdComCriterio;
@@ -7682,9 +7798,9 @@ public class RepositorioMicromedicaoHBM
 							+ " inner join rotaCriterio.cobrancaAcao cobrancaAcao " + " where cobrancaAcao.id = :idCobrancaAcao"
 							+ " and gerenciaRegional.id = :idGerenciaRegional";
 
-			Integer qtdComCriterio = ((Number) session.createQuery(consultaComCriterio).setInteger("idGerenciaRegional",
-							new Integer(idGerenciaRegional)).setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1)
-							.uniqueResult()).intValue();
+			Integer qtdComCriterio = ((Number) session.createQuery(consultaComCriterio)
+							.setInteger("idGerenciaRegional", new Integer(idGerenciaRegional))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
 
 			consulta = "select distinct(rota.id) from Rota rota " + " inner join rota.setorComercial setor "
 							+ " inner join setor.localidade localidade" + " inner join localidade.unidadeNegocio unidadeNegocio"
@@ -7700,9 +7816,9 @@ public class RepositorioMicromedicaoHBM
 							+ " cobrancaAcao.id <> :idCobrancaAcao" + " and gerenciaRegionalAcao.id = :idGerenciaRegional"
 							+ " and rotaAcao.id in (" + consulta + ")";
 
-			Integer qtdSemCriterio = ((Number) session.createQuery(consultaSemCriterio).setInteger("idGerenciaRegional",
-							new Integer(idGerenciaRegional)).setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1)
-							.uniqueResult()).intValue();
+			Integer qtdSemCriterio = ((Number) session.createQuery(consultaSemCriterio)
+							.setInteger("idGerenciaRegional", new Integer(idGerenciaRegional))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
 
 			retorno[0] = "" + qtdRotas;
 			retorno[1] = "" + qtdComCriterio;
@@ -7740,9 +7856,9 @@ public class RepositorioMicromedicaoHBM
 							+ " inner join rota.cobrancaGrupo cobrancaGrupo" + " inner join rotaCriterio.cobrancaAcao cobrancaAcao "
 							+ " where cobrancaAcao.id = :idCobrancaAcao" + " and cobrancaGrupo.id = :idGrupoCobranca";
 
-			Integer qtdComCriterio = ((Number) session.createQuery(consultaComCriterio).setInteger("idGrupoCobranca",
-							new Integer(idGrupoCobranca)).setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1)
-							.uniqueResult()).intValue();
+			Integer qtdComCriterio = ((Number) session.createQuery(consultaComCriterio)
+							.setInteger("idGrupoCobranca", new Integer(idGrupoCobranca))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
 
 			consulta = "select distinct(rota.id) from Rota rota " + " inner join rota.setorComercial setor "
 							+ " inner join rota.cobrancaGrupo cobrancaGrupo" + " where cobrancaGrupo.id = :idGrupoCobranca";
@@ -7752,9 +7868,9 @@ public class RepositorioMicromedicaoHBM
 							+ " where " + " cobrancaAcao.id <> :idCobrancaAcao" + " and cobrancaGrupo.id = :idGrupoCobranca"
 							+ " and rota.id in (" + consulta + ")";
 
-			Integer qtdSemCriterio = ((Number) session.createQuery(consultaSemCriterio).setInteger("idGrupoCobranca",
-							new Integer(idGrupoCobranca)).setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1)
-							.uniqueResult()).intValue();
+			Integer qtdSemCriterio = ((Number) session.createQuery(consultaSemCriterio)
+							.setInteger("idGrupoCobranca", new Integer(idGrupoCobranca))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
 
 			retorno[0] = "" + qtdRotas;
 			retorno[1] = "" + qtdComCriterio;
@@ -7797,9 +7913,9 @@ public class RepositorioMicromedicaoHBM
 							+ " inner join rotaCriterio.cobrancaAcao cobrancaAcao " + " where cobrancaAcao.id = :idCobrancaAcao"
 							+ " and unidadeNegocio.id = :idUnidadeNegocio";
 
-			Integer qtdComCriterio = ((Number) session.createQuery(consultaComCriterio).setInteger("idUnidadeNegocio",
-							new Integer(idUnidadeNegocio)).setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1)
-							.uniqueResult()).intValue();
+			Integer qtdComCriterio = ((Number) session.createQuery(consultaComCriterio)
+							.setInteger("idUnidadeNegocio", new Integer(idUnidadeNegocio))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
 
 			consulta = "select distinct(rota.id) from Rota rota " + " inner join rota.setorComercial setor "
 							+ " inner join setor.localidade localidade" + " inner join localidade.unidadeNegocio unidadeNegocio"
@@ -7811,9 +7927,9 @@ public class RepositorioMicromedicaoHBM
 							+ " left join rotaCriterio.cobrancaAcao cobrancaAcao " + " where cobrancaAcao.id <> :idCobrancaAcao"
 							+ " and unidadeNegocio.id = :idUnidadeNegocio" + " and rota.id in (" + consulta + ")";
 
-			Integer qtdSemCriterio = ((Number) session.createQuery(consultaSemCriterio).setInteger("idUnidadeNegocio",
-							new Integer(idUnidadeNegocio)).setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1)
-							.uniqueResult()).intValue();
+			Integer qtdSemCriterio = ((Number) session.createQuery(consultaSemCriterio)
+							.setInteger("idUnidadeNegocio", new Integer(idUnidadeNegocio))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).setMaxResults(1).uniqueResult()).intValue();
 
 			retorno[0] = "" + qtdRotas;
 			retorno[1] = "" + qtdComCriterio;
@@ -7895,9 +8011,9 @@ public class RepositorioMicromedicaoHBM
 							+ "and faturamentoGrupo = :idFaturamentoGrupo " + "and situacaoTransmissaoLeitura = :situacao";
 
 			// Executa o hql
-			session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idRota", idRota).setInteger(
-							"idFaturamentoGrupo", idGrupoFaturamento).setInteger("situacao", SituacaoTransmissaoLeitura.LIBERADO)
-							.executeUpdate();
+			session.createQuery(consulta).setInteger("anoMesReferencia", anoMesReferencia).setInteger("idRota", idRota)
+							.setInteger("idFaturamentoGrupo", idGrupoFaturamento)
+							.setInteger("situacao", SituacaoTransmissaoLeitura.LIBERADO).executeUpdate();
 
 			// Erro no hibernate
 		}catch(HibernateException e){
@@ -8013,16 +8129,17 @@ public class RepositorioMicromedicaoHBM
 							+ " and setor.codigo = :setorComercial " + " and localidade.id = :idLocalidade"
 							+ " and rotaCriterio.comp_id.cobrancaAcaoId = :idCriterioCobranca";
 
-			ArrayList colecao = (ArrayList) session.createQuery(pesquisa).setInteger("idLocalidade", new Integer(idLocalidade)).setInteger(
-							"setorComercial", new Integer(codigoSetorComercial)).setInteger("rotaInicial", new Integer(rotaInicial))
-							.setInteger("rotaFinal", new Integer(rotaFinal)).setInteger("idCobrancaAcao", new Integer(idCobrancaAcao))
+			ArrayList colecao = (ArrayList) session.createQuery(pesquisa).setInteger("idLocalidade", new Integer(idLocalidade))
+							.setInteger("setorComercial", new Integer(codigoSetorComercial))
+							.setInteger("rotaInicial", new Integer(rotaInicial)).setInteger("rotaFinal", new Integer(rotaFinal))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao))
 							.setInteger("idCriterioCobranca", new Integer(idCriterioCobranca)).list();
 
 			String consultaComCriterio = "delete from RotaAcaoCriterio rotaCriterioAcao " + " where rotaCriterioAcao.comp_id.rotaId in ("
 							+ ":colecao" + ") and rotaCriterioAcao.comp_id.cobrancaAcaoId = :idCriterio";
 
-			session.createQuery(consultaComCriterio).setParameterList("colecao", colecao).setInteger("idCriterio",
-							new Integer(idCriterioCobranca)).executeUpdate();
+			session.createQuery(consultaComCriterio).setParameterList("colecao", colecao)
+							.setInteger("idCriterio", new Integer(idCriterioCobranca)).executeUpdate();
 		}catch(HibernateException e){
 			throw new ErroRepositorioException("Erro no Hibernate");
 		}finally{
@@ -8049,10 +8166,10 @@ public class RepositorioMicromedicaoHBM
 							+ " where rotaCriterioAcao.comp_id.cobrancaAcaoId = :idCobrancaAcao"
 							+ " and rotaCriterioAcao.comp_id.rotaId in (" + consulta + ")";
 
-			session.createQuery(consultaComCriterio).setInteger("idLocalidade", new Integer(idLocalidade)).setInteger(
-							"codigoSetorComercialInicial", new Integer(codigoSetorComercialInicial)).setInteger(
-							"codigoSetorComercialFinal", new Integer(codigoSetorComercialFinal)).setInteger("idCobrancaAcao",
-							new Integer(idCobrancaAcao)).executeUpdate();
+			session.createQuery(consultaComCriterio).setInteger("idLocalidade", new Integer(idLocalidade))
+							.setInteger("codigoSetorComercialInicial", new Integer(codigoSetorComercialInicial))
+							.setInteger("codigoSetorComercialFinal", new Integer(codigoSetorComercialFinal))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).executeUpdate();
 		}catch(HibernateException e){
 			throw new ErroRepositorioException("Erro no Hibernate");
 		}finally{
@@ -8077,9 +8194,9 @@ public class RepositorioMicromedicaoHBM
 							+ " where rotaCriterioAcao.comp_id.cobrancaAcaoId = :idCobrancaAcao"
 							+ " and rotaCriterioAcao.comp_id.rotaId in (" + consulta + ")";
 
-			session.createQuery(consultaComCriterio).setInteger("idLocalidadeInicial", new Integer(idLocalidadeInicial)).setInteger(
-							"idLocalidadeFinal", new Integer(idLocalidadeFinal)).setInteger("idCobrancaAcao", new Integer(idCobrancaAcao))
-							.executeUpdate();
+			session.createQuery(consultaComCriterio).setInteger("idLocalidadeInicial", new Integer(idLocalidadeInicial))
+							.setInteger("idLocalidadeFinal", new Integer(idLocalidadeFinal))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).executeUpdate();
 		}catch(HibernateException e){
 			throw new ErroRepositorioException("Erro no Hibernate");
 		}finally{
@@ -8105,8 +8222,8 @@ public class RepositorioMicromedicaoHBM
 							+ " where rotaCriterioAcao.comp_id.cobrancaAcaoId = :idCobrancaAcao"
 							+ " and rotaCriterioAcao.comp_id.rotaId in (" + consulta + ")";
 
-			session.createQuery(consultaComCriterio).setInteger("idGerenciaRegional", new Integer(idGerenciaRegional)).setInteger(
-							"idCobrancaAcao", new Integer(idCobrancaAcao)).executeUpdate();
+			session.createQuery(consultaComCriterio).setInteger("idGerenciaRegional", new Integer(idGerenciaRegional))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).executeUpdate();
 		}catch(HibernateException e){
 			throw new ErroRepositorioException("Erro no Hibernate");
 		}finally{
@@ -8128,8 +8245,8 @@ public class RepositorioMicromedicaoHBM
 							+ " where rotaCriterioAcao.comp_id.cobrancaAcaoId = :idCobrancaAcao"
 							+ " and rotaCriterioAcao.comp_id.rotaId in (" + consulta + ")";
 
-			session.createQuery(consultaComCriterio).setInteger("idGrupoCobranca", new Integer(idGrupoCobranca)).setInteger(
-							"idCobrancaAcao", new Integer(idCobrancaAcao)).executeUpdate();
+			session.createQuery(consultaComCriterio).setInteger("idGrupoCobranca", new Integer(idGrupoCobranca))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).executeUpdate();
 		}catch(HibernateException e){
 			throw new ErroRepositorioException("Erro no Hibernate");
 		}finally{
@@ -8155,8 +8272,8 @@ public class RepositorioMicromedicaoHBM
 							+ " where rotaCriterioAcao.comp_id.cobrancaAcaoId = :idCobrancaAcao"
 							+ " and rotaCriterioAcao.comp_id.rotaId in (" + consulta + ")";
 
-			session.createQuery(consultaComCriterio).setInteger("idUnidadeNegocio", new Integer(idUnidadeNegocio)).setInteger(
-							"idCobrancaAcao", new Integer(idCobrancaAcao)).executeUpdate();
+			session.createQuery(consultaComCriterio).setInteger("idUnidadeNegocio", new Integer(idUnidadeNegocio))
+							.setInteger("idCobrancaAcao", new Integer(idCobrancaAcao)).executeUpdate();
 		}catch(HibernateException e){
 			throw new ErroRepositorioException("Erro no Hibernate");
 		}finally{
@@ -8188,9 +8305,9 @@ public class RepositorioMicromedicaoHBM
 							+ "where im.id = :idImovel and " + "ca.id = :idConsumoAnormalidade and "
 							+ "ch.referenciaFaturamento = :anoMesReferencia";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue()).setInteger(
-							"idConsumoAnormalidade", ConsumoAnormalidade.FATURAMENTO_ANTECIPADO).setInteger("anoMesReferencia",
-							anoMes.intValue()).setMaxResults(1).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idConsumoAnormalidade", ConsumoAnormalidade.FATURAMENTO_ANTECIPADO)
+							.setInteger("anoMesReferencia", anoMes.intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -8247,11 +8364,12 @@ public class RepositorioMicromedicaoHBM
 						+ " where medicaoHistorico.lagu_id = " + idImovel + " and medicaoHistorico.mdhi_amleitura = " + anoMes;
 
 		try{
-			retorno = session.createSQLQuery(consulta).addScalar("leituraAtualInformada", Hibernate.INTEGER).addScalar(
-							"leituraAnteriorFaturamento", Hibernate.INTEGER).addScalar("numeroHidrometro", Hibernate.STRING).addScalar(
-							"ligacaoAgua", Hibernate.INTEGER).addScalar("descLigacaoAguaSituacao", Hibernate.STRING).addScalar(
-							"funcionario", Hibernate.STRING).addScalar("descLeituraAnormalidadeInf", Hibernate.STRING).addScalar(
-							"descConsumoAnormalidade", Hibernate.STRING).addScalar("descLigacaoEsgotoSituacao", Hibernate.STRING).list();
+			retorno = session.createSQLQuery(consulta).addScalar("leituraAtualInformada", Hibernate.INTEGER)
+							.addScalar("leituraAnteriorFaturamento", Hibernate.INTEGER).addScalar("numeroHidrometro", Hibernate.STRING)
+							.addScalar("ligacaoAgua", Hibernate.INTEGER).addScalar("descLigacaoAguaSituacao", Hibernate.STRING)
+							.addScalar("funcionario", Hibernate.STRING).addScalar("descLeituraAnormalidadeInf", Hibernate.STRING)
+							.addScalar("descConsumoAnormalidade", Hibernate.STRING)
+							.addScalar("descLigacaoEsgotoSituacao", Hibernate.STRING).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -8350,8 +8468,8 @@ public class RepositorioMicromedicaoHBM
 							+ " Where :numeroPontos Between consumoFixoFaixa.numeroInicialFaixa and consumoFixoFaixa.numeroFinalFaixa  "
 							+ "   and  consumoFixoFaixa.consumoFixoUnidade.id = :idUnidadePontoConsumo ";
 
-			retorno = (Integer) session.createQuery(consulta).setInteger("numeroPontos", numeroPontosUtilizacao).setInteger(
-							"idUnidadePontoConsumo", ConsumoFixoUnidade.UNIDADE_TIPO_PONTOS_CONSUMO).uniqueResult();
+			retorno = (Integer) session.createQuery(consulta).setInteger("numeroPontos", numeroPontosUtilizacao)
+							.setInteger("idUnidadePontoConsumo", ConsumoFixoUnidade.UNIDADE_TIPO_PONTOS_CONSUMO).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -8382,8 +8500,8 @@ public class RepositorioMicromedicaoHBM
 			consulta = "select movimentoRoteiro FROM MovimentoRoteiroEmpresa movimentoRoteiro "
 							+ "WHERE movimentoRoteiro.imovel.id = :idImovel " + "AND movimentoRoteiro.anoMesMovimento = :referencia ";
 
-			movimentoRoteiro = (MovimentoRoteiroEmpresa) session.createQuery(consulta).setInteger("idImovel", imovel.getId()).setInteger(
-							"referencia", anoMesReferencia).setMaxResults(1).uniqueResult();
+			movimentoRoteiro = (MovimentoRoteiroEmpresa) session.createQuery(consulta).setInteger("idImovel", imovel.getId())
+							.setInteger("referencia", anoMesReferencia).setMaxResults(1).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -8466,10 +8584,11 @@ public class RepositorioMicromedicaoHBM
 						+ " order by medicaoHistorico.mdhi_amleitura desc";
 
 		try{
-			retorno = session.createSQLQuery(sql).addScalar("anoMes", Hibernate.INTEGER).addScalar("numeroLeituraAtualFaturamento",
-							Hibernate.INTEGER).addScalar("numeroConsumoMedidoMes", Hibernate.INTEGER).addScalar("consumoMedioImovel",
-							Hibernate.INTEGER).addScalar("numeroConsumoFaturadoMes", Hibernate.INTEGER).addScalar(
-							"leituraAnormalidadeFatu", Hibernate.INTEGER).setMaxResults(3).list();
+			retorno = session.createSQLQuery(sql).addScalar("anoMes", Hibernate.INTEGER)
+							.addScalar("numeroLeituraAtualFaturamento", Hibernate.INTEGER)
+							.addScalar("numeroConsumoMedidoMes", Hibernate.INTEGER).addScalar("consumoMedioImovel", Hibernate.INTEGER)
+							.addScalar("numeroConsumoFaturadoMes", Hibernate.INTEGER)
+							.addScalar("leituraAnormalidadeFatu", Hibernate.INTEGER).setMaxResults(3).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -8770,8 +8889,8 @@ public class RepositorioMicromedicaoHBM
 				}
 			}
 
-			retorno = session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("anoMesGrupoFaturamento",
-							anoMesGrupoFaturamento).list();
+			retorno = session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesGrupoFaturamento", anoMesGrupoFaturamento).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -8810,8 +8929,8 @@ public class RepositorioMicromedicaoHBM
 			consulta.append("ch.imovel = :idImovel ");
 			consulta.append("and ch.referenciaFaturamento = :anoMesGrupoFaturamento");
 
-			retorno = session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("anoMesGrupoFaturamento",
-							anoMesGrupoFaturamento).list();
+			retorno = session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesGrupoFaturamento", anoMesGrupoFaturamento).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -8849,8 +8968,8 @@ public class RepositorioMicromedicaoHBM
 			consulta.append("                                 and hidiAux.hidrometro = :idHidrometro) ");
 			consulta.append("  and hidi.hidrometro = :idHidrometro ");
 
-			retorno = (MedicaoHistorico) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger(
-							"idHidrometro", idHidrometro).uniqueResult();
+			retorno = (MedicaoHistorico) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("idHidrometro", idHidrometro).uniqueResult();
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -9055,8 +9174,7 @@ public class RepositorioMicromedicaoHBM
 		try{
 			consulta.append("select count(mre), mre.localidade.id, mre.codigoSetorComercial,");
 			consulta.append(" (select count(mrei.id) from MovimentoRoteiroEmpresa mrei where ");
-			consulta
-							.append("mrei.faturamentoGrupo.id = :idFaturamentoGrupo and mrei.anoMesMovimento = mrei.faturamentoGrupo.anoMesReferencia) ");
+			consulta.append("mrei.faturamentoGrupo.id = :idFaturamentoGrupo and mrei.anoMesMovimento = mrei.faturamentoGrupo.anoMesReferencia) ");
 			consulta.append("from MovimentoRoteiroEmpresa mre ");
 			consulta.append("where mre.leituraAnormalidade is not null and mre.leituraAnormalidade.id <> 0 and ");
 			consulta.append(movimentoRoteiroEmpresaFaturamentoGrupo);
@@ -9134,8 +9252,7 @@ public class RepositorioMicromedicaoHBM
 		try{
 			consulta.append("select count(mre), mre.rota.id,");
 			consulta.append(" (select count(mrei) from MovimentoRoteiroEmpresa mrei where ");
-			consulta
-							.append("mrei.faturamentoGrupo.id = :idFaturamentoGrupo and mrei.anoMesMovimento = mrei.faturamentoGrupo.anoMesReferencia) ");
+			consulta.append("mrei.faturamentoGrupo.id = :idFaturamentoGrupo and mrei.anoMesMovimento = mrei.faturamentoGrupo.anoMesReferencia) ");
 			consulta.append("from MovimentoRoteiroEmpresa mre ");
 			consulta.append("where mre.leituraAnormalidade is not null and  mre.leituraAnormalidade.id <> 0 and ");
 			consulta.append(movimentoRoteiroEmpresaFaturamentoGrupo);
@@ -9219,8 +9336,8 @@ public class RepositorioMicromedicaoHBM
 			consulta.append("and fac.leituraTipo.id in (:collLeituraTipo) ");
 			consulta.append("order by fac.id ");
 
-			query = session.createQuery(consulta.toString()).setInteger("idFaturamentoAtividade", idFaturamentoAtividade).setParameterList(
-							"collLeituraTipo", collLeituraTipo);
+			query = session.createQuery(consulta.toString()).setInteger("idFaturamentoAtividade", idFaturamentoAtividade)
+							.setParameterList("collLeituraTipo", collLeituraTipo);
 			retorno = (Collection<FaturamentoAtividadeCriterio>) query.list();
 
 		}catch(HibernateException e){
@@ -9278,8 +9395,8 @@ public class RepositorioMicromedicaoHBM
 			consulta.append("order by rot.id ");
 
 			query = session.createQuery(consulta.toString()).setInteger("idLeituraTipo", LeituraTipo.LEITURA_E_ENTRADA_SIMULTANEA)
-							.setInteger("idEmpresa", idEmpresa).setInteger("anoMesFaturamento", anoMesFaturamento).setInteger(
-											"idFaturamentoGrupo", idFaturamentoGrupo);
+							.setInteger("idEmpresa", idEmpresa).setInteger("anoMesFaturamento", anoMesFaturamento)
+							.setInteger("idFaturamentoGrupo", idFaturamentoGrupo);
 			retorno = query.list();
 
 		}catch(HibernateException e){
@@ -9420,11 +9537,9 @@ public class RepositorioMicromedicaoHBM
 
 			// Consultando Indicador de Hidrômetro Instalado
 			consulta.append("   case when (");
-			consulta
-							.append("       ( imovel.ligacaoAguaSituacao.indicadorFaturamentoSituacao = :indicadorFaturamentoSituacaoLigacaoAgua and");
+			consulta.append("       ( imovel.ligacaoAguaSituacao.indicadorFaturamentoSituacao = :indicadorFaturamentoSituacaoLigacaoAgua and");
 			consulta.append("         ligacaoAgua.hidrometroInstalacaoHistorico.id is not null ) or");
-			consulta
-							.append("      ( imovel.ligacaoEsgotoSituacao.indicadorFaturamentoSituacao = :indicadorFaturamentoSituacaoLigacaoEsgoto and");
+			consulta.append("      ( imovel.ligacaoEsgotoSituacao.indicadorFaturamentoSituacao = :indicadorFaturamentoSituacaoLigacaoEsgoto and");
 			consulta.append("         imovel.hidrometroInstalacaoHistorico.id is not null ) ) then");
 			consulta.append("     1");
 			consulta.append("   else");
@@ -9492,15 +9607,17 @@ public class RepositorioMicromedicaoHBM
 			consulta.append(" and imovel.indicadorImovelCondominio = :indicadorImovelCondominio");
 
 			if(Util.isVazioOuBranco(idRota)){
-				retorno = session.createQuery(consulta.toString()).setShort("indicadorFaturamentoSituacaoLigacaoAgua",
-								LigacaoAguaSituacao.FATURAMENTO_ATIVO).setInteger("indicadorFaturamentoSituacaoLigacaoEsgoto",
-								LigacaoEsgotoSituacao.FATURAMENTO_ATIVO).setInteger("idImovel", idImovel).setShort("indicadorExclusao",
-								ConstantesSistema.NAO).setShort("indicadorImovelCondominio", ConstantesSistema.NAO).list();
+				retorno = session.createQuery(consulta.toString())
+								.setShort("indicadorFaturamentoSituacaoLigacaoAgua", LigacaoAguaSituacao.FATURAMENTO_ATIVO)
+								.setInteger("indicadorFaturamentoSituacaoLigacaoEsgoto", LigacaoEsgotoSituacao.FATURAMENTO_ATIVO)
+								.setInteger("idImovel", idImovel).setShort("indicadorExclusao", ConstantesSistema.NAO)
+								.setShort("indicadorImovelCondominio", ConstantesSistema.NAO).list();
 			}else{
-				retorno = session.createQuery(consulta.toString()).setShort("indicadorFaturamentoSituacaoLigacaoAgua",
-								LigacaoAguaSituacao.FATURAMENTO_ATIVO).setInteger("indicadorFaturamentoSituacaoLigacaoEsgoto",
-								LigacaoEsgotoSituacao.FATURAMENTO_ATIVO).setInteger("idRota", idRota).setShort("indicadorExclusao",
-								ConstantesSistema.NAO).setShort("indicadorImovelCondominio", ConstantesSistema.NAO).list();
+				retorno = session.createQuery(consulta.toString())
+								.setShort("indicadorFaturamentoSituacaoLigacaoAgua", LigacaoAguaSituacao.FATURAMENTO_ATIVO)
+								.setInteger("indicadorFaturamentoSituacaoLigacaoEsgoto", LigacaoEsgotoSituacao.FATURAMENTO_ATIVO)
+								.setInteger("idRota", idRota).setShort("indicadorExclusao", ConstantesSistema.NAO)
+								.setShort("indicadorImovelCondominio", ConstantesSistema.NAO).list();
 			}
 
 		}catch(HibernateException e){
@@ -9559,24 +9676,27 @@ public class RepositorioMicromedicaoHBM
 
 			Query query = session.createQuery(hql.toString());
 
-			query.setInteger("anoMesReferencia", anoMesReferencia).setShort("indicadorHidrometro",
-							Util.obterShort(helper.getIdHidrometro().toString())).setShort("indicadorVolumeFixadoAgua",
-							Util.obterShort(helper.getIdHidrometro().toString())).setShort("indicadorVolumeFixadoEsgoto",
-							Util.obterShort(helper.getIdHidrometro().toString())).setShort("indicadorHidrometroPoco",
-							Util.obterShort(helper.getIdHidrometro().toString())).setShort("indicadorPoco",
-							Util.obterShort(helper.getIdHidrometro().toString())).setInteger("numeroQuadra", helper.getNumeroQuadra())
-							.setInteger("cdSetorComercial", helper.getCodigoSetorComercial()).setInteger("idGerenciaRegional",
-											helper.getIdGerenciaRegional()).setInteger("idLocalidade", helper.getIdLocalidade())
+			query.setInteger("anoMesReferencia", anoMesReferencia)
+							.setShort("indicadorHidrometro", Util.obterShort(helper.getIdHidrometro().toString()))
+							.setShort("indicadorVolumeFixadoAgua", Util.obterShort(helper.getIdHidrometro().toString()))
+							.setShort("indicadorVolumeFixadoEsgoto", Util.obterShort(helper.getIdHidrometro().toString()))
+							.setShort("indicadorHidrometroPoco", Util.obterShort(helper.getIdHidrometro().toString()))
+							.setShort("indicadorPoco", Util.obterShort(helper.getIdHidrometro().toString()))
+							.setInteger("numeroQuadra", helper.getNumeroQuadra())
+							.setInteger("cdSetorComercial", helper.getCodigoSetorComercial())
+							.setInteger("idGerenciaRegional", helper.getIdGerenciaRegional())
+							.setInteger("idLocalidade", helper.getIdLocalidade())
 							.setInteger("idSetorComercial", helper.getIdSetorComercial()).setInteger("idRota", helper.getIdRota())
 							.setInteger("idQuadra", helper.getIdQuadra()).setInteger("idImovelPerfil", helper.getIdPerfilImovel())
-							.setInteger("idLigacaoAguaSituacao", helper.getIdSituacaoLigacaoAgua()).setInteger("idLigacaoEsgotoSituacao",
-											helper.getIdSituacaoLigacaoEsgoto()).setInteger("idCategoria", helper.getIdCategoria())
+							.setInteger("idLigacaoAguaSituacao", helper.getIdSituacaoLigacaoAgua())
+							.setInteger("idLigacaoEsgotoSituacao", helper.getIdSituacaoLigacaoEsgoto())
+							.setInteger("idCategoria", helper.getIdCategoria())
 							.setInteger("idUnidadeNegocio", helper.getIdUnidadeNegocio()).setInteger("eloLocalidade", helper.getIdElo())
-							.setInteger("idSubcategoria", helper.getIdSubCategoria()).setInteger("idClienteTipo",
-											helper.getIdTipoClienteResponsavel()).setInteger("idLigacaoAguaPerfil",
-											helper.getIdPerfilLigacaoAgua()).setInteger("idLigacaoEsgotoPerfil",
-											helper.getIdPerfilLigacaoEsgoto()).setInteger("idConsumoTarifa",
-											helper.getIdTipoTarifaConsumo());
+							.setInteger("idSubcategoria", helper.getIdSubCategoria())
+							.setInteger("idClienteTipo", helper.getIdTipoClienteResponsavel())
+							.setInteger("idLigacaoAguaPerfil", helper.getIdPerfilLigacaoAgua())
+							.setInteger("idLigacaoEsgotoPerfil", helper.getIdPerfilLigacaoEsgoto())
+							.setInteger("idConsumoTarifa", helper.getIdTipoTarifaConsumo());
 
 			if(helper.getIdEsfera() != null){
 				query.setInteger("idEsferaPoder", helper.getIdEsfera());
@@ -9842,8 +9962,8 @@ public class RepositorioMicromedicaoHBM
 							+ " WHERE movimentoRoteiro.faturamentoGrupo.id = :idFaturamentoGrupo "
 							+ " AND movimentoRoteiro.anoMesMovimento = :referencia ";
 
-			retono = (Integer) session.createQuery(consulta).setInteger("idFaturamentoGrupo", idFaturamentoGrupo).setInteger("referencia",
-							anoMesReferencia).uniqueResult();
+			retono = (Integer) session.createQuery(consulta).setInteger("idFaturamentoGrupo", idFaturamentoGrupo)
+							.setInteger("referencia", anoMesReferencia).uniqueResult();
 
 			// erro no hibernate
 		}catch(HibernateException e){
@@ -9896,7 +10016,9 @@ public class RepositorioMicromedicaoHBM
 									+ // 5
 									" medicaohis0_.imov_id as idImovel, "
 									+ // 6
-									" medicaohis0_.mdhi_nnconsumocreditoanterior as consumoCreditoAnterior  " // 7
+									" medicaohis0_.mdhi_nnconsumocreditoanterior as consumoCreditoAnterior,  "
+									+ // 7
+									" medicaohis0_.mdhi_nnconsumocreditogerado as consumoCreditoGerado  " // 8
 									+ " from  medicao_historico medicaohis0_ "
 									+ " inner join  imovel imovel2_ on medicaohis0_.imov_id=imovel2_.imov_id "
 									+ " left outer join  hidrometro_instalacao_hist hidrometro3_  on imovel2_.hidi_id=hidrometro3_.hidi_id "
@@ -9919,7 +10041,9 @@ public class RepositorioMicromedicaoHBM
 									+ // 5
 									" medicaohis0_.lagu_id as idImovel, "
 									+ // 6
-									" medicaohis0_.mdhi_nnconsumocreditoanterior as consumoCreditoAnterior  " // 7
+									" medicaohis0_.mdhi_nnconsumocreditoanterior as consumoCreditoAnterior,  "
+									+ // 7
+									" medicaohis0_.mdhi_nnconsumocreditogerado as consumoCreditoGerado  " // 8
 									+ " from  medicao_historico medicaohis0_ "
 									+ " inner join  ligacao_agua ligacaoagu1_   on medicaohis0_.lagu_id=ligacaoagu1_.lagu_id "
 									+ " left outer join  hidrometro_instalacao_hist hidrometro3_  on ligacaoagu1_.hidi_id=hidrometro3_.hidi_id "
@@ -9929,12 +10053,13 @@ public class RepositorioMicromedicaoHBM
 
 				consulta += " order by medicaohis0_.mdhi_amleitura desc";
 
-				retorno.add(session.createSQLQuery(consulta).addScalar("dataLeituraAtualFat", Hibernate.DATE).addScalar("leituraAtualFat",
-								Hibernate.INTEGER).addScalar("leituraAtualInf", Hibernate.INTEGER).addScalar("idLeituraSitAtual",
-								Hibernate.INTEGER).addScalar("idHidrometroInstHist", Hibernate.INTEGER).addScalar("dataInstalacao",
-								Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER).addScalar("consumoCreditoAnterior",
-								Hibernate.INTEGER).setInteger("idImovel", idImovel).setInteger("idMedicaoTipo", idMedicaoTipo)
-								.setMaxResults(1).uniqueResult());
+				retorno.add(session.createSQLQuery(consulta).addScalar("dataLeituraAtualFat", Hibernate.DATE)
+								.addScalar("leituraAtualFat", Hibernate.INTEGER).addScalar("leituraAtualInf", Hibernate.INTEGER)
+								.addScalar("idLeituraSitAtual", Hibernate.INTEGER).addScalar("idHidrometroInstHist", Hibernate.INTEGER)
+								.addScalar("dataInstalacao", Hibernate.DATE).addScalar("idImovel", Hibernate.INTEGER)
+								.addScalar("consumoCreditoAnterior", Hibernate.INTEGER)
+								.addScalar("consumoCreditoGerado", Hibernate.INTEGER).setInteger("idImovel", idImovel)
+								.setInteger("idMedicaoTipo", idMedicaoTipo).setMaxResults(1).uniqueResult());
 			}
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -9972,8 +10097,8 @@ public class RepositorioMicromedicaoHBM
 									+ LeituraTipo.LEITURA_E_ENTRADA_SIMULTANEA + " where la.hidi_id <> 0 and la.hidi_id is not null "
 									+ " and r.ftgr_id = :idGrupoFaturamento" + " group by r.ftgr_id ";
 
-					retorno = (Collection) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER).addScalar("grupo",
-									Hibernate.INTEGER).setInteger("idGrupoFaturamento", idGrupoFaturamento).list();
+					retorno = (Collection) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER)
+									.addScalar("grupo", Hibernate.INTEGER).setInteger("idGrupoFaturamento", idGrupoFaturamento).list();
 
 					break;
 
@@ -9990,9 +10115,9 @@ public class RepositorioMicromedicaoHBM
 									+ " group by i.loca_id, sc.stcm_cdsetorcomercial " //
 									+ " order by i.loca_id, sc.stcm_cdsetorcomercial ";
 
-					retorno = (Collection) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER).addScalar(
-									"localidade", Hibernate.INTEGER).addScalar("setor", Hibernate.INTEGER).setInteger("idGrupoFaturamento",
-									idGrupoFaturamento).list();
+					retorno = (Collection) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER)
+									.addScalar("localidade", Hibernate.INTEGER).addScalar("setor", Hibernate.INTEGER)
+									.setInteger("idGrupoFaturamento", idGrupoFaturamento).list();
 
 					break;
 
@@ -10003,8 +10128,8 @@ public class RepositorioMicromedicaoHBM
 									+ LeituraTipo.LEITURA_E_ENTRADA_SIMULTANEA + " where la.hidi_id <> 0 and la.hidi_id is not null "
 									+ " and r.ftgr_id = :idGrupoFaturamento " + " group by r.rota_id " + " order by r.rota_id ";
 
-					retorno = (Collection) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER).addScalar("rota",
-									Hibernate.INTEGER).setInteger("idGrupoFaturamento", idGrupoFaturamento).list();
+					retorno = (Collection) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER)
+									.addScalar("rota", Hibernate.INTEGER).setInteger("idGrupoFaturamento", idGrupoFaturamento).list();
 
 					break;
 
@@ -10055,8 +10180,9 @@ public class RepositorioMicromedicaoHBM
 									+ " where ch.lgti_id = " + LigacaoTipo.LIGACAO_AGUA
 									+ " and r.ftgr_id = :idGrupoFaturamento and ch.csan_id = :idAnormalidade";
 
-					retorno = (Integer) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER).setInteger(
-									"idGrupoFaturamento", idGrupoFaturamento).setInteger("idAnormalidade", idAnormalidade).uniqueResult();
+					retorno = (Integer) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER)
+									.setInteger("idGrupoFaturamento", idGrupoFaturamento).setInteger("idAnormalidade", idAnormalidade)
+									.uniqueResult();
 
 					break;
 
@@ -10073,9 +10199,10 @@ public class RepositorioMicromedicaoHBM
 									+ " and r.ftgr_id = :idGrupoFaturamento and ch.csan_id = :idAnormalidade "
 									+ " and i.loca_id = :idLocalidade and sc.stcm_cdsetorcomercial = :cdSetorComercial ";
 
-					retorno = (Integer) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER).setInteger(
-									"idGrupoFaturamento", idGrupoFaturamento).setInteger("idAnormalidade", idAnormalidade).setInteger(
-									"idLocalidade", idLocalidade).setInteger("cdSetorComercial", cdSetorComercial).uniqueResult();
+					retorno = (Integer) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER)
+									.setInteger("idGrupoFaturamento", idGrupoFaturamento).setInteger("idAnormalidade", idAnormalidade)
+									.setInteger("idLocalidade", idLocalidade).setInteger("cdSetorComercial", cdSetorComercial)
+									.uniqueResult();
 					break;
 
 				case ConstantesSistema.CD_CONTROLE_ANORMALIDADE_ROTA:
@@ -10089,9 +10216,9 @@ public class RepositorioMicromedicaoHBM
 									+ " and r.ftgr_id = :idGrupoFaturamento and ch.csan_id = :idAnormalidade "
 									+ " and r.rota_id = :idRota ";
 
-					retorno = (Integer) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER).setInteger(
-									"idGrupoFaturamento", idGrupoFaturamento).setInteger("idAnormalidade", idAnormalidade).setInteger(
-									"idRota", idRota).uniqueResult();
+					retorno = (Integer) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER)
+									.setInteger("idGrupoFaturamento", idGrupoFaturamento).setInteger("idAnormalidade", idAnormalidade)
+									.setInteger("idRota", idRota).uniqueResult();
 					break;
 
 				default:
@@ -10188,7 +10315,7 @@ public class RepositorioMicromedicaoHBM
 							+ "hidrometroLocalInstalacao.descricaoAbreviada, "
 							+ "hidrometro.numeroDigitosLeitura, hidrometroInstalacaoHistorico.dataInstalacao, "
 							+ "hidProtecao.id, hidProtecao.descricao, hidTipo.id, hidTipo.descricao, "
-							+ "hidrometroInstalacaoHistorico.indicadorExistenciaCavalete, hidrometro.anoFabricacao "
+							+ "hidrometroInstalacaoHistorico.indicadorExistenciaCavalete, hidrometro.anoFabricacao, hidrometroLocalInstalacao.descricao "
 							+ "from gcom.micromedicao.hidrometro.HidrometroInstalacaoHistorico hidrometroInstalacaoHistorico ";
 
 			if(idTipoMedicao.equals(MedicaoTipo.LIGACAO_AGUA)){
@@ -10379,8 +10506,8 @@ public class RepositorioMicromedicaoHBM
 							+ "or exists (select imov.id from Imovel imov where imov.id = :idImovel and imov.id = med.ligacaoAgua.id)) "
 							+ "and med.anoMesReferencia = :anoMesReferencia and (med.imovel.id = :idImovel  or med.ligacaoAgua.id = :idImovel) ";
 
-			session.createQuery(sql).setTimestamp("data", new Date()).setInteger("idImovel", idImovel).setInteger("anoMesReferencia",
-							anoMesReferenciaFaturamento).executeUpdate();
+			session.createQuery(sql).setTimestamp("data", new Date()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesReferencia", anoMesReferenciaFaturamento).executeUpdate();
 		}catch(HibernateException e){
 
 			throw new ErroRepositorioException("Erro no Hibernate");
@@ -10400,31 +10527,43 @@ public class RepositorioMicromedicaoHBM
 
 			consulta = "";
 			if(idMedicaoTipo.equals(MedicaoTipo.POCO)){
-				consulta = " select " + " medicaohistorico.mdhi_dtleituraatualfaturamento as dtleituraatualfaturamento, "
-								+ " medicaohistorico.mdhi_dtleituraanteriorfaturame as dtleituraanteriorfaturame, "
-								+ " medicaohistorico.mdhi_nnleituraatualfaturamento as nnleituraatualfaturamento, "
-								+ " medicaohistorico.mdhi_nnconsumomedidomes as nnconsumomedidomes "
-								+ " from  medicao_historico medicaohistorico " + " where "
-								+ " medicaohistorico.mdhi_amleitura = :anoMesReferencia  and "
-								+ " medicaohistorico.medt_id= :idMedicaoTipo and " + " medicaohistorico.imov_id = :idImovel ";
 
-			}
-			if(idMedicaoTipo.equals(MedicaoTipo.LIGACAO_AGUA)){
-				consulta = " select " + " medicaohistorico.mdhi_dtleituraatualfaturamento as dtleituraatualfaturamento, "
+				consulta = " select medicaohistorico.mdhi_dtleituraatualfaturamento as dtleituraatualfaturamento, "
 								+ " medicaohistorico.mdhi_dtleituraanteriorfaturame as dtleituraanteriorfaturame, "
 								+ " medicaohistorico.mdhi_nnleituraatualfaturamento as nnleituraatualfaturamento, "
-								+ " medicaohistorico.mdhi_nnconsumomedidomes as nnconsumomedidomes "
-								+ " from  medicao_historico medicaohistorico " + " where "
+								+ " medicaohistorico.mdhi_nnconsumomedidomes as nnconsumomedidomes, "
+								+ " medicaohistorico.hidi_id as idHidrometroInstalHist, "
+								+ " medicaohistorico.mdhi_nnleituraanteriorfaturame as nnleituraanteriorfaturame, "
+								+ " medicaohistorico.ltan_idleituraanormalidadefatu as idleituraanormalidadefatu, "
+								+ " medicaohistorico.mdhi_dtleituraatualinformada as dataLeituraAtualInformada "
+								+ " from  medicao_historico medicaohistorico where "
 								+ " medicaohistorico.mdhi_amleitura = :anoMesReferencia  and "
-								+ " medicaohistorico.medt_id= :idMedicaoTipo and " + " medicaohistorico.lagu_id = :idImovel ";
+								+ " medicaohistorico.medt_id= :idMedicaoTipo and medicaohistorico.imov_id = :idImovel ";
+
+			}else if(idMedicaoTipo.equals(MedicaoTipo.LIGACAO_AGUA)){
+
+				consulta = " select medicaohistorico.mdhi_dtleituraatualfaturamento as dtleituraatualfaturamento, "
+								+ " medicaohistorico.mdhi_dtleituraanteriorfaturame as dtleituraanteriorfaturame, "
+								+ " medicaohistorico.mdhi_nnleituraatualfaturamento as nnleituraatualfaturamento, "
+								+ " medicaohistorico.mdhi_nnconsumomedidomes as nnconsumomedidomes, "
+								+ " medicaohistorico.hidi_id as idHidrometroInstalHist, "
+								+ " medicaohistorico.mdhi_nnleituraanteriorfaturame as nnleituraanteriorfaturame, "
+								+ " medicaohistorico.ltan_idleituraanormalidadefatu as idleituraanormalidadefatu, "
+								+ " medicaohistorico.mdhi_dtleituraatualinformada as dataLeituraAtualInformada "
+								+ " from  medicao_historico medicaohistorico where "
+								+ " medicaohistorico.mdhi_amleitura = :anoMesReferencia  and "
+								+ " medicaohistorico.medt_id= :idMedicaoTipo and medicaohistorico.lagu_id = :idImovel ";
 
 			}
 
 			resultadoPesquisa = (Object[]) session.createSQLQuery(consulta).addScalar("dtleituraatualfaturamento", Hibernate.DATE)
-							.addScalar("dtleituraanteriorfaturame", Hibernate.DATE).addScalar("nnleituraatualfaturamento",
-											Hibernate.INTEGER).addScalar("nnconsumomedidomes", Hibernate.INTEGER).setInteger("idImovel",
-											idImovel).setInteger("idMedicaoTipo", idMedicaoTipo).setInteger("anoMesReferencia",
-											anoMes.intValue()).uniqueResult();
+							.addScalar("dtleituraanteriorfaturame", Hibernate.DATE)
+							.addScalar("nnleituraatualfaturamento", Hibernate.INTEGER).addScalar("nnconsumomedidomes", Hibernate.INTEGER)
+							.addScalar("idHidrometroInstalHist", Hibernate.INTEGER)
+							.addScalar("nnleituraanteriorfaturame", Hibernate.INTEGER)
+							.addScalar("idleituraanormalidadefatu", Hibernate.INTEGER)
+							.addScalar("dataLeituraAtualInformada", Hibernate.DATE).setInteger("idImovel", idImovel)
+							.setInteger("idMedicaoTipo", idMedicaoTipo).setInteger("anoMesReferencia", anoMes.intValue()).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -10530,23 +10669,22 @@ public class RepositorioMicromedicaoHBM
 
 		try{
 
-			consulta.append("select imovel.id ,imovel.ligacaoAguaSituacao.id, ");
-			consulta.append("imovel.ligacaoEsgotoSituacao.id,imovel.ligacaoAguaSituacao.indicadorFaturamentoSituacao, ");
-			consulta.append("imovel.ligacaoEsgotoSituacao.indicadorFaturamentoSituacao ");
+			consulta.append("select imo ");
 			consulta.append("from ");
-			consulta.append("gcom.cadastro.imovel.Imovel imovel ");
-			consulta.append("inner join imovel.quadra quadra ");
-			consulta.append("inner join imovel.rota rota ");
+			consulta.append("Imovel imo ");
+			consulta.append("inner join fetch imo.ligacaoAguaSituacao last ");
+			consulta.append("inner join fetch imo.ligacaoEsgotoSituacao lest ");
+			consulta.append("inner join fetch imo.rota rot ");
 			consulta.append("where ");
-			consulta.append("imovel.indicadorImovelCondominio = ");
+			consulta.append("imo.indicadorImovelCondominio = ");
 			consulta.append(ConstantesSistema.SIM.toString());
-			consulta.append(" and (imovel.ligacaoAguaSituacao.id = ");
-			consulta.append(LigacaoAguaSituacao.LIGADO.toString());
+			consulta.append(" and (last.indicadorFaturamentoSituacao = ");
+			consulta.append(LigacaoAguaSituacao.FATURAMENTO_ATIVO.toString());
 			consulta.append(" or ");
-			consulta.append(" (imovel.ligacaoEsgotoSituacao.id = ");
-			consulta.append(LigacaoEsgotoSituacao.LIGADO.toString());
-			consulta.append(" and imovel.hidrometroInstalacaoHistorico is not null))");
-			consulta.append(" and rota.id = :idRota ");
+			consulta.append(" (lest.indicadorFaturamentoSituacao = ");
+			consulta.append(LigacaoEsgotoSituacao.FATURAMENTO_ATIVO.toString());
+			consulta.append(" and imo.hidrometroInstalacaoHistorico is not null))");
+			consulta.append(" and rot.id = :idRota ");
 
 			retorno = session.createQuery(consulta.toString()).setParameter("idRota", ((Rota) colecaoRota.iterator().next()).getId())
 							.list();
@@ -10662,9 +10800,9 @@ public class RepositorioMicromedicaoHBM
 			consulta.append("  im.id = :idImovel ");
 			consulta.append(" and im.indicadorExclusao = :indicadorExclusao");
 
-			retorno = session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setInteger("clienteResponsavel",
-							ClienteRelacaoTipo.RESPONSAVEL.intValue()).setInteger("indicadorExclusao", ConstantesSistema.NAO.intValue())
-							.list();
+			retorno = session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("clienteResponsavel", ClienteRelacaoTipo.RESPONSAVEL.intValue())
+							.setInteger("indicadorExclusao", ConstantesSistema.NAO.intValue()).list();
 
 		}catch(HibernateException e){
 
@@ -10720,9 +10858,10 @@ public class RepositorioMicromedicaoHBM
 
 		List<Integer> retorno = null;
 		Session session = HibernateUtil.getSession();
-		StringBuffer consulta = new StringBuffer("");
 
 		try{
+
+			StringBuffer consulta = new StringBuffer("");
 
 			consulta.append("SELECT R AS idRota ");
 			// consulta.append( ",SUM(DIF) ");
@@ -10781,8 +10920,8 @@ public class RepositorioMicromedicaoHBM
 			consulta.append("GROUP BY R ");
 			consulta.append("ORDER BY R ");
 
-			retorno = session.createSQLQuery(consulta.toString()).addScalar("idRota", Hibernate.INTEGER).setInteger(
-							"referenciaFaturamento", referenciaFaturamento).list();
+			retorno = session.createSQLQuery(consulta.toString()).addScalar("idRota", Hibernate.INTEGER)
+							.setInteger("referenciaFaturamento", referenciaFaturamento).list();
 
 		}catch(HibernateException e){
 
@@ -10821,8 +10960,8 @@ public class RepositorioMicromedicaoHBM
 			consulta.append("	AND le.dataLigacao IS NOT NULL ");
 			consulta.append("	AND le.dataLigacao > :referenciaFinal ");
 
-			Integer idLigacaoEsgoto = (Integer) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel).setDate(
-							"referenciaInicial", referenciaInicial).setDate("referenciaFinal", referenciaFinal).setMaxResults(1)
+			Integer idLigacaoEsgoto = (Integer) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setDate("referenciaInicial", referenciaInicial).setDate("referenciaFinal", referenciaFinal).setMaxResults(1)
 							.uniqueResult();
 
 			if(!Util.isVazioOuBranco(idLigacaoEsgoto)){
@@ -11001,8 +11140,7 @@ public class RepositorioMicromedicaoHBM
 	 * @author Anderson Italo
 	 * @date 01/04/2013
 	 */
-	public Object[] pesquisarDadosUltimaLeituraReal(Integer idImovel)
-					throws ErroRepositorioException{
+	public Object[] pesquisarDadosUltimaLeituraReal(Integer idImovel) throws ErroRepositorioException{
 
 		StringBuffer consulta = new StringBuffer("");
 		Session session = HibernateUtil.getSession();
@@ -11051,11 +11189,12 @@ public class RepositorioMicromedicaoHBM
 			consulta.append(" mh.mdhi_nnleituraatualfaturamento as leituraAtualFaturamento, "); // 1
 			consulta.append(" mh.mdhi_nnleituraatualinformada as leituraAtualInformada, "); // 2
 			consulta.append(" mh.ltst_idleiturasituacaoatual as idLeituraSituacaoAtual, "); // 3
-			consulta.append(" mh.mdhi_nnconsumocreditoanterior as creditoConsumoAnterior "); // 4
+			consulta.append(" mh.mdhi_nnconsumocreditoanterior as creditoConsumoAnterior, "); // 4
+			consulta.append(" mh.mdhi_nnconsumocreditogerado as creditoConsumoGerado "); // 5
 			consulta.append(" from medicao_historico mh ");
 
 			if(idMedicaoTipo.equals(MedicaoTipo.LIGACAO_AGUA)){
-															
+
 				consulta.append(" inner join ligacao_agua la on la.lagu_id = mh.lagu_id ");
 				consulta.append(" where ");
 				consulta.append(" mh.lagu_id = :idImovel and ");
@@ -11075,11 +11214,11 @@ public class RepositorioMicromedicaoHBM
 			retorno = (Object[]) session.createSQLQuery(consulta.toString()).addScalar("dataLeituraAtualFaturamento", Hibernate.DATE)
 							.addScalar("leituraAtualFaturamento", Hibernate.INTEGER).addScalar("leituraAtualInformada", Hibernate.INTEGER)
 							.addScalar("idLeituraSituacaoAtual", Hibernate.INTEGER).addScalar("creditoConsumoAnterior", Hibernate.INTEGER)
-							.setInteger("idImovel", idImovel.intValue()).setInteger("idMedicaoTipo", idMedicaoTipo.intValue())
-							.setInteger("anoMes", anoMesFaturamentoAtual.intValue()).setMaxResults(1).uniqueResult();
+							.addScalar("creditoConsumoGerado", Hibernate.INTEGER).setInteger("idImovel", idImovel.intValue())
+							.setInteger("idMedicaoTipo", idMedicaoTipo.intValue()).setInteger("anoMes", anoMesFaturamentoAtual.intValue())
+							.setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
-
 
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
 		}finally{
@@ -11110,8 +11249,7 @@ public class RepositorioMicromedicaoHBM
 							+ "order by cshi.referenciaFaturamento desc ";
 
 			retornoConsulta = (Number) session.createQuery(consulta).setInteger("idImovel", idImovel)
-							.setInteger("tipoLigacao", tipoLigacao)
-							.setMaxResults(1).uniqueResult();
+							.setInteger("tipoLigacao", tipoLigacao).setMaxResults(1).uniqueResult();
 
 			if(retornoConsulta != null){
 
@@ -11146,7 +11284,6 @@ public class RepositorioMicromedicaoHBM
 			consulta.append(" cosumohistorico.lgti_id=:ligacaoTipo and");
 			consulta.append(" cosumohistorico.cshi_amfaturamento<=ftg.FTGR_AMREFERENCIA ");
 			consulta.append(" order by cosumohistorico.cshi_amfaturamento desc");
-			
 
 			retorno = (Number) session.createSQLQuery(consulta.toString()).setInteger("idImovel", idImovel.intValue())
 							.setInteger("ligacaoTipo", LigacaoTipo.LIGACAO_AGUA).setMaxResults(1).uniqueResult();
@@ -11154,7 +11291,7 @@ public class RepositorioMicromedicaoHBM
 			if(retorno != null){
 				consumoMedio = retorno.intValue();
 			}
-							
+
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -11253,8 +11390,7 @@ public class RepositorioMicromedicaoHBM
 	 * @date 27/08/2013
 	 */
 	public Date obterDataUltimaLeituraReferenciaCortado(Integer idConsumoTipo, Integer idLigacaoTipo, Integer idMedicaoTipo,
-					Integer idImovel, Integer consumoMedidoReferenciaCortado)
-					throws ErroRepositorioException{
+					Integer idImovel, Integer consumoMedidoReferenciaCortado) throws ErroRepositorioException{
 
 		Date retorno = null;
 		Session session = HibernateUtil.getSession();
@@ -11276,7 +11412,6 @@ public class RepositorioMicromedicaoHBM
 			consulta.append("mh.mdhi_dtleituraatualfaturamento is not null and ");
 			consulta.append("coalesce(mh.mdhi_nnconsumomedidomes,0) > :consumoMedidoReferenciaCortado ");
 
-
 			retorno = (Date) session.createSQLQuery(consulta.toString()).addScalar("dataLeituraAtualFaturamento", Hibernate.DATE)
 							.setInteger("idConsumoTipo", idConsumoTipo.intValue()).setInteger("idLigacaoTipo", idLigacaoTipo.intValue())
 							.setInteger("idMedicaoTipo", idMedicaoTipo.intValue()).setInteger("idImovel", idImovel.intValue())
@@ -11284,7 +11419,6 @@ public class RepositorioMicromedicaoHBM
 							.uniqueResult();
 
 		}catch(HibernateException e){
-
 
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
 		}finally{
@@ -11404,10 +11538,8 @@ public class RepositorioMicromedicaoHBM
 	 * @author Victon Malcolm
 	 * @since 08/10/2013
 	 */
-	public Collection pesquisarAtualizacaoCadastralColetorDados(Integer referenciaInicial,
- Integer referenciaFinal, Integer matricula,
-					Integer localidade, Integer setorComercial, Integer rota, Boolean relatorio)
-					throws ErroRepositorioException{
+	public Collection pesquisarAtualizacaoCadastralColetorDados(Integer referenciaInicial, Integer referenciaFinal, Integer matricula,
+					Integer localidade, Integer setorComercial, Integer rota, Boolean relatorio) throws ErroRepositorioException{
 
 		Collection colecaoMovimentoRoteiroEmpresa = null;
 		Session session = HibernateUtil.getSession();
@@ -11461,7 +11593,7 @@ public class RepositorioMicromedicaoHBM
 							+ "ORDER BY MREM_INSCRICAO, MREM_AMMOVIMENTO DESC");
 			Query query = session.createSQLQuery(consulta.toString()).setInteger("referenciaInicial", referenciaInicial)
 							.setInteger("referenciaFinal", referenciaFinal);
-			
+
 			if(matricula != null && !matricula.equals("")){
 				query.setInteger("matricula", matricula);
 			}else{
@@ -11540,6 +11672,7 @@ public class RepositorioMicromedicaoHBM
 		}
 		return colecaoConsultaAtualizacaoCadastralColetorDados;
 	}
+
 	public Collection<FaturamentoGrupo> pesquisarGrupoFatProcessoRetornoImedInicConc() throws ErroRepositorioException{
 
 		Collection retorno = null;
@@ -11625,8 +11758,8 @@ public class RepositorioMicromedicaoHBM
 			consulta.append(" mt.id = :idMedicaoTipo and mh.anoMesReferencia < :anoMes ");
 
 			retorno = (MedicaoHistorico) session.createQuery(consulta.toString()).setInteger("idImovel", idImovel.intValue())
-							.setInteger("idMedicaoTipo", idMedicaoTipo.intValue())
-							.setInteger("anoMes", anoMesFaturamentoAtual.intValue()).setMaxResults(1).uniqueResult();
+							.setInteger("idMedicaoTipo", idMedicaoTipo.intValue()).setInteger("anoMes", anoMesFaturamentoAtual.intValue())
+							.setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -11647,7 +11780,8 @@ public class RepositorioMicromedicaoHBM
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Collection pesquisarQuadroHidrometros(Date dataReferencia) throws ErroRepositorioException{
+	public Collection pesquisarQuadroHidrometros(Date dataReferencia, Integer idLocalidade, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio) throws ErroRepositorioException{
 
 		Collection retorno = null;
 
@@ -11684,9 +11818,23 @@ public class RepositorioMicromedicaoHBM
 							+ "AND hidi.hidi_dtinstalacaohidrometro <= :dataReferencia "
 							+ "AND hicp.hicp_icuso=1 "
 							+ "AND hidm.hidm_icuso=1 "
-							+ "AND himc.himc_icuso=1 "
-							+ "GROUP BY hicp.hicp_dshidrometrocapacidade, hidm.hidm_dshidrometrodiametro, himc.himc_dshidrometromarca, imov.loca_id, loca.loca_nmlocalidade, greg.greg_id, greg.greg_nmregional "
+ + "AND himc.himc_icuso=1 ";
+							
+			if(idLocalidade != null){
+				consulta = consulta + " AND loca.loca_id = " + idLocalidade;
+			}
+
+			if(idGerenciaRegional != null){
+				consulta = consulta + " AND loca.greg_id = " + idGerenciaRegional;
+			}
+
+			if(idUnidadeNegocio != null){
+				consulta = consulta + " AND uneg_id = " + idUnidadeNegocio;
+			}
+			
+			consulta = consulta +  "GROUP BY hicp.hicp_dshidrometrocapacidade, hidm.hidm_dshidrometrodiametro, himc.himc_dshidrometromarca, imov.loca_id, loca.loca_nmlocalidade, greg.greg_id, greg.greg_nmregional "
 							+ "ORDER BY imov.loca_id";
+
 
 			retorno = session.createSQLQuery(consulta).addScalar("capacidade", Hibernate.STRING).addScalar("diametro", Hibernate.STRING)
 							.addScalar("marca", Hibernate.STRING).addScalar("idLocalidade", Hibernate.INTEGER)
@@ -11711,21 +11859,35 @@ public class RepositorioMicromedicaoHBM
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Integer pesquisarQuadroHidrometrosCount(Date dataReferencia) throws ErroRepositorioException{
+	public Integer pesquisarQuadroHidrometrosCount(Date dataReferencia, Integer idLocalidade, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio) throws ErroRepositorioException{
 
 		Integer retorno = null;
 
 		Session session = HibernateUtil.getSession();
 
 		try{
-			String consulta = "SELECT COUNT(*) as quantidade " + "FROM imovel imov " + "LEFT JOIN ligacao_agua lagu "
-							+ "ON imov.imov_id=lagu.lagu_id " + "LEFT JOIN hidrometro_instalacao_hist hidi "
-							+ "ON lagu.hidi_id=hidi.hidi_id " + "LEFT JOIN hidrometro hidr " + "ON hidi.hidr_id=hidr.hidr_id "
-							+ "LEFT JOIN hidrometro_capacidade hicp " + "ON hidr.hicp_id=hicp.hicp_id "
+			String consulta = "SELECT " + "COUNT(*) AS quantidade " + "FROM imovel imov " + "LEFT JOIN localidade loca "
+							+ "ON imov.loca_id=loca.loca_id " + "LEFT JOIN gerencia_regional greg " + "ON loca.greg_id=greg.greg_id "
+							+ "LEFT JOIN ligacao_agua lagu " + "ON imov.imov_id=lagu.lagu_id "
+							+ "LEFT JOIN hidrometro_instalacao_hist hidi " + "ON lagu.hidi_id=hidi.hidi_id " + "LEFT JOIN hidrometro hidr "
+							+ "ON hidi.hidr_id=hidr.hidr_id " + "LEFT JOIN hidrometro_capacidade hicp " + "ON hidr.hicp_id=hicp.hicp_id "
 							+ "LEFT JOIN hidrometro_diametro hidm " + "ON hidr.hidm_id=hidm.hidm_id " + "LEFT JOIN hidrometro_marca himc "
 							+ "ON hidr.hicm_id=himc.himc_id " + "WHERE hidi.hidi_dtinstalacaohidrometro IS NOT NULL "
-							+ "AND hidi.hidi_dtretiradahidrometro IS NULL " + "AND hidi.hidi_dtinstalacaohidrometro<= :dataReferencia "
-							+ "AND hicp.hicp_icuso=1 " + "AND hidm.hidm_icuso=1 " + "AND himc.himc_icuso=1";
+							+ "AND hidi.hidi_dtretiradahidrometro IS NULL " + "AND hidi.hidi_dtinstalacaohidrometro <= :dataReferencia "
+							+ "AND hicp.hicp_icuso=1 " + "AND hidm.hidm_icuso=1 " + "AND himc.himc_icuso=1 ";
+
+			if(idLocalidade != null){
+				consulta = consulta + " AND loca.loca_id = " + idLocalidade;
+			}
+
+			if(idGerenciaRegional != null){
+				consulta = consulta + " AND loca.greg_id = " + idGerenciaRegional;
+			}
+
+			if(idUnidadeNegocio != null){
+				consulta = consulta + " AND uneg_id = " + idUnidadeNegocio;
+			}
 
 			retorno = (Integer) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER)
 							.setDate("dataReferencia", dataReferencia).uniqueResult();
@@ -11813,9 +11975,8 @@ public class RepositorioMicromedicaoHBM
 		try{
 			String consulta = "SELECT count(*) AS quantidade " + "FROM imovel imov " + "LEFT JOIN localidade loca "
 							+ "ON imov.loca_id=loca.loca_id " + "LEFT JOIN ligacao_agua lagu " + "ON imov.imov_id=lagu.lagu_id "
-							+ "LEFT JOIN hidrometro_instalacao_hist hidi "
-							+ "ON lagu.hidi_id=hidi.hidi_id " + "LEFT JOIN hidrometro hidr " + "ON hidi.hidr_id=hidr.hidr_id "
-							+ "LEFT JOIN hidrometro_capacidade hicp " + "ON hidr.hicp_id=hicp.hicp_id "
+							+ "LEFT JOIN hidrometro_instalacao_hist hidi " + "ON lagu.hidi_id=hidi.hidi_id " + "LEFT JOIN hidrometro hidr "
+							+ "ON hidi.hidr_id=hidr.hidr_id " + "LEFT JOIN hidrometro_capacidade hicp " + "ON hidr.hicp_id=hicp.hicp_id "
 							+ "LEFT JOIN hidrometro_diametro hidm " + "ON hidr.hidm_id=hidm.hidm_id " + "LEFT JOIN hidrometro_marca himc "
 							+ "ON hidr.hicm_id=himc.himc_id " + "WHERE hidi.hidi_dtinstalacaohidrometro IS NOT NULL "
 							+ "AND hidi.hidi_dtretiradahidrometro IS NULL " + "AND hicp.hicp_icuso=1 " + "AND hidm.hidm_icuso=1 "
@@ -11840,25 +12001,64 @@ public class RepositorioMicromedicaoHBM
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Integer pesquisarQuadroHidrometrosSituacaoCount(Date dataInicial, Date dataFinal) throws ErroRepositorioException{
+	public Integer pesquisarQuadroHidrometrosSituacaoCount(Date dataInicial, Date dataFinal, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio, Integer idUnidadeFederacao, Integer idLocalidade, Integer idHidrometroCapacidade,
+					Integer idHidrometroMarca, Integer idHidrometroDiametro) throws ErroRepositorioException{
 
 		Integer retorno = null;
 
 		Session session = HibernateUtil.getSession();
 
 		try{
-			String consulta = "SELECT COUNT(*) AS quantidade " + "FROM medicao_historico mdhi " + "LEFT JOIN imovel imov "
-							+ "ON mdhi.lagu_id=imov.imov_id " + "LEFT JOIN localidade loca " + "ON imov.loca_id=loca.loca_id "
-							+ "LEFT JOIN gerencia_regional greg " + "ON loca.greg_id=greg.greg_id " + "LEFT JOIN ligacao_agua lagu "
-							+ "ON imov.imov_id=lagu.lagu_id " + "LEFT JOIN hidrometro_instalacao_hist hidi "
-							+ "ON lagu.hidi_id=hidi.hidi_id " + "LEFT JOIN hidrometro hidr " + "ON hidi.hidr_id=hidr.hidr_id "
-							+ "LEFT JOIN hidrometro_capacidade hicp " + "ON hidr.hicp_id=hicp.hicp_id "
-							+ "LEFT JOIN hidrometro_diametro hidm " + "ON hidr.hidm_id=hidm.hidm_id " + "LEFT JOIN hidrometro_marca himc "
-							+ "ON hidr.hicm_id=himc.himc_id " + "LEFT JOIN leitura_anormalidade ltan "
-							+ "ON mdhi.ltan_idleituraanormalidadefatu=ltan.ltan_id "
+			String consulta = "SELECT COUNT(*) AS quantidade " + "FROM medicao_historico mdhi "
+							+ "LEFT JOIN imovel imov ON mdhi.lagu_id=imov.imov_id "
+							+ "LEFT JOIN localidade loca ON imov.loca_id=loca.loca_id "
+							+ "LEFT JOIN gerencia_regional greg ON loca.greg_id=greg.greg_id "
+							+ "LEFT JOIN unidade_negocio uneg ON loca.uneg_id=uneg.uneg_id "
+							+ "LEFT JOIN ligacao_agua lagu 	ON imov.imov_id=lagu.lagu_id "
+							+ "LEFT JOIN hidrometro_instalacao_hist hidi ON lagu.hidi_id=hidi.hidi_id "
+							+ "LEFT JOIN hidrometro hidr ON hidi.hidr_id=hidr.hidr_id "
+							+ "LEFT JOIN hidrometro_capacidade hicp ON hidr.hicp_id=hicp.hicp_id "
+							+ "LEFT JOIN hidrometro_diametro hidm ON hidr.hidm_id=hidm.hidm_id "
+							+ "LEFT JOIN hidrometro_marca himc ON hidr.hicm_id=himc.himc_id "
+							+ "LEFT JOIN leitura_anormalidade ltan ON mdhi.ltan_idleituraanormalidadefatu=ltan.ltan_id "
+
+							+ "LEFT JOIN logradouro_bairro logradouro_bairro  on imov.lgbr_id = logradouro_bairro.lgbr_id "
+							+ "LEFT JOIN bairro bairro on logradouro_bairro.bair_id = bairro.bair_id "
+							+ "LEFT JOIN municipio municipio on bairro.muni_id = municipio.muni_id "
+							+ "LEFT JOIN unidade_federacao unidade_federacao on municipio.unfe_id = unidade_federacao.unfe_id "
+
 							+ "WHERE hidi.hidi_dtinstalacaohidrometro IS NOT NULL " + "AND hidi.hidi_dtretiradahidrometro IS NULL "
 							+ "AND mdhi.mdhi_dtleituraatualfaturamento BETWEEN :dataInicial AND :dataFinal " + "AND hicp.hicp_icuso=1 "
 							+ "AND hidm.hidm_icuso=1 " + "AND himc.himc_icuso=1 ";
+
+			if(idGerenciaRegional != null){
+				consulta = consulta + " AND greg.greg_id= " + idGerenciaRegional;
+			}
+
+			if(idUnidadeNegocio != null){
+				consulta = consulta + " AND uneg.uneg_id= " + idUnidadeNegocio;
+			}
+
+			if(idUnidadeFederacao != null){
+				consulta = consulta + " AND unidade_federacao.unfe_id= " + idUnidadeFederacao;
+			}
+
+			if(idLocalidade != null){
+				consulta = consulta + " AND loca.loca_id= " + idLocalidade;
+			}
+
+			if(idHidrometroCapacidade != null){
+				consulta = consulta + " AND hicp.hicp_id= " + idHidrometroCapacidade;
+			}
+
+			if(idHidrometroMarca != null){
+				consulta = consulta + " AND himc.himc_id= " + idHidrometroMarca;
+			}
+
+			if(idHidrometroDiametro != null){
+				consulta = consulta + " AND hidm.hidm_id= " + idHidrometroDiametro;
+			}
 
 			retorno = (Integer) session.createSQLQuery(consulta).addScalar("quantidade", Hibernate.INTEGER)
 							.setDate("dataInicial", dataInicial).setDate("dataFinal", dataFinal).uniqueResult();
@@ -11880,50 +12080,68 @@ public class RepositorioMicromedicaoHBM
 	 * @return Collection
 	 * @throws ControladorException
 	 */
-	public Collection pesquisarQuadroHidrometrosSituacao(Date dataInicial, Date dataFinal) throws ErroRepositorioException{
+	public Collection pesquisarQuadroHidrometrosSituacao(Date dataInicial, Date dataFinal, Integer idGerenciaRegional,
+					Integer idUnidadeNegocio, Integer idUnidadeFederacao, Integer idLocalidade, Integer idHidrometroCapacidade,
+					Integer idHidrometroMarca, Integer idHidrometroDiametro) throws ErroRepositorioException{
 
 		Collection retorno = null;
 
 		Session session = HibernateUtil.getSession();
 
 		try{
-			String consulta = "SELECT hicp.hicp_dshidrometrocapacidade AS capacidade, "
-							+ "hidm.hidm_dshidrometrodiametro AS diametro, "
-							+ "himc.himc_dshidrometromarca AS marca, "
-							+ "imov.loca_id AS idLocalidade, "
-							+ "loca.loca_nmlocalidade AS descricaoLocalidade, "
-							+ "greg.greg_id AS idGerencia, "
-							+ "greg.greg_nmregional AS descricaoGerencia, "
-							+ "COUNT(*) AS quantidade, "
+			String consulta = "SELECT hicp.hicp_dshidrometrocapacidade AS capacidade, " + "hidm.hidm_dshidrometrodiametro AS diametro, "
+							+ "himc.himc_dshidrometromarca AS marca, " + "imov.loca_id AS idLocalidade, "
+							+ "loca.loca_nmlocalidade AS descricaoLocalidade, " + "greg.greg_id AS idGerencia, "
+							+ "greg.greg_nmregional AS descricaoGerencia, " + "COUNT(*) AS quantidade, "
 							+ "mdhi.ltan_idleituraanormalidadefatu AS idLeituraAnormalidade, "
-							+ "ltan.ltan_dsleituraanormalidade AS descricaoLeituraAnormalidade "
-							+ "FROM medicao_historico mdhi "
-							+ "LEFT JOIN imovel imov "
-							+ "ON mdhi.lagu_id=imov.imov_id "
-							+ "LEFT JOIN localidade loca "
-							+ "ON imov.loca_id=loca.loca_id "
-							+ "LEFT JOIN gerencia_regional greg "
-							+ "ON loca.greg_id=greg.greg_id "
-							+ "LEFT JOIN ligacao_agua lagu "
-							+ "ON imov.imov_id=lagu.lagu_id "
-							+ "LEFT JOIN hidrometro_instalacao_hist hidi "
-							+ "ON lagu.hidi_id=hidi.hidi_id "
-							+ "LEFT JOIN hidrometro hidr "
-							+ "ON hidi.hidr_id=hidr.hidr_id "
-							+ "LEFT JOIN hidrometro_capacidade hicp "
-							+ "ON hidr.hicp_id=hicp.hicp_id "
-							+ "LEFT JOIN hidrometro_diametro hidm "
-							+ "ON hidr.hidm_id=hidm.hidm_id "
-							+ "LEFT JOIN hidrometro_marca himc "
-							+ "ON hidr.hicm_id=himc.himc_id "
-							+ "LEFT JOIN leitura_anormalidade ltan "
+							+ "ltan.ltan_dsleituraanormalidade AS descricaoLeituraAnormalidade " + "FROM medicao_historico mdhi "
+							+ "LEFT JOIN imovel imov " + "ON mdhi.lagu_id=imov.imov_id " + "LEFT JOIN localidade loca "
+							+ "ON imov.loca_id=loca.loca_id " + "LEFT JOIN gerencia_regional greg " + "ON loca.greg_id=greg.greg_id "
+							+ "LEFT JOIN ligacao_agua lagu " + "ON imov.imov_id=lagu.lagu_id "
+							+ "LEFT JOIN hidrometro_instalacao_hist hidi " + "ON lagu.hidi_id=hidi.hidi_id " + "LEFT JOIN hidrometro hidr "
+							+ "ON hidi.hidr_id=hidr.hidr_id " + "LEFT JOIN hidrometro_capacidade hicp " + "ON hidr.hicp_id=hicp.hicp_id "
+							+ "LEFT JOIN hidrometro_diametro hidm " + "ON hidr.hidm_id=hidm.hidm_id " + "LEFT JOIN hidrometro_marca himc "
+							+ "ON hidr.hicm_id=himc.himc_id " + "LEFT JOIN leitura_anormalidade ltan "
 							+ "ON mdhi.ltan_idleituraanormalidadefatu=ltan.ltan_id "
-							+ "WHERE hidi.hidi_dtinstalacaohidrometro IS NOT NULL "
-							+ "AND hidi.hidi_dtretiradahidrometro IS NULL "
-							+ "AND mdhi.mdhi_dtleituraatualfaturamento BETWEEN :dataInicial AND :dataFinal "
-							+ "AND hicp.hicp_icuso=1 "
-							+ "AND hidm.hidm_icuso=1 "
-							+ "AND himc.himc_icuso=1 "
+
+							+ "LEFT JOIN logradouro_bairro logradouro_bairro  on imov.lgbr_id = logradouro_bairro.lgbr_id "
+							+ "LEFT JOIN bairro bairro on logradouro_bairro.bair_id = bairro.bair_id "
+							+ "LEFT JOIN municipio municipio on bairro.muni_id = municipio.muni_id "
+							+ "LEFT JOIN unidade_federacao unidade_federacao on municipio.unfe_id = unidade_federacao.unfe_id "
+
+							+ "WHERE hidi.hidi_dtinstalacaohidrometro IS NOT NULL " + "AND hidi.hidi_dtretiradahidrometro IS NULL "
+							+ "AND mdhi.mdhi_dtleituraatualfaturamento BETWEEN :dataInicial AND :dataFinal " + "AND hicp.hicp_icuso=1 "
+							+ "AND hidm.hidm_icuso=1 " + "AND himc.himc_icuso=1 ";
+
+			if(idGerenciaRegional != null){
+				consulta = consulta + " AND greg.greg_id= " + idGerenciaRegional;
+			}
+
+			if(idUnidadeNegocio != null){
+				consulta = consulta + " AND uneg.uneg_id= " + idUnidadeNegocio;
+			}
+
+			if(idUnidadeFederacao != null){
+				consulta = consulta + " AND unidade_federacao.unfe_id= " + idUnidadeFederacao;
+			}
+
+			if(idLocalidade != null){
+				consulta = consulta + " AND loca.loca_id= " + idLocalidade;
+			}
+
+			if(idHidrometroCapacidade != null){
+				consulta = consulta + " AND hicp.hicp_id= " + idHidrometroCapacidade;
+			}
+
+			if(idHidrometroMarca != null){
+				consulta = consulta + " AND himc.himc_id= " + idHidrometroMarca;
+			}
+
+			if(idHidrometroDiametro != null){
+				consulta = consulta + " AND hidm.hidm_id= " + idHidrometroDiametro;
+			}
+
+			consulta = consulta
 							+ "GROUP BY hicp.hicp_dshidrometrocapacidade, hidm.hidm_dshidrometrodiametro, himc.himc_dshidrometromarca, imov.loca_id, loca.loca_nmlocalidade, greg.greg_id, greg.greg_nmregional, mdhi.ltan_idleituraanormalidadefatu, ltan.ltan_dsleituraanormalidade, "
 							+ "hicp.hicp_dshidrometrocapacidade, hidm.hidm_dshidrometrodiametro, himc.himc_dshidrometromarca, imov.loca_id, loca.loca_nmlocalidade, greg.greg_id, greg.greg_nmregional, mdhi.ltan_idleituraanormalidadefatu, ltan.ltan_dsleituraanormalidade "
 							+ "ORDER BY greg.greg_id, imov.loca_id, mdhi.ltan_idleituraanormalidadefatu";
@@ -11944,6 +12162,7 @@ public class RepositorioMicromedicaoHBM
 
 		return retorno;
 	}
+
 	/**
 	 * [UC0113] Faturar Grupo de Faturamento
 	 * [SB0002] - Determinar Valores para Faturamento de Água e/ou Esgoto
@@ -11963,7 +12182,8 @@ public class RepositorioMicromedicaoHBM
 			consulta.append(" select ch.cshi_id as idConsumoHistorico, "); // 0
 			consulta.append(" ch.cshi_nnconsumofaturadomes as numeroConsumoFaturado, "); // 1
 			consulta.append(" ch.cshi_nnconsumomedio as numeroConsumoMedio, "); // 2
-			consulta.append(" ch.cshi_nnconsumominimo as numeroConsumoMinimo "); // 3
+			consulta.append(" ch.cshi_nnconsumominimo as numeroConsumoMinimo, "); // 3
+			consulta.append(" ch.cshi_nnconsumocredito as numeroConsumoCredito "); // 4
 			consulta.append(" from consumo_historico ch ");
 			consulta.append(" where ");
 			consulta.append(" ch.imov_id = :idImovel and ");
@@ -11973,9 +12193,9 @@ public class RepositorioMicromedicaoHBM
 
 			retorno = (Object[]) session.createSQLQuery(consulta.toString()).addScalar("idConsumoHistorico", Hibernate.INTEGER)
 							.addScalar("numeroConsumoFaturado", Hibernate.INTEGER).addScalar("numeroConsumoMedio", Hibernate.INTEGER)
-							.addScalar("numeroConsumoMinimo", Hibernate.INTEGER).setInteger("idImovel", idImovel.intValue())
-							.setInteger("idLigacaoTipo", idLigacaoTipo.intValue()).setInteger("anoMes", anoMesFaturamentoAtual.intValue())
-							.setMaxResults(1).uniqueResult();
+							.addScalar("numeroConsumoMinimo", Hibernate.INTEGER).addScalar("numeroConsumoCredito", Hibernate.INTEGER)
+							.setInteger("idImovel", idImovel.intValue()).setInteger("idLigacaoTipo", idLigacaoTipo.intValue())
+							.setInteger("anoMes", anoMesFaturamentoAtual.intValue()).setMaxResults(1).uniqueResult();
 
 		}catch(HibernateException e){
 
@@ -12082,7 +12302,1017 @@ public class RepositorioMicromedicaoHBM
 								.setInteger("referencia", referencia).list();
 			}
 
+		}catch(HibernateException e){
 
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+
+	}
+
+	public Object[] obterMensagemContaArquivoLeiturasMicroColetor(Integer anoMesFaturamento, Integer idFaturamentoGrupo,
+					Integer idGerenciaRegional, Integer idLocalidade, Integer idSetorComercial) throws ErroRepositorioException{
+
+		Object[] retorno = null;
+
+		Session session = HibernateUtil.getSession();
+
+		try{
+			StringBuilder consulta = new StringBuilder();
+			consulta.append("select cm.descricaoContaMensagem01, cm.descricaoContaMensagem02, cm.descricaoContaMensagem03 ");
+			consulta.append("  from ContaMensagem cm ");
+			consulta.append("  where cm.anoMesRreferenciaFaturamento <= :anoMesFaturamento ");
+
+			if(idFaturamentoGrupo != null){
+				consulta.append("  and cm.faturamentoGrupo = :idFaturamentoGrupo ");
+			}else{
+				consulta.append("  and cm.faturamentoGrupo is null ");
+			}
+
+			consulta.append("  and cm.indicadorUso = :indicadorUso ");
+			consulta.append("  order by cm.anoMesRreferenciaFaturamento desc ");
+
+			Query hql = session.createQuery(consulta.toString());
+			hql.setInteger("anoMesFaturamento", anoMesFaturamento);
+			if(idFaturamentoGrupo != null){
+				hql.setInteger("idFaturamentoGrupo", idFaturamentoGrupo);
+			}
+			hql.setShort("indicadorUso", ConstantesSistema.INDICADOR_USO_ATIVO);
+
+			retorno = (Object[]) hql.setMaxResults(1).uniqueResult();
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC0083] Gerar Dados para Leitura
+	 * [SB0001] - Gerar Arquivo Convencional
+	 * [SB0010] - Gerar Arquivo - Modelo 2
+	 * Obtém os débitos cobrados de parcelamento
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/05/2014
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<DebitoCobrado> pesquisarDebitosCobradosParcelamentoArquivoMicroColetor(Integer idConta, DebitoTipo debitoTipoParcelamento)
+					throws ErroRepositorioException{
+
+		Collection<DebitoCobrado> retorno = null;
+		Collection retornoConsulta = null;
+
+		Session session = HibernateUtil.getSession();
+		StringBuilder consulta = new StringBuilder();
+
+		try{
+			consulta.append(" SELECT sum(dbcb.valorPrestacao), coalesce(parc.id,0), ");
+			consulta.append(" dbcb.numeroPrestacaoDebito, dbcb.numeroPrestacao ");
+			consulta.append(" FROM DebitoCobrado dbcb ");
+			consulta.append(" INNER JOIN dbcb.debitoTipo dbtp ");
+			consulta.append(" LEFT JOIN dbcb.parcelamento parc ");
+			consulta.append(" WHERE dbcb.conta.id = :contaId and dbcb.parcelamento.id is not null ");
+			consulta.append(" GROUP BY coalesce(parc.id,0), dbcb.numeroPrestacaoDebito, dbcb.numeroPrestacao");
+			consulta.append(" ORDER BY coalesce(parc.id,0) ");
+
+			retornoConsulta = session.createQuery(consulta.toString()).setInteger("contaId", idConta.intValue()).list();
+
+			if(retornoConsulta != null){
+
+				retorno = new ArrayList<DebitoCobrado>();
+
+				for(Iterator iteratorRetorno = retornoConsulta.iterator(); iteratorRetorno.hasNext();){
+
+					Object[] arrayObject = (Object[]) iteratorRetorno.next();
+					DebitoCobrado debitoCobrado = new DebitoCobrado();
+					DebitoTipo debitoTipo = new DebitoTipo();
+					debitoTipo.setDescricao(debitoTipoParcelamento.getDescricao());
+					debitoTipo.setId(debitoTipoParcelamento.getId());
+					debitoCobrado.setValorPrestacao((BigDecimal) arrayObject[0]);
+					debitoCobrado.setDebitoTipo(debitoTipo);
+					debitoCobrado.setNumeroPrestacaoDebito(Util.obterShort(arrayObject[2].toString()));
+					debitoCobrado.setNumeroPrestacao(Util.obterShort(arrayObject[3].toString()));
+
+					if(arrayObject[1] != null){
+
+						Parcelamento parcelamento = new Parcelamento((Integer) arrayObject[1]);
+						debitoCobrado.setParcelamento(parcelamento);
+					}
+
+					retorno.add(debitoCobrado);
+				}
+			}
+
+		}catch(HibernateException e){
+
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC0083] Gerar Dados para Leitura
+	 * [SB0001] - Gerar Arquivo Convencional
+	 * [SB0010] - Gerar Arquivo - Modelo 2
+	 * Obtém os débitos cobrados de financiamentos
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/05/2014
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<DebitoCobrado> pesquisarDebitosCobradosFinanciamentosArquivoMicroColetor(Integer idConta)
+					throws ErroRepositorioException{
+
+		Collection<DebitoCobrado> retorno = null;
+		Collection retornoConsulta = null;
+
+		Session session = HibernateUtil.getSession();
+		StringBuilder consulta = new StringBuilder();
+
+		try{
+			consulta.append(" SELECT sum(dbcb.valorPrestacao), dbtp.descricao, dbtp.id, ");
+			consulta.append(" dbcb.numeroPrestacaoDebito, dbcb.numeroPrestacao, coalesce(dbcb.anoMesReferenciaDebito,0) ");
+			consulta.append(" FROM DebitoCobrado dbcb ");
+			consulta.append(" INNER JOIN dbcb.debitoTipo dbtp ");
+			consulta.append(" WHERE  dbcb.conta.id = :contaId  and dbcb.parcelamento.id is null ");
+			consulta.append(" GROUP BY coalesce(dbcb.anoMesReferenciaDebito,0), dbcb.numeroPrestacaoDebito, dbcb.numeroPrestacao, dbtp.id, dbtp.descricao ");
+			consulta.append(" ORDER BY dbtp.id ");
+
+			retornoConsulta = session.createQuery(consulta.toString()).setInteger("contaId", idConta.intValue()).list();
+
+			if(retornoConsulta != null){
+
+				retorno = new ArrayList<DebitoCobrado>();
+
+				for(Iterator iteratorRetorno = retornoConsulta.iterator(); iteratorRetorno.hasNext();){
+
+					Object[] arrayObject = (Object[]) iteratorRetorno.next();
+					DebitoCobrado debitoCobrado = new DebitoCobrado();
+					DebitoTipo debitoTipo = new DebitoTipo();
+					debitoTipo.setDescricao((String) arrayObject[1]);
+					debitoTipo.setId((Integer) arrayObject[2]);
+					debitoCobrado.setValorPrestacao((BigDecimal) arrayObject[0]);
+					debitoCobrado.setDebitoTipo(debitoTipo);
+					debitoCobrado.setNumeroPrestacaoDebito(Util.obterShort(arrayObject[3].toString()));
+					debitoCobrado.setNumeroPrestacao(Util.obterShort(arrayObject[4].toString()));
+					debitoCobrado.setAnoMesReferenciaDebito(Util.obterInteger(arrayObject[5].toString()));
+					retorno.add(debitoCobrado);
+				}
+			}
+
+		}catch(HibernateException e){
+
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC0083] Gerar Dados para Leitura
+	 * [SB0001] - Gerar Arquivo Convencional
+	 * [SB0010] - Gerar Arquivo - Modelo 2
+	 * Obtém os créditos realizados
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/05/2014
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<CreditoRealizado> pesquisarCreditosRealizadosArquivoMicroletor(Integer idConta) throws ErroRepositorioException{
+
+		Collection<CreditoRealizado> retorno = null;
+		Collection retornoConsulta = null;
+
+		Session session = HibernateUtil.getSession();
+		StringBuilder consulta = new StringBuilder();
+
+		try{
+			consulta.append(" SELECT crti.id, crti.descricao, sum(crre.valorCredito), crre.numeroPrestacaoCredito, crre.numeroPrestacao ");
+			consulta.append(" FROM CreditoRealizado crre ");
+			consulta.append(" INNER JOIN crre.creditoTipo crti ");
+			consulta.append(" WHERE  crre.conta.id = :contaId ");
+			consulta.append(" GROUP BY crti.id, crti.descricao, crre.numeroPrestacaoCredito, crre.numeroPrestacao");
+			consulta.append(" ORDER BY crti.id");
+
+			retornoConsulta = session.createQuery(consulta.toString()).setInteger("contaId", idConta.intValue()).list();
+
+			if(retornoConsulta != null){
+
+				retorno = new ArrayList<CreditoRealizado>();
+
+				for(Iterator iteratorRetorno = retornoConsulta.iterator(); iteratorRetorno.hasNext();){
+
+					Object[] arrayObject = (Object[]) iteratorRetorno.next();
+					CreditoRealizado creditoRealizado = new CreditoRealizado();
+					CreditoTipo creditoTipo = new CreditoTipo();
+					creditoTipo.setId((Integer) arrayObject[0]);
+					creditoTipo.setDescricao((String) arrayObject[1]);
+					creditoRealizado.setCreditoTipo(creditoTipo);
+					creditoRealizado.setValorCredito((BigDecimal) arrayObject[2]);
+					creditoRealizado.setNumeroPrestacaoCredito((Short) arrayObject[3]);
+					creditoRealizado.setNumeroPrestacao((Short) arrayObject[4]);
+
+					retorno.add(creditoRealizado);
+				}
+			}
+
+		}catch(HibernateException e){
+
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * @author Anderson Italo
+	 * @date 13/06/2014
+	 * @param idImovel
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Object[] obterDadosHidrometroArquivoLeituraMicrocoletorModelo2(Integer idImovel, Integer idMedicaoTipo)
+					throws ErroRepositorioException{
+
+		Object[] retorno = null;
+		Session session = HibernateUtil.getSession();
+		String consulta;
+
+		try{
+
+			if(idMedicaoTipo.equals(MedicaoTipo.LIGACAO_AGUA)){
+
+				// água
+				consulta = "select h.numero, hl.descricao, h.numeroDigitosLeitura, hih.dataInstalacao from Imovel imov "
+								+ "inner join imov.ligacaoAgua lagu inner join lagu.hidrometroInstalacaoHistorico hih "
+								+ "inner join hih.hidrometro h inner join hih.hidrometroLocalInstalacao hl "
+								+ "where lagu.id = :idImovel and hih.dataRetirada is null ";
+			}else{
+
+				// poço
+				consulta = "select h.numero, hl.descricao, h.numeroDigitosLeitura, hih.dataInstalacao " + "from Imovel imov "
+								+ "inner join imov.hidrometroInstalacaoHistorico hih "
+								+ "inner join hih.hidrometro h inner join hih.hidrometroLocalInstalacao hl "
+								+ "where imov.id = :idImovel and hih.dataRetirada is null ";
+
+			}
+
+			retorno = (Object[]) session.createQuery(consulta).setInteger("idImovel", idImovel).setMaxResults(1).uniqueResult();
+
+		}catch(HibernateException e){
+
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC0083] Gerar Dados para Leitura
+	 * [SB0001] - Gerar Arquivo Convencional
+	 * [SB0010] - Gerar Arquivo - Modelo 2
+	 * Obtém os consumos anteriores
+	 * 
+	 * @author Anderson Italo
+	 * @date 14/06/2014
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<DadosConsumoAnteriorHelper> pesquisarDadosConsumosAnterioresArquivoMicrocoletorModelo2(Integer idImovel,
+					Integer anoMes, int qtdMeses, Integer idTipoLigacao) throws ErroRepositorioException{
+
+		Collection<DadosConsumoAnteriorHelper> retorno = null;
+		Collection retornoConsulta = null;
+
+		String referenciasPesquisarConsumo = "";
+		for(int i = 1; i <= qtdMeses; i++){
+
+			int anoMesSubtraido = Util.subtrairMesDoAnoMes(anoMes, i);
+
+			if(i == 1){
+
+				referenciasPesquisarConsumo += "" + anoMesSubtraido;
+			}else{
+
+				referenciasPesquisarConsumo += "," + anoMesSubtraido;
+			}
+		}
+
+		Session session = HibernateUtil.getSession();
+		StringBuilder consulta = new StringBuilder();
+
+		try{
+			consulta.append(" SELECT ch.cshi_amfaturamento as refFaturamento, ");
+			consulta.append(" ch.cshi_nnconsumofaturadomes as consumoFaturado, ");
+
+			if(idTipoLigacao.equals(LigacaoTipo.LIGACAO_AGUA)){
+
+				consulta.append(" (SELECT mdhi_nnconsumomedidomes from medicao_historico mh where mh.lagu_id = ch.imov_id and mh.medt_id = "
+								+ MedicaoTipo.LIGACAO_AGUA.toString() + " and mh.mdhi_amleitura=ch.cshi_amfaturamento) as consumoMedido ");
+			}else{
+
+				consulta.append(" (SELECT mdhi_nnconsumomedidomes from medicao_historico mh where mh.lagu_id = ch.imov_id and mh.medt_id = "
+								+ MedicaoTipo.POCO.toString() + " and mh.mdhi_amleitura=ch.cshi_amfaturamento) as consumoMedido ");
+			}
+
+			consulta.append(" FROM consumo_historico ch ");
+			consulta.append(" WHERE  ch.imov_id = " + idImovel.toString());
+			consulta.append(" and  ch.cshi_amfaturamento in (" + referenciasPesquisarConsumo + ")");
+			consulta.append(" and  ch.lgti_id = " + idTipoLigacao);
+
+			retornoConsulta = session.createSQLQuery(consulta.toString()).addScalar("refFaturamento", Hibernate.INTEGER)
+							.addScalar("consumoFaturado", Hibernate.INTEGER).addScalar("consumoMedido", Hibernate.INTEGER).list();
+
+			if(retornoConsulta != null){
+
+				retorno = new ArrayList<DadosConsumoAnteriorHelper>();
+
+				for(Iterator iteratorRetorno = retornoConsulta.iterator(); iteratorRetorno.hasNext();){
+
+					Object[] arrayObject = (Object[]) iteratorRetorno.next();
+					DadosConsumoAnteriorHelper dadosHelper = new DadosConsumoAnteriorHelper();
+					dadosHelper.setAnoMesReferencia((Integer) arrayObject[0]);
+
+					if(arrayObject[1] != null){
+
+						dadosHelper.setConsumoFaturado((Integer) arrayObject[1]);
+					}else{
+
+						dadosHelper.setConsumoFaturado(0);
+					}
+
+					if(arrayObject[2] != null){
+
+						dadosHelper.setConsumoMedido((Integer) arrayObject[2]);
+					}else{
+
+						dadosHelper.setConsumoMedido(0);
+					}
+
+					retorno.add(dadosHelper);
+				}
+			}
+
+		}catch(HibernateException e){
+
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC0083] Gerar Dados para Leitura
+	 * [SB0001] - Gerar Arquivo Convencional
+	 * [SB0010] - Gerar Arquivo - Modelo 2
+	 * Verificar se existe conta em débito
+	 * 
+	 * @author Anderson Italo
+	 * @date 14/06/2014
+	 * @throws ErroRepositorioException
+	 */
+	public boolean vericarExistenciaContaEmDebitoAnterior(Integer idImovel, Integer anoMesReferencia) throws ErroRepositorioException{
+
+		Object retornoConsulta = null;
+		boolean retorno = false;
+
+		Session session = HibernateUtil.getSession();
+		StringBuilder consulta = new StringBuilder();
+
+		try{
+			consulta.append(" SELECT count(*) as qtdConta ");
+			consulta.append(" FROM conta c ");
+			consulta.append(" WHERE  c.imov_id = " + idImovel.toString());
+			consulta.append(" and  c.cnta_amreferenciaconta < " + anoMesReferencia.toString());
+
+			retornoConsulta = session.createSQLQuery(consulta.toString()).addScalar("qtdConta", Hibernate.INTEGER).setMaxResults(1)
+							.uniqueResult();
+
+			if(retornoConsulta != null && Util.obterInteger(retornoConsulta.toString()).intValue() > 0){
+
+				retorno = true;
+			}
+
+		}catch(HibernateException e){
+
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC0078] Filtrar Hidrômetro
+	 * 
+	 * @author Anderson Italo
+	 * @date 04/09/2014
+	 */
+	public Collection pesquisarHidrometroFiltro(FiltroHidrometroHelper filtroHidrometroHelper, Integer numeroPagina)
+					throws ErroRepositorioException{
+
+		Collection colecaoHidrometros = null;
+		Session session = HibernateUtil.getSession();
+		StringBuffer consulta = new StringBuffer("");
+		StringBuffer condicoesFiltro = new StringBuffer("");
+		Query query = null;
+
+		try{
+				
+			consulta.append(" select h from Hidrometro h");
+			consulta.append(" left join fetch h.hidrometroClasseMetrologica hcm");
+			consulta.append(" left join fetch h.hidrometroMarca hm");
+			consulta.append(" left join fetch h.hidrometroDiametro hd");
+			consulta.append(" left join fetch h.hidrometroCapacidade hc");
+			consulta.append(" left join fetch h.hidrometroTipo ht");
+			consulta.append(" left join fetch h.hidrometroSituacao hs");
+			consulta.append(" left join fetch h.hidrometroLocalArmazenagem hla");
+			consulta.append(" left join h.hidrometroTipoTurbina htt");
+			condicoesFiltro.append(" where");
+			
+			if(filtroHidrometroHelper.getNumero() != null){
+
+				condicoesFiltro.append(" h.numero = '" + filtroHidrometroHelper.getNumero().toString() + "' and");
+			}
+
+			if(filtroHidrometroHelper.getDataAquisicao() != null){
+
+				condicoesFiltro.append(" h.dataAquisicao = :dataAquisicaoFiltro and");
+			}
+
+			if(filtroHidrometroHelper.getAnoFabricacao() != null){
+
+				condicoesFiltro.append(" h.anoFabricacao = " + filtroHidrometroHelper.getAnoFabricacao().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIndicadorMacromedidor() != null){
+
+				condicoesFiltro.append(" h.indicadorMacromedidor = " + filtroHidrometroHelper.getIndicadorMacromedidor().toString()
+								+ " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroClasseMetrologica() != null){
+				
+				condicoesFiltro.append(" hcm.id = " + filtroHidrometroHelper.getIdHidrometroClasseMetrologica().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroMarca() != null){
+
+				condicoesFiltro.append(" hm.id = " + filtroHidrometroHelper.getIdHidrometroMarca().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroDiametro() != null){
+
+				condicoesFiltro.append(" hd.id = " + filtroHidrometroHelper.getIdHidrometroDiametro().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroCapacidade() != null){
+
+				condicoesFiltro.append(" hc.id = " + filtroHidrometroHelper.getIdHidrometroCapacidade().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroTipo() != null){
+
+				condicoesFiltro.append(" ht.id = " + filtroHidrometroHelper.getIdHidrometroTipo().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getLoteEntrega() != null){
+
+				condicoesFiltro.append(" h.loteEntrega = " + filtroHidrometroHelper.getLoteEntrega().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroSituacao() != null){
+
+				condicoesFiltro.append(" hs.id = " + filtroHidrometroHelper.getIdHidrometroSituacao().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroLocalArmazenagem() != null){
+
+				condicoesFiltro.append(" hla.id = " + filtroHidrometroHelper.getIdHidrometroLocalArmazenagem().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroTipoTurbina() != null){
+
+				condicoesFiltro.append(" htt.id = " + filtroHidrometroHelper.getIdHidrometroTipoTurbina().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getNumeroNotaFiscal() != null){
+
+				condicoesFiltro.append(" h.numeroNotaFiscal = " + filtroHidrometroHelper.getNumeroNotaFiscal().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.isConsultarHistoricoInstalacao()){
+
+				condicoesFiltro.append(" exists(select 1 from HidrometroInstalacaoHistorico hih where hih.hidrometro.id = h.id");
+
+				if(filtroHidrometroHelper.getDataInstalacao() != null){
+
+					condicoesFiltro.append(" and hih.dataInstalacao = :dataInstalacaoFiltro");
+				}
+
+				condicoesFiltro.append(") and");
+			}
+
+			String orderBy = " order by h.numero ";
+
+			if(!condicoesFiltro.toString().equals(" where")){
+
+				query = session.createQuery(consulta.toString()
+								+ condicoesFiltro.toString().substring(0, condicoesFiltro.toString().length() - 3) + orderBy);
+			}else{
+
+				query = session.createQuery(consulta.toString() + orderBy);
+			}
+
+			if(filtroHidrometroHelper.getDataAquisicao() != null){
+
+				query.setDate("dataAquisicaoFiltro", filtroHidrometroHelper.getDataAquisicao());
+			}
+
+			if(filtroHidrometroHelper.getDataInstalacao() != null){
+
+				query.setDate("dataInstalacaoFiltro", filtroHidrometroHelper.getDataInstalacao());
+			}
+
+			if(numeroPagina != null){
+
+				if(filtroHidrometroHelper.isConsultaSemLimites()){
+
+					colecaoHidrometros = query.list();
+				}else{
+
+					colecaoHidrometros = query.setFirstResult(10 * numeroPagina).setMaxResults(10).list();
+				}
+			}else{
+
+				colecaoHidrometros = query.list();
+			}
+
+		}catch(HibernateException e){
+
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			HibernateUtil.closeSession(session);
+		}
+
+		return colecaoHidrometros;
+	}
+
+	/**
+	 * [UC0078] Filtrar Hidrômetro
+	 * 
+	 * @author Anderson Italo
+	 * @date 04/09/2014
+	 */
+	public Integer pesquisarHidrometroFiltroTotalRegistros(FiltroHidrometroHelper filtroHidrometroHelper) throws ErroRepositorioException{
+
+		Integer retorno = null;
+		Session session = HibernateUtil.getSession();
+		StringBuffer consulta = new StringBuffer("");
+		StringBuffer condicoesFiltro = new StringBuffer("");
+		Query query = null;
+
+		try{
+
+			consulta.append(" select count(h.id) from Hidrometro h");
+			consulta.append(" left join h.hidrometroClasseMetrologica hcm");
+			consulta.append(" left join h.hidrometroMarca hm");
+			consulta.append(" left join h.hidrometroDiametro hd");
+			consulta.append(" left join h.hidrometroCapacidade hc");
+			consulta.append(" left join h.hidrometroTipo ht");
+			consulta.append(" left join h.hidrometroSituacao hs");
+			consulta.append(" left join h.hidrometroLocalArmazenagem hla");
+			consulta.append(" left join h.hidrometroTipoTurbina htt");
+			condicoesFiltro.append(" where");
+
+			if(filtroHidrometroHelper.getNumero() != null){
+
+				condicoesFiltro.append(" h.numero = '" + filtroHidrometroHelper.getNumero().toString() + "' and");
+			}
+
+			if(filtroHidrometroHelper.getDataAquisicao() != null){
+
+				condicoesFiltro.append(" h.dataAquisicao = :dataAquisicaoFiltro and");
+			}
+
+			if(filtroHidrometroHelper.getAnoFabricacao() != null){
+
+				condicoesFiltro.append(" h.anoFabricacao = " + filtroHidrometroHelper.getAnoFabricacao().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIndicadorMacromedidor() != null){
+
+				condicoesFiltro.append(" h.indicadorMacromedidor = " + filtroHidrometroHelper.getIndicadorMacromedidor().toString()
+								+ " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroClasseMetrologica() != null){
+
+				condicoesFiltro.append(" hcm.id = " + filtroHidrometroHelper.getIdHidrometroClasseMetrologica().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroMarca() != null){
+
+				condicoesFiltro.append(" hm.id = " + filtroHidrometroHelper.getIdHidrometroMarca().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroDiametro() != null){
+
+				condicoesFiltro.append(" hd.id = " + filtroHidrometroHelper.getIdHidrometroDiametro().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroCapacidade() != null){
+
+				condicoesFiltro.append(" hc.id = " + filtroHidrometroHelper.getIdHidrometroCapacidade().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroTipo() != null){
+
+				condicoesFiltro.append(" ht.id = " + filtroHidrometroHelper.getIdHidrometroTipo().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getLoteEntrega() != null){
+
+				condicoesFiltro.append(" h.loteEntrega = " + filtroHidrometroHelper.getLoteEntrega().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroSituacao() != null){
+
+				condicoesFiltro.append(" hs.id = " + filtroHidrometroHelper.getIdHidrometroSituacao().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroLocalArmazenagem() != null){
+
+				condicoesFiltro.append(" hla.id = " + filtroHidrometroHelper.getIdHidrometroLocalArmazenagem().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getIdHidrometroTipoTurbina() != null){
+
+				condicoesFiltro.append(" htt.id = " + filtroHidrometroHelper.getIdHidrometroTipoTurbina().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.getNumeroNotaFiscal() != null){
+
+				condicoesFiltro.append(" h.numeroNotaFiscal = " + filtroHidrometroHelper.getNumeroNotaFiscal().toString() + " and");
+			}
+
+			if(filtroHidrometroHelper.isConsultarHistoricoInstalacao()){
+
+				condicoesFiltro.append(" exists(select 1 from HidrometroInstalacaoHistorico hih where hih.hidrometro.id = h.id");
+
+				if(filtroHidrometroHelper.getDataInstalacao() != null){
+
+					condicoesFiltro.append(" and hih.dataInstalacao = :dataInstalacaoFiltro");
+				}
+
+				condicoesFiltro.append(") and");
+			}
+
+			if(!condicoesFiltro.toString().equals(" where")){
+
+				query = session.createQuery(consulta.toString()
+								+ condicoesFiltro.toString().substring(0, condicoesFiltro.toString().length() - 3));
+			}else{
+
+				query = session.createQuery(consulta.toString());
+			}
+
+			if(filtroHidrometroHelper.getDataAquisicao() != null){
+
+				query.setDate("dataAquisicaoFiltro", filtroHidrometroHelper.getDataAquisicao());
+			}
+
+			if(filtroHidrometroHelper.getDataInstalacao() != null){
+
+				query.setDate("dataInstalacaoFiltro", filtroHidrometroHelper.getDataInstalacao());
+			}
+
+			Number retornoConsulta = (Number) query.setMaxResults(1).uniqueResult();
+
+			if(retornoConsulta != null){
+
+				retorno = retornoConsulta.intValue();
+			}else{
+
+				retorno = 0;
+			}
+
+		}catch(HibernateException e){
+
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	public Object[] pesquisarMedicaoHistoricoAnterior(Integer idImovel, Integer anoMes, Integer idMedicaoTipo)
+					throws ErroRepositorioException{
+
+		Object[] resultadoPesquisa = null;
+
+		Session session = HibernateUtil.getSession();
+		String consulta = null;
+		try{
+
+			consulta = "";
+			if(idMedicaoTipo.equals(MedicaoTipo.POCO)){
+
+				consulta = " select medicaohistorico.mdhi_dtleituraatualfaturamento as dtleituraatualfaturamento, " // 0
+								+ " medicaohistorico.mdhi_dtleituraanteriorfaturame as dtleituraanteriorfaturame, " // 1
+								+ " medicaohistorico.mdhi_nnleituraatualfaturamento as nnleituraatualfaturamento, " // 2
+								+ " medicaohistorico.mdhi_nnconsumomedidomes as nnconsumomedidomes, " // 3
+								+ " medicaohistorico.hidi_id as idHidrometroInstalHist, " // 4
+								+ " medicaohistorico.mdhi_nnleituraanteriorfaturame as nnleituraanteriorfaturame, " // 5
+								+ " medicaohistorico.ltan_idleituraanormalidadefatu as idleituraanormalidadefatu, " // 6
+								+ " medicaohistorico.mdhi_dtleituraatualinformada as dtleituraatualInformada, " // 7
+								+ " medicaohistorico.mdhi_nnleituraanteriorinformad as nnleituraanteriorInformada, " // 8
+								+ " medicaohistorico.mdhi_nnleituraatualinformada as nnleituraatualInformada, " // 9
+								+ " medicaohistorico.medt_id as medt_id, " // 10
+								+ " medicaohistorico.MDHI_NNCONSUMOMEDIOMEDIDO as MDHI_NNCONSUMOMEDIOMEDIDO, " // 11
+								+ " medicaohistorico.mdhi_nnconsumomediohidrometro as mdhi_nnconsumomediohidrometro " // 12
+								+ " from  medicao_historico medicaohistorico where "
+								+ " medicaohistorico.mdhi_amleitura = (select max(mh1.mdhi_amleitura) from medicao_historico mh1 where mh1.lagu_id = medicaohistorico.lagu_id and "
+								+ " medicaohistorico.medt_id = mh1.medt_id and mh1.mdhi_amleitura < :anoMesReferencia) and "
+								+ " medicaohistorico.medt_id= :idMedicaoTipo and medicaohistorico.imov_id = :idImovel ";
+
+			}else if(idMedicaoTipo.equals(MedicaoTipo.LIGACAO_AGUA)){
+
+				consulta = " select medicaohistorico.mdhi_dtleituraatualfaturamento as dtleituraatualfaturamento, " // 0
+								+ " medicaohistorico.mdhi_dtleituraanteriorfaturame as dtleituraanteriorfaturame, " // 1
+								+ " medicaohistorico.mdhi_nnleituraatualfaturamento as nnleituraatualfaturamento, " // 2
+								+ " medicaohistorico.mdhi_nnconsumomedidomes as nnconsumomedidomes, " // 3
+								+ " medicaohistorico.hidi_id as idHidrometroInstalHist, " // 4
+								+ " medicaohistorico.mdhi_nnleituraanteriorfaturame as nnleituraanteriorfaturame, " // 5
+								+ " medicaohistorico.ltan_idleituraanormalidadefatu as idleituraanormalidadefatu, " // 6
+								+ " medicaohistorico.mdhi_dtleituraatualinformada as dtleituraatualInformada, " // 7
+								+ " medicaohistorico.mdhi_nnleituraanteriorinformad as nnleituraanteriorInformada, " // 8
+								+ " medicaohistorico.mdhi_nnleituraatualinformada as nnleituraatualInformada, " // 9
+								+ " medicaohistorico.medt_id as medt_id, " // 10
+								+ " medicaohistorico.MDHI_NNCONSUMOMEDIOMEDIDO as MDHI_NNCONSUMOMEDIOMEDIDO, " // 11
+								+ " medicaohistorico.mdhi_nnconsumomediohidrometro as mdhi_nnconsumomediohidrometro " // 12
+								+ " from  medicao_historico medicaohistorico where "
+								+ " medicaohistorico.mdhi_amleitura = (select max(mh1.mdhi_amleitura) from medicao_historico mh1 where mh1.lagu_id = medicaohistorico.lagu_id and "
+								+ " medicaohistorico.medt_id = mh1.medt_id and mh1.mdhi_amleitura < :anoMesReferencia) and "
+								+ " medicaohistorico.medt_id= :idMedicaoTipo and medicaohistorico.lagu_id = :idImovel ";
+
+			}
+
+			resultadoPesquisa = (Object[]) session.createSQLQuery(consulta).addScalar("dtleituraatualfaturamento", Hibernate.DATE)
+							.addScalar("dtleituraanteriorfaturame", Hibernate.DATE)
+							.addScalar("nnleituraatualfaturamento", Hibernate.INTEGER).addScalar("nnconsumomedidomes", Hibernate.INTEGER)
+							.addScalar("idHidrometroInstalHist", Hibernate.INTEGER)
+							.addScalar("nnleituraanteriorfaturame", Hibernate.INTEGER)
+							.addScalar("idleituraanormalidadefatu", Hibernate.INTEGER)
+.addScalar("dtleituraatualInformada", Hibernate.DATE)
+							.addScalar("nnleituraanteriorInformada", Hibernate.INTEGER)
+							.addScalar("nnleituraatualInformada", Hibernate.INTEGER).addScalar("medt_id", Hibernate.INTEGER)
+							.addScalar("MDHI_NNCONSUMOMEDIOMEDIDO", Hibernate.INTEGER)
+							.addScalar("mdhi_nnconsumomediohidrometro", Hibernate.INTEGER)
+							.setInteger("idImovel", idImovel)
+							.setInteger("idMedicaoTipo", idMedicaoTipo).setInteger("anoMesReferencia", anoMes.intValue()).uniqueResult();
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+		return resultadoPesquisa;
+	}
+
+	public Collection pesquisarConsumoHistoricoAguaEsgotoAnterior(Integer idImovel, int anoMesGrupoFaturamento)
+					throws ErroRepositorioException{
+
+		Collection retorno = null;
+
+		Session session = HibernateUtil.getSession();
+
+		try{
+			StringBuffer consulta = new StringBuffer("select ");
+			consulta.append(" ch ");
+			consulta.append(" from ");
+			consulta.append(" ConsumoHistorico ch ");
+			consulta.append(" inner join  ch.ligacaoTipo lt ");
+			consulta.append(" where ");
+			consulta.append(" ch.imovel.id = :idImovel ");
+			consulta.append(" and ch.referenciaFaturamento = ");
+			consulta.append(" (select max(ch1.referenciaFaturamento) from ConsumoHistorico ch1 where ch1.imovel.id = ch.imovel.id and ch1.ligacaoTipo.id = lt.id ");
+			consulta.append(" and ch1.referenciaFaturamento < :anoMesGrupoFaturamento )");
+			consulta.append(" order by lt.id ");
+
+			retorno = session.createQuery(consulta.toString()).setInteger("idImovel", idImovel)
+							.setInteger("anoMesGrupoFaturamento", anoMesGrupoFaturamento).list();
+
+		}catch(HibernateException e){
+
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	public List<Object[]> pesquisarRotasComAlteracaoNasLigacoesEconomiasComReferencia() throws ErroRepositorioException{
+
+		List<Object[]> retorno = new ArrayList<Object[]>();
+		Session session = HibernateUtil.getSession();
+
+		try{
+
+			StringBuffer consulta = new StringBuffer("");
+			consulta.append("SELECT distinct R AS idRota ");
+			consulta.append(" FROM ");
+			consulta.append("	(SELECT R,S,Q,C,LA,LE,SUM(RLE) RLE1,SUM(IMO) IMO2, (SUM(RLE) - SUM(IMO)) DIF ");
+			consulta.append("	FROM ");
+			consulta.append("		(SELECT ");
+			consulta.append("			RL.ROTA_ID R, ");
+			consulta.append("			RL.STCM_ID S, ");
+			consulta.append("			RL.QDRA_ID Q, ");
+			consulta.append("			RL.CATG_ID C, ");
+			consulta.append("			RL.LAST_ID LA, ");
+			consulta.append("			RL.LEST_ID LE, ");
+			consulta.append("			sum(RL.RELE_QTLIGACOES) RLE, ");
+			consulta.append("			0 IMO ");
+			consulta.append("		FROM resumo_ligacoes_economia RL ");
+			consulta.append("		INNER JOIN ROTA RO ON RO.ROTA_ID = RL.ROTA_ID ");
+
+			consulta.append("		GROUP BY ");
+			consulta.append("			RL.ROTA_ID, ");
+			consulta.append("			RL.STCM_ID, ");
+			consulta.append("			RL.QDRA_ID, ");
+			consulta.append("			RL.CATG_ID, ");
+			consulta.append("			RL.LAST_ID, ");
+			consulta.append("			RL.LEST_ID ");
+			consulta.append("		UNION ");
+			consulta.append("		SELECT ");
+			consulta.append("			I.ROTA_ID R, ");
+			consulta.append("			I.STCM_ID S, ");
+			consulta.append("			I.QDRA_ID Q, ");
+			consulta.append("			CT.CATG_ID C, ");
+			consulta.append("			I.LAST_ID LA, ");
+			consulta.append("			I.LEST_ID LE, ");
+			consulta.append("			0 RLE, ");
+			consulta.append("			COUNT(*) IMO ");
+			consulta.append("		FROM IMOVEL I ");
+			consulta.append("		INNER JOIN ROTA R2 ON R2.ROTA_ID = I.ROTA_ID ");
+			consulta.append("		INNER JOIN CATEGORIA CT ON CT.CATG_ID = ");
+			consulta.append("			(SELECT MIN(IC2.CATG_ID) FROM IMOVEL_SUBCATEGORIA IC2 WHERE IC2.IMSB_QTECONOMIA = ");
+			consulta.append("				(SELECT MAX(IMSB_QTECONOMIA) FROM IMOVEL_SUBCATEGORIA IC1 WHERE IC1.IMOV_ID = I.IMOV_ID) ");
+			consulta.append("		 		AND IC2.IMOV_ID = I.IMOV_ID) ");
+
+			consulta.append("		GROUP BY  ");
+			consulta.append("			I.ROTA_ID, ");
+			consulta.append("			I.STCM_ID, ");
+			consulta.append("			I.QDRA_ID, ");
+			consulta.append("			CT.CATG_ID, ");
+			consulta.append("			I.LAST_ID, ");
+			consulta.append("			I.LEST_ID) TAB1 ");
+			consulta.append("	GROUP BY R,S,Q,C,LA,LE ");
+			consulta.append("	ORDER BY R,S,Q,C,LA,LE) TAB2 ");
+			consulta.append("GROUP BY R ");
+			consulta.append("ORDER BY R ");
+
+			List<Integer> lista = session.createSQLQuery(consulta.toString()).addScalar("idRota", Hibernate.INTEGER).list();
+
+			if(lista.isEmpty()){
+				return retorno;
+
+			}
+
+			List<Object[]> listaResumoLigacaoes = new ArrayList<Object[]>();
+			int indice = 0;
+			List<Integer> idsRota = new ArrayList<Integer>();
+			for(Integer idRota : lista){
+
+				if(++indice < 1000){
+					idsRota.add(idRota);
+					continue;
+				}
+				indice = 0;
+
+				listaResumoLigacaoes.addAll(listaResumoLigacaoEcnomia(idsRota, session));
+				idsRota.clear();
+
+			}
+
+			retorno = listaResumoLigacaoes;
+
+		}catch(HibernateException e){
+
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+
+	}
+
+	private List<Object[]> listaResumoLigacaoEcnomia(List<Integer> idsRota, Session session){
+
+		if(idsRota == null || idsRota.isEmpty()){
+			return new ArrayList<Object[]>();
+		}
+
+		StringBuilder string = new StringBuilder();
+		string.append(" select distinct r.rota_id , r.rele_amreferencia from resumo_ligacoes_economia r ");
+		string.append("  where r.rota_id in ( " + idsRota.toString().replace("[", "").replace("]", "") + ") ");
+
+		SQLQuery query = session.createSQLQuery(string.toString());
+
+		return query.list();
+
+	}
+
+	/**
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<Object[]> obterImoveisParaCreditoARealizarConta(Integer referencia, String idsGrupos)
+					throws ErroRepositorioException{
+
+		Collection<Object[]> retorno = null;
+		Session session = HibernateUtil.getSession();
+		StringBuffer consulta = new StringBuffer("");
+
+		try{
+
+			consulta.append(" select i.imov_id as idImovel, mre.MREM_NNCONSUMOMEDIDO as consumoMedido, mre.CSTF_ID as idConsumoTarifa , ");
+			consulta.append(" mre.MREM_NNCONSUMOFATURADOAGUA as consumoFaturadoAgua, mre.MREM_NNCONSUMOFATURADOESGOTO as consumoFaturadoEsgoto, mre.mrem_dtleituraanterior as dataLeituraAnterior , mre.mrem_tmleitura as dataLeituraAtual ");
+			consulta.append(" FROM imovel i ");
+			consulta.append(" inner join rota r on r.rota_id = i.rota_id ");
+			consulta.append(" inner join faturamento_grupo ftgr on ftgr.ftgr_id = r.ftgr_id ");
+			consulta.append(" inner join movimento_roteiro_empresa mre on mre.imov_id = i.imov_id ");
+			consulta.append(" where i.loca_id = 3 and ");
+			consulta.append(" mre.mrem_ammovimento =:referencia  and");
+			consulta.append(" i.stcm_cdsetorcomercial in (01,03,05,07,09,11,13,15) AND ");
+			consulta.append(" mre.MREM_NNCONSUMOMEDIDO is not null ");
+
+			if(idsGrupos != null){
+
+				consulta.append(" and r.ftgr_id in (" + idsGrupos + ") ");
+				consulta.append(" order by i.imov_id ");
+
+				retorno = (Collection<Object[]>) session.createSQLQuery(consulta.toString()).addScalar("idImovel", Hibernate.INTEGER)
+								.addScalar("consumoMedido", Hibernate.INTEGER).addScalar("idConsumoTarifa", Hibernate.INTEGER)
+								.addScalar("consumoFaturadoAgua", Hibernate.INTEGER).addScalar("consumoFaturadoEsgoto", Hibernate.INTEGER)
+								.addScalar("dataLeituraAnterior", Hibernate.DATE).addScalar("dataLeituraAtual", Hibernate.DATE)
+								.setInteger("referencia", referencia).list();
+
+			}else{
+
+				consulta.append(" order by i.imov_id ");
+				retorno = (Collection<Object[]>) session.createSQLQuery(consulta.toString()).addScalar("idImovel", Hibernate.INTEGER)
+								.addScalar("consumoMedido", Hibernate.INTEGER).addScalar("idConsumoTarifa", Hibernate.INTEGER)
+								.addScalar("consumoFaturadoAgua", Hibernate.INTEGER).addScalar("consumoFaturadoEsgoto", Hibernate.INTEGER)
+								.addScalar("dataLeituraAnterior", Hibernate.DATE).addScalar("dataLeituraAtual", Hibernate.DATE)
+								.setInteger("referencia", referencia).list();
+			}
 
 		}catch(HibernateException e){
 

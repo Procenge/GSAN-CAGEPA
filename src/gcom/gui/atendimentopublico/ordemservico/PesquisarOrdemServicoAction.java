@@ -128,6 +128,7 @@ public class PesquisarOrdemServicoAction
 			sessao.setAttribute("caminhoRetornoResultadoPesquisaOS", "pesquisarOrdemServicoAction.do");
 		}
 
+
 		boolean parametroInformado = false;
 
 		// Numero RA

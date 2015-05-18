@@ -79,6 +79,8 @@
 
 package gcom.gui.relatorio.faturamento;
 
+import gcom.cadastro.cliente.ClienteTipo;
+import gcom.cadastro.cliente.FiltroClienteTipo;
 import gcom.cadastro.localidade.FiltroLocalidade;
 import gcom.cadastro.localidade.Localidade;
 import gcom.gui.GcomAction;
@@ -126,6 +128,9 @@ public class ExibirGerarRelatorioMaioresDevedoresAction
 			// Faz a consulta de Localidade
 			this.pesquisarLocalidade(form, httpServletRequest);
 		}
+
+		this.pesquisarClienteTipo(form, httpServletRequest);
+
 		return retorno;
 
 	}
@@ -150,6 +155,22 @@ public class ExibirGerarRelatorioMaioresDevedoresAction
 			form.setNomeLocalidade("Localidade inexistente");
 		}
 	}
+	
+	
+	private void pesquisarClienteTipo(GerarRelatorioMaioresDevedoresActionForm form, HttpServletRequest httpServletRequest){
+
+		
+		FiltroClienteTipo filtroClienteTipo = new FiltroClienteTipo();
+		HttpSession sessao = httpServletRequest.getSession();
+
+		// Recupera cliente tipo
+		Collection colecaoClienteTipo = this.getFachada().pesquisar(filtroClienteTipo, ClienteTipo.class.getName());
+		sessao.setAttribute("colecaoClienteTipo", colecaoClienteTipo);
+		
+
+	}
+
+	
 
 	private void preencherForm(GerarRelatorioMaioresDevedoresActionForm form, String localidade, String nomeLocalidade){
 

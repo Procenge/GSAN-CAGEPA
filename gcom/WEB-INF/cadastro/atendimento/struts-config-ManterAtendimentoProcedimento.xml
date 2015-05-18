@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="ManutencaoRegistroActionForm"
+			type="gcom.gui.ManutencaoRegistroActionForm" />
+		<form-bean name="AtualizarAtendimentoProcedimentoActionForm"
+			type="gcom.gui.cadastro.atendimento.AtualizarAtendimentoProcedimentoActionForm" />
+	</form-beans>
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.cadastro.atendimento.ExibirManterAtendimentoProcedimentoAction"
+			validate="false" scope="session"
+			path="/exibirManterAtendimentoProcedimentoAction">
+			<forward name="exibirManterAtendimentoProcedimentoAction"
+				path="/jsp/cadastro/atendimento/atendimento_procedimento_manter.jsp" />
+			<forward name="atualizarAtendimentoProcedimento"
+				path="/exibirAtualizarAtendimentoProcedimentoAction.do?filtrar=sim" />
+		</action>
+
+		<action name="ManutencaoRegistroActionForm"
+			type="gcom.gui.cadastro.atendimento.RemoverAtendimentoProcedimentoAction"
+			validate="false" input="/exibirManterAtendimentoProcedimentoAction.do"
+			scope="request" path="/removerAtendimentoProcedimentoAction">
+		</action>
+
+		<action name="AtualizarAtendimentoProcedimentoActionForm"
+			type="gcom.gui.cadastro.atendimento.ExibirAtualizarAtendimentoProcedimentoAction"
+			validate="false" scope="session"
+			path="/exibirAtualizarAtendimentoProcedimentoAction">
+			<forward name="atualizarAtendimentoProcedimento"
+				path="/jsp/cadastro/atendimento/atendimento_procedimento_atualizar.jsp" />
+		</action>
+
+		<action name="AtualizarAtendimentoProcedimentoActionForm"
+			type="gcom.gui.cadastro.atendimento.AtualizarAtendimentoProcedimentoAction"
+			validate="true" scope="request"
+			path="/atualizarAtendimentoProcedimentoAction">
+		</action>
+
+		<action  name="AtualizarAtendimentoProcedimentoActionForm"
+			type="gcom.gui.cadastro.atendimento.RemoverAtualizarAdicionarAtendProcDocumentosPessoaTipoAction"
+			validate="false"
+			path="/removerAtualizarAdicionarAtendProcDocumentosPessoaTipoAction">
+			<forward name="atualizarRemoverAtendProcDocumentosPessoaTipo"
+				path="/exibirAtualizarAtendimentoProcedimentoAction.do?carregarProcDocumentoPessoa=1" />
+		</action>
+
+		<action  name="AtualizarAtendimentoProcedimentoActionForm"
+			type="gcom.gui.cadastro.atendimento.RemoverAtualizarAdicionarAtendProcNormaProcedimentalAction"
+			validate="false"
+			path="/removerAtualizarAdicionarAtendProcNormaProcedimentalAction">
+			<forward name="atualizarRemoverAtendProcNormaProcedimental"
+				path="/exibirAtualizarAtendimentoProcedimentoAction.do?carregarProcNormaProcedimental=1" />				
+		</action>
+ 
+
+	</action-mappings>
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

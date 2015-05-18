@@ -2,10 +2,15 @@ package gcom.agenciavirtual.cadastro.cliente;
 
 import gcom.agenciavirtual.AbstractAgenciaVirtualJSONWebservice;
 import gcom.cadastro.cliente.*;
+import gcom.cadastro.endereco.FiltroLogradouroBairro;
+import gcom.cadastro.geografico.Bairro;
+import gcom.cadastro.geografico.FiltroBairro;
 import gcom.fachada.Fachada;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+
+import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -108,6 +113,28 @@ public class PesquisarClienteWebService
 
 			}
 			
+			if(clienteHelper.getSiglaEstado().equals("")){
+
+				if(clienteEndereco.getLogradouroBairro() != null && clienteEndereco.getLogradouroBairro().getBairro() != null){
+
+					FiltroBairro filtroBairro = new FiltroBairro();
+
+					filtroBairro.adicionarParametro(new ParametroSimples(FiltroLogradouroBairro.ID, clienteEndereco
+									.getLogradouroBairro().getId()));
+					filtroBairro.adicionarCaminhoParaCarregamentoEntidade("municipio");
+					filtroBairro.adicionarCaminhoParaCarregamentoEntidade("municipio.unidadeFederacao");
+
+					Collection collBairro = Fachada.getInstancia().pesquisar(filtroBairro, Bairro.class.getName());
+
+					Bairro bairro = (Bairro) Util.retonarObjetoDeColecao(collBairro);
+
+					if(bairro != null && bairro.getMunicipio() != null && bairro.getMunicipio().getUnidadeFederacao() != null){
+						clienteHelper.setSiglaEstado(bairro.getMunicipio().getUnidadeFederacao().getSigla());
+					}
+
+				}
+			}
+
 			clienteHelper.setNumero(clienteEndereco.getNumero());
 			clienteHelper.setIdEnderecoReferencia(clienteEndereco.getEnderecoReferencia() != null ? clienteEndereco.getEnderecoReferencia()
 							.getId() : null);

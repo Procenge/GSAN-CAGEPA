@@ -128,4 +128,8 @@ public class FiltroConsumoTarifaVigencia
 
 	public final static String CONSUMO_TARIFA = "consumoTarifa";
 
+	public final static String DESCRICAO_ATO_ADMINISTRATIVO = "descricaoAtoAdministrativo";
+
+	public final static String CALCULO_TIPO = "calculoTipo";
+
 }

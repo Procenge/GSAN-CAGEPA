@@ -12,7 +12,11 @@ public class ConsultarAuditoriaTransferenciaDebitosActionForm
 
 	private String idUsuarioOrigem;
 
+	private String nomeUsuarioOrigem;
+
 	private String idUsuarioDestino;
+
+	private String nomeUsuarioDestino;
 
 	private String dataInicial;
 
@@ -76,6 +80,26 @@ public class ConsultarAuditoriaTransferenciaDebitosActionForm
 	public void setDataFinal(String dataFinal){
 
 		this.dataFinal = dataFinal;
+	}
+
+	public String getNomeUsuarioOrigem(){
+
+		return nomeUsuarioOrigem;
+	}
+
+	public void setNomeUsuarioOrigem(String nomeUsuarioOrigem){
+
+		this.nomeUsuarioOrigem = nomeUsuarioOrigem;
+	}
+
+	public String getNomeUsuarioDestino(){
+
+		return nomeUsuarioDestino;
+	}
+
+	public void setNomeUsuarioDestino(String nomeUsuarioDestino){
+
+		this.nomeUsuarioDestino = nomeUsuarioDestino;
 	}
 
 }

@@ -76,16 +76,19 @@
 
 package gcom.micromedicao.consumo;
 
-import java.io.Serializable;
+import gcom.faturamento.consumotarifa.FiltroCalculoTipo;
+import gcom.interceptor.ControleAlteracao;
+import gcom.interceptor.ObjetoTransacao;
+import gcom.util.filtro.Filtro;
+import gcom.util.filtro.ParametroSimples;
+
 import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-/**
- * @author Hibernate CodeGenerator
- */
+@ControleAlteracao()
 public class CalculoTipo
-				implements Serializable {
+				extends ObjetoTransacao {
 
 	private static final long serialVersionUID = 1L;
 
@@ -231,6 +234,29 @@ public class CalculoTipo
 	public String toString(){
 
 		return new ToStringBuilder(this).append("id", getId()).toString();
+	}
+
+	@Override
+	public Filtro retornaFiltro(){
+
+		FiltroCalculoTipo filtro = new FiltroCalculoTipo();
+
+		filtro.adicionarParametro(new ParametroSimples(FiltroCalculoTipo.ID, this.getId()));
+		return filtro;
+	}
+
+	@Override
+	public String[] retornaCamposChavePrimaria(){
+
+		String[] retorno = new String[1];
+		retorno[0] = "id";
+		return retorno;
+	}
+
+	@Override
+	public String getDescricaoParaRegistroTransacao(){
+
+		return getId() + " " + getDescricao();
 	}
 
 }

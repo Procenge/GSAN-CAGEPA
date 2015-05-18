@@ -30,6 +30,9 @@ import gcom.cobranca.parcelamento.Parcelamento;
 import gcom.fachada.Fachada;
 import gcom.faturamento.FaturamentoGrupo;
 import gcom.faturamento.FiltroFaturamentoGrupo;
+import gcom.faturamento.bean.FiltroContaSimularCalculoHelper;
+import gcom.faturamento.consumotarifa.ConsumoTarifaVigencia;
+import gcom.faturamento.consumotarifa.FiltroConsumoTarifaVigencia;
 import gcom.faturamento.credito.CreditoOrigem;
 import gcom.faturamento.credito.CreditoRealizado;
 import gcom.faturamento.debito.DebitoCreditoSituacao;
@@ -497,22 +500,22 @@ public class AjaxService {
 		Collection<Bairro> colecaoBairro = null;
 
 		if(colecaoLocalidade != null && !colecaoLocalidade.isEmpty()){
-		if(colecaoLocalidade.iterator().next().getMunicipio() != null && !colecaoLocalidade.iterator().next().getMunicipio().equals("")){
-			FiltroBairro filtroBairro = new FiltroBairro();
-			filtroBairro.adicionarParametro(new ParametroSimples(FiltroBairro.MUNICIPIO_ID, colecaoLocalidade.iterator().next()
-							.getMunicipio().getId().toString()));
-			filtroBairro.adicionarParametro(new ParametroSimples(FiltroBairro.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
-			filtroBairro.setCampoOrderBy(FiltroBairro.NOME);
+			if(colecaoLocalidade.iterator().next().getMunicipio() != null && !colecaoLocalidade.iterator().next().getMunicipio().equals("")){
+				FiltroBairro filtroBairro = new FiltroBairro();
+				filtroBairro.adicionarParametro(new ParametroSimples(FiltroBairro.MUNICIPIO_ID, colecaoLocalidade.iterator().next()
+								.getMunicipio().getId().toString()));
+				filtroBairro.adicionarParametro(new ParametroSimples(FiltroBairro.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
+				filtroBairro.setCampoOrderBy(FiltroBairro.NOME);
 
-			colecaoBairro = fachada.pesquisar(filtroBairro, Bairro.class.getName());
-		}
+				colecaoBairro = fachada.pesquisar(filtroBairro, Bairro.class.getName());
+			}
 
-		Bairro bairro = new Bairro();
+			Bairro bairro = new Bairro();
 
-		for(Iterator<Bairro> iterator = colecaoBairro.iterator(); iterator.hasNext();){
-			bairro = (Bairro) iterator.next();
-			retorno.put(String.valueOf(bairro.getNome()), String.valueOf(bairro.getId()));
-		}
+			for(Iterator<Bairro> iterator = colecaoBairro.iterator(); iterator.hasNext();){
+				bairro = (Bairro) iterator.next();
+				retorno.put(String.valueOf(bairro.getNome()), String.valueOf(bairro.getId()));
+			}
 		}
 
 		return retorno;
@@ -804,21 +807,21 @@ public class AjaxService {
 
 		if(idGerenciaRegional.equals("") == false){
 
-		if(!Integer.valueOf(idGerenciaRegional).equals(ConstantesSistema.NUMERO_NAO_INFORMADO)){
-			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID_GERENCIA, Integer.valueOf(idGerenciaRegional)));
-		}
-		filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.INDICADORUSO, ConstantesSistema.INDICADOR_USO_ATIVO));
-		filtroLocalidade.setCampoOrderBy(FiltroLocalidade.DESCRICAO);
+			if(!Integer.valueOf(idGerenciaRegional).equals(ConstantesSistema.NUMERO_NAO_INFORMADO)){
+				filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID_GERENCIA, Integer.valueOf(idGerenciaRegional)));
+			}
+			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.INDICADORUSO, ConstantesSistema.INDICADOR_USO_ATIVO));
+			filtroLocalidade.setCampoOrderBy(FiltroLocalidade.DESCRICAO);
 
-		Collection<Localidade> colecaoLocalidade = fachada.pesquisar(filtroLocalidade, Localidade.class.getName());
+			Collection<Localidade> colecaoLocalidade = fachada.pesquisar(filtroLocalidade, Localidade.class.getName());
 
-		for(Localidade localidade : colecaoLocalidade){
-			System.out.println(String.valueOf(localidade.getDescricao()));
-		}
+			for(Localidade localidade : colecaoLocalidade){
+				System.out.println(String.valueOf(localidade.getDescricao()));
+			}
 
-		for(Localidade localidade : colecaoLocalidade){
-			retorno.put(String.valueOf(localidade.getDescricao()), String.valueOf(localidade.getId()));
-		}
+			for(Localidade localidade : colecaoLocalidade){
+				retorno.put(String.valueOf(localidade.getDescricao()), String.valueOf(localidade.getId()));
+			}
 
 		}
 
@@ -912,58 +915,73 @@ public class AjaxService {
 	 */
 	public boolean validarMotivoRetificacaoInformado(String idMotivoRetificacaoStr, String idImovelStr){
 
-		boolean ocorreuErro = false;
-		if(idMotivoRetificacaoStr != null && !idMotivoRetificacaoStr.equals(ConstantesSistema.NUMERO_NAO_INFORMADO)){
+		boolean error = false;
 
-			// [FS0027] Validade motivo da retificação informado.
+		/*
+		 * 1. Caso existam, no ano corrente, contas retificadas com motivo de retificação igual a
+		 * "OCORRENCIA DE CONSUMO" (existe ocorrência na Tabela CONTA com IMOV_ID = matrícula do
+		 * imóvel e CNTA_DTRETIFICACAO entre o primeiro dia do ano corrente e a data corrente e
+		 * CMRT_ID = (PASI_VLPARAMETRO na tabela PARAMETRO_SISTEMA para PASI_CDPARAMETRO =
+		 * 'P_MOTIVO_RETIFICACAO_OCORRENCIA_CONSUMO'))
+		 * ou
+		 * (existe ocorrência na Tabela CONTA_HISTORICO com IMOV_ID = matrícula do imóvel e
+		 * CNHI_DTRETIFICACAO entre o primeiro dia do ano corrente e a data corrente e CMRT_ID =
+		 * (PASI_VLPARAMETRO na tabela PARAMETRO_SISTEMA para PASI_CDPARAMETRO =
+		 * 'P_MOTIVO_RETIFICACAO_OCORRENCIA_CONSUMO'))
+		 */
+		if(idMotivoRetificacaoStr != null && !idMotivoRetificacaoStr.equals(ConstantesSistema.NUMERO_NAO_INFORMADO)){
 			Integer idMotivoRetificacao = Util.converterStringParaInteger(idMotivoRetificacaoStr);
-			Integer parametroMotivoRetificaoOcorrenciaConsumo = null;
+			int paramMotivoRetificaoOcorrenciaConsumo = 0;
+			int qtdContasRetificadasPorMotivoRetificacao = 0;
+
+			// id do parâmetro
 			try{
-				parametroMotivoRetificaoOcorrenciaConsumo = Util
+				paramMotivoRetificaoOcorrenciaConsumo = Util
 								.converterStringParaInteger((String) ParametroFaturamento.P_MOTIVO_RETIFICACAO_OCORRENCIA_CONSUMO
 												.executar(ExecutorParametrosFaturamento.getInstancia()));
 			}catch(ControladorException e){
-				ocorreuErro = true;
+				error = true;
 			}
 
-			if(idMotivoRetificacao.equals(parametroMotivoRetificaoOcorrenciaConsumo)){
-				Integer qtdRAEncerradaAnoCorrente = null;
-				Integer idImovel = null;
-				try{
-					if(idImovelStr != null){
-						idImovel = Util.converterStringParaInteger(idImovelStr);
-					}
-					qtdRAEncerradaAnoCorrente = Fachada
-									.getInstancia()
-									.obterQuantidadeRAEncerradaAnoCorrentePorTipoSolicitacaoEspecificacao(
-													Util.obterInteger(((String) ParametroFaturamento.P_TIPO_SOLICITACAO_ESPECIFICACAO_BLOQUEIO_RETIFICACAO
-																	.executar(ExecutorParametrosFaturamento.getInstancia()))), idImovel);
-				}catch(ControladorException e){
-					ocorreuErro = true;
-				}
+			// retificações permitidas por ano
+			Integer qtdRAEncerradaAnoParametro = null;
+			try{
+				qtdRAEncerradaAnoParametro = Util
+								.converterStringParaInteger((String) ParametroFaturamento.P_QUANTIDADE_RA_ENCERRADA_ANO_BLOQUEIO_RETIFICACAO
+												.executar(ExecutorParametrosFaturamento.getInstancia()));
+			}catch(ControladorException e){
+				error = true;
+			}
 
-				Integer qtdRAEncerradaAnoParametro = null;
-				try{
-					qtdRAEncerradaAnoParametro = Util
-									.converterStringParaInteger((String) ParametroFaturamento.P_QUANTIDADE_RA_ENCERRADA_ANO_BLOQUEIO_RETIFICACAO
-													.executar(ExecutorParametrosFaturamento.getInstancia()));
-				}catch(ControladorException e){
-					ocorreuErro = true;
-				}
+			// motivo selecionado = motivo do parâmetro
+			if(idMotivoRetificacao.equals(paramMotivoRetificaoOcorrenciaConsumo)){
 
-				if(!ocorreuErro && qtdRAEncerradaAnoCorrente.intValue() > qtdRAEncerradaAnoParametro.intValue()){
-					ocorreuErro = true;
-				}
+				qtdContasRetificadasPorMotivoRetificacao = Fachada.getInstancia().obterQtdContasRetificadasPorMotivoRetificacao(
+								Integer.parseInt(idImovelStr), paramMotivoRetificaoOcorrenciaConsumo);
+			}
+
+			/*
+			 * e a quantidade de contas encontradas seja
+			 * maior que o valor contido em PASI_VLPARAMETRO na tabela PARAMETRO_SISTEMA para
+			 * PASI_CDPARAMETRO = 'P_QUANTIDADE_RA_ENCERRADA_ANO_BLOQUEIO_RETIFICACAO'), exibir a
+			 * mensagem "A quantidade de contas retificadas por Ocorrência de Consumo no ano de
+			 * <<ano
+			 * corrente>> supera a quantidade permitida. Utilize outro motivo de retificação" e
+			 * retornar
+			 * para o passo correspondente no fluxo principal.
+			 */
+			if(!error && qtdContasRetificadasPorMotivoRetificacao > qtdRAEncerradaAnoParametro){
+				error = true;
 			}
 		}
 
-		return ocorreuErro;
+		return error;
 	}
-	
+
 	public Map<String, String> obterCreditoOrigem(Integer idCreditoTipo, Short indicadorUsoLivre){
-		
+
 		Map<String, String> dados = new LinkedHashMap<String, String>();
-		
+
 		HttpSession sessao = WebContextFactory.get().getSession();
 		Usuario usuarioLogado = (Usuario) sessao.getAttribute("usuarioLogado");
 
@@ -987,9 +1005,9 @@ public class AjaxService {
 			}
 
 		}
-		
+
 		return dados;
-		
+
 	}
 
 	public Map<String, String> configurarCreditoARealizarImovel(Long idCreditoRealizado, String valorCredito){
@@ -1021,7 +1039,7 @@ public class AjaxService {
 
 							BigDecimal vlTotalDisponivel = this.obterValorCreditoDisponivel(creditoRealizado.getCreditoTipo().getId(),
 											sessao);
-											
+
 							if(vlTotalDisponivel != null){
 
 								BigDecimal vl = BigDecimal.ZERO;
@@ -1119,8 +1137,7 @@ public class AjaxService {
 
 	private BigDecimal obterValorCreditoDisponivel(Integer idCreditoTipo, HttpSession sessao){
 
-		Map<Integer, BigDecimal> mapCreditos = (Map<Integer, BigDecimal>) sessao.getAttribute(
-						ConstantesSistema.CREDITO_TOTAL_DISPONIVEL);
+		Map<Integer, BigDecimal> mapCreditos = (Map<Integer, BigDecimal>) sessao.getAttribute(ConstantesSistema.CREDITO_TOTAL_DISPONIVEL);
 
 		return mapCreditos.get(idCreditoTipo);
 
@@ -1128,8 +1145,7 @@ public class AjaxService {
 
 	private void atualizarValorCreditoDisponivel(Integer idCreditoTipo, BigDecimal valorAtualizado, HttpSession sessao){
 
-		Map<Integer, BigDecimal> mapCreditos = (Map<Integer, BigDecimal>) sessao.getAttribute(
-						ConstantesSistema.CREDITO_TOTAL_DISPONIVEL);
+		Map<Integer, BigDecimal> mapCreditos = (Map<Integer, BigDecimal>) sessao.getAttribute(ConstantesSistema.CREDITO_TOTAL_DISPONIVEL);
 
 		mapCreditos.remove(idCreditoTipo);
 
@@ -1172,7 +1188,6 @@ public class AjaxService {
 			e.printStackTrace();
 		}
 
-
 		if(Util.isVazioOuBranco(idImovel) || "-1".equals(idImovel)){
 			mensagem = "Informe a Matrícula do imóvel.";
 		}
@@ -1205,11 +1220,10 @@ public class AjaxService {
 			Collection<PagamentoHistoricoAdmiteDevolucaoHelper> colecao = fachada.consultarPagamentosHistoricoAdmiteDevolucao(
 							Integer.valueOf(idImovel), creditoARealizar);
 
-				sessao.setAttribute("pagamentosHistoricoAdmiteDevolucao", colecao);
+			sessao.setAttribute("pagamentosHistoricoAdmiteDevolucao", colecao);
 		}else{
 			sessao.removeAttribute("pagamentosHistoricoAdmiteDevolucao");
 		}
-
 
 		return dados;
 	}
@@ -1218,7 +1232,7 @@ public class AjaxService {
 
 		HttpSession sessao = WebContextFactory.get().getSession();
 		String[] retorno = new String[] {"false", null};
-		
+
 		Collection<PagamentoHistoricoAdmiteDevolucaoHelper> colecao = (Collection<PagamentoHistoricoAdmiteDevolucaoHelper>) sessao
 						.getAttribute("pagamentosHistoricoAdmiteDevolucao");
 
@@ -1233,7 +1247,10 @@ public class AjaxService {
 
 		if(pagamento != null){
 			Collection<Integer> tiposRelacionadoNoUC = Arrays.asList(DebitoCreditoSituacao.NORMAL, DebitoCreditoSituacao.RETIFICADA,
-							DebitoCreditoSituacao.INCLUIDA, DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO); // 0, 1, 2, 4 
+							DebitoCreditoSituacao.INCLUIDA, DebitoCreditoSituacao.ENTRADA_DE_PARCELAMENTO); // 0,
+																											// 1,
+																											// 2,
+																											// 4
 			Integer debitoCreditoIndicadorAtual = pagamento.getDebitoCreditoIndicadorAtual();
 			String condicaoJS = "false";
 
@@ -1256,7 +1273,7 @@ public class AjaxService {
 				condicaoJS = "true";
 				valorCredito = valorPagamentoStr;
 			}
-			
+
 			retorno = new String[] {condicaoJS, valorCredito};
 		}
 		return retorno;
@@ -1272,6 +1289,7 @@ public class AjaxService {
 
 		return retorno;
 	}
+
 	public Collection carregarElo(){
 
 		FiltroLocalidade filtroLocalidade = new FiltroLocalidade();
@@ -1350,6 +1368,63 @@ public class AjaxService {
 		}
 
 		return retorno;
+	}
+
+	/**
+	 * [UC3156] Simular Cálculo da Conta Dados Reais
+	 * 
+	 * @author Anderson Italo
+	 * @date 21/09/2014
+	 */
+	public Map<String, String> carregaConsumoTarifaVigencias(String id){
+
+		FiltroConsumoTarifaVigencia filtro = new FiltroConsumoTarifaVigencia();
+		filtro.adicionarParametro(new ParametroSimples(FiltroConsumoTarifaVigencia.CONSUMO_TARIFA_ID, Integer.valueOf(id)));
+		filtro.setCampoOrderByDesc(FiltroConsumoTarifaVigencia.DATA_VIGENCIA);
+		Collection<ConsumoTarifaVigencia> retorno1 = fachada.pesquisar(filtro, ConsumoTarifaVigencia.class.getName());
+		LinkedHashMap<String, String> retorno = new LinkedHashMap<String, String>();
+		for(ConsumoTarifaVigencia a : retorno1){
+
+			retorno.put(a.getId().toString(), a.getDataVigenciaFormatada());
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * [UC3156] Simular Cálculo da Conta Dados Reais
+	 * 
+	 * @author Anderson Italo
+	 * @date 27/09/2014
+	 */
+	public String obterQuantidadeContasComVigenciaValida(String idConsumoTarifaVigenciaRecalcular, String quantidadeContasFiltroSelecionado){
+
+		String quantidadeContasComVigenciaValida = quantidadeContasFiltroSelecionado;
+		HttpSession sessao = WebContextFactory.get().getSession();
+
+		FiltroContaSimularCalculoHelper filtroContaSimularCalculoHelper = (FiltroContaSimularCalculoHelper) sessao
+						.getAttribute("filtroContaSimularCalculoHelper");
+
+		if(Util.verificarIdNaoVazio(idConsumoTarifaVigenciaRecalcular)){
+
+			filtroContaSimularCalculoHelper.setIdConsumoTarifaVigenciaRecalcular(Util.obterInteger(idConsumoTarifaVigenciaRecalcular));
+		}else{
+
+			filtroContaSimularCalculoHelper.setIdConsumoTarifaVigenciaRecalcular(null);
+		}
+
+		sessao.setAttribute("filtroContaSimularCalculoHelper", filtroContaSimularCalculoHelper);
+
+		Integer quantidadeRegistros = fachada.pesquisarTotalRegistrosContasSimularCalculoDadosReais(filtroContaSimularCalculoHelper);
+
+		quantidadeContasComVigenciaValida = quantidadeRegistros.toString();
+
+		return quantidadeContasComVigenciaValida;
+	}
+
+	public String carregaTotalizadorDiarioPagamento(String indicadorTotalizarPorDataPagamento){
+
+		return indicadorTotalizarPorDataPagamento;
 	}
 
 }

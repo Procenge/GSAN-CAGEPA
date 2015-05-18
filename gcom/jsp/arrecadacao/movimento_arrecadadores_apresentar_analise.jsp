@@ -183,7 +183,12 @@
 	  <tr>
       	<td colspan="4" height="10"></td>
       </tr>
-      
+       	<tr>
+				<td><strong>Total Calculado: </strong></td>
+				<td><html:text property="valorCalculado" size="15" readonly="true" style="background-color:#EFEFEF; border:0; color: #000000"/></td>
+				<td colspan="2"><strong>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Diferença do Movimento:&nbsp;&nbsp;&nbsp;&nbsp; </strong>
+				<html:text property="diferencaMovimento" size="15" readonly="true" style="background-color:#EFEFEF; border:0; color: #000000"/></td>
+			</tr>
       <tr>
       	<td colspan="4">
       		
@@ -197,16 +202,18 @@
 						<td width="7%"><div align="center"><strong>Sequ.</strong></div></td>
                         <td width="5%"><div align="center"><strong>Tipo</strong></div></td>
                         <td width="14%"><div align="center"><strong>Dt. Cred.</strong></div></td>
-                        <td width="13%"><div align="right"><strong>Vl. Info.</strong></div></td>
+                       <!--  <td width="13%"><div align="right"><strong>Vl. Info.</strong></div></td>  -->
                         <td width="11%"><div align="right"><strong>Vl. Acerto.</strong></div></td>
                         <td width="14%"><div align="right"><strong>Vl. Calc.</strong></div></td>
-                        <td width="12%"><div align="right"><strong>Vl. Dife.</strong></div></td>
+                      <!--   <td width="12%"><div align="right"><strong>Vl. Dife.</strong></div></td> -->
                         <td width="10%"><div align="left"><strong>Situação</strong></div></td>
                     </tr>
                     </table>
 					
 				</td>
             </tr>
+          
+            
             </table>
 
 			<logic:present name="colecaoAvisosBancariosPorMovimentoArrecadador" scope="request">
@@ -271,7 +278,7 @@
 									</logic:notPresent>
 									</div>
 								</td>
-								<td width="13%">
+								<!-- <td width="13%">
 									<div align="right">
 									<logic:present name="avisoBancarioHelper" property="valorInformado">
 										<bean:write name="avisoBancarioHelper" property="valorInformado" formatKey="money.format"/>
@@ -280,7 +287,7 @@
 										&nbsp;
 									</logic:notPresent>
 									</div>
-								</td>
+								</td> -->
 								<td width="11%">
 									<div align="right">
 									<logic:present name="avisoBancarioHelper" property="valorAcertos">
@@ -300,9 +307,9 @@
 										&nbsp;
 									</logic:notPresent>
 									</div>
-								</td>
+								</td> 
 								
-								<td width="12%">
+								<!--  <td width="12%">
 									<div align="right">
 									<logic:present name="avisoBancarioHelper" property="valorDiferenca">
 										<bean:write name="avisoBancarioHelper" property="valorDiferenca" formatKey="money.format"/>
@@ -311,7 +318,7 @@
 										&nbsp;
 									</logic:notPresent>
 									</div>
-								</td>
+								</td> -->
 		
 								<td width="10%">
 									<div align="left">
@@ -327,6 +334,8 @@
 							
 
 						</logic:iterate>
+						<br>
+						
 						
 					</table>
 				</td>

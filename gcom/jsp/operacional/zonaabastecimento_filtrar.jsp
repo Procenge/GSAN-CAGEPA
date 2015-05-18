@@ -55,6 +55,12 @@
    	  	} 
 	 }
 	
+	function carregarDistritoOperacional(){
+		form = document.forms[0];
+		form.action = "/gsan/exibirFiltrarZonaAbastecimentoAction.do?objetoConsulta=1";
+		form.submit();
+	}
+	
 	
 </script>
 </head>
@@ -146,7 +152,7 @@
 			<table width="100%" border="0">
 				<tr>
 					<td><strong>Sistema de Abastecimento:</strong></td>
-					<td><html:select property="idSistemaAbastecimento"
+					<td><html:select property="idSistemaAbastecimento" onchange="carregarDistritoOperacional();"
 						style="width: 290px;" tabindex="1">
 						<html:option
 							value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
@@ -211,6 +217,10 @@
 						<html:radio	property="indicadorUso" tabindex="7" value=""/>Todos
 					</td>
 				</tr>																
+				<tr>
+				<td>
+				</td>
+				</tr>
 				
 				<tr>
 					<td><input name="Button" type="button" class="bottonRightCol" tabindex="8" value="Limpar" align="left"

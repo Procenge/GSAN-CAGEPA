@@ -77,6 +77,7 @@
 package gcom.gui.cadastro.imovel;
 
 import gcom.cadastro.imovel.FiltroImovelContaEnvio;
+import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.imovel.ImovelContaEnvio;
 import gcom.cadastro.localidade.FiltroSetorComercial;
 import gcom.cadastro.localidade.SetorComercial;
@@ -188,6 +189,23 @@ public class ExibirAtualizarImovelEnderecoAction
 		}else{
 			throw new ActionServletException("atencao.naocadastrado");
 		}
+
+		Imovel imovel = (Imovel) sessao.getAttribute("imovelAtualizacao");
+
+		if(inserirImovelLocalidadeActionForm.get("indicadorEnvioCorreio") == null
+						|| inserirImovelLocalidadeActionForm.get("indicadorEnvioCorreio").equals("")){
+			inserirImovelLocalidadeActionForm.set("indicadorEnvioCorreio", imovel.getIndicadorEnvioCorreio().toString());
+		}else{
+			if(inserirImovelLocalidadeActionForm.get("indicadorEnvioCorreio") != null
+							&& !inserirImovelLocalidadeActionForm.get("indicadorEnvioCorreio").equals("")
+							&& inserirImovelLocalidadeActionForm.get("indicadorEnvioCorreio").equals(ConstantesSistema.SIM.toString())){
+
+				inserirImovelLocalidadeActionForm.set("indicadorEnvioCorreio", ConstantesSistema.SIM.toString());
+			}else{
+				inserirImovelLocalidadeActionForm.set("indicadorEnvioCorreio", ConstantesSistema.NAO.toString());
+			}
+		}
+
 
 		// Alteracao Solicitada por Ana Breda, Data:23/02/2006
 		// Alterado por Rômulo Aurélio

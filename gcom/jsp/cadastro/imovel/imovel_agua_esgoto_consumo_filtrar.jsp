@@ -52,6 +52,9 @@
 
      this.ai = new Array("intervaloMediaMinimaHidrometroInicio", "Intervalo de Média Mínima do Hidrômetro Inicial deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
      this.aj = new Array("intervaloMediaMinimaHidrometroFinal", "Intervalo de Média Mínima do Hidrômetro Final deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+     
+     this.ak = new Array("consumoFixadoEsgotoPocoInicial", "Intervalo de Consumo Fixado de Esgoto do Poço Inicial deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+     this.al = new Array("consumoFixadoEsgotoPocoFinal", "Intervalo de Consumo Fixado de Esgoto do Poço Final deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
     } 
 
     function IntegerValidations () { 
@@ -66,6 +69,9 @@
 
      this.ai = new Array("intervaloMediaMinimaHidrometroInicio", "Intervalo de Média Mínima do Hidrômetro Inicial deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
      this.aj = new Array("intervaloMediaMinimaHidrometroFinal", "Intervalo de Média Mínima do Hidrômetro Final deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+     
+     this.ak = new Array("consumoFixadoEsgotoPocoInicial", "Intervalo de Consumo Fixado de Esgoto do Poço Inicial deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+     this.al = new Array("consumoFixadoEsgotoPocoFinal", "Intervalo de Consumo Fixado de Esgoto do Poço Final deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
     } 
 
     function FloatValidations () {
@@ -86,36 +92,6 @@ function validarForm(form){
   }
 }
 
-//esgoto
-function controlaTextEsgoto(tipoRelatorio){
-	var form = document.ImovelOutrosCriteriosActionForm;
-	
-	if (tipoRelatorio != "BoletimCadastro"){
-	if(form.situacaoLigacaoEsgoto.value != "3"
-		&& form.situacaoLigacaoEsgoto.value != "5" ){
-		form.intervaloPercentualEsgotoInicial.value = "";
-		form.intervaloPercentualEsgotoInicial.disabled = true;
-		form.intervaloPercentualEsgotoFinal.value = "";
-		form.intervaloPercentualEsgotoFinal.disabled = true;
-		//---
-		form.consumoMinimoFixadoEsgotoInicial.value = "";
-		form.consumoMinimoFixadoEsgotoInicial.disabled = true;
-		form.consumoMinimoFixadoEsgotoFinal.value = "";
-		form.consumoMinimoFixadoEsgotoFinal.disabled = true;
-	} else if (tipoRelatorio == "RelatorioCadastroConsumidoresInscricao") {
-		form.consumoMinimoFixadoEsgotoInicial.disabled = false;
-		form.consumoMinimoFixadoEsgotoFinal.disabled = false;
-	} else if (tipoRelatorio == "RelatorioImoveisEndereco") {
-	
-	} else {
-		form.intervaloPercentualEsgotoInicial.disabled = false;
-		form.intervaloPercentualEsgotoFinal.disabled = false;
-		form.consumoMinimoFixadoEsgotoInicial.disabled = false;
-		form.consumoMinimoFixadoEsgotoFinal.disabled = false;
-	}
-}
-}
-
 function controleFaixaEsgoto(){
 	var form = document.ImovelOutrosCriteriosActionForm;
 	
@@ -125,10 +101,18 @@ function controleFaixaEsgoto(){
 		form.intervaloPercentualEsgotoFinal.focus();
 		return false;
 	}
+	
 	if(form.consumoMinimoFixadoEsgotoInicial.value > form.consumoMinimoFixadoEsgotoFinal.value){
 		alert("Intervalo de Consumo Mínimo Fixado de Esgoto Inicial maior que o Intervalo de Consumo Mínimo Fixado de Esgoto Final.");
 		form.consumoMinimoFixadoEsgotoFinal.value = "";
 		form.consumoMinimoFixadoEsgotoFinal.focus();
+		return false;
+	}
+	
+	if(form.consumoFixadoEsgotoPocoInicial.value > form.consumoFixadoEsgotoPocoFinal.value){
+		alert("Intervalo de Consumo Fixado de Esgoto do Poço Inicial maior que o Intervalo de Consumo Fixado de Esgoto do Poço Final.");
+		form.consumoFixadoEsgotoPocoFinal.value = "";
+		form.consumoFixadoEsgotoPocoFinal.focus();
 		return false;
 	}
 	
@@ -148,26 +132,16 @@ function carregaFixadoEsgotoFinal(){
 	form.consumoMinimoFixadoEsgotoFinal.value = form.consumoMinimoFixadoEsgotoInicial.value;
 }
 
+function carregaFixadoEsgotoPocoFinal(){
+	var form = document.ImovelOutrosCriteriosActionForm;
+	
+	form.consumoFixadoEsgotoPocoFinal.value = form.consumoFixadoEsgotoPocoInicial.value;
+}
+
 -->
 </script>
 <script language="JavaScript">
 <!-- Begin
-function controlaTextAgua(tipoRelatorio){
-	var form = document.ImovelOutrosCriteriosActionForm;
-	
-	if (tipoRelatorio != "BoletimCadastro"){
-	if(form.situacaoAgua.value != "3"
-		&& form.situacaoAgua.value != "5" ){
-		form.consumoMinimoInicial.value = "";
-		form.consumoMinimoFinal.value = "";
-		form.consumoMinimoInicial.disabled = true;
-		form.consumoMinimoFinal.disabled = true;
-	} else if (tipoRelatorio != "RelatorioCadastroConsumidoresInscricao" && tipoRelatorio != "RelatorioImoveisEndereco") {
-		form.consumoMinimoInicial.disabled = false;
-		form.consumoMinimoFinal.disabled = false;
-	}
-}
-}
 
 function controleFaixaAgua(){
 	var form = document.ImovelOutrosCriteriosActionForm;
@@ -317,7 +291,7 @@ function validarIndicadorMedicao(tipoRelatorio){
 </head>
 
 <body leftmargin="5" topmargin="5"
-	onload="controlaTextAgua('${sessionScope.parametroGerarRelatorio}');controlaTextEsgoto('${sessionScope.parametroGerarRelatorio}');controlaTextMedicao('${sessionScope.parametroGerarRelatorio}');">
+	onload="javascript:controlaTextMedicao('${sessionScope.parametroGerarRelatorio}');">
 
 <html:form action="/filtrarImovelOutrosCriteriosWizardAction"
 	name="ImovelOutrosCriteriosActionForm" method="post"
@@ -394,7 +368,7 @@ function validarIndicadorMedicao(tipoRelatorio){
 					Liga&ccedil;&atilde;o de &Aacute;gua:</strong></td>
 					<td width="313" colspan="3" align="right">
 					<div align="left"><strong> 			
-						<html:select property="situacaoLigacaoAguaArray" style="width: 200px;" tabindex="11" multiple="true" onchange="controlaTextAgua('${sessionScope.parametroGerarRelatorio}');">
+						<html:select property="situacaoLigacaoAguaArray" style="width: 200px;" tabindex="11" multiple="true">
 							<html:option value=" ">&nbsp;</html:option>
 							<html:options collection="collectionsLigacaoAguaSituacao" labelProperty="descricao" property="id"/>
 						</html:select>
@@ -460,7 +434,7 @@ function validarIndicadorMedicao(tipoRelatorio){
 					Esgoto:</strong></td>
 					<td colspan="3" align="right">
 					<div align="left"><strong>
-					<html:select property="situacaoLigacaoEsgotoArray" style="width: 200px;" tabindex="11" multiple="true" onchange="controlaTextEsgoto('${sessionScope.parametroGerarRelatorio}');">
+					<html:select property="situacaoLigacaoEsgotoArray" style="width: 200px;" tabindex="11" multiple="true">
 							<html:option value=" ">&nbsp;</html:option>
 							<html:options collection="collectionLigacaoEsgotoSituacao" labelProperty="descricao" property="id"/>
 						</html:select>
@@ -566,6 +540,45 @@ function validarIndicadorMedicao(tipoRelatorio){
 					a <html:text property="consumoMinimoFixadoEsgotoFinal" size="6"
 							onblur="controleFaixaEsgoto();" maxlength="6" />
 					</logic:notPresent> </strong></div>
+					</td>
+				</tr>
+				<tr>
+					<td><strong>Intervalo de Consumo Fixado de Esgoto do Poço:</strong></td>
+					<td colspan="3" align="right">
+						<logic:present name="parametroGerarRelatorio">
+							<logic:notEqual name="parametroGerarRelatorio" value="BoletimCadastro">
+								<div align="left">
+									<strong> 
+										<html:text property="consumoFixadoEsgotoPocoInicial" 
+											size="6"
+											onkeyup="javascript:carregaFixadoEsgotoPocoFinal();" 
+											maxlength="6" />
+											a 
+										<html:text property="consumoFixadoEsgotoPocoFinal" 
+											size="6"
+											onblur="controleFaixaEsgoto();" 
+											maxlength="6" />
+									</strong>
+								</div>
+							</logic:notEqual>
+							<logic:equal name="parametroGerarRelatorio" value="BoletimCadastro">
+								<div align="left">
+									<strong> 
+										<html:text property="consumoFixadoEsgotoPocoInicial"
+											disabled="true" 
+											size="6"
+											onkeyup="javascript:carregaFixadoEsgotoPocoFinal();" 
+											maxlength="6" />
+											a 
+										<html:text property="consumoFixadoEsgotoPocoFinal"
+											disabled="true" 
+											size="6"
+											onblur="controleFaixaEsgoto();" 
+											maxlength="6" />
+									</strong>
+								</div>
+							</logic:equal>
+						</logic:present>
 					</td>
 				</tr>
 				<tr>

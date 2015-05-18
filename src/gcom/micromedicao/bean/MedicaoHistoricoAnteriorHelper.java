@@ -107,6 +107,8 @@ public class MedicaoHistoricoAnteriorHelper {
 
 	private Integer numeroConsumoCreditoAnterior;
 
+	private Integer numeroConsumoCreditoGerado;
+
 	/**
 	 * 
 	 */
@@ -189,6 +191,23 @@ public class MedicaoHistoricoAnteriorHelper {
 	public void setNumeroConsumoCreditoAnterior(Integer numeroConsumoCreditoAnterior){
 
 		this.numeroConsumoCreditoAnterior = numeroConsumoCreditoAnterior;
+	}
+
+	/**
+	 * @return the numeroConsumoCreditoGerado
+	 */
+	public Integer getNumeroConsumoCreditoGerado(){
+
+		return numeroConsumoCreditoGerado;
+	}
+
+	/**
+	 * @param numeroConsumoCreditoGerado
+	 *            the numeroConsumoCreditoGerado to set
+	 */
+	public void setNumeroConsumoCreditoGerado(Integer numeroConsumoCreditoGerado){
+
+		this.numeroConsumoCreditoGerado = numeroConsumoCreditoGerado;
 	}
 
 }

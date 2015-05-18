@@ -24,8 +24,13 @@ var indicadorUso = '<c:out value="${ClienteActionForm.map.indicadorUso}"/>';
 
 <!--
 function verificarGrupoRG(){
+	var validarDadosRG = true;
 	
-	if(indicadorUso != '2' ){
+	<c:if test="${usuarioPermissaoEspecialRemoverCPFCliente eq '1'}">
+		validarDadosRG = false;
+	</c:if>	
+	
+	if(indicadorUso != '2' && validarDadosRG){
 
 		var form = document.ClienteActionForm;
 		var rg = form.rg.value;
@@ -75,9 +80,15 @@ function required () {
 
 		this.ab = new Array("idPessoaSexo", "Informe Sexo.", new Function ("varName", " return this[varName];"));
 		//this.ac = new Array("cpf", "Informe CPF.", new Function ("varName", " return this[varName];"));
-		this.ad = new Array("rg", "Informe RG.", new Function ("varName", " return this[varName];"));
+		
+		<c:if test="${usuarioPermissaoEspecialRemoverCPFCliente eq '2'}">
+			
+			this.ad = new Array("rg", "Informe RG.", new Function ("varName", " return this[varName];"));
+		
+		</c:if>	
 
-		<c:if test="${nomeMaeClienteObrigatorio eq '1'}">
+		
+		<c:if test="${nomeMaeClienteObrigatorio eq '1' && usuarioPermissaoEspecialRemoverCPFCliente eq '2'}">
 
 			this.ae = new Array("nomeMae", "Informe o Nome da Mãe.", new Function ("varName", " return this[varName];"));	
 	
@@ -194,11 +205,24 @@ function DateValidations () {
 	this.aa = new Array("dataEmissao", "Data de Emissão inválida.", new Function ("varName", "this.datePattern='dd/MM/yyyy';  return this[varName];"));
 	this.ab = new Array("dataNascimento", "Data de Nascimento inválida.", new Function ("varName", "this.datePattern='dd/MM/yyyy';  return this[varName];"));
 }
+
+function verificarCheckDocumentoValidado(){
+    var form = document.forms[0];
+    
+    if(form.documentoValidado.value != 2){
+    	form.documentoValidado.checked = true;
+    	form.documentoValidado.value = "1";
+    }else{
+    	form.documentoValidado.checked = false;
+    	form.documentoValidado.value = "2";
+    }
+}
+
 -->
 </script>
 </head>
 <body leftmargin="5" topmargin="5"
-	onload="setarFoco('${requestScope.nomeCampo}');">
+	onload="setarFoco('${requestScope.nomeCampo}');verificarCheckDocumentoValidado();">
 <div id="formDiv">	
 <html:form action="/atualizarClienteWizardAction" method="post">
 	<jsp:include page="/jsp/util/wizard/navegacao_abas_wizard_valida_avancar.jsp?numeroPagina=2" />
@@ -270,7 +294,13 @@ function DateValidations () {
 				<tr>
 					<td width="18%" height="31"><strong>CPF:<font color="#FF0000">*</font></strong></td>
 					<td width="82%"><html:text property="cpf" size="11" maxlength="11"
-						tabindex="1" /></td>
+						tabindex="1" />
+						
+						<strong> Documento Validado:<font color="#FF0000">*</font></strong>
+						<html:radio property="documentoValidado" value="<%=ConstantesSistema.SIM.toString()%>" disabled="false" /><strong>Sim</strong>
+						<html:radio property="documentoValidado" value="<%=ConstantesSistema.NAO.toString()%>" disabled="false" /><strong>Não</strong>
+											
+					</td>
 				</tr>
 				<tr>
 					<td height="24" colspan="2">
@@ -346,7 +376,7 @@ function DateValidations () {
 					</td>
 				</tr>
 				<tr>
-					<td height="24"><strong>Nome da Mãe:<c:if test="${nomeMaeClienteObrigatorio eq '1'}"><font color="#FF0000">*</font></c:if></strong></td>
+					<td height="24"><strong>Nome da Mãe:<c:if test="${nomeMaeClienteObrigatorio eq '1' && usuarioPermissaoEspecialRemoverCPFCliente eq '2'}"><font color="#FF0000">*</font></c:if></strong></td>
 					<td><html:text property="nomeMae" size="50" maxlength="50" tabindex="9" /></td>
 				</tr>
 				

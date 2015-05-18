@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.seguranca.acesso.usuario.UsuarioAcesso"
+    table="usuario_acesso"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="USAS_ID"
+    >
+        <generator class="sequence">
+        	<param name="sequence">sq_usuario_acesso</param>
+     	</generator>
+    </id>
+
+    <property
+        name="diaSemana"
+        type="java.lang.Integer"
+        column="USAS_NNDIASEMANA"
+        length="2"
+    />
+
+    <property
+        name="horaInicio"
+        type="java.sql.Timestamp"
+        column="USAS_HRINICIO"
+        length="8"
+    />
+
+    <property
+        name="horaFim"
+        type="java.sql.Timestamp"
+        column="USAS_HRFIM"
+        length="8"
+    />
+
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="USAS_ICUSO"
+        length="2"
+    />
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="USAS_TMULTIMAALTERACAO"
+        length="8"
+    />
+
+    <!-- associations -->    
+    <many-to-one
+        name="usuario"
+	    class="gcom.seguranca.acesso.usuario.Usuario"
+	    not-null="true"
+	>
+    	<column name="usur_id" />
+	</many-to-one>
+
+</class>
+</hibernate-mapping>

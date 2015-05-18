@@ -63,6 +63,7 @@ public class RelatorioImoveisAcaoCobranca
 		Integer indicadorNotas = Integer.valueOf(1);
 		Integer indicadorGuias = Integer.valueOf(1);
 		Integer indicadorAtualizar = Integer.valueOf(1);
+		int indicadorCalcularAcrescimosSucumbenciaAnterior = 2;
 
 		SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
 
@@ -167,11 +168,12 @@ public class RelatorioImoveisAcaoCobranca
 				try{
 					colecaoDebitoImovel = fachada.obterDebitoImovelOuCliente(tipoImovel.intValue(), imovel.getId().toString(), null, null,
 									"000101", "999912", formatoData.parse("01/01/0001"), formatoData.parse("31/12/9999"),
-									indicadorPagamento.intValue(), indicadorConta.intValue(), indicadorDebito.intValue(), indicadorCredito
-													.intValue(), indicadorNotas.intValue(), indicadorGuias.intValue(), indicadorAtualizar
-.intValue(), null, null, null, null, null, ConstantesSistema.SIM,
-									ConstantesSistema.SIM, ConstantesSistema.SIM);
+									indicadorPagamento.intValue(), indicadorConta.intValue(), indicadorDebito.intValue(),
+									indicadorCredito.intValue(), indicadorNotas.intValue(), indicadorGuias.intValue(),
+									indicadorAtualizar.intValue(), null, null, null, null, null, ConstantesSistema.SIM,
+									ConstantesSistema.SIM, ConstantesSistema.SIM, indicadorCalcularAcrescimosSucumbenciaAnterior, null);
 				}catch(ParseException e){
+					throw new TarefaException("erro.sistema", e);
 				}
 
 				Collection<ContaValoresHelper> colecaoContaValores = colecaoDebitoImovel.getColecaoContasValores();

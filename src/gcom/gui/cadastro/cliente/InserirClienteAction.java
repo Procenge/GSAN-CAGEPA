@@ -92,6 +92,7 @@ import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
 import gcom.util.Util;
+import gcom.util.filtro.ComparacaoTexto;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
@@ -169,10 +170,8 @@ public class InserirClienteAction
 		String cnpj = (String) clienteActionForm.get("cnpj");
 		String email = (String) clienteActionForm.get("email");
 		String indicadorContaBraille = (String) clienteActionForm.get("indicadorContaBraille");
-
-
-
 		String inscricaoEstadual = (String) clienteActionForm.get("inscricaoEstadual");
+		String documentoValidado = (String) clienteActionForm.get("documentoValidado");
 
 		OrgaoExpedidorRg orgaoExpedidorRg = null;
 		if(clienteActionForm.get("idOrgaoExpedidor") != null && ((Integer) clienteActionForm.get("idOrgaoExpedidor")).intValue() > 0){
@@ -263,6 +262,8 @@ public class InserirClienteAction
 			}
 		}
 
+		AtividadeEconomica atividadeEconomica = null;
+
 		if(tipoPessoa != null){
 			if(tipoPessoa.equals(ClienteTipo.INDICADOR_PESSOA_JURIDICA)){
 
@@ -279,6 +280,54 @@ public class InserirClienteAction
 
 				if(inscricaoEstadual != null && !inscricaoEstadual.equalsIgnoreCase("") && unidadeFederacao == null){
 					throw new ActionServletException("atencao.informe_campo", null, "Estado");
+				}
+
+				String pIndicadorAtividadeEconomicaObrigatorio = null;
+
+				try{
+
+					pIndicadorAtividadeEconomicaObrigatorio = (String) ParametroCadastro.P_CNAE_OBRIGATORIO.executar();
+				}catch(ControladorException e){
+
+					throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(
+									new String[e.getParametroMensagem().size()]));
+				}
+
+				// Atividade Econômica (CNAE)
+				if(pIndicadorAtividadeEconomicaObrigatorio.equals(ConstantesSistema.SIM.toString())){
+
+					httpServletRequest.setAttribute("obrigatorioAtividadeEcocnomica", "true");
+					String codigoAtividadeEconomica = (String) clienteActionForm.get("codigoAtividadeEconomica");
+
+					if(!Util.isVazioOuBranco(codigoAtividadeEconomica)){
+
+						if(httpServletRequest.getParameter("pesquisaAtividadeEconomica") != null
+										&& !httpServletRequest.getParameter("pesquisaAtividadeEconomica").equals("")){
+
+							codigoAtividadeEconomica = httpServletRequest.getParameter("pesquisaAtividadeEconomica");
+						}
+
+						FiltroAtividadeEconomica filtroAtividadeEconomica = new FiltroAtividadeEconomica();
+						filtroAtividadeEconomica.adicionarParametro(new ComparacaoTexto(FiltroAtividadeEconomica.CODIGO,
+										codigoAtividadeEconomica));
+						filtroAtividadeEconomica.adicionarParametro(new ParametroSimples(FiltroAtividadeEconomica.INDICADOR_USO,
+										ConstantesSistema.INDICADOR_USO_ATIVO));
+
+						Collection<AtividadeEconomica> colecaoAtividadeEconomica = fachada.pesquisar(filtroAtividadeEconomica,
+										AtividadeEconomica.class.getName());
+
+						// [FS0001 - Verificar existência de dados]
+						if(Util.isVazioOrNulo(colecaoAtividadeEconomica)){
+
+							throw new ActionServletException("atencao.pesquisa_inexistente", null, "Atividade Ecônomica");
+						}else{
+
+							atividadeEconomica = (AtividadeEconomica) Util.retonarObjetoDeColecao(colecaoAtividadeEconomica);
+						}
+					}else{
+
+						throw new ActionServletException("atencao.required", null, "Atividade Ecônomica");
+					}
 				}
 
 			}else if(tipoPessoa.equals(ClienteTipo.INDICADOR_PESSOA_FISICA)){
@@ -304,7 +353,6 @@ public class InserirClienteAction
 				this.validarObrigatoriedadeCampos(httpServletRequest, clienteActionForm);
 
 			}
-
 		}
 
 		// Verifica se pelo menos um endereço de correspondência foi informado
@@ -354,7 +402,7 @@ public class InserirClienteAction
 							dataNascimento != null && !dataNascimento.trim().equalsIgnoreCase("") ? formatoData.parse(dataNascimento)
 											: null, cnpj, email, ConstantesSistema.INDICADOR_USO_ATIVO, new Date(), orgaoExpedidorRg,
 							clienteResponsavel, pessoaSexo, profissao, unidadeFederacao, clienteTipo, ramoAtividade, null,
-							inscricaoEstadual, Short.valueOf(indicadorContaBraille));
+							inscricaoEstadual, Short.valueOf(indicadorContaBraille), Short.parseShort(documentoValidado));
 
 			// Insere o indicador para Cobranca Acrescimos
 			cliente.setIndicadorCobrancaAcrescimos(new Short("1"));
@@ -371,6 +419,27 @@ public class InserirClienteAction
 			// Nome da Mãe
 			if(clienteActionForm.get("nomeMae") != null && (!(clienteActionForm.get("nomeMae").equals("")))){
 				cliente.setNomeMae((String) clienteActionForm.get("nomeMae"));
+			}
+
+			if(clienteActionForm.get("tipoPessoa") != null && !clienteActionForm.get("tipoPessoa").toString().equals("")){
+
+				if(clienteActionForm.get("tipoPessoa").toString().equals(ClienteTipo.APOSENTADO_PENSIONISTA.toString())){
+
+					String numeroBeneficio = (String) clienteActionForm.get("numeroBeneficio");
+					if(Util.isVazioOuBranco(numeroBeneficio)){
+
+						throw new ActionServletException("atencao.required", null, "Número do Benefício");
+					}
+
+					cliente.setNumeroBeneficio(numeroBeneficio);
+				}
+			}
+
+			// Insere documento Validado no objeto cliente
+			if(clienteActionForm.get("documentoValidado") != null && (!(clienteActionForm.get("documentoValidado").equals("")))){
+				cliente.setDocumentoValidado(new Short(documentoValidado));
+			}else{
+				cliente.setDocumentoValidado(new Short("2"));
 			}
 
 			ClienteResponsavel responsavelCliente = null;
@@ -446,6 +515,10 @@ public class InserirClienteAction
 				}
 
 			}
+
+			// Atividade Ecônomica
+			cliente.setAtividadeEconomica(atividadeEconomica);
+
 			// Estado Civil
 			Integer idEstadoCivil = (Integer) clienteActionForm.get("idEstadoCivil");
 

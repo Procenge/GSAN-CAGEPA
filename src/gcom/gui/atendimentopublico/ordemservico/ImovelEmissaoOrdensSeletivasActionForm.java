@@ -76,6 +76,7 @@
 
 package gcom.gui.atendimentopublico.ordemservico;
 
+import gcom.atendimentopublico.ordemservico.bean.ImovelEmissaoOrdensSeletivaHelper;
 import gcom.util.IoUtil;
 
 import java.sql.Blob;
@@ -245,6 +246,8 @@ public class ImovelEmissaoOrdensSeletivasActionForm
 	private Blob ArquivoBlob;
 
 	private String idComandoOsServicoSeletiva;
+
+	private String referenciaUltimaAfericaoAnterior;
 
 	public FormFile getArquivoMatricula(){
 
@@ -1016,6 +1019,95 @@ public class ImovelEmissaoOrdensSeletivasActionForm
 	public void setIdComandoOsServicoSeletiva(String idComandoOsServicoSeletiva){
 
 		this.idComandoOsServicoSeletiva = idComandoOsServicoSeletiva;
+	}
+
+	public String getReferenciaUltimaAfericaoAnterior(){
+
+		return referenciaUltimaAfericaoAnterior;
+	}
+
+	public void setReferenciaUltimaAfericaoAnterior(String referenciaUltimaAfericaoAnterior){
+
+		this.referenciaUltimaAfericaoAnterior = referenciaUltimaAfericaoAnterior;
+	}
+
+	public ImovelEmissaoOrdensSeletivaHelper obterImovelEmissaoOrdensSeletivaHelper(){
+
+		ImovelEmissaoOrdensSeletivaHelper imovelEmissaoOrdensSeletivaHelper = new ImovelEmissaoOrdensSeletivaHelper();
+		imovelEmissaoOrdensSeletivaHelper.setAnormalidadeHidrometro(anormalidadeHidrometro);
+		imovelEmissaoOrdensSeletivaHelper.setArquivo(arquivo);
+		imovelEmissaoOrdensSeletivaHelper.setArquivoBlob(ArquivoBlob);
+		imovelEmissaoOrdensSeletivaHelper.setArquivoCarregado(arquivoCarregado);
+		imovelEmissaoOrdensSeletivaHelper.setArquivoDownload(arquivoDownload);
+		imovelEmissaoOrdensSeletivaHelper.setArquivoMatricula(arquivoMatricula);
+		imovelEmissaoOrdensSeletivaHelper.setBairro(bairro);
+		imovelEmissaoOrdensSeletivaHelper.setCapacidade(capacidade);
+		imovelEmissaoOrdensSeletivaHelper.setCategoriaDescricao(categoriaDescricao);
+		imovelEmissaoOrdensSeletivaHelper.setCategoria(categoria);
+		imovelEmissaoOrdensSeletivaHelper.setCategoriaDescricao(categoriaDescricao);
+		imovelEmissaoOrdensSeletivaHelper.setColecaoConsumoMedioImovel(colecaoConsumoMedioImovel);
+		imovelEmissaoOrdensSeletivaHelper.setColecaoDadosDoHidrometro(colecaoDadosDoHidrometro);
+		imovelEmissaoOrdensSeletivaHelper.setColecaoDadosDoHidrometro(colecaoDadosDoHidrometro);
+		imovelEmissaoOrdensSeletivaHelper.setConsumoPorEconomia(consumoPorEconomia);
+		imovelEmissaoOrdensSeletivaHelper.setDataCorteFinal(dataCorteFinal);
+		imovelEmissaoOrdensSeletivaHelper.setDataCorteInicial(dataCorteInicial);
+		imovelEmissaoOrdensSeletivaHelper.setElo(elo);
+		imovelEmissaoOrdensSeletivaHelper.setEnderecoArquivoDownload(enderecoArquivoDownload);
+		imovelEmissaoOrdensSeletivaHelper.setFaturamentoGrupo(faturamentoGrupo);
+		imovelEmissaoOrdensSeletivaHelper.setFirma(firma);
+		imovelEmissaoOrdensSeletivaHelper.setGerenciaRegional(gerenciaRegional);
+		imovelEmissaoOrdensSeletivaHelper.setHidrometroClasseMetrologica(hidrometroClasseMetrologica);
+		imovelEmissaoOrdensSeletivaHelper.setHidrometroLocalInstalacao(hidrometroLocalInstalacao);
+		imovelEmissaoOrdensSeletivaHelper.setHidrometroProtecao(hidrometroProtecao);
+		imovelEmissaoOrdensSeletivaHelper.setIdComandoOsServicoSeletiva(idComandoOsServicoSeletiva);
+		imovelEmissaoOrdensSeletivaHelper.setIdsImoveis(idsImoveis);
+		imovelEmissaoOrdensSeletivaHelper.setImovelCondominio(imovelCondominio);
+		imovelEmissaoOrdensSeletivaHelper.setInscricaoTipo(inscricaoTipo);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloAreaConstruidaFinal(intervaloAreaConstruidaFinal);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloAreaConstruidaInicial(intervaloAreaConstruidaInicial);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloDataCorteFinal(intervaloDataCorteFinal);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloDataCorteInicial(intervaloDataCorteInicial);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloNumeroConsumoMesFinal(intervaloNumeroConsumoMesFinal);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloNumeroConsumoMesInicial(intervaloNumeroConsumoMesInicial);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloNumeroMoradoresFinal(intervaloNumeroMoradoresFinal);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloNumeroMoradoresInicial(intervaloNumeroMoradoresInicial);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloNumeroPontosUtilizacaoFinal(intervaloNumeroPontosUtilizacaoFinal);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloNumeroPontosUtilizacaoInicial(intervaloNumeroPontosUtilizacaoInicial);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloQuantidadeContasVencidasFinal(intervaloQuantidadeContasVencidasFinal);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloQuantidadeContasVencidasInicial(intervaloQuantidadeContasVencidasInicial);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloQuantidadeDocumentosFinal(intervaloQuantidadeDocumentosFinal);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloQuantidadeDocumentosInicial(intervaloQuantidadeDocumentosInicial);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloQuantidadeEconomiasFinal(intervaloQuantidadeEconomiasFinal);
+		imovelEmissaoOrdensSeletivaHelper.setIntervaloQuantidadeEconomiasInicial(intervaloQuantidadeEconomiasInicial);
+		imovelEmissaoOrdensSeletivaHelper.setLigacaoAguaSituacao(ligacaoAguaSituacao);
+		imovelEmissaoOrdensSeletivaHelper.setLigacaoEsgotoSituacao(ligacaoEsgotoSituacao);
+		imovelEmissaoOrdensSeletivaHelper.setLocalidade(localidade);
+		imovelEmissaoOrdensSeletivaHelper.setLogradouro(logradouro);
+		imovelEmissaoOrdensSeletivaHelper.setLote(lote);
+		imovelEmissaoOrdensSeletivaHelper.setMarca(marca);
+		imovelEmissaoOrdensSeletivaHelper.setMarcaDescricao(marcaDescricao);
+		imovelEmissaoOrdensSeletivaHelper.setMediaImovel(mediaImovel);
+		imovelEmissaoOrdensSeletivaHelper.setMesAnoInstalacao(mesAnoInstalacao);
+		imovelEmissaoOrdensSeletivaHelper.setNomeElo(nomeElo);
+		imovelEmissaoOrdensSeletivaHelper.setNomeFirma(nomeFirma);
+		imovelEmissaoOrdensSeletivaHelper.setNumeroOcorrenciasConsecutivas(numeroOcorrenciasConsecutivas);
+		imovelEmissaoOrdensSeletivaHelper.setPerfilImovel(perfilImovel);
+		imovelEmissaoOrdensSeletivaHelper.setPerfilImovelDescricao(perfilImovelDescricao);
+		imovelEmissaoOrdensSeletivaHelper.setQuadra(quadra);
+		imovelEmissaoOrdensSeletivaHelper.setQuantidadeMaxima(quantidadeMaxima);
+		imovelEmissaoOrdensSeletivaHelper.setRota(rota);
+		imovelEmissaoOrdensSeletivaHelper.setServicoTipo(servicoTipo);
+		imovelEmissaoOrdensSeletivaHelper.setServicoTipoDescricao(servicoTipoDescricao);
+		imovelEmissaoOrdensSeletivaHelper.setSetor(setor);
+		imovelEmissaoOrdensSeletivaHelper.setSimulacao(simulacao);
+		imovelEmissaoOrdensSeletivaHelper.setSubCategoria(subCategoria);
+		imovelEmissaoOrdensSeletivaHelper.setTipoMedicao(tipoMedicao);
+		imovelEmissaoOrdensSeletivaHelper.setTipoMedicaoDescricao(tipoMedicaoDescricao);
+		imovelEmissaoOrdensSeletivaHelper.setTitulo(titulo);
+		imovelEmissaoOrdensSeletivaHelper.setValorTotalDebitoVencido(valorTotalDebitoVencido);
+
+		return imovelEmissaoOrdensSeletivaHelper;
+
 	}
 
 }

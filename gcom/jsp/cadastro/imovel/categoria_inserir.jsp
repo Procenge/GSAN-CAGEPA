@@ -208,6 +208,16 @@ function validarForm(form){
 						<div align="left"><input name="consumoMedioEconomiaMes" type="text" size="6" maxlength="7"></div>
 					</td>
 				</tr>
+				
+				<tr>
+					<td>
+						<strong>Quantidade Máxima de Economias:<font color="#FF0000">*</font></strong>
+					</td>
+					<td align="right">
+						<div align="left"><input name="quantidadeMaximoEconomiasValidacao" type="text" size="6" maxlength="4"></div>
+					</td>
+				</tr>
+								
 				<tr>
 					<td colspan="2"><br>
 						<table width="100%" align="center" bgcolor="#99CCFF" border="0">
@@ -298,6 +308,48 @@ function validarForm(form){
 					</td>
 				</tr>
 				<tr>
+				<tr>
+					<td colspan="2"><br>
+						<table width="100%" align="center" bgcolor="#99CCFF" border="0">
+							<tr>
+								<td align="center"><strong>Dados para Determina&ccedil;&atilde;o da Virada do Hidrometro</strong></td>
+							</tr>
+							<tr bgcolor="#cbe5fe">
+								<td width="100%" align="center">
+									<table width="100%" border="0">
+										<tr> 
+											<td width="50%">
+												<strong>Consumo de Virada do Hidrometro:</strong>
+											</td>
+											<td>
+												<input name="consumoViradaHidrometro" type="text" size="4" maxlength="9">&nbsp;m<sup>3</sup>
+											</td>
+										</tr>
+										<tr> 
+											<td><strong>Numero de Vezes Media de Virada do Hidrometro:</strong></td>
+											<td>
+												<input name="numeroVezesMediaViradaHidrometro" type="text" size="4" maxlength="3">&nbsp;m<sup>3</sup>
+											</td>
+										</tr>
+										<tr> 
+											<td><strong>Indicador Validar a VIrada do Hidrometro:</strong></td>
+											<td>
+												<input name="indicadorValidarViradaHidrometro" type="text" size="4" maxlength="1">&nbsp;m<sup>3</sup>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+				
+				
+						</table>
+					</td>
+				</tr>
+				<tr>
+				
+				
+				
+				
 					<td colspan="2">&nbsp;</td>
 				</tr>
 				<tr>

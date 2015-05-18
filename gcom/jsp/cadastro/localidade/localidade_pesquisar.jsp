@@ -145,7 +145,7 @@
           	<INPUT TYPE="button" class="bottonRightCol" value="Limpar" onclick="document.forms[0].reset();limparForm();"/>
           	&nbsp;&nbsp;
           	<logic:present name="caminhoRetornoTelaPesquisaLocalidade">
-          		<INPUT TYPE="button" class="bottonRightCol" value="Voltar" onclick="redirecionarSubmit('${caminhoRetornoTelaPesquisaLocalidade}.do')"/>
+          		<INPUT TYPE="button" class="bottonRightCol" value="Voltar" onclick="redirecionarSubmit('${caminhoRetornoTelaPesquisaLocalidade}.do?retornoTelaConsulta=1')"/>
           	</logic:present>
           </td>
           <td align="right">

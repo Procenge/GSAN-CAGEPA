@@ -251,6 +251,16 @@ public class FiltrarGuiaPagamentoAction
 			filtro.setIdsDebitoTipo(idsDebitoTipo);
 		}
 
+		// Numero RA
+		if(!Util.isVazioOuBranco(formulario.getNumeroRA())){
+
+			peloAoMenosUmParametroInformado = true;
+			filtro.setNumeroRA(Util.obterInteger(formulario.getNumeroRA()));
+
+			relatorioManterGuiaPagamentoParametrosHelper.setNumeroRA(formulario.getNumeroRA());
+			relatorioManterGuiaPagamentoParametrosHelper.setDescricaoRA(formulario.getDescricaoRA());
+		}
+
 		/*
 		 * Caso o usuário informe o Número da Guia, desconsiderar os demais
 		 * parâmetros do filtro

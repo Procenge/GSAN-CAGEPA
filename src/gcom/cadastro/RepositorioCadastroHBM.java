@@ -78,6 +78,7 @@ package gcom.cadastro;
 
 import gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao;
 import gcom.cadastro.aguaparatodos.bean.AguaParaTodosMotivoExclusaoHelper;
+import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.cliente.ClienteRelacaoTipo;
 import gcom.cadastro.endereco.LogradouroBairro;
 import gcom.cadastro.imovel.ImovelPerfil;
@@ -594,7 +595,7 @@ public class RepositorioCadastroHBM
 			insert = "insert into cliente_endereco(cled_id, clie_id, edtp_id, " + "edrf_id, cled_nnimovel, cled_dscomplementoendereco, "
 							+ "cep_id, bair_id, cled_icenderecocorrespondencia, " + "cled_tmultimaalteracao, logr_id, lgbr_id, lgcp_id) "
 							+ "values (nextval('sq_cliente_end'), " + idCliente + ", 1, 1, " + numeroImovelMenor + ", " + numeroImovelMaior
-							+ ", " + idCep + ", " + idBairro + ", 1, " + " sysdate, " + idLograd + ", " + idLogradBairro + ", "
+							+ ", " + idCep + ", " + idBairro + ", 1, " + " CURRENT_DATE, " + idLograd + ", " + idLogradBairro + ", "
 							+ idLogradCep + ")";
 
 			stmt.executeUpdate(insert);
@@ -637,7 +638,7 @@ public class RepositorioCadastroHBM
 
 			insert = "insert into cliente_imovel(clim_id, " + "clie_id, imov_id, clim_dtrelacaoinicio, " + "clim_tmultimaalteracao, "
 							+ "crtp_id, clim_icnomeconta) " + "values (nextval('sq_cliente_imov'), " + idCliente + ", " + idImovel + ", "
-							+ data + ", " + " sysdate, " + "2, " + "1)";
+							+ data + ", " + " current_date, " + "2, " + "1)";
 
 			stmt.executeUpdate(insert);
 
@@ -673,7 +674,7 @@ public class RepositorioCadastroHBM
 			stmt = con.createStatement();
 
 			insert = "insert into imovel_subcategoria(imov_id, scat_id, " + "imsb_qteconomia, imsb_tmultimaalteracao) " + "values ( "
-							+ idImovel + ", " + idSubcategoria + ", " + "1, " + "sysdate)";
+							+ idImovel + ", " + idSubcategoria + ", " + "1, " + "current_date)";
 
 			stmt.executeUpdate(insert);
 
@@ -710,7 +711,7 @@ public class RepositorioCadastroHBM
 
 			insert = "insert into ligacao_agua(lagu_id, lagu_dtimplantacao, lagu_dtligacaoagua, "
 							+ "lagu_icemissaocortesupressao, lagd_id, lagm_id, lapf_id, lagu_tmultimaalteracao) " + "values ( " + idImovel
-							+ ", " + dataBD + ", " + dataBD + ", 1, 2, 1, 1," + " sysdate)";
+							+ ", " + dataBD + ", " + dataBD + ", 1, 2, 1, 1," + " current_date)";
 
 			stmt.executeUpdate(insert);
 
@@ -1242,7 +1243,7 @@ public class RepositorioCadastroHBM
 							+ "   c.imovel.subLote, " + "   c.imovel.setorComercial.id, " + "   c.imovel.rota.id, "
 							+ "   count(*) as quantidade, "
 							+ "   sum( c.valorAgua + c.valorEsgoto + c.debitos - c.valorCreditos ) as valor " + " from " + "   Conta c, "
-							+ "   ClienteImovel ci " + " where " + "   c.imovel.id = ci.imovel.id and "
+							+ "   ClienteImovel ci " + " where " + "   c.imovel.id = ci.imovel.id and " + " ci.dataFimRelacao IS NULL and "
 							+ "   c.debitoCreditoSituacaoAtual in ( 0,1,2 ) and " + "   ci.clienteRelacaoTipo.id = "
 							+ ClienteRelacaoTipo.USUARIO;
 
@@ -1441,7 +1442,7 @@ public class RepositorioCadastroHBM
 			}
 
 			if(sequencialRotaInicial != null){
-				consulta += " i.imov_nnsequencialrota between :sequencialRotaInicial and :sequencialRotaFinal ";
+				consulta += " and i.imov_nnsequencialrota between :sequencialRotaInicial and :sequencialRotaFinal ";
 
 				parameters.put("sequencialRotaInicial", sequencialRotaInicial);
 				parameters.put("sequencialRotaFinal", sequencialRotaFinal);
@@ -4078,4 +4079,77 @@ public class RepositorioCadastroHBM
 
 		return retorno;
 	}
+
+	/**
+	 * @author Yara Souza
+	 * @date 29/07/2014
+	 *       Select cdc.Clie_Id,c.clie_nmcliente,crt.crtp_dsclienterelacaotipo From
+	 *       Cliente_Debito_A_Cobrar cdc
+	 *       Inner Join Cliente C On C.Clie_Id = Cdc.Clie_Id
+	 *       inner join cliente_relacao_tipo crt on crt.crtp_id = Cdc.crtp_id
+	 *       group by cdc.Clie_Id,c.clie_nmcliente,crt.crtp_dsclienterelacaotipo;
+	 */
+
+	public Collection<Object[]> pesquisarClienteDebitoACobrar(Cliente cliente) throws ErroRepositorioException{
+
+		Collection<Object[]> retorno = null;
+
+		Session session = HibernateUtil.getSession();
+		String consulta;
+
+		try{
+			consulta = "select cliente.id," + "cliente.nome, " + "clienteRelacaoTipo.descricao "
+							+ "from ClienteDebitoACobrar clienteDebitoACobrar " + "inner join clienteDebitoACobrar.cliente cliente "
+							+ "inner join clienteDebitoACobrar.clienteRelacaoTipo clienteRelacaoTipo " + "where  cliente.id = :idCliente "
+							+ " group by cliente.id,cliente.nome,clienteRelacaoTipo.descricao ";
+
+			retorno = (Collection<Object[]>) session.createQuery(consulta).setInteger("idCliente", cliente.getId()).list();
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * @author Yara Souza
+	 * @date 29/07/2014
+	 *       Select cdc.Clie_Id,c.clie_nmcliente,crt.crtp_dsclienterelacaotipo From
+	 *       Cliente_Guia_Pagamemento cdc
+	 *       Inner Join Cliente C On C.Clie_Id = Cdc.Clie_Id
+	 *       inner join cliente_relacao_tipo crt on crt.crtp_id = Cdc.crtp_id
+	 *       group by cdc.Clie_Id,c.clie_nmcliente,crt.crtp_dsclienterelacaotipo;
+	 */
+
+	public Collection<Object[]> pesquisarClienteGuiaPagamento(Cliente cliente) throws ErroRepositorioException{
+
+		Collection<Object[]> retorno = null;
+
+		Session session = HibernateUtil.getSession();
+		String consulta;
+
+		try{
+			consulta = "select cliente.id," + "cliente.nome, " + "clienteRelacaoTipo.descricao "
+							+ "from ClienteGuiaPagamento clienteGuiaPagamento " + "inner join clienteGuiaPagamento.cliente cliente "
+							+ "inner join clienteGuiaPagamento.clienteRelacaoTipo clienteRelacaoTipo " + "where  cliente.id = :idCliente "
+							+ " group by cliente.id,cliente.nome,clienteRelacaoTipo.descricao ";
+
+			retorno = (Collection<Object[]>) session.createQuery(consulta).setInteger("idCliente", cliente.getId()).list();
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
 }

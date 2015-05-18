@@ -50,6 +50,9 @@
 	<parameter name="P_NM_EMPRESA" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_JUCOR" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_FONE" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="guiaPagamento" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="totalDebitoACobrarGuiaPagamento" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="getIndicadorPrimeiraPagina" class="java.lang.String"/>
 	<field name="getArrayJRDetail" class="java.lang.Object"/>
@@ -211,23 +214,6 @@
 						<font fontName="Courier New" pdfFontName="Courier-Bold" size="8" isBold="true"/>
 					</textElement>
 				<text><![CDATA[VALOR R$]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						x="58"
-						y="4"
-						width="60"
-						height="12"
-						key="staticText-54"/>
-					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-</box>
-					<textElement textAlignment="Center" verticalAlignment="Middle">
-						<font fontName="Courier New" pdfFontName="Courier-Bold" size="8" isBold="true"/>
-					</textElement>
-				<text><![CDATA[MATRÍCULA]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
@@ -864,7 +850,7 @@
 					<textElement verticalAlignment="Middle">
 						<font fontName="Courier New" pdfFontName="Courier-Bold" size="9" isBold="true"/>
 					</textElement>
-				<text><![CDATA[DÉBITOS A COBRAR]]></text>
+				<text><![CDATA[GUIAS DE PAGAMENTOS + DÈBITOS A COBRAR]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
@@ -940,7 +926,8 @@
 					<textElement textAlignment="Right">
 						<font fontName="Courier New" pdfFontName="Courier-Bold" size="9" isBold="true"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{debitosACobrar}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{totalDebitoACobrarGuiaPagamento}
+]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
@@ -1032,6 +1019,23 @@ $P{representacaoNumericaCodBarraSemDigito} != null)]]></printWhenExpression>
 					<dataSourceExpression><![CDATA[$F{getArrayJRDetail}]]></dataSourceExpression>
 					<subreportExpression  class="java.lang.String"><![CDATA["relatorioExtratoDebitoClienteDetail.jasper"]]></subreportExpression>
 				</subreport>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="58"
+						y="4"
+						width="60"
+						height="12"
+						key="textField-14"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="Courier New" pdfFontName="Courier-Bold" size="8" isBold="true"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS}]]></textFieldExpression>
+				</textField>
 			</band>
 			</groupHeader>
 			<groupFooter>
@@ -1220,7 +1224,7 @@ $P{representacaoNumericaCodBarraSemDigito} != null)]]></printWhenExpression>
 				<staticText>
 					<reportElement
 						x="302"
-						y="44"
+						y="43"
 						width="230"
 						height="18"
 						key="staticText-69"/>

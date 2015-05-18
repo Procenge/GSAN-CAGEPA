@@ -119,6 +119,8 @@ public class NegativadorRetornoMotivo
 
 	public static final String OPERACAO_BEM_SUCEDIDA = "00";
 
+	public static final String REGISTRO_ASSOCIADO_COM_ERRO_SPC_BOA_VISTA = "999";
+
 	/** full constructor */
 	public NegativadorRetornoMotivo(Integer id, String descricaoRetornocodigo, Short indicadorUso, Short indicadorRegistroAceito,
 									Date ultimaAlteracao, gcom.cobranca.Negativador negativador, Set negativadorMovimentoRegRetMot,

@@ -16,6 +16,7 @@ import gcom.micromedicao.consumo.LigacaoTipo;
 import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
 import gcom.util.Util;
+import gcom.util.filtro.ConectorOr;
 import gcom.util.filtro.ParametroSimples;
 
 import java.util.ArrayList;
@@ -74,11 +75,13 @@ public class ExibirInserirDebitoACobrarRateioMacromedidoresAction
 			throw new ActionServletException("erro.sistema");
 		}
 		FiltroDebitoTipo filtroDebitoTipo = new FiltroDebitoTipo();
-		filtroDebitoTipo.adicionarParametro(new ParametroSimples(FiltroDebitoTipo.ID, Integer.valueOf(tipoDebitosRateio)));
-		Collection<DebitoTipo> colecaoDebitoTipo = fachada.pesquisar(filtroDebitoTipo, DebitoTipo.class.getName());
-		DebitoTipo debitoTipoBase = (DebitoTipo) Util.retonarObjetoDeColecao(colecaoDebitoTipo);
-
-		form.setTipoDebitosRateio(debitoTipoBase.getDescricaoFormatada());
+		filtroDebitoTipo.adicionarParametro(new ParametroSimples(FiltroDebitoTipo.ID, Integer.valueOf(tipoDebitosRateio),
+						ConectorOr.CONECTOR_OR));
+		filtroDebitoTipo.adicionarParametro(new ParametroSimples(FiltroDebitoTipo.ID, DebitoTipo.RATEIO_AGUA, ConectorOr.CONECTOR_OR));
+		filtroDebitoTipo.adicionarParametro(new ParametroSimples(FiltroDebitoTipo.ID, DebitoTipo.RATEIO_ESGOTO, ConectorOr.CONECTOR_OR));
+		filtroDebitoTipo.adicionarParametro(new ParametroSimples(FiltroDebitoTipo.ID, DebitoTipo.RATEIO_TEE));
+		Collection<DebitoTipo> colecaoDebitoTipoRateio = fachada.pesquisar(filtroDebitoTipo, DebitoTipo.class.getName());
+		httpServletRequest.setAttribute("colecaoDebitoTipoRateio", colecaoDebitoTipoRateio);
 
 
 		form.setIdTipoLigacao(LigacaoTipo.LIGACAO_AGUA.toString());

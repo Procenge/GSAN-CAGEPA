@@ -78,6 +78,7 @@ package gcom.gui.faturamento.conta;
 
 import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.cliente.FiltroCliente;
+import gcom.cadastro.endereco.Logradouro;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.localidade.*;
 import gcom.fachada.Fachada;
@@ -95,6 +96,7 @@ import gcom.util.filtro.ParametroSimples;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -157,6 +159,8 @@ public class FiltrarImovelInserirManterContaAction
 			sessao.removeAttribute("inscricaoInicialImovel");
 			sessao.removeAttribute("inscricaoDestinoImovel");
 
+			sessao.removeAttribute("colecaoFaturamentoGrupo");
+
 			if(sessao.getAttribute("quadraSelecionada") != null){
 				sessao.removeAttribute("quadraSelecionada");
 			}
@@ -188,6 +192,9 @@ public class FiltrarImovelInserirManterContaAction
 				sessao.setAttribute("colecaoImovel", colecaoImovel);
 				sessao.setAttribute("arquivoQuantidadeContas", quantidadeConta);
 			}
+
+			sessao.removeAttribute("colecaoFaturamentoGrupo");
+
 		}else{
 
 			Imovel imovelInscricaoOrigem = new Imovel();
@@ -434,18 +441,44 @@ public class FiltrarImovelInserirManterContaAction
 				quadras = (String[]) sessao.getAttribute("quadraSelecionada");
 			}
 
+			// Faturamento Grupo
+			Collection<Integer> colecaoFaturamentoGrupo = null;
+			if(filtrarImovelContaActionForm.getFaturamentoGrupo() != null
+							&& filtrarImovelContaActionForm.getFaturamentoGrupo().length > 0){
+
+				colecaoFaturamentoGrupo = new ArrayList<Integer>();
+
+				String[] faturamentoGrupo = filtrarImovelContaActionForm.getFaturamentoGrupo();
+				for(int i = 0; i < faturamentoGrupo.length; i++){
+
+					if(!Util.isVazioOuBranco(faturamentoGrupo[i])){
+
+						colecaoFaturamentoGrupo.add(Integer.valueOf(faturamentoGrupo[i]));
+					}
+				}
+
+			}else{
+				sessao.removeAttribute("colecaoFaturamentoGrupo");
+			}
+
+			// Colecao Logradouro
+			Collection<Logradouro> colecaoLogradouro = (Collection) sessao.getAttribute("colecaoLogradouro");
+			Collection<Integer> colecaoIdLogradouro = null;
+			if(!Util.isVazioOrNulo(colecaoLogradouro)){
+				colecaoIdLogradouro = new ArrayList();
+				Iterator it = colecaoLogradouro.iterator();
+				while(it.hasNext()){
+					Logradouro logradouro = (Logradouro) it.next();
+					colecaoIdLogradouro.add(logradouro.getId());
+				}
+			}
+
 			/*
 			 * Colocado por Raphael Rossiter em 02/08/2007
 			 * OBJETIVO: Acrescentar o parâmetro grupo de faturamento para o filtro de manutenção
 			 * de várias contas.
 			 */
-			Integer idGrupoFaturamento = null;
 
-			if(filtrarImovelContaActionForm.getIdFaturamentoGrupo() != null
-							&& !filtrarImovelContaActionForm.getIdFaturamentoGrupo().equals("")){
-
-				idGrupoFaturamento = Integer.parseInt(filtrarImovelContaActionForm.getIdFaturamentoGrupo());
-			}
 
 			FiltrarImovelInserirManterContaHelper filtro = new FiltrarImovelInserirManterContaHelper();
 
@@ -488,7 +521,12 @@ public class FiltrarImovelInserirManterContaAction
 			 * OBJETIVO: Acrescentar o parâmetro grupo de faturamento para o filtro de manutenção
 			 * de várias contas.
 			 */
-			filtro.setIdGrupoFaturamento(idGrupoFaturamento);
+
+			filtro.setColecaoFaturamentoGrupo(colecaoFaturamentoGrupo);
+			
+			if(!Util.isVazioOrNulo(colecaoIdLogradouro)){
+				filtro.setColecaoLogradouro(colecaoIdLogradouro);
+			}
 
 			colecaoImovel = fachada.pesquisarColecaoImovel(filtro);
 
@@ -510,10 +548,10 @@ public class FiltrarImovelInserirManterContaAction
 				sessao.removeAttribute("inscricaoDestinoImovel");
 			}
 
-			if(idGrupoFaturamento != null){
-				sessao.setAttribute("grupoFaturamento", idGrupoFaturamento.toString());
+			if(colecaoFaturamentoGrupo != null){
+				sessao.setAttribute("colecaoFaturamentoGrupo", colecaoFaturamentoGrupo);
 			}else{
-				sessao.removeAttribute("grupoFaturamento");
+				sessao.removeAttribute("colecaoFaturamentoGrupo");
 			}
 
 			sessao.removeAttribute("codigoCliente");
@@ -524,404 +562,7 @@ public class FiltrarImovelInserirManterContaAction
 		return retorno;
 	}
 
-	/**
-	 * Verifica a situação em que se encontra a rota que pertence a quadra
-	 * passada como parâmetro - não faturada = false e faturada = true
-	 * 
-	 * @param quadra
-	 * @return um boleano
-	 */
 
-	/*
-	 * private boolean verificarSituacaoRota(Quadra quadra) {
-	 * boolean retorno = true;
-	 * Collection colecaoPesquisa = null;
-	 * SistemaParametro sistemaParametro = null;
-	 * //Obtém a instância da fachada
-	 * Fachada fachada = Fachada.getInstancia();
-	 * //Retorna o único objeto da tabela sistemaParametro
-	 * sistemaParametro = fachada.pesquisarParametrosDoSistema();
-	 * if (sistemaParametro == null) {
-	 * retorno = false;
-	 * throw new ActionServletException(
-	 * "atencao.pesquisa.sistemaparametro_inexistente");
-	 * } else {
-	 * FiltroFaturamentoAtividadeCronograma filtroFaturamentoAtividadeCronograma = new
-	 * FiltroFaturamentoAtividadeCronograma();
-	 * filtroFaturamentoAtividadeCronograma
-	 * .adicionarParametro(new ParametroSimples(
-	 * 
-	 * FiltroFaturamentoAtividadeCronograma.FATURAMENTO_GRUPO_CRONOGRAMA_MENSAL_FATURAMENTO_GRUPO_ID,
-	 * quadra.getRota().getFaturamentoGrupo().getId()));
-	 * filtroFaturamentoAtividadeCronograma
-	 * .adicionarParametro(new ParametroSimples(
-	 * FiltroFaturamentoAtividadeCronograma.FATURAMENTO_GRUPO_CRONOGRAMA_MENSAL_ANO_MES_REFERENCIA,
-	 * new Integer(sistemaParametro.getAnoMesFaturamento())));
-	 * //O valor do ID será fixo
-	 * // =============================================
-	 * filtroFaturamentoAtividadeCronograma
-	 * .adicionarParametro(new ParametroSimples(
-	 * FiltroFaturamentoAtividadeCronograma.FATURAMENTO_ATIVIDADE_ID,
-	 * FaturamentoAtividade.FATURAR_GRUPO));
-	 * //=====================================================================
-	 * colecaoPesquisa = fachada.pesquisar(
-	 * filtroFaturamentoAtividadeCronograma,
-	 * FaturamentoAtividadeCronograma.class.getName());
-	 * if (colecaoPesquisa == null || colecaoPesquisa.isEmpty()) {
-	 * retorno = false;
-	 * throw new ActionServletException(
-	 * "atencao.pesquisa.faturamento_atividade_cronograma_inexistente");
-	 * } else {
-	 * FaturamentoAtividadeCronograma faturamentoAtividadeCronograma =
-	 * (FaturamentoAtividadeCronograma) Util
-	 * .retonarObjetoDeColecao(colecaoPesquisa);
-	 * //Local da verificação da situação da Rota (Faturada ou não
-	 * // Faturada)
-	 * if (faturamentoAtividadeCronograma.getDataRealizacao() == null) {
-	 * retorno = false;
-	 * }
-	 * }
-	 * }
-	 * return retorno;
-	 * }
-	 */
-
-	/**
-	 * @param objetoPesquisa
-	 * @param objetoPai
-	 * @param tipoObjeto
-	 * @return
-	 * @throws RemoteException
-	 * @throws ErroRepositorioException
-	 */
-
-	/*
-	 * private boolean pesquisarObjeto(Object objetoPesquisa, Object objetoPai,
-	 * int tipoObjeto) {
-	 * boolean retorno = true;
-	 * Collection colecaoPesquisa = null;
-	 * SetorComercial setorComercial = null;
-	 * //Obtém a instância da fachada
-	 * Fachada fachada = Fachada.getInstancia();
-	 * switch (tipoObjeto) {
-	 * //Setor Comercial
-	 * case 1:
-	 * Localidade localidade = (Localidade) objetoPai;
-	 * setorComercial = (SetorComercial) objetoPesquisa;
-	 * FiltroSetorComercial filtroSetorComercial = new FiltroSetorComercial();
-	 * filtroSetorComercial.adicionarParametro(new ParametroSimples(
-	 * FiltroSetorComercial.ID_LOCALIDADE, localidade.getId()));
-	 * filtroSetorComercial.adicionarParametro(new ParametroSimples(
-	 * FiltroSetorComercial.CODIGO_SETOR_COMERCIAL, String
-	 * .valueOf(setorComercial.getCodigo())));
-	 * filtroSetorComercial.adicionarParametro(new ParametroSimples(
-	 * FiltroSetorComercial.INDICADORUSO,
-	 * ConstantesSistema.INDICADOR_USO_ATIVO));
-	 * colecaoPesquisa = fachada.pesquisar(filtroSetorComercial,
-	 * SetorComercial.class.getName());
-	 * if (colecaoPesquisa == null || colecaoPesquisa.isEmpty()) {
-	 * retorno = false;
-	 * }
-	 * break;
-	 * //Quadra
-	 * case 2:
-	 * setorComercial = (SetorComercial) objetoPai;
-	 * Quadra quadra = (Quadra) objetoPesquisa;
-	 * FiltroQuadra filtroQuadra = new FiltroQuadra();
-	 * filtroQuadra.adicionarParametro(new ParametroSimples(
-	 * FiltroQuadra.ID_SETORCOMERCIAL, String
-	 * .valueOf(setorComercial.getId())));
-	 * filtroQuadra.adicionarParametro(new ParametroSimples(
-	 * FiltroQuadra.NUMERO_QUADRA, String.valueOf(quadra
-	 * .getNumeroQuadra())));
-	 * filtroQuadra.adicionarParametro(new ParametroSimples(
-	 * FiltroQuadra.INDICADORUSO,
-	 * ConstantesSistema.INDICADOR_USO_ATIVO));
-	 * colecaoPesquisa = fachada.pesquisar(filtroQuadra, Quadra.class
-	 * .getName());
-	 * if (colecaoPesquisa == null || colecaoPesquisa.isEmpty()) {
-	 * retorno = false;
-	 * }
-	 * break;
-	 * default:
-	 * break;
-	 * }
-	 * return retorno;
-	 * }
-	 */
-	/*    *//**
-	 * @param objetoPesquisa
-	 * @param objetoPai
-	 * @param tipoObjeto
-	 * @return
-	 * @throws RemoteException
-	 * @throws ErroRepositorioException
-	 */
-	/*
-	 * private Object pesquisarRetornarObjeto(Object objetoPesquisa,
-	 * Object objetoPai, int tipoObjeto) {
-	 * Object retorno = null;
-	 * Collection colecaoPesquisa = null;
-	 * SetorComercial setorComercial = null;
-	 * Quadra quadra = null;
-	 * Imovel imovel = null;
-	 * //Obtém a instância da fachada
-	 * Fachada fachada = Fachada.getInstancia();
-	 * switch (tipoObjeto) {
-	 * //Setor Comercial
-	 * case 1:
-	 * Localidade localidade = (Localidade) objetoPai;
-	 * setorComercial = (SetorComercial) objetoPesquisa;
-	 * FiltroSetorComercial filtroSetorComercial = new FiltroSetorComercial();
-	 * filtroSetorComercial.adicionarParametro(new ParametroSimples(
-	 * FiltroSetorComercial.ID_LOCALIDADE, localidade.getId()));
-	 * filtroSetorComercial.adicionarParametro(new ParametroSimples(
-	 * FiltroSetorComercial.CODIGO_SETOR_COMERCIAL, String
-	 * .valueOf(setorComercial.getCodigo())));
-	 * filtroSetorComercial.adicionarParametro(new ParametroSimples(
-	 * FiltroSetorComercial.INDICADORUSO,
-	 * ConstantesSistema.INDICADOR_USO_ATIVO));
-	 * colecaoPesquisa = fachada.pesquisar(filtroSetorComercial,
-	 * SetorComercial.class.getName());
-	 * if (colecaoPesquisa != null || !colecaoPesquisa.isEmpty()) {
-	 * retorno = Util.retonarObjetoDeColecao(colecaoPesquisa);
-	 * }
-	 * break;
-	 * //Quadra
-	 * case 2:
-	 * setorComercial = (SetorComercial) objetoPai;
-	 * quadra = (Quadra) objetoPesquisa;
-	 * FiltroQuadra filtroQuadra = new FiltroQuadra();
-	 * //Objetos que serão retornados pelo hibernate
-	 * filtroQuadra.adicionarCaminhoParaCarregamentoEntidade("rota.faturamentoGrupo");
-	 * filtroQuadra.adicionarParametro(new ParametroSimples(
-	 * FiltroQuadra.ID_SETORCOMERCIAL, String
-	 * .valueOf(setorComercial.getId())));
-	 * filtroQuadra.adicionarParametro(new ParametroSimples(
-	 * FiltroQuadra.NUMERO_QUADRA, String.valueOf(quadra
-	 * .getNumeroQuadra())));
-	 * filtroQuadra.adicionarParametro(new ParametroSimples(
-	 * FiltroQuadra.INDICADORUSO,
-	 * ConstantesSistema.INDICADOR_USO_ATIVO));
-	 * colecaoPesquisa = fachada.pesquisar(filtroQuadra, Quadra.class
-	 * .getName());
-	 * if (colecaoPesquisa != null || !colecaoPesquisa.isEmpty()) {
-	 * retorno = Util.retonarObjetoDeColecao(colecaoPesquisa);
-	 * }
-	 * break;
-	 * //Imovel
-	 * case 3:
-	 * quadra = (Quadra) objetoPai;
-	 * imovel = (Imovel) objetoPesquisa;
-	 * FiltroImovel filtroImovel = new FiltroImovel();
-	 * filtroImovel.adicionarParametro(new ParametroSimples(
-	 * FiltroImovel.QUADRA_ID, quadra.getId()));
-	 * filtroImovel.adicionarParametro(new ParametroSimples(
-	 * FiltroImovel.LOTE, new Short(imovel.getLote())));
-	 * filtroImovel.adicionarParametro(new ParametroSimples(
-	 * FiltroImovel.SUBLOTE, new Short(imovel.getSubLote())));
-	 * colecaoPesquisa = fachada.pesquisar(filtroImovel, Imovel.class
-	 * .getName());
-	 * if (colecaoPesquisa != null || !colecaoPesquisa.isEmpty()) {
-	 * retorno = Util.retonarObjetoDeColecao(colecaoPesquisa);
-	 * }
-	 * break;
-	 * default:
-	 * break;
-	 * }
-	 * return retorno;
-	 * }
-	 */
-	/**
-	 * Compara os objetos para validar suas referencias
-	 * 
-	 * @param origem
-	 * @param destino
-	 * @param tipoObjeto
-	 * @return
-	 * @throws RemoteException
-	 * @throws ErroRepositorioException
-	 */
-
-	/*
-	 * private boolean compararObjetos(Object origem, Object destino,
-	 * int tipoObjeto) {
-	 * boolean retorno = true;
-	 * //Collection colecaoImoveis;
-	 * switch (tipoObjeto) {
-	 * //Localidade
-	 * case 1:
-	 * Collection colecaoSetorOrigem = pesquisarDependentes(origem, 1);
-	 * //Comparação de setores
-	 * if (colecaoSetorOrigem != null && !colecaoSetorOrigem.isEmpty()) {
-	 * Collection colecaoSetorDestino = pesquisarDependentes(destino,
-	 * 1);
-	 * if (colecaoSetorDestino != null
-	 * && !colecaoSetorDestino.isEmpty()) {
-	 * Iterator itSetorOrigem = (colecaoSetorOrigem).iterator();
-	 * Iterator itSetorDestino = null;
-	 * Iterator itQuadraOrigem = null;
-	 * Iterator itQuadraDestino = null;
-	 * SetorComercial setorComercialOrigem = null;
-	 * SetorComercial setorComercialDestino = null;
-	 * Quadra quadraOrigem = null;
-	 * Quadra quadraDestino = null;
-	 * while (itSetorOrigem.hasNext()) {
-	 * if (!retorno) {
-	 * // Verifica a existência de imóveis no setor
-	 * // comercial
-	 * if (existeImovel(setorComercialOrigem, 1)) {
-	 * break;
-	 * }
-	 * }
-	 * setorComercialOrigem = (SetorComercial) itSetorOrigem
-	 * .next();
-	 * //Colocar o índice para o primeiro registro
-	 * itSetorDestino = (colecaoSetorDestino).iterator();
-	 * //flag auxiliar para controlar a saída da rotina de
-	 * // repetição
-	 * boolean sairLoop = false;
-	 * while (itSetorDestino.hasNext() && sairLoop == false) {
-	 * setorComercialDestino = (SetorComercial) itSetorDestino
-	 * .next();
-	 * if (setorComercialDestino.getCodigo() == setorComercialOrigem
-	 * .getCodigo()) {
-	 * retorno = true;
-	 * sairLoop = true;
-	 * //Comparação de quadras
-	 * Collection colecaoQuadraOrigem = pesquisarDependentes(
-	 * setorComercialOrigem, 2);
-	 * if (colecaoQuadraOrigem == null
-	 * || colecaoQuadraOrigem.isEmpty()) {
-	 * retorno = true;
-	 * break;
-	 * } else {
-	 * Collection colecaoQuadraDestino = pesquisarDependentes(
-	 * setorComercialDestino, 2);
-	 * if (colecaoQuadraDestino != null
-	 * && !colecaoQuadraDestino.isEmpty()) {
-	 * itQuadraOrigem = (colecaoQuadraOrigem)
-	 * .iterator();
-	 * while (itQuadraOrigem.hasNext()) {
-	 * if (!retorno) {
-	 * // Verifica a existência de
-	 * // imóveis na quadra
-	 * if (existeImovel(quadraOrigem,
-	 * 2)) {
-	 * break;
-	 * }
-	 * }
-	 * quadraOrigem = (Quadra) itQuadraOrigem
-	 * .next();
-	 * //Colocar o índice para o primeiro
-	 * // registro
-	 * itQuadraDestino = (colecaoQuadraDestino)
-	 * .iterator();
-	 * while (itQuadraDestino.hasNext()) {
-	 * quadraDestino = (Quadra) itQuadraDestino
-	 * .next();
-	 * if (quadraDestino
-	 * .getNumeroQuadra() == quadraOrigem
-	 * .getNumeroQuadra()) {
-	 * retorno = true;
-	 * break;
-	 * } else {
-	 * retorno = false;
-	 * }
-	 * }
-	 * }
-	 * } else {
-	 * retorno = false;
-	 * }
-	 * }
-	 * } else {
-	 * retorno = false;
-	 * }
-	 * }
-	 * }
-	 * } else {
-	 * retorno = false;
-	 * }
-	 * }
-	 * break;
-	 * //Setor Comercial
-	 * case 2:
-	 * Collection colecaoQuadraOrigem = pesquisarDependentes(origem, 2);
-	 * //Comparação de quadras
-	 * if (colecaoQuadraOrigem != null && !colecaoQuadraOrigem.isEmpty()) {
-	 * Collection colecaoQuadraDestino = pesquisarDependentes(destino,
-	 * 2);
-	 * if (colecaoQuadraDestino != null
-	 * && !colecaoQuadraDestino.isEmpty()) {
-	 * Iterator itQuadraOrigem = (colecaoQuadraOrigem).iterator();
-	 * Iterator itQuadraDestino = null;
-	 * while (itQuadraOrigem.hasNext()) {
-	 * if (!retorno) {
-	 * break;
-	 * }
-	 * Quadra quadraOrigem = (Quadra) itQuadraOrigem.next();
-	 * //Colocar o índice para o primeiro registro
-	 * itQuadraDestino = (colecaoQuadraDestino).iterator();
-	 * while (itQuadraDestino.hasNext()) {
-	 * Quadra quadraDestino = (Quadra) itQuadraDestino
-	 * .next();
-	 * if (quadraDestino.getNumeroQuadra() == quadraOrigem
-	 * .getNumeroQuadra()) {
-	 * retorno = true;
-	 * break;
-	 * } else {
-	 * retorno = false;
-	 * }
-	 * }
-	 * }
-	 * } else {
-	 * retorno = false;
-	 * }
-	 * }
-	 * break;
-	 * default:
-	 * break;
-	 * }
-	 * return retorno;
-	 * }
-	 */
-
-	/**
-	 * Retorna os dependentes do objeto passado (Localidade ou Setor Comercial)
-	 * 
-	 * @param objetoPai
-	 * @param tipoObjeto
-	 * @return uma colecao com objetos dependentes do objeto passado
-	 * @throws RemoteException
-	 * @throws ErroRepositorioException
-	 */
-
-	/*
-	 * private Collection pesquisarDependentes(Object objetoPai, int tipoObjeto) {
-	 * Collection colecaoPesquisa = null;
-	 * //Obtém a instância da fachada
-	 * Fachada fachada = Fachada.getInstancia();
-	 * switch (tipoObjeto) {
-	 * //Localidade - retorna uma coleção de setor comercial
-	 * case 1:
-	 * Localidade localidade = (Localidade) objetoPai;
-	 * //Indicador de uso considerado como ATIVO
-	 * colecaoPesquisa = fachada.pesquisarSetorComercial(localidade
-	 * .getId().intValue());
-	 * break;
-	 * //Setor Comercial - retorna uma coleção de quadra
-	 * case 2:
-	 * SetorComercial setorComercial = (SetorComercial) objetoPai;
-	 * //Indicador de uso considerado como ATIVO
-	 * colecaoPesquisa = fachada.pesquisarQuadra(setorComercial.getId()
-	 * .intValue());
-	 * break;
-	 * default:
-	 * break;
-	 * }
-	 * return colecaoPesquisa;
-	 * }
-	 */
 	/**
 	 * Valida os valores digitados pelo usuário
 	 * 

@@ -142,6 +142,8 @@ public class InserirEquipeActionForm
 
 	private String deleteComponente;
 
+	private Integer idEquipeTipo;
+
 	/**
 	 * @return Retorna a carga de trabalho por dia.
 	 */
@@ -429,5 +431,15 @@ public class InserirEquipeActionForm
 	public void setDeleteComponente(String deleteComponente){
 
 		this.deleteComponente = deleteComponente;
+	}
+
+	public Integer getIdEquipeTipo(){
+
+		return idEquipeTipo;
+	}
+
+	public void setIdEquipeTipo(Integer idEquipeTipo){
+
+		this.idEquipeTipo = idEquipeTipo;
 	}
 }

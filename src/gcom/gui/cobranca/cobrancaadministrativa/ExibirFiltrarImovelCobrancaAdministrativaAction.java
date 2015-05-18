@@ -7,23 +7,8 @@ import gcom.atendimentopublico.ligacaoesgoto.FiltroLigacaoEsgotoSituacao;
 import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao;
 import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.empresa.Empresa;
-import gcom.cadastro.imovel.Categoria;
-import gcom.cadastro.imovel.FiltroCategoria;
-import gcom.cadastro.imovel.FiltroImovelCobrancaMotivoRetirada;
-import gcom.cadastro.imovel.FiltroSubCategoria;
-import gcom.cadastro.imovel.Imovel;
-import gcom.cadastro.imovel.ImovelCobrancaMotivoRetirada;
-import gcom.cadastro.imovel.Subcategoria;
-import gcom.cadastro.localidade.FiltroGerenciaRegional;
-import gcom.cadastro.localidade.FiltroLocalidade;
-import gcom.cadastro.localidade.FiltroQuadra;
-import gcom.cadastro.localidade.FiltroSetorComercial;
-import gcom.cadastro.localidade.FiltroUnidadeNegocio;
-import gcom.cadastro.localidade.GerenciaRegional;
-import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.localidade.Quadra;
-import gcom.cadastro.localidade.SetorComercial;
-import gcom.cadastro.localidade.UnidadeNegocio;
+import gcom.cadastro.imovel.*;
+import gcom.cadastro.localidade.*;
 import gcom.cobranca.CobrancaAcao;
 import gcom.cobranca.CobrancaAcaoAtividadeComando;
 import gcom.fachada.Fachada;
@@ -34,15 +19,7 @@ import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.filtro.ParametroSimplesColecao;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Scanner;
@@ -775,8 +752,9 @@ public class ExibirFiltrarImovelCobrancaAdministrativaAction
 				if(idsImoveis.size() > 0){
 
 					form.setIdsImoveis(idsImoveis);
+					sessao.setAttribute("idsImoveisArquivo", idsImoveis);
 				}else{
-
+					sessao.removeAttribute("idsImoveisArquivo");
 					form.setArquivoDownload("Nenhum imóvel foi encontrado no arquivo.");
 					form.setArquivoCarregado("");
 				}

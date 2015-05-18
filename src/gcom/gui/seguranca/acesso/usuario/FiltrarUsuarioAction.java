@@ -119,6 +119,9 @@ public class FiltrarUsuarioAction
 		String empresa = usarioFiltrarActionForm.getEmpresa();
 		String idFuncionario = usarioFiltrarActionForm.getIdFuncionario();
 		String nome = usarioFiltrarActionForm.getNome();
+
+		String idUsuario = usarioFiltrarActionForm.getIdUsuario();
+
 		String idLotacao = usarioFiltrarActionForm.getIdLotacao();
 		String usuarioSituacao = usarioFiltrarActionForm.getUsuarioSituacao();
 		String abrangencia = usarioFiltrarActionForm.getAbrangencia();
@@ -200,10 +203,17 @@ public class FiltrarUsuarioAction
 			peloMenosUmParametroInformado = true;
 			filtroUsuarioGrupo.adicionarParametro(new ParametroSimples(FiltroUsuarioGrupo.USUARIO_EMPRESA_ID, empresa));
 		}
+
 		if(nome != null && !nome.trim().equalsIgnoreCase("")){
 			peloMenosUmParametroInformado = true;
 			filtroUsuarioGrupo.adicionarParametro(new ComparacaoTexto(FiltroUsuarioGrupo.USUARIO_NOME, nome.toUpperCase()));
 		}
+
+		if(idUsuario != null && !idUsuario.trim().equalsIgnoreCase("")){
+			peloMenosUmParametroInformado = true;
+			filtroUsuarioGrupo.adicionarParametro(new ParametroSimples(FiltroUsuarioGrupo.USUARIO_ID, Integer.valueOf(idUsuario)));
+		}
+
 		if(indicadorFuncionario != null && !indicadorFuncionario.equals("")){
 			short indFuncionario = new Short(indicadorFuncionario);
 			if(indFuncionario != UsuarioTipo.INDICADOR_FUNCIONARIO){

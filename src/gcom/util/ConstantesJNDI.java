@@ -227,6 +227,10 @@ public class ConstantesJNDI {
 
 	public static String BATCH_GERAR_TAXA_ENTREGA_OUTRO_ENDERECO_MDB = "";
 
+	public static String BATCH_AJUSTA_LANCAMENTOS_CONTABIES_SINTETICOS_MDB = "";
+
+	public static String BATCH_AJUSTA_RELACAO_USUARIO_CLIENTE_IMOVEL_MDB = "";
+
 	public static String BATCH_GERAR_DADOS_DIARIOS_ARRECADACAO_MDB = "";
 
 	public static String BATCH_GERAR_ATIVIDADE_ACAO_COBRANCA_MDB = "";
@@ -325,7 +329,11 @@ public class ConstantesJNDI {
 
 	public static String BATCH_GERAR_AVISO_CORTE_MDB = "";
 
+	public static String BATCH_GERAR_NOTIFICACAO_AMIGAVEL_MDB = "";
+
 	public static String BATCH_EMITIR_RELACAO_DOCUMENTOS_COBRANCA = "";
+
+	public static String BATCH_SUPRESSAO_DEFINITIVA_IMOVEIS_MDB = "";
 
 	// public static String BATCH_GERAR_MOVIMENTO_EXCLUSAO_EM_LOTE_NEGATIVACAO_MDB = "";
 
@@ -334,6 +342,8 @@ public class ConstantesJNDI {
 	public static String CONTROLADOR_CONTABIL_SEJB = "";
 
 	public static String BATCH_GERAR_QUADRO_COMPARATIVO_FAT_ARREC_MDB = "";
+
+	public static String BATCH_AJUSTAR_LANCAMENTOS_CONTABEIS_SINTETICOS_MDB = "";
 
 	// ESQUEMA DOS CONTROLADORES
 	// =====================================================================================================
@@ -420,6 +430,8 @@ public class ConstantesJNDI {
 	public static String BATCH_GERAR_MULTA_POR_DESCUMPRIMENTO_PARCELAMENTO_MDB = "";
 
 	public static String BATCH_REGISTRAR_MOVIMENTO_ARRECADORES_MDB = "";
+	
+	public static String BATCH_REGISTRAR_LEITURAS_ANORMALIDADES_MDB = "";
 
 	public static String BATCH_GERAR_ENVIAR_RELATORIO_RESUMO_MOVIMENTO_ARRECADACAO_MDB = "";
 
@@ -491,6 +503,8 @@ public class ConstantesJNDI {
 	public static String BATCH_COMANDAR_PRESCRICAO_DEBITOS_MDB = "";
 
 	public static String BATCH_COMANDAR_PRESCRICAO_AUTOMATICA_DEBITOS_MDB = "";
+
+	public static String BATCH_IMPORTAR_DADOS_DIVIDA_ATIVA_MDB = "";
 
 	static{
 
@@ -752,10 +766,17 @@ public class ConstantesJNDI {
 			BATCH_EMITIR_DOCUMENTO_COBRANCA_MDB = propriedades.getProperty("QueueBatchEmitirDocumentoCobrancaMDB");
 
 			BATCH_GERAR_AVISO_CORTE_MDB = propriedades.getProperty("QueueBatchGerarAvisoCorteMDB");
+			
+			BATCH_GERAR_NOTIFICACAO_AMIGAVEL_MDB = propriedades.getProperty("QueueBatchGerarNotificacaoAmigavelMDB");
 
 			BATCH_EMITIR_RELACAO_DOCUMENTOS_COBRANCA = propriedades.getProperty("QueueBatchEmitirRelacaoDocumentosCobrancaMDB");
 
 			BATCH_GERAR_QUADRO_COMPARATIVO_FAT_ARREC_MDB = propriedades.getProperty("QueueBatchGerarQuadroComparativoFatEArrecMDB");
+
+			BATCH_AJUSTAR_LANCAMENTOS_CONTABEIS_SINTETICOS_MDB = propriedades
+							.getProperty("QueueBatchAjustarLancamentosContabeisSinteticosMDB");
+
+			BATCH_SUPRESSAO_DEFINITIVA_IMOVEIS_MDB = propriedades.getProperty("QueueBatchSupressaoDefinitivaImoveisMDB");
 
 			CONTROLADOR_CONTABIL_SEJB = propriedades.getProperty("ControladorContabil");
 
@@ -835,6 +856,8 @@ public class ConstantesJNDI {
 							.getProperty("QueueBatchGerarMultaPorDescumprimentoParcelamentoMDB");
 
 			BATCH_REGISTRAR_MOVIMENTO_ARRECADORES_MDB = propriedades.getProperty("QueueBatchRegistrarMovimentoArrecadadoresMDB");
+
+			BATCH_REGISTRAR_LEITURAS_ANORMALIDADES_MDB = propriedades.getProperty("QueueBatchRegistrarLeiturasAnormalidadesMDB");
 
 			BATCH_GERAR_ENVIAR_RELATORIO_RESUMO_MOVIMENTO_ARRECADACAO_MDB = propriedades
 							.getProperty("QueueBatchGerarEnviarRelatorioResumoMovimentoArrecadacaoMDB");
@@ -919,6 +942,13 @@ public class ConstantesJNDI {
 			BATCH_COMANDAR_PRESCRICAO_DEBITOS_MDB = propriedades.getProperty("QueueBatchComandarPrescricaoDebitosMDB");
 
 			BATCH_COMANDAR_PRESCRICAO_AUTOMATICA_DEBITOS_MDB = propriedades.getProperty("QueueBatchComandarPrescricaoAutomaticaDebitosMDB");
+
+			BATCH_AJUSTA_LANCAMENTOS_CONTABIES_SINTETICOS_MDB = propriedades
+							.getProperty("QueueBatchAjustarLancamentosContabiesSinteticosMDB");
+
+			BATCH_AJUSTA_RELACAO_USUARIO_CLIENTE_IMOVEL_MDB = propriedades.getProperty("QueueBatchAjustarRelacaoUsuarioClienteImovelMDB");
+
+			BATCH_IMPORTAR_DADOS_DIVIDA_ATIVA_MDB = propriedades.getProperty("QueueBatchImportarDadosDividaAtivaMDB");
 
 			stream.close();
 

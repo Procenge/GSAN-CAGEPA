@@ -79,8 +79,7 @@ package gcom.gui.micromedicao.hidrometro;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.micromedicao.hidrometro.FiltroHidrometro;
-import gcom.micromedicao.hidrometro.Hidrometro;
+import gcom.micromedicao.bean.FiltroHidrometroHelper;
 import gcom.util.ConstantesSistema;
 
 import java.util.Collection;
@@ -151,30 +150,26 @@ public class ExibirMovimentarHidrometroAction
 			colecaoHidrometro = fachada.pesquisarNumeroHidrometroFaixa(fixo, faixaInicial, faixaFinal);
 
 		}else{
-			FiltroHidrometro filtroHidrometro = new FiltroHidrometro();
+			FiltroHidrometroHelper filtroHidrometroHelper = new FiltroHidrometroHelper();
 
 			// Verifica se o filtro se encontra no request
-			if(httpServletRequest.getAttribute("filtroHidrometro") != null){
-				filtroHidrometro = (FiltroHidrometro) httpServletRequest.getAttribute("filtroHidrometro");
-			}else if(sessao.getAttribute("filtroHidrometro") != null){
+			if(httpServletRequest.getAttribute("filtroHidrometroHelper") != null){
+
+				filtroHidrometroHelper = (FiltroHidrometroHelper) httpServletRequest.getAttribute("filtroHidrometroHelper");
+			}else if(sessao.getAttribute("filtroHidrometroHelper") != null){
+
 				// Verifica de o filtro se encontra na sessão
-				filtroHidrometro = (FiltroHidrometro) sessao.getAttribute("filtroHidrometro");
+				filtroHidrometroHelper = (FiltroHidrometroHelper) sessao.getAttribute("filtroHidrometroHelper");
 			}
 
-			int totalRegistros = fachada.totalRegistrosPesquisa(filtroHidrometro, Hidrometro.class.getName());
+			Integer totalRegistros = fachada.pesquisarHidrometroFiltroTotalRegistros(filtroHidrometroHelper);
 
 			if(totalRegistros > ConstantesSistema.NUMERO_MAXIMO_REGISTROS_MANUTENCAO){
 
 				throw new ActionServletException("atencao.pesquisa.muitosregistros");
 			}
 
-			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade(FiltroHidrometro.HIDROMETRO_SITUACAO);
-			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade(FiltroHidrometro.HIDROMETRO_LOCAL_ARMAZENAGEM);
-			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade(FiltroHidrometro.HIDROMETRO_MARCA);
-			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade(FiltroHidrometro.HIDROMETRO_CAPACIDADE);
-			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade(FiltroHidrometro.HIDROMETRO_DIAMETRO);
-
-			colecaoHidrometro = fachada.pesquisar(filtroHidrometro, Hidrometro.class.getName());
+			colecaoHidrometro = fachada.pesquisarHidrometroFiltro(filtroHidrometroHelper, null);
 		}
 
 		// Caso a coleção seja null

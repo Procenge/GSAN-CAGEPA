@@ -115,6 +115,63 @@ public class GuiaPagamentoPrestacaoHelper
 
 	private String idDebitoCreditoSituacao;
 
+	private Short indicadorDividaAtiva;
+
+	private Short indicadorExecucaoFiscal;
+
+	private Integer numeroProcessoAdministrativoExecucaoFiscal;
+
+	/**
+	 * @return the numeroProcessoAdministrativoExecucaoFiscal
+	 */
+	public Integer getNumeroProcessoAdministrativoExecucaoFiscal(){
+
+		return numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	/**
+	 * @param numeroProcessoAdministrativoExecucaoFiscal
+	 *            the numeroProcessoAdministrativoExecucaoFiscal to set
+	 */
+	public void setNumeroProcessoAdministrativoExecucaoFiscal(Integer numeroProcessoAdministrativoExecucaoFiscal){
+
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	/**
+	 * @return the indicadorDividaAtiva
+	 */
+	public Short getIndicadorDividaAtiva(){
+
+		return indicadorDividaAtiva;
+	}
+
+	/**
+	 * @param indicadorDividaAtiva
+	 *            the indicadorDividaAtiva to set
+	 */
+	public void setIndicadorDividaAtiva(Short indicadorDividaAtiva){
+
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+	}
+
+	/**
+	 * @return the indicadorExecucaoFiscal
+	 */
+	public Short getIndicadorExecucaoFiscal(){
+
+		return indicadorExecucaoFiscal;
+	}
+
+	/**
+	 * @param indicadorExecucaoFiscal
+	 *            the indicadorExecucaoFiscal to set
+	 */
+	public void setIndicadorExecucaoFiscal(Short indicadorExecucaoFiscal){
+
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+	}
+
 	/**
 	 * @return the descricaoTipoDebito
 	 */
@@ -196,6 +253,59 @@ public class GuiaPagamentoPrestacaoHelper
 		this.valorPrestacaoTipoDebito = valorPrestacao;
 		this.indicadorPagamento = indicadorPagamentoPendente;
 		this.descricaoDebitoCreditoSituacao = descricaoDebitoCreditoSituacao;
+	}
+
+	/**
+	 * @param idGuiaPagamento
+	 *            TODO
+	 * @param idTipoDebito
+	 *            TODO
+	 * @param idTipoDebito
+	 * @param idLancamentoItemContabil
+	 *            TODO
+	 * @param descricaoDebitoCreditoSituacao
+	 *            TODO
+	 * @param descricaoTipoDebito
+	 * @param valorTipoDebito
+	 * @param valorPrestacaoTipoDebito
+	 */
+	public GuiaPagamentoPrestacaoHelper(Integer idGuiaPagamento, Short numeroPrestacao, Integer idTipoDebito,
+										Integer idLancamentoItemContabil, String descricaoDocumentoTipo, Short numeroPrestacaoTotal,
+										Date dataEmissao, Date dataVencimento, BigDecimal valorPrestacao, Short indicadorPagamentoPendente,
+										String descricaoDebitoCreditoSituacao, Short indicadorExecucaoFiscal) {
+
+		this.idGuiaPagamento = idGuiaPagamento;
+		this.numeroPrestacao = numeroPrestacao;
+		this.idTipoDebito = idTipoDebito;
+		this.idLancamentoItemContabil = idLancamentoItemContabil;
+		this.descricaoDocumentoTipo = descricaoDocumentoTipo;
+		this.numeroPrestacaoTotal = numeroPrestacaoTotal;
+		this.dataEmissao = dataEmissao;
+		this.dataVencimento = dataVencimento;
+		this.valorPrestacaoTipoDebito = valorPrestacao;
+		this.indicadorPagamento = indicadorPagamentoPendente;
+		this.descricaoDebitoCreditoSituacao = descricaoDebitoCreditoSituacao;
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+	}
+
+	public GuiaPagamentoPrestacaoHelper(Integer idGuiaPagamento, Short numeroPrestacao, Integer idTipoDebito,
+										Integer idLancamentoItemContabil, String descricaoDocumentoTipo, Short numeroPrestacaoTotal,
+										Date dataEmissao, Date dataVencimento, BigDecimal valorPrestacao, Short indicadorPagamentoPendente,
+										String descricaoDebitoCreditoSituacao, Short indicadorExecucaoFiscal, Short indicadorDividaAtiva) {
+
+		this.idGuiaPagamento = idGuiaPagamento;
+		this.numeroPrestacao = numeroPrestacao;
+		this.idTipoDebito = idTipoDebito;
+		this.idLancamentoItemContabil = idLancamentoItemContabil;
+		this.descricaoDocumentoTipo = descricaoDocumentoTipo;
+		this.numeroPrestacaoTotal = numeroPrestacaoTotal;
+		this.dataEmissao = dataEmissao;
+		this.dataVencimento = dataVencimento;
+		this.valorPrestacaoTipoDebito = valorPrestacao;
+		this.indicadorPagamento = indicadorPagamentoPendente;
+		this.descricaoDebitoCreditoSituacao = descricaoDebitoCreditoSituacao;
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
 	}
 
 	public GuiaPagamentoPrestacaoHelper(Long id, String descricaoTipoDebito, BigDecimal valorTipoDebito, BigDecimal valorPrestacaoTipoDebito) {
@@ -311,6 +421,50 @@ public class GuiaPagamentoPrestacaoHelper
 		this.dsIndicadorPagamento = (indicadorPagamento == 1) ? "S" : "";
 		this.descricaoTipoDebito = descricaoDebitoTipo;
 	}
+	
+	public GuiaPagamentoPrestacaoHelper(String descricaoDocumentoTipo, Integer idGuiaPagamento, Short numeroPrestacao,
+			Short numeroPrestacaoTotal, BigDecimal valorTotalPorPrestacao, Date dataEmissao,
+			Date dataVencimento, Short indicadorPagamento, Integer idDebitoTipo, String descricaoDebitoTipo,
+			String descricaoDebitoCreditoSituacao, Short indicadorExecucaoFiscal, Short indicadorDividaAtiva) {
+
+		this.valorTotalPorPrestacao = valorTotalPorPrestacao;
+		this.descricaoDocumentoTipo = descricaoDocumentoTipo;
+		this.numeroPrestacaoTotal = numeroPrestacaoTotal;
+		this.dataEmissao = dataEmissao;
+		this.dataVencimento = dataVencimento;
+		this.indicadorPagamento = indicadorPagamento;
+		this.id = Long.valueOf(idGuiaPagamento.toString() + numeroPrestacao.toString());
+		this.idGuiaPagamento = idGuiaPagamento;
+		this.numeroPrestacao = numeroPrestacao;
+		this.descricaoDebitoCreditoSituacao = descricaoDebitoCreditoSituacao;
+		this.dsIndicadorPagamento = (indicadorPagamento == 1) ? "S" : "";
+		this.descricaoTipoDebito = descricaoDebitoTipo;
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+	}
+
+	public GuiaPagamentoPrestacaoHelper(String descricaoDocumentoTipo, Integer idGuiaPagamento, Short numeroPrestacao,
+										Short numeroPrestacaoTotal, BigDecimal valorTotalPorPrestacao, Date dataEmissao,
+										Date dataVencimento, Short indicadorPagamento, Integer idDebitoTipo, String descricaoDebitoTipo,
+										String descricaoDebitoCreditoSituacao, Short indicadorExecucaoFiscal, Short indicadorDividaAtiva,
+										Integer numeroProcessoAdministrativoExecucaoFiscal) {
+
+		this.valorTotalPorPrestacao = valorTotalPorPrestacao;
+		this.descricaoDocumentoTipo = descricaoDocumentoTipo;
+		this.numeroPrestacaoTotal = numeroPrestacaoTotal;
+		this.dataEmissao = dataEmissao;
+		this.dataVencimento = dataVencimento;
+		this.indicadorPagamento = indicadorPagamento;
+		this.id = Long.valueOf(idGuiaPagamento.toString() + numeroPrestacao.toString());
+		this.idGuiaPagamento = idGuiaPagamento;
+		this.numeroPrestacao = numeroPrestacao;
+		this.descricaoDebitoCreditoSituacao = descricaoDebitoCreditoSituacao;
+		this.dsIndicadorPagamento = (indicadorPagamento == 1) ? "S" : "";
+		this.descricaoTipoDebito = descricaoDebitoTipo;
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
+	}
 
 	/**
 	 * Default Constructor
@@ -383,8 +537,102 @@ public class GuiaPagamentoPrestacaoHelper
 		this.indicadorCobrancaAdministrativa = indicadorCobrancaAdministrativa;
 	}
 
+	/**
+	 * @param valorTotalPorPrestacao
+	 * @param descricaoDocumentoTipo
+	 * @param numeroPrestacaoTotal
+	 * @param dataEmissao
+	 * @param dataVencimento
+	 * @param indicadorPagamento
+	 * @param idGuiaPagamento
+	 * @param numeroPrestacao
+	 * @param descricaoDebitoCreditoSituacao
+	 */
+	public GuiaPagamentoPrestacaoHelper(Short numeroPrestacao, Date dataVencimento, BigDecimal valorTotalPorPrestacao,
+										String descricaoDocumentoTipo, Integer idGuiaPagamento, Short numeroPrestacaoTotal,
+										Date dataEmissao, Short indicadorPagamento, Integer idImovel,
+										String descricaoDebitoCreditoSituacao, Integer numeroContratoParcelOrgaoPublico,
+										Short indicadorCobrancaAdministrativa, Short indicadorExecucaoFiscal) {
+
+		this.valorTotalPorPrestacao = valorTotalPorPrestacao;
+		this.descricaoDocumentoTipo = descricaoDocumentoTipo;
+		this.numeroPrestacaoTotal = numeroPrestacaoTotal;
+		this.dataEmissao = dataEmissao;
+		this.dataVencimento = dataVencimento;
+		this.indicadorPagamento = indicadorPagamento;
+		this.id = Long.valueOf(idGuiaPagamento.toString() + numeroPrestacao.toString());
+		this.idGuiaPagamento = idGuiaPagamento;
+		this.numeroPrestacao = numeroPrestacao;
+		this.descricaoDebitoCreditoSituacao = descricaoDebitoCreditoSituacao;
+		this.dsIndicadorPagamento = (indicadorPagamento == 1) ? "S" : "";
+		this.idImovel = idImovel;
+		this.numeroContratoParcelOrgaoPublico = numeroContratoParcelOrgaoPublico;
+		this.indicadorCobrancaAdministrativa = indicadorCobrancaAdministrativa;
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+	}
+
+	public GuiaPagamentoPrestacaoHelper(Short numeroPrestacao, Date dataVencimento, BigDecimal valorTotalPorPrestacao,
+										String descricaoDocumentoTipo, Integer idGuiaPagamento, Short numeroPrestacaoTotal,
+										Date dataEmissao, Short indicadorPagamento, Integer idImovel,
+										String descricaoDebitoCreditoSituacao, Integer numeroContratoParcelOrgaoPublico,
+										Short indicadorCobrancaAdministrativa, Short indicadorExecucaoFiscal, Short indicadorDividaAtiva) {
+
+		this.valorTotalPorPrestacao = valorTotalPorPrestacao;
+		this.descricaoDocumentoTipo = descricaoDocumentoTipo;
+		this.numeroPrestacaoTotal = numeroPrestacaoTotal;
+		this.dataEmissao = dataEmissao;
+		this.dataVencimento = dataVencimento;
+		this.indicadorPagamento = indicadorPagamento;
+		this.id = Long.valueOf(idGuiaPagamento.toString() + numeroPrestacao.toString());
+		this.idGuiaPagamento = idGuiaPagamento;
+		this.numeroPrestacao = numeroPrestacao;
+		this.descricaoDebitoCreditoSituacao = descricaoDebitoCreditoSituacao;
+		this.dsIndicadorPagamento = (indicadorPagamento == 1) ? "S" : "";
+		this.idImovel = idImovel;
+		this.numeroContratoParcelOrgaoPublico = numeroContratoParcelOrgaoPublico;
+		this.indicadorCobrancaAdministrativa = indicadorCobrancaAdministrativa;
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+	}
+
+	public GuiaPagamentoPrestacaoHelper(Short numeroPrestacao, Date dataVencimento, BigDecimal valorTotalPorPrestacao,
+										String descricaoDocumentoTipo, Integer idGuiaPagamento, Short numeroPrestacaoTotal,
+										Date dataEmissao, Short indicadorPagamento, Integer idImovel,
+										String descricaoDebitoCreditoSituacao, Integer numeroContratoParcelOrgaoPublico,
+										Short indicadorCobrancaAdministrativa, Short indicadorExecucaoFiscal, Short indicadorDividaAtiva,
+										Integer numeroProcessoAdministrativoExecucaoFiscal) {
+
+		this.valorTotalPorPrestacao = valorTotalPorPrestacao;
+		this.descricaoDocumentoTipo = descricaoDocumentoTipo;
+		this.numeroPrestacaoTotal = numeroPrestacaoTotal;
+		this.dataEmissao = dataEmissao;
+		this.dataVencimento = dataVencimento;
+		this.indicadorPagamento = indicadorPagamento;
+		this.id = Long.valueOf(idGuiaPagamento.toString() + numeroPrestacao.toString());
+		this.idGuiaPagamento = idGuiaPagamento;
+		this.numeroPrestacao = numeroPrestacao;
+		this.descricaoDebitoCreditoSituacao = descricaoDebitoCreditoSituacao;
+		this.dsIndicadorPagamento = (indicadorPagamento == 1) ? "S" : "";
+		this.idImovel = idImovel;
+		this.numeroContratoParcelOrgaoPublico = numeroContratoParcelOrgaoPublico;
+		this.indicadorCobrancaAdministrativa = indicadorCobrancaAdministrativa;
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
 	public GuiaPagamentoPrestacaoHelper(Short numeroPrestacao, Date dataVencimento, BigDecimal valorTotalPorPrestacao) {
 
+		this.valorTotalPorPrestacao = valorTotalPorPrestacao;
+		this.dataVencimento = dataVencimento;
+		this.numeroPrestacao = numeroPrestacao;
+
+	}
+
+	public GuiaPagamentoPrestacaoHelper(Integer idGuiaPagamento, Short numeroPrestacao, Date dataVencimento,
+										BigDecimal valorTotalPorPrestacao) {
+
+		this.idGuiaPagamento = idGuiaPagamento;
 		this.valorTotalPorPrestacao = valorTotalPorPrestacao;
 		this.dataVencimento = dataVencimento;
 		this.numeroPrestacao = numeroPrestacao;

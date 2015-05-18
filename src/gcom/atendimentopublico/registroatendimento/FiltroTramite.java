@@ -118,4 +118,9 @@ public class FiltroTramite
 	public final static String REGISTRO_ATENDIMENTO = "registroAtendimento";
 
 	public final static String REGISTRO_ATENDIMENTO_ID = "registroAtendimento.id";
+
+	public final static String UNIDADE_ORGANIZACIONAL_ORIGEM = "unidadeOrganizacionalOrigem";
+
+	public final static String UNIDADE_ORGANIZACIONAL_DESTINO = "unidadeOrganizacionalDestino";
+
 }

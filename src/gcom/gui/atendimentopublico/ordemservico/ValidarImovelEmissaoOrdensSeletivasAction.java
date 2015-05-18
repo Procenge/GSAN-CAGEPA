@@ -184,6 +184,20 @@ public class ValidarImovelEmissaoOrdensSeletivasAction
 				throw new ActionServletException("atencao.mes_ano_instalacao_invalido", null, "");
 			}
 		}
+		
+		if(imovelEmissaoOrdensSeletivas.getReferenciaUltimaAfericaoAnterior() != null
+						&& !imovelEmissaoOrdensSeletivas.getReferenciaUltimaAfericaoAnterior().equals("")){
+
+			Integer referenciaInformada = Util.obterInteger(Util.formatarMesAnoParaAnoMes(imovelEmissaoOrdensSeletivas
+							.getReferenciaUltimaAfericaoAnterior()));
+
+			Integer refrenciaMesAtual = Util.getAnoMesComoInteger(new Date());
+
+			if(Util.compararAnoMesReferencia(referenciaInformada, refrenciaMesAtual, ">")){
+
+				throw new ActionServletException("atencao.campo.invalido", null, "Última Aferição anterior a");
+			}
+		}
 
 		// [FS0011] - Verificar preenchimento dos parâmetros. Caso não informe o Arquivo, nem o Elo,
 		// nem o Grupo de Faturamento, nem algum dos Dados de Localização Geográfica (regional,
@@ -414,6 +428,15 @@ public class ValidarImovelEmissaoOrdensSeletivasAction
 								.getNumeroOcorrenciasConsecutivas()));
 
 			}
+
+			if(imovelEmissaoOrdensSeletivas.getReferenciaUltimaAfericaoAnterior() != null
+							&& !imovelEmissaoOrdensSeletivas.getReferenciaUltimaAfericaoAnterior().equals("")){
+
+				osSeletivaComando.setReferenciaUltimaAfericaoHidrometro(Util.obterInteger(Util
+								.formatarMesAnoParaAnoMes(imovelEmissaoOrdensSeletivas.getReferenciaUltimaAfericaoAnterior())));
+
+			}
+
 			osSeletivaComando.setUsuario(usuarioLogado);
 			osSeletivaComando.setTempoComando(new Date());
 			osSeletivaComando.setUltimaAlteracao(new Date());

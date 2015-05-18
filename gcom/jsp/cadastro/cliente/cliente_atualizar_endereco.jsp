@@ -148,7 +148,7 @@ function remover(objeto){
 						color="red">*</font></strong></td>
 					<td width="432" align="right"><html:button
 						styleClass="bottonRightCol" property="adicionar" value="Adicionar"
-						onclick="javascript:abrirPopup('exibirInserirEnderecoAction.do?tipoPesquisaEndereco=cliente&operacao=2', 570, 700);" />
+						onclick="javascript:abrirPopup('exibirInserirEnderecoAction.do?tipoPesquisaEndereco=cliente&operacao=2&exibirMatriculaImovel=1', 570, 700);" />
 					</td>
 				</tr>
 				<tr>
@@ -193,7 +193,6 @@ function remover(objeto){
 										<tr bgcolor="#FFFFFF">
 										<%}%>
 											<td width="9%" align="center">
-												<input type="hidden" id="validarEndereco" value="<%= cont%>">
 												<img src="<bean:message key='caminho.imagens'/>Error.gif"
 													width="14" height="14" style="cursor:hand;" alt="Remover"
 													onclick="javascript:remover(document.forms[0].enderecoRemoverSelecao.value='<%=""+GcomAction.obterTimestampIdObjeto(endereco)%>');">
@@ -207,6 +206,7 @@ function remover(objeto){
 											</td>
 										</tr>
 									</logic:iterate>
+									<input type="hidden" id="validarEndereco" value="<%= cont%>">									
 								</logic:present>
 							</table>
 							</div>

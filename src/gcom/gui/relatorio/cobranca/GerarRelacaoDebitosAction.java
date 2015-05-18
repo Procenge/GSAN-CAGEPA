@@ -114,8 +114,8 @@ public class GerarRelacaoDebitosAction
 
 		ImovelOutrosCriteriosActionForm imovelOutrosCriteriosActionForm = (ImovelOutrosCriteriosActionForm) actionForm;
 
-		RelatorioGerarRelacaoDebitos relatorioGerarRelacaoDebitos = new RelatorioGerarRelacaoDebitos((Usuario) (httpServletRequest
-						.getSession(false)).getAttribute("usuarioLogado"));
+		RelatorioGerarRelacaoDebitos relatorioGerarRelacaoDebitos = new RelatorioGerarRelacaoDebitos(
+						(Usuario) (httpServletRequest.getSession(false)).getAttribute("usuarioLogado"));
 
 		String[] ligacaoAguaSituacao = Util.removerValorBranco(imovelOutrosCriteriosActionForm.getSituacaoLigacaoAguaArray());
 		String[] ligacaoEsgotoSituacao = Util.removerValorBranco(imovelOutrosCriteriosActionForm.getSituacaoLigacaoEsgotoArray());
@@ -172,34 +172,42 @@ public class GerarRelacaoDebitosAction
 		relatorioGerarRelacaoDebitos.addParametro("situacaoLigacaoEsgoto", ligacaoEsgotoSituacao);
 
 		// consumo Minimo Fixado Esgoto Inicial
-		relatorioGerarRelacaoDebitos.addParametro("consumoMinimoFixadoEsgotoInicial", imovelOutrosCriteriosActionForm
-						.getConsumoMinimoFixadoEsgotoInicial());
+		relatorioGerarRelacaoDebitos.addParametro("consumoMinimoFixadoEsgotoInicial",
+						imovelOutrosCriteriosActionForm.getConsumoMinimoFixadoEsgotoInicial());
 		// consumo Minimo Fixado Esgoto Final
-		relatorioGerarRelacaoDebitos.addParametro("consumoMinimoFixadoEsgotoFinal", imovelOutrosCriteriosActionForm
-						.getConsumoMinimoFixadoEsgotoFinal());
+		relatorioGerarRelacaoDebitos.addParametro("consumoMinimoFixadoEsgotoFinal",
+						imovelOutrosCriteriosActionForm.getConsumoMinimoFixadoEsgotoFinal());
+
+		// consumo Fixado Esgoto do Poço Inicial
+		relatorioGerarRelacaoDebitos.addParametro("consumoFixadoEsgotoPocoInicial",
+						imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoInicial());
+
+		// consumo Fixado Esgoto do Poço Final
+		relatorioGerarRelacaoDebitos.addParametro("consumoFixadoEsgotoPocoFinal",
+						imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoFinal());
 
 		// intervalo Percentual Esgoto Inicial
-		relatorioGerarRelacaoDebitos.addParametro("intervaloPercentualEsgotoInicial", imovelOutrosCriteriosActionForm
-						.getIntervaloPercentualEsgotoInicial());
+		relatorioGerarRelacaoDebitos.addParametro("intervaloPercentualEsgotoInicial",
+						imovelOutrosCriteriosActionForm.getIntervaloPercentualEsgotoInicial());
 		// intervalor Percentual Esgoto Final
-		relatorioGerarRelacaoDebitos.addParametro("intervaloPercentualEsgotoFinal", imovelOutrosCriteriosActionForm
-						.getIntervaloPercentualEsgotoFinal());
+		relatorioGerarRelacaoDebitos.addParametro("intervaloPercentualEsgotoFinal",
+						imovelOutrosCriteriosActionForm.getIntervaloPercentualEsgotoFinal());
 		// indicador Medicao
 		relatorioGerarRelacaoDebitos.addParametro("indicadorMedicao", imovelOutrosCriteriosActionForm.getIndicadorMedicao());
 		// tipo Medicao ID
 		relatorioGerarRelacaoDebitos.addParametro("tipoMedicaoID", imovelOutrosCriteriosActionForm.getTipoMedicao());
 		// intervalo Media Minima Imovel Inicial
-		relatorioGerarRelacaoDebitos.addParametro("intervaloMediaMinimaImovelInicial", imovelOutrosCriteriosActionForm
-						.getIntervaloMediaMinimaImovelInicio());
+		relatorioGerarRelacaoDebitos.addParametro("intervaloMediaMinimaImovelInicial",
+						imovelOutrosCriteriosActionForm.getIntervaloMediaMinimaImovelInicio());
 		// intervalo Media Minima Imovel Final
-		relatorioGerarRelacaoDebitos.addParametro("intervaloMediaMinimaImoveFinal", imovelOutrosCriteriosActionForm
-						.getIntervaloMediaMinimaImovelFinal());
+		relatorioGerarRelacaoDebitos.addParametro("intervaloMediaMinimaImoveFinal",
+						imovelOutrosCriteriosActionForm.getIntervaloMediaMinimaImovelFinal());
 		// intervalo Media Minima Hidrometro Inicial
-		relatorioGerarRelacaoDebitos.addParametro("intervaloMediaMinimaHidrometroInicial", imovelOutrosCriteriosActionForm
-						.getIntervaloMediaMinimaHidrometroInicio());
+		relatorioGerarRelacaoDebitos.addParametro("intervaloMediaMinimaHidrometroInicial",
+						imovelOutrosCriteriosActionForm.getIntervaloMediaMinimaHidrometroInicio());
 		// intervalo Media Minima Hidrometro Final
-		relatorioGerarRelacaoDebitos.addParametro("intervaloMediaMinimaHidrometroFinal", imovelOutrosCriteriosActionForm
-						.getIntervaloMediaMinimaHidrometroFinal());
+		relatorioGerarRelacaoDebitos.addParametro("intervaloMediaMinimaHidrometroFinal",
+						imovelOutrosCriteriosActionForm.getIntervaloMediaMinimaHidrometroFinal());
 		// perfil Imovel ID
 		relatorioGerarRelacaoDebitos.addParametro("perfilImovelID", imovelOutrosCriteriosActionForm.getPerfilImovel());
 		// categoria Imovel ID
@@ -207,8 +215,8 @@ public class GerarRelacaoDebitosAction
 		// sub categoria ID
 		relatorioGerarRelacaoDebitos.addParametro("subCategoriaID", imovelOutrosCriteriosActionForm.getSubcategoria());
 		// quantidade Economias Inicial
-		relatorioGerarRelacaoDebitos.addParametro("quantidadeEconomiasInicial", imovelOutrosCriteriosActionForm
-						.getQuantidadeEconomiasInicial());
+		relatorioGerarRelacaoDebitos.addParametro("quantidadeEconomiasInicial",
+						imovelOutrosCriteriosActionForm.getQuantidadeEconomiasInicial());
 		// quantidade Economias Final
 		relatorioGerarRelacaoDebitos
 						.addParametro("quantidadeEconomiasFinal", imovelOutrosCriteriosActionForm.getQuantidadeEconomiasFinal());
@@ -229,11 +237,11 @@ public class GerarRelacaoDebitosAction
 		// poco Tipo ID
 		relatorioGerarRelacaoDebitos.addParametro("pocoTipoID", imovelOutrosCriteriosActionForm.getTipoPoco());
 		// tipo Situacao Faturamento ID
-		relatorioGerarRelacaoDebitos.addParametro("tipoSituacaoFaturamentoID", imovelOutrosCriteriosActionForm
-						.getTipoSituacaoEspecialFaturamento());
+		relatorioGerarRelacaoDebitos.addParametro("tipoSituacaoFaturamentoID",
+						imovelOutrosCriteriosActionForm.getTipoSituacaoEspecialFaturamento());
 		// tipo Situacao Especial Cobranca ID
-		relatorioGerarRelacaoDebitos.addParametro("tipoSituacaoEspecialCobrancaID", imovelOutrosCriteriosActionForm
-						.getTipoSituacaoEspecialCobranca());
+		relatorioGerarRelacaoDebitos.addParametro("tipoSituacaoEspecialCobrancaID",
+						imovelOutrosCriteriosActionForm.getTipoSituacaoEspecialCobranca());
 		// situacao Cobranca ID
 		relatorioGerarRelacaoDebitos.addParametro("situacaoCobrancaID", imovelOutrosCriteriosActionForm.getSituacaoCobranca());
 		// dia Vencimento Alternativo
@@ -327,6 +335,11 @@ public class GerarRelacaoDebitosAction
 		}
 
 		relatorioGerarRelacaoDebitos.addParametro("tipoFormatoRelatorio", Integer.parseInt(tipoRelatorio));
+
+		relatorioGerarRelacaoDebitos.addParametro("indicadorOpcaoAgrupamento",
+						imovelOutrosCriteriosActionForm.getIndicadorOpcaoAgrupamento());
+		relatorioGerarRelacaoDebitos.addParametro("indicadorOrdenacaoAscDesc",
+						imovelOutrosCriteriosActionForm.getIndicadorOrdenacaoAscDesc());
 
 		retorno = processarExibicaoRelatorio(relatorioGerarRelacaoDebitos, tipoRelatorio, httpServletRequest, httpServletResponse,
 						actionMapping);

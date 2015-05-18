@@ -228,9 +228,9 @@ function caucionarConta(form){
 }
 
 function isQtdContasPermitida() {
-	var mensagem = "Limite máximo de contas selecionadas excedido. \nPor favor selecione até 50 contas.";
+	var mensagem = "Limite máximo de contas selecionadas excedido. \nPor favor selecione até <bean:write name="limiteContasSelecionadas" scope="session"/> contas.";
 	
-	return obterQuantidadeCheckboxMarcado(mensagem, null, 50);
+	return obterQuantidadeCheckboxMarcado(mensagem, null, <bean:write name="limiteContasSelecionadas" scope="session"/> );
 	
 }
  
@@ -496,37 +496,72 @@ function isQtdContasPermitida() {
 											</td>
 										</tr>
 										<tr bgcolor="#90c7fc">
-
+										<%
+												String pctQtdColunasContas="9";
+										
+												String pctReferencia    = "10%";
+												String pctDataVencimento   = "12%";
+												String pctValorConta = "11%";
+												String pctValorAgua   = "11%";
+												String pctValorEsgoto 	 = "11%";
+												String pctValidade  = "12%";
+												String pctRevisao  = "12%";
+												String pctSituacao  = "14%";
+												String pctDividaAtivaGuia  = "0%";
+										
+												
+												if (session.getAttribute("exibirDividaAtivaColuna") != null) {
+													pctReferencia    = "8%";
+													pctDataVencimento   = "10%";
+													pctValorConta = "8%";
+													pctValorAgua   = "8%";
+													pctValorEsgoto 	 = "8%";
+													pctValidade  = "10%";
+													pctRevisao  = "10%";
+													pctSituacao  = "10%";
+													pctDividaAtivaGuia  = "8%";
+													
+													pctQtdColunasContas      = "10";
+												}						
+										%>
 											
 											<td align="center" width="7%">
 											<div align="center"><strong><a
 												href="javascript:facilitador(this);" id="0">Todos</a></strong></div>
 											</td>
 											
-											<td width="10%">
+											<td width="<%= pctReferencia%>">
 											<div align="center"><strong>Refe.</strong></div>
 											</td>
-											<td width="13%">
+											<td width="<%= pctDataVencimento%>">
 											<div align="center"><strong>Venc.</strong></div>
 											</td>
-											<td width="10%">
+											<td width="<%= pctValorConta%>">
 											<div align="center"><strong>Valor</strong></div>
 											</td>
-											<td width="10%">
+											<td width="<%= pctValorAgua%>">
 											<div align="center"><strong>Água</strong></div>
 											</td>
-											<td width="10%">
+											<td width="<%= pctValorEsgoto%>">
 											<div align="center"><strong>Esgoto</strong></div>
 											</td>
-											<td width="13%">
+											<td width="<%= pctValidade%>">
 											<div align="center"><strong>Validade</strong></div>
 											</td>
-											<td width="13%">
+											<td width="<%= pctRevisao%>">
 											<div align="center"><strong>Revisão</strong></div>
 											</td>
-											<td width="16%">
+											<td width="<%= pctSituacao%>">
 											<div align="center"><strong>Situação</strong></div>
 											</td>
+											
+											<logic:present name="exibirDividaAtivaColuna" scope="session">
+												<td width="<%= pctDividaAtivaGuia%>" >
+													<div align="center" >
+														<strong>Dívida Ativa</strong>
+													</div>
+												</td>				
+											</logic:present>
 
 										</tr>
 									</table>
@@ -571,13 +606,16 @@ function isQtdContasPermitida() {
 												
 													<td align="center" width="7%" valign="middle"><INPUT
 														TYPE="checkbox" NAME="conta"
-														value="<%="" + conta.getId().intValue()%>-<%=data%>"></td>
-													<td width="10%" align="center">
-													
-													<a href="javascript:retificar('<%="" + conta.getId().intValue()%>')">
-													<%=""+ Util.formatarMesAnoReferencia(conta.getReferencia())%> </a>
+														value="<%="" + conta.getId().intValue()%>-<%=data%>">
 													</td>
-													<td width="13%">
+													
+													<td width="<%= pctReferencia%>" align="center">
+														<a href="javascript:retificar('<%="" + conta.getId().intValue()%>')">
+														<%=""+ Util.formatarMesAnoReferencia(conta.getReferencia())%> </a>
+													</td>
+
+												
+													<td width="<%= pctDataVencimento%>">
 													<div align="center"><logic:present name="conta"
 														property="dataVencimentoConta">
 														<span style="color: #000000;"><%=""
@@ -587,8 +625,8 @@ function isQtdContasPermitida() {
 												&nbsp;
 											</logic:notPresent></div>
 													</td>
-													<td width="10%"><div align="right"><span style="color: #000000;"><%="" + Util.formatarMoedaReal(new BigDecimal(conta.getValorTotalConta())).trim()%></span></div></td>
-													<td width="10%">
+													<td width="<%= pctValorConta%>"><div align="right"><span style="color: #000000;"><%="" + Util.formatarMoedaReal(new BigDecimal(conta.getValorTotalConta())).trim()%></span></div></td>
+													<td width="<%= pctValorAgua%>">
 													<div align="center"><logic:present name="conta"
 														property="consumoAgua">
 														<bean:write name="conta" property="consumoAgua" />
@@ -597,7 +635,7 @@ function isQtdContasPermitida() {
 												&nbsp;
 											</logic:notPresent></div>
 													</td>
-													<td width="10%">
+													<td width="<%= pctValorEsgoto%>">
 													<div align="center"><logic:present name="conta"
 														property="consumoEsgoto">
 														<bean:write name="conta" property="consumoEsgoto" />
@@ -606,7 +644,7 @@ function isQtdContasPermitida() {
 												&nbsp;
 											</logic:notPresent></div>
 													</td>
-													<td width="13%">
+													<td width="<%= pctValidade%>">
 													<div align="center"><logic:present name="conta"
 														property="dataValidadeConta">
 														<span style="color: #000000;"><%=""
@@ -616,7 +654,7 @@ function isQtdContasPermitida() {
 												&nbsp;
 											</logic:notPresent></div>
 													</td>
-													<td width="13%">
+													<td width="<%= pctRevisao%>">
 													<div align="center"><logic:present name="conta"
 														property="dataRevisao">
 														<span style="color: #000000;"><%="" + Util.formatarData(conta.getDataRevisao())%></span>
@@ -625,7 +663,7 @@ function isQtdContasPermitida() {
 												&nbsp;
 											</logic:notPresent></div>
 													</td>
-													<td width="16%">
+													<td width="<%= pctSituacao%>">
 													<div align="center">
 													
 													<logic:present name="conta" property="debitoCreditoSituacaoAtual">
@@ -639,6 +677,26 @@ function isQtdContasPermitida() {
 													</div>
 													
 													</td>
+													
+													<logic:present name="exibirDividaAtivaColuna" scope="session">
+														<td width="<%= pctDividaAtivaGuia%>" align="center">
+															<logic:equal name="conta" property="indicadorDividaAtiva" value="2">
+																<logic:equal name="conta" property="indicadorExecucaoFiscal" value="2">
+																	N
+																</logic:equal>
+															</logic:equal>
+								
+															<logic:equal name="conta" property="indicadorDividaAtiva" value="1">
+																<logic:equal name="conta" property="conta.indicadorExecucaoFiscal" value="2">
+																	A
+																</logic:equal>
+															</logic:equal>
+														
+															<logic:equal name="conta" property="indicadorExecucaoFiscal" value="1">
+																E
+															</logic:equal>
+														</td>				
+													</logic:present>														
 												</tr>
 											
 

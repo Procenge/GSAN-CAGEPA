@@ -42,10 +42,57 @@ public class RelatorioQuadroHidrometrosSituacao
 		// ------------------------------------
 
 		String dataReferencia = (String) getParametro("dataReferencia");
-		int tipoFormatoRelatorio = (Integer) getParametro("tipoFormatoRelatorio");
-
+		String pIdGerenciaRegional = (String) getParametro("idGerenciaRegional");
+		String pIdUnidadeNegocio = (String) getParametro("idUnidadeNegocio");
+		String pIdUnidadeFederacao = (String) getParametro("idUnidadeFederacao");
+		String pIdLocalidade = (String) getParametro("idLocalidade");
+		String pIdHidrometroCapacidade = (String) getParametro("idHidrometroCapacidade");
+		String pIdHidrometroMarca = (String) getParametro("idHidrometroMarca");
+		String pIdHidrometroDiametro = (String) getParametro("idHidrometroDiametro");
+		
 		Date dateInicioMes = Util.converterMesAnoParaDataInicial(dataReferencia);
 		Date dateFimMes = Util.converterMesAnoParaDataFinalMes(dataReferencia);
+		
+		
+		Integer idGerenciaRegional = null;
+		if(pIdGerenciaRegional != null){
+			idGerenciaRegional = Util.converterStringParaInteger(pIdGerenciaRegional);
+		}
+		
+		Integer idUnidadeNegocio = null;
+		if(pIdUnidadeFederacao != null){
+			idUnidadeNegocio = Util.converterStringParaInteger(pIdUnidadeFederacao);
+		}
+
+		Integer idUnidadeFederacao = null;
+		if(pIdUnidadeNegocio != null){
+			idUnidadeFederacao = Util.converterStringParaInteger(pIdUnidadeNegocio);
+		}
+
+		Integer idLocalidade = null;
+		if(pIdLocalidade != null){
+			idLocalidade = Util.converterStringParaInteger(pIdLocalidade);
+		}
+
+		Integer idHidrometroCapacidade = null;
+		if(pIdHidrometroCapacidade != null){
+			idHidrometroCapacidade = Util.converterStringParaInteger(pIdHidrometroCapacidade);
+		}
+
+		Integer idHidrometroMarca = null;
+		if(pIdHidrometroMarca != null){
+			idHidrometroMarca = Util.converterStringParaInteger(pIdHidrometroMarca);
+		}
+
+		Integer idHidrometroDiametro = null;
+		if(pIdHidrometroDiametro != null){
+			idHidrometroDiametro = Util.converterStringParaInteger(pIdHidrometroDiametro);
+		}
+		
+		
+		
+		int tipoFormatoRelatorio = (Integer) getParametro("tipoFormatoRelatorio");
+		
 
 		// coleção de beans do relatório
 		List relatorioBeans = new ArrayList();
@@ -54,7 +101,9 @@ public class RelatorioQuadroHidrometrosSituacao
 		
 		RelatorioQuadroHidrometrosSituacaoBean relatorioBean = null;
 
-		Collection colecaoDadosRelatorioQuadroHidrometros = fachada.pesquisarQuadroHidrometrosSituacao(dateInicioMes, dateFimMes);
+		Collection colecaoDadosRelatorioQuadroHidrometros = fachada.pesquisarQuadroHidrometrosSituacao(dateInicioMes, dateFimMes,
+						idGerenciaRegional, idUnidadeNegocio, idUnidadeFederacao, idLocalidade, idHidrometroCapacidade, idHidrometroMarca,
+						idHidrometroDiametro);
 
 		// se a coleção de parâmetros da analise não for vazia
 		if(colecaoDadosRelatorioQuadroHidrometros != null && !colecaoDadosRelatorioQuadroHidrometros.isEmpty()){
@@ -83,7 +132,7 @@ public class RelatorioQuadroHidrometrosSituacao
 					marca = quadroHidrometrosRelatorioHelper.getMarca();
 				}
 
-				Integer idLocalidade = 0;
+				idLocalidade = 0;
 				if(quadroHidrometrosRelatorioHelper.getIdLocalidade() != null){
 					idLocalidade = quadroHidrometrosRelatorioHelper.getIdLocalidade();
 				}
@@ -152,7 +201,7 @@ public class RelatorioQuadroHidrometrosSituacao
 
 		parametros.put("imagem", sistemaParametro.getImagemRelatorio());
 
-		parametros.put("P_NM_ESTADO", sistemaParametro.getNomeEstado());
+		parametros.put("P_NM_EMPRESA", sistemaParametro.getNomeEmpresa());
 
 		parametros.put("dataReferencia", dataReferencia);
 

@@ -79,6 +79,8 @@ package gcom.gui.atendimentopublico.ordemservico;
 import gcom.atendimentopublico.ordemservico.bean.ObterDadosAtividadeOSHelper;
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
+import gcom.util.ControladorException;
+import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 
 import java.util.Collection;
 
@@ -116,6 +118,14 @@ public class ExibirDetalharPeriodoExecucaoEquipePopupAction
 		DetalharPeriodoExecucaoEquipePopupActionForm detalharPeriodoExecucaoEquipePopupActionForm = (DetalharPeriodoExecucaoEquipePopupActionForm) actionForm;
 		Integer idOS = new Integer(detalharPeriodoExecucaoEquipePopupActionForm.getNumeroOS());
 		Integer idAtividade = new Integer(detalharPeriodoExecucaoEquipePopupActionForm.getAtividadeId());
+		String permiteCobrarHora = "0";
+		try{
+			permiteCobrarHora = ParametroAtendimentoPublico.P_PERMITE_COBRAR_HORA_OS.executar();
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		httpServletRequest.setAttribute("permiteCobrarHora", permiteCobrarHora);
 
 		Collection<ObterDadosAtividadeOSHelper> colecaoObterDadosAtividadeOSHelper = fachada.obterDadosAtividadeOS(idOS, idAtividade,
 						ObterDadosAtividadeOSHelper.INDICADOR_PERIODO.intValue());

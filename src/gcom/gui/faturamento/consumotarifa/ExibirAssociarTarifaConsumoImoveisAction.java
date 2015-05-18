@@ -81,7 +81,7 @@ package gcom.gui.faturamento.consumotarifa;
 
 import gcom.cadastro.cliente.ClienteImovel;
 import gcom.cadastro.cliente.FiltroClienteImovel;
-import gcom.cadastro.imovel.Imovel;
+import gcom.cadastro.imovel.*;
 import gcom.cadastro.localidade.*;
 import gcom.fachada.Fachada;
 import gcom.faturamento.consumotarifa.ConsumoTarifa;
@@ -180,6 +180,12 @@ public class ExibirAssociarTarifaConsumoImoveisAction
 						&& indicadorCadastroPrevioTarifaSocial.equals(ConstantesSistema.SIM.toString())){
 			filtroConsumoTarifa.adicionarParametro(new ParametroSimplesDiferenteDe(FiltroConsumoTarifa.ID, parametroTarifaTemp));
 		}
+
+		// Faz a pesquisa das Categorias
+		this.pesquisarCategoria(httpServletRequest);
+
+		// Faz a pesquisa das SubCategorias
+		this.pesquisarSubCategoria(httpServletRequest, associarTarifaConsumoImoveisActionForm);
 
 		// Verifica se os dados foram informados da tabela existem e joga numa
 		// colecao
@@ -314,6 +320,37 @@ public class ExibirAssociarTarifaConsumoImoveisAction
 		// Exibir quantidade de Imoveis com situacao especial de faturamento
 		if(httpServletRequest.getParameter("selecionar") != null){
 
+			String idsCategorias = "";
+			String idsSubcategorias = "";
+
+			// Categoria
+			if(!Util.isVazioOrNulo(associarTarifaConsumoImoveisActionForm.getIdCategoria())){
+
+				for(int i = 0; i < associarTarifaConsumoImoveisActionForm.getIdCategoria().length; i++){
+
+					if(Util.obterInteger(associarTarifaConsumoImoveisActionForm.getIdCategoria()[i]).intValue() != ConstantesSistema.NUMERO_NAO_INFORMADO
+									&& Util.obterInteger(associarTarifaConsumoImoveisActionForm.getIdCategoria()[i]).intValue() != ConstantesSistema.ZERO
+													.intValue()){
+
+						idsCategorias += associarTarifaConsumoImoveisActionForm.getIdCategoria()[i] + ",";
+					}
+				}
+
+				if(!Util.isVazioOrNulo(associarTarifaConsumoImoveisActionForm.getIdSubCategoria())){
+
+					// Subcategoria
+					for(int i = 0; i < associarTarifaConsumoImoveisActionForm.getIdSubCategoria().length; i++){
+
+						if(Util.obterInteger(associarTarifaConsumoImoveisActionForm.getIdSubCategoria()[i]).intValue() != ConstantesSistema.NUMERO_NAO_INFORMADO
+										&& Util.obterInteger(associarTarifaConsumoImoveisActionForm.getIdSubCategoria()[i]).intValue() != ConstantesSistema.ZERO
+														.intValue()){
+
+							idsSubcategorias += associarTarifaConsumoImoveisActionForm.getIdSubCategoria()[i] + ",";
+						}
+					}
+				}
+			}
+
 			httpServletRequest.removeAttribute("bloquear");
 
 			httpServletRequest.setAttribute("liberarBotaoInserir", true);
@@ -332,7 +369,8 @@ public class ExibirAssociarTarifaConsumoImoveisAction
 								associarTarifaConsumoImoveisActionForm.getQuadraDestinoID(), associarTarifaConsumoImoveisActionForm
 												.getLoteOrigem(), associarTarifaConsumoImoveisActionForm.getLoteDestino(),
 								associarTarifaConsumoImoveisActionForm.getSubloteOrigem(), associarTarifaConsumoImoveisActionForm
-												.getSubloteDestino(), associarTarifaConsumoImoveisActionForm.getTarifaAnteriorHidden());
+.getSubloteDestino(),
+								associarTarifaConsumoImoveisActionForm.getTarifaAnteriorHidden(), idsCategorias, idsSubcategorias);
 
 				sessao.setAttribute("colecaoImoveis", colecaoImoveis);
 
@@ -938,6 +976,70 @@ public class ExibirAssociarTarifaConsumoImoveisAction
 			}
 		}
 
+	}
+
+	/**
+	 * Pesquisar Categoria
+	 * 
+	 * @author Anderson Italo
+	 * @date 31/03/2014
+	 */
+	private void pesquisarCategoria(HttpServletRequest httpServletRequest){
+
+		// Carregamento inicial do formulário.
+		FiltroCategoria filtroCategoria = new FiltroCategoria();
+
+		filtroCategoria.setCampoOrderBy(FiltroCategoria.DESCRICAO);
+
+		filtroCategoria.adicionarParametro(new ParametroSimples(FiltroCategoria.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
+
+		// Retorna categoria
+		Collection colecaoCategoria = this.getFachada().pesquisar(filtroCategoria, Categoria.class.getName());
+
+		// [FS0001] - Verificar existência de dados
+		if(colecaoCategoria == null || colecaoCategoria.isEmpty()){
+
+			// Nenhum registro na tabela consumo_tarifa foi encontrada
+			throw new ActionServletException("atencao.pesquisa.nenhum_registro_tabela", null, "Categoria");
+		}else{
+
+			httpServletRequest.setAttribute("colecaoCategoria", colecaoCategoria);
+		}
+	}
+
+	/**
+	 * Pesquisar Subcategoria
+	 * 
+	 * @author Anderson Italo
+	 * @date 31/03/2014
+	 */
+	private void pesquisarSubCategoria(HttpServletRequest httpServletRequest, AssociarTarifaConsumoImoveisActionForm form){
+
+		if(!Util.isVazioOrNulo(form.getIdCategoria())){
+
+			if(form.getIdCategoria().length == 1){
+
+				// Carregamento inicial do formulário.
+				FiltroSubCategoria filtroSubCategoria = new FiltroSubCategoria();
+
+				filtroSubCategoria.setCampoOrderBy(FiltroSubCategoria.DESCRICAO);
+
+				filtroSubCategoria.adicionarParametro(new ParametroSimples(FiltroSubCategoria.CATEGORIA_ID, Util.obterInteger(form
+								.getIdCategoria()[0])));
+
+				filtroSubCategoria.adicionarParametro(new ParametroSimples(FiltroSubCategoria.INDICADOR_USO,
+								ConstantesSistema.INDICADOR_USO_ATIVO));
+
+				// Retorna sub_categoria
+				Collection colecaoSubCategoria = this.getFachada().pesquisar(filtroSubCategoria, Subcategoria.class.getName());
+				httpServletRequest.setAttribute("colecaoSubCategoria", colecaoSubCategoria);
+
+			}else{
+
+				httpServletRequest.removeAttribute("colecaoSubCategoria");
+				form.setIdSubCategoria(null);
+			}
+		}
 	}
 
 }

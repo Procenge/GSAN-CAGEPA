@@ -133,6 +133,8 @@ public class InserirClienteActionForm
 
 	private String ramalClienteInserir;
 
+	private String documentoValidado = "1";
+
 	/**
 	 * @return Retorna o campo cnpjClienteInserir.
 	 */
@@ -403,6 +405,23 @@ public class InserirClienteActionForm
 	public void setIndicadorUsoClienteInserir(String indicadorUsoClienteInserir){
 
 		this.indicadorUsoClienteInserir = indicadorUsoClienteInserir;
+	}
+
+	/**
+	 * @return Retorna o campo documentoValidado.
+	 */
+	public String getDocumentoValidado(){
+
+		return documentoValidado;
+	}
+
+	/**
+	 * @param documentoValidado
+	 *            O documentoValidadoInserir a ser setado.
+	 */
+	public void setDocumentoValidadoInserir(String documentoValidado){
+
+		this.documentoValidado = documentoValidado;
 	}
 
 	/**

@@ -76,9 +76,7 @@
 
 package gcom.gui.atendimentopublico.ordemservico;
 
-import gcom.atendimentopublico.ordemservico.EquipeComponentes;
-import gcom.atendimentopublico.ordemservico.FiltroServicoPerfilTipo;
-import gcom.atendimentopublico.ordemservico.ServicoPerfilTipo;
+import gcom.atendimentopublico.ordemservico.*;
 import gcom.cadastro.funcionario.FiltroFuncionario;
 import gcom.cadastro.funcionario.Funcionario;
 import gcom.cadastro.unidade.FiltroUnidadeOrganizacional;
@@ -197,6 +195,12 @@ public class ExibirInserirEquipeAction
 
 			retorno = actionMapping.findForward("inserirEquipeComponente");
 		}
+
+		FiltroEquipeTipo filtroEquipeTipo = new FiltroEquipeTipo();
+		filtroEquipeTipo.setCampoOrderBy(FiltroEquipeTipo.DESCRICAO);
+		
+		httpServletRequest
+						.setAttribute("colecaoEquipeTipo", Fachada.getInstancia().pesquisar(filtroEquipeTipo, EquipeTipo.class.getName()));
 
 		return retorno;
 	}

@@ -79,6 +79,8 @@
 
 package gcom.gui.cadastro.funcionario;
 
+import gcom.atendimentopublico.ordemservico.EquipeTipo;
+import gcom.atendimentopublico.ordemservico.FiltroEquipeTipo;
 import gcom.cadastro.empresa.Empresa;
 import gcom.cadastro.empresa.FiltroEmpresa;
 import gcom.cadastro.funcionario.FiltroFuncionario;
@@ -88,6 +90,7 @@ import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
 import gcom.util.filtro.ParametroSimples;
 
 import java.util.Collection;
@@ -157,6 +160,13 @@ public class ExibirAtualizarFuncionarioAction
 
 		httpServletRequest.setAttribute("colecaoEmpresa", colecaoEmpresa);
 
+		// Tipo de equipe
+		FiltroEquipeTipo filtroEquipeTipo = new FiltroEquipeTipo();
+		filtroEquipeTipo.setCampoOrderBy(FiltroEquipeTipo.DESCRICAO);
+
+		httpServletRequest
+						.setAttribute("colecaoEquipeTipo", Fachada.getInstancia().pesquisar(filtroEquipeTipo, EquipeTipo.class.getName()));
+
 		// -------Parte que trata do código quando o usuário tecla enter
 
 		String idDigitadoEnterUnidadeEmpresa = form.getIdUnidade();
@@ -216,6 +226,16 @@ public class ExibirAtualizarFuncionarioAction
 
 				form.setNomeUnidade(funcionario.getUnidadeOrganizacional().getDescricao());
 
+				form.setNomeResumido(funcionario.getNomeResumido());
+				form.setJornadaTipo(funcionario.getJornadaTipo() != null ? funcionario.getJornadaTipo().toString() : ConstantesSistema.SIM
+								.toString());
+
+				EquipeTipo equipeTipo = funcionario.getEquipeTipo();
+				if(equipeTipo != null){
+					form.setIdEquipeTipo(funcionario.getEquipeTipo().getId() != null ? funcionario.getEquipeTipo().getId()
+									: ConstantesSistema.NUMERO_NAO_INFORMADO);
+				}
+
 				sessao.setAttribute("funcionarioAtualizar", funcionario);
 
 				sessao.removeAttribute("objetoFuncionario");
@@ -264,6 +284,18 @@ public class ExibirAtualizarFuncionarioAction
 
 				form.setNomeUnidade(funcionario.getUnidadeOrganizacional().getDescricao());
 
+				form.setNomeResumido(funcionario.getNomeResumido());
+				form.setJornadaTipo(funcionario.getJornadaTipo() != null ? funcionario.getJornadaTipo().toString() : ConstantesSistema.SIM
+								.toString());
+				EquipeTipo equipeTipo = funcionario.getEquipeTipo();
+				if(equipeTipo != null){
+					form.setIdEquipeTipo(funcionario.getEquipeTipo().getId() != null ? funcionario.getEquipeTipo().getId()
+									: ConstantesSistema.NUMERO_NAO_INFORMADO);
+				}else{
+					form.setIdEquipeTipo(ConstantesSistema.NUMERO_NAO_INFORMADO);
+				}
+
+
 				sessao.setAttribute("funcionarioAtualizar", funcionario);
 
 			}
@@ -302,6 +334,15 @@ public class ExibirAtualizarFuncionarioAction
 
 				form.setNomeUnidade(funcionario.getUnidadeOrganizacional().getDescricao());
 
+				form.setNomeResumido(funcionario.getNomeResumido());
+				form.setJornadaTipo(funcionario.getJornadaTipo() != null ? funcionario.getJornadaTipo().toString() : ConstantesSistema.SIM
+								.toString());
+				EquipeTipo equipeTipo = funcionario.getEquipeTipo();
+				if(equipeTipo != null){
+					form.setIdEquipeTipo(funcionario.getEquipeTipo().getId() != null ? funcionario.getEquipeTipo().getId()
+									: ConstantesSistema.NUMERO_NAO_INFORMADO);
+				}
+
 				sessao.setAttribute("funcionarioAtualizar", funcionario);
 				sessao.removeAttribute("funcionario");
 			}
@@ -337,6 +378,15 @@ public class ExibirAtualizarFuncionarioAction
 				form.setIdUnidade(funcionario.getUnidadeOrganizacional().getId().toString());
 
 				form.setNomeUnidade(funcionario.getUnidadeOrganizacional().getDescricao());
+
+				form.setNomeResumido(funcionario.getNomeResumido());
+				form.setJornadaTipo(funcionario.getJornadaTipo() != null ? funcionario.getJornadaTipo().toString() : ConstantesSistema.SIM
+								.toString());
+				EquipeTipo equipeTipo = funcionario.getEquipeTipo();
+				if(equipeTipo != null){
+					form.setIdEquipeTipo(funcionario.getEquipeTipo().getId() != null ? funcionario.getEquipeTipo().getId()
+									: ConstantesSistema.NUMERO_NAO_INFORMADO);
+				}
 			}
 		}
 		// -------------- bt DESFAZER ---------------

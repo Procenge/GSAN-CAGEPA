@@ -76,36 +76,30 @@
 
 package gcom.gui.faturamento.conta;
 
+import gcom.atendimentopublico.registroatendimento.FiltroSolicitacaoTipoEspecificacao;
 import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.cliente.ClienteRelacaoTipo;
 import gcom.cadastro.cliente.FiltroCliente;
 import gcom.cadastro.cliente.FiltroClienteRelacaoTipo;
+import gcom.cadastro.endereco.FiltroLogradouro;
+import gcom.cadastro.endereco.Logradouro;
+import gcom.cadastro.geografico.Bairro;
+import gcom.cadastro.geografico.FiltroBairro;
+import gcom.cadastro.geografico.FiltroMunicipio;
+import gcom.cadastro.geografico.Municipio;
 import gcom.cadastro.imovel.Imovel;
-import gcom.cadastro.localidade.FiltroLocalidade;
-import gcom.cadastro.localidade.FiltroQuadra;
-import gcom.cadastro.localidade.FiltroSetorComercial;
-import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.localidade.Quadra;
-import gcom.cadastro.localidade.SetorComercial;
+import gcom.cadastro.localidade.*;
 import gcom.fachada.Fachada;
+import gcom.faturamento.FaturamentoGrupo;
+import gcom.faturamento.FiltroFaturamentoGrupo;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -176,10 +170,15 @@ public class ExibirFiltrarImovelInserirManterContaAction
 			throw new ActionServletException("atencao.collectionClienteRelacaoTipo_inexistente", null, "id");
 		}
 
+
+	    // Faturamento Grupo
+		this.getColecaoFaturamentoGrupo(sessao, fachada, filtrarImovelContaActionForm);
+
 		// PESQUISAR CLIENTE
 		if(codigoCliente != null && !codigoCliente.toString().trim().equalsIgnoreCase("")){
 			this.pesquisarCliente(codigoCliente, filtrarImovelContaActionForm, fachada, httpServletRequest);
 		}
+
 
 		String objetoConsulta = httpServletRequest.getParameter("objetoConsulta");
 		String inscricaoTipo = httpServletRequest.getParameter("inscricaoTipo");
@@ -219,6 +218,74 @@ public class ExibirFiltrarImovelInserirManterContaAction
 					break;
 			}
 		}
+		
+		String idBairroFiltro = null;
+		String idMunicipioFiltro = null;
+		
+		idBairroFiltro = (String) filtrarImovelContaActionForm.getIdBairroFiltro();
+		idMunicipioFiltro = (String) filtrarImovelContaActionForm.getIdMunicipioFiltro();
+		
+
+		// PESQUISAR MUNICIPIO
+		if(idMunicipioFiltro != null && !idMunicipioFiltro.toString().trim().equalsIgnoreCase("")){
+			this.pesquisarMunicipio(idMunicipioFiltro, filtrarImovelContaActionForm, fachada, httpServletRequest);
+		}
+
+
+		// PESQUISAR BAIRRO
+		if(idBairroFiltro != null && !idBairroFiltro.toString().trim().equalsIgnoreCase("")){
+			this.pesquisarBairro(idMunicipioFiltro, idBairroFiltro, filtrarImovelContaActionForm, fachada, httpServletRequest);
+		}
+
+		String codigoDigitadoLogradouroEnter = (String) filtrarImovelContaActionForm.getIdLogradouro();
+
+		// Verifica se o código foi digitado
+		if(codigoDigitadoLogradouroEnter != null && !codigoDigitadoLogradouroEnter.trim().equals("")
+						&& Integer.parseInt(codigoDigitadoLogradouroEnter) > 0){
+
+			// Manda para a página a informação do campo para que seja
+			// focado no retorno da pesquisa
+			httpServletRequest.setAttribute("nomeCampo", "logradouro");
+
+			FiltroLogradouro filtroLogradouro = new FiltroLogradouro();
+
+			filtroLogradouro.adicionarCaminhoParaCarregamentoEntidade("logradouroTipo");
+			filtroLogradouro.adicionarCaminhoParaCarregamentoEntidade("logradouroTitulo");
+
+			filtroLogradouro.adicionarParametro(new ParametroSimples(FiltroLogradouro.ID, codigoDigitadoLogradouroEnter));
+
+			Collection logradouroEncontrado = fachada.pesquisar(filtroLogradouro, Logradouro.class.getName());
+
+			if(logradouroEncontrado != null && !logradouroEncontrado.isEmpty()){
+				// O logradouro foi encontrado
+				filtrarImovelContaActionForm.setIdLogradouro("" + ((Logradouro) ((List) logradouroEncontrado).get(0)).getId());
+				filtrarImovelContaActionForm.setDescricaoLogradouro(((Logradouro) ((List) logradouroEncontrado).get(0))
+								.getDescricaoFormatada());
+				httpServletRequest.setAttribute("idLogradouroNaoEncontrado", "true");
+
+			}else{
+				filtrarImovelContaActionForm.setIdLogradouro("");
+				httpServletRequest.setAttribute("idLogradouroNaoEncontrado", "exception");
+				filtrarImovelContaActionForm.setDescricaoLogradouro("Logradouro Inexistente");
+
+			}
+		}
+
+
+		// Adicionar logradouro na coleção
+		if(!Util.isVazioOuBranco(httpServletRequest.getParameter("adicionarLogradouro"))){
+			this.adicionarLogradouro(sessao, fachada, filtrarImovelContaActionForm);
+		}
+
+		// Remover logradouro na coleção
+		if(!Util.isVazioOuBranco(httpServletRequest.getParameter("removerLogradouro"))){
+
+			String acao = (String) httpServletRequest.getParameter("removerLogradouro");
+
+			this.removerLogradouro(sessao, httpServletRequest, filtrarImovelContaActionForm, acao);
+
+		}
+
 
 		Collection<Object[]> retornoArquivo = null;
 		if(filtrarImovelContaActionForm.getArquivoMatricula() != null
@@ -618,10 +685,6 @@ public class ExibirFiltrarImovelInserirManterContaAction
 				String erro = "";
 
 				try{
-					// if (itemLinha.length != 3){
-					// throw new
-					// ActionServletException("atencao.versao.arquivo.incalida","/gsan/exibirFiltrarImovelInserirManterContaAction.do?menu=sim",null,"");
-					// }
 
 					if(itemLinha.length != 3){
 						erro += " FORMATAÇÃO INCORRETA DA LINHA";
@@ -698,11 +761,6 @@ public class ExibirFiltrarImovelInserirManterContaAction
 				}
 			}
 
-			// // Seta os imoveis para a pesquisa
-			// Collection<Integer> idsImoveis = new ArrayList();
-			// for (Imovel item : (Collection<Imovel>) colecaoImoveis) {
-			// idsImoveis.add(item.getId());
-			// }
 
 			// Prepara arquivo com erros
 			File arquivoErro = new File(formFile.getFileName());
@@ -758,4 +816,236 @@ public class ExibirFiltrarImovelInserirManterContaAction
 		}
 		return retorno;
 	}
+
+	/**
+	 * Carrega as grupos de faturamento selecionados.
+	 * 
+	 * @author Yara Souza
+	 * @date 02/06/2014
+	 * @param sessao
+	 * @param fachada
+	 */
+	private void getColecaoFaturamentoGrupo(HttpSession sessao, Fachada fachada, FiltrarImovelContaActionForm form){
+
+		Collection colecaoFaturamentoGrupo = null;
+
+
+
+			// Filtra Faturamento Grupo
+			FiltroFaturamentoGrupo filtroFaturamentoGrupo = new FiltroFaturamentoGrupo();
+			filtroFaturamentoGrupo.adicionarParametro(new ParametroSimples(FiltroSolicitacaoTipoEspecificacao.INDICADOR_USO,
+							ConstantesSistema.SIM));
+			filtroFaturamentoGrupo.setCampoOrderBy(FiltroSolicitacaoTipoEspecificacao.DESCRICAO);
+
+
+			Collection colecaoRetorno = fachada.pesquisar(filtroFaturamentoGrupo, FaturamentoGrupo.class.getName());
+
+			if(colecaoRetorno != null && !colecaoRetorno.isEmpty()){
+
+				if(colecaoFaturamentoGrupo == null){
+					colecaoFaturamentoGrupo = colecaoRetorno;
+				}else{
+					colecaoFaturamentoGrupo.addAll(colecaoRetorno);
+				}
+			}
+
+
+		if(colecaoFaturamentoGrupo != null && !colecaoFaturamentoGrupo.isEmpty()){
+			sessao.setAttribute("colecaoFaturamentoGrupo", colecaoFaturamentoGrupo);
+		}else{
+			sessao.setAttribute("colecaoFaturamentoGrupo", new ArrayList());
+		}
+	}
+
+	/**
+	 * @param sessao
+	 * @param fachada
+	 * @param form
+	 */
+
+	private void adicionarLogradouro(HttpSession sessao, Fachada fachada, FiltrarImovelContaActionForm form){
+
+		Collection<Logradouro> colecaoLogradouro = null;
+
+		if(!Util.isVazioOuBranco(form.getIdLogradouro())){
+
+			String codigoDigitadoLogradouroEnter = (String) form.getIdLogradouro();
+
+			FiltroLogradouro filtroLogradouro = new FiltroLogradouro();
+
+			filtroLogradouro.adicionarCaminhoParaCarregamentoEntidade("logradouroTipo");
+			filtroLogradouro.adicionarCaminhoParaCarregamentoEntidade("logradouroTitulo");
+			filtroLogradouro.adicionarCaminhoParaCarregamentoEntidade("municipio");
+
+			filtroLogradouro.adicionarParametro(new ParametroSimples(FiltroLogradouro.ID, codigoDigitadoLogradouroEnter));
+
+			Collection colLogradouro = fachada.pesquisar(filtroLogradouro, Logradouro.class.getName());
+
+			Logradouro logradouro = (Logradouro) Util.retonarObjetoDeColecao(colLogradouro);
+
+			colecaoLogradouro = (Collection) sessao.getAttribute("colecaoLogradouro");
+
+			if(colecaoLogradouro != null && !colecaoLogradouro.isEmpty()){
+
+				if(!colecaoLogradouro.contains(logradouro)){
+					colecaoLogradouro.add(logradouro);
+					form.setIdLogradouro("");
+					form.setDescricaoLogradouro("");
+				}
+
+			}else{
+				colecaoLogradouro = new ArrayList();
+				colecaoLogradouro.add(logradouro);
+			}
+
+			sessao.setAttribute("colecaoLogradouro", colecaoLogradouro);
+
+		}
+	}
+
+	/**
+	 * @param sessao
+	 * @param fachada
+	 * @param form
+	 */
+
+	private void removerLogradouro(HttpSession sessao, HttpServletRequest httpServletRequest, FiltrarImovelContaActionForm form, String acao){
+
+		Collection<Logradouro> colecaoLogradouro = (Collection) sessao.getAttribute("colecaoLogradouro");
+
+		if(acao.equals("sim")){
+			Collection<Logradouro> colecaoLograduroRemover = new ArrayList();
+
+			if(httpServletRequest.getParameter("idLogradouroRemover") != null){
+
+				if(!colecaoLogradouro.isEmpty()){
+					Iterator it = colecaoLogradouro.iterator();
+					while(it.hasNext()){
+						Logradouro logradouro = (Logradouro) it.next();
+
+						if(logradouro.getId().equals(
+										Util.converterStringParaInteger(httpServletRequest.getParameter("idLogradouroRemover")))){
+							colecaoLograduroRemover.add(logradouro);
+						}
+					}
+
+					if(!colecaoLograduroRemover.isEmpty()){
+						Iterator itt = colecaoLograduroRemover.iterator();
+						while(itt.hasNext()){
+							Logradouro logradouro = (Logradouro) itt.next();
+
+							if(colecaoLogradouro.contains(logradouro)){
+								colecaoLogradouro.remove(logradouro);
+							}
+						}
+
+						form.setIdLogradouro("");
+						form.setDescricaoLogradouro("");
+
+						sessao.setAttribute("colecaoLogradouro", colecaoLogradouro);
+
+					}
+
+				}
+
+			}
+
+		}
+
+		if(acao.equals("todos")){
+			sessao.setAttribute("colecaoLogradouro", null);
+
+		}
+
+	}
+
+	/**
+	 * Pesquisar Municipio
+	 * 
+	 * @param filtroMunicipio
+	 * @param idMunicipioFiltro
+	 * @param codigoSetorComercial
+	 * @param municipios
+	 * @param filtrarImovelFiltrarActionForm
+	 * @param fachada
+	 * @param httpServletRequest
+	 */
+	public void pesquisarMunicipio(String idMunicipioFiltro,
+ FiltrarImovelContaActionForm form,
+					Fachada fachada, HttpServletRequest httpServletRequest){
+
+		FiltroMunicipio filtroMunicipio = new FiltroMunicipio();
+
+		filtroMunicipio.adicionarParametro(new ParametroSimples(FiltroMunicipio.ID, idMunicipioFiltro));
+		filtroMunicipio.adicionarParametro(new ParametroSimples(FiltroMunicipio.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
+
+		Collection municipioEncontrado = null;
+
+		// pesquisa
+		municipioEncontrado = fachada.pesquisar(filtroMunicipio, Municipio.class.getName());
+
+		if(municipioEncontrado != null && !municipioEncontrado.isEmpty()){
+			// O municipio foi encontrado
+			form.setIdMunicipioFiltro("" + ((Municipio) ((List) municipioEncontrado).get(0)).getId());
+			form.setMunicipioFiltro(((Municipio) ((List) municipioEncontrado).get(0)).getNome());
+			httpServletRequest.setAttribute("idMunicipioFiltroImovelNaoEncontrado", "true");
+
+			httpServletRequest.setAttribute("nomeCampo", "idBairroFiltro");
+
+		}else{
+			form.setIdMunicipioFiltro("");
+			httpServletRequest.setAttribute("idMunicipioFiltroImovelNaoEncontrado", "exception");
+			form.setMunicipioFiltro("Município inexistente");
+
+			httpServletRequest.setAttribute("nomeCampo", "idMunicipioFiltro");
+
+		}
+	}
+
+	/**
+	 * Pesquisar Bairro
+	 * 
+	 * @param filtroBairro
+	 * @param idMunicipioFiltro
+	 * @param idBairroFiltro
+	 * @param bairros
+	 * @param filtrarImovelFiltrarActionForm
+	 * @param fachada
+	 * @param httpServletRequest
+	 */
+	public void pesquisarBairro(String idMunicipioFiltro, String idBairroFiltro,
+ FiltrarImovelContaActionForm form,
+					Fachada fachada, HttpServletRequest httpServletRequest){
+
+		FiltroBairro filtroBairro = new FiltroBairro();
+
+		if(idMunicipioFiltro != null && !idMunicipioFiltro.trim().equals("") && Integer.parseInt(idMunicipioFiltro) > 0){
+
+			filtroBairro.adicionarParametro(new ParametroSimples(FiltroBairro.MUNICIPIO_ID, idMunicipioFiltro));
+		}
+
+		filtroBairro.adicionarParametro(new ParametroSimples(FiltroBairro.CODIGO, idBairroFiltro));
+		filtroBairro.adicionarParametro(new ParametroSimples(FiltroBairro.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
+
+		Collection bairroEncontrado = fachada.pesquisar(filtroBairro, Bairro.class.getName());
+
+		if(bairroEncontrado != null && !bairroEncontrado.isEmpty()){
+			// O municipio foi encontrado
+			form.setIdBairroFiltro("" + ((Bairro) ((List) bairroEncontrado).get(0)).getCodigo());
+			form.setBairroFiltro(((Bairro) ((List) bairroEncontrado).get(0)).getNome());
+			httpServletRequest.setAttribute("codigoBairroImovelNaoEncontrado", "true");
+
+			httpServletRequest.setAttribute("nomeCampo", "idLogradouroFiltro");
+
+		}else{
+			form.setIdBairroFiltro("");
+			httpServletRequest.setAttribute("codigoBairroImovelNaoEncontrado", "exception");
+			form.setBairroFiltro("Bairro inexistente");
+
+			httpServletRequest.setAttribute("nomeCampo", "idBairroFiltro");
+
+		}
+
+	}
+
 }

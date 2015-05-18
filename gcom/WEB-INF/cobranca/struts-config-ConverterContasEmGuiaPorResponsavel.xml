@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+
+		<form-bean name="ConverterContasEmGuiaPorResponsavelActionForm"
+			type="gcom.gui.cobranca.ConverterContasEmGuiaPorResponsavelActionForm" />
+
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<!--******************* PÁGINA PRINCIPAL *******************-->
+		<!-- [UC3044] Informar Entrega/Devolução de Documentos de Cobrança Auhtor: Carlos Chrystian Data:02/03/2012-->
+		<action name="ConverterContasEmGuiaPorResponsavelActionForm"
+			type="gcom.gui.cobranca.ExibirConverterContasEmGuiaPorResponsavelAction"
+			scope="session" path="/exibirConverterContasEmGuiaPorResponsavelAction">
+			<forward name="exibirConverterContasEmGuiaPorResponsavelAction"
+				path="/jsp/cobranca/converter_contas_em_guia.jsp" />
+		</action>
+	
+		<action name="ConverterContasEmGuiaPorResponsavelActionForm"
+			type="gcom.gui.cobranca.ConverterContasEmGuiaPorResponsavelAction"
+			scope="session" path="/converterContasEmGuiaPorResponsavelAction">
+				<forward name="telaSucesso"
+				path="/jsp/util/sucesso.jsp" />
+		</action>
+	
+		
+
+	</action-mappings>
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

@@ -94,6 +94,7 @@ import gcom.util.*;
 import gcom.util.email.ErroEmailException;
 import gcom.util.email.ServicosEmail;
 import gcom.util.filtro.*;
+import gcom.util.parametrizacao.ParametroGeral;
 import gcom.util.parametrizacao.batch.ParametroBatch;
 
 import java.text.ParseException;
@@ -1835,11 +1836,13 @@ public class ControladorAcessoSEJB
 
 		// Valida a data de nascimento digitada
 		Date dataNascimento = null;
-		SimpleDateFormat dataFormato = new SimpleDateFormat("dd/MM/yyyy");
-		try{
-			dataNascimento = dataFormato.parse(dataNascimentoString);
-		}catch(ParseException ex){
-			throw new ControladorException("atencao.data.invalida", null, "Data de Nascimento");
+		if(!Util.isVazioOuBranco(dataNascimentoString)){
+			SimpleDateFormat dataFormato = new SimpleDateFormat("dd/MM/yyyy");
+			try{
+				dataNascimento = dataFormato.parse(dataNascimentoString);
+			}catch(ParseException ex){
+				throw new ControladorException("atencao.data.invalida", null, "Data de Nascimento");
+			}
 		}
 
 		// Cria a situaçdo usuário e setaseu valor para senha ativa
@@ -1855,6 +1858,13 @@ public class ControladorAcessoSEJB
 			sessionContext.setRollbackOnly();
 			throw new ControladorException("erro.criptografia.senha");
 		}
+
+		// Últimas senhas criptografadas do usuário para evitar repetições
+		UsuarioSenha usuarioSenha = new UsuarioSenha();
+		usuarioSenha.setUsuario(usuarioLogado);
+		usuarioSenha.setNomeSenha(novaSenha);
+		usuarioSenha.setUltimaAlteracao(new Date());
+		getControladorUtil().inserir(usuarioSenha);
 
 		// Atualiza os dados do usuário
 		usuarioLogado.setSenha(novaSenha);
@@ -1910,26 +1920,26 @@ public class ControladorAcessoSEJB
 		// Recupera o login do usuário logado
 		String login = usuarioLogado.getLogin();
 
-		// Recupera a data atual
-		Date dataAtual = new Date();
-
-		// [FS0003] - Validar Data
-		Date dataNascimento = null;
-		SimpleDateFormat dataFormato = new SimpleDateFormat("dd/MM/yyyy");
-		try{
-			dataNascimento = dataFormato.parse(dataNascimentoString);
-		}catch(ParseException ex){
-			throw new ControladorException("atencao.data.invalida", null, "Data de Nascimento");
-		}
-
-		// [FS0004] - Verificar data maior ou igual a data corrente
-		if(!dataNascimento.before(dataAtual)){
-			throw new ControladorException("atencao.data_nascimento.anterior.dataatual", null, login, Util.formatarData(dataAtual));
-		}
-
 		// [FS0005] - Verificar data de nascimento do login
 		Date dataNascimentoUsuarioLogado = usuarioLogado.getDataNascimento();
 		if(dataNascimentoUsuarioLogado != null){
+
+			// [FS0003] - Validar Data
+			Date dataNascimento = null;
+			SimpleDateFormat dataFormato = new SimpleDateFormat("dd/MM/yyyy");
+			try{
+				dataNascimento = dataFormato.parse(dataNascimentoString);
+			}catch(ParseException ex){
+				throw new ControladorException("atencao.data.invalida", null, "Data de Nascimento");
+			}
+
+			// Recupera a data atual
+			Date dataAtual = new Date();
+			// [FS0004] - Verificar data maior ou igual a data corrente
+			if(!dataNascimento.before(dataAtual)){
+				throw new ControladorException("atencao.data_nascimento.anterior.dataatual", null, login, Util.formatarData(dataAtual));
+			}
+
 			if(dataNascimento.compareTo(dataNascimentoUsuarioLogado) != 0){
 				throw new ControladorException("atencao.data_nascimento.incorreta.login", null, login);
 			}
@@ -1963,6 +1973,41 @@ public class ControladorAcessoSEJB
 
 		// [FS0010] - Validar Senha
 		this.validarSenha(novaSenha);
+
+		String quantidadeHistorico = ParametroGeral.P_SENHA_QUANTIDADE_HISTORICO.executar();
+		if(quantidadeHistorico != null){
+			Integer valor = Util.converterStringParaInteger(quantidadeHistorico);
+			if(valor != null && valor.intValue() > 0){
+
+				Collection<String> senhasAnteriores = null;
+				try{
+					senhasAnteriores = this.repositorioAcesso.pesquisarUsuarioSenha(usuarioLogado.getId(), valor);
+				}catch(ErroRepositorioException e){
+					sessionContext.setRollbackOnly();
+					e.printStackTrace();
+				}
+
+				if(!Util.isVazioOrNulo(senhasAnteriores)){
+
+					String senhaCriptografada = null;
+					try{
+						// Criptografa a nova senha gerada para ser usada pelo usuário
+						senhaCriptografada = Criptografia.encriptarSenha(novaSenha);
+					}catch(ErroCriptografiaException e){
+						sessionContext.setRollbackOnly();
+						throw new ControladorException("erro.criptografia.senha");
+					}
+
+					for(String senhaAnterior : senhasAnteriores){
+						if(senhaAnterior.equals(senhaCriptografada)){
+							throw new ControladorException("atencao.senha.invalida", null, "As últimas " + valor.intValue()
+											+ " senhas não podem se repetir.");
+						}
+					}
+				}
+			}
+		}
+
 	}
 
 	/**
@@ -2088,18 +2133,68 @@ public class ControladorAcessoSEJB
 	 */
 	private void validarSenha(String senha) throws ControladorException{
 
-		if(senha.length() < 4){
-			throw new ControladorException("atencao.senha.invalida", null, "Senha deve ter pelo menos 4 caracteres.Informe outra.");
+		String quantidadeMinimaCaracteres = ParametroGeral.P_SENHA_QUANTIDADE_MINIMA_CARACTERES.executar();
+		Integer quantidade = Util.converterStringParaInteger(quantidadeMinimaCaracteres);
+		if(senha.length() < quantidade.intValue()){
+			throw new ControladorException("atencao.senha.invalida", null, "Senha deve ter pelo menos " + quantidade.intValue()
+							+ " caracteres.");
 		}
 
-		/*
-		 * boolean senhaNoPadrao = true;
-		 * char[] senhaArray = senha.toCharArray();
-		 * for (int i = 0; i < senha.length(); i++) { char temp = senhaArray[i]; }
-		 * if(!senhaNoPadrao){ throw new
-		 * ControladorException("atencao.senha.invalida", null,"Senha está fora
-		 * do padrão de segurança adotado pela empresa.Informe outra."); }
-		 */
+		int contadorMinusculas = 0;
+		int contadorMaiusculas = 0;
+		int contadorNumeros = 0;
+		int contadorEspeciais = 0;
+
+		char[] caracteresSenha = senha.toCharArray();
+		for(char caracter : caracteresSenha){
+
+			if(Character.isLowerCase(caracter)){
+				contadorMinusculas++;
+			}else if(Character.isUpperCase(caracter)){
+				contadorMaiusculas++;
+			}else if(Character.isDigit(caracter)){
+				contadorNumeros++;
+			}else if(Util.isCaracterEspecial(String.valueOf(caracter))){
+				contadorEspeciais++;
+			}
+		}
+
+		String quantidadeMinimaLetrasMinusculas = ParametroGeral.P_SENHA_QUANTIDADE_MINIMA_LETRAS_MINUSCULAS.executar();
+		if(quantidadeMinimaLetrasMinusculas != null){
+			Integer valor = Util.converterStringParaInteger(quantidadeMinimaLetrasMinusculas);
+			if(valor != null && valor.intValue() > contadorMinusculas){
+				throw new ControladorException("atencao.senha.invalida", null, "Senha deve ter pelo menos " + valor.intValue()
+								+ " letra(s) minúscula(s).");
+			}
+		}
+
+		String quantidadeMinimaLetrasMaiusculas = ParametroGeral.P_SENHA_QUANTIDADE_MINIMA_LETRAS_MAIUSCULAS.executar();
+		if(quantidadeMinimaLetrasMaiusculas != null){
+			Integer valor = Util.converterStringParaInteger(quantidadeMinimaLetrasMaiusculas);
+			if(valor != null && valor.intValue() > contadorMaiusculas){
+				throw new ControladorException("atencao.senha.invalida", null, "Senha deve ter pelo menos " + valor.intValue()
+								+ " letra(s) maiúscula(s).");
+			}
+		}
+
+		String quantidadeMinimaNumeros = ParametroGeral.P_SENHA_QUANTIDADE_MINIMA_NUMEROS.executar();
+		if(quantidadeMinimaNumeros != null){
+			Integer valor = Util.converterStringParaInteger(quantidadeMinimaNumeros);
+			if(valor != null && valor.intValue() > contadorNumeros){
+				throw new ControladorException("atencao.senha.invalida", null, "Senha deve ter pelo menos " + valor.intValue()
+								+ " número(s).");
+			}
+		}
+
+		String quantidadeMinimaCaracteresEspeciais = ParametroGeral.P_SENHA_QUANTIDADE_MINIMA_CARACTERES_ESPECIAIS.executar();
+		if(quantidadeMinimaCaracteresEspeciais != null){
+			Integer valor = Util.converterStringParaInteger(quantidadeMinimaCaracteresEspeciais);
+			if(valor != null && valor.intValue() > contadorEspeciais){
+				throw new ControladorException("atencao.senha.invalida", null, "Senha deve ter pelo menos " + valor.intValue()
+								+ " caracter(es) especial(is).");
+			}
+		}
+
 	}
 
 	/**
@@ -2112,11 +2207,11 @@ public class ControladorAcessoSEJB
 	 * @return
 	 * @throws ControladorException
 	 */
-	public String verificarTipoURL(String url) throws ControladorException{
+	public Map<Integer, String> verificarTipoURL(String url) throws ControladorException{
 
 		// Variável que vai conter uma string indicando se a url é uma operação
 		// ou uma funcionalidade
-		String retorno = null;
+		Map<Integer, String> retorno = null;
 
 		// Caso a url starte com "/"(barra) retira a barra da url
 		if(url.startsWith("/")){
@@ -2139,7 +2234,10 @@ public class ControladorAcessoSEJB
 		 * operação.
 		 */
 		if(colecaoFuncionalidade != null && !colecaoFuncionalidade.isEmpty()){
-			retorno = "funcionalidade";
+			Funcionalidade funcionalidadeAtual = (Funcionalidade) Util.retonarObjetoDeColecao(colecaoFuncionalidade);
+
+			retorno = new HashMap<Integer, String>();
+			retorno.put(funcionalidadeAtual.getId(), "funcionalidade");
 		}else{
 			// Cria o filtro de operação para verificar se a url é uma operação
 			FiltroOperacao filtroOperacao = new FiltroOperacao();
@@ -2155,7 +2253,10 @@ public class ControladorAcessoSEJB
 			 * uma operação
 			 */
 			if(colecaoOperacao != null && !colecaoOperacao.isEmpty()){
-				retorno = "operacao";
+				Operacao operacaoAtual = (Operacao) Util.retonarObjetoDeColecao(colecaoOperacao);
+				
+				retorno = new HashMap<Integer, String>();
+				retorno.put(operacaoAtual.getId(), "operacao");
 			}
 		}
 		// Retorna uma string indicando se a url é uma funcionalidade ou
@@ -3708,4 +3809,6 @@ public class ControladorAcessoSEJB
 		}
 		return retorno;
 	}
+
+
 }

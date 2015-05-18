@@ -322,6 +322,18 @@ public class InformarNaoEntregaDocumentosActionForm
 
 	private String motivo;
 
+	private String responsavelEntrega;
+
+	public String getResponsavelEntrega(){
+
+		return responsavelEntrega;
+	}
+
+	public void setResponsavelEntrega(String responsavelEntrega){
+
+		this.responsavelEntrega = responsavelEntrega;
+	}
+
 	public String getCodigoMotivoDevolucao(){
 
 		return codigoMotivoDevolucao;

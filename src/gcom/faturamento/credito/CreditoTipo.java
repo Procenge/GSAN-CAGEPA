@@ -116,6 +116,12 @@ public class CreditoTipo
 
 	public static Integer DESCONTO_TARIFA_SOCIAL;
 
+	public static Integer RESCREDTAC;
+
+	public static Integer CREDTAC;
+
+	public static Integer DEVSERVICOFRPRZ;
+
 	/**
 	 * Este método foi criado para inicializar as constantes. A sua implementação visa utilizar a
 	 * solução dada para casos em que haja constantes com descrições diferentes mas que utilizavam o
@@ -145,6 +151,12 @@ public class CreditoTipo
 		DESCONTO_SANCOES = CreditoTipoEnum.DESCONTO_SANCOES.getId();
 
 		DESCONTO_TARIFA_SOCIAL = CreditoTipoEnum.DESCONTO_TARIFA_SOCIAL.getId();
+
+		RESCREDTAC = CreditoTipoEnum.RESCREDTAC.getId();
+
+		CREDTAC = CreditoTipoEnum.CREDTAC.getId();
+
+		DEVSERVICOFRPRZ = CreditoTipoEnum.DEVSERVICOFRPRZ.getId();
 	}
 
 	/**
@@ -161,7 +173,7 @@ public class CreditoTipo
 
 		DESCONTO_ACRESCIMOS_IMPONTUALIDADE, DESCONTO_ANTIGUIDADE_DEBITO, DESCONTO_INATIVIDADE_LIGACAO_AGUA, CREDITOS_ANTERIORES,
 		DEVOLUCAO_PAGAMENTOS_DUPLICIDADE, DEVOLUCAO_OUTROS_VALORES, DESCONTOS_CONCEDIDOS, DEVOLUCAO_ACRESCIMOS_IMPONTUALIDADE,
-		DESCONTO_SANCOES, DESCONTO_TARIFA_SOCIAL;
+		DESCONTO_SANCOES, DESCONTO_TARIFA_SOCIAL, RESCREDTAC, CREDTAC, DEVSERVICOFRPRZ;
 
 		private Integer id = -1;
 

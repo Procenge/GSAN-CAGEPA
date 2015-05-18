@@ -57,6 +57,8 @@ public class ContasEmAtrasoPorIdadeDividaValidadorImpl
 
 	public static final String P_UNIDADE_NEGOCIO_INICIAL = "P_UNE_INI";
 
+	public static final String P_FORMATO_RELATORIO = "formatoRelatorio";
+
 	/**
 	 * Método que converte todos os parâmetros.
 	 * 
@@ -74,7 +76,7 @@ public class ContasEmAtrasoPorIdadeDividaValidadorImpl
 		this.converterReferenciaDebito(parametros, parametrosConvertidos);
 		this.converterTipoRelatorio(parametros, parametrosConvertidos);
 		this.converterUnidadeNegocio(parametros, parametrosConvertidos);
-
+		this.converterFormatoRelatorio(parametros, parametrosConvertidos);
 		return parametrosConvertidos;
 	}
 
@@ -98,6 +100,7 @@ public class ContasEmAtrasoPorIdadeDividaValidadorImpl
 		String tipoRelatorio = (String) parametros.get(P_SETOR_FATURAMENTO_FINAL);
 		String idUnidadeNegocioInicial = (String) parametros.get(P_UNIDADE_NEGOCIO_INICIAL);
 		String idUnidadeNegocioFinal = (String) parametros.get(P_UNIDADE_NEGOCIO_FINAL);
+		// 
 
 		// Valida os intervalos de valores
 		validarIntervalo(idRegionalInicial, idRegionalFinal, erros, P_REGIONAL_INICIAL, P_REGIONAL_FINAL, "Regional");
@@ -181,6 +184,19 @@ public class ContasEmAtrasoPorIdadeDividaValidadorImpl
 
 		parametrosConvertidos.put(P_REGIONAL_INICIAL, idRegionalInicial);
 		parametrosConvertidos.put(P_REGIONAL_FINAL, idRegionalFinal);
+	}
+
+	private void converterFormatoRelatorio(Map<String, Object> parametros, Map<String, Object> parametrosConvertidos){
+
+		// Pega os valores em String
+		String formatoRelatorio = (String) parametros.get(P_FORMATO_RELATORIO);
+		// Valida se não está nulo
+		if(Util.isVazioOuBranco(formatoRelatorio)){
+			formatoRelatorio = VALOR_NAO_INFORMADO;
+		}
+
+
+		parametrosConvertidos.put(P_FORMATO_RELATORIO, formatoRelatorio);
 	}
 
 	private void converterLocalidades(Map<String, Object> parametros, Map<String, Object> parametrosConvertidos){

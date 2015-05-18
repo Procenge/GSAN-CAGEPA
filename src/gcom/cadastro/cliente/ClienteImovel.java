@@ -116,6 +116,10 @@ public class ClienteImovel
 	private Date dataFimRelacao;
 
 	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_CLIENTE_IMOVEL_INSERIR, ATRIBUTOS_CLIENTE_IMOVEL_ATUALIZAR, ATRIBUTOS_CLIENTE_IMOVEL_REMOVER, ATRIBUTOS_IMOVEL_ATUALIZAR})
+	private Date dataPrevistaFimRelacao;
+
+	/** nullable persistent field */
 	private Date ultimaAlteracao;
 
 	@ControleAlteracao(value = FiltroClienteImovel.IMOVEL, funcionalidade = {ATRIBUTOS_CLIENTE_IMOVEL_INSERIR, ATRIBUTOS_CLIENTE_IMOVEL_ATUALIZAR, ATRIBUTOS_CLIENTE_IMOVEL_REMOVER})
@@ -143,6 +147,8 @@ public class ClienteImovel
 
 	public transient Short indicadorEmissaoExtratoFaturamento;
 
+	public transient Short indicadorAtualizarDebitos;
+
 	/** full constructor */
 	public ClienteImovel(Date dataInicioRelacao, Date dataFimRelacao, Date ultimaAlteracao, Imovel imovel,
 							gcom.cadastro.cliente.ClienteImovelFimRelacaoMotivo clienteImovelFimRelacaoMotivo,
@@ -150,6 +156,7 @@ public class ClienteImovel
 
 		this.dataInicioRelacao = dataInicioRelacao;
 		this.dataFimRelacao = dataFimRelacao;
+		this.dataPrevistaFimRelacao = dataFimRelacao;
 		this.ultimaAlteracao = ultimaAlteracao;
 		this.imovel = imovel;
 		this.clienteImovelFimRelacaoMotivo = clienteImovelFimRelacaoMotivo;
@@ -192,6 +199,16 @@ public class ClienteImovel
 	public void setDataInicioRelacao(Date dataInicioRelacao){
 
 		this.dataInicioRelacao = dataInicioRelacao;
+	}
+
+	public Date getDataPrevistaFimRelacao(){
+
+		return this.dataPrevistaFimRelacao;
+	}
+
+	public void setDataPrevistaFimRelacao(Date dataPrevistaFimRelacao){
+
+		this.dataPrevistaFimRelacao = dataPrevistaFimRelacao;
 	}
 
 	public Date getDataFimRelacao(){
@@ -364,6 +381,16 @@ public class ClienteImovel
 	public String getDescricaoParaRegistroTransacao(){
 
 		return this.getDescricao() + " (" + this.getClienteRelacaoTipo().getDescricao() + ")";
+	}
+
+	public Short getIndicadorAtualizarDebitos(){
+
+		return indicadorAtualizarDebitos;
+	}
+
+	public void setIndicadorAtualizarDebitos(Short indicadorAtualizarDebitos){
+
+		this.indicadorAtualizarDebitos = indicadorAtualizarDebitos;
 	}
 
 	public Short getIndicadorEmissaoExtratoFaturamento(){

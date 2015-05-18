@@ -5,6 +5,7 @@ import gcom.atendimentopublico.ordemservico.Atividade;
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +38,14 @@ public class AtualizarAtividadeAction
 		atividade.setDescricaoAbreviada(atividadeActionForm.getDescricaoAbreviada());
 		atividade.setIndicadorAtividadeUnica(Short.valueOf(atividadeActionForm.getIndicadorAtividadeUnica()));
 		atividade.setIndicadorUso(Short.valueOf(atividadeActionForm.getIndicadorUso()));
+		if(atividadeActionForm.getValorHora() != null && atividadeActionForm.getValorHora().length() == 0){
+			atividade.setValorHora(BigDecimal.valueOf(0));
+		}else{
+			String valorAux1 = atividadeActionForm.getValorHora().replace(".", "");
+
+			valorAux1 = valorAux1.replace(",", ".");
+			atividade.setValorHora(BigDecimal.valueOf(Double.valueOf(valorAux1)));
+		}
 		atividade.setUltimaAlteracao(new Date());
 
 		fachada.atualizar(atividade);

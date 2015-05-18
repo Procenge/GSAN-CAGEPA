@@ -34,6 +34,7 @@ import gcom.cadastro.localidade.*;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.cobranca.*;
 import gcom.cobranca.bean.CalcularAcrescimoPorImpontualidadeHelper;
+import gcom.cobranca.bean.IntervaloReferenciaHelper;
 import gcom.cobranca.parcelamento.ParcelamentoHelper;
 import gcom.contabil.bean.LancamentoContabilAnaliticoConsultaHelper;
 import gcom.contabil.bean.LancamentoContabilAnaliticoHelper;
@@ -41,6 +42,7 @@ import gcom.contabil.bean.LancamentoContabilSinteticoConsultaHelper;
 import gcom.contabil.bean.LancamentoContabilSinteticoHelper;
 import gcom.fachada.Fachada;
 import gcom.faturamento.IRepositorioFaturamento;
+import gcom.faturamento.ImpostoTipo;
 import gcom.faturamento.RepositorioFaturamentoHBM;
 import gcom.faturamento.conta.*;
 import gcom.faturamento.credito.*;
@@ -52,6 +54,7 @@ import gcom.util.filtro.ParametroNaoNulo;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.ExecutorParametro;
 import gcom.util.parametrizacao.ParametroContabil;
+import gcom.util.parametrizacao.cobranca.parcelamento.ParametroParcelamento;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -365,24 +368,11 @@ public class ControladorContabilSEJB
 				int qtdLancamentos = repositorioContabil.consultarQuantidadeLancamentoContabilSinteticoInserir(mapaParametros);
 				if(qtdLancamentos > 0){
 					// O subfluxo Acumula Contabilização é iniciado
-					if(qtdLancamentos == 1){
-						synchronized(this){
-							Collection<LancamentoContabilSintetico> colecaoLCS = this
-											.consultarLancamentoContabilSinteticoInserir(mapaParametros);
-							this.acumularContabilizacao((LancamentoContabilSintetico) Util.retonarObjetoDeColecao(colecaoLCS),
-											lancamentoContabilSinteticoHelper);
-						}
-					}else{
+					synchronized(this){
 						Collection<LancamentoContabilSintetico> colecaoLCS = this
 										.consultarLancamentoContabilSinteticoInserir(mapaParametros);
-						for(LancamentoContabilSintetico lancamentoContabilSintetico : colecaoLCS){
-							if(lancamentoContabilSintetico.getEventoComercial() != null){
-								LOG.error("DataAtual= " + dataAtual + " /n DataContabil= " + dataContabil + " /n eventoComer= "
-												+ lancamentoContabilSintetico.getEventoComercial().getId());
-							}
-						}
-						throw new NegocioException(
-										"Não foi possível inserir o Lançamento Contábil pois existem mais de um Lançamentos com atributos idênticos.");
+						this.acumularContabilizacao((LancamentoContabilSintetico) Util.retonarObjetoDeColecao(colecaoLCS),
+										lancamentoContabilSinteticoHelper);
 					}
 				}else{
 
@@ -420,6 +410,123 @@ public class ControladorContabilSEJB
 			throw new ControladorException("erro.sistema", ex);
 		}
 
+	}
+
+	/**
+	 * Esta funcao tem como objetivo buscar todos os lancamentos sinteticos duplicados
+	 * e unificar os mesmos os elementos duplicados são:
+	 * dataContabil, dataGeracao, idUnidadeContabilAgrupamento, eventoComercial.id
+	 * categoria.id , lancamentoItemContabil.id, impostoTipo.id e contaBancaria.id
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 26/05/2014, 30/05/2014
+	 * @param rotas
+	 * @throws ControladorException
+	 */
+	public void ajustarLancamentosContabeisSinteticos(int idFuncionalidadeIniciada) throws ControladorException{
+		
+		int idUnidadeIniciada = 0;
+		try{
+			// 1 - Primeiro Ajuste quanto a retirada da duplicitada de dados
+			// 2 - segundo Ajuste quanto valores incorretos no sintetico
+			
+			idUnidadeIniciada = getControladorBatch().iniciarUnidadeProcessamentoBatch(idFuncionalidadeIniciada,
+							UnidadeProcessamento.FUNCIONALIDADE, 0);
+
+			//
+			// 1 - Primeiro Ajuste quanto a retirada da duplicitada de dados
+			//
+			Collection<LancamentoContabilSintetico> listaLancamentoContabilSinteticoDuplicados = this
+							.consultarLancamentoContabilSinteticoDuplicado();
+
+			// Perecorrer Lista de Lancamentos Duplicados para realizados ajuste de retirada dos
+			// duplicados
+			for(LancamentoContabilSintetico lancamentoContabilSintetico : listaLancamentoContabilSinteticoDuplicados){
+				// Consulta Registro a serem realizados os ajustes
+				Map<String, Object> mapaParametros = new HashMap<String, Object>();
+				mapaParametros.put("dataGeracao", lancamentoContabilSintetico.getDataGeracao());
+				mapaParametros.put("dataContabil", lancamentoContabilSintetico.getDataContabil());
+				mapaParametros.put("idUnidadeContabilAgrupamento", lancamentoContabilSintetico.getUnidadeContabilAgrupamento().getId());
+				mapaParametros.put("idEventoComercial", lancamentoContabilSintetico.getEventoComercial().getId());
+
+				if(lancamentoContabilSintetico.getCategoria() != null){
+					mapaParametros.put("idCategoria", lancamentoContabilSintetico.getCategoria().getId());
+				};
+				
+				if(lancamentoContabilSintetico.getLancamentoItemContabil() != null){
+					mapaParametros.put("idLancamentoItemContabil", lancamentoContabilSintetico.getLancamentoItemContabil().getId());
+				};
+				
+				if(lancamentoContabilSintetico.getImpostoTipo() != null){
+					mapaParametros.put("idImpostoTipo", lancamentoContabilSintetico.getImpostoTipo().getId());
+				}
+
+				if(lancamentoContabilSintetico.getContaBancaria() != null){
+					mapaParametros.put("idContaBancaria", lancamentoContabilSintetico.getContaBancaria().getId());
+				}				
+				
+				
+				Collection<LancamentoContabilSintetico> listaLancamentoContabilSinteticoAjustar = this
+								.consultarLancamentoContabilSinteticoDuplicadoDetalhe(mapaParametros);
+				
+				int posicaoLista = 1;
+				Long idLancamentoContabilSintetico = null;
+				ArrayList<Long> listaIdLancamentoContabilAnaliticoSintetico = new ArrayList();
+				
+				for(LancamentoContabilSintetico lancamentoContabilSinteticoAjustar : listaLancamentoContabilSinteticoAjustar){
+					if(posicaoLista == 1){
+						// Ajusta o valor do primeiro registro com o somaoria de todos os itens						
+						idLancamentoContabilSintetico = lancamentoContabilSinteticoAjustar.getId();
+						
+					}else{
+						// Será alterado os Lancamentos Analitos para o novo Id do Lancamento
+						// Sintetico
+						listaIdLancamentoContabilAnaliticoSintetico.add(lancamentoContabilSinteticoAjustar.getId());
+					}
+
+					posicaoLista++;
+				}
+
+				// Ajusda relaorios analiticos para apontar para o novo sintetico e depois apagar o
+				// sintetico
+				if((idLancamentoContabilSintetico != null) && (listaIdLancamentoContabilAnaliticoSintetico.size() != 0)){
+					// Atualiza o Valor do Sintetico com o somatório de todos os itens duplicados
+					repositorioContabil.atualizarLancamentoContabilAnaliticoSintetico(idLancamentoContabilSintetico,
+									listaIdLancamentoContabilAnaliticoSintetico);
+
+					repositorioContabil.apagarLancamentoContabilSintetico(listaIdLancamentoContabilAnaliticoSintetico);
+				}
+				
+			}
+			
+			//
+			// 2 - segundo Ajuste quanto valores incorretos no sintetico
+			//	
+			Collection<LancamentoContabilSintetico> listaLancamentoContabilSinteticoValores = this
+							.consultarLancamentoContabilSinteticoValorIncorreto();
+			for(LancamentoContabilSintetico lancamentoContabilSintetico : listaLancamentoContabilSinteticoValores){
+				repositorioContabil.atualizarValorLancamentoContabilSintetico(lancamentoContabilSintetico.getId());
+			}
+
+			// --------------------------------------------------------
+			//
+			// Registrar o fim da execução da Unidade de Processamento
+			//
+			// --------------------------------------------------------
+			getControladorBatch().encerrarUnidadeProcessamentoBatch(idUnidadeIniciada, false);			
+
+
+		}catch(Exception e){
+			// Este catch serve para interceptar qualquer exceção que o processo
+			// batch venha a lançar e garantir que a unidade de processamento do
+			// batch será atualizada com o erro ocorrido
+			e.printStackTrace();
+			sessionContext.setRollbackOnly();
+
+			getControladorBatch().encerrarUnidadeProcessamentoBatch(idUnidadeIniciada, true);
+
+			throw new EJBException(e);
+		}
 	}
 
 	/**
@@ -619,7 +726,12 @@ public class ControladorContabilSEJB
 	 */
 	public void registrarLancamentoContabil(Object objeto, OperacaoContabil operacaoContabil) throws ControladorException{
 
-		this.registrarLancamentoContabil(objeto, operacaoContabil, null);
+		try{
+			this.registrarLancamentoContabil(objeto, operacaoContabil, null);
+		}catch(ControladorException ex){
+			sessionContext.setRollbackOnly();
+			throw new ControladorException("erro.sistema", ex);
+		}
 	}
 
 	/**
@@ -1046,6 +1158,7 @@ public class ControladorContabilSEJB
 								|| pagamentoHistorico.getConta() != null){
 
 					if(pagamentoHistorico.getConta() != null){
+
 						registrarLancamentoContabilContaHistorico(pagamentoHistorico.getConta(), operacaoContabil, contaBancaria,
 										pagamentoHistorico.getDataPagamento());
 
@@ -1166,6 +1279,7 @@ public class ControladorContabilSEJB
 				}
 			}
 		}catch(Exception e){
+
 			throw new ControladorException("erro.sistema", e);
 		}
 	}
@@ -1637,6 +1751,85 @@ public class ControladorContabilSEJB
 				lancamentoContabilSintetico.getUnidadeContabilAgrupamento().setId(
 								lancamentoContabilSintetico.getIdUnidadeContabilAgrupamento());
 				lancamentoContabilSintetico.getUnidadeContabilAgrupamento().setDescricao(descricaoUnidadeAgrupamentoContabil);
+
+				colecaoLancamentoContabilSintetico.add(lancamentoContabilSintetico);
+
+			}
+		}catch(ErroRepositorioException ex){
+			throw new ControladorException("erro.sistema", ex);
+		}
+
+		return colecaoLancamentoContabilSintetico;
+	}
+
+	public Collection<LancamentoContabilSintetico> consultarLancamentoContabilSinteticoDuplicadoDetalhe(Map<String, Object> mapaParametros)
+					throws ControladorException{
+
+		try{
+
+			return repositorioContabil.consultarLancamentoContabilSinteticoDulicadoDetalhe(mapaParametros);
+
+		}catch(ErroRepositorioException ex){
+			throw new ControladorException("erro.sistema", ex);
+		}
+
+	}
+
+	public Collection<LancamentoContabilSintetico> consultarLancamentoContabilSinteticoValorIncorreto()
+					throws ControladorException{
+
+		try{
+
+			return repositorioContabil.consultarLancamentoContabilSinteticoValorIncorreto();
+
+		}catch(ErroRepositorioException ex){
+			throw new ControladorException("erro.sistema", ex);
+		}
+
+	}
+
+	public Collection<LancamentoContabilSintetico> consultarLancamentoContabilSinteticoDuplicado() throws ControladorException{
+
+		Collection<LancamentoContabilSintetico> colecaoLancamentoContabilSintetico = new ArrayList<LancamentoContabilSintetico>();
+		try{
+
+			Collection colecaoConsulta = repositorioContabil.consultarLancamentoContabilSinteticoDuplicado();
+
+			Iterator iterator = colecaoConsulta.iterator();
+
+			while(iterator.hasNext()){
+				Object[] element = null;
+				LancamentoContabilSintetico lancamentoContabilSintetico = new LancamentoContabilSintetico();
+
+				element = (Object[]) iterator.next();
+				
+				lancamentoContabilSintetico.setDataContabil((Date) element[0]);
+				lancamentoContabilSintetico.setDataGeracao((Date) element[1]);
+
+				lancamentoContabilSintetico.setUnidadeContabilAgrupamento(new UnidadeContabilAgrupamento());
+				lancamentoContabilSintetico.getUnidadeContabilAgrupamento().setId(Integer.parseInt(element[2].toString()));
+
+				lancamentoContabilSintetico.setEventoComercial(new EventoComercial());
+				lancamentoContabilSintetico.getEventoComercial().setId(Integer.parseInt(element[3].toString()));
+				
+				if(element[4] != null){
+					lancamentoContabilSintetico.setCategoria(new Categoria(Integer.parseInt(element[4].toString())));
+				}
+
+				if(element[5] != null){
+					lancamentoContabilSintetico.setLancamentoItemContabil(new LancamentoItemContabil(
+									Integer.parseInt(element[5].toString())));
+				}
+
+				if(element[6] != null){
+					lancamentoContabilSintetico.setImpostoTipo(new ImpostoTipo());
+					lancamentoContabilSintetico.getImpostoTipo().setId(Integer.parseInt(element[6].toString()));
+				}
+
+				if(element[7] != null){
+					lancamentoContabilSintetico.setContaBancaria(new ContaBancaria());
+					lancamentoContabilSintetico.getContaBancaria().setId(Integer.parseInt(element[7].toString()));
+				}
 
 				colecaoLancamentoContabilSintetico.add(lancamentoContabilSintetico);
 
@@ -2437,11 +2630,21 @@ public class ControladorContabilSEJB
 			DebitoACobrar parcelamentoDebitos = null;
 			DebitoACobrar reparcelamento = null;
 
+			Collection<Integer> idDebitoTipoConta = this.carregarTiposDebitoConta();
+			Collection<Integer> idDebitoTipoGuia = this.carregarTiposDebitoGuia();
+			Collection<Integer> idDebitoTipoDebitoACobrarParcelamento = this.carregarTiposDebitoDebitoACobrarParcelamento();
+			Collection<Integer> idDebitoTipoDebitoACobrarServico = this.carregarTiposDebitoDebitoACobrarServico();
+			Collection<Integer> idDebitoTipoDebitoAcrescimo = this.carregarTiposDebitoAcrescimo();
+			Collection<Integer> idDebitoTipoSucumbenciaDiligencia = this.carregarTiposDebitoSucumbenciaDiligencias();
+
 			for(DebitoACobrar debitoACobrar : colecaoDebitoACobrarParcelamento){
 				repositorioContabil.carregarAtributosDebitoACobrar(debitoACobrar);
 
-				if(debitoACobrar.getDebitoTipo().getId().equals(DebitoTipo.PARCELAMENTO_ACRESCIMOS_IMPONTUALIDADE)
-								|| debitoACobrar.getDebitoTipo().getId().equals(DebitoTipo.JUROS_SOBRE_PARCELAMENTO)){
+				Integer idDebitoACobrar = debitoACobrar.getDebitoTipo().getId();
+
+				if(idDebitoACobrar.equals(DebitoTipo.PARCELAMENTO_ACRESCIMOS_IMPONTUALIDADE)
+								|| idDebitoACobrar.equals(DebitoTipo.JUROS_SOBRE_PARCELAMENTO)
+								|| idDebitoTipoDebitoAcrescimo.contains(idDebitoACobrar)){
 
 					// O registro de juros e acréscimos não é dividido em curto e longo prazo
 					// (considerarCurtoLongoPrazo = false).
@@ -2450,21 +2653,29 @@ public class ControladorContabilSEJB
 
 				}
 
-				else if(debitoACobrar.getDebitoTipo().getId().equals(DebitoTipo.PARCELAMENTO_CONTAS)){
+				else if(idDebitoACobrar.equals(DebitoTipo.PARCELAMENTO_CONTAS) || idDebitoTipoConta.contains(idDebitoACobrar)){
 
 					registrarLancamentoContabilDebitoACobrarParcelamentoConta(debitoACobrar, operacaoContabil, parcelamentoHelper);
 
 				}
 
-				else if(debitoACobrar.getDebitoTipo().getId().equals(DebitoTipo.PARCELAMENTO_GUIAS_PAGAMENTO)){
+				else if(idDebitoACobrar.equals(DebitoTipo.PARCELAMENTO_GUIAS_PAGAMENTO) || idDebitoTipoGuia.contains(idDebitoACobrar)){
 
 					registrarLancamentoContabilDebitoACobrar(debitoACobrar, true, operacaoContabil, ObjetoContabil.FINANCIAMENTO, null,
 									null);
 
 				}
+				
+				else if(idDebitoTipoSucumbenciaDiligencia.contains(idDebitoACobrar)){
 
-				else if(debitoACobrar.getDebitoTipo().getId().equals(DebitoTipo.PARCELAMENTO_DEBITO_A_COBRAR_CURTO_PRAZO)
-								|| debitoACobrar.getDebitoTipo().getId().equals(DebitoTipo.PARCELAMENTO_DEBITO_A_COBRAR_LONGO_PRAZO)){
+					// TODO Luís Eduardo irá definir uma OperacaoContabil específica
+					registrarLancamentoContabilDebitoACobrar(debitoACobrar, true, OperacaoContabil.INCLUIR_DEBITO_A_COBRAR,
+									ObjetoContabil.FINANCIAMENTO, null, null);
+				}
+
+				else if(idDebitoACobrar.equals(DebitoTipo.PARCELAMENTO_DEBITO_A_COBRAR_CURTO_PRAZO)
+								|| idDebitoACobrar.equals(DebitoTipo.PARCELAMENTO_DEBITO_A_COBRAR_LONGO_PRAZO)
+								|| idDebitoTipoDebitoACobrarParcelamento.contains(idDebitoACobrar)){
 
 					// Totaliza valores de curto e longo prazo dos débitos originais.
 					if(parcelamentoDebitos == null){
@@ -2475,8 +2686,9 @@ public class ControladorContabilSEJB
 
 				}
 
-				else if(debitoACobrar.getDebitoTipo().getId().equals(DebitoTipo.REPARCELAMENTOS_CURTO_PRAZO)
-								|| debitoACobrar.getDebitoTipo().getId().equals(DebitoTipo.REPARCELAMENTOS_LONGO_PRAZO)){
+				else if(idDebitoACobrar.equals(DebitoTipo.REPARCELAMENTOS_CURTO_PRAZO)
+								|| idDebitoACobrar.equals(DebitoTipo.REPARCELAMENTOS_LONGO_PRAZO)
+								|| idDebitoTipoDebitoACobrarServico.contains(idDebitoACobrar)){
 
 					// Totaliza valores de curto e longo prazo dos reparcelamentos originais.
 					if(reparcelamento == null){
@@ -2500,6 +2712,102 @@ public class ControladorContabilSEJB
 		}catch(Exception e){
 			throw new ControladorException(e.getMessage());
 		}
+	}
+
+	private ArrayList<Integer> carregarTiposDebitoConta() throws ControladorException{
+
+		Collection<String> valoresParametros = ParametroParcelamento.executarParametrosDiversos(
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_CONTA,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_CONTA_DIVIDA_ATIVA,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_CONTA_EXECUCAO_FISCAL,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_CONTA_COBRANCA_ADMINISTRATIVA);
+
+		return this.carregarValores(valoresParametros);
+	}
+
+	private ArrayList<Integer> carregarTiposDebitoGuia() throws ControladorException{
+
+		Collection<String> valoresParametros = ParametroParcelamento.executarParametrosDiversos(
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_GUIA_PAGAMENTO,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_GUIA_PAGAMENTO_DIVIDA_ATIVA,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_GUIA_PAGAMENTO_EXECUCAO_FISCAL,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_GUIA_PAGAMENTO_COBRANCA_ADMINISTRATIVA);
+
+		return this.carregarValores(valoresParametros);
+	}
+
+	private ArrayList<Integer> carregarTiposDebitoDebitoACobrarParcelamento() throws ControladorException{
+
+		Collection<String> valoresParametros = ParametroParcelamento.executarParametrosDiversos(
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_PARCELAMENTO,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_PARCELAMENTO_DIVIDA_ATIVA,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_PARCELAMENTO_EXECUCAO_FISCAL,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_PARCELAMENTO_COBRANCA_ADMINISTRATIVA);
+
+		return this.carregarValores(valoresParametros);
+	}
+
+	private ArrayList<Integer> carregarTiposDebitoDebitoACobrarServico() throws ControladorException{
+
+		Collection<String> valoresParametros = ParametroParcelamento
+						.executarParametrosDiversos(ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_FINANCIAMENTO);
+
+		return this.carregarValores(valoresParametros);
+	}
+
+	private ArrayList<Integer> carregarTiposDebitoAcrescimo() throws ControladorException{
+
+		Collection<String> valoresParametros = ParametroParcelamento.executarParametrosDiversos(
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_JUROS_PARCELAMENTO,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_JUROS_PARCELAMENTO_DIVIDA_ATIVA,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_JUROS_PARCELAMENTO_EXECUCAO_FISCAL,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_JUROS_PARCELAMENTO_COBRANCA_ADMINISTRATIVA,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_CORRECAO,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_MULTA_ATRASO,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_JUROS_MORA,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_CORRECAO_DIVIDA_ATIVA,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_MULTA_ATRASO_DIVIDA_ATIVA,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_JUROS_MORA_DIVIDA_ATIVA,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_CORRECAO_EXECUCAO_FISCAL,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_MULTA_ATRASO_EXECUCAO_FISCAL,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_JUROS_MORA_EXECUCAO_FISCAL,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_ACRESCIMO_IMPONTUALIDADE,
+						ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_ACRESCIMO_IMPONTUALIDADE_COBRANCA_ADMINISTRATIVA);
+
+		return this.carregarValores(valoresParametros);
+	}
+
+	private ArrayList<Integer> carregarValores(Collection<String> valoresParametros){
+
+		ArrayList<Integer> colecaoDebitoTipo = new ArrayList<Integer>();
+
+		for(String valor : valoresParametros){
+
+			String[] colecaoValores = null;
+			if(valor != null){
+				colecaoValores = valor.split(",");
+			}
+
+			if(!Util.isVazioOrNulo(colecaoValores)){
+				for(int i = 0; i < colecaoValores.length; i++){
+					if(Integer.valueOf(colecaoValores[i]).intValue() > 0){
+						colecaoDebitoTipo.add(Integer.valueOf(colecaoValores[i]));
+					}
+				}
+			}
+		}
+
+		return colecaoDebitoTipo;
+	}
+
+	private ArrayList<Integer> carregarTiposDebitoSucumbenciaDiligencias() throws ControladorException{
+
+		ArrayList<Integer> colecaoDebitoTipo = new ArrayList<Integer>();
+
+		colecaoDebitoTipo.add(DebitoTipo.SUCUMBENCIA);
+		colecaoDebitoTipo.add(DebitoTipo.DILIGENCIAS);
+
+		return colecaoDebitoTipo;
 	}
 
 	/**
@@ -2636,9 +2944,12 @@ public class ControladorContabilSEJB
 
 		Date dataMin6meses = Util.adicionarNumeroMesDeUmaData(new Date(), -6);
 		Date dataMin1ano = Util.adicionarNumeroMesDeUmaData(new Date(), -12);
+		Date dataMin2anos = Util.adicionarNumeroMesDeUmaData(new Date(), -24);
 		if(referencia != null){
 			dataMin6meses = Util.adicionarNumeroMesDeUmaData(Util.gerarDataApartirAnoMesRefencia(referencia), -6);
 			dataMin1ano = Util.adicionarNumeroMesDeUmaData(Util.gerarDataApartirAnoMesRefencia(referencia), -12);
+			dataMin2anos = Util.adicionarNumeroMesDeUmaData(Util.gerarDataApartirAnoMesRefencia(referencia), -24);
+
 		}
 
 		String retorno = "";
@@ -2646,38 +2957,38 @@ public class ControladorContabilSEJB
 		if(objetoConta instanceof Conta){
 			Conta conta = (Conta) objetoConta;
 
-			if(conta.getValorTotal().compareTo(new BigDecimal(5000)) <= 0 && conta.getDataVencimentoConta().compareTo(dataMin6meses) < 0){
-				// Faixa1 (ate R$5.000,00 vencidos a mais de 6 meses)
+			if(conta.getValorTotal().compareTo(new BigDecimal(15000)) <= 0 && conta.getDataVencimentoConta().compareTo(dataMin6meses) < 0){
+				// Faixa1 (ate R$15.000,00 vencidos a mais de 6 meses)
 				retorno = "PDD_FAIXA1";
 
-			}else if(conta.getValorTotal().compareTo(new BigDecimal(5000)) > 0
-							&& conta.getValorTotal().compareTo(new BigDecimal(30000)) <= 0
+			}else if(conta.getValorTotal().compareTo(new BigDecimal(15000)) > 0
+							&& conta.getValorTotal().compareTo(new BigDecimal(100000)) <= 0
 							&& conta.getDataVencimentoConta().compareTo(dataMin1ano) < 0){
-				// Faixa2 (acima de R$5.000,00 ate R$30.000,00 e vencidos a mais de 1 ano)
+				// Faixa2 (acima de R$15.000,00 ate R$100.000,00 e vencidos a mais de 1 ano)
 				retorno = "PDD_FAIXA2";
 
-			}else if(conta.getValorTotal().compareTo(new BigDecimal(30000)) > 0
-							&& conta.getDataVencimentoConta().compareTo(dataMin1ano) < 0){
-				// Faixa3 (acima de R$30.000,00 e vencidos a mais de 1 ano)
+			}else if(conta.getValorTotal().compareTo(new BigDecimal(100000)) > 0
+							&& conta.getDataVencimentoConta().compareTo(dataMin2anos) < 0){
+				// Faixa3 (acima de R$100.000,00 e vencidos a mais de 2 anos)
 				retorno = "PDD_FAIXA3";
 
 			}
 		}else{
 			ContaHistorico conta = (ContaHistorico) objetoConta;
 
-			if(conta.getValorTotal().compareTo(new BigDecimal(5000)) <= 0 && conta.getDataVencimentoConta().compareTo(dataMin6meses) < 0){
-				// Faixa1 (ate R$5.000,00 vencidos a mais de 6 meses)
+			if(conta.getValorTotal().compareTo(new BigDecimal(15000)) <= 0 && conta.getDataVencimentoConta().compareTo(dataMin6meses) < 0){
+				// Faixa1 (ate R$15.000,00 vencidos a mais de 6 meses)
 				retorno = "PDD_FAIXA1";
 
-			}else if(conta.getValorTotal().compareTo(new BigDecimal(5000)) > 0
-							&& conta.getValorTotal().compareTo(new BigDecimal(30000)) <= 0
+			}else if(conta.getValorTotal().compareTo(new BigDecimal(15000)) > 0
+							&& conta.getValorTotal().compareTo(new BigDecimal(100000)) <= 0
 							&& conta.getDataVencimentoConta().compareTo(dataMin1ano) < 0){
-				// Faixa2 (acima de R$5.000,00 ate R$30.000,00 e vencidos a mais de 1 ano)
+				// Faixa2 (acima de R$15.000,00 ate R$100.000,00 e vencidos a mais de 1 ano)
 				retorno = "PDD_FAIXA2";
 
-			}else if(conta.getValorTotal().compareTo(new BigDecimal(30000)) > 0
-							&& conta.getDataVencimentoConta().compareTo(dataMin1ano) < 0){
-				// Faixa3 (acima de R$30.000,00 e vencidos a mais de 1 ano)
+			}else if(conta.getValorTotal().compareTo(new BigDecimal(100000)) > 0
+							&& conta.getDataVencimentoConta().compareTo(dataMin2anos) < 0){
+				// Faixa3 (acima de R$100.000,00 e vencidos a mais de 2 anos)
 				retorno = "PDD_FAIXA3";
 
 			}
@@ -2845,11 +3156,14 @@ public class ControladorContabilSEJB
 		}
 	}
 
-	public void ajustarRegistrosContaEGuiaDeso() throws ControladorException{
+	public void ajustarRegistrosContaEGuia(Integer idClienteResponsavel, Integer idImovel,
+					Collection<IntervaloReferenciaHelper> colecaoReferencias, BigDecimal valorJuros) throws ControladorException{
 
 		try{
+
 			AjusteContabilidadeDeso ajusteContabilidadeDeso = new AjusteContabilidadeDeso();
-			ajusteContabilidadeDeso.executarAjustarRegistrosContaEGuiaDeso();
+			ajusteContabilidadeDeso.executarAjustarRegistrosContaEGuia(idClienteResponsavel, idImovel, colecaoReferencias, valorJuros);
+
 		}catch(Exception e){
 			e.printStackTrace();
 			sessionContext.setRollbackOnly();
@@ -2869,149 +3183,7 @@ public class ControladorContabilSEJB
 		}
 	}
 
-	// public String obterCodigoContaAuxiliarOrigemCredito(LancamentoContabilSintetico
-	// lancamentoContabilSintetico)
-	// throws ControladorException{
-	//
-	// // Caso o grupo de conta auxiliar da conta contábil for 003 (CNCT_NNGRUPOCONTAAUXILIAR da
-	// // tabela CONTA_CONTABIL com CNCT_ID = CNCT_ID_CREDITO da tabela EVENTO_COMERCIAL_LANCAMENTO
-	// // com (EVCO_ID = EVCO_ID, CATG_ID = CATG_ID, LICT_ID = LICT_ID , IMTP_ID = IMTP_ID) da
-	// // tabela LANCAMENTO_CONTABIL_SINTETICO)
-	//
-	// // então atribuir o código do banco (BNCO_ID da tabela
-	// // AGENCIA com AGEN_ID = AGEN_ID da tabela CONTA_BANCARIA com CTCB_ID = CTBC_ID da tabela
-	// // LANCAMENTO_CONTABIL_SINTETICO) senão atribuir a unidade de contabilização (UNCO_ID da
-	// // tabela LANCAMENTO_CONTABIL_SINTETICO)
-	//
-	// String retorno = null;
-	//
-	// try{
-	//
-	// String numGrupoContaAuxiliar =
-	// repositorioContabil.obterNumeroContaAuiliar(ObjetoContabil.CREDITO,
-	// lancamentoContabilSintetico);
-	//
-	// if(numGrupoContaAuxiliar != null){
-	//
-	// if(numGrupoContaAuxiliar.equals("003")){
-	//
-	// retorno = numGrupoContaAuxiliar;
-	//
-	// }else{
-	//
-	// retorno = this.obterCodigoBanco(lancamentoContabilSintetico);
-	//
-	// }
-	//
-	// }else{
-	//
-	// retorno = this.obterCodigoBanco(lancamentoContabilSintetico);
-	//
-	// }
-	//
-	// }catch(ErroRepositorioException ex){
-	//
-	// throw new ControladorException("erro.sistema", ex);
-	//
-	// }
-	//
-	// return retorno;
-	//
-	// }
 
-	// /**
-	// * Método usado para obter O Evento Comercial Lancamento
-	// *
-	// * @param lancamentoContabilSintetico
-	// * @return
-	// * @throws ControladorException
-	// */
-	// public String obterCodigoContaAuxiliarOrigemDebito(LancamentoContabilSintetico
-	// lancamentoContabilSintetico)
-	// throws ControladorException{
-	//
-	// // COD_CNTAUX_ORIGEM
-	//
-	// // Caso o grupo de conta auxiliar da conta contábil for 003 (CNCT_NNGRUPOCONTAAUXILIAR da
-	// // tabela CONTA_CONTABIL com CNCT_ID = CNCT_ID_DEBITO da tabela EVENTO_COMERCIAL_LANCAMENTO
-	// // com (EVCO_ID = EVCO_ID, CATG_ID = CATG_ID, LICT_ID = LICT_ID , IMTP_ID = IMTP_ID) da
-	// // tabela LANCAMENTO_CONTABIL_SINTETICO)
-	//
-	// // então atribuir o código do banco (BNCO_ID da tabela
-	// // AGENCIA com AGEN_ID = AGEN_ID da tabela CONTA_BANCARIA com CTCB_ID = CTBC_ID da tabela
-	// // LANCAMENTO_CONTABIL_SINTETICO) senão atribuir a unidade de contabilização (UNCO_ID da
-	// // tabela LANCAMENTO_CONTABIL_SINTETICO)
-	//
-	// String retorno = null;
-	//
-	// try{
-	//
-	// String numGrupoContaAuxiliar =
-	// repositorioContabil.obterNumeroContaAuiliar(ObjetoContabil.DEBITO,
-	// lancamentoContabilSintetico);
-	//
-	// if(numGrupoContaAuxiliar != null){
-	//
-	// if(numGrupoContaAuxiliar.equals("003")){
-	//
-	// retorno = numGrupoContaAuxiliar;
-	//
-	// }else{
-	//
-	// retorno = this.obterCodigoBanco(lancamentoContabilSintetico);
-	//
-	// }
-	//
-	// }else{
-	//
-	// retorno = this.obterCodigoBanco(lancamentoContabilSintetico);
-	//
-	// }
-	//
-	//
-	// }catch(ErroRepositorioException ex){
-	//
-	// throw new ControladorException("erro.sistema", ex);
-	//
-	// }
-	//
-	// return retorno;
-	//
-	// }
-
-	// private String obterCodigoBanco(LancamentoContabilSintetico lancamentoContabilSintetico)
-	// throws ControladorException{
-	//
-	// String retorno = null;
-	//
-	// try{
-	//
-	// ContaBancaria contaBancaria =
-	// repositorioContabil.obterContaBancaria(lancamentoContabilSintetico);
-	//
-	// if(contaBancaria != null){
-	//
-	// retorno =
-	// Util.completarStringZeroEsquerda(String.valueOf(contaBancaria.getAgencia().getBanco().getId()),
-	// 3);
-	//
-	// }else{
-	//
-	// retorno =
-	// Util.completarStringZeroEsquerda(String.valueOf(lancamentoContabilSintetico.getIdUnidadeContabilAgrupamento()),
-	// 3);
-	//
-	// }
-	//
-	// }catch(ErroRepositorioException ex){
-	//
-	// throw new ControladorException("erro.sistema", ex);
-	//
-	// }
-	//
-	// return retorno;
-	//
-	// }
 
 	public String obterCodigoGrupoContaAuxiliarOrigemCredito(LancamentoContabilSintetico lancamentoContabilSintetico)
 					throws ControladorException{

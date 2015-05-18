@@ -121,4 +121,6 @@ public class FiltroOsProgramNaoEncerMotivo
 	 */
 	public final static String DESCRICAO = "descricao";
 
+	public final static String DESCRICAOABREVIADA = "descricaoAbreviada";
+
 }

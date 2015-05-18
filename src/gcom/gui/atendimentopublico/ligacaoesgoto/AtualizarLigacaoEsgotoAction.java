@@ -180,6 +180,14 @@ public class AtualizarLigacaoEsgotoAction
 			ligacaoEsgotoActionForm.setInscricaoImovel("Matrícula inexistente");
 		}
 
+		if(!Util.isVazioOuBranco(ligacaoEsgotoActionForm.getConsumoFixoPoco())){
+
+			ligacaoEsgoto.setNumeroConsumoFixoPoco(Util.obterInteger(ligacaoEsgotoActionForm.getConsumoFixoPoco()));
+		}else{
+
+			ligacaoEsgoto.setNumeroConsumoFixoPoco(null);
+		}
+
 		ligacaoEsgoto.setIndicadorCaixaGordura(new Short(ligacaoEsgotoActionForm.getIndicadorCaixaGordura()));
 
 		if(localInstalacaoRamal != null && !localInstalacaoRamal.equals("") && !localInstalacaoRamal.equals("-1")){

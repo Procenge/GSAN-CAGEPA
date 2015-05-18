@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.micromedicao.hidrometro.HidrometroHistoricoAfericao" 
+    table="hidrometro_historico_afericao"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="hiha_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_hidrometro_hist_afericao</param>
+    	</generator>
+    </id>
+    
+    <property
+        name="indicadorClienteAcompanhou"
+        type="java.lang.Short"
+        column="hiha_icclienteacompanhou"
+        not-null="true"
+        length="1"
+    />
+    
+    <property
+        name="indicadorResultado"
+        type="java.lang.Short"
+        column="hiha_icresultado"
+        not-null="true"
+        length="1"
+    />
+    
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="hiha_icuso"
+        not-null="true"
+        length="1"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="hiha_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="dataAfericao"
+        type="java.sql.Date"
+        column="hiha_dtafericao"
+        not-null="true"
+        length="6"
+    />
+    
+    <!-- Associations -->
+    
+    <!-- bi-directional many-to-one association to Hidrometro -->
+    <many-to-one
+        name="hidrometro"
+        class="gcom.micromedicao.hidrometro.Hidrometro"
+        not-null="true"
+    >
+        <column name="hidr_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Funcionario -->
+	<many-to-one 
+		name="funcionario"
+		class="gcom.cadastro.funcionario.Funcionario" 
+		not-null="true">
+
+		<column name="func_id" />
+
+	</many-to-one>
+	
+	<!-- bi-directional many-to-one association to Hidrometro -->
+    <many-to-one
+        name="hidrometroCondicao"
+        class="gcom.micromedicao.hidrometro.HidrometroCondicao"
+        not-null="true"
+    >
+        <column name="hico_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to OrdemServico -->
+    <many-to-one
+        name="ordemServico"
+        class="gcom.atendimentopublico.ordemservico.OrdemServico"
+        not-null="true"
+    >
+        <column name="orse_id" />
+    </many-to-one>
+	
+</class>
+</hibernate-mapping>

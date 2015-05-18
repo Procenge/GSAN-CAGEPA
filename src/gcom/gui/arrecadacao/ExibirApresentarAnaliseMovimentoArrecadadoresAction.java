@@ -85,7 +85,9 @@ import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
+import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -240,12 +242,39 @@ public class ExibirApresentarAnaliseMovimentoArrecadadoresAction
 			apresentarAnaliseMovimentoArrecadadoresActionForm.setValorTotalMovimento(Util.formatarMoedaReal(arrecadadorMovimento
 							.getValorTotalMovimento(), 2));
 		}
+		
 
 		/*
 		 * Lista os avisos bancários associados ao movimento
 		 */
-		Collection<AvisoBancarioHelper> colecaoAvisosBancariosPorMovimentoArrecadador = fachada
-						.obterColecaoAvisosBancariosPorArrecadadorMovimento(arrecadadorMovimento);
+		Collection<AvisoBancarioHelper> colecaoAvisosBancariosPorMovimentoArrecadador = fachada.obterColecaoAvisosBancariosPorArrecadadorMovimento(arrecadadorMovimento);
+		
+		//OC1388359
+		Integer valorCalculadoTotal = 0;
+		if(!Util.isVazioOrNulo(colecaoAvisosBancariosPorMovimentoArrecadador)){
+			Iterator<AvisoBancarioHelper> it = colecaoAvisosBancariosPorMovimentoArrecadador.iterator();
+			while(it.hasNext()){
+				AvisoBancarioHelper helper = it.next();
+				valorCalculadoTotal = valorCalculadoTotal + helper.getValorCalculado().intValue();
+
+			}
+			
+		}
+		if(!Util.isVazioOuBranco(valorCalculadoTotal)){
+			apresentarAnaliseMovimentoArrecadadoresActionForm.setValorCalculado(Util.formatarMoedaReal(new BigDecimal(valorCalculadoTotal)));
+		}
+		
+		
+		if(!Util.isVazioOuBranco(arrecadadorMovimento.getValorTotalMovimento()) || !Util.isVazioOuBranco(valorCalculadoTotal)){
+			
+			valorCalculadoTotal = valorCalculadoTotal - arrecadadorMovimento.getValorTotalMovimento().intValue();
+			apresentarAnaliseMovimentoArrecadadoresActionForm.setDiferencaMovimento(Util.formatarMoedaReal(new BigDecimal(valorCalculadoTotal)));
+					
+		}
+		
+		
+		
+		// fim OC1388359
 
 		httpServletRequest.setAttribute("colecaoAvisosBancariosPorMovimentoArrecadador", colecaoAvisosBancariosPorMovimentoArrecadador);
 

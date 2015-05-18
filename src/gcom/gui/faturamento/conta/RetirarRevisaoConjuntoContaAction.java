@@ -76,12 +76,15 @@
 
 package gcom.gui.faturamento.conta;
 
+import gcom.cobranca.bean.ContaValoresHelper;
 import gcom.fachada.Fachada;
 import gcom.faturamento.conta.Conta;
 import gcom.faturamento.conta.FiltroConta;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.seguranca.acesso.PermissaoEspecial;
 import gcom.seguranca.acesso.usuario.Usuario;
+import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
 import java.util.ArrayList;
@@ -111,6 +114,9 @@ public class RetirarRevisaoConjuntoContaAction
 		Usuario usuarioLogado = (Usuario) sessao.getAttribute("usuarioLogado");
 		Fachada fachada = Fachada.getInstancia();
 		ManterContaConjuntoImovelActionForm manterContaConjuntoImovelActionForm = (ManterContaConjuntoImovelActionForm) actionForm;
+		
+		boolean temPermissaoAtualizarDebitosExecFiscal = fachada.verificarPermissaoEspecial(
+						PermissaoEspecial.ATUALIZAR_DEBITOS_EXECUCAO_FISCAL, this.getUsuarioLogado(httpServletRequest));		
 
 		// Carregando o identificador das contas selecionadas
 		String identificadoresConta = manterContaConjuntoImovelActionForm.getContaSelected();
@@ -118,6 +124,7 @@ public class RetirarRevisaoConjuntoContaAction
 		Collection idsConta = new ArrayList();
 
 		String[] arrayIdentificadores = identificadoresConta.split(",");
+		StringBuffer parametroExecucaoFiscal = new StringBuffer();
 
 		for(int i = 0; i < arrayIdentificadores.length; i++){
 
@@ -129,6 +136,7 @@ public class RetirarRevisaoConjuntoContaAction
 			FiltroConta filtroConta = new FiltroConta();
 			filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.IMOVEL);
 			filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.DEBITO_CREDITO_SITUACAO_ATUAL);
+			filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.DEBITOS_COBRADOS);
 			filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.ID, idConta));
 			Collection colecaoConta = fachada.pesquisar(filtroConta, Conta.class.getName());
 			Conta contaSelecao = (Conta) colecaoConta.iterator().next();
@@ -140,9 +148,38 @@ public class RetirarRevisaoConjuntoContaAction
 					throw new ActionServletException("atencao.conta_em_situacao_nao_permitida", contaSelecao
 									.getDebitoCreditoSituacaoAtual().getDescricaoDebitoCreditoSituacao(), "ação");
 				}
+				
+				/**
+				 * [UC0146] Manter Conta
+				 * [SB0040] Verificar Existência de Conta em Execução Fiscal
+				 * 
+				 * @author Gicevalter Couto
+				 * @date 07/08/2014
+				 * @param colecaoContas
+				 */
+
+				ContaValoresHelper contaValores = new ContaValoresHelper();
+				contaValores.setConta(contaSelecao);
+
+				Collection<ContaValoresHelper> colecaoContaValores = new ArrayList<ContaValoresHelper>();
+				colecaoContaValores.add(contaValores);
+
+				if(fachada.verificarExecucaoFiscal(colecaoContaValores, null, null) && !temPermissaoAtualizarDebitosExecFiscal){
+					parametroExecucaoFiscal.append(contaSelecao.getReferenciaFormatada());
+				}
+									
 			}
 
 			idsConta.add(idConta);
+		}
+
+		String parametroMensagemExecFiscal = parametroExecucaoFiscal.toString();
+
+		if(!Util.isVazioOuBranco(parametroMensagemExecFiscal)){
+			parametroMensagemExecFiscal = parametroMensagemExecFiscal.substring(0, parametroMensagemExecFiscal.length() - 2);
+
+			throw new ActionServletException("atencao.conta.debito.execucao.fiscal", usuarioLogado.getNomeUsuario().toString(),
+							parametroMensagemExecFiscal);
 		}
 
 		// [FS0017] Verificar ocorrência de conta(s) em revisão por ação do usuário

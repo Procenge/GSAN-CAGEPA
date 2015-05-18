@@ -242,10 +242,9 @@ public class ExibirAtualizarUnidadeOperacionalAction
 					atualizarUnidadeOperacionalActionForm.setFax(unidadeOperacional.getFax().toString());
 				}
 				atualizarUnidadeOperacionalActionForm.setEmail(unidadeOperacional.getEmail());
-				;
+
 				atualizarUnidadeOperacionalActionForm.setDescricaoTipoInstalacao(unidadeOperacional.getDescricaoTipoInstalacao());
-				;
-				;
+
 				if(unidadeOperacional.getNumeroCota() != null){
 					atualizarUnidadeOperacionalActionForm.setNumeroCota(unidadeOperacional.getNumeroCota().toString());
 				}

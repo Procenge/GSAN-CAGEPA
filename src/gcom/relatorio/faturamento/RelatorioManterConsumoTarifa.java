@@ -76,26 +76,17 @@
 
 package gcom.relatorio.faturamento;
 
-import gcom.batch.Relatorio;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
 import gcom.relatorio.ConstantesRelatorios;
 import gcom.relatorio.RelatorioDataSource;
-import gcom.relatorio.RelatorioVazioException;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaException;
 import gcom.tarefa.TarefaRelatorio;
-import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.agendadortarefas.AgendadorTarefas;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * classe responsável por criar o relatório de manter consumo tarifa
@@ -119,30 +110,16 @@ public class RelatorioManterConsumoTarifa
 		super(null, "");
 	}
 
-	/**
-	 * < <Descrição do método>>
-	 * 
-	 * @param bairros
-	 *            Description of the Parameter
-	 * @param bairroParametros
-	 *            Description of the Parameter
-	 * @return Descrição do retorno
-	 * @exception RelatorioVazioException
-	 *                Descrição da exceção
-	 */
 	public Object executar() throws TarefaException{
 
 		// valor de retorno
 		byte[] retorno = null;
 
-		// ------------------------------------
-		Integer idFuncionalidadeIniciada = this.getIdFuncionalidadeIniciada();
-		// ------------------------------------
-
 		String descricao = (String) getParametro("descricao");
 		Date dataVigenciaInicial = (Date) getParametro("dataVigenciaInicial");
 		Date dataVigenciaFinal = (Date) getParametro("dataVigenciaFinal");
 		int tipoFormatoRelatorio = (Integer) getParametro("tipoFormatoRelatorio");
+		String descricaoAtoAdministrativo = (String) getParametro("descricaoAtoAdministrativo");
 
 		// coleção de beans do relatório
 		List relatorioBeans = new ArrayList();
@@ -152,7 +129,7 @@ public class RelatorioManterConsumoTarifa
 		RelatorioManterConsumoTarifaBean relatorioBean = null;
 
 		Collection colecaoConsumoTarifaRelatorioHelper = fachada.pesquisarConsumoTarifaRelatorio(descricao, dataVigenciaInicial,
-						dataVigenciaFinal);
+						dataVigenciaFinal, descricaoAtoAdministrativo);
 
 		// se a coleção de parâmetros da analise não for vazia
 		if(colecaoConsumoTarifaRelatorioHelper != null && !colecaoConsumoTarifaRelatorioHelper.isEmpty()){
@@ -313,20 +290,18 @@ public class RelatorioManterConsumoTarifa
 			parametros.put("dataVigencia", "");
 		}
 
+		// Descrição Ato Administrativo
+		if(descricaoAtoAdministrativo != null){
+
+			parametros.put("descricaoAtoAdministrativo", descricaoAtoAdministrativo);
+		}else{
+			parametros.put("descricaoAtoAdministrativo", "");
+		}
+
 		// cria uma instância do dataSource do relatório
 		RelatorioDataSource ds = new RelatorioDataSource(relatorioBeans);
 
 		retorno = gerarRelatorio(ConstantesRelatorios.RELATORIO_CONSUMO_TARIFA_MANTER, parametros, ds, tipoFormatoRelatorio);
-
-		// ------------------------------------
-		// Grava o relatório no sistema
-		try{
-			persistirRelatorioConcluido(retorno, Relatorio.MANTER_BAIRRO, idFuncionalidadeIniciada, null);
-		}catch(ControladorException e){
-			e.printStackTrace();
-			throw new TarefaException("Erro ao gravar relatório no sistema", e);
-		}
-		// ------------------------------------
 
 		// retorna o relatório gerado
 		return retorno;
@@ -335,19 +310,12 @@ public class RelatorioManterConsumoTarifa
 	@Override
 	public int calcularTotalRegistrosRelatorio(){
 
-		int retorno = 0;
-
-		// retorno = Fachada.getInstancia().totalRegistrosPesquisa(
-		// (FiltroBairro) getParametro("filtroBairro"),
-		// Bairro.class.getName());
-
-		return retorno;
+		return 0;
 	}
 
 	public void agendarTarefaBatch(){
 
-		AgendadorTarefas.agendarTarefa("RelatorioManterBairro", this);
-
+		AgendadorTarefas.agendarTarefa("RelatorioManterConsumoTarifa", this);
 	}
 
 }

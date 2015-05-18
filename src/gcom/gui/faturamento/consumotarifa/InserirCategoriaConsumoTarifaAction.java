@@ -81,21 +81,21 @@ package gcom.gui.faturamento.consumotarifa;
 
 import gcom.cadastro.imovel.Categoria;
 import gcom.cadastro.imovel.FiltroCategoria;
+import gcom.cadastro.imovel.FiltroSubCategoria;
+import gcom.cadastro.imovel.Subcategoria;
 import gcom.fachada.Fachada;
 import gcom.faturamento.consumotarifa.ConsumoTarifaCategoria;
 import gcom.faturamento.consumotarifa.ConsumoTarifaFaixa;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.gui.faturamento.consumotarifa.bean.CategoriaFaixaConsumoTarifaHelper;
+import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -127,6 +127,15 @@ public class InserirCategoriaConsumoTarifaAction
 
 		HttpSession sessao = httpServletRequest.getSession(false);
 
+		String indicadorTarifaCosumoPorSubCategoria = ConstantesSistema.NAO.toString();
+		try{
+			indicadorTarifaCosumoPorSubCategoria = (String) ParametroFaturamento.P_INDICADOR_TARIFA_CONSUMO_SUBCATEGORIA.executar();
+
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
+
 		Collection colecaoFaixa = (Collection) sessao.getAttribute("colecaoFaixa");
 
 		if(colecaoFaixa != null){
@@ -139,13 +148,24 @@ public class InserirCategoriaConsumoTarifaAction
 			throw new ActionServletException("atencao.faixa_categoria_consumo_tarifa");
 		}
 
+		String pQuantidadeDecimaisValorTarifa = null;
+		try{
+
+			pQuantidadeDecimaisValorTarifa = (String) ParametroFaturamento.P_QUANTIDADE_DECIMAIS_VALOR_TARIFA.executar();
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
+
 		Iterator iteratorColecaoFaixa = colecaoFaixa.iterator();
 
 		while(iteratorColecaoFaixa.hasNext()){
 			ConsumoTarifaFaixa consumoTarifaFaixa = (ConsumoTarifaFaixa) iteratorColecaoFaixa.next();
 			String parametroConsumoTarifaFaixa = "valorConsumoTarifa" + consumoTarifaFaixa.getUltimaAlteracao().getTime();
-			consumoTarifaFaixa.setValorConsumoTarifa(Util.formatarMoedaRealparaBigDecimal(httpServletRequest
-							.getParameter(parametroConsumoTarifaFaixa), 4));
+			consumoTarifaFaixa
+							.setValorConsumoTarifa(Util.formatarMoedaRealparaBigDecimal(
+											httpServletRequest.getParameter(parametroConsumoTarifaFaixa),
+											Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
 
 		}
 
@@ -154,16 +174,30 @@ public class InserirCategoriaConsumoTarifaAction
 		String idCategoria = inserirCategoriaConsumoTarifaActionForm.getSlcCategoria();
 
 		FiltroCategoria filtroCategoria = new FiltroCategoria();
-
 		filtroCategoria.adicionarParametro(new ParametroSimples(FiltroCategoria.CODIGO, idCategoria));
 
 		Collection colecaoCategoria = fachada.pesquisar(filtroCategoria, Categoria.class.getName());
-
 		Categoria categoriaSelected = (Categoria) Util.retonarObjetoDeColecao(colecaoCategoria);
+
+		Subcategoria subcategoriaSelected = null;
+		if(inserirCategoriaConsumoTarifaActionForm.getSlcCategoria() != null
+						&& !inserirCategoriaConsumoTarifaActionForm.getSlcCategoria().toString().equals("")
+						&& !inserirCategoriaConsumoTarifaActionForm.getSlcCategoria().toString().equals("-1")){
+
+			FiltroSubCategoria filtroSubCategoria = new FiltroSubCategoria();
+			filtroSubCategoria.adicionarParametro(new ParametroSimples(FiltroSubCategoria.CATEGORIA_ID, Integer
+							.valueOf(inserirCategoriaConsumoTarifaActionForm.getSlcCategoria())));
+			filtroSubCategoria.adicionarParametro(new ParametroSimples(FiltroSubCategoria.ID, Integer
+							.valueOf(inserirCategoriaConsumoTarifaActionForm.getSlcSubCategoria())));
+
+			Collection<Subcategoria> colecaoSubCategoria = fachada.pesquisar(filtroSubCategoria, Subcategoria.class.getName());
+			subcategoriaSelected = (Subcategoria) Util.retonarObjetoDeColecao(colecaoSubCategoria);
+		}
 
 		ConsumoTarifaCategoria consumoTarifaCategoria = new ConsumoTarifaCategoria();
 
 		consumoTarifaCategoria.setCategoria(categoriaSelected);
+		consumoTarifaCategoria.setSubCategoria(subcategoriaSelected);
 
 		Collection<CategoriaFaixaConsumoTarifaHelper> colecaoConsumoTarifaCategoria = new ArrayList();
 		int numeroFaixasCategoria = 0;
@@ -179,12 +213,15 @@ public class InserirCategoriaConsumoTarifaAction
 			Collection colecaoCategoriaSemHelper = new ArrayList();
 
 			if(colecaoCategoriaSemHelper.contains(consumoTarifaCategoria)){
-				throw new ActionServletException("atencao.consumotaria.categoria_existente");
+				if(indicadorTarifaCosumoPorSubCategoria.equals(ConstantesSistema.SIM.toString())){
+					throw new ActionServletException("atencao.consumotaria.subcategoria_existente");
+				}else{
+					throw new ActionServletException("atencao.consumotaria.categoria_existente");
+				}
 			}
 
 			for(CategoriaFaixaConsumoTarifaHelper categoriaFaixaConsumoTarifaHelper : colecaoConsumoTarifaCategoria){
 				colecaoCategoriaSemHelper.add(categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria());
-
 			}
 
 			if((colecaoFaixa != null) && (!colecaoFaixa.isEmpty())){
@@ -203,7 +240,11 @@ public class InserirCategoriaConsumoTarifaAction
 			}
 
 			if(colecaoCategoriaSemHelper.contains(consumoTarifaCategoria)){
-				throw new ActionServletException("atencao.consumotaria.categoria_existente");
+				if(indicadorTarifaCosumoPorSubCategoria.equals(ConstantesSistema.SIM.toString())){
+					throw new ActionServletException("atencao.consumotaria.subcategoria_existente");
+				}else{
+					throw new ActionServletException("atencao.consumotaria.categoria_existente");
+				}
 
 			}else{
 
@@ -238,15 +279,16 @@ public class InserirCategoriaConsumoTarifaAction
 		consumoTarifaCategoria.setNumeroConsumoMinimo(new Integer(inserirCategoriaConsumoTarifaActionForm.getConsumoMinimo()));
 
 		// Tarifa mínima
-		consumoTarifaCategoria.setValorTarifaMinima(Util.formatarMoedaRealparaBigDecimal(inserirCategoriaConsumoTarifaActionForm
-						.getValorTarifaMinima(), 4));
+		consumoTarifaCategoria.setValorTarifaMinima(Util.formatarMoedaRealparaBigDecimal(
+						inserirCategoriaConsumoTarifaActionForm.getValorTarifaMinima(), Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
 
 		// Ultima alteração
 		consumoTarifaCategoria.setUltimaAlteracao(new Date());
 		
 		// Tarifa mínima esgoto
 		consumoTarifaCategoria.setValorTarifaMinimaEsgoto(Util.formatarMoedaRealparaBigDecimal(inserirCategoriaConsumoTarifaActionForm
-						.getValorTarifaMinimaEsgoto(), 4));
+.getValorTarifaMinimaEsgoto(),
+						Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
 
 		// Atribuindo a colecao faixa valores da categoria
 		colecaoFaixa = (Collection) sessao.getAttribute("colecaoFaixa");

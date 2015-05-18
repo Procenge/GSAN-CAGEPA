@@ -513,6 +513,9 @@ public class SistemaParametro
 	// Indicador de Uso Pela Empresa CASAL
 	public static Short INDICADOR_EMPRESA_CASAL = Short.valueOf("3");
 
+	// Indicador de Uso Pela Empresa CAGEPA
+	public static Short INDICADOR_EMPRESA_CAGEPA = Short.valueOf("4");
+
 	public static String SISTEMA_PARAMETRO = "sistemaParametro";
 
 	@ControleAlteracao(funcionalidade = ATRIBUTOS_SISTEMA_PARAMETROS_INFORMAR)
@@ -562,6 +565,9 @@ public class SistemaParametro
 
 	@ControleAlteracao(funcionalidade = ATRIBUTOS_SISTEMA_PARAMETROS_INFORMAR)
 	private Short indicadorLayoutArquivoLeituraPadrao;
+
+	@ControleAlteracao(funcionalidade = ATRIBUTOS_SISTEMA_PARAMETROS_INFORMAR)
+	private String numeroTelefoneSecretariaSaude;
 
 	/**
 	 * Método criado para adequar ao padrão de getId() do Interceptador.
@@ -1961,6 +1967,16 @@ public class SistemaParametro
 	public void setArquivoImagemRelatorio(byte[] arquivoImagemRelatorio){
 
 		this.arquivoImagemRelatorio = arquivoImagemRelatorio;
+	}
+
+	public String getNumeroTelefoneSecretariaSaude(){
+
+		return numeroTelefoneSecretariaSaude;
+	}
+
+	public void setNumeroTelefoneSecretariaSaude(String numeroTelefoneSecretariaSaude){
+
+		this.numeroTelefoneSecretariaSaude = numeroTelefoneSecretariaSaude;
 	}
 
 }

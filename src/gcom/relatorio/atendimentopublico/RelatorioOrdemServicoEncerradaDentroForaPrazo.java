@@ -323,9 +323,7 @@ public class RelatorioOrdemServicoEncerradaDentroForaPrazo
 		RelatorioDataSource ds = new RelatorioDataSource(relatorioBeans);
 
 		// processa a geração do arquivo
-		retorno = gerarRelatorio(ConstantesRelatorios.RELATORIO_ORDENS_SERVICO_ENCERRADAS_DENTRO_FORA_PRAZO, parametros, ds,
-						tipoFormatoRelatorio);
-
+		retorno = gerarRelatorio(ConstantesRelatorios.RELATORIO_ORDENS_SERVICO_ENCERRADAS_DENTRO_FORA_PRAZO, parametros, ds, tipoFormatoRelatorio);
 		// ------------------------------------
 		// Grava o relatório no sistema
 		try{

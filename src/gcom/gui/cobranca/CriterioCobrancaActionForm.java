@@ -105,6 +105,8 @@ public class CriterioCobrancaActionForm
 
 	private String opcaoContasRevisao;
 
+	private String opcaoDividaAtiva;
+
 	private String opcaoAcaoImovelDebitoMesConta;
 
 	private String opcaoAcaoInquilinoDebitoMesConta;
@@ -166,6 +168,8 @@ public class CriterioCobrancaActionForm
 	private String comCpf;
 
 	private String comTelefone;
+
+	private String criterioCobranca;
 
 	private String qtdDiasVencMinima;
 
@@ -562,6 +566,16 @@ public class CriterioCobrancaActionForm
 		this.comTelefone = comTelefone;
 	}
 
+	public String getCriterioCobranca(){
+
+		return criterioCobranca;
+	}
+
+	public void setCriterioCobranca(String criterioCobranca){
+
+		this.criterioCobranca = criterioCobranca;
+	}
+
 	public String getQtdDiasCortado(){
 
 		return qtdDiasCortado;
@@ -590,6 +604,16 @@ public class CriterioCobrancaActionForm
 	public void setIdClienteRelacaoTipo(String idClienteRelacaoTipo){
 
 		this.idClienteRelacaoTipo = idClienteRelacaoTipo;
+	}
+
+	public String getOpcaoDividaAtiva(){
+
+		return opcaoDividaAtiva;
+	}
+
+	public void setOpcaoDividaAtiva(String opcaoDividaAtiva){
+
+		this.opcaoDividaAtiva = opcaoDividaAtiva;
 	}
 
 

@@ -66,6 +66,12 @@ public class ImovelComentario
 
 	private Date ultimaAlteracao;
 
+	private ImovelComentario imovelComentarioAnterior;
+
+	private Short indicadorUso;
+
+	private Date dataInclusao;
+
 	public String[] retornaCamposChavePrimaria(){
 
 		String[] retorno = {"id"};
@@ -130,6 +136,36 @@ public class ImovelComentario
 	public void setUltimaAlteracao(Date ultimaAlteracao){
 
 		this.ultimaAlteracao = ultimaAlteracao;
+	}
+
+	public ImovelComentario getImovelComentarioAnterior(){
+
+		return imovelComentarioAnterior;
+	}
+
+	public void setImovelComentarioAnterior(ImovelComentario imovelComentarioAnterior){
+
+		this.imovelComentarioAnterior = imovelComentarioAnterior;
+	}
+
+	public Short getIndicadorUso(){
+
+		return indicadorUso;
+	}
+
+	public void setIndicadorUso(Short indicadorUso){
+
+		this.indicadorUso = indicadorUso;
+	}
+
+	public Date getDataInclusao(){
+
+		return dataInclusao;
+	}
+
+	public void setDataInclusao(Date dataInclusao){
+
+		this.dataInclusao = dataInclusao;
 	}
 
 }

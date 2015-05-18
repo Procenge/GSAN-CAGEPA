@@ -1,6 +1,7 @@
 
 package gcom.relatorio.cobranca;
 
+import gcom.cadastro.imovel.Imovel;
 import gcom.cobranca.bean.CobrancaDocumentoItemHelper;
 import gcom.cobranca.bean.EmitirDocumentoOrdemCorteModelo4e5Helper;
 import gcom.relatorio.RelatorioBean;
@@ -95,7 +96,8 @@ public class RelatorioOrdemCorteModelo5Bean
 
 		if(helper1 != null){
 			this.matricula1 = Util.completarStringComValorEsquerda(
-							Util.retornaMatriculaImovelFormatadaParametrizada(helper1.getIdImovel()), "0", 9);
+							Imovel.getMatriculaComDigitoVerificadorFormatada(helper1.getIdImovel().toString()), "0", 9);
+
 			this.dataEmissao1 = Util.formatarData(helper1.getDataEmissao());
 			this.dataEntrega1 = Util.formatarData(helper1.getDataEntrega());
 			this.sequencial1 = String.valueOf(helper1.getSequencialImpressao());
@@ -120,7 +122,7 @@ public class RelatorioOrdemCorteModelo5Bean
 
 		if(helper2 != null){
 			this.matricula2 = Util.completarStringComValorEsquerda(
-							Util.retornaMatriculaImovelFormatadaParametrizada(helper2.getIdImovel()), "0", 9);
+							Imovel.getMatriculaComDigitoVerificadorFormatada(helper2.getIdImovel().toString()), "0", 9);
 			this.dataEmissao2 = Util.formatarData(helper2.getDataEmissao());
 			this.dataEntrega2 = Util.formatarData(helper2.getDataEntrega());
 			this.sequencial2 = String.valueOf(helper2.getSequencialImpressao());

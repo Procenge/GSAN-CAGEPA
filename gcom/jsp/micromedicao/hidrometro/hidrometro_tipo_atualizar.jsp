@@ -112,7 +112,7 @@
 				<tr>
 				  <td  width="30%" class="style3"><strong>Descrição Abreviada:</strong></td>
 				  <td  width="70%" colspan="2"><strong><b><span class="style2"> 
-				  		<html:text  property="descricaoAbreviada" size="3" maxlength="3" tabindex="2"/> </span></b></strong></td>
+				  		<html:text  property="descricaoAbreviada" size="5" maxlength="5" tabindex="2"/> </span></b></strong></td>
 				</tr>
 				<tr>
 					<td><strong>Indicador de uso:<font color="#FF0000">*</font></strong></td>

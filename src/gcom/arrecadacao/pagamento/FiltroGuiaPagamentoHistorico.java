@@ -96,6 +96,8 @@ public class FiltroGuiaPagamentoHistorico
 
 	public final static String REGISTRO_ATENDIMENTO_ID = "registroAtendimento.id";
 
+	public final static String REGISTRO_ATENDIMENTO = "registroAtendimento";
+
 	public final static String PARCELAMENTO_ID = "parcelamento.id";
 
 	public final static String GUIAS_PAGAMENTO_CATEGORIA_HISTORICO = "guiasPagamentoCategoriaHistorico";
@@ -105,5 +107,21 @@ public class FiltroGuiaPagamentoHistorico
 	public final static String VALOR_DEBITO = "valorDebito";
 
 	public final static String PARCELAMENTO = "parcelamento";
+
+	public final static String SERVICO_TIPO = "servicoTipo";
+
+	public final static String ID_SERVICO_TIPO = "servicoTipo.id";
+
+	public final static String DEBITO_TIPO = "servicoTipo.debitoTipo";
+
+	public final static String ID_DEBITO_TIPO = "servicoTipo.debitoTipo.id";
+
+	public final static String ORDEM_SERVICO_ID = "ordemServico.id";
+
+	public final static String ORDEM_SERVICO = "ordemServico";
+
+	public final static String ORDEM_SERVICO_SERVICO_TIPO = "ordemServico.servicoTipo";
+
+	public final static String ORDEM_SERVICO_SERVICO_TIPO_DEBITO_ID = "ordemServico.servicoTipo.debitoTipo.id";
 
 }

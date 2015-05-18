@@ -143,6 +143,12 @@ public class ClienteRelacaoTipo
 
 	}
 
+	/** full constructor */
+	public ClienteRelacaoTipo(Integer id) {
+
+		this.id = id;
+	}
+
 	public Integer getId(){
 
 		return this.id;

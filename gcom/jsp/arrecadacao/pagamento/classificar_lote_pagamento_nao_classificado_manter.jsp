@@ -40,11 +40,15 @@
 				return false;
 			}
 			
-			if(confirm('Tem certeza que deseja realizar a baixa forçada dos pagamentos?')){
-
-				document.forms[0].submit();	
+		//	if(form.opcaoGeracao.value == 'C'){
 				
-			}
+				//if(confirm('Tem certeza que deseja realizar a baixa forçada dos pagamentos?')){
+	
+					document.forms[0].submit();	
+					
+				//}
+		//	}
+			
 		}
 	}
 	
@@ -292,6 +296,9 @@
 		var form = document.ClassificarLotePagamentosNaoClassificadosActionForm;
 		form.dataPagamentoFinal.value = form.dataPagamentoInicial.value;
 	}
+	
+	
+	
 	
 </script>
 
@@ -563,6 +570,14 @@
 							</td>
 		              	</tr>
 		              	
+		                   <tr>
+							<td><strong>Cobrar Diferença para menor?: <font color="#FF0000">*</font></strong></td>						
+							<td>					
+								<html:radio property="indicadorCorancaDiferencaPagtoAMenor" value="<%= ""+ConstantesSistema.SIM %>"/><strong>Sim</strong>
+								<html:radio property="indicadorCorancaDiferencaPagtoAMenor" value="<%= ""+ConstantesSistema.NAO %>"/><strong>Não</strong>
+							</td>
+						   </tr>
+		            	
 		              	<tr>
 							<td><strong>Limite Máximo da Diferença: <font color="#FF0000">*</font></strong></td>						
 							<td>						
@@ -572,6 +587,14 @@
 								
 							</td>
 						</tr>
+						<tr>
+							<td><strong>Método de Baixa: <font color="#FF0000">*</font></strong></td>						
+							<td>						
+								<html:radio property="opcaoGeracao" value="C"><strong>Classificar</strong></html:radio>
+								<html:radio property="opcaoGeracao" value="S"><strong>Simular</strong></html:radio>
+							</td>
+						</tr>
+						
 						
 						<tr>
 							<td>
@@ -590,7 +613,7 @@
 							</td>
 							<td align="right">
 								<input type="button" onclick="javascript:validarForm();" name="botaoListarPagamentos"
-								class="bottonRightCol" value="Classificar Pagamentos">
+								class="bottonRightCol" value="Gerar">
 							</td>
 						</tr>
 						

@@ -230,7 +230,7 @@ function validarHabilitarCampo(){
 	
 	if(form.dataRealizacao==undefined || form.dataRealizacao.value == ''){
 
-		habilitar(document.forms[0].cobrancaAtividadeIndicadorExecucao.value);
+		//habilitar(document.forms[0].cobrancaAtividadeIndicadorExecucao.value);
 		//validarGrupoCobranca(0);
 		validarCliente(0);
 		
@@ -743,17 +743,17 @@ function verificar(){
 
 	var form = document.forms[0];
 	
-	if(form.cobrancaAtividadeIndicadorExecucao.value != 1){
+	//if(form.cobrancaAtividadeIndicadorExecucao.value != 1){
 	///	form.executarComando.disabled = true;	
-	}else if(form.cobrancaAtividadeIndicadorExecucao.value != 1){
+	//}else if(form.cobrancaAtividadeIndicadorExecucao.value != 1){
 		///form.executarComando.disabled = false;	
-	}
+	//}
 }
 
 function habilitar(valor){
 
 	var form = document.forms[0];
-	form.cobrancaAtividadeIndicadorExecucao.value = valor;	
+	//form.cobrancaAtividadeIndicadorExecucao.value = valor;	
 	if(valor == 1){//indicador de rota
 		form.concluir.disabled = false;
 		form.Avancar.disabled = true;

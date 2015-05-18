@@ -220,36 +220,45 @@ if(valor == "1"){
 								tabindex="12" /> <strong>Todos</strong></td>
 						</tr>
 						<tr>
+							<td width="65%"><strong>Considerar Debitos na Divida Ativa:</strong></td>
+							<td><html:radio property="opcaoDividaAtiva" value="1"
+								tabindex="13" /> <strong>Sim</strong></td>
+							<td><html:radio property="opcaoDividaAtiva" value="2"
+								tabindex="14" /> <strong>N&atilde;o</strong></td>
+							<td><html:radio property="opcaoDividaAtiva" value="3"
+								tabindex="15" /> <strong>Todos</strong></td>
+						</tr>
+						<tr>
 							<td width="65%"><strong>Emiss&atilde;o da A&ccedil;&atilde;o para
 							Im&oacute;vel com D&eacute;bito s&oacute; da Conta do M&ecirc;s:</strong></td>
 							<td><html:radio property="opcaoAcaoImovelDebitoMesConta"
-								value="1" tabindex="13" /> <strong>Sim</strong></td>
+								value="1" tabindex="16" /> <strong>Sim</strong></td>
 							<td><html:radio property="opcaoAcaoImovelDebitoMesConta"
-								value="2" tabindex="14" /> <strong>N&atilde;o</strong></td>
+								value="2" tabindex="17" /> <strong>N&atilde;o</strong></td>
 							<td><html:radio property="opcaoAcaoImovelDebitoMesConta" value="3"
-								tabindex="15" /> <strong>Todos</strong></td>
+								tabindex="18" /> <strong>Todos</strong></td>
 						</tr>
 						<tr>
 							<td width="65%"><strong>Emiss&atilde;o da A&ccedil;&atilde;o para
 							Inquilino Com D&eacute;bito s&oacute; da Conta do M&ecirc;s
 							Independentemente do Valor da Conta:</strong></td>
 							<td><html:radio property="opcaoAcaoInquilinoDebitoMesConta"
-								value="1" tabindex="16" /> <strong>Sim</strong></td>
+								value="1" tabindex="19" /> <strong>Sim</strong></td>
 							<td><html:radio property="opcaoAcaoInquilinoDebitoMesConta"
-								value="2" tabindex="17" /> <strong>N&atilde;o</strong></td>
+								value="2" tabindex="20" /> <strong>N&atilde;o</strong></td>
 							<td><html:radio property="opcaoAcaoInquilinoDebitoMesConta" value="3"
-								tabindex="18" /> <strong>Todos</strong></td>
+								tabindex="21" /> <strong>Todos</strong></td>
 						</tr>
 						<tr>
 							<td width="65%"><strong>Emiss&atilde;o da A&ccedil;&atilde;o para
 							Im&oacute;vel com D&eacute;bito s&oacute; de Contas Antigas:</strong></td>
 
 							<td><html:radio property="opcaoAcaoImovelDebitoContasAntigas"
-								value="1" tabindex="19" /> <strong>Sim</strong></td>
+								value="1" tabindex="22" /> <strong>Sim</strong></td>
 							<td><html:radio property="opcaoAcaoImovelDebitoContasAntigas"
-								value="2" tabindex="20" /> <strong>N&atilde;o</strong></td>
+								value="2" tabindex="23" /> <strong>N&atilde;o</strong></td>
 							<td><html:radio property="opcaoAcaoImovelDebitoContasAntigas" value="3"
-								tabindex="21" /> <strong>Todos</strong></td>
+								tabindex="24" /> <strong>Todos</strong></td>
 						</tr>
 						<tr>
 		                 	<td>
@@ -308,6 +317,35 @@ if(valor == "1"){
 		                 		</html:radio>                 	
 		                 	</td>
 		               	</tr>
+		               	
+		               	<tr>
+		                 	<td>
+		                 		<strong>
+		                 			Emiss&atilde;o da A&ccedil;&atilde;o para Im&oacute;vel cujo Cliente Titular Atual do D&eacute;bito possua CPF/CNPJ Validado:
+		                 		</strong>                 	
+		                 	</td>
+		                 	<td>
+		                 		<html:radio property="criterioCobranca" value="1">
+		                 			<strong>
+		                 			 	Sim
+		                 			</strong>                 		
+		                 		</html:radio>                 	
+		                 	</td>
+		                 	<td>
+		                 		<html:radio property="criterioCobranca" value="2">
+		                 			<strong>
+		                 				Não
+		                 			</strong>
+		                 		</html:radio>   
+		                 	</td>
+		                 	<td>
+		                 		<html:radio property="criterioCobranca" value="3">
+		                 			<strong>
+		                 				Ambos
+		                 			</strong>
+		                 		</html:radio>                 	
+		                 	</td>
+		               	</tr>
 					</table>
 					</td>
 				</tr>
@@ -318,9 +356,9 @@ if(valor == "1"){
 
 				<tr>
 					<td colspan="2"><strong>Indicador de Uso:</strong>&nbsp; <html:radio
-						property="indicadorUso" value="1" tabindex="22" /> <strong>Ativo</strong>
-					<html:radio property="indicadorUso" value="2" tabindex="23" /> <strong>Inativo</strong>
-					<html:radio property="indicadorUso" value="3" tabindex="24" /> <strong>Todos</strong>
+						property="indicadorUso" value="1" tabindex="25" /> <strong>Ativo</strong>
+					<html:radio property="indicadorUso" value="2" tabindex="26" /> <strong>Inativo</strong>
+					<html:radio property="indicadorUso" value="3" tabindex="27" /> <strong>Todos</strong>
 
 					</td>
 
@@ -339,7 +377,7 @@ if(valor == "1"){
 					<td valign="top">
 					
 					<div align="right">
-					  <gcom:controleAcessoBotao name="botaoInserir" value="Filtrar" onclick="validarForm(document.forms[0]);" url="filtrarCriterioCobrancaAction.do" tabindex="25"/>
+					  <gcom:controleAcessoBotao name="botaoInserir" value="Filtrar" onclick="validarForm(document.forms[0]);" url="filtrarCriterioCobrancaAction.do" tabindex="28"/>
 					  <%-- <input name="botaoInserir" type="button" class="bottonRightCol" value="Filtrar" onclick="validarForm(document.forms[0]);" tabindex="25"> --%>
 					</div>
 					</td>

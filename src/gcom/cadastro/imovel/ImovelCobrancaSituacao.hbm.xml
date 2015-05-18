@@ -103,6 +103,26 @@
         length="8"
     />
 
+	<property
+        name="numeroProcessoAdministrativoExecucaoFiscal"
+        type="java.lang.Integer"
+        column="ISCB_NNPROCESADMEXECUCAOFISCAL"
+        length="14"
+    />
+    
+    <property
+        name="valorProcessoAdministrativoExecucaoFiscal"
+        type="java.math.BigDecimal"
+        column="ISCB_VLPROCESADMEXECUCAOFISCAL"
+        length="15"
+    />
+    
+    <property
+        name="numeroVara"
+        type="java.lang.Integer"
+        column="ISCB_NNVARA"
+    />
+
     <!-- associations -->
     <!-- bi-directional many-to-one association to Imovel -->
     <many-to-one

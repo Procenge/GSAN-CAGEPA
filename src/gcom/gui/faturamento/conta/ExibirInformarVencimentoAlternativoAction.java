@@ -207,9 +207,6 @@ public class ExibirInformarVencimentoAlternativoAction
 
 				filtroVencimentoAlternativo.adicionarParametro(new ParametroSimples(FiltroVencimentoAlternativo.IMOVEL_ID, imovel.getId()));
 
-				filtroVencimentoAlternativo
-								.adicionarParametro(new ParametroSimples(FiltroVencimentoAlternativo.CLIENTE_ID, cliente.getId()));
-
 				filtroVencimentoAlternativo.adicionarParametro(new ParametroNulo(FiltroVencimentoAlternativo.DATA_EXCLUSAO));
 
 				Collection vencimentosAlternativos = fachada.pesquisar(filtroVencimentoAlternativo, VencimentoAlternativo.class.getName());

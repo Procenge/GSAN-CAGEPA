@@ -161,6 +161,11 @@ public class AtualizarCategoriaAction
 		BigDecimal vezesMediaAltoConsumo = new BigDecimal(categoriaActionForm.getVezesMediaAltoConsumo().replace(",", "."));
 		Integer consumoMedioEconomiaMes = Util.obterInteger(categoriaActionForm.getConsumoMedioEconomiaMes());
 		Short indicadorDeUso = Util.obterShort(categoriaActionForm.getIndicadorUso());
+		Integer consumoViradaHidrometro = categoriaActionForm.getConsumoViradaHidrometro();
+		Integer quantidadeMaximoEconomiasValidacao = categoriaActionForm.getQuantidadeMaximoEconomiasValidacao();
+		
+		Integer numeroVezesMediaViradaHidrometro = categoriaActionForm.getNumeroVezesMediaViradaHidrometro();
+		Short indicadorValidarViradaHidrometro = categoriaActionForm.getIndicadorValidarViradaHidrometro();
 
 		// Seta os campos para serem atualizados
 		categoria.setId(codigoCategoria);
@@ -175,7 +180,12 @@ public class AtualizarCategoriaAction
 		categoria.setConsumoAlto(consumoAlto);
 		categoria.setConsumoMedioEconomiaMes(consumoMedioEconomiaMes);
 		categoria.setIndicadorUso(indicadorDeUso);
-
+		categoria.setNumeroVezesMediaViradaHidrometro(numeroVezesMediaViradaHidrometro);
+		categoria.setIndicadorValidarViradaHidrometro(indicadorValidarViradaHidrometro);
+		categoria.setConsumoViradaHidrometro(consumoViradaHidrometro);
+		categoria.setQuantidadeMaximoEconomiasValidacao(quantidadeMaximoEconomiasValidacao);
+		
+		
 		// ------------ REGISTRAR TRANSAÇÃO ----------------
 		categoria.setOperacaoEfetuada(operacaoEfetuada);
 		categoria.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);

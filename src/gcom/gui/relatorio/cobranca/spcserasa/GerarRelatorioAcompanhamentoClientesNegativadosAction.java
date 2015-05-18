@@ -84,16 +84,7 @@ import gcom.cadastro.imovel.Categoria;
 import gcom.cadastro.imovel.FiltroCategoria;
 import gcom.cadastro.imovel.FiltroImovelPerfil;
 import gcom.cadastro.imovel.ImovelPerfil;
-import gcom.cadastro.localidade.FiltroGerenciaRegional;
-import gcom.cadastro.localidade.FiltroLocalidade;
-import gcom.cadastro.localidade.FiltroQuadra;
-import gcom.cadastro.localidade.FiltroSetorComercial;
-import gcom.cadastro.localidade.FiltroUnidadeNegocio;
-import gcom.cadastro.localidade.GerenciaRegional;
-import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.localidade.Quadra;
-import gcom.cadastro.localidade.SetorComercial;
-import gcom.cadastro.localidade.UnidadeNegocio;
+import gcom.cadastro.localidade.*;
 import gcom.cobranca.CobrancaGrupo;
 import gcom.cobranca.FiltroCobrancaGrupo;
 import gcom.cobranca.Negativador;
@@ -175,7 +166,8 @@ public class GerarRelatorioAcompanhamentoClientesNegativadosAction
 
 		Date periodoEnvioNegativacaoInicio = null;
 		if(!Util.isVazioOuBranco(form.getPeriodoEnvioNegativacaoInicio())){
-			Date periodoInicio = Util.converteStringParaDate(form.getPeriodoEnvioNegativacaoInicio());
+			Date periodoInicio = Util.converterStringParaDate(form.getPeriodoEnvioNegativacaoInicio(),
+							"atencao.data_inicial_periodo_negativacao.invalida");
 			periodoEnvioNegativacaoInicio = Util.getSQLDate(periodoInicio);
 		}
 		// if (periodoEnvioNegativacaoInicio == null) {
@@ -186,7 +178,8 @@ public class GerarRelatorioAcompanhamentoClientesNegativadosAction
 
 		Date periodoEnvioNegativacaoFim = null;
 		if(!Util.isVazioOuBranco(form.getPeriodoEnvioNegativacaoFim())){
-			Date periodoFim = Util.converteStringParaDate(form.getPeriodoEnvioNegativacaoFim());
+			Date periodoFim = Util.converterStringParaDate(form.getPeriodoEnvioNegativacaoFim(),
+							"atencao.data_final_periodo_negativacao.invalida");
 			periodoEnvioNegativacaoFim = Util.getSQLDate(periodoFim);
 		}
 		// if (periodoEnvioNegativacaoFim == null) {
@@ -694,8 +687,8 @@ public class GerarRelatorioAcompanhamentoClientesNegativadosAction
 		}
 
 		// cria uma instância da classe do relatório
-		RelatorioAcompanhamentoClientesNegativados relatorio = new RelatorioAcompanhamentoClientesNegativados((Usuario) (httpServletRequest
-						.getSession(false)).getAttribute("usuarioLogado"));
+		RelatorioAcompanhamentoClientesNegativados relatorio = new RelatorioAcompanhamentoClientesNegativados(
+						(Usuario) (httpServletRequest.getSession(false)).getAttribute("usuarioLogado"));
 
 		// seta os parametros que serão mostrados no relatório
 		parametros = validarGeracaoRelatorio(idNegativador, periodoEnvioNegativacaoInicio, periodoEnvioNegativacaoFim, tituloComando,

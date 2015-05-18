@@ -182,8 +182,46 @@ public class FiltrarRegistroAtendimentoHelper
 
 	private BigDecimal coordenadaLesteDireita;
 
+	private String indicadorRaVencidas;
+
+	private String indicadorRaPagamento;
+
+	private String indicadorRaDevolucao;
+
 	public FiltrarRegistroAtendimentoHelper() {
 
+	}
+
+	private RegistroAtendimento ra = new RegistroAtendimento();
+
+	public String getIndicadorRaVencidas(){
+
+		return indicadorRaVencidas;
+	}
+
+	public void setIndicadorRaVencidas(String indicadorRaVencidas){
+
+		this.indicadorRaVencidas = indicadorRaVencidas;
+	}
+
+	public String getIndicadorRaPagamento(){
+
+		return indicadorRaPagamento;
+	}
+
+	public void setIndicadorRaPagamento(String indicadorRaPagamento){
+
+		this.indicadorRaPagamento = indicadorRaPagamento;
+	}
+
+	public String getIndicadorRaDevolucao(){
+
+		return indicadorRaDevolucao;
+	}
+
+	public void setIndicadorRaDevolucao(String indicadorRaDevolucao){
+
+		this.indicadorRaDevolucao = indicadorRaDevolucao;
 	}
 
 	public String getBairroId(){

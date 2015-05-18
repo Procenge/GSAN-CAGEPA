@@ -106,7 +106,7 @@ import org.hibernate.*;
  */
 public class RepositorioBatchHBM
 				implements IRepositorioBatch {
-	
+
 	private static final Logger LOGGER = Logger.getLogger(RepositorioBatchHBM.class);
 
 	private static final String PREFIXO_VALORES_DADOS_COMPLEMENTARES = "V";
@@ -141,7 +141,8 @@ public class RepositorioBatchHBM
 
 		try{
 			consulta = "SELECT fatAtivCronRota, fatAtivCronRota.rota " + "FROM FaturamentoAtivCronRota fatAtivCronRota "
-							+ "left join fatAtivCronRota.faturamentoAtividadeCronograma fatAtividadeCronograma "
+							+ "left join fetch fatAtivCronRota.faturamentoAtividadeCronograma fatAtividadeCronograma "
+							+ "left join fetch fatAtividadeCronograma.faturamentoGrupoCronogramaMensal fgcm "
 							+ "left join fetch fatAtivCronRota.rota.faturamentoGrupo fatGrupo "
 							+ "where fatAtividadeCronograma.id in (:ids)" + " ORDER BY fatAtivCronRota.rota.id ";
 
@@ -233,9 +234,9 @@ public class RepositorioBatchHBM
 			if(ip != null) consulta.append(" and processo1.ip = :ip ");
 			consulta.append("and iniciada.id is not null ");
 
-			Query query = session.createQuery(consulta.toString()).setInteger("situacaoConcluidaComErro",
-							FuncionalidadeSituacao.CONCLUIDA_COM_ERRO).setInteger("processoIniciadoConcluidoComErro",
-							ProcessoSituacao.CONCLUIDO_COM_ERRO);
+			Query query = session.createQuery(consulta.toString())
+							.setInteger("situacaoConcluidaComErro", FuncionalidadeSituacao.CONCLUIDA_COM_ERRO)
+							.setInteger("processoIniciadoConcluidoComErro", ProcessoSituacao.CONCLUIDO_COM_ERRO);
 
 			if(ip != null) query.setString("ip", ip);
 
@@ -306,8 +307,8 @@ public class RepositorioBatchHBM
 				consulta.append("  and procInic.ip = :ip ");
 			}
 
-			Query query = session.createQuery(consulta.toString()).setInteger("situacaoConcluida", UnidadeSituacao.CONCLUIDA).setInteger(
-							"situacaoFuncionalidadeConcluida", FuncionalidadeSituacao.CONCLUIDA);
+			Query query = session.createQuery(consulta.toString()).setInteger("situacaoConcluida", UnidadeSituacao.CONCLUIDA)
+							.setInteger("situacaoFuncionalidadeConcluida", FuncionalidadeSituacao.CONCLUIDA);
 
 			if(ip != null) query.setString("ip", ip);
 
@@ -351,9 +352,9 @@ public class RepositorioBatchHBM
 			consulta.append("situacao = :situacaoConcluidaComErro ");
 			if(ip != null) consulta.append(" and procInic.ip = :ip ");
 
-			Query query = session.createQuery(consulta.toString()).setInteger("situacaoConcluidaComErro",
-							UnidadeSituacao.CONCLUIDA_COM_ERRO).setInteger("funcionalidadeSituacaoConcluidaComErro",
-							FuncionalidadeSituacao.CONCLUIDA_COM_ERRO);
+			Query query = session.createQuery(consulta.toString())
+							.setInteger("situacaoConcluidaComErro", UnidadeSituacao.CONCLUIDA_COM_ERRO)
+							.setInteger("funcionalidadeSituacaoConcluidaComErro", FuncionalidadeSituacao.CONCLUIDA_COM_ERRO);
 
 			if(ip != null) query.setString("ip", ip);
 
@@ -393,22 +394,22 @@ public class RepositorioBatchHBM
 			consulta.append("from FuncionalidadeIniciada func ");
 			consulta.append("inner join fetch func.processoIniciado procIniciado ");
 			consulta.append("inner join procIniciado.processoSituacao procSituacao ");
-			consulta.append("left join procIniciado.processoIniciadoPrecedente procPrecedente ");
-			consulta.append("left join procPrecedente.processoSituacao procPrecedenteSituacao ");
+			// consulta.append("left join procIniciado.processoIniciadoPrecedente procPrecedente ");
+			// consulta.append("left join procPrecedente.processoSituacao procPrecedenteSituacao ");
 			consulta.append("left join func.unidadesIniciadas unidIniciada ");
 			consulta.append("where unidIniciada is null and func.funcionalidadeSituacao <> :funcionalidadeEmProcessamento ");
 			consulta.append("and (procSituacao.id = :emEspera or procSituacao.id = :processoEmProcessamento) ");
-			consulta.append("and (procPrecedente is null or procPrecedenteSituacao.id = :situacaoProcessoConcluido) ");
+			// consulta.append("and (procPrecedente is null or procPrecedenteSituacao.id = :situacaoProcessoConcluido) ");
 			consulta.append("and (procIniciado.dataHoraAgendamento is null or procIniciado.dataHoraAgendamento <= current_timestamp()) ");
 			consulta.append("and (procIniciado.id in (:processosProntos)) ");
 
 			if(ip != null) consulta.append(" and procIniciado.ip = :ip ");
-			consulta.append("order by func.processoFuncionalidade.sequencialExecucao");
+			consulta.append("order by func.processoFuncionalidade.sequencialExecucao, procIniciado.processoIniciadoPrecedente");
 
 			Query query = session.createQuery(consulta.toString())//
 							.setInteger("emEspera", ProcessoSituacao.EM_ESPERA)//
 							.setInteger("processoEmProcessamento", ProcessoSituacao.EM_PROCESSAMENTO)//
-							.setInteger("situacaoProcessoConcluido", ProcessoSituacao.CONCLUIDO)//
+							// .setInteger("situacaoProcessoConcluido", ProcessoSituacao.CONCLUIDO)
 							.setInteger("funcionalidadeEmProcessamento", FuncionalidadeSituacao.EM_PROCESSAMENTO)//
 							.setParameterList("processosProntos", processosId);
 
@@ -457,9 +458,9 @@ public class RepositorioBatchHBM
 			consulta.append(" and procFunc.sequencialExecucao < :sequencialExecucao ");
 			if(ip != null) consulta.append(" and procInic.ip = :ip ");
 
-			Query query = session.createQuery(consulta.toString()).setInteger("sequencialExecucao", idSequencialExecucao).setInteger(
-							"situacaoFuncionalidadeConcluida", FuncionalidadeSituacao.CONCLUIDA).setInteger("idProcessoIniciado",
-							idProcessoIniciado);
+			Query query = session.createQuery(consulta.toString()).setInteger("sequencialExecucao", idSequencialExecucao)
+							.setInteger("situacaoFuncionalidadeConcluida", FuncionalidadeSituacao.CONCLUIDA)
+							.setInteger("idProcessoIniciado", idProcessoIniciado);
 
 			if(ip != null) query.setString("ip", ip);
 
@@ -497,8 +498,8 @@ public class RepositorioBatchHBM
 							+ "where unid.funcionalidadeIniciada.id = :idFuncionalidadeIniciada and "
 							+ "unid.unidadeSituacao.id = :unidadeSituacaoConcluidaComErro";
 
-			retorno = (Number) session.createQuery(consulta).setInteger("idFuncionalidadeIniciada", idFuncionalidadeIniciada).setInteger(
-							"unidadeSituacaoConcluidaComErro", UnidadeSituacao.CONCLUIDA_COM_ERRO).uniqueResult();
+			retorno = (Number) session.createQuery(consulta).setInteger("idFuncionalidadeIniciada", idFuncionalidadeIniciada)
+							.setInteger("unidadeSituacaoConcluidaComErro", UnidadeSituacao.CONCLUIDA_COM_ERRO).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -537,8 +538,6 @@ public class RepositorioBatchHBM
 					Conta conta = (Conta) objetoParaInserir;
 					System.out.println("INSERINDO: " + conta.getId());
 				}
-
-
 
 				session.save(objetoParaInserir);
 
@@ -658,8 +657,9 @@ public class RepositorioBatchHBM
 			consulta = "update FuncionalidadeIniciada " + "set funcionalidadeSituacao.id = :emProcessamento, dataHoraInicio = :dataAtual  "
 							+ "where id = :idFuncionalidadeIniciada";
 
-			session.createQuery(consulta).setInteger("idFuncionalidadeIniciada", idFuncionalidadeIniciada).setInteger("emProcessamento",
-							FuncionalidadeSituacao.EM_PROCESSAMENTO).setTimestamp("dataAtual", new Date()).executeUpdate();
+			session.createQuery(consulta).setInteger("idFuncionalidadeIniciada", idFuncionalidadeIniciada)
+							.setInteger("emProcessamento", FuncionalidadeSituacao.EM_PROCESSAMENTO).setTimestamp("dataAtual", new Date())
+							.executeUpdate();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -729,8 +729,8 @@ public class RepositorioBatchHBM
 			consulta = "update FuncionalidadeIniciada " + "set funcionalidadeSituacao.id = :situacao, dataHoraTermino = :dataAtual  "
 							+ "where id = :idFuncionalidadeIniciada";
 
-			session.createQuery(consulta).setInteger("idFuncionalidadeIniciada", idFuncionalidadeIniciada).setInteger("situacao",
-							situacaoConclusaoFuncionalidade).setTimestamp("dataAtual", new Date()).executeUpdate();
+			session.createQuery(consulta).setInteger("idFuncionalidadeIniciada", idFuncionalidadeIniciada)
+							.setInteger("situacao", situacaoConclusaoFuncionalidade).setTimestamp("dataAtual", new Date()).executeUpdate();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -762,8 +762,8 @@ public class RepositorioBatchHBM
 							+ "where id IN (select func.processoIniciado.id from FuncionalidadeIniciada as func "
 							+ "where func.id = :idFuncionalidadeIniciada) ";
 
-			session.createQuery(consulta).setInteger("idFuncionalidadeIniciada", idFuncionalidadeIniciada).setInteger("situacao",
-							situacaoConclusaoFuncionalidade).setTimestamp("dataAtual", new Date()).executeUpdate();
+			session.createQuery(consulta).setInteger("idFuncionalidadeIniciada", idFuncionalidadeIniciada)
+							.setInteger("situacao", situacaoConclusaoFuncionalidade).setTimestamp("dataAtual", new Date()).executeUpdate();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -870,11 +870,11 @@ public class RepositorioBatchHBM
 							+ "group by processo4_.proc_dsprocesso, processoin3_.proc_id ) q2 on q1.processoid = q2.processoid "
 							+ "order by 1 ";
 
-			retorno = (Collection<Object[]>) session.createSQLQuery(consulta).addScalar("nomeRelatorio", Hibernate.STRING).addScalar(
-							"quantidadeDisponivel", Hibernate.INTEGER).addScalar("quantidadeEmProcessamento", Hibernate.INTEGER).addScalar(
-							"processo", Hibernate.INTEGER).setInteger("relatorio", ProcessoTipo.RELATORIO).setInteger(
-							"relatorioResultadoProcesso", ProcessoTipo.RELATORIO_RESULTADO_PROCESSAMENTO).setInteger("situacaoConcluida",
-							FuncionalidadeSituacao.CONCLUIDA)
+			retorno = (Collection<Object[]>) session.createSQLQuery(consulta).addScalar("nomeRelatorio", Hibernate.STRING)
+							.addScalar("quantidadeDisponivel", Hibernate.INTEGER).addScalar("quantidadeEmProcessamento", Hibernate.INTEGER)
+							.addScalar("processo", Hibernate.INTEGER).setInteger("relatorio", ProcessoTipo.RELATORIO)
+							.setInteger("relatorioResultadoProcesso", ProcessoTipo.RELATORIO_RESULTADO_PROCESSAMENTO)
+							.setInteger("situacaoConcluida", FuncionalidadeSituacao.CONCLUIDA)
 							.setInteger("situacaoEmProcessamento", FuncionalidadeSituacao.EM_PROCESSAMENTO).list();
 
 			return retorno;
@@ -1008,8 +1008,8 @@ public class RepositorioBatchHBM
 							+ "inner join funcIni.processoIniciado procIni "
 							+ "where date(funcIni.dataHoraTermino) <= date(:dataExpiracao)";
 
-			Iterator<ProcessoIniciado> iterator = (Iterator<ProcessoIniciado>) session.createQuery(consulta).setDate("dataExpiracao",
-							dataDeExpiracao).iterate();
+			Iterator<ProcessoIniciado> iterator = (Iterator<ProcessoIniciado>) session.createQuery(consulta)
+							.setDate("dataExpiracao", dataDeExpiracao).iterate();
 
 			while(iterator.hasNext()){
 				iterator.next();
@@ -1168,8 +1168,8 @@ public class RepositorioBatchHBM
 		try{
 			consulta = " select proi.id" + " from ProcessoIniciado proi" + " where proi.processo.id = :idProcesso"
 							+ " and proi.processoSituacao.id = :idSituacaoProcesso";
-			retornoHQL = (Integer) session.createQuery(consulta).setInteger("idProcesso", idProcesso).setInteger("idSituacaoProcesso",
-							ProcessoSituacao.EM_PROCESSAMENTO).setMaxResults(1).uniqueResult();
+			retornoHQL = (Integer) session.createQuery(consulta).setInteger("idProcesso", idProcesso)
+							.setInteger("idSituacaoProcesso", ProcessoSituacao.EM_PROCESSAMENTO).setMaxResults(1).uniqueResult();
 
 			if(retornoHQL != null){
 				retorno = true;
@@ -1283,18 +1283,16 @@ public class RepositorioBatchHBM
 		StringBuffer consulta = new StringBuffer();
 
 		try{
-			consulta
-							.append(" select count(*) as quantidade from unidade_iniciada ui ")
+			consulta.append(" select count(*) as quantidade from unidade_iniciada ui ")
 							.append(" inner join funcionalidade_iniciada fi on ui.fuin_id = fi.fuin_id     ")
 							.append(" inner join processo_iniciado pi on pi.proi_id = fi.proi_id ")
 							.append(" inner join processo_funcionalidade pf on pf.proc_id = pi.proc_id ")
-							.append(
-											" where pf.fncd_id = :idFuncionalidadeIniciada and pi.prst_id = :processoSituacaoProcessamento and ui.unst_id = :unidadeSituacaoProcessamento ");
+							.append(" where pf.fncd_id = :idFuncionalidadeIniciada and pi.prst_id = :processoSituacaoProcessamento and ui.unst_id = :unidadeSituacaoProcessamento ");
 
-			retorno = (Integer) session.createSQLQuery(consulta.toString()).addScalar("quantidade", Hibernate.INTEGER).setInteger(
-							"idFuncionalidadeIniciada", idFuncionalidadeIniciada).setInteger("processoSituacaoProcessamento",
-							UnidadeSituacao.EM_PROCESSAMENTO).setInteger("unidadeSituacaoProcessamento", UnidadeSituacao.EM_PROCESSAMENTO)
-							.uniqueResult();
+			retorno = (Integer) session.createSQLQuery(consulta.toString()).addScalar("quantidade", Hibernate.INTEGER)
+							.setInteger("idFuncionalidadeIniciada", idFuncionalidadeIniciada)
+							.setInteger("processoSituacaoProcessamento", UnidadeSituacao.EM_PROCESSAMENTO)
+							.setInteger("unidadeSituacaoProcessamento", UnidadeSituacao.EM_PROCESSAMENTO).uniqueResult();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada
@@ -1431,10 +1429,10 @@ public class RepositorioBatchHBM
 		String sql = "SELECT pd.PROC_IDDEPENDENTE as processoDependenteId, pd.PRDE_DSDADOSCOMPLEMENTARES as dadosComplementares FROM PROCESSO_DEPENDENCIA pd WHERE pd.PRDE_ICUSO = 1 AND pd.PROC_ID = :processoCorrenteId";
 		Session session = HibernateUtil.getSession();
 		try{
-		SQLQuery query = session.createSQLQuery(sql);
-		query.addScalar("processoDependenteId", Hibernate.INTEGER);
-		query.addScalar("dadosComplementares", Hibernate.STRING);
-		query.setInteger("processoCorrenteId", processoCorrente.getProcesso().getId());
+			SQLQuery query = session.createSQLQuery(sql);
+			query.addScalar("processoDependenteId", Hibernate.INTEGER);
+			query.addScalar("dadosComplementares", Hibernate.STRING);
+			query.setInteger("processoCorrenteId", processoCorrente.getProcesso().getId());
 			list = query.list();
 		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
@@ -1485,9 +1483,7 @@ public class RepositorioBatchHBM
 					sqlBuilder.append(" WHERE last_pi.PROC_ID    = :processoPendenteId ");
 					sqlBuilder.append(" AND last_pi.proi_tmtermino IS NOT NULL ");
 					if(processoCorrente.getCodigoGrupoProcesso() == null){
-
 						sqlBuilder.append(" AND last_pi.PROI_NNGRUPO IS NULL ");
-
 
 					}else{
 						sqlBuilder.append(" AND last_pi.PROI_NNGRUPO = :codigoGrupo ");
@@ -1507,13 +1503,14 @@ public class RepositorioBatchHBM
 					if(processoCorrente.getCodigoGrupoProcesso() == null){
 						sqlBuilder.append(" 	AND pi_.PROI_NNGRUPO IS NULL ");
 
-
 					}else{
 						sqlBuilder.append(" 	AND pi_.PROI_NNGRUPO = :codigoGrupo ");
 
 					}
 					if(processoCorrentePossueDadosComplementares){
 						for(int i = 0; i < chaveDadosComplementaresArray.length; i++){
+
+
 							sqlBuilder.append(clausulaDadoComplementar.replaceAll("#dadoComplementar#",
 											PREFIXO_VALORES_DADOS_COMPLEMENTARES + i));
 						}
@@ -1529,8 +1526,6 @@ public class RepositorioBatchHBM
 					// PREENCHENDO VALORES
 					query.setInteger("processoPendenteId", processoPendenteId);
 
-
-
 					query.setParameterList("processoSituacoesPendente", situacoesProcessoPendente, Hibernate.INTEGER);
 
 					if(processoCorrente.getCodigoGrupoProcesso() != null){
@@ -1545,6 +1540,7 @@ public class RepositorioBatchHBM
 							query.setString(PREFIXO_VALORES_DADOS_COMPLEMENTARES + i,//
 											"%" + helper.getChaveValor(DadoComplementarEnumerator.get(chaveDadosComplementaresArray[i]))
 															+ "%");
+
 						}
 					}
 
@@ -1659,6 +1655,97 @@ public class RepositorioBatchHBM
 		}
 
 		return retorno;
+	}
+
+	/**
+	 * Verifica situação de processo iniciado
+	 * 
+	 * @author Yara Souza
+	 * @date 15/08/2014
+	 */
+	public Integer verificarProcessoSituacao(Integer idProcessoIniciado) throws ErroRepositorioException{
+
+		Integer retorno = null;
+
+		Session session = HibernateUtil.getSession();
+		String consulta;
+
+		try{
+			consulta = " select proi.processoSituacao.id" + " from ProcessoIniciado proi" + " where proi.id = :idProcessoIniciado";
+
+			retorno = (Integer) session.createQuery(consulta).setInteger("idProcessoIniciado", idProcessoIniciado).setMaxResults(1)
+							.uniqueResult();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+
+	}
+
+	/**
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+
+	// SELECT * FROM PROCESSO_INICIADO PI where PROI_ID in ( SELECT PIDEPENDENTE.PROI_IDPRECEDENTE
+	// FROM PROCESSO_INICIADO PI
+	// INNER JOIN PROCESSO_INICIADO PIDEPENDENTE ON PIDEPENDENTE.PROI_ID = PI.PROI_ID
+	// WHERE PIDEPENDENTE.PROI_IDPRECEDENTE IS NOT NULL AND PIDEPENDENTE.PRST_ID IN (8)) AND
+	// (PI.PRST_ID = 2 or PI.PRST_ID = 6);
+
+	public Collection<Integer> pesquisarProcessoDependeConcluido() throws ErroRepositorioException{
+
+		Collection<Integer> retorno = new ArrayList();
+		Session session = HibernateUtil.getSession();
+		StringBuffer consulta = new StringBuffer();
+
+		try{
+			consulta.append(" SELECT PI.PROI_ID as idProcessoIniciado FROM PROCESSO_INICIADO PI  where PROI_ID in ( SELECT PIDEPENDENTE.PROI_IDPRECEDENTE FROM PROCESSO_INICIADO PI ");
+			consulta.append(" INNER JOIN PROCESSO_INICIADO PIDEPENDENTE ON PIDEPENDENTE.PROI_ID = PI.PROI_ID ");
+			consulta.append("  WHERE PIDEPENDENTE.PROI_IDPRECEDENTE IS NOT NULL AND PIDEPENDENTE.PRST_ID IN (8)) AND  (PI.PRST_ID = 2 or  PI.PRST_ID = 6) ");
+
+			retorno = (Collection<Integer>) session.createSQLQuery(consulta.toString()).addScalar("idProcessoIniciado", Hibernate.INTEGER)
+							.list();
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+
+	}
+
+	public Collection pesquisarSetorComercialProcessamentoBatch() throws ErroRepositorioException{
+
+		Collection retorno = null;
+
+		Session session = HibernateUtil.getSession();
+		String consulta;
+
+		try{
+			consulta = "SELECT rota.setorComercial.id " + "FROM Imovel imovel " + "inner join  imovel.rota rota "
+							+ "group by rota.setorComercial.id " + "order by count(*) desc";
+
+			retorno = session.createQuery(consulta).list();
+
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+
 	}
 
 }

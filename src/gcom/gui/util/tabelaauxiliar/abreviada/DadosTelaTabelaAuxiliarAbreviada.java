@@ -78,6 +78,9 @@ package gcom.gui.util.tabelaauxiliar.abreviada;
 
 import gcom.arrecadacao.banco.Banco;
 import gcom.atendimentopublico.ordemservico.EquipamentosEspeciais;
+import gcom.atendimentopublico.ordemservico.EquipeTipo;
+import gcom.cadastro.atendimento.AtendimentoDocumentoTipo;
+import gcom.cadastro.atendimento.AtendimentoPessoaTipo;
 import gcom.cadastro.cliente.EstadoCivil;
 import gcom.cadastro.cliente.Nacionalidade;
 import gcom.cadastro.cliente.OrgaoExpedidorRg;
@@ -494,8 +497,24 @@ public class DadosTelaTabelaAuxiliarAbreviada
 
 		configuracaoParametrosTelas.put("estadoCivil",
 						new String[] {EstadoCivil.class.getName(), "Estado Civil", Funcionalidade.TELA_ESTADO_CIVIL});
+
 		configuracaoParametrosTelas.put("nacionalidade",
 						new String[] {Nacionalidade.class.getName(), "Nacionalidade", Funcionalidade.TELA_NACIONALIDADE});
+
+		configuracaoParametrosTelas
+						.put("atendimentoDocumentoTipo",
+										new String[] {AtendimentoDocumentoTipo.class.getName(), "Tipo de Documento do Atendimento", Funcionalidade.TELA_ATENDIMENTO_DOCUMENTO_TIPO});
+
+		configuracaoParametrosTelas
+						.put("atendimentoPessoaTipo",
+										new String[] {AtendimentoPessoaTipo.class.getName(), "Tipo de Pessoa do Atendimento", Funcionalidade.TELA_ATENDIMENTO_PESSOA_TIPO});
+
+		configuracaoParametrosTelas
+						.put("equipeTipo",
+						new String[] {EquipeTipo.class.getName(), "Tipo de Equipe", Funcionalidade.TELA_EQUIPE_TIPO});
+
+		configuracaoParametrosTelas.put("leituraSituacao",
+						new String[] {EquipeTipo.class.getName(), "Situação Leitura", Funcionalidade.TELA_LEITURA_SITUACAO});
 
 	}
 

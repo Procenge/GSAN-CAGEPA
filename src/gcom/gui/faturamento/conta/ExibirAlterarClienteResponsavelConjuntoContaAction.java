@@ -78,16 +78,24 @@ package gcom.gui.faturamento.conta;
 
 import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.cliente.FiltroCliente;
+import gcom.cobranca.bean.ContaValoresHelper;
 import gcom.fachada.Fachada;
+import gcom.faturamento.conta.Conta;
+import gcom.faturamento.conta.FiltroConta;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.seguranca.acesso.PermissaoEspecial;
+import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -102,10 +110,69 @@ public class ExibirAlterarClienteResponsavelConjuntoContaAction
 		// Seta o mapeamento de retorno
 		ActionForward retorno = actionMapping.findForward("exibirAlterarClienteResponsavelConjuntoConta");
 
+		HttpSession sessao = httpServletRequest.getSession(false);
+		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
+
 		// Instância do formulário que está sendo utilizado
 		AlterarClienteResponsavelConjuntoContaActionForm alterarClienteResposanvelContaActionForm = (AlterarClienteResponsavelConjuntoContaActionForm) actionForm;
 
 		Fachada fachada = Fachada.getInstancia();
+
+		boolean temPermissaoAtualizarDebitosExecFiscal = fachada.verificarPermissaoEspecial(
+						PermissaoEspecial.ATUALIZAR_DEBITOS_EXECUCAO_FISCAL, this.getUsuarioLogado(httpServletRequest));
+		if(!temPermissaoAtualizarDebitosExecFiscal){
+			/**
+			 * [UC0146] Manter Conta
+			 * [SB0040] Verificar Existência de Conta em Execução Fiscal
+			 * 
+			 * @author Gicevalter Couto
+			 * @date 07/08/2014
+			 * @param colecaoContas
+			 */
+			StringBuffer parametroExecucaoFiscal = new StringBuffer();
+
+			// Carregando contas selecionadas
+			String contaSelected = httpServletRequest.getParameter("idsContasSelecionadas");
+			if(!Util.isVazioOuBranco(contaSelected)){
+				// Contas selecionadas pelo usuário
+				String[] arrayIdentificadores = contaSelected.split(",");
+
+				for(int i = 0; i < arrayIdentificadores.length; i++){
+
+					String dadosConta = arrayIdentificadores[i];
+					String[] idContaArray = dadosConta.split("-");
+					Integer idConta = new Integer(idContaArray[0]);
+
+					if(idConta != null){
+						FiltroConta filtroConta = new FiltroConta();
+						filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.ID, idConta));
+						filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.DEBITOS_COBRADOS);
+
+						Conta conta = (Conta) Util.retonarObjetoDeColecao(((Collection<Conta>) fachada.pesquisar(filtroConta,
+										Conta.class.getName())));
+						ContaValoresHelper contaValores = new ContaValoresHelper();
+						contaValores.setConta(conta);
+
+						Collection<ContaValoresHelper> colecaoContaValores = new ArrayList<ContaValoresHelper>();
+						colecaoContaValores.add(contaValores);
+
+						if(fachada.verificarExecucaoFiscal(colecaoContaValores, null, null)){
+							parametroExecucaoFiscal.append(conta.getReferenciaFormatada());
+							parametroExecucaoFiscal.append(", ");
+						}
+					}
+				}
+
+				String parametroMensagemExecFiscal = parametroExecucaoFiscal.toString();
+
+				if(!Util.isVazioOuBranco(parametroMensagemExecFiscal)){
+					parametroMensagemExecFiscal = parametroMensagemExecFiscal.substring(0, parametroMensagemExecFiscal.length() - 2);
+
+					throw new ActionServletException("atencao.conta.debito.execucao.fiscal", usuario.getNomeUsuario().toString(),
+									parametroMensagemExecFiscal);
+				}
+			}
+		}
 
 		String idCliente = alterarClienteResposanvelContaActionForm.getIdCliente();
 

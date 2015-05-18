@@ -147,7 +147,7 @@ public class FiltroServicoTipo
 
 	public final static String SERVICOTIPOPRIORIDADE = "servicoTipoPrioridade.id";
 
-	public final static String DEBITOTIPO = "debitoTipo.id";
+	public final static String DEBITOTIPO = "debitoTipo";
 
 	public final static String ATIVIDADETIPOSERVICO = "debitoTipo.id";
 

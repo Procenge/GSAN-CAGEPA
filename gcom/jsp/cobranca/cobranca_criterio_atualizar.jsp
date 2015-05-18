@@ -104,6 +104,9 @@ function validaTodosRadioButton(){
 	if(validaRadioButton(form.opcaoContasRevisao,"Considerar Contas em Revisão") != ""){
 		mensagem = mensagem + validaRadioButton(form.opcaoContasRevisao,"Considerar Contas em Revisão")+"\n";
 	}
+	if(validaRadioButton(form.opcaoDividaAtiva,"Considerar Debitos na Divida Ativa") != ""){
+		mensagem = mensagem + validaRadioButton(form.opcaoDividaAtiva,"Considerar Debitos na Divida Ativa")+"\n";
+	}	
 	if(validaRadioButton(form.opcaoAcaoImovelDebitoMesConta,"Emissão da Ação para Imóvel com Débito só da Conta do Mês") != ""){
 		mensagem = mensagem + validaRadioButton(form.opcaoAcaoImovelDebitoMesConta,"Emissão da Ação para Imóvel com Débito só da Conta do Mês")+"\n";
 	}
@@ -645,9 +648,15 @@ face: Verdana, Arial, Helvetica, sans-serif;
                  	<td width="65%">
                  		<strong>Considerar apenas o Débito do Titular Atual do Imóvel:<font color="#FF0000">*</font></strong>
                  	</td>
-                  	<td>
-                  		<html:radio property="indicadorConsiderarApenasDebitoTitularAtual" value="<%=""+ConstantesSistema.SIM%>" onclick="javascript:habilitarSelectComCor(document.forms[0].indicadorConsiderarApenasDebitoTitularAtual, document.forms[0].idClienteRelacaoTipo, 0)"/><strong>Sim</strong>			    
-                  		<html:radio property="indicadorConsiderarApenasDebitoTitularAtual" value="<%=""+ConstantesSistema.NAO%>" onclick="javascript:habilitarSelectComCor(document.forms[0].indicadorConsiderarApenasDebitoTitularAtual, document.forms[0].idClienteRelacaoTipo, 0)"/><strong>N&atilde;o</strong>
+                 	<td>
+	                  	<logic:present name="indicadorFaturamentoTitularDebito" scope="request">
+                 			<input type="radio" name="indicadorConsiderarApenasDebitoTitularAtual" value="1" checked="checked"><strong>Sim</strong>			    
+                  			<input type="radio" name="indicadorConsiderarApenasDebitoTitularAtual" value="1" disabled="disabled"><strong>Não</strong>
+                  		</logic:present>
+                  		<logic:notPresent name="indicadorFaturamentoTitularDebito" scope="request">
+	                  		<html:radio property="indicadorConsiderarApenasDebitoTitularAtual" value="<%=""+ConstantesSistema.SIM%>" onclick="javascript:habilitarSelectComCor(document.forms[0].indicadorConsiderarApenasDebitoTitularAtual, document.forms[0].idClienteRelacaoTipo, 0)"/><strong>Sim</strong>			    
+                  			<html:radio property="indicadorConsiderarApenasDebitoTitularAtual" value="<%=""+ConstantesSistema.NAO%>" onclick="javascript:habilitarSelectComCor(document.forms[0].indicadorConsiderarApenasDebitoTitularAtual, document.forms[0].idClienteRelacaoTipo, 0)"/><strong>N&atilde;o</strong>
+	                  	</logic:notPresent>
                    	</td>
                  </tr>
                   
@@ -760,6 +769,23 @@ face: Verdana, Arial, Helvetica, sans-serif;
                   </logic:notPresent>                  
                  </tr>
                  
+                 
+                 <tr> 
+                  <td width="65%"><strong>Considerar Debitos na Divida Ativa:<font color="#FF0000"></font><font color="#FF0000">*</font></strong></td>
+                  
+                  <logic:present name="desabilita">
+					<td><html:radio property="opcaoDividaAtiva" value="1" tabindex="13" disabled="true"/> 
+                      <strong>Sim</strong></td>
+                    <td><html:radio property="opcaoDividaAtiva" value="2" tabindex="14" disabled="true"/> 
+                      <strong>N&atilde;o</strong></td>
+                  </logic:present>
+                  <logic:notPresent name="desabilita">
+                     <td><html:radio property="opcaoDividaAtiva" value="1" tabindex="13"/> 
+                      <strong>Sim</strong></td>
+                  <td><html:radio property="opcaoDividaAtiva" value="2" tabindex="14"/> 
+                      <strong>N&atilde;o</strong></td>
+                  </logic:notPresent>                  
+                 </tr>
                              
                  
                  
@@ -768,15 +794,15 @@ face: Verdana, Arial, Helvetica, sans-serif;
                       com D&eacute;bito s&oacute; da Conta do M&ecirc;s:<font color="#FF0000"></font><font color="#FF0000">*</font></strong></td>
                   
                   <logic:present name="desabilita">
-					<td><html:radio property="opcaoAcaoImovelDebitoMesConta" value="1" tabindex="13" disabled="true"/> 
+					<td><html:radio property="opcaoAcaoImovelDebitoMesConta" value="1" tabindex="15" disabled="true"/> 
                       <strong>Sim</strong></td>
-                    <td><html:radio property="opcaoAcaoImovelDebitoMesConta" value="2" tabindex="14" disabled="true"/> 
+                    <td><html:radio property="opcaoAcaoImovelDebitoMesConta" value="2" tabindex="16" disabled="true"/> 
                       <strong>N&atilde;o</strong></td>
                   </logic:present>
                   <logic:notPresent name="desabilita">
-                     <td><html:radio property="opcaoAcaoImovelDebitoMesConta" value="1" tabindex="13"/> 
+                     <td><html:radio property="opcaoAcaoImovelDebitoMesConta" value="1" tabindex="15"/> 
                       <strong>Sim</strong></td>
-                  <td><html:radio property="opcaoAcaoImovelDebitoMesConta" value="2" tabindex="14"/> 
+                  <td><html:radio property="opcaoAcaoImovelDebitoMesConta" value="2" tabindex="16"/> 
                       <strong>N&atilde;o</strong></td>
                   </logic:notPresent>                  
                  </tr>
@@ -786,15 +812,15 @@ face: Verdana, Arial, Helvetica, sans-serif;
                       do Valor da Conta:<font color="#FF0000"></font><font color="#FF0000">*</font></strong></td>
 
                   <logic:present name="desabilita">
-					<td><html:radio property="opcaoAcaoInquilinoDebitoMesConta" value="1" tabindex="15" disabled="true"/> 
+					<td><html:radio property="opcaoAcaoInquilinoDebitoMesConta" value="1" tabindex="17" disabled="true"/> 
                       <strong>Sim</strong></td>
-                    <td><html:radio property="opcaoAcaoInquilinoDebitoMesConta" value="2" tabindex="16" disabled="true"/> 
+                    <td><html:radio property="opcaoAcaoInquilinoDebitoMesConta" value="2" tabindex="18" disabled="true"/> 
                       <strong>N&atilde;o</strong></td>
                   </logic:present>
                   <logic:notPresent name="desabilita">
-                     <td><html:radio property="opcaoAcaoInquilinoDebitoMesConta" value="1" tabindex="15"/> 
+                     <td><html:radio property="opcaoAcaoInquilinoDebitoMesConta" value="1" tabindex="17"/> 
                       <strong>Sim</strong></td>
-                  <td><html:radio property="opcaoAcaoInquilinoDebitoMesConta" value="2" tabindex="16"/> 
+                  <td><html:radio property="opcaoAcaoInquilinoDebitoMesConta" value="2" tabindex="18"/> 
                       <strong>N&atilde;o</strong></td>
                   </logic:notPresent>                  
                  </tr>
@@ -803,15 +829,15 @@ face: Verdana, Arial, Helvetica, sans-serif;
                       com D&eacute;bito s&oacute; de Contas Antigas:<font color="#FF0000"></font><font color="#FF0000">*</font></strong></td>
                       
                   <logic:present name="desabilita">
-					<td><html:radio property="opcaoAcaoImovelDebitoContasAntigas" value="1" tabindex="17" disabled="true"/> 
+					<td><html:radio property="opcaoAcaoImovelDebitoContasAntigas" value="1" tabindex="19" disabled="true"/> 
                       <strong>Sim</strong></td>
-                    <td><html:radio property="opcaoAcaoImovelDebitoContasAntigas" value="2" tabindex="18" disabled="true"/> 
+                    <td><html:radio property="opcaoAcaoImovelDebitoContasAntigas" value="2" tabindex="20" disabled="true"/> 
                       <strong>N&atilde;o</strong></td>
                   </logic:present>
                   <logic:notPresent name="desabilita">
-                     <td><html:radio property="opcaoAcaoImovelDebitoContasAntigas" value="1" tabindex="17"/> 
+                     <td><html:radio property="opcaoAcaoImovelDebitoContasAntigas" value="1" tabindex="19"/> 
                       <strong>Sim</strong></td>
-                  <td><html:radio property="opcaoAcaoImovelDebitoContasAntigas" value="2" tabindex="18"/> 
+                  <td><html:radio property="opcaoAcaoImovelDebitoContasAntigas" value="2" tabindex="20"/> 
                       <strong>N&atilde;o</strong></td>
                   </logic:notPresent>                  
                </tr>
@@ -846,6 +872,23 @@ face: Verdana, Arial, Helvetica, sans-serif;
                  	<td><html:radio property="comTelefone" value="1"><strong>Sim</strong></html:radio></td>
                  	<td><html:radio property="comTelefone" value="2"><strong>Não</strong></html:radio></td>   
                  	<td><html:radio property="comTelefone" value="3"><strong>Ambos</strong></html:radio></td>     		
+                    </logic:notPresent> 
+                     			
+                </tr>
+                
+                <tr>
+                 	<td><strong>Emiss&atilde;o da A&ccedil;&atilde;o para Im&oacute;vel cujo Cliente Titular Atual do D&eacute;bito possua CPF/CNPJ Validado:<font color="#FF0000"></font><font color="#FF0000">*</font></strong></td> 
+                 	               	
+                 	<logic:present name="desabilita">
+                 	<td><html:radio property="criterioCobranca" value="1" disabled="true"><strong>Sim</strong></html:radio></td>
+                 	<td><html:radio property="criterioCobranca" value="2" disabled="true"><strong>Não</strong></html:radio></td>   
+                 	<td><html:radio property="criterioCobranca" value="3" disabled="true"><strong>Ambos</strong></html:radio></td>     		
+                    </logic:present> 	
+                    
+                 	<logic:notPresent name="desabilita">  
+                 	<td><html:radio property="criterioCobranca" value="1"><strong>Sim</strong></html:radio></td>
+                 	<td><html:radio property="criterioCobranca" value="2"><strong>Não</strong></html:radio></td>   
+                 	<td><html:radio property="criterioCobranca" value="3"><strong>Ambos</strong></html:radio></td>     		
                     </logic:notPresent> 
                      			
                 </tr>
@@ -895,7 +938,7 @@ face: Verdana, Arial, Helvetica, sans-serif;
 						onClick="javascript:document.forms[0].target='';window.location.href='/gsan/telaPrincipal.do'"></td>
 					<td valign="top">
 					  <div align="right">
-					    <gcom:controleAcessoBotao name="botaoInserir" value="Atualizar" onclick="validarForm(document.forms[0]);" url="atualizarCriterioCobrancaAction.do" tabindex="17"/>
+					    <gcom:controleAcessoBotao name="botaoInserir" value="Atualizar" onclick="validarForm(document.forms[0]);" url="atualizarCriterioCobrancaAction.do" tabindex="21"/>
 					    <%-- <input name="botaoInserir" type="button" class="bottonRightCol" value="Atualizar" onclick="validarForm(document.forms[0]);" tabindex="17"> --%>
 					  </div>
 					</td>

@@ -117,6 +117,8 @@ public class RemoverUsuarioAction
 		Usuario usuario = (Usuario) sessao.getAttribute("usuario");
 
 		String[] ids = excluirUsuarioActionForm.getIds();
+		String inativar = httpServletRequest.getParameter("inativar");
+		String ativar = httpServletRequest.getParameter("ativar");
 
 		ActionForward retorno = actionMapping.findForward("telaSucesso");
 
@@ -128,14 +130,29 @@ public class RemoverUsuarioAction
 			throw new ActionServletException("atencao.registros.nao_selecionados");
 		}
 
-		fachada.removerUsuario(ids, usuario);
+		String mensagem = "";
+		if(inativar != null && inativar.equals("ok")){
+
+			fachada.ativarInativarUsuario(ids, usuario, false);
+			mensagem = "Usuário(s) inativado(s) com sucesso";
+
+		}else if(ativar != null && ativar.equals("ok")){
+
+			fachada.ativarInativarUsuario(ids, usuario, true);
+			mensagem = "Usuário(s) ativado(s) com sucesso";
+
+		}else{
+
+			fachada.removerUsuario(ids, usuario);
+			mensagem = "Usuário(s) removido(s) com sucesso";
+		}
 
 		sessao.removeAttribute("indicadorAtualizar");
 		sessao.removeAttribute("voltar");
 
 		// Monta a página de sucesso
 		if(retorno.getName().equalsIgnoreCase("telaSucesso")){
-			montarPaginaSucesso(httpServletRequest, "Usuário(s) removido(s) com sucesso", "Realizar outra manutenção de Usuário",
+			montarPaginaSucesso(httpServletRequest, mensagem, "Realizar outra manutenção de Usuário",
 							"exibirFiltrarUsuarioAction.do?menu=sim");
 		}
 

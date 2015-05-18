@@ -424,4 +424,12 @@ public interface ControladorBatchLocal
 	public Collection<FaturamentoSimulacaoComando> pesquisarFaturamentoSimulacaoComandoNaoRealizados(Integer numeroPagina)
 					throws ControladorException;
 
+
+	/**
+	 * @return
+	 * @throws ControladorException
+	 */
+	public Collection pesquisarSetorComercialProcessamentoBatch() throws ControladorException;
+
+	public List<Object[]> pesquisarRotasComAlteracaoNasLigacoesEconomiasComReferencia() throws ControladorException;
 }

@@ -129,7 +129,12 @@ function linkAnalise(idImovel, idMedicaoTipo, linkAnalise){
 
 	
 	linkFinal = '/gsan/exibirManterAnaliseExcecoesConsumosAction.do';
-    linkFinal = linkFinal + "?idRegistroAtualizacao=" + idImovel + "&medicaoTipo=" + idMedicaoTipo;
+    linkFinal = linkFinal + "?idRegistroAtualizacao=" + idImovel;
+  
+    if (idMedicaoTipo != '') {
+    	linkFinal = linkFinal + "&medicaoTipo=" + idMedicaoTipo;
+    }
+    
     linkFinal = linkFinal + "&linkAnalise=" + linkAnalise;
 
 	if (idRegistrosImovel.length > 0){
@@ -379,14 +384,34 @@ function capturarSelecao(){
 						<td width="21%">
 							<div align="center">
 								<logic:present name="indicadorTipoApresentacao">
-									<a href="javascript:linkAnalise(${imovelMicromedicao.imovel.id}, ${imovelMicromedicao.medicaoHistorico.medicaoTipo.id}, '/gsan/exibirDadosAnaliseMedicaoConsumoAction.do');">
-									<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">${imovelMicromedicao.imovel.inscricaoFormatada}</font>
-									</a>
+
+									<logic:notEmpty name="imovelMicromedicao" property="medicaoHistorico.medicaoTipo.id" >
+										<a href="javascript:linkAnalise(${imovelMicromedicao.imovel.id}, ${imovelMicromedicao.medicaoHistorico.medicaoTipo.id}, '/gsan/exibirDadosAnaliseMedicaoConsumoAction.do');">
+										<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">${imovelMicromedicao.imovel.inscricaoFormatada}</font>
+										</a>
+									</logic:notEmpty>
+									
+									<logic:empty name="imovelMicromedicao" property="medicaoHistorico.medicaoTipo.id" >
+										<a href="javascript:linkAnalise(${imovelMicromedicao.imovel.id}, '', '/gsan/exibirDadosAnaliseMedicaoConsumoAction.do');">
+										<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">${imovelMicromedicao.imovel.inscricaoFormatada}</font>
+										</a>
+									</logic:empty>									
+									
 								</logic:present>
 								<logic:notPresent name="indicadorTipoApresentacao">
-									<a href="javascript:linkAnalise(${imovelMicromedicao.imovel.id}, ${imovelMicromedicao.medicaoHistorico.medicaoTipo.id}, '/gsan/exibirDadosAnaliseMedicaoConsumoResumoAction.do');">
-									<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">${imovelMicromedicao.imovel.inscricaoFormatada}</font>
-									</a>
+								
+									<logic:notEmpty name="imovelMicromedicao" property="medicaoHistorico.medicaoTipo.id" >
+										<a href="javascript:linkAnalise(${imovelMicromedicao.imovel.id}, ${imovelMicromedicao.medicaoHistorico.medicaoTipo.id}, '/gsan/exibirDadosAnaliseMedicaoConsumoResumoAction.do');">
+										<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">${imovelMicromedicao.imovel.inscricaoFormatada}</font>
+										</a>
+									</logic:notEmpty>
+									
+									<logic:empty name="imovelMicromedicao" property="medicaoHistorico.medicaoTipo.id" >
+										<a href="javascript:linkAnalise(${imovelMicromedicao.imovel.id}, '', '/gsan/exibirDadosAnaliseMedicaoConsumoResumoAction.do');">
+										<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">${imovelMicromedicao.imovel.inscricaoFormatada}</font>
+										</a>									
+									</logic:empty>
+									
 								</logic:notPresent>
 							</div>
 						</td>

@@ -122,6 +122,11 @@ public class ExibirPesquisarClienteAction
 		// Mudar isso quando tiver esquema de segurança
 		HttpSession sessao = httpServletRequest.getSession(false);
 
+		String indicadorPagina = httpServletRequest.getParameter("indicadorPagina");
+		
+
+		
+		
 		// Verifica se o pesquisar cliente foi chamado a partir do inserir cliente
 		// e em caso afirmativo recebe o parâmetro e manda-o pela sessão para
 		// ser verificado no cliente_resultado_pesquisa e depois retirado da

@@ -76,6 +76,8 @@
 
 package gcom.gui.relatorio.atendimentopublico;
 
+import gcom.atendimentopublico.ordemservico.OrdemServico;
+import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.relatorio.ConstantesRelatorios;
 import gcom.relatorio.ExibidorProcessamentoTarefaRelatorio;
@@ -85,6 +87,7 @@ import gcom.tarefa.TarefaRelatorio;
 import gcom.util.Util;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
@@ -112,6 +115,7 @@ public class GerarRelatorioOrdemServicoAction
 		ActionForward retorno = actionMapping.findForward("telaSucesso");
 		String idOrdemServico = null;
 		String telaOSSeletiva = "";
+		Fachada fachada = Fachada.getInstancia();
 
 		if(Util.isVazioOuBranco(httpServletRequest.getParameter("idsOS"))){
 			throw new ActionServletException("atencao.required", null, "alguma(s) Ordem(s) de Serviço(s)");
@@ -125,6 +129,13 @@ public class GerarRelatorioOrdemServicoAction
 
 		for(String idOS : idsOS){
 			idsOrdemServico.add(Integer.valueOf(idOS));
+
+			// Atualiza a Data de Emissao
+			OrdemServico ordemServicoPesq = fachada.pesquisarOrdemServico(Integer.valueOf(idOS));
+			ordemServicoPesq.setDataEmissao(Calendar.getInstance().getTime());
+			ordemServicoPesq.setUltimaAlteracao(Calendar.getInstance().getTime());
+
+			fachada.atualizar(ordemServicoPesq);
 		}
 
 		// ******************************************************************************************

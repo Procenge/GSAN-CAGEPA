@@ -42,11 +42,7 @@ import gcom.arrecadacao.ControladorArrecadacaoLocal;
 import gcom.arrecadacao.ControladorArrecadacaoLocalHome;
 import gcom.arrecadacao.pagamento.bean.ClassificarLotePagamentosNaoClassificadosHelper;
 import gcom.seguranca.acesso.usuario.Usuario;
-import gcom.util.ConstantesJNDI;
-import gcom.util.ControladorException;
-import gcom.util.ServiceLocator;
-import gcom.util.ServiceLocatorException;
-import gcom.util.SistemaException;
+import gcom.util.*;
 
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
@@ -90,7 +86,8 @@ public class BatchClassificarLotePagamentosNaoClassificadosMDB
 
 				this.getControladorArrecadacao().classificarLotePagamentosNaoClassificados(
 								(ClassificarLotePagamentosNaoClassificadosHelper) ((Object[]) objectMessage.getObject())[0],
-								(Usuario) ((Object[]) objectMessage.getObject())[1], (Integer) ((Object[]) objectMessage.getObject())[2]);
+								(Usuario) ((Object[]) objectMessage.getObject())[1], (Integer) ((Object[]) objectMessage.getObject())[2],
+								(Boolean) ((Object[]) objectMessage.getObject())[3]);
 
 			}catch(JMSException e){
 				System.out.println("Erro no MDB");

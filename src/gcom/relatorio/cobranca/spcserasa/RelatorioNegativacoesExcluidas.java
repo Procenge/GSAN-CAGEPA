@@ -73,6 +73,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  * 02111-1307, USA.
  */
+
 package gcom.relatorio.cobranca.spcserasa;
 
 import gcom.batch.Relatorio;
@@ -80,22 +81,11 @@ import gcom.cadastro.cliente.ClienteTipo;
 import gcom.cadastro.cliente.EsferaPoder;
 import gcom.cadastro.imovel.Categoria;
 import gcom.cadastro.imovel.ImovelPerfil;
-import gcom.cadastro.localidade.FiltroLocalidade;
-import gcom.cadastro.localidade.FiltroQuadra;
-import gcom.cadastro.localidade.GerenciaRegional;
-import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.localidade.Quadra;
-import gcom.cadastro.localidade.UnidadeNegocio;
+import gcom.cadastro.localidade.*;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
-import gcom.cobranca.CobrancaDebitoSituacao;
-import gcom.cobranca.CobrancaGrupo;
-import gcom.cobranca.FiltroNegativadorExclusaoMotivo;
-import gcom.cobranca.Negativador;
-import gcom.cobranca.NegativadorExclusaoMotivo;
-import gcom.cobranca.NegativadorMovimentoReg;
+import gcom.cobranca.*;
 import gcom.cobranca.bean.DadosConsultaNegativacaoHelper;
 import gcom.fachada.Fachada;
-import gcom.gui.cobranca.spcserasa.RelatorioNegativacoesExcluidasSomatorioDadosParcelamentoHelper;
 import gcom.relatorio.ConstantesExecucaoRelatorios;
 import gcom.relatorio.ConstantesRelatorios;
 import gcom.relatorio.RelatorioDataSource;
@@ -110,29 +100,19 @@ import gcom.util.agendadortarefas.AgendadorTarefas;
 import gcom.util.filtro.ParametroSimples;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
- * 
  * Title: GCOM
  * </p>
  * <p>
- * 
  * Description: Sistema de Gestão Comercial
  * </p>
  * <p>
- * 
  * Copyright: Copyright (c) 2004
  * </p>
  * <p>
- * 
  * Company: COMPESA - Companhia Pernambucana de Saneamento
  * </p>
  * 
@@ -141,18 +121,22 @@ import java.util.Map;
  * @version 1.0
  */
 
-public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
+public class RelatorioNegativacoesExcluidas
+				extends TarefaRelatorio {
+
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor for the RelatorioNegativacoesExcluidas object
 	 */
 	public RelatorioNegativacoesExcluidas(Usuario usuario) {
+
 		super(usuario, ConstantesRelatorios.RELATORIO_NEGATIVACOES_EXCLUIDAS);
 	}
 
 	@Deprecated
 	public RelatorioNegativacoesExcluidas() {
+
 		super(null, "");
 	}
 
@@ -166,7 +150,7 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 	 *                Descrição da exceção
 	 */
 
-	public Object executar() throws TarefaException {
+	public Object executar() throws TarefaException{
 
 		// ------------------------------------
 		Integer idFuncionalidadeIniciada = this.getIdFuncionalidadeIniciada();
@@ -188,14 +172,13 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 		RelatorioNegativacoesExcluidasBean relatorioBean = null;
 
 		// Nova consulta para trazer objeto completo
-		Collection colecaoNovos = fachada
-				.pesquisarRelatorioNegativacoesExcluidas(parametrosHelper);
+		Collection colecaoNovos = fachada.pesquisarRelatorioNegativacoesExcluidas(parametrosHelper);
 
-		if (colecaoNovos != null && !colecaoNovos.isEmpty()) {
+		if(colecaoNovos != null && !colecaoNovos.isEmpty()){
 			// coloca a coleção de parâmetros da analise no iterator
 
 			Iterator it = colecaoNovos.iterator();
-			while (it.hasNext()) {
+			while(it.hasNext()){
 
 				NegativadorMovimentoReg negativadorMovimentoReg = (NegativadorMovimentoReg) it.next();
 
@@ -204,13 +187,14 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 
 				String idNegativador = "";
 				String negativador = "";
-				if (negativadorMovimentoReg.getNegativadorMovimento() != null && negativadorMovimentoReg.getNegativadorMovimento().getNegativador() != null) {
+				if(negativadorMovimentoReg.getNegativadorMovimento() != null
+								&& negativadorMovimentoReg.getNegativadorMovimento().getNegativador() != null){
 
 					Negativador negativ = negativadorMovimentoReg.getNegativadorMovimento().getNegativador();
 
 					idNegativador = negativ.getId().toString();
 
-					if (negativ.getCliente() != null) {
+					if(negativ.getCliente() != null){
 						negativador = negativ.getCliente().getNome();
 					}
 
@@ -218,47 +202,48 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 
 				// cliente nome
 				String nomeCliente = "";
-				if (negativadorMovimentoReg.getCliente() != null) {
+				if(negativadorMovimentoReg.getCliente() != null){
 					nomeCliente = negativadorMovimentoReg.getCliente().getNome();
 				}
 
 				// data de processamento
 				String periodoEnvioNegativacao = "";
-				if (negativadorMovimentoReg != null && negativadorMovimentoReg.getNegativadorMovimento() != null) {
-					periodoEnvioNegativacao = Util.formatarData(negativadorMovimentoReg.getNegativadorMovimento().getDataProcessamentoEnvio());
+				if(negativadorMovimentoReg != null && negativadorMovimentoReg.getNegativadorMovimento() != null){
+					periodoEnvioNegativacao = Util.formatarData(negativadorMovimentoReg.getNegativadorMovimento()
+									.getDataProcessamentoEnvio());
 				}
 
 				// localidade
 				String localidade = "";
 				String idLocalidade = "";
-				if (negativadorMovimentoReg.getLocalidade() != null) {
+				if(negativadorMovimentoReg.getLocalidade() != null){
 					idLocalidade = negativadorMovimentoReg.getLocalidade().getId().toString();
 					localidade = negativadorMovimentoReg.getLocalidade().getDescricao();
 				}
 
 				// matricula do Imovel
 				String matricula = "";
-				if (negativadorMovimentoReg.getImovel() != null) {
+				if(negativadorMovimentoReg.getImovel() != null){
 					matricula = negativadorMovimentoReg.getImovel().getId().toString();
 				}
 
 				// cpf ou cnpj
 				String cpfCnpj = "";
-				if (negativadorMovimentoReg.getNumeroCnpj() != null) {
+				if(negativadorMovimentoReg.getNumeroCnpj() != null){
 					cpfCnpj = negativadorMovimentoReg.getNumeroCnpj();
-				} else if (negativadorMovimentoReg.getNumeroCpf() != null) {
+				}else if(negativadorMovimentoReg.getNumeroCpf() != null){
 					cpfCnpj = negativadorMovimentoReg.getNumeroCpf();
 				}
 
 				// valor negativado
 				BigDecimal valorNegativado = new BigDecimal(0);
-				if (negativadorMovimentoReg.getValorDebito() != null) {
+				if(negativadorMovimentoReg.getValorDebito() != null){
 					valorNegativado = negativadorMovimentoReg.getValorDebito();
 				}
 
 				// motivo da Exclusão
 				String motivoExclusao = null;
-				if (negativadorMovimentoReg.getNegativadorExclusaoMotivo() != null) {
+				if(negativadorMovimentoReg.getNegativadorExclusaoMotivo() != null){
 					motivoExclusao = negativadorMovimentoReg.getNegativadorExclusaoMotivo().getDescricaoExclusaoMotivo();
 				}
 
@@ -268,64 +253,43 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 				BigDecimal valorPago = new BigDecimal(0);
 				BigDecimal valorParceladoPago = new BigDecimal(0);
 				BigDecimal valorParceladoEntradaPago = new BigDecimal(0);
-				
-				if (negativadorMovimentoReg.getNegativadorExclusaoMotivo() != null 
-						&& negativadorMovimentoReg.getNegativadorExclusaoMotivo().getCobrancaDebitoSituacao() != null) {
-					
-					Integer idCobrancaDebitoSituacao = negativadorMovimentoReg.getNegativadorExclusaoMotivo().getCobrancaDebitoSituacao().getId();
 
-					if (idCobrancaDebitoSituacao.equals(CobrancaDebitoSituacao.PARCELADO)) {
+				BigDecimal valorCancelado = new BigDecimal(0);
 
-//						valorParcelado = fachada.pesquisarSomatorioNegativadorMovimentoRegItens(negativadorMovimentoReg.getId(), CobrancaDebitoSituacao.PARCELADO);
-//
-//						if(valorParcelado == null){
-//							valorParcelado = new BigDecimal(0);
-//						}	
-//						
-//						valorParceladoEntrada = negativadorMovimentoReg.getValorParceladoEntrada();
-//
-//						if (valorParceladoEntrada != null) {
-//							valorParcelado = valorParcelado.subtract(valorParceladoEntrada);
-//						} else {
-//							valorParceladoEntrada = new BigDecimal(0);
-//
-//						}
-						
-						//Vivianne Sousa - 28/04/2009 - CRC1599
-						RelatorioNegativacoesExcluidasSomatorioDadosParcelamentoHelper helper = 
-							fachada.pesquisarNegativadorMovimentoRegParcelamento(negativadorMovimentoReg.getId());
-						
-						valorParcelado = helper.getValorParcelado();
-						valorParceladoPago = helper.getValorParceladoPago();
-						valorParceladoEntrada = helper.getValorParceladoEntrada();
-						valorParceladoEntradaPago = helper.getValorParceladoEntradaPago();
+				Integer idCobrancaDebitoSituacao = null;
 
-					}
+				if(negativadorMovimentoReg.getNegativadorExclusaoMotivo() != null
+								&& negativadorMovimentoReg.getNegativadorExclusaoMotivo().getCobrancaDebitoSituacao() != null){
 
-					if (idCobrancaDebitoSituacao.equals(CobrancaDebitoSituacao.PAGO)) {
+					idCobrancaDebitoSituacao = negativadorMovimentoReg.getNegativadorExclusaoMotivo().getCobrancaDebitoSituacao().getId();
 
-						valorPago = fachada.pesquisarSomatorioNegativadorMovimentoRegItens(negativadorMovimentoReg.getId(), CobrancaDebitoSituacao.PAGO);
-						
-						if(valorPago == null){
-							valorPago = new BigDecimal(0);
-						}
+					if(idCobrancaDebitoSituacao.equals(CobrancaDebitoSituacao.PARCELADO)){
 
+						valorParcelado = calcularValorParcelado(fachada, negativadorMovimentoReg);
+
+					}else if(idCobrancaDebitoSituacao.equals(CobrancaDebitoSituacao.PAGO)){
+
+						valorPago = calcularValorPago(fachada, negativadorMovimentoReg);
+
+					}else if(idCobrancaDebitoSituacao.equals(CobrancaDebitoSituacao.CANCELADO)){
+
+						valorCancelado = calcularValorCancelado(fachada, negativadorMovimentoReg);
 					}
 
 				}
 
 				// data Situação do Debito
 				String dtSitDebito = null;
-				if (negativadorMovimentoReg.getDataSituacaoDebito() != null) {
+				if(negativadorMovimentoReg.getDataSituacaoDebito() != null){
 					dtSitDebito = Util.formatarData(negativadorMovimentoReg.getDataSituacaoDebito());
 				}
 
 				String dataExclusao = null;
-				if (negativadorMovimentoReg.getImovel() != null) {
+				if(negativadorMovimentoReg.getImovel() != null){
 
 					Date dataExcl = fachada.pesquisarDataExclusaoNegativacao(negativadorMovimentoReg.getImovel().getId(),
-							negativadorMovimentoReg.getNegativadorMovimento().getNegativacaoComando().getId());
-					if (dataExcl != null) {
+									negativadorMovimentoReg.getNegativadorMovimento().getCobrancaAcaoAtividadeComando().getId());
+					if(dataExcl != null){
 						dataExclusao = Util.formatarData(dataExcl);
 					}
 
@@ -333,9 +297,11 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 
 				// Inicializa o construtor constituído dos campos
 				// necessários para a impressão do relatorio
-				relatorioBean = new RelatorioNegativacoesExcluidasBean(nomeCliente, matricula, cpfCnpj, valorNegativado, motivoExclusao, periodoEnvioNegativacao, 
-						localidade,	idLocalidade, idNegativador, negativador, dtSitDebito, dataExclusao, valorParceladoEntrada, valorParcelado,	valorPago,
-						 valorParceladoPago, valorParceladoEntradaPago);
+				relatorioBean = new RelatorioNegativacoesExcluidasBean(nomeCliente, matricula, cpfCnpj, valorNegativado, motivoExclusao,
+								periodoEnvioNegativacao, localidade, idLocalidade, idNegativador, negativador, dtSitDebito, dataExclusao,
+								valorParceladoEntrada, valorParcelado, valorPago, valorParceladoPago, valorParceladoEntradaPago,
+								valorCancelado,
+								idCobrancaDebitoSituacao);
 
 				// adiciona o bean a coleção
 				relatorioBeans.add(relatorioBean);
@@ -352,133 +318,136 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 
 		parametros.put("imagem", sistemaParametro.getImagemRelatorio());
 
-		if (parametrosHelper.getIdNegativador() != null) {
+		if(parametrosHelper.getIdNegativador() != null){
 			FiltroNegativador filtroNegativador = new FiltroNegativador();
 			filtroNegativador.adicionarCaminhoParaCarregamentoEntidade("cliente");
 			filtroNegativador.adicionarParametro(new ParametroSimples(FiltroNegativador.ID, parametrosHelper.getIdNegativador()));
 
-			Collection collNegativador = fachada.pesquisar(filtroNegativador,Negativador.class.getName());
+			Collection collNegativador = fachada.pesquisar(filtroNegativador, Negativador.class.getName());
 			Iterator itt = collNegativador.iterator();
-			while (itt.hasNext()) {
+			while(itt.hasNext()){
 				Negativador negativador = (Negativador) itt.next();
-				if (negativador.getCliente() != null) {
+				if(negativador.getCliente() != null){
 					parametros.put("negativador", negativador.getCliente().getNome());
 				}
 				break;
 			}
 
-		} else {
+		}else{
 			parametros.put("negativador", "");
 		}
 
-		if (parametrosHelper.getIdNegativadorExclusaoMotivo() != null) {
+		if(parametrosHelper.getIdNegativadorExclusaoMotivo() != null){
 			FiltroNegativadorExclusaoMotivo filtroNegativadorExclusaoMotivo = new FiltroNegativadorExclusaoMotivo();
-			filtroNegativadorExclusaoMotivo.adicionarParametro(new ParametroSimples(FiltroNegativadorExclusaoMotivo.ID,	parametrosHelper.getIdNegativadorExclusaoMotivo()));
+			filtroNegativadorExclusaoMotivo.adicionarParametro(new ParametroSimples(FiltroNegativadorExclusaoMotivo.ID, parametrosHelper
+							.getIdNegativadorExclusaoMotivo()));
 
-			Collection collNegativadorExclusaoMotivo = fachada.pesquisar(filtroNegativadorExclusaoMotivo,NegativadorExclusaoMotivo.class.getName());
+			Collection collNegativadorExclusaoMotivo = fachada.pesquisar(filtroNegativadorExclusaoMotivo,
+							NegativadorExclusaoMotivo.class.getName());
 			Iterator itt = collNegativadorExclusaoMotivo.iterator();
-			while (itt.hasNext()) {
+			while(itt.hasNext()){
 				NegativadorExclusaoMotivo negativadorExclusaoMotivo = (NegativadorExclusaoMotivo) itt.next();
-				if (negativadorExclusaoMotivo != null) {
-					parametros.put("negativadorExclusaoMotivo",	negativadorExclusaoMotivo.getDescricaoExclusaoMotivo());
+				if(negativadorExclusaoMotivo != null){
+					parametros.put("negativadorExclusaoMotivo", negativadorExclusaoMotivo.getDescricaoExclusaoMotivo());
 				}
 				break;
 			}
 
-		} else {
+		}else{
 			parametros.put("negativadorExclusaoMotivo", "");
 		}
 
-		if (parametrosHelper.getPeriodoEnvioNegativacaoInicio() != null) {
-			parametros.put("periodoEnvioNegativacao", Util.formatarData(parametrosHelper.getPeriodoEnvioNegativacaoInicio())
-					+ " à "	+ Util.formatarData(parametrosHelper.getPeriodoEnvioNegativacaoFim()));
-		} else {
+		if(parametrosHelper.getPeriodoEnvioNegativacaoInicio() != null){
+			parametros.put("periodoEnvioNegativacao",
+							Util.formatarData(parametrosHelper.getPeriodoEnvioNegativacaoInicio()) + " à "
+											+ Util.formatarData(parametrosHelper.getPeriodoEnvioNegativacaoFim()));
+		}else{
 			parametros.put("periodoEnvioNegativacao", "");
 		}
 
-		if (parametrosHelper.getPeriodoExclusaoNegativacaoInicio() != null) {
-			parametros.put("periodoExclusaoNegativacao", Util.formatarData(parametrosHelper.getPeriodoExclusaoNegativacaoInicio())
-					+ " à "	+ Util.formatarData(parametrosHelper.getPeriodoExclusaoNegativacaoFim()));
-		} else {
+		if(parametrosHelper.getPeriodoExclusaoNegativacaoInicio() != null){
+			parametros.put("periodoExclusaoNegativacao", Util.formatarData(parametrosHelper.getPeriodoExclusaoNegativacaoInicio()) + " à "
+							+ Util.formatarData(parametrosHelper.getPeriodoExclusaoNegativacaoFim()));
+		}else{
 			parametros.put("periodoExclusaoNegativacao", "");
 		}
 
-		if (parametrosHelper.getTituloComando() != null) {
+		if(parametrosHelper.getTituloComando() != null){
 			parametros.put("tituloComando", parametrosHelper.getTituloComando().toString());
-		} else {
+		}else{
 			parametros.put("tituloComando", "");
 		}
 
-		if (parametrosHelper.getIdEloPolo() != null) {
+		if(parametrosHelper.getIdEloPolo() != null){
 			FiltroLocalidade filtroLocalidade = new FiltroLocalidade();
 			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID_ELO, parametrosHelper.getIdEloPolo()));
 
-			Collection collLocalidade = fachada.pesquisar(filtroLocalidade,	Localidade.class.getName());
+			Collection collLocalidade = fachada.pesquisar(filtroLocalidade, Localidade.class.getName());
 			Iterator itt = collLocalidade.iterator();
-			while (itt.hasNext()) {
+			while(itt.hasNext()){
 				Localidade localidade = (Localidade) itt.next();
-				if (localidade != null) {
+				if(localidade != null){
 					parametros.put("eloPolo", localidade.getDescricao());
 				}
 				break;
 			}
-		} else {
+		}else{
 			parametros.put("eloPolo", "");
 		}
 
-		if (parametrosHelper.getIdLocalidade() != null) {
+		if(parametrosHelper.getIdLocalidade() != null){
 			FiltroLocalidade filtroLocalidade = new FiltroLocalidade();
 			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, parametrosHelper.getIdLocalidade()));
 
-			Collection collLocalidade = fachada.pesquisar(filtroLocalidade,	Localidade.class.getName());
+			Collection collLocalidade = fachada.pesquisar(filtroLocalidade, Localidade.class.getName());
 			Iterator itt = collLocalidade.iterator();
-			while (itt.hasNext()) {
+			while(itt.hasNext()){
 				Localidade localidade = (Localidade) itt.next();
-				if (localidade != null) {
+				if(localidade != null){
 					parametros.put("localidade", localidade.getDescricao());
 				}
 				break;
 			}
 
-		} else {
+		}else{
 			parametros.put("localidade", "");
 		}
 
-		if (parametrosHelper.getIdSetorComercial() != null) {
+		if(parametrosHelper.getIdSetorComercial() != null){
 			parametros.put("codigoSetorComercial", parametrosHelper.getIdSetorComercial().toString());
-		} else {
+		}else{
 			parametros.put("codigoSetorComercial", "");
 		}
 
-		if (parametrosHelper.getIdQuadra() != null) {
+		if(parametrosHelper.getIdQuadra() != null){
 			FiltroQuadra filtroQuadra = new FiltroQuadra();
 			filtroQuadra.adicionarParametro(new ParametroSimples(FiltroQuadra.ID, parametrosHelper.getIdQuadra()));
 
-			Collection collQuadra = fachada.pesquisar(filtroQuadra,	Quadra.class.getName());
+			Collection collQuadra = fachada.pesquisar(filtroQuadra, Quadra.class.getName());
 			Iterator itt = collQuadra.iterator();
-			while (itt.hasNext()) {
+			while(itt.hasNext()){
 				Quadra quadra = (Quadra) itt.next();
-				if (quadra != null) {
+				if(quadra != null){
 					parametros.put("numeroQuadra", quadra.getNumeroQuadra());
 				}
 				break;
 			}
-		} else {
+		}else{
 			parametros.put("numeroQuadra", "");
 		}
 
-		if (parametrosHelper.getColecaoCobrancaGrupo() != null) {
+		if(parametrosHelper.getColecaoCobrancaGrupo() != null){
 			String gruposCobranca = "";
 
 			Iterator itt = parametrosHelper.getColecaoCobrancaGrupo().iterator();
 			boolean primeiro = true;
-			while (itt.hasNext()) {
+			while(itt.hasNext()){
 				CobrancaGrupo cobrancaGrupo = (CobrancaGrupo) itt.next();
-				if (cobrancaGrupo != null) {
-					if (primeiro) {
-						gruposCobranca = gruposCobranca	+ cobrancaGrupo.getDescricao();
+				if(cobrancaGrupo != null){
+					if(primeiro){
+						gruposCobranca = gruposCobranca + cobrancaGrupo.getDescricao();
 						primeiro = false;
-					} else {
+					}else{
 						gruposCobranca = gruposCobranca + ", " + cobrancaGrupo.getDescricao();
 					}
 				}
@@ -486,22 +455,22 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 
 			parametros.put("grupoCobranca", gruposCobranca);
 
-		} else {
+		}else{
 			parametros.put("grupoCobranca", "");
 		}
 
-		if (parametrosHelper.getColecaoGerenciaRegional() != null) {
+		if(parametrosHelper.getColecaoGerenciaRegional() != null){
 			String gerenciasRegionais = "";
 
 			Iterator itt = parametrosHelper.getColecaoGerenciaRegional().iterator();
 			boolean primeiro = true;
-			while (itt.hasNext()) {
+			while(itt.hasNext()){
 				GerenciaRegional gerenciaRegional = (GerenciaRegional) itt.next();
-				if (gerenciaRegional != null) {
-					if (primeiro) {
-						gerenciasRegionais = gerenciasRegionais	+ gerenciaRegional.getNome();
+				if(gerenciaRegional != null){
+					if(primeiro){
+						gerenciasRegionais = gerenciasRegionais + gerenciaRegional.getNome();
 						primeiro = false;
-					} else {
+					}else{
 						gerenciasRegionais = gerenciasRegionais + ", " + gerenciaRegional.getNome();
 					}
 				}
@@ -509,22 +478,22 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 
 			parametros.put("gerenciaRegional", gerenciasRegionais);
 
-		} else {
+		}else{
 			parametros.put("gerenciaRegional", "");
 		}
 
-		if (parametrosHelper.getColecaoUnidadeNegocio() != null) {
+		if(parametrosHelper.getColecaoUnidadeNegocio() != null){
 			String unidadesNegocio = "";
 
 			Iterator itt = parametrosHelper.getColecaoUnidadeNegocio().iterator();
 			boolean primeiro = true;
-			while (itt.hasNext()) {
+			while(itt.hasNext()){
 				UnidadeNegocio unidadeNegocio = (UnidadeNegocio) itt.next();
-				if (unidadeNegocio != null) {
-					if (primeiro) {
+				if(unidadeNegocio != null){
+					if(primeiro){
 						unidadesNegocio = unidadesNegocio + unidadeNegocio.getNome();
 						primeiro = false;
-					} else {
+					}else{
 						unidadesNegocio = unidadesNegocio + ", " + unidadeNegocio.getNome();
 					}
 				}
@@ -532,22 +501,22 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 
 			parametros.put("unidadeNegocio", unidadesNegocio);
 
-		} else {
+		}else{
 			parametros.put("unidadeNegocio", "");
 		}
 
-		if (parametrosHelper.getColecaoImovelPerfil() != null) {
+		if(parametrosHelper.getColecaoImovelPerfil() != null){
 			String imoveisPerfil = "";
 
 			Iterator itt = parametrosHelper.getColecaoImovelPerfil().iterator();
 			boolean primeiro = true;
-			while (itt.hasNext()) {
+			while(itt.hasNext()){
 				ImovelPerfil imovelPerfil = (ImovelPerfil) itt.next();
-				if (imovelPerfil != null) {
-					if (primeiro) {
+				if(imovelPerfil != null){
+					if(primeiro){
 						imoveisPerfil = imoveisPerfil + imovelPerfil.getDescricao();
 						primeiro = false;
-					} else {
+					}else{
 						imoveisPerfil = imoveisPerfil + ", " + imovelPerfil.getDescricao();
 					}
 				}
@@ -555,22 +524,22 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 
 			parametros.put("imovelPerfil", imoveisPerfil);
 
-		} else {
+		}else{
 			parametros.put("imovelPerfil", "");
 		}
 
-		if (parametrosHelper.getColecaoCategoria() != null) {
+		if(parametrosHelper.getColecaoCategoria() != null){
 			String categorias = "";
 
 			Iterator itt = parametrosHelper.getColecaoCategoria().iterator();
 			boolean primeiro = true;
-			while (itt.hasNext()) {
+			while(itt.hasNext()){
 				Categoria categoria = (Categoria) itt.next();
-				if (categoria != null) {
-					if (primeiro) {
+				if(categoria != null){
+					if(primeiro){
 						categorias = categorias + categoria.getDescricao();
 						primeiro = false;
-					} else {
+					}else{
 						categorias = categorias + ", " + categoria.getDescricao();
 					}
 				}
@@ -578,22 +547,22 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 
 			parametros.put("categoria", categorias);
 
-		} else {
+		}else{
 			parametros.put("categoria", "");
 		}
 
-		if (parametrosHelper.getColecaoClienteTipo() != null) {
+		if(parametrosHelper.getColecaoClienteTipo() != null){
 			String tiposCliente = "";
 
 			Iterator itt = parametrosHelper.getColecaoClienteTipo().iterator();
 			boolean primeiro = true;
-			while (itt.hasNext()) {
+			while(itt.hasNext()){
 				ClienteTipo clienteTipo = (ClienteTipo) itt.next();
-				if (clienteTipo != null) {
-					if (primeiro) {
-						tiposCliente = tiposCliente	+ clienteTipo.getDescricao();
+				if(clienteTipo != null){
+					if(primeiro){
+						tiposCliente = tiposCliente + clienteTipo.getDescricao();
 						primeiro = false;
-					} else {
+					}else{
 						tiposCliente = tiposCliente + ", " + clienteTipo.getDescricao();
 					}
 				}
@@ -601,30 +570,30 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 
 			parametros.put("tipoCliente", tiposCliente);
 
-		} else {
+		}else{
 			parametros.put("tipoCliente", "");
 		}
 
-		if (parametrosHelper.getColecaoEsferaPoder() != null) {
+		if(parametrosHelper.getColecaoEsferaPoder() != null){
 			String esferasPoder = "";
 
 			Iterator itt = parametrosHelper.getColecaoEsferaPoder().iterator();
 			boolean primeiro = true;
-			while (itt.hasNext()) {
+			while(itt.hasNext()){
 				EsferaPoder esferaPoder = (EsferaPoder) itt.next();
-				if (esferaPoder != null) {
-					if (primeiro) {
-						esferasPoder = esferasPoder	+ esferaPoder.getDescricao();
+				if(esferaPoder != null){
+					if(primeiro){
+						esferasPoder = esferasPoder + esferaPoder.getDescricao();
 						primeiro = false;
-					} else {
-						esferasPoder = esferasPoder + ", "	+ esferaPoder.getDescricao();
+					}else{
+						esferasPoder = esferasPoder + ", " + esferaPoder.getDescricao();
 					}
 				}
 			}
 
 			parametros.put("esferaPoder", esferasPoder);
 
-		} else {
+		}else{
 			parametros.put("esferaPoder", "");
 		}
 
@@ -636,9 +605,9 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 
 		// ------------------------------------
 		// Grava o relatório no sistema
-		try {
-			persistirRelatorioConcluido(retorno,Relatorio.GERAR_RELATORIO_NEGATIVACOES_EXCLUIDAS,idFuncionalidadeIniciada,null);
-		} catch (ControladorException e) {
+		try{
+			persistirRelatorioConcluido(retorno, Relatorio.GERAR_RELATORIO_NEGATIVACOES_EXCLUIDAS, idFuncionalidadeIniciada, null);
+		}catch(ControladorException e){
 			e.printStackTrace();
 			throw new TarefaException("Erro ao gravar relatório no sistema", e);
 		}
@@ -648,8 +617,64 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 		return retorno;
 	}
 
+	private BigDecimal calcularValorPago(Fachada fachada, NegativadorMovimentoReg negativadorMovimentoReg){
+
+		BigDecimal valorPago;
+		valorPago = fachada.pesquisarSomatorioNegativadorMovimentoRegItens(negativadorMovimentoReg.getId(), CobrancaDebitoSituacao.PAGO);
+
+		if(valorPago == null){
+			valorPago = new BigDecimal(0);
+		}
+		return valorPago;
+	}
+
+	private BigDecimal calcularValorCancelado(Fachada fachada, NegativadorMovimentoReg negativadorMovimentoReg){
+
+		BigDecimal valorCancelado = fachada.pesquisarSomatorioNegativadorMovimentoRegItens(negativadorMovimentoReg.getId(),
+						CobrancaDebitoSituacao.CANCELADO);
+
+		if(valorCancelado == null){
+			valorCancelado = new BigDecimal(0);
+		}
+
+		return valorCancelado;
+	}
+
+	private BigDecimal calcularValorParcelado(Fachada fachada, NegativadorMovimentoReg negativadorMovimentoReg){
+
+		BigDecimal valorParcelado;
+		valorParcelado = fachada.pesquisarSomatorioNegativadorMovimentoRegItens(negativadorMovimentoReg.getId(),
+						CobrancaDebitoSituacao.PARCELADO);
+
+		if(valorParcelado == null){
+			valorParcelado = new BigDecimal(0);
+		}
+		//
+		// valorParceladoEntrada =
+		// negativadorMovimentoReg.getValorParceladoEntrada();
+		//
+		// if (valorParceladoEntrada != null) {
+		// valorParcelado = valorParcelado.subtract(valorParceladoEntrada);
+		// } else {
+		// valorParceladoEntrada = new BigDecimal(0);
+		//
+		// }
+
+		// Vivianne Sousa - 28/04/2009 - CRC1599
+		// RelatorioNegativacoesExcluidasSomatorioDadosParcelamentoHelper helper =
+		// fachada
+		// .pesquisarNegativadorMovimentoRegParcelamento(negativadorMovimentoReg.getId());
+		//
+		// valorParcelado = helper.getValorParcelado();
+		// valorParceladoPago = helper.getValorParceladoPago();
+		// valorParceladoEntrada = helper.getValorParceladoEntrada();
+		// valorParceladoEntradaPago = helper.getValorParceladoEntradaPago();
+		return valorParcelado;
+	}
+
 	@Override
-	public int calcularTotalRegistrosRelatorio() {
+	public int calcularTotalRegistrosRelatorio(){
+
 		int retorno = ConstantesExecucaoRelatorios.QUANTIDADE_NAO_INFORMADA;
 
 		// retorno = Fachada.getInstancia().totalRegistrosPesquisa(
@@ -659,7 +684,8 @@ public class RelatorioNegativacoesExcluidas extends TarefaRelatorio {
 		return retorno;
 	}
 
-	public void agendarTarefaBatch() {
+	public void agendarTarefaBatch(){
+
 		AgendadorTarefas.agendarTarefa("RelatorioNegativacoesExcluidas", this);
 	}
 

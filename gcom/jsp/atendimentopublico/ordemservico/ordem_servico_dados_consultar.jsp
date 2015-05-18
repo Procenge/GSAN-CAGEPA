@@ -3,6 +3,9 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="display" uri="displaytag" %>
+<link rel="stylesheet" href="<bean:message key="caminho.css"/>displaytag.css" type="text/css">	
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
@@ -44,6 +47,14 @@
 		var form = document.forms[0];
 		form.action = "exibirEncerrarOrdemServicoAction.do?numeroOS=" + form.numeroOSPesquisada.value + "&retornoTela=exibirConsultarDadosOrdemServicoAction.do?numeroOS=" + form.numeroOSPesquisada.value;
 		form.submit();
+	}
+	
+	function gerarOS() {
+		var form = document.forms[0];
+
+		form.action = 'exibirGerarOrdemServicoAction.do?menu=sim&forward=exibirGerarOrdemServico&caminhoRetornoGerarOs=filtrarOrdemServicoAction.do&numeroRA='+form.numeroRA.value+"&numeroOS=" + form.numeroOSPesquisada.value;
+		form.submit();
+
 	}
 
 	function tramitar(){
@@ -432,6 +443,25 @@
 												style="background-color:#EFEFEF; border:0; text-align:right;"
 												size="9" maxlength="9" /></td>
 										</tr>
+										
+										<tr>
+									<logic:equal name="permiteCobrarHora" value="1" scope="request">
+											<td height="10" width="33%"><strong>Valor das Horas Trabalhadas:</strong></td>
+											<td><html:text property="valorHorasTrabalhadas"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; text-align:right;"
+												size="9" maxlength="9" /> 
+												
+												&nbsp;&nbsp;&nbsp;&nbsp; 
+									</logic:equal>
+									<logic:equal name="permiteCobrarMaterial" value="1" scope="request">
+										<strong>Valor
+											do Material Utilizado:</strong> &nbsp;&nbsp; <html:text
+												property="valorMateriais" readonly="true"
+												style="background-color:#EFEFEF; border:0; text-align:right;"
+												size="9" maxlength="9" /></td>
+												</logic:equal>
+										</tr>
 
 										<tr>
 											<td width="33%"><strong>Prioridade Original:</strong></td>
@@ -477,12 +507,31 @@
 												style="background-color:#EFEFEF; border:0;" size="40"
 												maxlength="40" /></td>
 										</tr>
+										<tr>
+											<td width="33%"><strong>Quantidade Dias Unidade:</strong></td>
+											<td><html:text property="quantidadeDiasUnidade" readonly="true"
+												style="background-color:#EFEFEF; border:0;" size="6"
+												maxlength="8" /> </td>
+										</tr>
+										<tr>
+											<td width="33%"><strong>Data Prevista Cliente:</strong></td>
+											<td><html:text property="dataPrevisaoCliente" readonly="true"
+												style="background-color:#EFEFEF; border:0;" size="10"
+												maxlength="10" /> </td>
+										</tr>
 
 										<tr>
 											<td width="33%"><strong>Data da &Uacute;ltima Emiss&atilde;o:</strong></td>
 											<td><html:text property="dataUltimaEmissao" readonly="true"
 												style="background-color:#EFEFEF; border:0;" size="9" /></td>
 										</tr>
+										<c:if test="${ConsultarDadosOrdemServicoActionForm.idOSServicoReparo != null}">
+										<tr>
+											<td width="33%"><strong>OS do Serviço de Reparo:</strong></td>
+											<td><html:text property="idOSServicoReparo" readonly="true"
+												style="background-color:#EFEFEF; border:0;" size="9" /></td>
+										</tr>
+										</c:if>
 
 									</table>
 									</td>
@@ -589,6 +638,158 @@
 														</span>
 													</div>
 											    </td>
+											</tr>
+									</logic:iterate>
+								</logic:present>
+								
+								</table>
+								
+							</td>
+						</tr>
+					</table>
+					</div>
+					</td>
+				</tr>
+				</logic:present>
+				<logic:present name="achouDadosInterrupcaoDeslocamento">
+				<tr>
+					<td>
+					<div id="layerHideInterrupcaoDeslocamento" style="display:block">
+					<table width="100%" border="0" bgcolor="#99CCFF">
+						<tr bgcolor="#99CCFF">
+							<td align="center"><span class="style2"> <a
+								href="javascript:extendeTabela('InterrupcaoDeslocamento',true);" /> <b>Dados
+							de Interrupção do Deslocamento</b> </a> </span></td>
+						</tr>
+					</table>
+					</div>
+
+					<div id="layerShowInterrupcaoDeslocamento" style="display:none">
+
+					<table width="100%" border="0" bgcolor="#99CCFF">
+
+						<tr bgcolor="#99CCFF">
+							<td align="center"><span class="style2"> <a
+								href="javascript:extendeTabela('InterrupcaoDeslocamento',false);" /> <b>Dados
+							de Interrupcao do Deslocamento</b> </a> </span></td>
+						</tr>
+
+						<tr bgcolor="#cbe5fe">
+
+							<td>
+							<table width="100%" border="0" bgcolor="#90c7fc">
+								<tr bgcolor="#90c7fc" height="18">
+									<td align="center"><strong>Motivo Interrupção</strong></td>
+									<td align="center"><strong>Km</strong></td>
+									<td align="center"><strong>Início da Interrupção</strong></td>
+									<td align="center"><strong>Fim da Interrupção</strong></td>
+								</tr>
+								
+								<logic:present name="ConsultarDadosOrdemServicoActionForm" property="collectionOsInterrupcaoDeslocamentoHelpers" scope="session">
+									<%int cont = 1;%>
+									<logic:iterate id="helperInterrupcaoDeslocamento" name="ConsultarDadosOrdemServicoActionForm" property="collectionOsInterrupcaoDeslocamentoHelpers" type="gcom.gui.atendimentopublico.ordemservico.OSDadosInterrupcaoHelper" scope="session">
+											<%cont = cont + 1;
+												if (cont % 2 == 0) {%>
+											<tr bgcolor="#FFFFFF">
+												<%} else {
+			
+												%>
+											<tr bgcolor="#cbe5fe">
+												<%}%>
+																			       								       
+										       <td align="center">
+													<div>
+														<bean:write	name="helperInterrupcaoDeslocamento" property="motivoInterrupcao" />
+													</div>
+											   </td>
+											   <td align="center">
+													<div>
+														<bean:write	name="helperInterrupcaoDeslocamento" property="km" />
+													</div>
+											   </td>
+											   <td align="center">
+													<div>
+														<bean:write	name="helperInterrupcaoDeslocamento" property="inicioInterrupcao" />
+													</div>
+											   </td>
+											   <td align="center">
+													<div>
+														<bean:write	name="helperInterrupcaoDeslocamento" property="fimInterrupcao" />
+													</div>
+											   </td>
+											</tr>
+									</logic:iterate>
+								</logic:present>
+								
+								</table>
+								
+							</td>
+						</tr>
+					</table>
+					</div>
+					</td>
+				</tr>
+				</logic:present>
+				<logic:present name="achouDadosInterrupcaoExecucao">
+				<tr>
+					<td>
+					<div id="layerHideInterrupcaoExecucao" style="display:block">
+					<table width="100%" border="0" bgcolor="#99CCFF">
+						<tr bgcolor="#99CCFF">
+							<td align="center"><span class="style2"> <a
+								href="javascript:extendeTabela('InterrupcaoExecucao',true);" /> <b>Dados
+							de Interrupção de Execução</b> </a> </span></td>
+						</tr>
+					</table>
+					</div>
+
+					<div id="layerShowInterrupcaoExecucao" style="display:none">
+
+					<table width="100%" border="0" bgcolor="#99CCFF">
+
+						<tr bgcolor="#99CCFF">
+							<td align="center"><span class="style2"> <a
+								href="javascript:extendeTabela('InterrupcaoExecucao',false);" /> <b>Dados
+							de Interrupcao de Execução</b> </a> </span></td>
+						</tr>
+
+						<tr bgcolor="#cbe5fe">
+
+							<td>
+							<table width="100%" border="0" bgcolor="#90c7fc">
+								<tr bgcolor="#90c7fc" height="18">
+									<td align="center"><strong>Motivo Interrupção</strong></td>
+									<td align="center"><strong>Início da Interrupção</strong></td>
+									<td align="center"><strong>Fim da Interrupção</strong></td>
+								</tr>
+								
+								<logic:present name="ConsultarDadosOrdemServicoActionForm" property="collectionOsInterrupcaoExecucaoHelpers" scope="session">
+									<%int cont = 1;%>
+									<logic:iterate id="helperInterrupcaoDeslocamento" name="ConsultarDadosOrdemServicoActionForm" property="collectionOsInterrupcaoExecucaoHelpers" type="gcom.gui.atendimentopublico.ordemservico.OSDadosInterrupcaoHelper" scope="session">
+											<%cont = cont + 1;
+												if (cont % 2 == 0) {%>
+											<tr bgcolor="#FFFFFF">
+												<%} else {
+			
+												%>
+											<tr bgcolor="#cbe5fe">
+												<%}%>
+																			       								       
+										       <td align="center">
+													<div>
+														<bean:write	name="helperInterrupcaoDeslocamento" property="motivoInterrupcao" />
+													</div>
+											   </td>
+											   <td align="center">
+													<div>
+														<bean:write	name="helperInterrupcaoDeslocamento" property="inicioInterrupcao" />
+													</div>
+											   </td>
+											   <td align="center">
+													<div>
+														<bean:write	name="helperInterrupcaoDeslocamento" property="fimInterrupcao" />
+													</div>
+											   </td>
 											</tr>
 									</logic:iterate>
 								</logic:present>
@@ -815,7 +1016,7 @@
 									<tr>
 										<td class="style3"><strong>Usu&aacute;rio do Encerramento:</strong>
 										</td>
-										<td><html:text property="usuarioEncerramentoId"
+										<td><html:text property="usuarioEncerramentoLogin"
 											readonly="true" style="background-color:#EFEFEF; border:0;"
 											size="2" maxlength="2" /> <html:text
 											property="usuarioEncerramentoNome" readonly="true"
@@ -1249,58 +1450,70 @@
 									<b>Dados da Vala</b> </a> </span></td>
 							</tr>
 							<tr bgcolor="#cbe5fe">
-								<td>
-								<table border="0" width="100%">
-
-									<tr>
-										<td width="20%"><strong>Número da Vala:</strong></td>
-										<td>
-											<html:text property="numeroVala" readonly="true"
-												style="background-color:#EFEFEF; border:0;" size="20"
-												maxlength="48" />
-										</td>
-									</tr>
-									<tr>
-										<td><strong>Comprimento:</strong></td>
-										<td>
-											<html:text property="comprimentoVala" readonly="true"
-												style="background-color:#EFEFEF; border:0;" size="20"
-													maxlength="48" />
-										</td>
-									</tr>
-									<tr>
-										<td><strong>Largura:</strong></td>
-										<td>
-											<html:text property="larguraVala" readonly="true"
-												style="background-color:#EFEFEF; border:0;" size="20"
-													maxlength="48" />
-										</td>
-									</tr>
-									<tr>
-										<td><strong>Profundidade:</strong></td>
-										<td>
-											<html:text property="profundidadeVala" readonly="true"
-												style="background-color:#EFEFEF; border:0;" size="20"
-													maxlength="48" />
-										</td>
-									</tr>
-									<tr>
-										<td><strong>Local Ocorrência:</strong></td>
-										<td>
-											<html:text property="descricaoLocalOcorrencia" readonly="true"
-														style="background-color:#EFEFEF; border:0;" size="20"
-														maxlength="48" />
-										</td>
-									</tr>
-									<tr>
-										<td><strong>Pavimento:</strong></td>
-										<td>
-											<html:text property="descricaoPavimento" readonly="true"
-														style="background-color:#EFEFEF; border:0;" size="20"
-														maxlength="48" />
-										</td>
-									</tr>
-								</table>
+								<td>																	
+									<display:table class="dataTable" name="sessionScope.colecaoVala" sort="list" id="vala"  pagesize="15" excludedParams="" > 
+									        		
+											        <display:column property="numeroVala" title="Núm."/>											        											        											        
+											        <display:column sortable="false" title="C x L x P">											        	
+											        	<c:out value="${vala.numeroComprimento}" />		
+											        	<c:out value=" x "/>
+											        	<c:out value="${vala.numeroLargura}" />		
+											        	<c:out value=" x "/>
+											        	<c:out value="${vala.numeroProfundidade}" />								        		
+											        </display:column>
+											        											        
+											        <display:column property="localOcorrencia.descricaoAbreviada" title="Loc. Ocor."/>
+											        <display:column sortable="false" title="Pav.">
+											        	<c:choose>
+											        		<c:when test="${vala.localOcorrencia.indicadorCalcada == 1}">
+											        			<c:out value="${vala.pavimentoCalcada.descricao}" />
+											        		</c:when>
+											        		<c:otherwise>
+											        			<c:out value="${vala.pavimentoRua.descricao}" />
+											        		</c:otherwise>
+											        	</c:choose>
+											        </display:column>
+											        <display:column sortable="false" title="Ater.">
+											        	<c:choose>
+											        		<c:when test="${vala.indicadorAterro eq 1}">
+											        			<c:out value="Sim"/>
+											        		</c:when>
+											        		<c:otherwise>
+											        			<c:out value="Não"/>
+											        		</c:otherwise>
+											        	</c:choose>
+											        </display:column>
+											        	
+											        
+											        <display:column sortable="false" title="Ent.">
+											        	<c:choose>
+											        		<c:when test="${vala.indicadorEntulho eq 1}">
+											        			<c:out value="Sim"/>
+											        		</c:when>
+											        		<c:otherwise>
+											        			<c:out value="Não"/>
+											        		</c:otherwise>
+											        	</c:choose>
+											        </display:column> 
+											        
+											        <display:column sortable="false" title="Qtd. Ent.">											        	
+											        	<c:out value="${vala.quantidadeEntulho}" />											        		
+											        </display:column>
+											        
+											        <display:column sortable="false" title="Med. Ent.">											        	
+											        	<c:out value="${vala.entulhoMedida.descricaoAbreviada}" />											        		
+											        </display:column>
+											        
+											         <display:column sortable="false" title="Tub.Ag. C x D">											        	
+											        	<c:out value="${vala.numeroComprimentoTutulacaoAguaPluvial}" />		
+											        	<c:out value=" x "/>
+											        	<c:out value="${vala.numeroDiametroTutulacaoAguaPluvial}" />									        		
+											        </display:column>
+											        
+											          
+											        											         											    	
+									        	</display:table>
+									        	
 								</td>
 							</tr>
 						</table>
@@ -1310,7 +1523,128 @@
 				</c:if>
 				<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
 				<!-- FIM - Dados da Vala -->
+				<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->				
+				
 				<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+				<!-- Dados do reparo solicitado -->
+				<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->				
+				<c:if test="${ConsultarDadosOrdemServicoActionForm.exibirDadosReparoOSPrincipal != null}">
+					<tr>
+						<td>
+						<div id="layerHideDadosValaOSPrincipal" style="display:block">
+						<table width="100%" border="0" bgcolor="#99CCFF">
+							<tr bgcolor="#99CCFF">
+								<td align="center"><span class="style2"> <a
+									href="javascript:extendeTabela('DadosValaOSPrincipal',true);" />
+									<b>Dados do Reparo Solicitado</b> </a> </span></td>
+							</tr>
+						</table>
+						</div>
+
+						<div id="layerShowDadosValaOSPrincipal" style="display:none">
+
+						<table width="100%" border="0" bgcolor="#99CCFF">
+
+							<tr bgcolor="#99CCFF">
+								<td align="center"><span class="style2"> <a
+									href="javascript:extendeTabela('DadosValaOSPrincipal',false);" />
+									<b>Dados do Reparo Solicitado</b> </a> </span></td>
+							</tr>
+							<tr bgcolor="#cbe5fe">
+
+								<td>
+								<table border="0" width="100%">
+		            		  	<tr>
+		            			  <td width="20%"><strong>OS Principal:</strong></td>
+						          <td> 
+		        			    	 	<html:text property="idOSPrincipal" readonly="true"
+													style="background-color:#EFEFEF; border:0;" size="20"
+													maxlength="48" />
+						          </td>
+						        </tr>						        
+						        </table>
+						        
+						        <table border="0" width="100%">
+		            		  	<tr>		            			  
+						          <td> 
+		        			    	 	<strong>Dados da Vala da OS Principal:</strong>														
+									<display:table class="dataTable" name="sessionScope.colecaoValaOSPrincipal" sort="list" id="vala"  pagesize="15" excludedParams="" > 
+									        		
+											        <display:column property="numeroVala" title="Núm."/>											        											        											        
+											        <display:column sortable="false" title="C x L x P">											        	
+											        	<c:out value="${vala.numeroComprimento}" />		
+											        	<c:out value=" x "/>
+											        	<c:out value="${vala.numeroLargura}" />		
+											        	<c:out value=" x "/>
+											        	<c:out value="${vala.numeroProfundidade}" />								        		
+											        </display:column>
+											        											        
+											        <display:column property="localOcorrencia.descricaoAbreviada" title="Loc. Ocor."/>
+											        <display:column sortable="false" title="Pav.">
+											        	<c:choose>
+											        		<c:when test="${vala.localOcorrencia.indicadorCalcada == 1}">
+											        			<c:out value="${vala.pavimentoCalcada.descricao}" />
+											        		</c:when>
+											        		<c:otherwise>
+											        			<c:out value="${vala.pavimentoRua.descricao}" />
+											        		</c:otherwise>
+											        	</c:choose>
+											        </display:column>
+											        <display:column sortable="false" title="Ater.">
+											        	<c:choose>
+											        		<c:when test="${vala.indicadorAterro eq 1}">
+											        			<c:out value="Sim"/>
+											        		</c:when>
+											        		<c:otherwise>
+											        			<c:out value="Não"/>
+											        		</c:otherwise>
+											        	</c:choose>
+											        </display:column>
+											        	
+											        
+											        <display:column sortable="false" title="Ent.">
+											        	<c:choose>
+											        		<c:when test="${vala.indicadorEntulho eq 1}">
+											        			<c:out value="Sim"/>
+											        		</c:when>
+											        		<c:otherwise>
+											        			<c:out value="Não"/>
+											        		</c:otherwise>
+											        	</c:choose>
+											        </display:column> 
+											        
+											        <display:column sortable="false" title="Qtd. Ent.">											        	
+											        	<c:out value="${vala.quantidadeEntulho}" />											        		
+											        </display:column>
+											        
+											        <display:column sortable="false" title="Med. Ent.">											        	
+											        	<c:out value="${vala.entulhoMedida.descricaoAbreviada}" />											        		
+											        </display:column>
+											        
+											         <display:column sortable="false" title="Tub.Ag. C x D">											        	
+											        	<c:out value="${vala.numeroComprimentoTutulacaoAguaPluvial}" />		
+											        	<c:out value=" x "/>
+											        	<c:out value="${vala.numeroDiametroTutulacaoAguaPluvial}" />									        		
+											        </display:column>
+											        
+											          
+											        											         											    	
+									        	</display:table>
+						          </td>
+						        </tr>						        
+						        </table>
+						        
+						        </td>
+						    </tr>														
+						</table>
+						</div>
+						</td>
+					</tr>
+				</c:if>
+				<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+				<!-- FIM - Dados do reparo solicitado -->
+				<!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+				<!-- -------------asdfasdfsafd---- -->
 				<tr>
 					<td>
 					<table width="100%">
@@ -1327,6 +1661,21 @@
 <!-- 						<input type="button" name="SubmitImprimirParecerOS" -->
 <!-- 											class="bottonRightCol" value="Imprimir Parecer OS" -->
 <!-- 											onclick="imprimirParecerOS();"> -->
+
+							<c:if
+								test="${ConsultarDadosOrdemServicoActionForm.permiteGerarOSReparo == '1'}">
+								<input name="SubmitGerarOS" type="button" class="bottonRightCol"
+									value="Gerar OS Reparo" onclick="gerarOS();">
+
+							</c:if> 				
+							<c:if
+								test="${ConsultarDadosOrdemServicoActionForm.permiteGerarOSReparo != '1'}">
+								<input name="SubmitGerarOS" type="button" class="bottonRightCol"
+									value="Gerar OS Reparo"
+									disabled="disabled">
+
+							</c:if>
+
 							<c:if
 								test="${ConsultarDadosOrdemServicoActionForm.situacaoOSId == '2'}">
 								<input name="SubmitImprimirParecerOS" type="button" class="bottonRightCol"

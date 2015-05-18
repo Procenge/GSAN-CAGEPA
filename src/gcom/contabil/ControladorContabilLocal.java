@@ -78,12 +78,14 @@ package gcom.contabil;
 
 import gcom.arrecadacao.pagamento.GuiaPagamentoCategoria;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
+import gcom.cobranca.bean.IntervaloReferenciaHelper;
 import gcom.contabil.bean.LancamentoContabilAnaliticoConsultaHelper;
 import gcom.contabil.bean.LancamentoContabilSinteticoConsultaHelper;
 import gcom.faturamento.debito.DebitoACobrar;
 import gcom.util.ControladorException;
 import gcom.util.ErroRepositorioException;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Map;
 
@@ -200,7 +202,8 @@ public interface ControladorContabilLocal
 
 	public void ajustarContabilidadeArrecadacaoDeso(Integer limite) throws ControladorException;
 
-	public void ajustarRegistrosContaEGuiaDeso() throws ControladorException;
+	public void ajustarRegistrosContaEGuia(Integer idClienteResponsavel, Integer idImovel,
+					Collection<IntervaloReferenciaHelper> colecaoReferencias, BigDecimal valorJuros) throws ControladorException;
 
 	public void desfazerPreFaturamentoPorGrupoERef() throws ControladorException;
 
@@ -243,5 +246,24 @@ public interface ControladorContabilLocal
 	 * @throws ControladorException
 	 */
 	String obterCodigoGrupoContaAuxiliarOrigemCredito(LancamentoContabilSintetico lancamentoContabilSintetico) throws ControladorException;
+
+	// /**
+	// * Método usado para obter o CodigoContaAuxiliarOrigem
+	// *
+	// * @param lancamentoContabilSintetico
+	// * @return
+	// * @throws ControladorException
+	// */
+	// String obterCodigoContaAuxiliarOrigemCredito(LancamentoContabilSintetico
+	// lancamentoContabilSintetico) throws ControladorException;
+
+	/**
+	 * Método usado para ajustar os lancamentos contaveis sinteticos
+	 * 
+	 * @param ajutarLacamentoContabilSintetico
+	 * @return
+	 * @throws ControladorException
+	 */
+	public void ajustarLancamentosContabeisSinteticos(int idFuncionalidadeIniciada) throws ControladorException;
 
 }

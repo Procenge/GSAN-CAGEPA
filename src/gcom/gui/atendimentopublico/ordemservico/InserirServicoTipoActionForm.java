@@ -174,6 +174,8 @@ public class InserirServicoTipoActionForm
 
 	private String indicadorVistoria;
 
+	private String indicadorAfericaoHidrometro;
+
 	private String indicadorFiscalizacaoInfracao;
 
 	private String valorRemuneracao;
@@ -204,11 +206,49 @@ public class InserirServicoTipoActionForm
 
 	private String indicadorServicoCritico;
 
+	private String indicadorPagamentoAntecipado;
+
+	private String numeroMaximoVisitasImprodutivasPermitidas;
+
+	private String indicadorPermiteAlterarValor;
+
 	Collection<ServicoTipoAtividade> servicoTipoAtividades = new ArrayList<ServicoTipoAtividade>();
 
 	Collection<ServicoTipoMaterial> servicoTipoMateriais = new ArrayList<ServicoTipoMaterial>();
 
 	Collection<ServicoTipoValorLocalidade> servicoTipoValorLocalidade = new ArrayList<ServicoTipoValorLocalidade>();
+
+	private String numeroMaximoGuiaPrestacaoAntecipadaPermitidas;
+
+	public String getNumeroMaximoGuiaPrestacaoAntecipadaPermitidas(){
+
+		return numeroMaximoGuiaPrestacaoAntecipadaPermitidas;
+	}
+
+	public void setNumeroMaximoGuiaPrestacaoAntecipadaPermitidas(String numeroMaximoGuiaPrestacaoAntecipadaPermitidas){
+
+		this.numeroMaximoGuiaPrestacaoAntecipadaPermitidas = numeroMaximoGuiaPrestacaoAntecipadaPermitidas;
+	}
+
+	public String getNumeroMaximoVisitasImprodutivasPermitidas(){
+
+		return numeroMaximoVisitasImprodutivasPermitidas;
+	}
+
+	public void setNumeroMaximoVisitasImprodutivasPermitidas(String numeroMaximoVisitasImprodutivasPermitidas){
+
+		this.numeroMaximoVisitasImprodutivasPermitidas = numeroMaximoVisitasImprodutivasPermitidas;
+	}
+
+	public String getIndicadorPagamentoAntecipado(){
+
+		return indicadorPagamentoAntecipado;
+	}
+
+	public void setIndicadorPagamentoAntecipado(String indicadorPagamentoAntecipado){
+
+		this.indicadorPagamentoAntecipado = indicadorPagamentoAntecipado;
+	}
 
 	public String getAbreviatura(){
 
@@ -541,6 +581,17 @@ public class InserirServicoTipoActionForm
 		this.servicoTipoMaterialQuantidadePadrao = servicoTipoMaterialQuantidadePadrao;
 	}
 
+	
+	public String getIndicadorPermiteAlterarValor(){
+
+		return indicadorPermiteAlterarValor;
+	}
+
+	public void setIndicadorPermiteAlterarValor(String indicadorPermiteAlterarValor){
+
+		this.indicadorPermiteAlterarValor = indicadorPermiteAlterarValor;
+	}
+
 	public void addServicoTipoAtividade(){
 
 		Atividade atv;
@@ -722,6 +773,16 @@ public class InserirServicoTipoActionForm
 			servicoTipo.setIndicadorVistoria(Short.parseShort(getIndicadorVistoria()));
 		}
 
+		// indicador Aferição de Hidrômetro
+		if(Util.validarNumeroMaiorQueZERO(getIndicadorAfericaoHidrometro())){
+			servicoTipo.setIndicadorAfericaoHidrometro(Short.parseShort(getIndicadorAfericaoHidrometro()));
+		}
+
+		// indicador Aferição de Hidrômetro
+		if(Util.validarNumeroMaiorQueZERO(getIndicadorPagamentoAntecipado())){
+			servicoTipo.setIndicadorPagamentoAntecipado(Short.parseShort(getIndicadorPagamentoAntecipado()));
+		}
+
 		// indicador Fiscalizacao Infração
 		if(Util.validarNumeroMaiorQueZERO(getIndicadorFiscalizacaoInfracao())){
 			servicoTipo.setIndicadorFiscalizacaoInfracao(Short.parseShort(getIndicadorFiscalizacaoInfracao()));
@@ -758,6 +819,23 @@ public class InserirServicoTipoActionForm
 		if(getPrazoExecucao() != null){
 			try{
 				servicoTipo.setPrazoExecucao(Integer.valueOf(getPrazoExecucao()));
+			}catch(NumberFormatException e){
+			}
+		}
+
+		// Numero Maximo de Visitas Improdutivas Permitidas
+		if(getNumeroMaximoVisitasImprodutivasPermitidas() != null && !getNumeroMaximoVisitasImprodutivasPermitidas().equals("")){
+			try{
+				servicoTipo.setNumeroMaximoVisitasImprodutivasPermitidas(Integer.valueOf(getNumeroMaximoVisitasImprodutivasPermitidas()));
+			}catch(NumberFormatException e){
+			}
+		}
+
+		// Numero Maximo de Prestações de Guia de Pagamento Permitidas
+		if(getNumeroMaximoGuiaPrestacaoAntecipadaPermitidas() != null && !getNumeroMaximoGuiaPrestacaoAntecipadaPermitidas().equals("")){
+			try{
+				servicoTipo.setNumeroMaximoGuiaPrestacaoAntecipadaPermitidas(Short
+								.valueOf(getNumeroMaximoGuiaPrestacaoAntecipadaPermitidas()));
 			}catch(NumberFormatException e){
 			}
 		}
@@ -811,6 +889,10 @@ public class InserirServicoTipoActionForm
 			servicoTipo.setIndicadorServicoCritico(Integer.parseInt(getIndicadorServicoCritico()));
 		}
 
+		if(Util.validarNumeroMaiorQueZERO(getIndicadorPermiteAlterarValor())){
+			servicoTipo.setIndicadorPermiteAlterarValor(Short.parseShort(getIndicadorPermiteAlterarValor()));
+		}
+
 		return servicoTipo;
 	}
 
@@ -838,11 +920,15 @@ public class InserirServicoTipoActionForm
 		atividadeUnica = null;
 		indicadorFiscalizacaoInfracao = null;
 		indicadorVistoria = null;
+		indicadorAfericaoHidrometro = null;
+		indicadorPagamentoAntecipado = null;
 
 		valorRemuneracao = null;
 		percentualRemuneracao = null;
 		prazoExecucao = null;
 		tipoRemuneracao = null;
+		numeroMaximoVisitasImprodutivasPermitidas = null;
+		numeroMaximoGuiaPrestacaoAntecipadaPermitidas = null;
 
 		method = null;
 
@@ -875,6 +961,7 @@ public class InserirServicoTipoActionForm
 		indicadorVala = null;
 		indicadorOrdemSeletiva = null;
 		indicadorServicoCritico = null;
+		indicadorPermiteAlterarValor = null;
 
 	}
 
@@ -1047,4 +1134,15 @@ public class InserirServicoTipoActionForm
 
 		this.servicoTipoValorLocalidadeId = servicoTipoValorLocalidadeId;
 	}
+
+	public String getIndicadorAfericaoHidrometro(){
+
+		return indicadorAfericaoHidrometro;
+	}
+
+	public void setIndicadorAfericaoHidrometro(String indicadorAfericaoHidrometro){
+
+		this.indicadorAfericaoHidrometro = indicadorAfericaoHidrometro;
+	}
+
 }

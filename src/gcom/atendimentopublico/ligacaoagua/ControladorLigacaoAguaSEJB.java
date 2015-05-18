@@ -2063,6 +2063,10 @@ public class ControladorLigacaoAguaSEJB
 												.getPercentualCobranca().toString()), helper.getQtdeParcelas());
 			}
 
+			// 4.4.1. Retirar o hidrômetro instalado
+			getControladorAtendimentoPublico().efetuarRetiradaHidrometro(integracaoComercialHelper);
+
+			// Atualizar hidrômetro instalação histórico com valor correspondente a disponível
 			HidrometroInstalacaoHistorico hidrometroInstalacaoHistorico = integracaoComercialHelper.getHidrometroInstalacaoHistorico();
 
 			if(integracaoComercialHelper.getHidrometroInstalacaoHistorico() != null){

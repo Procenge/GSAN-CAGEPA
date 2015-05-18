@@ -83,6 +83,7 @@ import gcom.seguranca.transacao.Tabela;
 import gcom.util.ControladorException;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Declaração pública de serviços do Session Bean de ControladorCliente
@@ -343,7 +344,7 @@ public interface ControladorAcessoLocal
 	 * @return
 	 * @throws ControladorException
 	 */
-	public String verificarTipoURL(String url) throws ControladorException;
+	public Map<Integer, String> verificarTipoURL(String url) throws ControladorException;
 
 	/**
 	 * Metódo que verifica se o usuário tem permissão para acessar a funcionalidade
@@ -443,4 +444,6 @@ public interface ControladorAcessoLocal
 	 * @throws ControladorException
 	 */
 	public Object[] consultarDadosAcessoGcsME(Usuario usuariologado) throws ControladorException;
+
+
 }

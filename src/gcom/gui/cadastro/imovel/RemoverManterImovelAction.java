@@ -86,6 +86,7 @@ import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.gui.ManutencaoRegistroActionForm;
+import gcom.seguranca.acesso.PermissaoEspecial;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.filtro.ParametroSimples;
@@ -134,6 +135,11 @@ public class RemoverManterImovelAction
 
 		Fachada fachada = Fachada.getInstancia();
 
+		HttpSession sessao = httpServletRequest.getSession(false);
+
+		// Usuario logado no sistema
+		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
+
 		// mensagem de erro quando o usuário tenta excluir sem ter selecionado
 		// nenhum
 		// registro
@@ -149,8 +155,12 @@ public class RemoverManterImovelAction
 			String idImovel = idUltimaAlteracao[0].trim();
 
 			// [FS0006] - Verificar Existência de RA
-			fachada.verificarExistenciaRegistroAtendimento(new Integer(idImovel), "atencao.conta_existencia_registro_atendimento",
-							EspecificacaoTipoValidacao.ALTERACAO_CONTA);
+			boolean temPermissao = fachada.verificarPermissaoEspecial(PermissaoEspecial.ALTERAR_IMOVEL, usuario);
+
+			if(!temPermissao){
+				fachada.verificarExistenciaRegistroAtendimento(Integer.valueOf(idImovel), "atencao.imovel_existencia_registro_atendimento",
+								EspecificacaoTipoValidacao.ALTERACAO_CADASTRAL);
+			}
 
 			idsFormatado[i] = idImovel;
 			Calendar dataInicio = new GregorianCalendar();
@@ -165,7 +175,7 @@ public class RemoverManterImovelAction
 
 			ObterDebitoImovelOuClienteHelper obterDebitoImovelOuClienteHelper = fachada.obterDebitoImovelOuCliente(1, idImovel, null, null,
 							"190001", "999912", dataInicio.getTime(), dataFim.getTime(), 1, 1, 1, 1, 1, 1, 1, null, null, null, null, null,
-							ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM);
+							ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM, 2, null);
 			boolean existeDebito = false;
 			if(obterDebitoImovelOuClienteHelper != null){
 				// contas
@@ -256,10 +266,9 @@ public class RemoverManterImovelAction
 		 * para verificar se o usuário tem abrangência para atualizar o imóvel
 		 * informado.
 		 */
-		HttpSession sessao = httpServletRequest.getSession(false);
-		Usuario usuarioLogado = (Usuario) sessao.getAttribute(Usuario.USUARIO_LOGADO);
 
-		fachada.removerImovel(ids, usuarioLogado);
+
+		fachada.removerImovel(ids, usuario);
 
 		// Monta a página de sucesso
 		if(retorno.getName().equalsIgnoreCase("telaSucesso")){

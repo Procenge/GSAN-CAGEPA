@@ -170,6 +170,13 @@
 										</td>
 										<td>
 										<div align="center"><logic:equal name="criterio"
+											property="indicadorDividaAtiva" value="1">Sim</logic:equal>
+										<logic:equal name="criterio"
+											property="indicadorDividaAtiva" value="2">Não</logic:equal>
+										</div>
+										</td>
+										<td>
+										<div align="center"><logic:equal name="criterio"
 											property="indicadorEmissaoDebitoContaMes" value="1">Sim</logic:equal>
 										<logic:equal name="criterio"
 											property="indicadorEmissaoDebitoContaMes" value="2">Não</logic:equal>

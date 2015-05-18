@@ -114,9 +114,7 @@
         not-null="true"
         length="2"
     />
-    
-    
-    
+        
     <property
         name="indicadorGeraArquivoTexto"
         type="java.lang.Short"
@@ -137,6 +135,20 @@
         type="java.lang.Short"
         column="clie_iccontabraille"
         length="2"
+    />
+     
+    <property
+        name="documentoValidado"
+        type="java.lang.Short"
+        column="clie_iccpfcnpjvalidado"
+        length="2"
+    />
+    
+     <property
+        name="numeroBeneficio"
+        type="java.lang.String"
+        column="clie_nnbeneficio"
+        length="10"
     />   
 
     
@@ -164,7 +176,7 @@
     <!-- bi-directional one-to-many association to ClienteFone -->
     <set
         name="clienteFones"
-        lazy="true"
+        lazy="false"
         inverse="true"
 	cascade="delete"
     >
@@ -266,6 +278,7 @@
         name="clienteTipo"
         class="gcom.cadastro.cliente.ClienteTipo"
         not-null="true"
+        lazy="false"
     >
         <column name="cltp_id" />
     </many-to-one>
@@ -305,6 +318,15 @@
         not-null="false"
     >
         <column name="ESTC_ID" />
+    </many-to-one>
+    
+     <!-- bi-directional many-to-one association to Atividade Economica-->
+    <many-to-one
+        name="atividadeEconomica"
+        class="gcom.cadastro.cliente.AtividadeEconomica"
+        not-null="false"
+    >
+        <column name="atec_id" />
     </many-to-one>
     
     

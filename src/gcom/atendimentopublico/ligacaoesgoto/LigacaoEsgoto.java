@@ -155,6 +155,8 @@ public class LigacaoEsgoto
 	// {ATRIBUTOS_LIGACAO_ESGOTO_INSERIR, ATRIBUTOS_LIGACAO_ESGOTO_ATUALIZAR})
 	private RamalLocalInstalacao ramalLocalInstalacao;
 
+	private Integer numeroConsumoFixoPoco;
+
 	/** full constructor */
 	public LigacaoEsgoto(Date dataLigacao, Integer consumoMinimo, BigDecimal percentual, BigDecimal percentualAguaConsumidaColetada,
 							Date ultimaAlteracao, Short indicadorCaixaGordura, Imovel imovel,
@@ -366,6 +368,16 @@ public class LigacaoEsgoto
 	public String getDescricaoParaRegistroTransacao(){
 
 		return getId() + "  " + "";
+	}
+
+	public Integer getNumeroConsumoFixoPoco(){
+
+		return numeroConsumoFixoPoco;
+	}
+
+	public void setNumeroConsumoFixoPoco(Integer numeroConsumoFixoPoco){
+
+		this.numeroConsumoFixoPoco = numeroConsumoFixoPoco;
 	}
 
 }

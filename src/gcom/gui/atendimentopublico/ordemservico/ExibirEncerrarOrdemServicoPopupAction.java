@@ -76,21 +76,19 @@
 
 package gcom.gui.atendimentopublico.ordemservico;
 
-import gcom.atendimentopublico.ordemservico.FiltroOSReferidaRetornoTipo;
-import gcom.atendimentopublico.ordemservico.FiltroOrdemServicoUnidade;
-import gcom.atendimentopublico.ordemservico.FiltroServicoTipo;
-import gcom.atendimentopublico.ordemservico.OrdemServico;
-import gcom.atendimentopublico.ordemservico.OrdemServicoUnidade;
-import gcom.atendimentopublico.ordemservico.OsReferidaRetornoTipo;
-import gcom.atendimentopublico.ordemservico.ServicoTipo;
+import gcom.atendimentopublico.ordemservico.*;
 import gcom.atendimentopublico.ordemservico.bean.ObterDescricaoSituacaoOSHelper;
 import gcom.atendimentopublico.registroatendimento.AtendimentoMotivoEncerramento;
 import gcom.atendimentopublico.registroatendimento.AtendimentoRelacaoTipo;
 import gcom.atendimentopublico.registroatendimento.FiltroAtendimentoMotivoEncerramento;
 import gcom.atendimentopublico.registroatendimento.bean.ObterDescricaoSituacaoRAHelper;
+import gcom.cadastro.funcionario.FiltroFuncionario;
+import gcom.cadastro.funcionario.Funcionario;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.micromedicao.hidrometro.FiltroHidrometroCondicao;
+import gcom.micromedicao.hidrometro.HidrometroCondicao;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
@@ -315,6 +313,22 @@ public class ExibirEncerrarOrdemServicoPopupAction
 							encerrarOrdemServicoActionForm.setIndicadorVistoriaServicoTipo(""
 											+ ordemServico.getServicoTipo().getIndicadorVistoria());
 
+							encerrarOrdemServicoActionForm.setIndicadorAfericaoServicoTipo(ordemServico.getServicoTipo()
+											.getIndicadorAfericaoHidrometro().toString());
+
+							FiltroHidrometroCondicao filtroHidrometroCondicao = new FiltroHidrometroCondicao();
+							filtroHidrometroCondicao.adicionarParametro(new ParametroSimples(FiltroHidrometroCondicao.INDICADOR_USO,
+											ConstantesSistema.INDICADOR_USO_ATIVO));
+							filtroHidrometroCondicao.setCampoOrderBy(FiltroHidrometroCondicao.DESCRICAO);
+
+							Collection<HidrometroCondicao> colecaoHidrometroCondicao = fachada.pesquisar(filtroHidrometroCondicao,
+											HidrometroCondicao.class.getName());
+
+							if(!Util.isVazioOrNulo(colecaoHidrometroCondicao)){
+
+								sessao.setAttribute("colecaoHidrometroCondicao", colecaoHidrometroCondicao);
+							}
+
 							if(ordemServico.getServicoTipo().getServicoTipoReferencia() != null
 											&& !ordemServico.getServicoTipo().getServicoTipoReferencia().equals("")){
 
@@ -463,6 +477,15 @@ public class ExibirEncerrarOrdemServicoPopupAction
 				if(retornoConsulta.equals("informarOS")){
 					httpServletRequest.setAttribute("nomeCampo", "ButtonOSFiscalizacao");
 				}
+			}
+		}
+
+		// Pesquisar Funcionário
+		if(!Util.isVazioOuBranco(encerrarOrdemServicoActionForm.getIdFuncionario())){
+
+			if(Util.validarNumeroMaiorQueZERO(encerrarOrdemServicoActionForm.getIdFuncionario())){
+
+				this.pesquisarFuncionario(encerrarOrdemServicoActionForm, fachada, httpServletRequest);
 			}
 		}
 
@@ -655,6 +678,36 @@ public class ExibirEncerrarOrdemServicoPopupAction
 			return true;
 		}else{
 			return false;
+		}
+	}
+
+	/**
+	 * Pesquisar uma funcionário após teclar ENTER pelo id informado
+	 * 
+	 * @author Anderson Italo
+	 * @date 08/09/2014
+	 */
+	private void pesquisarFuncionario(EncerrarOrdemServicoActionForm form, Fachada fachada, HttpServletRequest httpServletRequest){
+
+		FiltroFuncionario filtroFuncionario = new FiltroFuncionario();
+		filtroFuncionario.adicionarParametro(new ParametroSimples(FiltroFuncionario.ID, form.getIdFuncionario()));
+
+		Collection colecaoFuncionario = fachada.pesquisar(filtroFuncionario, Funcionario.class.getName());
+
+		if(Util.isVazioOrNulo(colecaoFuncionario)){
+
+			form.setIdFuncionario("");
+			form.setNomeFuncionario("Funcionário Inexistente");
+			httpServletRequest.setAttribute("nomeCampo", "idFuncionario");
+
+		}else{
+
+			Funcionario funcionario = (Funcionario) Util.retonarObjetoDeColecao(colecaoFuncionario);
+
+			form.setIdFuncionario(funcionario.getId().toString());
+			form.setNomeFuncionario(funcionario.getNome());
+			httpServletRequest.setAttribute("idFuncionarioEncontrado", "true");
+			httpServletRequest.setAttribute("nomeCampo", "idFuncionario");
 		}
 	}
 }

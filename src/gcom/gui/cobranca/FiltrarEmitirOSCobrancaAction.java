@@ -138,7 +138,7 @@ public class FiltrarEmitirOSCobrancaAction
 
 				// TESTE
 				FiltroSetorComercial filtro = new FiltroSetorComercial();
-				filtro.adicionarParametro(new ParametroSimples(FiltroSetorComercial.ID, idSetorComercial));
+				filtro.adicionarParametro(new ParametroSimples(FiltroSetorComercial.CODIGO_SETOR_COMERCIAL, idSetorComercial));
 				Collection<Object> colecaoSetorComercial2 = fachada.pesquisar(filtro, SetorComercial.class.getName());
 				if(colecaoSetorComercial2 == null || colecaoSetorComercial2.isEmpty()){
 					throw new ActionServletException("atencao.filtro.nenhum_parametro_informado");

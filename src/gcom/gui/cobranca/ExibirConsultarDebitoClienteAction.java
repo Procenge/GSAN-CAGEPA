@@ -149,8 +149,6 @@ public class ExibirConsultarDebitoClienteAction
 
 		Usuario usuarioLogado = (Usuario) sessao.getAttribute("usuarioLogado");
 
-
-
 		boolean temPermissaoEmitirExtratoDeDebitosSemAcrescimo = fachada
 						.verificarPermissaoEmitirExtratoDeDebitosoSemAcrescimo(usuarioLogado);
 		String pIndicadorEmissaoExtratoDebitoSemAcrescimo = ConstantesSistema.NAO.toString();
@@ -235,20 +233,18 @@ public class ExibirConsultarDebitoClienteAction
 			dataVencimentoDebitoF = null;
 		}
 
+
 		Integer tipoCliente = null;
-		if(tipoRelacao == null || tipoRelacao.intValue() == ClienteRelacaoTipo.RESPONSAVEL.intValue()){
-			if(consultarDebitoClienteActionForm.getResponsavel() != null && consultarDebitoClienteActionForm.getResponsavel().equals("1")){
+		if (consultarDebitoClienteActionForm.getCodigoCliente() != null && !consultarDebitoClienteActionForm.getCodigoCliente().equals("")) {
+			if (consultarDebitoClienteActionForm.getResponsavel() != null && consultarDebitoClienteActionForm.getResponsavel().equals("1")) {
 				tipoCliente = Integer.valueOf(3);
-			}else if(consultarDebitoClienteActionForm.getResponsavel() != null
-							&& consultarDebitoClienteActionForm.getResponsavel().equals("2")){
-				tipoCliente = Integer.valueOf(4);
-			}else{
+			} else {
 				tipoCliente = Integer.valueOf(2);
 			}
-		}else{
-			tipoCliente = Integer.valueOf(2);
+		} else {
+			tipoCliente = Integer.valueOf(4);
 		}
-
+		
 		// Se a pesquisa foi pelo cliente superior seta o valor 99 no tipo da
 		// relação para identificar posteriormente este tipo de pesquisa (o
 		// código 99 é apenas um identificador)
@@ -265,6 +261,7 @@ public class ExibirConsultarDebitoClienteAction
 		Integer indicadorNotas = Integer.valueOf(1);
 		Integer indicadorGuias = Integer.valueOf(1);
 		Integer indicadorAtualizar = Integer.valueOf(1);
+		Integer indicadorCalcularAcrescimosSucumbenciaAnterior = Integer.valueOf(2);
 
 		// Obtendo dados do cliente
 		if((!Util.isVazioOuBranco(codigoCliente) && Integer.parseInt(codigoCliente) > 0)
@@ -317,10 +314,9 @@ public class ExibirConsultarDebitoClienteAction
 					consultarDebitoClienteActionForm.setRamoAtividade(cliente.getRamoAtividade().getDescricao());
 				}
 				if(cliente.getClienteTipo() != null){
-					consultarDebitoClienteActionForm.setTipoRelacao(cliente.getClienteTipo().getDescricao());
+					consultarDebitoClienteActionForm.setDescricaoTipoRelacao(cliente.getClienteTipo().getDescricao());
 				}else{
-					consultarDebitoClienteActionForm.setTipoRelacao("");
-					tipoRelacao = null;
+					consultarDebitoClienteActionForm.setDescricaoTipoRelacao("");
 				}
 			}else{
 				throw new ActionServletException("atencao.cliente.inexistente");
@@ -388,7 +384,8 @@ public class ExibirConsultarDebitoClienteAction
 							anoMesInicial, anoMesFinal, dataVencimentoDebitoI, dataVencimentoDebitoF, indicadorPagamento.intValue(),
 							indicadorConta.intValue(), indicadorDebito.intValue(), indicadorCredito.intValue(), indicadorNotas.intValue(),
 							indicadorGuias.intValue(), indicadorAtualizar.intValue(), null, null, new Date(), ConstantesSistema.SIM, null,
-							ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM);
+							ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM,
+							indicadorCalcularAcrescimosSucumbenciaAnterior.intValue(), null);
 
 		}else{
 
@@ -396,7 +393,8 @@ public class ExibirConsultarDebitoClienteAction
 							anoMesInicial, anoMesFinal, dataVencimentoDebitoI, dataVencimentoDebitoF, indicadorPagamento.intValue(),
 							indicadorConta.intValue(), indicadorDebito.intValue(), indicadorCredito.intValue(), indicadorNotas.intValue(),
 							indicadorGuias.intValue(), indicadorAtualizar.intValue(), null, null, new Date(), ConstantesSistema.SIM, null,
-							ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM);
+							ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM,
+							indicadorCalcularAcrescimosSucumbenciaAnterior.intValue(), null);
 		}
 
 		Collection<ContaValoresHelper> colecaoContaValores = colecaoDebitoCliente.getColecaoContasValores();
@@ -517,6 +515,8 @@ public class ExibirConsultarDebitoClienteAction
 		// Manda a colecao e o valor total de GuiaPagamento pelo request
 		sessao.setAttribute("colecaoGuiaPagamentoValores", colecaoGuiaPagamentoValores);
 		sessao.setAttribute("valorGuiaPagamento", Util.formatarMoedaReal(valorGuiaPagamento));
+		sessao.setAttribute("valorTotalDebitoACobrarGuiaPagamento", Util.formatarMoedaReal(valorGuiaPagamento.add(valorDebitoACobrar)));
+		sessao.setAttribute("valorTotalDocumento", Util.formatarMoedaReal(valorConta.add(valorGuiaPagamento.add(valorDebitoACobrar))));
 
 		// Soma o valor total dos debitos e subtrai dos creditos
 		BigDecimal valorTotalSemAcrescimo = valorConta.add(valorDebitoACobrar);

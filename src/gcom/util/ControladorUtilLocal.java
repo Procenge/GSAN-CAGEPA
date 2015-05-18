@@ -79,6 +79,7 @@ package gcom.util;
 import gcom.cadastro.DbVersaoImplementada;
 import gcom.cadastro.geografico.Municipio;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
+import gcom.cobranca.MunicipioFeriado;
 import gcom.cobranca.NacionalFeriado;
 import gcom.interceptor.ObjetoTransacao;
 import gcom.seguranca.acesso.OperacaoEfetuada;
@@ -552,5 +553,15 @@ public interface ControladorUtilLocal
 					throws ControladorException;
 
 	public String retornarEnderecoCompletoEmpresa(SistemaParametro sistemaParametro);
+
+	/**
+	 * Recupera a coleção de feriados municipais
+	 * 
+	 * @author Anderson Italo
+	 * @date 13/06/2014
+	 * @return
+	 * @throws ControladorException
+	 */
+	public Collection<MunicipioFeriado> pesquisarFeriadosMunicipais() throws ControladorException;
 
 }

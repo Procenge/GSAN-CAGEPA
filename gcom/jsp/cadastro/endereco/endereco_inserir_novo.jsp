@@ -87,7 +87,13 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
     	//Código responsável pela atualização automática da coleção
 	    form.action = "exibirInserirLogradouroAction.do";
 		submeterFormPadrao(form);
-    }
+    }if(tipoConsulta == 'imovel'){
+		//Código responsável pela atualização automática da coleção
+		 form.idMatriculaImovel.value = codigoRegistro;
+		
+		 form.action = "exibirInserirLogradouroAction.do";
+	     form.submit();
+	}
 }
   
 function limparPesquisaCep(){
@@ -98,6 +104,7 @@ function limparPesquisaCep(){
     	form.logradouro.disabled = false;
     	form.logradouro.value = "";
     	form.logradouroDescricao.value = "";
+    	from.idMatriculaImovel.value="";
     }
     
     form.action = "exibirInserirEnderecoAction.do?removerCep=OK";
@@ -111,6 +118,7 @@ function limparLogradouro(){
     	form.logradouro.disabled = false;
     	form.logradouro.cep = "";
     	form.logradouroDescricao.value = "";
+    	from.idMatriculaImovel.value="";
     }
     
     form.action = "exibirInserirEnderecoAction.do?limparLogradouro=true";
@@ -276,7 +284,7 @@ function janela(url, target, largura, altura) {
 				<body leftmargin="5" topmargin="5" onload="chamarReloadSubmetForm('inserirImovelWizardAction.do?action=exibirInserirImovelEnderecoAction');window.close();">
 			</logic:equal>
 			<logic:equal name="flagOperacao" value="2">
-				<body leftmargin="5" topmargin="5" onload="chamarReloadSubmetForm('atualizarImovelWizardAction.do?action=exibirAtualizarImovelEnderecoAction');window.close();">
+				<body leftmargin="5" topmargin="5" onload="chamarReloadSubmetForm('atualizarImovelWizardAction.do?action=exibirManterImovelAction&pagina=2');window.close();">
 			</logic:equal>
 		</logic:present>
 		<logic:notPresent name="fecharPopup">
@@ -284,7 +292,7 @@ function janela(url, target, largura, altura) {
 				<body leftmargin="5" topmargin="5" onload="chamarReload('inserirImovelWizardAction.do?action=exibirInserirImovelEnderecoAction');resizePageSemLink(700, 570); document.InserirEnderecoActionForm.reset();setarFoco('${requestScope.nomeCampo}');">
 			</logic:equal>
 			<logic:equal name="flagOperacao" value="2">
-				<body leftmargin="5" topmargin="5" onload="chamarReload('atualizarImovelWizardAction.do?action=exibirAtualizarImovelEnderecoAction');resizePageSemLink(700, 570); document.InserirEnderecoActionForm.reset();setarFoco('${requestScope.nomeCampo}');">
+				<body leftmargin="5" topmargin="5" onload="chamarReload('atualizarImovelWizardAction.do?action=exibirManterImovelAction&pagina=2');resizePageSemLink(700, 570); document.InserirEnderecoActionForm.reset();setarFoco('${requestScope.nomeCampo}');">
 			</logic:equal>
 		</logic:notPresent>
 	</logic:equal>
@@ -554,11 +562,31 @@ function janela(url, target, largura, altura) {
 										</logic:notPresent>
 								</td>
 							</tr>
+							
+							
+							
+							
 						</table>
 						<html:hidden property="cepUnico"/>
 						<html:hidden property="codigoCepUnico"/>
 					</td>
 				</tr>
+				<logic:equal name="exibirMatriculaImovel" value="1">
+									<tr>
+										<td bordercolor="#000000" width="25%"><strong>Im&oacute;vel:</strong></td>
+												<td width="75%" colspan="3"><html:text
+													property="idMatriculaImovel" maxlength="9" size="9" 
+													onkeypress="validaEnterComMensagemAceitaZERO(event, 'exibirInserirEnderecoAction.do?pesquisarImovel=OK', 'idMatriculaImovel', 'IMOVEL');"
+													 />
+												<a 	href="javascript:redirecionarSubmit('exibirPesquisarImovelAction.do?caminhoRetornoTelaPesquisaImovel=exibirInserirEnderecoAction')">
+			
+												<img width="23" height="21"
+												src="<bean:message key='caminho.imagens'/>pesquisa.gif" border="0" /></a>
+												<html:text property="imovelDescricao" size="30" readonly="true"  style="background-color:#EFEFEF; border:0; color: #000000" />
+										</td>
+									</tr>
+							</logic:equal>
+							
 				<tr>
 					<td colspan="2">
 						<table width="100%" cellpadding="0" cellspacing="0">

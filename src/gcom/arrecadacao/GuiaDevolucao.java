@@ -76,6 +76,7 @@
 
 package gcom.arrecadacao;
 
+import gcom.arrecadacao.pagamento.PagamentoHistorico;
 import gcom.atendimentopublico.ordemservico.OrdemServico;
 import gcom.atendimentopublico.registroatendimento.RegistroAtendimento;
 import gcom.cadastro.cliente.Cliente;
@@ -179,6 +180,10 @@ public class GuiaDevolucao
 	/** persistent field */
 	private Usuario usuario;
 
+	private Short numeroPrestacao;
+
+	private PagamentoHistorico pagamentoHistorico;
+
 	/** full constructor */
 	public GuiaDevolucao(Date dataEmissao, Date dataValidade, BigDecimal valorDevolucao, Date ultimaAlteracao,
 							Integer anoMesReferenciaContabil, LancamentoItemContabil lancamentoItemContabil, Cliente cliente,
@@ -263,6 +268,26 @@ public class GuiaDevolucao
 		this.localidade = localidade;
 		this.creditoTipo = creditoTipo;
 		this.guiaPagamentoGeral = guiaPagamentoGeral;
+	}
+
+	public PagamentoHistorico getPagamentoHistorico(){
+
+		return pagamentoHistorico;
+	}
+
+	public void setPagamentoHistorico(PagamentoHistorico pagamentoHistorico){
+
+		this.pagamentoHistorico = pagamentoHistorico;
+	}
+
+	public Short getNumeroPrestacao(){
+
+		return this.numeroPrestacao;
+	}
+
+	public void setNumeroPrestacao(Short numeroPrestacao){
+
+		this.numeroPrestacao = numeroPrestacao;
 	}
 
 	public Integer getId(){

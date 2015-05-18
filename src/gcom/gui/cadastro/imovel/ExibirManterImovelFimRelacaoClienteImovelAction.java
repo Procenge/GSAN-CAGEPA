@@ -84,8 +84,8 @@ import gcom.util.ConstantesSistema;
 import gcom.util.filtro.ParametroSimples;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -141,7 +141,11 @@ public class ExibirManterImovelFimRelacaoClienteImovelAction
 
 		SimpleDateFormat dataFormato = new SimpleDateFormat("dd/MM/yyyy");
 		// joga em dataInicial a parte da data
-		String dataFinal = dataFormato.format(new Date());
+
+		Calendar dataFimRelacao = Calendar.getInstance();
+		dataFimRelacao.add(Calendar.DATE, -1);
+
+		String dataFinal = dataFormato.format(dataFimRelacao.getTime());
 
 		fimRelacaoClienteImovelActionForm.setDataTerminoRelacao(dataFinal);
 

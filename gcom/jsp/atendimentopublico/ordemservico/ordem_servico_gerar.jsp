@@ -177,6 +177,10 @@
 	    form.action = action;
 		form.submit();
 	}
+	
+	function voltarOrdemServico(action){
+		window.history.back();
+	}
 
 	function raAnterior(){
  		var form = document.forms[0];
@@ -938,6 +942,26 @@
 		                    			</tr>
 		                    		</c:when>
 									<c:otherwise>
+										<logic:present name="idOSPrincipal" scope="request">
+										<tr>
+		                      				<td>
+		                      					<strong>OS Principal:<font color="#FF0000"></font></strong>
+	                      					</td>
+
+		                      				<td colspan="3">
+		                      				<strong>
+		                      					<html:hidden property="indicadorTelaOrdemServico"/>			                     				
+			             						<html:text property="idOSPrincipal" 
+														size="15"
+														maxlength="15" 
+														readonly="true"
+														style="background-color:#EFEFEF; border:0; " /> 
+		                      				
+		                      					</strong>
+		                      				</td>
+		                    			</tr>
+		                    			</logic:present>
+									
 		                    			<tr>
 		                      				<td>
 		                      					<strong>Tipo de Servi&ccedil;o:<font color="#FF0000">*</font></strong>
@@ -956,6 +980,26 @@
 		                      					</strong>
 		                      				</td>
 		                    			</tr>
+		                    			<logic:present name="temServicoPrincipal" scope="request">
+		                    			<tr>
+		                      				<td>
+		                      					<strong>OS Principal:<font color="#FF0000">*</font></strong>
+	                      					</td>
+
+		                      				<td colspan="3">
+		                      				<strong>
+			                     				
+			             						<html:select property="idOSPrincipal">
+													<html:option value="-1">&nbsp;</html:option>
+													<html:options collection="colecaoOrdemServicoPrincipal" 
+														labelProperty="id" 
+														property="id" />
+												</html:select> 
+		                      				
+		                      					</strong>
+		                      				</td>
+		                    			</tr>
+		                    			</logic:present>
 									</c:otherwise>
 								</c:choose>
 							    <c:if test="${servicoTipo.servicoTipoReferencia != null}">
@@ -1229,6 +1273,25 @@
 										</strong>
                       				</td>
                     			</tr>
+                    			
+						        <tr>
+						          <td><strong>Quantidade de Prestações da Guia de Pagamento :</strong></td>
+								  <td colspan="3">
+								  
+								  	<logic:present name="habilitarPrestacaoGuia" scope="session">
+								  		<html:text
+												property="quantidadePrestacoesGuiaPagamento" size="10" maxlength="3" 
+												onkeyup="javascript:verificaNumeroInteiro(this);"/>
+									</logic:present>
+									
+								  	<logic:notPresent name="habilitarPrestacaoGuia" scope="session">
+								  		<html:text
+												property="quantidadePrestacoesGuiaPagamento" size="10" maxlength="3" readonly="true"
+												onkeyup="javascript:verificaNumeroInteiro(this);"/>
+									</logic:notPresent>									
+									
+						          </td>
+						        </tr>	                    			
                   			</table>
                   		</td>
               		</tr>
@@ -1254,11 +1317,22 @@
 
 								<logic:notEmpty name="caminhoRetornoGerarOs">
 
+									<logic:present name="idOSPrincipal" scope="request">
+									<input name="button" 
+										type="button" 
+										class="bottonRightCol" 
+										value="Voltar" 
+										onclick="javascript:voltarOrdemServico('<bean:write name="caminhoRetornoGerarOs"/>')" >
+									</logic:present>
+									
+									<logic:notPresent name="idOSPrincipal" scope="request">
 									<input name="button" 
 										type="button" 
 										class="bottonRightCol" 
 										value="Voltar" 
 										onclick="javascript:voltar('<bean:write name="caminhoRetornoGerarOs"/>')" >
+									</logic:notPresent>
+									
 
 								</logic:notEmpty>
 	

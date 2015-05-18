@@ -19,23 +19,8 @@ import gcom.util.agendadortarefas.AgendadorTarefas;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 import gcom.util.parametrizacao.ordemservico.ParametroOrdemServico;
 
-import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.io.*;
+import java.util.*;
 import java.util.zip.ZipOutputStream;
 
 import net.sf.jasperreports.engine.JRException;
@@ -116,8 +101,9 @@ public class GeradorRelatorioOrdemServico
 			if(sistemaParametro != null){
 				addParametro("imagem", sistemaParametro.getImagemRelatorio());
 				addParametro("P_NM_ESTADO", sistemaParametro.getNomeEstado());
+				addParametro("P_NM_EMPRESA", sistemaParametro.getNomeEmpresa());
+				addParametro("P_NN_FONE", sistemaParametro.getNumeroTelefone());
 			}
-
 
 			Iterator<OrdemServico> itOrdemServico = listaOs.iterator();
 			while(itOrdemServico.hasNext()){
@@ -307,6 +293,8 @@ public class GeradorRelatorioOrdemServico
 				addParametro("telefoneEmpresa", sistemaParametro.getNumeroTelefone());
 				addParametro("municipioEmpresa", sistemaParametro.getBairro().getMunicipio().getNome());
 				addParametro("P_NM_ESTADO", sistemaParametro.getBairro().getMunicipio().getUnidadeFederacao().getDescricao());
+				addParametro("P_NM_EMPRESA", sistemaParametro.getNomeEmpresa());
+				addParametro("P_NN_FONE", sistemaParametro.getNumeroTelefone());
 
 				try{
 					addParametro("siteEmpresa", ParametroCadastro.P_SITE_EMPRESA.executar());

@@ -93,6 +93,7 @@ import gcom.cadastro.endereco.LogradouroCep;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.imovel.ImovelCobrancaSituacao;
 import gcom.cobranca.*;
+import gcom.cobranca.bean.IntervaloReferenciaHelper;
 import gcom.cobranca.contrato.CobrancaContrato;
 import gcom.cobranca.parcelamento.Parcelamento;
 import gcom.faturamento.conta.Conta;
@@ -5423,6 +5424,23 @@ public interface IRepositorioArrecadacao {
 	 * @date 28/12/2013
 	 */
 	public double retornaPercentualRemuneracaoPorEmpresa(Integer idEmpresa, double percentualDesempenho) throws ErroRepositorioException;
+
+	/**
+	 * Rotina de ajuste - CAERD
+	 * 
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<Integer> obterContasParaCancelamento(Integer idClienteResponsavel,
+					Collection<IntervaloReferenciaHelper> colecaoReferencias) throws ErroRepositorioException;
+
+	/**
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+
+	public BigDecimal obterValorTotalContasParaCancelamento(Integer idClienteRelacaoTipo, Integer idClienteResponsavel,
+					Collection<IntervaloReferenciaHelper> colecaoReferencias) throws ErroRepositorioException;
 
 
 }

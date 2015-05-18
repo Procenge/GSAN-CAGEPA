@@ -112,6 +112,13 @@
         length="1"
         not-null="true"
     />
+    
+    <property
+        name="numeroProcessoAdministrativoExecucaoFiscal"
+        type="java.lang.Integer"
+        column="DBHI_NNPROCESADMEXECUCAOFISCAL"
+        length="14"
+    />
 
     <!-- associations -->
     <!-- bi-directional many-to-one association to FinanciamentoTipo -->

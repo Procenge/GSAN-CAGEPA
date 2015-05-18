@@ -274,7 +274,7 @@ public class ExibirInformarNaoEntregaDocumentosAction
 			form.setQtTentativas18("1");
 			form.setQtTentativas19("1");
 			form.setQtTentativas20("1");
-
+			form.setResponsavelEntrega("");
 			form.setMotivo("");
 
 		}

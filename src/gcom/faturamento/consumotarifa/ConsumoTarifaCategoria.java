@@ -78,36 +78,42 @@ package gcom.faturamento.consumotarifa;
 
 import gcom.cadastro.imovel.Categoria;
 import gcom.cadastro.imovel.Subcategoria;
+import gcom.interceptor.ControleAlteracao;
+import gcom.interceptor.ObjetoTransacao;
+import gcom.util.filtro.Filtro;
+import gcom.util.filtro.ParametroSimples;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-/** @author Hibernate CodeGenerator */
+@ControleAlteracao()
 public class ConsumoTarifaCategoria
-				implements Serializable {
+				extends ObjetoTransacao {
 
 	private static final long serialVersionUID = 1L;
 
-	/** identifier field */
+	public static final int ATRIBUTOS_INSERIR_CONSUMO_TARIFA = 367;
+
+	public static final int ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA = 382;
+
 	private Integer id;
 
-	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
 	private Integer numeroConsumoMinimo;
 
-	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
 	private BigDecimal valorTarifaMinima;
 
 	/** nullable persistent field */
 	private Date ultimaAlteracao;
 
-	/** persistent field */
-	private gcom.faturamento.consumotarifa.ConsumoTarifaVigencia consumoTarifaVigencia;
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
+	private ConsumoTarifaVigencia consumoTarifaVigencia;
 
-	/** persistent field */
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
 	private Categoria categoria;
 
 	/** persistent field */
@@ -115,7 +121,7 @@ public class ConsumoTarifaCategoria
 
 	private Set consumoTarifaFaixas;
 
-	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
 	private BigDecimal valorTarifaMinimaEsgoto;
 
 	/** full constructor */
@@ -153,8 +159,12 @@ public class ConsumoTarifaCategoria
 		}
 		ConsumoTarifaCategoria castOther = (ConsumoTarifaCategoria) other;
 
-		return (this.getCategoria().getId().equals(castOther.getCategoria().getId()) && this.getSubCategoria().getId().equals(
+		if (this.getSubCategoria() != null && this.getSubCategoria().getId() != null) { 
+			return (this.getCategoria().getId().equals(castOther.getCategoria().getId()) && this.getSubCategoria().getId().equals(
 						castOther.getSubCategoria().getId()));
+		} else {
+			return (this.getCategoria().getId().equals(castOther.getCategoria().getId()));
+		}
 	}
 
 	public Integer getId(){
@@ -250,6 +260,45 @@ public class ConsumoTarifaCategoria
 	public void setValorTarifaMinimaEsgoto(BigDecimal valorTarifaMinimaEsgoto){
 
 		this.valorTarifaMinimaEsgoto = valorTarifaMinimaEsgoto;
+	}
+
+	@Override
+	public Filtro retornaFiltro(){
+
+		FiltroConsumoTarifaCategoria filtro = new FiltroConsumoTarifaCategoria();
+
+		filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroConsumoTarifaCategoria.CATEGORIA);
+		filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroConsumoTarifaCategoria.CONSUMO_VIGENCIA);
+		filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroConsumoTarifaCategoria.CONSUMO_VIGENCIA_CONSUMO_TARIFA);
+
+		filtro.adicionarParametro(new ParametroSimples(FiltroConsumoTarifaCategoria.ID, this.getId()));
+		return filtro;
+	}
+
+	@Override
+	public String[] retornaCamposChavePrimaria(){
+
+		String[] retorno = new String[1];
+		retorno[0] = "id";
+		return retorno;
+	}
+
+	@Override
+	public String getDescricaoParaRegistroTransacao(){
+
+		return getId() + "";
+	}
+
+	public String[] retornarAtributosInformacoesOperacaoEfetuada(){
+
+		String[] atributos = {"consumoTarifaVigencia.consumoTarifa.descricao", "categoria.id", "consumoTarifaVigencia.dataVigenciaFormatada"};
+		return atributos;
+	}
+
+	public String[] retornarLabelsInformacoesOperacaoEfetuada(){
+
+		String[] labels = {"Tarifa", "Categoria", "Data de Vigencia"};
+		return labels;
 	}
 
 }

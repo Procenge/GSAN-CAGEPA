@@ -69,6 +69,13 @@
         <column name="unid_id" />
     </many-to-one>
     
+    <many-to-one
+        name="equipeTipo"
+        class="gcom.atendimentopublico.ordemservico.EquipeTipo"        
+    >
+        <column name="eqtp_id" />
+    </many-to-one>
+    
     <!-- bi-directional many-to-one association to ServicoPerfilTipo -->
     <many-to-one
         name="servicoPerfilTipo"

@@ -121,6 +121,18 @@ public class ConsultarDebitoActionForm
 
 	private String responsavel;
 
+	private String idClienteRelacaoImovelSelecionado;
+
+	public String getIdClienteRelacaoImovelSelecionado(){
+
+		return idClienteRelacaoImovelSelecionado;
+	}
+
+	public void setIdClienteRelacaoImovelSelecionado(String idClienteRelacaoImovelSelecionado){
+
+		this.idClienteRelacaoImovelSelecionado = idClienteRelacaoImovelSelecionado;
+	}
+
 	public String getCodigoCliente(){
 
 		return codigoCliente;

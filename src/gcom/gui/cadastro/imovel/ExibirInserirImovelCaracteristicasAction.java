@@ -294,7 +294,7 @@ public class ExibirInserirImovelCaracteristicasAction
 		filtroLigacaoAguaSituacao.setCampoOrderBy(FiltroLigacaoAguaSituacao.DESCRICAO);
 		ligacaoAguaSituacaos = fachada.pesquisar(filtroLigacaoAguaSituacao, LigacaoAguaSituacao.class.getName());
 		if(ligacaoAguaSituacaos == null || ligacaoAguaSituacaos.isEmpty()){
-			throw new ActionServletException("atencao.naocadastrado");
+			throw new ActionServletException("atencao.naocadastrado", "Situação de Ligação de Água");
 		}
 		// Verifica parâmento de abastecimento obrigatorio
 		// 2.25.1.Caso o parâmetro P_CRITICAR_ESGOTO_QUADRA tenha valor 1.

@@ -63,6 +63,8 @@ public class ListaDadosPrestacaoGuiaHelper
 
 	private Map<Integer, BigDecimal> mapValorDebitoNaPrestacaoPorTipoDebito = new HashMap<Integer, BigDecimal>();
 
+	private Map<Integer, Integer> mapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito = new HashMap<Integer, Integer>();
+
 	/**
 	 * Construtor padrão
 	 */
@@ -76,12 +78,14 @@ public class ListaDadosPrestacaoGuiaHelper
 	 * @param mapValorDebitoNaPrestacaoPorTipoDebito
 	 */
 	public ListaDadosPrestacaoGuiaHelper(Integer prestacao, Date dataVencimentoPrestacao,
-											Map<Integer, BigDecimal> mapValorDebitoNaPrestacaoPorTipoDebito) {
+											Map<Integer, BigDecimal> mapValorDebitoNaPrestacaoPorTipoDebito,
+											Map<Integer, Integer> mapValorDebitoNaPrestacaoPorProcessoAdministrativo) {
 
 		super();
 		this.prestacao = prestacao;
 		this.dataVencimentoPrestacao = dataVencimentoPrestacao;
 		this.mapValorDebitoNaPrestacaoPorTipoDebito = mapValorDebitoNaPrestacaoPorTipoDebito;
+		this.mapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito = mapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito;
 	}
 
 
@@ -139,6 +143,24 @@ public class ListaDadosPrestacaoGuiaHelper
 	public void setMapValorDebitoNaPrestacaoPorTipoDebito(Map<Integer, BigDecimal> mapValorDebitoNaPrestacaoPorTipoDebito){
 
 		this.mapValorDebitoNaPrestacaoPorTipoDebito = mapValorDebitoNaPrestacaoPorTipoDebito;
+	}
+
+	/**
+	 * @return the mapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito
+	 */
+	public Map<Integer, Integer> getMapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito(){
+
+		return mapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito;
+	}
+
+	/**
+	 * @param mapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito
+	 *            the mapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito to set
+	 */
+	public void setMapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito(
+					Map<Integer, Integer> mapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito){
+
+		this.mapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito = mapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito;
 	}
 
 }

@@ -259,7 +259,15 @@ public class Operacao
 
 	public static final Integer OPERACAO_USUARIO_INSERIR = Integer.valueOf(58);
 
+	public static final Integer OPERACAO_USUARIO_INSERIR_DADOS_GERAIS = Integer.valueOf(92);
+
+	public static final Integer OPERACAO_USUARIO_INSERIR_ACESSOS = Integer.valueOf(93);
+
 	public static final Integer OPERACAO_USUARIO_ATUALIZAR = Integer.valueOf(59);
+
+	public static final Integer OPERACAO_USUARIO_ATUALIZAR_DADOS_GERAIS = Integer.valueOf(97);
+
+	public static final Integer OPERACAO_USUARIO_ATUALIZAR_ACESSOS = Integer.valueOf(98);
 
 	public static final Integer OPERACAO_USUARIO_REMOVER = Integer.valueOf(60);
 
@@ -303,6 +311,8 @@ public class Operacao
 
 	/** OPERACAO ATUALIZAR */
 	public static final Integer OPERACAO_OPERACAO_ATUALIZAR = Integer.valueOf(88);
+
+	public static final Integer OPERACAO_ATENDIMENTO_PROCEDIMENTO_ATUALIZAR = Integer.valueOf(900243);
 
 	/** OPERACAO REMOVER */
 	public static final Integer OPERACAO_OPERACAO_REMOVER = Integer.valueOf(91);
@@ -450,6 +460,8 @@ public class Operacao
 
 	/** REGISTRO ATENDIMENTO ENCERRAR */
 	public static final Integer OPERACAO_REGISTRO_ATENDIMENTO_ENCERRAR = Integer.valueOf(463);
+
+	public static final Integer OPERACAO_REGISTRO_ATENDIMENTO_CANCELAR = Integer.valueOf(900296);
 
 	/** IMOVEL DOACAO INSERIR */
 	public static final Integer OPERACAO_INSERIR_IMOVEL_DOACAO = Integer.valueOf(282);
@@ -796,6 +808,10 @@ public class Operacao
 
 	public static final Integer OPERACAO_ATUALIZAR_NEGATIVADOR = Integer.valueOf(1404); // Código
 
+	public static final Integer OPERACAO_ATULIZAR_NORMA_PROCEDIMENTAL = Integer.valueOf(900237);
+
+	public static final Integer OPERACAO_ATULIZAR_ATENDIMENTO_PARECER = Integer.valueOf(900262);
+
 	// Embasa
 	// 1093
 
@@ -889,6 +905,18 @@ public class Operacao
 	public static final Integer OPERACAO_EXIBIR_LOGOMARCA_EMPRESA = Integer.valueOf(1309);
 
 	public static final Integer OPERACAO_INSERIR_EMPRESA = Integer.valueOf(1152);
+
+	public static final Integer OPERACAO_INSERIR_NORMA_PROCEDIMENTAL = Integer.valueOf(900235);
+
+	public static final Integer OPERACAO_INSERIR_ATENDIMENTO_PARECER = Integer.valueOf(900260);
+
+	public static final Integer OPERACAO_REMOVER_NORMA_PROCEDIMENTAL = Integer.valueOf(900238);
+
+	public static final Integer OPERACAO_REMOVER_DOCUMENTO_ELETRONICO = Integer.valueOf(900289);
+
+	public static final Integer OPERACAO_INSERIR_DOCUMENTO_ELETRONICA = Integer.valueOf(900286);
+
+	public static final Integer OPERACAO_REMOVER_PARECER_ATENDIMENTO = Integer.valueOf(900263);
 
 	public static final Integer OPERACAO_ATUALIZAR_PROGRAMA_COBRANCA = Integer.valueOf(1159);
 
@@ -1236,6 +1264,31 @@ public class Operacao
 	public static final Integer OPERACAO_ATUALIZAR_COMANDO_ATIVIDADE_FATURAMENTO = Integer.valueOf(442);
 
 	public static final Integer OPERACAO_ATUALIZAR_COMANDO_ATIVIDADE_DATA_VENCIMENTO_FATURAMENTO = Integer.valueOf(583);
+
+	public static final Integer OPERACAO_ATIVIDADE_ECONOMICA_INSERIR = 900208;
+
+	public static final Integer OPERACAO_ATIVIDADE_ECONOMICA_REMOVER = 900214;
+
+	public static final Integer OPERACAO_ATIVIDADE_ECONOMICA_ATUALIZAR = 900213;
+
+	public static final int OPERACAO_INSERIR_CONSUMO_TARIFA = 367;
+
+	public static final int OPERACAO_ATUALIZAR_CONSUMO_TARIFA = 382;
+
+
+	public static final Integer OPERACAO_EMITIR_DOCUMENTO_CERTIDAO_NEGATIVA = 900301;
+
+	public static final Integer OPERACAO_EMITIR_DOCUMENTO_CERTIDAO_POSITIVA = 900302;
+
+	public static final Integer OPERACAO_EMITIR_DOCUMENTO_CERTIDAO_NEGATIVA_COM_EFEITO_POSITIVA = 900303;
+
+	public static final Integer OPERACAO_EMITIR_DOCUMENTO_SEGUNDA_VIA_CONTA = 900304;
+
+	public static final Integer OPERACAO_EMITIR_DOCUMENTO_EXTRATO_DEBITO = 900305;
+
+	public static final Integer OPERACAO_EMITIR_DOCUMENTO_GUIA_PAGAMENTO = 900306;
+
+	public static final Integer OPERACAO_EMITIR_FATURA_CLIENTE_RESPONSAVEL = 900307;
 
 	/** nullable persistent field */
 	private String descricaoAbreviada;

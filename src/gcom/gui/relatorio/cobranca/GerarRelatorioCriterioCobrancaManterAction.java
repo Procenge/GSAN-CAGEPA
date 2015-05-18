@@ -222,6 +222,18 @@ public class GerarRelatorioCriterioCobrancaManterAction
 
 		}
 
+		// Debitos Divida Ativa
+
+		Short debitosDividaAtiva = null;
+
+		String debitosDividaAtivaPesquisar = (String) criterioCobrancaFiltrarActionForm.getOpcaoDividaAtiva();
+
+		if(debitosDividaAtivaPesquisar != null && !debitosDividaAtivaPesquisar.equals("") && !debitosDividaAtivaPesquisar.equals("3")){
+
+			debitosDividaAtiva = new Short(debitosDividaAtivaPesquisar);
+
+		}
+
 		// Imóvel com Débito só da Conta do Mês
 
 		Short imovelDebitoContaMes = null;
@@ -279,6 +291,7 @@ public class GerarRelatorioCriterioCobrancaManterAction
 		cobrancaCriterioParametros.setIndicadorEmissaoImovelParalisacao(situacaoEspecialCobranca);
 		cobrancaCriterioParametros.setIndicadorEmissaoImovelSituacaoCobranca(situacaoCobranca);
 		cobrancaCriterioParametros.setIndicadorEmissaoContaRevisao(contasRevisao);
+		cobrancaCriterioParametros.setIndicadorDividaAtiva(debitosDividaAtiva);
 		cobrancaCriterioParametros.setIndicadorEmissaoDebitoContaMes(imovelDebitoContaMes);
 		cobrancaCriterioParametros.setIndicadorEmissaoInquilinoDebitoContaMes(inquilinoDebitoContaMes);
 		cobrancaCriterioParametros.setIndicadorEmissaoDebitoContaAntiga(imovelDebitoContasAntigas);

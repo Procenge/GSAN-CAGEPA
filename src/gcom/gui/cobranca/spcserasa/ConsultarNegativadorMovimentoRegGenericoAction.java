@@ -173,6 +173,8 @@ public class ConsultarNegativadorMovimentoRegGenericoAction
 						retorno = actionMapping.findForward("consultarDadosRegistroSPC");
 					}else if(negativador.getId().equals(Negativador.NEGATIVADOR_SERASA)){
 						retorno = actionMapping.findForward("consultarDadosRegistroSERASA");
+					}else if(negativador.getId().equals(Negativador.NEGATIVADOR_SPC_BOA_VISTA)){
+						retorno = actionMapping.findForward("consultarDadosRegistroBOAVISTA");
 					}else{
 						throw new ActionServletException("atencao.negativador.nao.selecionado");
 					}

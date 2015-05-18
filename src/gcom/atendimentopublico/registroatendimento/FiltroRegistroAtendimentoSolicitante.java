@@ -124,4 +124,6 @@ public class FiltroRegistroAtendimentoSolicitante
 	public final static String INDICADOR_SOLICITANTE_PRINCIPAL = "indicadorSolicitantePrincipal";
 
 	public final static String CLIENTE = "cliente";
+
+	public final static String UNIDADE_ORGANIZACIONAL = "unidadeOrganizacional";
 }

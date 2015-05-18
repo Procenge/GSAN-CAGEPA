@@ -105,10 +105,7 @@ import gcom.cadastro.localidade.SetorComercial;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.cobranca.CobrancaDocumento;
 import gcom.cobranca.CobrancaForma;
-import gcom.cobranca.bean.CalcularAcrescimoPorImpontualidadeHelper;
-import gcom.cobranca.bean.ContaValoresHelper;
-import gcom.cobranca.bean.GuiaPagamentoValoresHelper;
-import gcom.cobranca.bean.GupoFaturamentoHelper;
+import gcom.cobranca.bean.*;
 import gcom.faturamento.bean.*;
 import gcom.faturamento.consumotarifa.ConsumoTarifa;
 import gcom.faturamento.consumotarifa.ConsumoTarifaCategoria;
@@ -131,6 +128,7 @@ import gcom.micromedicao.medicao.MedicaoHistorico;
 import gcom.relatorio.faturamento.RelatorioAnaliticoFaturamentoHelper;
 import gcom.relatorio.faturamento.RelatorioArquivoDeclaracaoAnualQuitacaoDebitos;
 import gcom.relatorio.faturamento.RelatorioSituacaoEspecialFaturamentoHelper;
+import gcom.relatorio.faturamento.conta.DadosConsumoAnteriorHelper;
 import gcom.relatorio.faturamento.conta.RelatorioContaModelo2Bean;
 import gcom.relatorio.faturamento.conta.RelatorioContaModelo3Bean;
 import gcom.relatorio.ordemservico.DadosContaEmRevisaoHelper;
@@ -152,27 +150,12 @@ import java.util.*;
 public interface IControladorFaturamento {
 
 	/**
-	 * < <Descrição do método>>
-	 * 
-	 * @param faturamentoAtividadeCronogramas
-	 *            Descrição do parâmetro
-	 * @param faturamentoGrupoCronogramaMensal
-	 *            Descrição do parâmetro
+	 * [UC0116] Inserir Cronograma Faturamento
 	 */
-	public void inserirFaturamentoCronograma(Collection faturamentoAtividadeCronogramas,
-					FaturamentoGrupoCronogramaMensal faturamentoGrupoCronogramaMensal, RegistradorOperacao registradorOperacao)
+	public String inserirFaturamentoGrupoCronogramaMensal(FaturamentoGrupoCronogramaMensal faturamentoGrupoCronogramaMensal,
+					Collection<FaturamentoAtividadeCronograma> colecaoFaturamentoAtividadeCronogramaInserir, Usuario usuarioLogado,
+					Integer quantidadeCronogramas)
 					throws ControladorException;
-
-	/**
-	 * < <Descrição do método>>
-	 * 
-	 * @param faturamentoGrupoCronogramaMensal
-	 *            Descrição do parâmetro
-	 * @param faturamentoAtividadeCronogramas
-	 *            Descrição do parâmetro
-	 */
-	public void inserirFaturamentoGrupoCronogramaMensal(FaturamentoGrupoCronogramaMensal faturamentoGrupoCronogramaMensal,
-					Collection faturamentoAtividadeCronogramas, Usuario usuarioLogado) throws ControladorException;
 
 	/**
 	 * < <Descrição do método>>
@@ -192,8 +175,8 @@ public interface IControladorFaturamento {
 	 * @param faturamentoAtividadeCronogramas
 	 *            Descrição do parâmetro
 	 */
-	public void atualizarFaturamentoGrupoCronogramaMensal(FaturamentoGrupoCronogramaMensal faturamentoGrupoCronogramaMensal,
-					Collection faturamentoAtividadeCronogramas, Collection colecaoTodasAtividades, Usuario usuarioLogado)
+	public String atualizarFaturamentoGrupoCronogramaMensal(FaturamentoGrupoCronogramaMensal faturamentoGrupoCronogramaMensal,
+					Collection<FaturamentoAtividadeCronograma> colecaoFaturamentoAtividadeCronogramaAtualizar, Usuario usuarioLogado)
 					throws ControladorException;
 
 	/**
@@ -236,7 +219,7 @@ public interface IControladorFaturamento {
 	 * @return
 	 */
 	public Collection verificarSituacaoAtividadeRota(Collection colecaoRotasGrupo, FaturamentoAtividade faturamentoAtividade,
-					FaturamentoGrupo faturamentoGrupo, boolean habilitada) throws ControladorException;
+					Integer anoMesReferencia, boolean habilitada) throws ControladorException;
 
 	public Integer inserirComandoAtividadeFaturamento(FaturamentoGrupo faturamentoGrupo, FaturamentoAtividade faturamentoAtividade,
 					Collection colecaoRotas, Date dataVencimentoGrupo, Usuario usuarioLogado) throws ControladorException;
@@ -304,7 +287,7 @@ public interface IControladorFaturamento {
 					Integer ligacaoSituacaoEsgotoId, Short indicadorFaturamentoAgua, Short indicadorFaturamentoEsgoto,
 					Collection categoriasImovel, Integer consumoFaturadoAguaMes, Integer consumoFaturadoEsgotoMes,
 					int consumoMinimoLigacao, Date dataLeituraAnterior, Date dataLeituraAtual, BigDecimal percentualEsgoto,
-					Integer tarifaImovel, Integer idImovel) throws ControladorException;
+					Integer tarifaImovel, Integer idImovel, ConsumoTarifaVigencia consumoTarifaVigencia) throws ControladorException;
 
 	/**
 	 * @param imovel
@@ -362,8 +345,18 @@ public interface IControladorFaturamento {
 					throws ControladorException;
 
 	/**
-	 * [UC0145] - Inserir Conta Author: Raphael Rossiter 05/12/2005
+	 * [UC0145] - Inserir Conta [SF002] - Gerar dados da conta [SF003] - Gerar os débitos cobrados
+	 * Author: Raphael Rossiter, Pedro Alexandre Data
+	 * 05/12/2005, 20/11/2006
 	 * 
+	 * @author eduardo henrique
+	 * @date 26/11/2008 Alteração no método para a adequação do objeto conta efetuar contabilização
+	 *       do evento Inserir Conta.
+	 * @author Saulo Lima
+	 * @date 26/11/2008 Alteração no método para chamar a Classificação de Pagamento e Devoluções
+	 *       [UC0300]
+	 * @author eduardo henrique
+	 * @date 19/01/2009 Alteração no método para desativação da contabilização da conta.
 	 * @param mesAnoConta
 	 * @param imovel
 	 * @param colecaoDebitoCobrado
@@ -382,7 +375,7 @@ public interface IControladorFaturamento {
 					LigacaoAguaSituacao ligacaoAguaSituacao, LigacaoEsgotoSituacao ligacaoEsgotoSituacao, Collection colecaoCategoria,
 					String consumoAgua, String consumoEsgoto, String percentualEsgoto, Date dataVencimentoConta,
 					Collection<CalcularValoresAguaEsgotoHelper> calcularValoresConta, ContaMotivoInclusao contaMotivoInclusao,
-					Map<String, String[]> requestMap, Usuario usuarioLogado) throws ControladorException;
+					Map<String, String[]> requestMap, Usuario usuarioLogado, Integer consumoPoco) throws ControladorException;
 
 	/**
 	 * [UC0147] - Cancelar Conta Author: Raphael Rossiter Data: 10/12/2005
@@ -657,10 +650,11 @@ public interface IControladorFaturamento {
 	 * @throws ControladorException
 	 */
 	public void inserirConsumoTarifa(ConsumoTarifa consumoTarifa, ConsumoTarifaVigencia consumoTarifaVigencia,
-					Collection<ConsumoTarifaCategoria> colecaoConsumoTarifaCategoria) throws ControladorException;
+					Collection<ConsumoTarifaCategoria> colecaoConsumoTarifaCategoria, Usuario usuarioLogado) throws ControladorException;
 
 	public void atualizarConsumoTarifa(ConsumoTarifaVigencia consumoTarifaVigencia,
-					Collection<CategoriaFaixaConsumoTarifaHelper> colecaoCategoriaFaixaConsumoTarifaHelper) throws ControladorException;
+					Collection<CategoriaFaixaConsumoTarifaHelper> colecaoCategoriaFaixaConsumoTarifaHelper, Usuario usuarioLogado)
+					throws ControladorException;
 
 	/**
 	 * [UC0145] - Inserir Conta Author: Raphael Rossiter Data: 12/01/2006
@@ -750,6 +744,18 @@ public interface IControladorFaturamento {
 	 * @throws ControladorException
 	 */
 	public void inserirCreditoARealizar(Imovel imovel, CreditoARealizar creditoARealizaro, Usuario usuarioLogado)
+					throws ControladorException;
+
+	/**
+	 * [UC0194] - Inserir Crédito a Realizar
+	 * 
+	 * @author Roberta Costa
+	 * @since 12/01/2006
+	 * @param creditoARealizar
+	 *            CreditoARealizar
+	 * @throws ControladorException
+	 */
+	public void inserirCreditoARealizar(Imovel imovel, CreditoARealizar creditoARealizar, Usuario usuarioLogado, Boolean gerarErro)
 					throws ControladorException;
 
 	/**
@@ -1030,7 +1036,8 @@ public interface IControladorFaturamento {
 	public BigDecimal calcularPrestacao(BigDecimal taxaJurosFinanciamento, Integer numeroPrestacoes, BigDecimal valorTotalServico,
 					BigDecimal valorEntrada) throws ControladorException;
 
-	public void reajustarTarifaConsumo(Map<ConsumoTarifaVigencia, Map<ConsumoTarifaCategoria, BigDecimal>> mapReajuste)
+	public void reajustarTarifaConsumo(Map<ConsumoTarifaVigencia, Map<ConsumoTarifaCategoria, BigDecimal>> mapReajuste,
+					Usuario usuarioLogado)
 					throws ControladorException;
 
 	/**
@@ -1225,7 +1232,8 @@ public interface IControladorFaturamento {
 					String municipio, String idTipoMedicao, String indicadorMedicao, String idSubCategoria, String idCategoria,
 					String quantidadeEconomiasInicial, String quantidadeEconomiasFinal, String diaVencimento, String idCliente,
 					String idClienteTipo, String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal,
-					String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa, int anoMesReferencia
+					String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa, int anoMesReferencia,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal
 
 	) throws ControladorException;
 
@@ -1251,7 +1259,8 @@ public interface IControladorFaturamento {
 	 * @author Rafel Santos
 	 * @date 21/07/2006
 	 */
-	public void iniciarProcessoReajustarTarifaConsumo(Map listaParametrosValoresCategoria, Date dataNovaVigencia, String[] idsRecuperados)
+	public void iniciarProcessoReajustarTarifaConsumo(Map listaParametrosValoresCategoria, Date dataNovaVigencia, String[] idsRecuperados,
+					Usuario usuarioLogado, String descricaoAtoAdministrativo)
 					throws ControladorException;
 
 	/**
@@ -2171,7 +2180,8 @@ public interface IControladorFaturamento {
 	 * @return
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarConsumoTarifaRelatorio(String descricao, Date dataVigenciaInicial, Date dataVigenciaFinal)
+	public Collection pesquisarConsumoTarifaRelatorio(String descricao, Date dataVigenciaInicial, Date dataVigenciaFinal,
+					String descricaoAtoAdministrativo)
 					throws ControladorException;
 
 	/**
@@ -2196,7 +2206,7 @@ public interface IControladorFaturamento {
 	 * @throws ErroRepositorioException
 	 */
 	public Integer obterContasConjuntoImoveis(Integer anoMes, Collection idsImovel, Integer codigoCliente, Integer relacaoTipo,
-					Date dataVencimentoContaInicio, Date dataVencimentoContaFim, Integer idGrupoFaturamento, Integer anoMesFinal,
+					Date dataVencimentoContaInicio, Date dataVencimentoContaFim, Collection colecaoGrupoFaturamento, Integer anoMesFinal,
 					String inContasRevisao, Integer[] motivosRevisaoDisponiveis) throws ControladorException;
 
 	/**
@@ -2209,7 +2219,7 @@ public interface IControladorFaturamento {
 	 * @throws ErroRepositorioException
 	 */
 	public Collection recuperarContasConjuntoImoveis(Integer anoMes, Collection idsImovel, Integer codigoCliente, Integer relacaoTipo,
-					Date dataVencimentoContaInicio, Date dataVencimentoContaFim, Integer idGrupoFaturamento, Integer anoMesFinal,
+					Date dataVencimentoContaInicio, Date dataVencimentoContaFim, Collection colecaoGrupoFaturamento, Integer anoMesFinal,
 					String inContasRevisao, Integer[] motivosRevisaoDisponiveis) throws ControladorException;
 
 	/**
@@ -2470,7 +2480,7 @@ public interface IControladorFaturamento {
 	 * @return
 	 * @throws ControladorException
 	 */
-	public Date obterDataVencimentoGrupo(Integer idFaturamentoGrupo) throws ControladorException;
+	public Date obterDataVencimentoGrupo(Integer idFaturamentoGrupo, Integer anoMesReferencia) throws ControladorException;
 
 	/**
 	 * Permite atualizar os dados de um contrato de demanda
@@ -2580,7 +2590,7 @@ public interface IControladorFaturamento {
 	 * @date 21/08/2007
 	 * @throws ControladorException
 	 */
-	public Collection pesquisarConjuntoContaEmitir2Via(Integer idGrupoFaturamento, Integer anoMes, Date dataVencimentoContaInicio,
+	public Collection pesquisarConjuntoContaEmitir2Via(String idGrupoFaturamento, Integer anoMes, Date dataVencimentoContaInicio,
 					Date dataVencimentoContaFim, Integer anoMesFim) throws ControladorException;
 
 	/**
@@ -2698,6 +2708,13 @@ public interface IControladorFaturamento {
 					Integer idMotivoRevisao, Integer idImovelPerfil, Integer referenciaInicial, Integer referenciaFinal)
 					throws ControladorException;
 
+	//
+
+	public Collection<RelatorioAnaliticoContasHelper> pesquisarDadosRelatorioAnaliticoContas(Integer idGerenciaRegional,
+					Integer idLocalidade, Integer idCategoria, Integer idCliente, Integer IdImovel, Integer idSituacao,
+					Integer motivoRetificacao, Integer referencia, Integer faturamentoGrupo, Integer setorComercial, Integer quadra)
+					throws ControladorException;
+
 	/**
 	 * Pesquisa os dados necessário para a geração do relatório resumido
 	 * [UC0635] - Gerar Relatórios de Contas em Revisão
@@ -2764,7 +2781,10 @@ public interface IControladorFaturamento {
 	 * @param conta
 	 * @return
 	 */
-	public Collection montarColecaoContaCategoria(Collection colecaoSubcategoria, Conta conta);
+	public Collection montarColecaoContaCategoria(Collection colecaoSubcategoria, Conta conta) throws ControladorException;
+
+	public Object[] gerarDadosContaCategoriaEContaCategoriaConsumoFaixa(Collection colecaoCategorias,
+					Collection colecaoCalcularValoresAguaEsgotoHelper, Conta conta) throws ControladorException;
 
 	/**
 	 * Método que verifica se há Registro de Atendimento, que possui tipo de débito vinculado com
@@ -3399,7 +3419,8 @@ public interface IControladorFaturamento {
 					String indicadorMedicao, String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial,
 					String quantidadeEconomiasFinal, String diaVencimento, String idCliente, String idClienteTipo,
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
-					String numeroMoradoresFinal, String idAreaConstruidaFaixa, int anoMesReferencia) throws ControladorException;
+					String numeroMoradoresFinal, String idAreaConstruidaFaixa, int anoMesReferencia, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal) throws ControladorException;
 
 	public BigDecimal calcularValorTotalMultasCobradasConta(Collection<DebitoCobrado> colecaoDebitoCobrado) throws ControladorException;
 
@@ -3971,7 +3992,8 @@ public interface IControladorFaturamento {
 	 * @author Victon Santos
 	 * @return
 	 */
-	public Collection<RelatorioMaioresDevedoresHelper> pesquisarDadosRelatorioMaioresDevedores(Integer localidade, Integer registros)
+	public Collection<RelatorioMaioresDevedoresHelper> pesquisarDadosRelatorioMaioresDevedores(Integer localidade, Integer registros,
+					Integer[] idsTipoCliente)
 					throws ControladorException;
 
 	/**
@@ -4307,4 +4329,177 @@ public interface IControladorFaturamento {
 	 */
 	public void verificarExistenciaDebitoPrescrito(Usuario usuario, Collection<ContaValoresHelper> colecaoContaValoresHelper,
 					Collection<GuiaPagamentoValoresHelper> colecaoGuiaValoresHelper) throws ControladorException;
+
+	/**
+	 * Metódo responsável por emitir os txts das contas.
+	 * [UC0348] Emitir Contas
+	 * [SB0004] Obter Dados do Consumo e Medicao Anterior
+	 * 
+	 * @author Anderson Italo
+	 * @date 05/08/2013
+	 * @throws ControladorException
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<DadosConsumoAnteriorHelper> obterDadosConsumoAnteriorModelo(Integer idImovel, Integer anoMes, int qtdMeses,
+					Integer tipoLigacao, Integer tipoMedicao) throws ControladorException, ErroRepositorioException;
+
+	/**
+	 * OC1307375 - Criado rotina de ajuste para testar alteração no calcular valores de água e
+	 * esgoto cascata
+	 * 
+	 * @author Anderson Italo
+	 * @date 03/07/2014
+	 **/
+	public void executarAjusteVerificarBatimentoCalculoValorConta(Integer anoMesReferencia) throws ControladorException;
+
+	/**
+	 * @author Yara Souza
+	 * @date 29/07/2014
+	 * @throws ControladorException
+	 */
+	public void executarAjusteClienteDebitoACobrar() throws ControladorException;
+
+	/**
+	 * [UC3153] - Verificar Titularidade Débito/Crédito
+	 * 
+	 * @author Yara Souza
+	 * @date 29/07/2014
+	 **/
+	public void verificarTitularidadeDebitoCredito(Integer idImovel, ObterDebitoImovelOuClienteHelper obterDebitoImovelOuClienteHelper,
+					Collection colecaoDebitoACobrar, Collection colecaoCreditoARealizar) throws ControladorException;
+
+	/**
+	 * @param creditoARealizar
+	 * @return
+	 * @throws ControladorException
+	 */
+
+	public Collection pesquisarClienteCreditoARealizar(CreditoARealizar creditoARealizar) throws ControladorException;
+
+	/**
+	 * @param debitoACobrar
+	 * @return
+	 * @throws ControladorException
+	 */
+	public Collection pesquisarClienteDebitoACobrar(DebitoACobrar debitoACobrar) throws ControladorException;
+
+	/**
+	 * @param debitoACobrarHistorico
+	 * @return
+	 * @throws ControladorException
+	 */
+
+	public Collection pesquisarClienteDebitoACobrarHistorico(DebitoACobrarHistorico debitoACobrarHistorico) throws ControladorException;
+
+	/**
+	 * <p>
+	 * [OC1348276] [NF] Refaturar todas as contas da localidade 062 com referência de 10/2009 a
+	 * 08/2014
+	 * </p>
+	 * <p>
+	 * Refaturar todas as contas geradas para o municipio de Siriri, para atendermos ao trabalho que
+	 * a Deso está desenvolvendo naquele município e a RDE 12/2014. Parâmetros:
+	 * <ul>
+	 * <li>Localidade: 062</li>
+	 * <li>Período de referência das faturas: 10/2009 a 08/2014</li>
+	 * <li>Refaturar consumo de todas as matrículas de categoria Residencial e Comercial para 10m³ e
+	 * categoria Industrial para 30m³</li>
+	 * </ul>
+	 * </p>
+	 * 
+	 * @author Magno Silveira { @literal <magno.silveira@procenge.com.br> }
+	 * @since 2014-09-02
+	 * @param anoMesReferenciaInicial
+	 * @param anoMesReferenciaFinal
+	 * @throws ControladorException
+	 */
+	public void refaturarContasDESOLocalidade062(Integer anoMesReferenciaInicial)
+					throws ControladorException;
+
+	/**
+	 * [UC0187] Inserir Guia de Pagamento
+	 * Processos das execuções especiais pendentes de cobrança do valor de sucumbência
+	 * 
+	 * @date 08/09/2014
+	 * @author Gicevalter Couto
+	 */
+	public Collection<Integer> pesquisarProcessosExecucaoEspeciaisPendentesCobranca(Integer idImovel) throws ControladorException;
+
+	/**
+	 * [UC3156] Simular Cálculo da Conta Dados Reais
+	 * 
+	 * @author Anderson Italo
+	 * @date 22/09/2014
+	 */
+	public Collection pesquisarContasSimularCalculoDadosReais(FiltroContaSimularCalculoHelper helper, Integer numeroPagina)
+					throws ControladorException;
+
+	/**
+	 * /**
+	 * [UC3156] Simular Cálculo da Conta Dados Reais
+	 * 
+	 * @author Anderson Italo
+	 * @date 22/09/2014
+	 */
+	public Integer pesquisarTotalRegistrosContasSimularCalculoDadosReais(FiltroContaSimularCalculoHelper helper)
+					throws ControladorException;
+
+	public void executarAjusteConversaoAcordoTac() throws ControladorException;
+
+	/**
+	 * @param idCliente
+	 * @return
+	 * @throws ControladorException
+	 */
+	public Collection<Integer> pesquisarProcessosExecucaoEspeciaisPendentesCobrancaPorCliente(Integer idCliente)
+					throws ControladorException;
+
+	/**
+	 * Pesquisar Prestações de Guia de Pagamento
+	 * 
+	 * @author Gicevalter Couto
+	 * @throws ControladorException
+	 * @date 29/01/2014
+	 */
+	public Collection<GuiaPagamentoPrestacaoHelper> pesquisarGuiasPagamentoPrestacaoPorParcelamento(Integer parcelamentoId)
+					throws ControladorException;
+
+
+	/**
+	 * @param idGuia
+	 * @return
+	 * @throws ControladorException
+	 */
+	public BigDecimal pesquisarValorPrestacoesGuiaPagamento(Integer idGuia) throws ControladorException;
+	
+	public void criarTabelaTemporariaRelatorioTotalContasEmitidasLocalidade() throws ControladorException;
+
+	public void inserirRegistrosTabelaTemporariaRelatorioTotalContasEmitidasLocalidade(Integer anoMesReferencia)
+					throws ControladorException;
+
+	/**
+	 * @param referencia
+	 * @param idsGrupos
+	 * @throws ControladorException
+	 */
+	public void gerarCreditoARealizarAjuste(Integer referencia, String idsGrupos) throws ControladorException;
+
+	/**
+	 * [UC3165] Gerar Relatório Posição do Débito da Negativação - Legado CAGEPA
+	 * Pesquisar as contas em processo de negativação e já transferidas para o histórico
+	 * 
+	 * @date 07/03/2015
+	 * @author Luciano Galvão
+	 */
+	public Collection pesquisarContaEmProcessoNegativacaoCagepa(Integer anoMesFaturamento) throws ControladorException;
+
+	/**
+	 * @author Magno Silveira <magno.silveira@procenge.com.br>
+	 * @since 16/04/2015
+	 * @param idImovel
+	 * @param paramMotivoRetificaoOcorrenciaConsumo
+	 * @return
+	 */
+	public int obterQtdContasRetificadasPorMotivoRetificacao(Integer idImovel, Integer paramMotivoRetificaoOcorrenciaConsumo)
+					throws ControladorException;
 }

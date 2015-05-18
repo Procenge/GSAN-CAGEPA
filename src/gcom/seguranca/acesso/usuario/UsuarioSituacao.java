@@ -202,4 +202,24 @@ public class UsuarioSituacao
 
 		this.indicadorUsoSistema = indicadorUsoSistema;
 	}
+
+	public boolean equals(Object arg){
+
+		if(arg == null){
+			return false;
+		}
+		if(!(arg instanceof UsuarioSituacao)){
+			return false;
+		}
+		return this.id.intValue() == ((UsuarioSituacao) arg).getId().intValue();
+	}
+
+	@Override
+	public int hashCode(){
+
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
 }

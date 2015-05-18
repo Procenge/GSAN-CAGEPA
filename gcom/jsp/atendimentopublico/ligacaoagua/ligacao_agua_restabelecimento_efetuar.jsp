@@ -234,7 +234,19 @@
 			form.valorParcelas.value = "";
 			form.buttonCalcular.disabled = true;
 		}
-	}		 
+	}		
+	
+	
+	
+	  function validarSubmitAutomatico(form) {
+	   		if (form.submitAutomatico2.value == 'ok') {
+	    		validarForm(form);
+	      	}
+	   }
+	
+	
+	
+	
 </script>
 
 
@@ -694,7 +706,20 @@
 							<td align="right"><input name="Button" type="button"
 								class="bottonRightCol" value="Efetuar"
 								onClick="javascript:validarForm(document.forms[0]);"></td>
+								
+								
+								  <!-- Utilizado pelo setor de Mobilidade para encerramento automático de OS através de dispositivo móvel -->
+								   <input type="hidden" name="submitAutomatico2" value="${requestScope.submitAutomatico2}" />
+								   <script language="JavaScript">
+								   		validarSubmitAutomatico(document.forms[0]);
+								   </script>
+								
+								
+								
 						</tr>
+						
+						
+						
 					</table>
 					</td>
 

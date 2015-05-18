@@ -77,6 +77,7 @@
 
 package gcom.cadastro;
 
+import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.sistemaparametro.bean.DadosEnvioEmailHelper;
 import gcom.cobranca.bean.FiltroRelatorioDebitoPorResponsavelHelper;
 import gcom.relatorio.cadastro.imovel.*;
@@ -506,4 +507,18 @@ public interface IRepositorioCadastro {
 	public void criarSequence(String nomeSequence) throws ErroRepositorioException;
 
 	public Integer obterNextValSequence(String nomeSequence) throws ErroRepositorioException;
+
+	/**
+	 * @param cliente
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<Object[]> pesquisarClienteDebitoACobrar(Cliente cliente) throws ErroRepositorioException;
+
+	/**
+	 * @param cliente
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<Object[]> pesquisarClienteGuiaPagamento(Cliente cliente) throws ErroRepositorioException;
 }

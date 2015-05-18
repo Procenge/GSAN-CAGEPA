@@ -256,7 +256,7 @@ public interface IRepositorioCliente {
 	public Collection filtrarCliente(String codigo, String cpf, String rg, String cnpj, String nome, String nomeMae, String cep,
 					String idMunicipio, String idBairro, String idLogradouro, String indicadorUso, String tipoPesquisa,
 					String tipoPesquisaNomeMae, String clienteTipo, Integer numeroPagina, String inscricaoEstadual,
-					String indicadorContaBraille)
+					String indicadorContaBraille, String documentoValidado, String numeroBeneficio)
 					throws ErroRepositorioException;
 
 	/**
@@ -275,7 +275,8 @@ public interface IRepositorioCliente {
 	 */
 	public Object filtrarQuantidadeCliente(String codigo, String cpf, String rg, String cnpj, String nome, String nomeMae, String cep,
 					String idMunicipio, String idBairro, String idLogradouro, String indicadorUso, String tipoPesquisa,
-					String tipoPesquisaNomeMae, String clienteTipo, String inscricaoEstadual, String indicadorContaBraille)
+					String tipoPesquisaNomeMae, String clienteTipo, String inscricaoEstadual, String indicadorContaBraille,
+					String documentoValidado, String numeroBeneficio)
 					throws ErroRepositorioException;
 
 	/**

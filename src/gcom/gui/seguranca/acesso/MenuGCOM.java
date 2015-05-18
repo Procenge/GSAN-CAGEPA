@@ -173,12 +173,13 @@ public class MenuGCOM {
 						menu
 										.append("d.add(" + contadorId + "," + nivelArvore + ",'" + funcionalidade.getDescricao() + "','"
 														+ funcionalidade.getCaminhoUrl()
-														+ ((funcionalidade.getCaminhoUrl().indexOf("?") != -1) ? "" : "?menu=sim")
+										+ ((funcionalidade.getCaminhoUrl().indexOf("?") != -1) ? "" : "?menuprincipal=sim&menu=sim")
 														+ "','','_newblank');\n");
 					}else{
 						menu.append("d.add(" + contadorId + "," + nivelArvore + ",'" + funcionalidade.getDescricao() + "','"
 										+ funcionalidade.getCaminhoUrl()
-										+ ((funcionalidade.getCaminhoUrl().indexOf("?") != -1) ? "" : "?menu=sim") + "');\n");
+										+ ((funcionalidade.getCaminhoUrl().indexOf("?") != -1) ? "" : "?menuprincipal=sim&menu=sim")
+										+ "');\n");
 					}
 				}else{
 					// Volta o contador

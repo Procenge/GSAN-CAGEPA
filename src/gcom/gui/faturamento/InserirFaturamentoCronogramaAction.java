@@ -81,14 +81,11 @@ import gcom.faturamento.FaturamentoAtividade;
 import gcom.faturamento.FaturamentoAtividadeCronograma;
 import gcom.faturamento.FaturamentoGrupo;
 import gcom.faturamento.FaturamentoGrupoCronogramaMensal;
-import gcom.faturamento.FiltroFaturamentoGrupo;
-import gcom.faturamento.FiltroFaturamentoGrupoCronogramaMensal;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
-import gcom.util.filtro.ParametroSimples;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -144,6 +141,13 @@ public class InserirFaturamentoCronogramaAction
 
 		String idGrupo = faturamentoActionForm.getIdGrupoFaturamento();
 		String mesAno = faturamentoActionForm.getMesAno();
+		Integer quantidadeCronogramas = 1;
+
+		if(!Util.isVazioOuBranco(faturamentoActionForm.getQuantidadeCronogramas())){
+
+			quantidadeCronogramas = Util.obterInteger(faturamentoActionForm.getQuantidadeCronogramas());
+		}
+
 		Collection faturamentoAtividades = (Collection) sessao.getAttribute("faturamentoAtividades");
 		Collection faturamentoAtividadeCronogramas = new ArrayList();
 		Collection colecaoTestePredecessoraVazia = new ArrayList();
@@ -153,6 +157,7 @@ public class InserirFaturamentoCronogramaAction
 		// Instancia objeto FaturamenatoGrupo
 		FaturamentoGrupo faturamentoGrupo = new FaturamentoGrupo();
 		faturamentoGrupo.setId(new Integer(idGrupo));
+		faturamentoGrupo = (FaturamentoGrupo) fachada.pesquisar(faturamentoGrupo.getId(), FaturamentoGrupo.class);
 
 		while(iterateFaturamentoAtividades.hasNext()){
 			faturamentoAtividadeCronograma = new FaturamentoAtividadeCronograma();
@@ -229,38 +234,15 @@ public class InserirFaturamentoCronogramaAction
 						colecaoTestePredecessoraVazia);
 		fachada.validarFaturamentoCronograma(colecaoTestePredecessoraVazia);
 
-		fachada.inserirFaturamentoGrupoCronogramaMensal(faturamentoGrupoCronogramaMensal, faturamentoAtividadeCronogramas, usuarioLogado);
+		String referenciasInseridas = fachada.inserirFaturamentoGrupoCronogramaMensal(faturamentoGrupoCronogramaMensal,
+						faturamentoAtividadeCronogramas, usuarioLogado,
+						quantidadeCronogramas);
 
-		// pega o grupo de faturamento para mostrar a descricao na tela de sucesso
-		FiltroFaturamentoGrupo filtroFaturamentoGrupo = new FiltroFaturamentoGrupo();
-		filtroFaturamentoGrupo.adicionarParametro(new ParametroSimples(FiltroFaturamentoGrupo.ID, faturamentoGrupo.getId()));
-		Collection colecaoFaturamentoGrupo = fachada.pesquisar(filtroFaturamentoGrupo, FaturamentoGrupo.class.getName());
-		FaturamentoGrupo faturamentoGrupoDescricao = new FaturamentoGrupo();
 
-		// pega o id do faturamento grupo cronograma mensal para o caso de chamar direto o atualizar
-		FiltroFaturamentoGrupoCronogramaMensal filtroFaturamentoGrupoCronogramaMensal = new FiltroFaturamentoGrupoCronogramaMensal();
 
-		filtroFaturamentoGrupoCronogramaMensal.adicionarParametro(new ParametroSimples(
-						FiltroFaturamentoGrupoCronogramaMensal.ANO_MES_REFERENCIA, mesAno));
-
-		filtroFaturamentoGrupoCronogramaMensal.adicionarParametro(new ParametroSimples(
-						FiltroFaturamentoGrupoCronogramaMensal.FATURAMENTO_GRUPO, faturamentoGrupo.getId()));
-		filtroFaturamentoGrupoCronogramaMensal.adicionarCaminhoParaCarregamentoEntidade("faturamentoGrupo");
-		Collection colecaoFaturamentoGrupoCronogramaMensal = fachada.pesquisar(filtroFaturamentoGrupoCronogramaMensal,
-						FaturamentoGrupoCronogramaMensal.class.getName());
-
-		FaturamentoGrupoCronogramaMensal faturamentoGrupoCronogramaMensalComId = (FaturamentoGrupoCronogramaMensal) Util
-						.retonarObjetoDeColecao(colecaoFaturamentoGrupoCronogramaMensal);
-
-		if(!colecaoFaturamentoGrupo.isEmpty()){
-			faturamentoGrupoDescricao = (FaturamentoGrupo) colecaoFaturamentoGrupo.iterator().next();
-		}
-
-		montarPaginaSucesso(httpServletRequest, "Cronograma de Faturamento do grupo " + faturamentoGrupoDescricao.getId()
-						+ " referente ao mês/ano: " + faturamentoGrupoCronogramaMensal.getMesAno() + " inserido com sucesso.",
-						"Inserir outro Cronograma de Faturamento.", "exibirInserirFaturamentoCronogramaAction.do",
-						"exibirAtualizarFaturamentoCronogramaAction.do?idRegistroAtualizacao="
-										+ faturamentoGrupoCronogramaMensalComId.getId(), "Atualizar Cronograma de Faturamento Inserido");
+		montarPaginaSucesso(httpServletRequest, "Cronograma de Faturamento do grupo " + faturamentoGrupo.getDescricao()
+						+ " referente ao(s) mês(es)/ano(s): " + referenciasInseridas + " inserido(s) com sucesso.",
+						"Inserir outro Cronograma de Faturamento.", "exibirInserirFaturamentoCronogramaAction.do");
 
 		sessao.removeAttribute("faturamentoAtividades");
 

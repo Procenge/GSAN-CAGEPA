@@ -4,6 +4,7 @@ package gcom.relatorio;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaException;
 import gcom.tarefa.TarefaRelatorio;
+import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.agendadortarefas.AgendadorTarefas;
@@ -38,19 +39,28 @@ public class RelatorioGeracaoCrystalReport
 
 	private static final long serialVersionUID = 1L;
 
+	public static final String RELATORIO_CONTAS_EM_ATRAZO_POR_IDADE_DA_DIVIDA = "RelatorioContasEmAtrasoPorIdadeDaDivida.rpt";
+
 	public Object executar() throws TarefaException{
 
 		br.com.procenge.geradorrelatorio.api.Relatorio relatorio = (br.com.procenge.geradorrelatorio.api.Relatorio) getParametro("relatorio");
+		
+		
 
 		Map<String, Object> parametros = (Map<String, Object>) getParametro("parametros");
 
 		byte[] retorno = null;
 
 		try{
-
 			// Gera o relatório Crystal Report
-			byte[] conteudoRelatorio = getBytesFromByteArrayInputStream(getControladorRelatorio().gerarRelatorio(relatorio, parametros,
-							ControladorRelatorio.FORMATO_PDF));
+			byte[] conteudoRelatorio = null;
+			if(parametros.get("formatoRelatorio") != null && parametros.get("formatoRelatorio").equals(ConstantesSistema.XLS)){
+				conteudoRelatorio = getBytesFromByteArrayInputStream(getControladorRelatorio().gerarRelatorio(relatorio, parametros,
+								ControladorRelatorio.FORMATO_PLANILHA));
+			}else{
+				conteudoRelatorio = getBytesFromByteArrayInputStream(getControladorRelatorio().gerarRelatorio(relatorio, parametros,
+								ControladorRelatorio.FORMATO_PDF));
+			}
 
 			// Verifica se o relatorioId é válido
 			if((relatorio.getRelatorioId() == null) || (!Util.isNumero(relatorio.getRelatorioId(), false, 0))){

@@ -147,6 +147,8 @@ public class FiltrarUsuarioActionForm
 
 	private String loginUsuario = "";
 
+	private String idUsuario;
+
 	/**
 	 * @return Retorna o campo nome.
 	 */
@@ -498,6 +500,16 @@ public class FiltrarUsuarioActionForm
 	public void setLoginUsuario(String loginUsuario){
 
 		this.loginUsuario = loginUsuario;
+	}
+
+	public String getIdUsuario(){
+
+		return idUsuario;
+	}
+
+	public void setIdUsuario(String idUsuario){
+
+		this.idUsuario = idUsuario;
 	}
 
 }

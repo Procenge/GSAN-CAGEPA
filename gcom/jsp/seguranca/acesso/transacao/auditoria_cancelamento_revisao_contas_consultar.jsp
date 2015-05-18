@@ -24,7 +24,10 @@
 			form.idFuncionario.value = codigoRegistro;
 			form.nomeFuncionario.value = descricaoRegistro;
 			form.nomeFuncionario.style.color = "#000000";
-		}
+		}else if ('usuario' == tipoConsulta) {
+		 	document.forms[0].idUsuario.value = codigoRegistro;
+		 	document.forms[0].nomeUsuario.value = descricaoRegistro;
+	 	}
 	}
 	
 	function dataEstahLimpa(){
@@ -52,6 +55,7 @@
 	function limparUsuario() {		
 		var form = document.ConsultarAuditoriaCancelamentoRevisaoContasActionForm;	
 		form.idUsuario.value = "";
+		form.nomeUsuario.value = "";
 		desabilitarIdFuncionario();
 	}
 	
@@ -148,11 +152,20 @@
 	                  <strong>Usuário:</strong>
                   </td>
                   <td>
-                  	<html:text property="idUsuario" size="10" tabindex="2" maxlength="8" 
-                  		onkeypress="return isCampoNumerico(event);" 
-                  		onkeyup="desabilitarIdFuncionario();" 
-                  		onblur="desabilitarIdFuncionario();"/>
+					<html:text property="idUsuario" maxlength="9" size="9"
+						onkeypress="validaEnterComMensagem(event, 'exibirConsultarAuditoriaCancelamentoRevisaoContasAction.do', 'idUsuario', 'Matrícula do Usuário')" />
+               		<img onclick="abrirPopup('exibirUsuarioPesquisar.do', 250, 495);" width="23" height="21" src="<bean:message key="caminho.imagens"/>pesquisa.gif" border="0"/>
+                    <logic:present name="usuarioNaoEncontrado">
+						<html:text property="nomeUsuario" size="30" maxlength="40"
+							readonly="true"
+							style="background-color:#EFEFEF; border:0; color: #ff0000" />
+					</logic:present> <logic:notPresent name="imovelNaoEncontrado">
+						<html:text property="nomeUsuario" size="30" maxlength="40"
+							readonly="true"
+							style="background-color:#EFEFEF; border:0; color: #000000" />
+					</logic:notPresent>
                   	<a href="javascript:limparUsuario();"> <img src="<bean:message key="caminho.imagens"/>limparcampo.gif" border="0" title="Apagar" /></a>	
+                  	
                   </td>
                   <td>&nbsp;</td>
 				</tr>

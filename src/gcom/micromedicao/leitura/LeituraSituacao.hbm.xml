@@ -32,6 +32,16 @@
         column="ltst_dsleiturasituacao"
         length="30"
     />
+    
+    
+     <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="LTST_DSABREVIADA"
+        length="6"
+    />
+    
+    
     <property
         name="indicadorUso"
         type="java.lang.Short"

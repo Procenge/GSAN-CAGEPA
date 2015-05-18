@@ -47,6 +47,13 @@
         not-null="true"
         length="8"
     />
+    
+    <property
+        name="valorAtividadePeriodo"
+        type="java.math.BigDecimal"
+        column="oape_vlatividadeperiodo"
+        length="13"
+    />
 
     <!-- Associations -->
   

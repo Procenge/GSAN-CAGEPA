@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.dividaativa.DividaAtivaInscricaoResumo"
+    table="INSC_DIVIDA_ATIVA_RESUMO"
+>
+	
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ISCR_ID">
+        
+      <generator class="sequence">
+       		<param name="sequence">SQ_INSC_DIVIDA_ATIVA_RESUMO</param>
+    	</generator>
+
+    </id>
+
+	<property
+        name="quantidadeDebitos"
+        type="java.lang.Integer"
+        column="ISCR_QTDEBITO"
+        not-null="true"
+        length="4"
+    />
+
+     <property
+        name="valorTotalDebitos"
+        type="java.math.BigDecimal"
+        column="ISCR_VLTOTALDEBITO"
+        not-null="false"
+        length="13"
+    />
+
+
+
+
+ <property
+        name="indicadorExecucaoFiscal"
+        type="java.lang.Short"
+        column="ISCR_ICEXECFISCAL"
+        length="1"
+        not-null="true"
+    />
+    
+    
+ <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ISCR_TMULTIMAALTERACAO"
+        length="8"
+    />
+    
+
+    <!-- associations -->
+    
+    <!-- bi-directional many-to-one association to Cliente -->
+    <many-to-one
+        name="cliente"
+        class="gcom.cadastro.cliente.Cliente"
+        not-null="false"
+    >
+        <column name="CLIE_ID" />
+    </many-to-one>
+    
+     <!-- bi-directional many-to-one association to Cliente -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="false"
+    >
+        <column name="IMOV_ID" />
+    </many-to-one>
+    
+    
+       <!-- bi-directional many-to-one association to Cliente -->
+    <many-to-one
+        name="documentoTipo"
+        class="gcom.cobranca.DocumentoTipo"
+        not-null="false"
+    >
+        <column name="DOTP_ID" />
+    </many-to-one>
+    
+    
+</class>    
+   
+</hibernate-mapping>

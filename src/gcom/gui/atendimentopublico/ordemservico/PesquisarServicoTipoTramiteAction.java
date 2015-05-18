@@ -2,6 +2,8 @@
 package gcom.gui.atendimentopublico.ordemservico;
 
 import gcom.atendimentopublico.ordemservico.ServicoTipoTramite;
+import gcom.cadastro.geografico.Bairro;
+import gcom.cadastro.geografico.FiltroBairro;
 import gcom.cadastro.localidade.FiltroLocalidade;
 import gcom.cadastro.localidade.FiltroSetorComercial;
 import gcom.cadastro.localidade.Localidade;
@@ -16,11 +18,7 @@ import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -64,6 +62,10 @@ public class PesquisarServicoTipoTramiteAction
 		String codigoSetorComercialStr = form.getCodigoSetorComercial();
 		String idUnidadeOrganizacionalOrigemStr = form.getIdUnidadeOrganizacionalOrigem();
 		String idUnidadeOrganizacionalDestinoStr = form.getIdUnidadeOrganizacionalDestino();
+
+		String idMunicipioStr = form.getIdMunicipio();
+		String cdBairroStr = form.getCodigoBairro();
+		String indicadorPrimeiroTramite = form.getIndicadorPrimeiroTramite();
 
 		// Gerando o objeto ServicoTipoTramite que será inserido na coleção
 		ServicoTipoTramite servicoTipoTramite = new ServicoTipoTramite();
@@ -151,6 +153,7 @@ public class PesquisarServicoTipoTramiteAction
 							.getName());
 
 			if(!Util.isVazioOrNulo(colecaoUnidadeOrganizacional)){
+
 				UnidadeOrganizacional unidadeOrganizacional = (UnidadeOrganizacional) Util
 								.retonarObjetoDeColecao(colecaoUnidadeOrganizacional);
 
@@ -161,6 +164,26 @@ public class PesquisarServicoTipoTramiteAction
 		}else{
 			throw new ActionServletException("atencao.informe_campo", null, "Unidade Organizacional Destino");
 		}
+
+		// Bairro
+		if(!Util.isVazioOuBranco(idMunicipioStr) && !Util.isVazioOuBranco(cdBairroStr)){
+			FiltroBairro filtro = new FiltroBairro();
+			filtro.adicionarParametro(new ParametroSimples(FiltroBairro.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
+			filtro.adicionarParametro(new ParametroSimples(FiltroBairro.CODIGO, cdBairroStr));
+			filtro.adicionarParametro(new ParametroSimples(FiltroBairro.MUNICIPIO_ID, idMunicipioStr));
+
+			Collection<Bairro> colecaoBairro = fachada.pesquisar(filtro, Bairro.class.getName());
+
+			if(!Util.isVazioOrNulo(colecaoBairro)){
+				Bairro bairro = (Bairro) Util.retonarObjetoDeColecao(colecaoBairro);
+
+				servicoTipoTramite.setBairro(bairro);
+			}else{
+				throw new ActionServletException("atencao.pesquisa_inexistente", null, "Bairro");
+			}
+		}
+
+		servicoTipoTramite.setIndicadorPrimeiroTramite(Util.converterStringParaShort(indicadorPrimeiroTramite));
 
 		// Colocando o objeto gerado na coleção que ficará na sessão
 		Collection<ServicoTipoTramite> colecaoServicoTipoTramite = (ArrayList<ServicoTipoTramite>) sessao
@@ -232,6 +255,7 @@ public class PesquisarServicoTipoTramiteAction
 					ServicoTipoTramite servicoTipoTramite){
 
 		// Id - Novo
+		// Integer id = servicoTipoTramite.getId();
 		Integer id = servicoTipoTramite.getId();
 
 		// Localidade - Novo
@@ -258,9 +282,36 @@ public class PesquisarServicoTipoTramiteAction
 			idUnidadeOrganizacionalOrigem = unidadeOrganizacionalOrigem.getId();
 		}
 
+		// Bairro
+		Integer idBairro = null;
+		Bairro bairro = servicoTipoTramite.getBairro();
+
+		if(bairro != null){
+			idBairro = bairro.getId();
+		}
+
+		// OrganizacionalDestino
+		Integer idUnidadeOrganizacionalDestino = null;
+		UnidadeOrganizacional unidadeOrganizacionalDestino = null;
+		if(servicoTipoTramite.getUnidadeOrganizacionalDestino() != null){
+			unidadeOrganizacionalDestino = servicoTipoTramite.getUnidadeOrganizacionalDestino();
+		}
+
+
+		if(unidadeOrganizacionalDestino != null){
+			idUnidadeOrganizacionalDestino = unidadeOrganizacionalDestino.getId();
+		}
+
+		Short indicadorPrimeiroTramite = null;
+
+		indicadorPrimeiroTramite = servicoTipoTramite.getIndicadorPrimeiroTramite();
+
 		boolean localidadeIgual = false;
 		boolean setorComercialIgual = false;
 		boolean unidadeOrganizacionalOrigemIgual = false;
+		boolean bairroIgual = false;
+		boolean unidadeOrganizacionalDestinoIgual = false;
+		boolean indicadorPrimeiroTramiteIgual = false;
 
 		Integer idAux = null;
 
@@ -273,8 +324,17 @@ public class PesquisarServicoTipoTramiteAction
 		Integer idUnidadeOrganizacionalOrigemAux = null;
 		UnidadeOrganizacional unidadeOrganizacionalOrigemAux = null;
 
+		Integer idBairroAux = null;
+		Bairro bairroAux = null;
+
+		Integer idUnidadeOrganizacionalDestinoAux = null;
+		UnidadeOrganizacional unidadeOrganizacionalDestinoAux = null;
+
+		Short indicadorPrimeiroTramiteAux = null;
+
 		for(ServicoTipoTramite servicoTipoTramiteAux : colecaoServicoTipoTramite){
 			// Id - Existente
+			// idAux = servicoTipoTramiteAux.getId();
 			idAux = servicoTipoTramiteAux.getId();
 
 			// Localidade - Existente
@@ -297,6 +357,21 @@ public class PesquisarServicoTipoTramiteAction
 			if(unidadeOrganizacionalOrigemAux != null){
 				idUnidadeOrganizacionalOrigemAux = unidadeOrganizacionalOrigemAux.getId();
 			}
+
+			bairroAux = servicoTipoTramiteAux.getBairro();
+
+			if(bairroAux != null){
+				idBairroAux = bairroAux.getId();
+			}
+
+			// Unidade Organizacional Destino - Existente
+			unidadeOrganizacionalDestinoAux = servicoTipoTramiteAux.getUnidadeOrganizacionalDestino();
+
+			if(unidadeOrganizacionalDestinoAux != null){
+				idUnidadeOrganizacionalDestinoAux = unidadeOrganizacionalDestinoAux.getId();
+			}
+
+			indicadorPrimeiroTramiteAux = servicoTipoTramiteAux.getIndicadorPrimeiroTramite();
 
 			// Compara Localidade
 			if((idLocalidadeAux == null && idLocalidade == null) || (idLocalidadeAux != null && idLocalidadeAux.equals(idLocalidade))){
@@ -322,10 +397,56 @@ public class PesquisarServicoTipoTramiteAction
 				unidadeOrganizacionalOrigemIgual = false;
 			}
 
+			// Compara Bairro
+			if((idBairroAux == null && idBairro == null) || (idBairroAux != null && idBairroAux.equals(idBairro))){
+				bairroIgual = true;
+			}else{
+				bairroIgual = false;
+			}
+
+			// Compara unidadeOrganizacionalDestino
+			if((idUnidadeOrganizacionalDestinoAux == null && idUnidadeOrganizacionalDestino == null)
+							|| (idUnidadeOrganizacionalDestinoAux != null && idUnidadeOrganizacionalDestinoAux
+											.equals(idUnidadeOrganizacionalDestino))){
+				unidadeOrganizacionalDestinoIgual = true;
+			}else{
+				unidadeOrganizacionalDestinoIgual = false;
+			}
+
+			if(indicadorPrimeiroTramiteAux.equals(indicadorPrimeiroTramite) && indicadorPrimeiroTramite.equals(ConstantesSistema.SIM)){
+				indicadorPrimeiroTramiteIgual = true;
+			}else{
+				indicadorPrimeiroTramiteIgual = false;
+			}
+
+
+			// [FS0020] - Criticar duplicidade de configuração de trâmite
+			// . Caso a combinação Tipo de Serviço/Localidade/Setor Comercial/Bairro/Unidade
+			// Origem/Unidade Destino já tenha sido informada na coleção ou já exista na tabela
+			// SERVICO_TIPO_TRAMITE, exibir a mensagem "Configuração de trâmite já informado" e
+			// retornar para o passo correspondente no fluxo principal.
+			// . Caso a associação seja do primeiro trâmite para o serviço (campo
+			// "Unidade do Primeiro Trâmite?" com a opção "Sim" selecionada):
+			// . Caso a combinação Tipo de Serviço/Localidade/Setor Comercial/Bairro/Unidade
+			// Origem/Primeiro Trâmite com o valor "Sim" já tenha sido informada na coleção ou já
+			// exista na tabela SERVICO_TIPO_TRAMITE (ESTR_ICPRIMEIROTRAMITE=1 (um)), exibir a
+			// mensagem "Configuração de primeiro trâmite já informado" e retornar para o passo
+			// correspondente no fluxo principal.
+
+
 			// Compara o objeto
-			if(!idAux.equals(id) && localidadeIgual && setorComercialIgual && unidadeOrganizacionalOrigemIgual){
+			if(!idAux.equals(id) && localidadeIgual && setorComercialIgual && bairroIgual && unidadeOrganizacionalOrigemIgual
+							&& unidadeOrganizacionalDestinoIgual){
 				throw new ActionServletException("atencao.configuracao.tramite.ja.informado");
 			}
+
+			if(indicadorPrimeiroTramiteIgual){
+				if(!idAux.equals(id) && localidadeIgual && setorComercialIgual && bairroIgual && unidadeOrganizacionalOrigemIgual
+								&& indicadorPrimeiroTramiteIgual){
+					throw new ActionServletException("atencao.configuracao.primeiro.tramite.ja.informado");
+				}
+			}
+
 		}
 	}
 }

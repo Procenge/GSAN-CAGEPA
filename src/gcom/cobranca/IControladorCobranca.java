@@ -83,6 +83,7 @@ import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao;
 import gcom.arrecadacao.pagamento.Pagamento;
 import gcom.atendimentopublico.ordemservico.OrdemServico;
 import gcom.cadastro.cliente.Cliente;
+import gcom.cadastro.cliente.ClienteImovel;
 import gcom.cadastro.cliente.ClienteRelacaoTipo;
 import gcom.cadastro.empresa.Empresa;
 import gcom.cadastro.geografico.Municipio;
@@ -102,6 +103,7 @@ import gcom.faturamento.FaturamentoGrupo;
 import gcom.faturamento.FaturamentoGrupoCronogramaMensal;
 import gcom.faturamento.conta.Conta;
 import gcom.faturamento.credito.CreditoARealizar;
+import gcom.faturamento.credito.CreditoARealizarHistorico;
 import gcom.faturamento.debito.DebitoACobrar;
 import gcom.faturamento.debito.DebitoACobrarHistorico;
 import gcom.faturamento.debito.DebitoTipo;
@@ -211,8 +213,8 @@ public interface IControladorCobranca {
 					int indicadorDebitoACobrar, int indicadorCreditoARealizar, int indicadorNotasPromissorias, int indicadorGuiasPagamento,
 					int indicadorCalcularAcrescimoImpontualidade, Boolean indicadorContas, SistemaParametro sistemaParametro,
 					Date dataEmissaoDocumento, Short indicadorEmissaoDocumento, Short indicadorConsiderarPagamentoNaoClassificado,
-					Short multa, Short jurosMora, Short atualizacaoTarifaria)
-					throws ControladorException;
+					Short multa, Short jurosMora, Short atualizacaoTarifaria, int indicadorCalcularAcrescimosSucumbenciaAnterior,
+					Integer indicadorDividaAtiva) throws ControladorException;
 
 	/**
 	 * [UC0216] Calcular Acrescimo por Impontualidade
@@ -670,9 +672,8 @@ public interface IControladorCobranca {
 	 * @throws ControladorException
 	 */
 	public Collection obterListasRotas(String idRotaInicial, String idRotaFinal, String idSetorComercialInicial, String nuQuadraInicial,
-					String nuQuadraFinal,
-					String idSetorComercialFinal, String idLocalidadeInicial, String idLocalidadeFinal, String idGerenciaRegional,
-					String idUnidadeNegocio) throws ControladorException;
+					String nuQuadraFinal, String idSetorComercialFinal, String idLocalidadeInicial, String idLocalidadeFinal,
+					String idGerenciaRegional, String idUnidadeNegocio) throws ControladorException;
 
 	/**
 	 * Obter Lista de Rotas Comando
@@ -775,7 +776,9 @@ public interface IControladorCobranca {
 					BigDecimal valorDebitoACobrarParcelamentoImovel, Integer anoMesInicialReferenciaDebito,
 					Integer anoMesFinalReferenciaDebito, IndicadoresParcelamentoHelper indicadoresParcelamentoHelper,
 					String dataVencimentoEntradaParcelamento, boolean verificaNulidade,
-					ParcelamentoQuantidadePrestacao parcelamentoQuantidadePrestacao) throws ControladorException;
+					ParcelamentoQuantidadePrestacao parcelamentoQuantidadePrestacao, BigDecimal valorTotalSucumbencia,
+					Integer quantidadeParcelasSucumbencia, BigDecimal valorSucumbenciaAtual, BigDecimal valorDiligencias)
+					throws ControladorException;
 
 	/**
 	 * Permite excluir um comando de atividade de cobrança do crongrama ou
@@ -1054,7 +1057,11 @@ public interface IControladorCobranca {
 					Integer anoMesReferenciaDebitoInicial, Integer anoMesReferenciaDebitoFinal, BigDecimal percentualDescontoJurosMora,
 					BigDecimal percentualDescontoMulta, BigDecimal percentualDescontoCorrecaoMonetaria,
 					BigDecimal valorDescontoAcrescimosImpontualidadeNaPrestacao,
-					Collection<ParcelamentoConfiguracaoPrestacao> colecaoParcelamentoConfiguracaoPrestacao) throws ControladorException;
+					Collection<ParcelamentoConfiguracaoPrestacao> colecaoParcelamentoConfiguracaoPrestacao,
+					byte[] conteudoTermoParcelamentoInicial, byte[] conteudoTermoParcelamentoFinal, boolean inserirPacelamentoBanco,
+					BigDecimal valorSucumbenciaAnterior, BigDecimal valorSucumbenciaAtual, Short quantidadeParcelasSucumbencia,
+					BigDecimal valorDiligencias, BigDecimal valorAtualizacaoMonetariaSucumbencia, BigDecimal valorJurosMoraSucumbencia,
+					BigDecimal valorASerNegociado, BigDecimal valorASerParcelado) throws ControladorException;
 
 	/**
 	 * Inserir um comando de atividade de cobrança eventual
@@ -1181,13 +1188,13 @@ public interface IControladorCobranca {
 					String idCobrancaAtividade, String idCobrancaGrupo, String idGerenciaRegional, String localidadeOrigemID,
 					String localidadeDestinoID, String setorComercialOrigemCD, String setorComercialDestinoCD, String idCliente,
 					String clienteRelacaoTipo, String indicador, String quadraInicial, String quadraFinal, String rotaInicial,
-					String rotaFinal, String setorComercialOrigemID,
-					String setorComercialDestinoID, String idComando, String unidadeNegocio, Usuario usuarioLogado, String titulo,
-					String descricaoSolicitacao, String prazoExecucao, String quantidadeMaximaDocumentos, String indicadorImoveisDebito,
-					String indicadorGerarBoletimCadastro, String codigoClienteSuperior, String empresa, String valorLimiteEmissao,
-					byte[] arquivoImoveis, String arrecadador, CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComandoPrecedente,
-					CobrancaCriterio cobrancaCriterio, String indicadorGerarRelacaoDocumento, String idCobrancaAcaoAtividadeComando,
-					String formatoArquivo) throws ControladorException;
+					String rotaFinal, String setorComercialOrigemID, String setorComercialDestinoID, String idComando,
+					String unidadeNegocio, Usuario usuarioLogado, String titulo, String descricaoSolicitacao, String prazoExecucao,
+					String quantidadeMaximaDocumentos, String indicadorImoveisDebito, String indicadorGerarBoletimCadastro,
+					String codigoClienteSuperior, String empresa, String valorLimiteEmissao, byte[] arquivoImoveis, String arrecadador,
+					CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComandoPrecedente, CobrancaCriterio cobrancaCriterio,
+					String indicadorGerarRelacaoDocumento, String idCobrancaAcaoAtividadeComando, String formatoArquivo)
+					throws ControladorException;
 
 	/**
 	 * Inserir Comando de Ação de Cobrança
@@ -1276,15 +1283,14 @@ public interface IControladorCobranca {
 					String idCobrancaAtividade, String idCobrancaGrupo, String idGerenciaRegional, String localidadeOrigemID,
 					String localidadeDestinoID, String setorComercialOrigemCD, String setorComercialDestinoCD, String idCliente,
 					String clienteRelacaoTipo, String indicador, String quadraInicial, String quadraFinal, String rotaInicial,
-					String rotaFinal, String setorComercialOrigemID,
-					String setorComercialDestinoID, String idCobrancaAcaoAtividadeComando, Date realizacao, Date comando,
-					Date ultimaDataAtualizacao, Usuario usuario, Empresa empresa, Integer quantidadeDocumentos, BigDecimal valorDocumentos,
-					Integer quantidadeItensCobrados, String idComando, String unidadeNegocio, String titulo, String descricaoSolicitacao,
-					String prazoExecucao, String quantidadeMaximaDocumentos, String indicadorImoveisDebito,
-					String indicadorGerarBoletimCadastro, String codigoClienteSuperior, String valorLimiteEmissao, byte[] arquivoImoveis,
-					String arrecadador, CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComandoPrecedente,
-					CobrancaCriterio cobrancaCriterio, String indicadorGerarRelacaoDocumento, String formatoArquivo)
-					throws ControladorException;
+					String rotaFinal, String setorComercialOrigemID, String setorComercialDestinoID, String idCobrancaAcaoAtividadeComando,
+					Date realizacao, Date comando, Date ultimaDataAtualizacao, Usuario usuario, Empresa empresa,
+					Integer quantidadeDocumentos, BigDecimal valorDocumentos, Integer quantidadeItensCobrados, String idComando,
+					String unidadeNegocio, String titulo, String descricaoSolicitacao, String prazoExecucao,
+					String quantidadeMaximaDocumentos, String indicadorImoveisDebito, String indicadorGerarBoletimCadastro,
+					String codigoClienteSuperior, String valorLimiteEmissao, byte[] arquivoImoveis, String arrecadador,
+					CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComandoPrecedente, CobrancaCriterio cobrancaCriterio,
+					String indicadorGerarRelacaoDocumento, String formatoArquivo) throws ControladorException;
 
 	/**
 	 * Manter Comando de Ação de Cobrança
@@ -1394,7 +1400,12 @@ public interface IControladorCobranca {
 					Integer anoMesReferenciaDebitoFinal, BigDecimal percentualDescontoJurosMora, BigDecimal percentualDescontoMulta,
 					BigDecimal percentualDescontoCorrecaoMonetaria, BigDecimal valorDescontoAcrescimosImpontualidadeNaPrestacao,
 					BigDecimal valorFinalFinanciamento,
-					Collection<ParcelamentoConfiguracaoPrestacao> colecaoParcelamentoConfiguracaoPrestacao) throws ControladorException;
+					Collection<ParcelamentoConfiguracaoPrestacao> colecaoParcelamentoConfiguracaoPrestacao,
+					byte[] conteudoTermoParcelamentoInicial, byte[] conteudoTermoParcelamentoFinal,
+					ParcelamentoTermoTestemunhas parcelamentoTermoTestemunhas, ParcelamentoDadosTermo parcelamentoDadosTermo,
+					BigDecimal valorSucumbenciaAnterior, Map<Integer, BigDecimal> mapProcessosSucumbencias,
+					Short quantidadeParcelasSucumbencia, Map<Integer, BigDecimal> mapProcessosDiligencias,
+					BigDecimal valorAtualizacaoMonetariaSucumbencia, BigDecimal valorJurosMoraSucumbencia) throws ControladorException;
 
 	/**
 	 * Inseri um Cronograma de Cobrança com as Ações de Cobranças e suas
@@ -1717,8 +1728,7 @@ public interface IControladorCobranca {
 					String situacaoComando, String indicadorCriterio, String idGerenciaRegional, String idLocalidadeInicial,
 					String idLocalidadeFinal, String codigoSetorComercialInicial, String codigoSetorComercialFinal, String nuQuadraInicial,
 					String nuQuadraFinal, String idRotaInicial, String idRotaFinal, String idCliente, String idClienteRelacaoTipo,
-					String criterioCobranca, String unidadeNegocio)
-					throws ControladorException;
+					String criterioCobranca, String unidadeNegocio) throws ControladorException;
 
 	/**
 	 * Filtrar os Comandos de Ação de Cobrança tipo comando Eventual
@@ -1805,23 +1815,6 @@ public interface IControladorCobranca {
 	public CobrancaAcaoAtividadeComando obterCobrancaAcaoAtividadeComando(String idCobrancaAcaoAtividadeComando)
 					throws ControladorException;
 
-	/**
-	 * Este caso de uso permite a emissão de um ou mais documentos de cobrança
-	 * [UC0349] Emitir Documento de Cobrança
-	 * 
-	 * @author Raphael Rossiter
-	 * @param indicadorOrdenacao
-	 * @data 26/05/2006
-	 * @param
-	 * @return void
-	 */
-	/*
-	 * public void emitirDocumentoCobranca( Integer
-	 * idCronogramaAtividadeAcaoCobranca, Integer
-	 * idComandoAtividadeAcaoCobranca, Date dataAtualPesquisa, Integer
-	 * idAcaoCobranca) throws ControladorException;
-	 */
-
 	public Collection gerarRelacaoDebitos(String idImovelCondominio, String idImovelPrincipal, String idNomeConta,
 					String[] idSituacaoLigacaoAgua, String consumoMinimoInicialAgua, String consumoMinimoFinalAgua,
 					String[] idSituacaoLigacaoEsgoto, String consumoMinimoInicialEsgoto, String consumoMinimoFinalEsgoto,
@@ -1839,7 +1832,15 @@ public interface IControladorCobranca {
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String[] tipoDebito, String valorDebitoInicial,
 					String valorDebitoFinal, String qtdContasInicial, String qtdContasFinal, String referenciaFaturaInicial,
 					String referenciaFaturaFinal, String vencimentoInicial, String vencimentoFinal, String qtdImoveis, String qtdMaiores,
-					String indicadorOrdenacao, String idUnidadeNegocio) throws ControladorException;
+					String indicadorOrdenacao, String idUnidadeNegocio, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal, String indicadorOpcaoAgrupamento, String indicadorOrdenacaoAscDesc)
+					throws ControladorException;
+
+	public List<Object[]> gerarRelatorioContasReceberValoresCorrigidos(Integer matriculaImovel, Integer referencia)
+					throws ControladorException;
+
+	public Long quantidadeRegistrosRelatorioContasReceberValoresCorrigidos(Integer matriculaImovel, Integer referencia)
+					throws ControladorException;;
 
 	/**
 	 * Retorna o count do resultado da pesquisa de Cobrança Cronograma
@@ -1985,7 +1986,8 @@ public interface IControladorCobranca {
 					Collection colecaoContas, Collection colecaoGuiasPagamento, Collection colecaoDebitosACobrar,
 					BigDecimal valorAcrescimosImpontualidade, BigDecimal valorDesconto, BigDecimal valorDocumento,
 					Collection<CreditoARealizar> colecaoCreditoARealizar, Cliente cliente,
-					NegociacaoOpcoesParcelamentoHelper opcaoParcelamento, Integer idResolucaoDiretoria) throws ControladorException;
+					NegociacaoOpcoesParcelamentoHelper opcaoParcelamento, Integer idResolucaoDiretoria,
+					Map<Integer, BigDecimal> mapProcessosExecFiscal) throws ControladorException;
 
 	/**
 	 * [UC0349] Emitir Documento de Cobrança
@@ -2387,25 +2389,6 @@ public interface IControladorCobranca {
 	public void inserirResumoAcoesCobrancaCronograma(Object[] dadosCobrancaAcaoAtividadeCronograma, int idFuncionalidadeIniciada)
 					throws ControladorException;
 
-	// /**
-	// *
-	// * Este caso de uso gera os avisos de cobrança dos documentos de cobrança
-	// *
-	// * [UC0575] Emitir Parcelamento em Atraso
-	// *
-	// *
-	// * @author Sávio Luiz
-	// * @data 12/04/2007
-	// *
-	// * @param
-	// * @return void
-	// */
-	// public void emitirParcelamentoEmAtraso(
-	// Integer idCronogramaAtividadeAcaoCobranca,
-	// Integer idComandoAtividadeAcaoCobranca, Date dataAtualPesquisa,
-	// Integer idAcaoCobranca, CobrancaGrupo grupoCobranca)
-	// throws ControladorException;
-
 	/**
 	 * Esta funcionalidade permite informar dados para geração de relatórios ou
 	 * consultas
@@ -2503,7 +2486,8 @@ public interface IControladorCobranca {
 	 * @param idImovelOrigem
 	 * @exception ControladorException
 	 */
-	public ObterDebitoImovelOuClienteHelper apresentarDebitoCreditoImovelOrigem(Integer idImovelOrigem) throws ControladorException;
+	public ObterDebitoImovelOuClienteHelper apresentarDebitoCreditoImovelOrigem(Integer idImovelOrigem, Integer idClienteOrigem,
+					Integer idClienteRelacaoOrigem) throws ControladorException;
 
 	/**
 	 * [UC0609] Transferência de Débitos/Créditos
@@ -2519,9 +2503,10 @@ public interface IControladorCobranca {
 	 * @param colecaoGuiasPagamento
 	 * @throws ControladorException
 	 */
-	public void transferirDebitosCreditos(Integer idImovelDestino, Collection colecaoContas, Collection colecaoDebitosACobrar,
-					Collection colecaoCreditosARealizar, Collection colecaoGuiasPagamento, Usuario usuarioLogado,
-					Integer idRegistroAtendimento, String identificadoresConta) throws ControladorException;
+	public Integer transferirDebitosCreditos(Integer idImovelOrigem, Integer idImovelDestino, Collection<Conta> colecaoContas,
+					Collection<DebitoACobrar> colecaoDebitosACobrar, Collection<CreditoARealizar> colecaoCreditosARealizar,
+					Collection<GuiaPagamento> colecaoGuiasPagamento,
+					Usuario usuarioLogado, Integer idRegistroAtendimento, String identificadoresConta) throws ControladorException;
 
 	/**
 	 * [UC0594] Gerar Relação de Parcelamento
@@ -2590,8 +2575,8 @@ public interface IControladorCobranca {
 	 * @param idImovel
 	 * @exception ControladorException
 	 */
-	public ObterDebitoImovelOuClienteHelper apresentarDebitoCreditoImovelExtratoDebito(Integer idImovel, boolean indicadorParcelamento,
-					Short multa, Short jurosMora, Short atualizacaoTarifaria)
+	public ObterDebitoImovelOuClienteHelper apresentarDebitoCreditoImovelExtratoDebito(Integer idImovel, Integer idClienteDebito,
+					Integer idRelacaoClienteDebito, boolean indicadorParcelamento, Short multa, Short jurosMora, Short atualizacaoTarifaria)
 					throws ControladorException;
 
 	/**
@@ -2809,8 +2794,7 @@ public interface IControladorCobranca {
 	public void inserirCobrancaContrato(CobrancaContrato cobrancaContrato,
 					Collection<CobrancaContratoRemuneracaoPorSucesso> colecaoCobrancaContratoRemuneracaoPorSucesso,
 					Collection<CobrancaContratoRemuneracaoPorProdutividade> colecaoCobrancaContratoRemuneracaoPorProdutividade,
-					Usuario usuarioLogado)
-					throws ControladorException;
+					Usuario usuarioLogado) throws ControladorException;
 
 	/**
 	 * Método responsável por atualizar um CobrancaContrato
@@ -2830,8 +2814,7 @@ public interface IControladorCobranca {
 	public void atualizarCobrancaContrato(CobrancaContrato cobrancaContrato,
 					Collection<CobrancaContratoRemuneracaoPorSucesso> colecaoCobrancaContratoRemuneracaoPorSucesso,
 					Collection<CobrancaContratoRemuneracaoPorProdutividade> colecaoCobrancaContratoRemuneracaoPorProdutividade,
-					Usuario usuarioLogado)
-	 throws ControladorException;
+					Usuario usuarioLogado) throws ControladorException;
 
 	/**
 	 * Método responsável por gerar dados relativos documentos gerados
@@ -2921,7 +2904,7 @@ public interface IControladorCobranca {
 	 * @return
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarParcelamentosSituacaoNormal(Integer idImovel) throws ControladorException;
+	public Collection<Parcelamento> pesquisarParcelamentosSituacaoNormal(Integer idImovel) throws ControladorException;
 
 	/**
 	 * [UC0213] Desfazer Parcelamento Debito - remover debito a cobrar referente
@@ -3073,8 +3056,7 @@ public interface IControladorCobranca {
 
 	public Integer filtrarRelatorioImovelPorAcaoCobrancaCount(String comando, String idComando, String idCronograma, String[] acao,
 					Date dataInicial, Date dataFinal, String grupo, String[] setorComercial, String[] bairro, String[] categoria,
-					String localidade)
-					throws ControladorException;
+					String localidade) throws ControladorException;
 
 	/**
 	 * @author isilva
@@ -3457,8 +3439,8 @@ public interface IControladorCobranca {
 	public Collection<CreditoARealizar> classificarCreditoARealizarParaHistorico(Collection<CreditoARealizar> colecaoCreditoARealizar,
 					String indicadorCreditoARealizar, SistemaParametro sistemaParametros) throws ControladorException;
 
-	public void classificarDebitoACobrarTempParaHistorico(Collection<DebitoACobrar> colecaoDebitoACobrarTemp, Map debitoACobrarValorDivida,
-					Integer parcelamentoId) throws ControladorException;
+	public void classificarDebitoACobrarTempParaHistorico(Collection<DebitoACobrar> colecaoDebitoACobrarTemp, Map debitoACobrarValorDivida)
+					throws ControladorException;
 
 	public Collection<CobrancaSituacaoHistorico> pesquisarCobrancaSituacaoHistorico(Integer idImovel, Integer anoMesFinal)
 					throws ControladorException;
@@ -3620,8 +3602,7 @@ public interface IControladorCobranca {
 	 * @throws ControladorException
 	 */
 	public Collection<BoletoBancario> gerarBoletoCobrancaBancaria(Integer idComandoCobrancaEventual, Integer idGuiaPagamento,
-					Integer numeroPrestacaoInicialGuia,
-					Usuario usuario) throws ControladorException;
+					Integer numeroPrestacaoInicialGuia, Usuario usuario) throws ControladorException;
 
 	/**
 	 * @author Yara Souza
@@ -3790,8 +3771,8 @@ public interface IControladorCobranca {
 					BigDecimal valorDebitosACobrar, BigDecimal valorAcrescimosImpontualidade, BigDecimal valorDescontoCredito,
 					BigDecimal valorDesconto, BigDecimal valorDocumento, Usuario usuario, String inscricao, String nomeUsuario,
 					String matricula, String enderecoImovel, String quantidadeParcelas, String mensagemPagamentoAVista,
-					String quantidadeParcelasDebitos, Integer quantidadeDebitoACobrar, Integer quantidadeParcelamento)
-					throws ControladorException;
+					String quantidadeParcelasDebitos, Integer quantidadeDebitoACobrar, Integer quantidadeParcelamento,
+					BigDecimal valorTotalSucumbencia) throws ControladorException;
 
 	/**
 	 * Inserir Boleto Bancário Movimentação
@@ -3839,8 +3820,6 @@ public interface IControladorCobranca {
 					Integer negociacaoNumeroParcelasALancar, Integer negociacaoNumeroMesesInicioCobranca,
 					Integer negociacaoNumeroDiasVencimentoDaEntrada, BigDecimal negociacaoTaxaJuros, Integer negociacaoIdRD)
 					throws ControladorException;
-
-	public Collection obterColecaoDebitosACobrarDoParcelamento(Collection<DebitoACobrar> colecaoDebitosACobrar) throws ControladorException;
 
 	/**
 	 * Este caso de uso emite a relação dos documentos de cobrança
@@ -4059,11 +4038,10 @@ public interface IControladorCobranca {
 	// Collection<GuiaPagamentoValoresHelper> colecaoGuiasPagamento, Collection<CreditoARealizar>
 	// colecaoCreditoARealizar,
 	// Usuario usuario) throws ControladorException;
-	public CobrancaAcaoIndividualHelper gerarEmitirAvisoDeCorteOrdemDeCorteIndividual(Integer idImovel,
-					BigDecimal valorDocumento, Collection<ContaValoresHelper> colecaoContas,
-					Collection<DebitoACobrar> colecaoDebitosACobrar, Collection<GuiaPagamentoValoresHelper> colecaoGuiasPagamento,
-					Collection<CreditoARealizar> colecaoCreditoARealizar, Usuario usuario,
-					Collection<CobrancaAcaoIndividualHelper> colecaoCobrancaAcaoHelper, Short indicadorAtividade)
+	public CobrancaAcaoIndividualHelper gerarEmitirAvisoDeCorteOrdemDeCorteIndividual(Integer idImovel, BigDecimal valorDocumento,
+					Collection<ContaValoresHelper> colecaoContas, Collection<DebitoACobrar> colecaoDebitosACobrar,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuiasPagamento, Collection<CreditoARealizar> colecaoCreditoARealizar,
+					Usuario usuario, Collection<CobrancaAcaoIndividualHelper> colecaoCobrancaAcaoHelper, Short indicadorAtividade)
 					throws ControladorException;
 
 	/**
@@ -4206,8 +4184,8 @@ public interface IControladorCobranca {
 					Date anoMesInicialVencimentoDebito, Date anoMesFinalVencimentoDebito, int indicadorPagamento, int indicadorConta,
 					int indicadorCalcularAcrescimoImpontualidade, Boolean indicadorContas, String anoMesArrecadacao, Collection idImoveis,
 					Date dataEmissaoDocumento, Short indicadorEmissaoDocumento, Short indicadorConsiderarPagamentoNaoClassificado,
-					Short multa, Short jurosMora, Short atualizacaoTarifaria)
-					throws ControladorException;
+					Short multa, Short jurosMora, Short atualizacaoTarifaria, int indicadorCalcularAcrescimosSucumbenciaAnterior,
+					Integer indicadorDividaAtiva) throws ControladorException;
 
 	/**
 	 * @param indicadorDebito
@@ -4599,6 +4577,17 @@ public interface IControladorCobranca {
 					Integer idProcessoIniciado) throws ControladorException;
 
 	/**
+	 * [UCXXXX] Gerar Notificacao Amigavel
+	 * 
+	 * @author Genival Barbosa
+	 * @date 31/08/2014
+	 */
+	public void gerarNotificacaoAmigavel(Collection<Rota> colecaoRota, Collection<FaturamentoAtivCronRota> colecaoFaturamentoAtivCronRota,
+					Integer anoMesFaturamentoGrupo, FaturamentoGrupo faturamentoGrupo, Integer idFuncionalidadeIniciada,
+					FaturamentoAtividade faturamentoAtividade, FaturamentoGrupoCronogramaMensal faturamentoGrupoCronogramaMensal,
+					Integer idProcessoIniciado) throws ControladorException;
+
+	/**
 	 * [UC0617] Consultar Resumo das Ações de Cobrança Eventuais
 	 * 4.2.1.5.6. Para cada percentual de remuneração (o percentual de remuneração
 	 * 
@@ -4790,8 +4779,7 @@ public interface IControladorCobranca {
 	public CalcularAcrescimoPorImpontualidadeHelper calcularAcrescimoPorImpontualidadeBancoDeDados(int anoMesReferenciaDebito,
 					Date dataVencimento, Date dataPagamento, BigDecimal valorDebito, BigDecimal valorMultasCobradas, short indicadorMulta,
 					String anoMesArrecadacao, Integer idConta, Date dataEmissaoDocumento, Short indicadorEmissaoDocumento, Short multa,
-					Short jurosMora, Short atualizacaoTarifaria)
-					throws ControladorException;
+					Short jurosMora, Short atualizacaoTarifaria) throws ControladorException;
 
 	/**
 	 * Pesquisar rotas dos imóveis gerados no comando precedente
@@ -4830,8 +4818,18 @@ public interface IControladorCobranca {
 	 * @author Hebert Falcão
 	 * @date 31/10/2012
 	 */
+	public Collection pesquisarResolucaoDiretoriaParametrosPagamentoAVista(Integer idResolucaoDiretoria) throws ControladorException;
+
+	/**
+	 * Pesquisar Resolução de Diretoria Parâmetros Pagamento À Vista
+	 * 
+	 * @author Hebert Falcão
+	 * @date 31/10/2012
+	 */
 	public ResolucaoDiretoriaParametrosPagamentoAVista pesquisarResolucaoDiretoriaParametrosPagamentoAVista(Integer idResolucaoDiretoria,
-					Date dataPagamento) throws ControladorException;
+					Date dataPagamento)
+					throws ControladorException;
+
 
 	/**
 	 * [UC0444] Gerar e Emitir Extrato de Débito
@@ -5130,7 +5128,6 @@ public interface IControladorCobranca {
 	public Collection<Object[]> obterSomatorioValorDebitosACobrarFinanciamentoOuParcelamento(String idLocalidade, String idUnidadeNegocio,
 					String idGerenciaRegional, boolean isFinanciado) throws ControladorException;
 
-
 	/**
 	 * @param colecaoCreditoARealizar
 	 * @return
@@ -5157,7 +5154,6 @@ public interface IControladorCobranca {
 	 */
 	public void marcarItensRemuneraveisCobrancaAdministrativa(int idFuncionalidadeIniciada) throws ControladorException;
 
-	
 	/**
 	 * [UC0243] Inserir Comando de Ação de Cobrança
 	 */
@@ -5193,7 +5189,7 @@ public interface IControladorCobranca {
 	 */
 	public List<CobrancaAdministrativaHelper> obterDadosDaConta(List<ItensRemuradosHelper> listaItensRemuradosHelper)
 					throws ControladorException;
-	
+
 	/**
 	 * [UC3060] Manter Imóvel Cobrança Administrativa.
 	 * [SB0011] - Obter Dados Guia de Pagamento.
@@ -5215,7 +5211,7 @@ public interface IControladorCobranca {
 	 */
 	public List<CobrancaAdministrativaHelper> obterDadosDoDebitoACobrar(List<ItensRemuradosHelper> listaItensRemuradosHelper)
 					throws ControladorException;
-	
+
 	/**
 	 * [UC3060] Manter Imóvel Cobrança Administrativa.
 	 * [SB0001B] - Exibir Dados da Remuneração da Cobrança Administrativa do Imóvel.
@@ -5254,7 +5250,6 @@ public interface IControladorCobranca {
 	public void cancelarAvisoDeCortePendente(Integer idFuncionalidadeIniciada, FaturamentoGrupo faturamentoGrupo)
 					throws ControladorException;
 
-
 	/**
 	 * [UC0214] Efetuar Parcelamento de Débitos
 	 * [FS0044] Retirar Débitos Não Vencidos
@@ -5281,8 +5276,6 @@ public interface IControladorCobranca {
 	 */
 	public Collection<ContaValoresHelper> retirarContasMotivoRevisaoComImpedimentoParcelamento(
 					Collection<ContaValoresHelper> colecaoContasImovel, Usuario usuario) throws ControladorException;
-
-
 
 	/**
 	 * [UC0203][SB0010]
@@ -5353,6 +5346,7 @@ public interface IControladorCobranca {
 	 */
 	public RelatorioExtratoDebito gerarRelatorioRelatorioExtratoDebitoParaEmissaoPorImovel(Integer idImovel, Usuario usuario)
 					throws ControladorException;
+
 	/**
 	 * [UC3137] Comandar Prescrição de Débito
 	 * 
@@ -5453,10 +5447,364 @@ public interface IControladorCobranca {
 	 * 
 	 */
 	public Collection pesquisarImovelEmCobrancaAdministrativaAjuste() throws ControladorException;
-	
-	
+
 	/**
 	 * 
 	 */
 	public void executarAjusteResumoAcaoCobranca() throws ControladorException;
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * [FS0050] Verificar imóvel em execução fiscal
+	 * 
+	 * @author Hebert Falcão
+	 * @date 21/05/2014
+	 */
+	public Short verificarImovelEmExecucaoFiscal(Integer idImovel) throws ControladorException;
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * [SB0046] Determinar Valor Sucumbência Atual
+	 * 
+	 * @author Hebert Falcão
+	 * @date 21/05/2014
+	 */
+	public Map<Integer, BigDecimal> determinarValorSucumbenciaAtual(Integer idImovel, Collection<ContaValoresHelper> colecaoContaHelper,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoHelper, String chavesSucumbenciasConta,
+					String chavesSucumbenciasGuia) throws ControladorException;
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * [SB0049] Distribuir Valor de Sucumbência Atual Entre os Processos de Execução Fiscal
+	 * [SB0050] Distribuir Valor de Diligências Entre os Processos de Execução Fiscal
+	 * 
+	 * @author Saulo Lima
+	 * @date 15/07/2014
+	 */
+	public Map<Integer, BigDecimal> distribuirValorEntreProcessosExecucaoFiscal(BigDecimal valorDigitado,
+					Map<Integer, BigDecimal> mapProcessosValorSucumbenciaAtual, Integer idImovel) throws ControladorException;
+
+	/**
+	 * Obtém o Map (ItemContabil -> Categoria -> Valor) do Map (TipoDebito -> ItemContabil ...)
+	 * 
+	 * @author Luciano Galvao
+	 * @date 31/10/2012
+	 */
+	public Map<LancamentoItemContabilParcelamentoHelper, Map<Categoria, BigDecimal>> obterMapaItensContabeis(
+					Map<Integer, Map<LancamentoItemContabilParcelamentoHelper, Map<Categoria, BigDecimal>>> mapaTipoDebitoItensContabeis,
+					Integer tipoDebito);
+
+	/**
+	 * Este método busca o mapeamento de uma Categoria num dado Mapa (Categoria -> Valor). Se
+	 * encontrar a Categoria, realiza o subflixo [SB0031] do UC0214, que mantém a maior Quantidade
+	 * de Economias na Categoria que está mapeada. Se encontrar a Categoria no Mapa, o método
+	 * retorna o valor mapeado para a Categoria. Se o método retornar Null, significa que não
+	 * localizou a categoria no Mapa.
+	 * [SB0031] - Guardar Maior Quantidade de Economias
+	 * 
+	 * @author Luciano Galvao
+	 * @date 31/10/2012
+	 */
+	public BigDecimal acumularCategoriaValor(BigDecimal valorParaAcumular, BigDecimal valorEntradaParaDeduzir, Integer tipoDebito,
+					LancamentoItemContabilParcelamentoHelper itemContabil, Categoria categoriaAtual,
+					Map<Categoria, BigDecimal> mapaCategoriaValor,
+					Map<Integer, Map<LancamentoItemContabilParcelamentoHelper, Map<Categoria, BigDecimal>>> valorEntradaPorTipoDebito,
+					boolean existeContaComoEntradaParcelamento) throws ControladorException;
+
+	/**
+	 * Distribui o valor de juros do parcelamento por categorias
+	 * 
+	 * @author Luciano Galvao
+	 * @date 31/10/2012
+	 */
+	public Map<Categoria, BigDecimal> distribuirValorParcelamentoPorCategoria(Collection<Categoria> colecaoCategoria, BigDecimal valor);
+
+	public void validarEntidadesDebitoParcelamentoImovel(Parcelamento parcelamento, Collection<ContaValoresHelper> colecaoContaValores,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores, Collection<DebitoACobrar> colecaoDebitoACobrar,
+					Collection<CreditoARealizar> colecaoCreditoARealizar) throws ControladorException;
+
+	public boolean validaCobrancaAdministrativa(Collection<ContaValoresHelper> colecaoConta,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuias, Integer idCobrancaForma,
+					Collection<DebitoACobrar> colecaoDebitoACobrarItem) throws ControladorException;
+
+	public int obterCaracteristicaParcelamento(Collection<ContaValoresHelper> colecaoConta,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuias, Integer idCobrancaForma, String indicadorCobrancaBancaria,
+					Collection<DebitoACobrar> colecaoDebitoACobrarItem) throws ControladorException;
+
+	/**
+	 * [SB0064] Verificar Parcelamento de Execução Fiscal
+	 * 
+	 * @author Saulo Lima
+	 * @date 03/07/2014
+	 * @param colecaoContaValores
+	 * @param colecaoGuiaPagamentoHelper
+	 * @param colecaoDebitoACobrar
+	 */
+	public boolean verificarExecucaoFiscal(Collection<ContaValoresHelper> colecaoContaValores,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoHelper, Collection<DebitoACobrar> colecaoDebitoACobrar)
+					throws ControladorException;
+
+	/**
+	 * [UC0146] Consultar Parcelamentos de Débitos
+	 * [SB0016] Verificar Parcelamento de Execução Fiscal
+	 * 
+	 * @param parcelamento
+	 * @author Gicevalter Couto
+	 * @date 05/08/2014
+	 */
+	public Short verificarContaExecucaoFiscal(Conta conta) throws ControladorException;
+
+	/**
+	 * [UC0252] Consultar Parcelamentos de Débitos
+	 * [SB0010] Verificar Parcelamento de Execução Fiscal
+	 * 
+	 * @param parcelamento
+	 * @author Gicevalter Couto
+	 * @date 29/07/2014
+	 */
+	public Short verificarParcelamentoExecucaoFiscal(Parcelamento parcelamento) throws ControladorException;
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * 
+	 * @author Hebert Falcão
+	 * @date 31/12/2011
+	 */
+	public Date obterDataVencimentoGuiaEntradaParcelamento(Date data, Integer numeroDias) throws ControladorException;
+
+	/**
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<Integer> pesquisarIdParcelamento() throws ControladorException;
+
+	public Collection<Object[]> pesquisarDebitoACobrarPorParcelamento() throws ControladorException;
+
+	public Collection<Object[]> pesquisarClienteImovelPorDataEImovel(Date dataGeracaoDebito, Integer idImovel) throws ControladorException;
+
+	public Collection<Object[]> pesquisarCreditoARealizarPorParcelamento() throws ControladorException;
+
+	public void inserirClienteDebitoACobrar(DebitoACobrar debitoACobrar) throws ControladorException;
+
+	public void inserirClienteDebitoACobrarHistorico(DebitoACobrarHistorico debitoACobrarHistorico) throws ControladorException;
+
+	public void inserirClienteCreditoARealizar(CreditoARealizar creditoARealizar) throws ControladorException;
+
+	public void inserirClienteCreditoARealizarHistorico(CreditoARealizarHistorico creditoARealizarHistorico) throws ControladorException;
+
+	public void removerClienteDebitoACobrar(DebitoACobrar debitoACobrar) throws ControladorException;
+
+	public void removerClienteDebitoACobrarHistorico(DebitoACobrarHistorico debitoACobrarHistorico) throws ControladorException;
+
+	public void removerClienteCreditoARealizar(CreditoARealizar creditoARealizar) throws ControladorException;
+
+	public Collection obterColecaoClienteDebitoACobrar(DebitoACobrar debitoACobrar) throws ControladorException;
+
+	public void transferirParaClienteCreditoARealizarHistorico(Collection colecaoClienteCreditoARealizar,
+					CreditoARealizarHistorico creditoARealizarHistorico) throws ControladorException;
+
+	public void transferirParaClienteDebitoACobrarHistorico(Collection colecaoClienteDebitoACobrar,
+					DebitoACobrarHistorico debitoACobrarHistorico) throws ControladorException;
+
+	/**
+	 * [UC0188] Manter Guia de Pagamento
+	 * [SB0012] Verificar Execução Fiscal
+	 * 
+	 * @param parcelamento
+	 * @author Gicevalter Couto
+	 * @date 05/08/2014
+	 */
+	public Short verificarGuiaPagamentoPrestacaoExecucaoFiscal(GuiaPagamentoPrestacao guiaPagamentoPrestacao) throws ControladorException;
+
+	/**
+	 * [UC0203] Consultar Débitos
+	 * [FS0015] Verificar Execução Fiscal
+	 * 
+	 * @param parcelamento
+	 * @author Gicevalter Couto
+	 * @date 05/08/2014
+	 */
+	public Short verificarDebitoACobrarExecucaoFiscal(DebitoACobrar debitoACobrar) throws ControladorException;
+
+	/**
+	 * [UC0203] Consultar Débitos
+	 * [FS0015] Verificar Execução Fiscal
+	 * 
+	 * @param parcelamento
+	 * @author Gicevalter Couto
+	 * @date 05/08/2014
+	 */
+	public Short verificarImovelDebitoExecucaoFiscal(Collection<DebitoACobrar> colecaoDebitoACobrar,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamento, Collection<ContaValoresHelper> colecaoConta)
+					throws ControladorException;
+
+	/**
+	 * @param periodoInicial
+	 * @param periodoFinal
+	 * @return
+	 * @throws ControladorException
+	 */
+
+	public Collection<Object[]> pesquisarImovelPorPeriodoVencimentoConta(Date periodoInicial, Date periodoFinal, Integer idSetorComercial)
+					throws ControladorException;
+
+	/**
+	 * @param periodoInicial
+	 * @param periodoFinal
+	 * @return
+	 * @throws ControladorException
+	 */
+
+	public Collection<Object[]> pesquisarImovelPorPeriodoVencimentoGuiaPagamento(Date periodoInicial, Date periodoFinal,
+					Integer idSetorComercial)
+					throws ControladorException;
+
+	/**
+	 * 'chavesDebitosACobrar' (Ex.: 9988-1$9988-2$7766-1)
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * 
+	 * @author Gicevaler Couto
+	 * @date 01/08/2014
+	 */
+	public Collection<DebitoACobrarValoresHelper> retornarDebitoACobrarValoresSelecionadas(String chavesDebitosACobrar,
+					Collection<DebitoACobrarValoresHelper> colecaoDebitoACobrarValores) throws ControladorException;
+
+	/**
+	 * @author Gicevaler Couto
+	 * @date 01/08/2014
+	 */
+	public Collection<ClienteImovel> obterListaClientesRelacaoDevedor(Integer idImovelOrigem, Integer anoMesInicialReferenciaDebito,
+					Integer anoMesFinalReferenciaDebito, Integer indicadorPagamento, Integer indicadorContasRevisao,
+					Integer indicadorDebitosACobrar, Integer indicadorCreditoARealizar, Integer indicadorNotasPromissorias,
+					Integer indicadorGuiasPagamento, Integer indicadorAcrescimosImpotualidade,
+					Short indicadorNaoConsiderarPagamentoNaoClassificado, Short indicadorMulta, Short indicadorJurosMora,
+					Short indicadorAtualizacaoMonetaria, Integer indicadorCalcularAcrescimosSucumbenciaAnterior,
+					Short indicadorEmissaoDocumento, Integer tipoRelacaoCliente) throws ControladorException;
+
+	/**
+	 * [UC0609] Transferência de Débitos/Créditos
+	 * [SB00002] Transferência dos Débitos/Créditos selecionados para o imóvel
+	 * destino
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 19/09/2014
+	 */
+	public Integer transferirDebitosCreditosCliente(Integer idRegistroAtendimento, Integer idImovelOrigem, List<Integer> idsClienteOrigem,
+					List<Integer> idsRelacaoClienteOrigem, Integer idClienteDestino, List<String> idsContas,
+					List<String> idsDebitosACobrar, List<String> idsCreditosARealizar, List<String> idsGuiasPagamento, Usuario usuarioLogado)
+					throws ControladorException;
+
+	/**
+	 * Acumula os valores por categoria dos Débitos Cobrados de uma determinada Conta
+	 * 
+	 * @author Luciano Galvao
+	 * @date 31/10/2012
+	 * @param mapaPrincipal
+	 * @param contaHelper
+	 * @param existeContaComoEntradaParcelamento
+	 * @throws ControladorException
+	 */
+	public BigDecimal acumularListaDebitoCobradoConta(
+					Map<Integer, Map<LancamentoItemContabilParcelamentoHelper, Map<Categoria, BigDecimal>>> mapaPrincipal,
+					ContaValoresHelper contaHelper, BigDecimal valorEntradaParaDeduzir,
+					Map<Integer, Map<LancamentoItemContabilParcelamentoHelper, Map<Categoria, BigDecimal>>> valorEntradaPorTipoDebito,
+					boolean existeContaComoEntradaParcelamento, Short[] indicadorTotalRemuneracaoCobrancaAdm, boolean indicadorSucumbencia)
+					throws ControladorException;
+
+	/**
+	 * <p>
+	 * [OC1381720]
+	 * </p>
+	 * 
+	 * @author Magno Silveira (magno.silveira@procenge.com.br)
+	 * @since 22/10/2014
+	 * @param boletoBancarioId
+	 * @return
+	 * @throws ControladorException
+	 */
+	public boolean boletoBancarioPodeSerCancelado(Integer boletoBancarioId) throws ControladorException;
+
+	public String pesquisarMensagemDocumentoCobrancaAcao(Integer idCobrancaAcao) throws ControladorException;
+
+	/**
+	 * <p>
+	 * [OC1366820]
+	 * </p>
+	 * 
+	 * @author Magno Silveira (magno.silveira@procenge.com.br)
+	 * @since 10/10/2014
+	 * @param idImovel
+	 * @return true se o imovel possuir algum debito
+	 */
+	public boolean imovelPossuiDebitos(Integer idImovel) throws ControladorException;
+
+	/**
+	 * @param idComando
+	 * @return
+	 * @throws ControladorException
+	 */
+	public Collection pesquisarCobrancaDocumentoItemParcelado(Integer idComando) throws ControladorException;
+
+	/**
+	 * @param colecaoContaValores
+	 * @throws ControladorException
+	 */
+	public void tratarContasParaGerarGuia(Collection colecaoContaValores, BigDecimal valorTotalContasParaGuia, Integer idImovel,
+					BigDecimal valorJuros) throws ControladorException;
+
+	public Object[] acumularListaGuiaPagamento(Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores,
+					BigDecimal valorEntradaParaDeduzir,
+					Map<Integer, Map<LancamentoItemContabilParcelamentoHelper, Map<Categoria, BigDecimal>>> valorEntradaPorTipoDebito,
+					boolean existeContaComoEntradaParcelamento, Short[] indicadorTotalRemuneracaoCobrancaAdm, boolean indicadorSucumbencia)
+					throws ControladorException;
+
+	public Object[] acumularListaDebitoACobrar(Collection<DebitoACobrar> colecaoDebitoACobrar, BigDecimal valorEntradaParaDeduzir,
+					Map<Integer, Map<LancamentoItemContabilParcelamentoHelper, Map<Categoria, BigDecimal>>> valorEntradaPorTipoDebito,
+					boolean existeContaComoEntradaParcelamento, Short[] indicadorTotalRemuneracaoCobrancaAdm, boolean indicadorSucumbencia)
+					throws ControladorException;
+
+	public Object[] acumularListaAcrescimos(Collection<ContaValoresHelper> colecaoContaValores,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores, boolean existeContaComoEntradaParcelamento,
+					BigDecimal valorDescontoAcrescimos, String indicadorCobrancaParcelamento, BigDecimal valorEntradaParaDeduzir,
+					Map<Integer, Map<LancamentoItemContabilParcelamentoHelper, Map<Categoria, BigDecimal>>> valorEntradaPorTipoDebito,
+					Short[] indicadorTotalRemuneracaoCobrancaAdm, Boolean indicadorSucumbencia) throws ControladorException;
+
+	/**
+	 * @param idFuncionalidadeIniciada
+	 * @param anoMesInicialVencimentoDebito
+	 * @param anoMesFinalVencimentoDebito
+	 * @throws ControladorException
+	 */
+
+	public void importarDadosDividaAtiva(int idFuncionalidadeIniciada, Date anoMesInicialVencimentoDebito,
+					Date anoMesFinalVencimentoDebito, Integer idSetorComercial)
+					throws ControladorException;
+
+	/**
+	 * @param periodoInicial
+	 * @param periodoFinal
+	 * @return
+	 * @throws ControladorException
+	 */
+	public Collection<Object[]> pesquisarClientePorPeriodoVencimentoGuiaPagamento(Date periodoInicial, Date periodoFinal,
+					Integer idSetorComercial)
+					throws ControladorException;
+
+	public void removerDividaAtivaInscricaoDebito() throws ControladorException;
+
+	public void removerDividaAtivaInscricaoResumo() throws ControladorException;
+	
+	public Collection<DocumentoTipo> pesquisarDocumentoTipoModelo() throws ControladorException;
+
+	public Integer inserirDocumentoTipoLayout(DocumentoTipoLayout documentoTipoLayout,
+					Collection<DocumentoLayoutAssinatura> colecaoDocumentoLayoutAssinatura, Usuario usuarioLogado)
+					throws ControladorException;
+
+	public void atualizarDocumentoTipoLayout(DocumentoTipoLayout documentoTipoLayout,
+					Collection<DocumentoLayoutAssinatura> colecaoDocumentoLayoutAssinatura, Usuario usuarioLogado)
+					throws ControladorException;
+	
+	public Collection<DocumentoTipoLayoutCobrancaAcaoHelper> pesquisarDocumentoTipoLayoutPorAcaoCobranca(Integer idAcaoCobranca,
+					Short indicadorUsoDocumentoTipoLayout)
+					throws ControladorException;
 }

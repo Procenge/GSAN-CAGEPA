@@ -6,7 +6,6 @@ import gcom.cobranca.bean.ImovelComDebitosPrescritosHelper;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.util.ConstantesSistema;
 
 import java.util.Collection;
 
@@ -43,91 +42,25 @@ public class ExibirAcompanharImovelComDebitosPrescritosAction
 							.getAttribute("filtroImoveisComDebitosPrescritosHelper");
 		}
 
-//		if((retorno != null) && (retorno.getName().equalsIgnoreCase("acompanharImovelComDebitosPrescritos"))
-//						&& filtroImoveisComDebitosPrescritosHelper != null){
-//
-//			Integer totalRegistros = 0;
-//
-//			try{
-//
-//				totalRegistros = fachada.pesquisarQuantidadeImoveisComDebitosPrescritos(filtroImoveisComDebitosPrescritosHelper);
-//			}catch(FachadaException e){
-//
-//				String[] parametros = new String[e.getParametroMensagem().size()];
-//				e.getParametroMensagem().toArray(parametros);
-//				ActionServletException ex = new ActionServletException(e.getMessage(), e, parametros);
-//				ex.setUrlBotaoVoltar("/gsan/exibirFiltrarImoveisComDebitosPrescritosAction.do");
-//				throw ex;
-//			}
-//
-//			if(totalRegistros == 0){
-//
-//				// Nenhuma registro encontrado
-//				ActionServletException ex = new ActionServletException("atencao.pesquisa.nenhumresultado", null,
-//								"Imóvel com Débitos Prescritos");
-//				ex.setUrlBotaoVoltar("/gsan/exibirFiltrarImoveisComDebitosPrescritosAction.do");
-//				throw ex;
-//			}
-//
-//			// Paginação
-//			retorno = this.controlarPaginacao(httpServletRequest, retorno, totalRegistros);
-//			
-//			
-//
-//			// <<Inclui>> [UC3141 - Filtrar Imóveis com Débitos Prescritos]
-//			try{
-//
-//				colecaoImovelComDebitosPrescritosHelper = fachada
-//								.pesquisarImoveisComDebitoPrescrito(filtroImoveisComDebitosPrescritosHelper,
-//							(Integer) httpServletRequest.getAttribute("numeroPaginasPesquisa"));
-//			}catch(FachadaException e){
-//
-//				String[] parametros = new String[e.getParametroMensagem().size()];
-//				e.getParametroMensagem().toArray(parametros);
-//				ActionServletException ex = new ActionServletException(e.getMessage(), e, parametros);
-//				ex.setUrlBotaoVoltar("/gsan/exibirFiltrarImoveisComDebitosPrescritosAction.do");
-//				throw ex;
-//			}
-//			
-//			
+		// Total de registros
+		Integer totalRegistros = fachada.pesquisarQuantidadeImoveisComDebitosPrescritos(filtroImoveisComDebitosPrescritosHelper);
+
+		if(totalRegistros == null || totalRegistros.intValue() == 0){
 			
-			//....................
-			
-			// Total de registros
-			Integer totalRegistros = fachada.pesquisarQuantidadeImoveisComDebitosPrescritos(filtroImoveisComDebitosPrescritosHelper);
+			// Nenhum registro encontrado
+			ActionServletException ex = new ActionServletException("atencao.pesquisa.nenhumresultado", null,
+							"Imóvel com Débitos Prescritos");
+			ex.setUrlBotaoVoltar("/gsan/exibirFiltrarImoveisComDebitosPrescritosAction.do");
+			throw ex;
+		}
 
-			if(totalRegistros == 0){
-				// Nenhuma registro encontrado
-				throw new ActionServletException("atencao.pesquisa.nenhumresultado", null, "Boleto Bancário");
-			}
+		// Paginação
+		retorno = this.controlarPaginacao(httpServletRequest, retorno, totalRegistros);
 
-			// Paginação
-			retorno = this.controlarPaginacao(httpServletRequest, retorno, totalRegistros);
-
-			colecaoImovelComDebitosPrescritosHelper = fachada
-							.pesquisarImoveisComDebitoPrescrito(filtroImoveisComDebitosPrescritosHelper,
+		colecaoImovelComDebitosPrescritosHelper = fachada.pesquisarImoveisComDebitoPrescrito(filtroImoveisComDebitosPrescritosHelper,
 						(Integer) httpServletRequest.getAttribute("numeroPaginasPesquisa"));
-
-
-			if(colecaoImovelComDebitosPrescritosHelper == null || colecaoImovelComDebitosPrescritosHelper.isEmpty()){
-				// Nenhuma cliente cadastrado
-				throw new ActionServletException("atencao.pesquisa.nenhumresultado", null, "Boleto Bancário");
-			}else if(colecaoImovelComDebitosPrescritosHelper.size() > ConstantesSistema.NUMERO_MAXIMO_REGISTROS_BOLETO_BANCARIO){
-				// Muitos registros encontrados
-				throw new ActionServletException("atencao.pesquisa.muitosregistros");
-			}else{
-				// Coloca a coleção na sessão
-				sessao.setAttribute("colecaoImovelComDebitosPrescritosHelper", colecaoImovelComDebitosPrescritosHelper);
-
-			}
-
-			
-			
-			//..................
-			
-			sessao.setAttribute("caminhoRetornoVoltar", "/gsan/exibirAcompanharImovelComDebitosPrescritosAction.do");
-
-
+		sessao.setAttribute("colecaoImovelComDebitosPrescritosHelper", colecaoImovelComDebitosPrescritosHelper);
+		sessao.setAttribute("caminhoRetornoVoltar", "/gsan/exibirAcompanharImovelComDebitosPrescritosAction.do");
 
 
 		return retorno;

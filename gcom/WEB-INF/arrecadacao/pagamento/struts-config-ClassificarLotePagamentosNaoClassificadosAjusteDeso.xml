@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean name="ClassificarLotePagamentosNaoClassificadosAjusteDesoActionForm"	
+		           type="gcom.gui.arrecadacao.pagamento.ClassificarLotePagamentosNaoClassificadosAjusteDesoActionForm" />
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+		<action name="ClassificarLotePagamentosNaoClassificadosAjusteDesoActionForm"
+			    type="gcom.gui.arrecadacao.pagamento.ExibirClassificarLotePagamentosNaoClassificadosAjusteDesoAction"
+			    validate="false" 
+			    scope="session"
+			    path="/exibirClassificarLotePagamentosNaoClassificadosAjusteDesoAction">
+			<forward name="exibirClassificarLotePagamentosNaoClassificadosAjusteDesoAction"
+				     path="/jsp/arrecadacao/pagamento/classificar_lote_pagamento_nao_classificado_manter_ajuste_deso.jsp" />
+		</action>
+		
+		<action name="ClassificarLotePagamentosNaoClassificadosAjusteDesoActionForm"
+			    type="gcom.gui.arrecadacao.pagamento.ClassificarLotePagamentosNaoClassificadosAjusteDesoAction"
+			    validate="true"
+			    scope="session" 
+			    path="/classificarLotePagamentosNaoClassificadosAjusteDesoAction" />
+			      
+	</action-mappings>
+
+	<message-resources null="false" parameter="gcom.properties.application" />
+</struts-config>

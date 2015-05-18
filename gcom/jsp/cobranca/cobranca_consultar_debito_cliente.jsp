@@ -212,7 +212,7 @@ function extendeTabela(tabela,display){
 									</div>
 									</td>
 									<td align="left" width="50%"><html:text
-										name="ConsultarDebitoClienteActionForm" property="tipoRelacao"
+										name="ConsultarDebitoClienteActionForm" property="descricaoTipoRelacao"
 										size="30" readonly="true"
 										style="background-color:#EFEFEF; border:0; font-size:9px" /></td>
 								</tr>
@@ -1771,17 +1771,10 @@ function extendeTabela(tabela,display){
 					</td>
 				</tr>
 				<tr>
-					<logic:empty name="colecaoContaValores">
-						<td colspan="4" align="right"><input type="button" name=""
-							value="Imprimir Extrato de Débito Total" class="bottonRightCol"
-							disabled="true" /></td>
-					</logic:empty>
-					<logic:notEmpty name="colecaoContaValores">
-						<td colspan="4" align="right"><input type="button" name=""
-							value="Imprimir Extrato de Débito Total" class="bottonRightCol"
-							onclick="window.location.href='<html:rewrite page="/gerarRelatorioExtratoDebitoClienteAction.do?tipo=total"/>'" />
-						</td>
-					</logic:notEmpty>
+					<td colspan="4" align="right"><input type="button" name=""
+						value="Imprimir Extrato de Débito Total" class="bottonRightCol"
+						onclick="window.location.href='<html:rewrite page="/gerarRelatorioExtratoDebitoClienteAction.do?tipo=total"/>'" />
+					</td>
 				</tr>
 
 				<tr>

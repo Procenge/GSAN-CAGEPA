@@ -77,11 +77,13 @@
 package gcom.gui.faturamento.conta;
 
 import gcom.atendimentopublico.registroatendimento.EspecificacaoTipoValidacao;
+import gcom.cobranca.bean.ContaValoresHelper;
 import gcom.fachada.Fachada;
 import gcom.faturamento.conta.Conta;
 import gcom.faturamento.conta.FiltroConta;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.seguranca.acesso.PermissaoEspecial;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ControladorException;
 import gcom.util.Util;
@@ -129,8 +131,12 @@ public class ExibirAlterarVencimentoContaAction
 
 		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
 
+		boolean temPermissaoAtualizarDebitosExecFiscal = fachada.verificarPermissaoEspecial(
+						PermissaoEspecial.ATUALIZAR_DEBITOS_EXECUCAO_FISCAL, this.getUsuarioLogado(httpServletRequest));
+
 		// Contas selecionadas pelo usuário
 		String[] arrayIdentificadores = contaSelected.split(",");
+		StringBuffer parametroExecucaoFiscal = new StringBuffer();
 		Collection idsConta = new ArrayList();
 
 		for(int i = 0; i < arrayIdentificadores.length; i++){
@@ -142,6 +148,7 @@ public class ExibirAlterarVencimentoContaAction
 			FiltroConta filtroConta = new FiltroConta();
 			filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.IMOVEL);
 			filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.DEBITO_CREDITO_SITUACAO_ATUAL);
+			filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.DEBITOS_COBRADOS);
 			filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.ID, idConta));
 			Collection colecaoConta = fachada.pesquisar(filtroConta, Conta.class.getName());
 			Conta contaSelecao = (Conta) colecaoConta.iterator().next();
@@ -150,9 +157,28 @@ public class ExibirAlterarVencimentoContaAction
 					throw new ActionServletException("atencao.conta_em_situacao_nao_permitida", contaSelecao
 									.getDebitoCreditoSituacaoAtual().getDescricaoDebitoCreditoSituacao(), "ação");
 				}
+
+				ContaValoresHelper contaValores = new ContaValoresHelper();
+				contaValores.setConta(contaSelecao);
+
+				Collection<ContaValoresHelper> colecaoContaValores = new ArrayList<ContaValoresHelper>();
+				colecaoContaValores.add(contaValores);
+
+				if(fachada.verificarExecucaoFiscal(colecaoContaValores, null, null) && !temPermissaoAtualizarDebitosExecFiscal){
+					parametroExecucaoFiscal.append(contaSelecao.getReferenciaFormatada());
+					parametroExecucaoFiscal.append(", ");
+				}
 			}
 
 			idsConta.add(idConta);
+		}
+
+		String parametroMensagemExecFiscal = parametroExecucaoFiscal.toString();
+		if(!Util.isVazioOuBranco(parametroMensagemExecFiscal)){
+			parametroMensagemExecFiscal = parametroMensagemExecFiscal.substring(0, parametroMensagemExecFiscal.length() - 2);
+
+			throw new ActionServletException("atencao.conta.debito.execucao.fiscal", usuario.getNomeUsuario().toString(),
+							parametroMensagemExecFiscal);
 		}
 
 		// [FS0018] Verificar ocorrência de conta(s) sem revisão ou em revisão por ação do usuário -

@@ -235,9 +235,17 @@ public class ExibirAtualizarArrecadadorAction
 
 			if(idCliente == null || idCliente.trim().equals("")){
 
-				atualizarArrecadadorActionForm.setIdCliente(arrecadador.getCliente().getId().toString());
+				if(arrecadador.getCliente() != null){
+					atualizarArrecadadorActionForm.setIdCliente(arrecadador.getCliente().getId().toString());
 
-				atualizarArrecadadorActionForm.setNomeCliente(arrecadador.getCliente().getNome());
+					atualizarArrecadadorActionForm.setNomeCliente(arrecadador.getCliente().getNome());
+				}else{
+					atualizarArrecadadorActionForm.setIdCliente("");
+
+					atualizarArrecadadorActionForm.setNomeCliente("");
+				}
+
+				
 
 			}
 			atualizarArrecadadorActionForm.setId(idArrecadador);

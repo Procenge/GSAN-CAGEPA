@@ -77,6 +77,7 @@
 package gcom.gui.atendimentopublico.ordemservico;
 
 import gcom.atendimentopublico.ordemservico.Equipe;
+import gcom.atendimentopublico.ordemservico.EquipeTipo;
 import gcom.atendimentopublico.ordemservico.bean.ObterDadosEquipe;
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
@@ -142,6 +143,18 @@ public class ExibirConsultarDadosEquipeAction
 		consultarDadosEquipeActionForm.setUnidadeOrganizacionalDescricao(equipe.getUnidadeOrganizacional().getDescricao());
 		consultarDadosEquipeActionForm.setTipoPerfilServicoId("" + equipe.getServicoPerfilTipo().getId());
 		consultarDadosEquipeActionForm.setTipoPerfilServicoDescricao(equipe.getServicoPerfilTipo().getDescricao());
+		EquipeTipo equipeTipo = null;
+		if(equipe.getEquipeTipo() != null && equipe.getEquipeTipo().getId() != null){
+			equipeTipo = equipe.getEquipeTipo();
+		}else{
+			if(obterDadosEquipe.getEquipe() != null && obterDadosEquipe.getEquipe().getEquipeTipo() != null
+							&& obterDadosEquipe.getEquipe().getEquipeTipo().getId() != null){
+				equipeTipo = obterDadosEquipe.getEquipe().getEquipeTipo();
+			}
+		}
+		consultarDadosEquipeActionForm.setEquipeTipoId(equipeTipo != null ? "" + equipeTipo.getId() : "");
+		consultarDadosEquipeActionForm.setEquipeTipoDescricao(equipeTipo != null ? equipeTipo.getDescricao() : "");
+
 		consultarDadosEquipeActionForm.setEquipeComponentes(obterDadosEquipe.getColecaoEquipeComponentes());
 
 		return retorno;

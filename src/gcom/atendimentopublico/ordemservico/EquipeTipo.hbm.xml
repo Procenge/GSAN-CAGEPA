@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.atendimentopublico.ordemservico.EquipeTipo" 
+    table="equipe_tipo"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="eqtp_id"
+    >
+        <generator class="sequence">
+       		<param name="sequence">sq_equipe_tipo</param>
+    	</generator>
+    </id>
+    
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="eqtp_dsequipetipo"
+        length="30"
+    />
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="eqtp_dsabreviada"
+        length="10"
+    />
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="eqtp_icuso"
+        length="2"
+    />
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="eqtp_tmultimaalteracao"
+        length="8"
+    />
+   
+</class>
+</hibernate-mapping>

@@ -98,10 +98,7 @@ import gcom.atendimentopublico.ligacaoagua.CorteTipo;
 import gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao;
 import gcom.atendimentopublico.ligacaoagua.SupressaoTipo;
 import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao;
-import gcom.atendimentopublico.ordemservico.FiltroOrdemServico;
-import gcom.atendimentopublico.ordemservico.FiltroServicoTipo;
-import gcom.atendimentopublico.ordemservico.OrdemServico;
-import gcom.atendimentopublico.ordemservico.ServicoTipo;
+import gcom.atendimentopublico.ordemservico.*;
 import gcom.atendimentopublico.registroatendimento.*;
 import gcom.batch.*;
 import gcom.cadastro.ControladorCadastroLocal;
@@ -119,10 +116,7 @@ import gcom.cadastro.imovel.bean.ImovelMicromedicao;
 import gcom.cadastro.localidade.*;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.cobranca.*;
-import gcom.cobranca.bean.CalcularAcrescimoPorImpontualidadeHelper;
-import gcom.cobranca.bean.ContaValoresHelper;
-import gcom.cobranca.bean.GuiaPagamentoValoresHelper;
-import gcom.cobranca.bean.ObterDebitoImovelOuClienteHelper;
+import gcom.cobranca.bean.*;
 import gcom.cobranca.contrato.CobrancaContrato;
 import gcom.cobranca.contrato.FiltroCobrancaContrato;
 import gcom.cobranca.contrato.FiltroCobrancaContratoRemuneracao;
@@ -139,6 +133,7 @@ import gcom.faturamento.bean.CalcularValoresAguaEsgotoHelper;
 import gcom.faturamento.consumotarifa.ConsumoTarifa;
 import gcom.faturamento.conta.*;
 import gcom.faturamento.credito.*;
+import gcom.faturamento.credito.CreditoTipo.CreditoTipoEnum;
 import gcom.faturamento.debito.*;
 import gcom.faturamento.debito.DebitoTipo.DebitoTipoEnum;
 import gcom.financeiro.FinanciamentoTipo;
@@ -180,6 +175,7 @@ import gcom.util.parametrizacao.arrecadacao.ParametroArrecadacao;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 import gcom.util.parametrizacao.cobranca.ParametroCobranca;
 import gcom.util.parametrizacao.cobranca.parcelamento.ParametroParcelamento;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
@@ -195,7 +191,9 @@ import javax.mail.SendFailedException;
 import org.apache.commons.beanutils.BeanComparator;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections.comparators.ComparatorChain;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
 
 import br.com.procenge.parametrosistema.api.ControladorParametroSistema;
 import br.com.procenge.util.SpringBeanLocator;
@@ -215,6 +213,8 @@ public class ControladorArrecadacao
 	protected IRepositorioCliente repositorioCliente = null;
 
 	protected IRepositorioImovel repositorioImovel = null;
+
+	protected IRepositorioClienteImovel repositorioClienteImovel = null;
 
 	protected IRepositorioLocalidade repositorioLocalidade = null;
 
@@ -247,7 +247,7 @@ public class ControladorArrecadacao
 		repositorioFaturamento = RepositorioFaturamentoHBM.getInstancia();
 		repositorioArrecadacao = RepositorioArrecadacaoHBM.getInstancia();
 		repositorioCobranca = RepositorioCobrancaHBM.getInstancia();
-
+		repositorioClienteImovel = RepositorioClienteImovelHBM.getInstancia();
 	}
 
 	/**
@@ -589,6 +589,7 @@ public class ControladorArrecadacao
 			// caso exista documento de cobrança
 			if(parmsDocumentoCobranca != null){
 				Integer idCobrancaDocumento = null;
+				Integer idCliente = null;
 				BigDecimal valorAcrescimo = BigDecimal.ZERO;
 				BigDecimal valorAcrescimoOriginalDocCob = BigDecimal.ZERO;
 				BigDecimal valorDesconto = BigDecimal.ZERO;
@@ -610,6 +611,20 @@ public class ControladorArrecadacao
 				if(parmsDocumentoCobranca[2] != null){
 					dataEmissao = ((Date) parmsDocumentoCobranca[2]);
 				}
+				
+				if(parmsDocumentoCobranca[8] != null){
+					idCliente = ((Integer) parmsDocumentoCobranca[8]);
+				}				
+				
+				if(parmsDocumentoCobranca[3] != null){
+					idCobrancaDocumento = ((Integer) parmsDocumentoCobranca[3]);
+				}				
+
+				BigDecimal valorSucumbencia = null;
+
+				if(parmsDocumentoCobranca[7] != null){
+					valorSucumbencia = ((BigDecimal) parmsDocumentoCobranca[7]);
+				}
 
 				// Parâmetro que identifica se a empresa emite o documento com acrescimos
 				String parametroTratarAcrescimosEmissaoDocumento = ParametroArrecadacao.P_TRATAR_ACRESCIMOS_EMISSAO_DOCUMENTO.executar()
@@ -623,437 +638,112 @@ public class ControladorArrecadacao
 
 				Integer idResolucaoDiretoria = null;
 
+				// 2.4.1. Caso o documento de cobrança seja um extrato de débito de parcelamento
+				// (RDIR_ID na tabela COBRANCA_DOCUMENTO com o valor diferente de nulo)
 				if(parmsDocumentoCobranca[6] != null){
 					idResolucaoDiretoria = ((Integer) parmsDocumentoCobranca[6]);
+					// 2.4.1.1. Caso a RD associada ao extrato seja uma RD cujo desconto depende do
+					// período de pagamento do extrato (existe ocorrência na tabela
+					// RD_PARAMETROS_PAGMTO_A_VISTA com RDIR_ID=RDIR_ID da tabela
+					// COBRANCA_DOCUMENTO):
 
-					resolucaoDiretoriaParametrosPagamentoAVista = this.getControladorCobranca()
-									.pesquisarResolucaoDiretoriaParametrosPagamentoAVista(idResolucaoDiretoria, dataPagamento);
-				}
+					Collection colecaoResolucaoDiretoriaParametrosPagamentoAVista = this.getControladorCobranca()
+									.pesquisarResolucaoDiretoriaParametrosPagamentoAVista(idResolucaoDiretoria);
 
-				if(resolucaoDiretoriaParametrosPagamentoAVista != null){
-					Imovel imovel = this.getControladorImovel().pesquisarImovel(idImovelNaBase);
+					Calendar dataCalendarPagamento = new GregorianCalendar();
+					dataCalendarPagamento.setTime(dataPagamento);
 
-					// [SB0023 – Tratar Desconto Extrato Parcelamento]
+					if(!Util.isVazioOrNulo(colecaoResolucaoDiretoriaParametrosPagamentoAVista)){
 
-					BigDecimal percentualDescontoMulta = resolucaoDiretoriaParametrosPagamentoAVista.getPercentualDescontoMulta();
-					BigDecimal percentualDescontoJurosMora = resolucaoDiretoriaParametrosPagamentoAVista.getPercentualDescontoJurosMora();
-					BigDecimal percentualDescontoCorrecaoMonetaria = resolucaoDiretoriaParametrosPagamentoAVista
-									.getPercentualDescontoCorrecaoMonetaria();
+						Iterator it = colecaoResolucaoDiretoriaParametrosPagamentoAVista.iterator();
+						// 2.4.1.1.1. Caso o pagamento do extrato esteja dentro do período de
+						// concessão do desconto (RDPV_DTPAGAMENTOINICIO menor ou igual à data de
+						// pagamento do extrato e RDPV_DTPAGAMENTOFINAL maior ou igual à data de
+						// pagamento do extrato):
 
-					BigDecimal cem = new BigDecimal("100").setScale(2);
+						while(it.hasNext()){
 
-					BigDecimal saldoValorPago = valorPagamento;
+							resolucaoDiretoriaParametrosPagamentoAVista = (ResolucaoDiretoriaParametrosPagamentoAVista) it.next();
 
-					Collection<Conta> contas = this.getControladorCobranca().pesquisarContasCobrancaDocumento(numeroSequencialDocumento);
-
-					if(!Util.isVazioOrNulo(contas)){
-						Conta conta = null;
-
-						BigDecimal valorTotalContaSemImposto = BigDecimal.ZERO;
-
-						Integer referencia = null;
-						Date dataVencimentoConta = null;
-						Short indicadorCobrancaMulta = null;
-						Integer idConta = null;
-
-						FiltroDebitoCobrado filtroDebitoCobrado = null;
-						Collection<DebitoCobrado> debitosCobrados = null;
-						BigDecimal valorDebitosConta = BigDecimal.ZERO;
-
-						CalcularAcrescimoPorImpontualidadeHelper calcularAcrescimoPorImpontualidadeHelper = null;
-
-						BigDecimal valorMulta = BigDecimal.ZERO;
-						BigDecimal valorJurosMora = BigDecimal.ZERO;
-						BigDecimal valorAtualizacaoMonetaria = BigDecimal.ZERO;
-
-						Integer idDebitoTipo = null;
-						DebitoTipo debitoTipo = null;
-
-						Collection<Integer> colecaoIdsContasAtualizarIndicadorMulta = new ArrayList<Integer>();
-						Collection<Conta> colecaoContasAtualizarVencimento = new ArrayList<Conta>();
-
-						Iterator contasIterator = contas.iterator();
-
-						while(contasIterator.hasNext() && saldoValorPago.compareTo(BigDecimal.ZERO) > 0){
-							conta = (Conta) contasIterator.next();
-
-
-							resolucaoDiretoriaParametrosPagamentoAVista = this.getControladorCobranca()
-											.obterResolucaoDiretoriaParametrosPagamentoAVista(conta.getAnoMesReferenciaConta(),
-															conta.getDataVencimentoConta(), idResolucaoDiretoria, dataPagamento);
-
-							if(resolucaoDiretoriaParametrosPagamentoAVista != null){
-								percentualDescontoMulta = resolucaoDiretoriaParametrosPagamentoAVista.getPercentualDescontoMulta();
-								percentualDescontoJurosMora = resolucaoDiretoriaParametrosPagamentoAVista.getPercentualDescontoJurosMora();
-								percentualDescontoCorrecaoMonetaria = resolucaoDiretoriaParametrosPagamentoAVista
-												.getPercentualDescontoCorrecaoMonetaria();
-
-							}else{
-								continue;
+							Calendar dataCalendarPagamentoInicio = new GregorianCalendar();
+							if(resolucaoDiretoriaParametrosPagamentoAVista.getDataPagamentoInicio() != null){
+								dataCalendarPagamentoInicio.setTime(resolucaoDiretoriaParametrosPagamentoAVista.getDataPagamentoInicio());
+							}
+							Calendar dataCalendarPagamentoFinal = new GregorianCalendar();
+							if(resolucaoDiretoriaParametrosPagamentoAVista.getDataPagamentoFinal() != null){
+								dataCalendarPagamentoFinal.setTime(resolucaoDiretoriaParametrosPagamentoAVista.getDataPagamentoFinal());
 							}
 
+							if((dataCalendarPagamento.getTime().compareTo(dataCalendarPagamentoInicio.getTime()) > 0 || dataCalendarPagamento
+											.getTime().compareTo(dataCalendarPagamentoInicio.getTime()) == 0)
+											&& (dataCalendarPagamento.getTime().compareTo(dataCalendarPagamentoFinal.getTime()) < 0 || dataCalendarPagamento
+															.getTime().compareTo(dataCalendarPagamentoFinal.getTime()) == 0)){
 
-							valorTotalContaSemImposto = conta.getValorTotalContaSemImposto();
-
-							if(saldoValorPago.compareTo(valorTotalContaSemImposto) < 0){
 								break;
-							}
-
-							saldoValorPago = saldoValorPago.subtract(valorTotalContaSemImposto);
-
-							dataVencimentoConta = conta.getDataVencimentoConta();
-
-							if((percentualDescontoMulta != null && percentualDescontoMulta.compareTo(cem) != 0)
-											|| (percentualDescontoJurosMora != null && percentualDescontoJurosMora.compareTo(cem) != 0)
-											|| (percentualDescontoCorrecaoMonetaria != null && percentualDescontoCorrecaoMonetaria
-															.compareTo(cem) != 0)){
-
-								// [UC0216 – Calcular Acréscimos por Impontualidade]
-								referencia = conta.getReferencia();
-								indicadorCobrancaMulta = conta.getIndicadorCobrancaMulta();
-								idConta = conta.getId();
-
-								filtroDebitoCobrado = new FiltroDebitoCobrado();
-								filtroDebitoCobrado.adicionarParametro(new ParametroSimples(FiltroDebitoCobrado.CONTA_ID, idConta));
-								filtroDebitoCobrado.adicionarCaminhoParaCarregamentoEntidade(FiltroDebitoCobrado.DEBITO_TIPO);
-
-								debitosCobrados = this.getControladorUtil().pesquisar(filtroDebitoCobrado, DebitoCobrado.class.getName());
-
-								valorDebitosConta = this.getControladorFaturamento().calcularValorTotalMultasCobradasConta(debitosCobrados);
-
-								calcularAcrescimoPorImpontualidadeHelper = this.getControladorCobranca()
-												.calcularAcrescimoPorImpontualidadeBancoDeDados(referencia, dataVencimentoConta,
-																dataEmissao, valorTotalContaSemImposto, valorDebitosConta,
-																indicadorCobrancaMulta, Integer.toString(anoMesReferenciaArrecadacao),
-																idConta, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM,
-																ConstantesSistema.SIM);
-
-								if(calcularAcrescimoPorImpontualidadeHelper != null){
-									BigDecimal valorAuxiliar = BigDecimal.ZERO;
-
-									valorMulta = calcularAcrescimoPorImpontualidadeHelper.getValorMulta();
-
-									if(valorMulta.compareTo(BigDecimal.ZERO) > 0){
-										valorAuxiliar = cem.subtract(percentualDescontoMulta);
-										valorAuxiliar = valorAuxiliar.divide(cem);
-
-										valorMulta = valorMulta.multiply(valorAuxiliar);
-									}
-
-									valorJurosMora = calcularAcrescimoPorImpontualidadeHelper.getValorJurosMora();
-
-									if(valorJurosMora.compareTo(BigDecimal.ZERO) > 0){
-										valorAuxiliar = cem.subtract(percentualDescontoJurosMora);
-										valorAuxiliar = valorAuxiliar.divide(cem);
-
-										valorJurosMora = valorJurosMora.multiply(valorAuxiliar);
-									}
-
-									valorAtualizacaoMonetaria = calcularAcrescimoPorImpontualidadeHelper.getValorAtualizacaoMonetaria();
-
-									if(valorAtualizacaoMonetaria.compareTo(BigDecimal.ZERO) > 0){
-										valorAuxiliar = cem.subtract(percentualDescontoCorrecaoMonetaria);
-										valorAuxiliar = valorAuxiliar.divide(cem);
-
-										valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.multiply(valorAuxiliar);
-									}
-
-									if(valorMulta.compareTo(BigDecimal.ZERO) > 0){
-										idDebitoTipo = DebitoTipo.MULTA_IMPONTUALIDADE;
-
-										debitoTipo = new DebitoTipo();
-										debitoTipo.setId(idDebitoTipo);
-
-										this.getControladorFaturamento().criarDebitoACobrar(imovel, null, sistemaParametro, debitoTipo,
-														valorMulta, referencia);
-
-										colecaoIdsContasAtualizarIndicadorMulta.add(idConta);
-									}
-
-									if(valorJurosMora.compareTo(BigDecimal.ZERO) > 0){
-										idDebitoTipo = DebitoTipo.JUROS_MORA;
-
-										debitoTipo = new DebitoTipo();
-										debitoTipo.setId(idDebitoTipo);
-
-										this.getControladorFaturamento().criarDebitoACobrar(imovel, null, sistemaParametro, debitoTipo,
-														valorJurosMora, referencia);
-									}
-
-									if(valorAtualizacaoMonetaria.compareTo(BigDecimal.ZERO) > 0){
-										idDebitoTipo = DebitoTipo.ATUALIZACAO_MONETARIA;
-
-										debitoTipo = new DebitoTipo();
-										debitoTipo.setId(idDebitoTipo);
-
-										this.getControladorFaturamento().criarDebitoACobrar(imovel, null, sistemaParametro, debitoTipo,
-														valorAtualizacaoMonetaria, referencia);
-									}
-
-								}
-							}
-
-							if(Util.compararData(dataVencimentoConta, dataPagamento) == -1){
-								colecaoContasAtualizarVencimento.add(conta);
-							}
-						}
-
-						if(!Util.isVazioOrNulo(colecaoIdsContasAtualizarIndicadorMulta)){
-							try{
-								repositorioFaturamento.atualizarIndicadorMultaDeConta(colecaoIdsContasAtualizarIndicadorMulta);
-							}catch(ErroRepositorioException e){
-								throw new ControladorException(e.getMessage());
-							}
-						}
-
-						// [UC0151] Alterar Vencimento de Conta
-						if(!Util.isVazioOrNulo(colecaoContasAtualizarVencimento)){
-							this.getControladorFaturamento().alterarVencimentoConta(colecaoContasAtualizarVencimento, null, dataPagamento,
-											null);
-						}
-					}
-
-					Collection<GuiaPagamentoPrestacao> guiasPagamentoPrestacao = this.getControladorCobranca()
-									.pesquisarGuiasPagamentoPrestacaoCobrancaDocumento(numeroSequencialDocumento);
-
-					if(!Util.isVazioOrNulo(guiasPagamentoPrestacao)){
-						GuiaPagamentoPrestacao guiaPagamentoPrestacao = null;
-
-						GuiaPagamentoPrestacaoPK guiaPagamentoPrestacaoPK = null;
-
-						BigDecimal valorPrestacao = BigDecimal.ZERO;
-
-						Integer anoMesReferenciaFaturamento = null;
-						Date dataVencimento = null;
-						Short indicadorCobrancaMulta = null;
-
-						CalcularAcrescimoPorImpontualidadeHelper calcularAcrescimoPorImpontualidadeHelper = null;
-
-						BigDecimal valorMulta = BigDecimal.ZERO;
-						BigDecimal valorJurosMora = BigDecimal.ZERO;
-						BigDecimal valorAtualizacaoMonetaria = BigDecimal.ZERO;
-
-						Integer idDebitoTipo = null;
-						DebitoTipo debitoTipo = null;
-
-						Collection<GuiaPagamentoPrestacaoPK> colecaoIdsGuiasPagamentosAtualizarIndicadorMulta = new ArrayList<GuiaPagamentoPrestacaoPK>();
-						Collection<Object[]> colecaoGuiasPagamentoPrestacaoAtualizarVencimento = new ArrayList<Object[]>();
-
-						Iterator<GuiaPagamentoPrestacao> guiasPagamentoPrestacaoIterator = guiasPagamentoPrestacao.iterator();
-
-						while(guiasPagamentoPrestacaoIterator.hasNext() && saldoValorPago.compareTo(BigDecimal.ZERO) > 0){
-							guiaPagamentoPrestacao = (GuiaPagamentoPrestacao) guiasPagamentoPrestacaoIterator.next();
-
-							resolucaoDiretoriaParametrosPagamentoAVista = this
-											.getControladorCobranca()
-											.obterResolucaoDiretoriaParametrosPagamentoAVista(
-															guiaPagamentoPrestacao.getAnoMesReferenciaFaturamento(),
-															guiaPagamentoPrestacao.getDataVencimento(), idResolucaoDiretoria, dataPagamento);
-
-							if(resolucaoDiretoriaParametrosPagamentoAVista != null){
-								percentualDescontoMulta = resolucaoDiretoriaParametrosPagamentoAVista.getPercentualDescontoMulta();
-								percentualDescontoJurosMora = resolucaoDiretoriaParametrosPagamentoAVista.getPercentualDescontoJurosMora();
-								percentualDescontoCorrecaoMonetaria = resolucaoDiretoriaParametrosPagamentoAVista
-												.getPercentualDescontoCorrecaoMonetaria();
-
 							}else{
-								continue;
+								resolucaoDiretoriaParametrosPagamentoAVista = null;
 							}
 
-							guiaPagamentoPrestacaoPK = guiaPagamentoPrestacao.getComp_id();
-
-							valorPrestacao = guiaPagamentoPrestacao.getValorPrestacao();
-
-							if(saldoValorPago.compareTo(valorPrestacao) < 0){
-								break;
-							}
-
-							saldoValorPago = saldoValorPago.subtract(valorPrestacao);
-
-							dataVencimento = guiaPagamentoPrestacao.getDataVencimento();
-
-							if((percentualDescontoMulta != null && percentualDescontoMulta.compareTo(cem) != 0)
-											|| (percentualDescontoJurosMora != null && percentualDescontoJurosMora.compareTo(cem) != 0)
-											|| (percentualDescontoCorrecaoMonetaria != null && percentualDescontoCorrecaoMonetaria
-															.compareTo(cem) != 0)){
-
-								// [UC0216 – Calcular Acréscimos por Impontualidade]
-								anoMesReferenciaFaturamento = guiaPagamentoPrestacao.getAnoMesReferenciaFaturamento();
-								indicadorCobrancaMulta = guiaPagamentoPrestacao.getIndicadorCobrancaMulta();
-
-								calcularAcrescimoPorImpontualidadeHelper = this.getControladorCobranca()
-												.calcularAcrescimoPorImpontualidadeBancoDeDados(anoMesReferenciaFaturamento,
-																dataVencimento, dataEmissao, valorPrestacao, BigDecimal.ZERO,
-																indicadorCobrancaMulta, Integer.toString(anoMesReferenciaArrecadacao),
-																null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM,
-																ConstantesSistema.SIM);
-
-								if(calcularAcrescimoPorImpontualidadeHelper != null){
-									BigDecimal valorAuxiliar = BigDecimal.ZERO;
-
-									valorMulta = calcularAcrescimoPorImpontualidadeHelper.getValorMulta();
-
-									if(valorMulta.compareTo(BigDecimal.ZERO) > 0){
-										valorAuxiliar = cem.subtract(percentualDescontoMulta);
-										valorAuxiliar = valorAuxiliar.divide(cem);
-
-										valorMulta = valorMulta.multiply(valorAuxiliar);
-									}
-
-									valorJurosMora = calcularAcrescimoPorImpontualidadeHelper.getValorJurosMora();
-
-									if(valorJurosMora.compareTo(BigDecimal.ZERO) > 0){
-										valorAuxiliar = cem.subtract(percentualDescontoJurosMora);
-										valorAuxiliar = valorAuxiliar.divide(cem);
-
-										valorJurosMora = valorJurosMora.multiply(valorAuxiliar);
-									}
-
-									valorAtualizacaoMonetaria = calcularAcrescimoPorImpontualidadeHelper.getValorAtualizacaoMonetaria();
-
-									if(valorAtualizacaoMonetaria.compareTo(BigDecimal.ZERO) > 0){
-										valorAuxiliar = cem.subtract(percentualDescontoCorrecaoMonetaria);
-										valorAuxiliar = valorAuxiliar.divide(cem);
-
-										valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.multiply(valorAuxiliar);
-									}
-
-									if(valorMulta.compareTo(BigDecimal.ZERO) > 0){
-										idDebitoTipo = DebitoTipo.MULTA_IMPONTUALIDADE;
-
-										debitoTipo = new DebitoTipo();
-										debitoTipo.setId(idDebitoTipo);
-
-										this.getControladorFaturamento().criarDebitoACobrar(imovel, null, sistemaParametro, debitoTipo,
-														valorMulta, anoMesReferenciaFaturamento);
-
-										colecaoIdsGuiasPagamentosAtualizarIndicadorMulta.add(guiaPagamentoPrestacaoPK);
-									}
-
-									if(valorJurosMora.compareTo(BigDecimal.ZERO) > 0){
-										idDebitoTipo = DebitoTipo.JUROS_MORA;
-
-										debitoTipo = new DebitoTipo();
-										debitoTipo.setId(idDebitoTipo);
-
-										this.getControladorFaturamento().criarDebitoACobrar(imovel, null, sistemaParametro, debitoTipo,
-														valorJurosMora, anoMesReferenciaFaturamento);
-									}
-
-									if(valorAtualizacaoMonetaria.compareTo(BigDecimal.ZERO) > 0){
-										idDebitoTipo = DebitoTipo.ATUALIZACAO_MONETARIA;
-
-										debitoTipo = new DebitoTipo();
-										debitoTipo.setId(idDebitoTipo);
-
-										this.getControladorFaturamento().criarDebitoACobrar(imovel, null, sistemaParametro, debitoTipo,
-														valorAtualizacaoMonetaria, anoMesReferenciaFaturamento);
-									}
-								}
-							}
-
-							if(Util.compararData(dataVencimento, dataPagamento) == -1){
-								colecaoGuiasPagamentoPrestacaoAtualizarVencimento.add(new Object[] {guiaPagamentoPrestacaoPK
-												.getGuiaPagamentoId(), guiaPagamentoPrestacaoPK.getNumeroPrestacao()});
-							}
 						}
 
-						if(!Util.isVazioOrNulo(colecaoIdsGuiasPagamentosAtualizarIndicadorMulta)){
-							try{
-								repositorioFaturamento
-												.atualizarIndicadorMultaDeGuiaPagamentoPrestacao(colecaoIdsGuiasPagamentosAtualizarIndicadorMulta);
-							}catch(ErroRepositorioException e){
-								throw new ControladorException("erro.sistema", e);
-							}
+						if(resolucaoDiretoriaParametrosPagamentoAVista != null){
+							// 2.4.1.1.1.1. Tratar descontos do extrato de parcelamento [SB0023 -
+							// Tratar Desconto Extrato Parcelamento].
+							this.tratarDescontoExtratoParcelamento(resolucaoDiretoriaParametrosPagamentoAVista, idImovelNaBase,
+											numeroSequencialDocumento, valorPagamento, idResolucaoDiretoria, dataPagamento,
+											sistemaParametro, dataEmissao, anoMesReferenciaArrecadacao);
+
+						}else{
+							// 2.4.1.1.2. Caso contrário, ou seja, o pagamento do extrato esteja
+							// fora do período de concessão do desconto:
+
+							// 2.4.1.1.2.1. Atribuir o valor 0 (zero) ao valor dos acréscimos do
+							// extrato (CBDO_VLACRESCIMOS da tabela COBRANCA_DOCUMENTO).
+							valorAcrescimo = BigDecimal.ZERO;
+
+							// 2.4.1.1.2.2. Atribuir o valor 0 (zero) ao valor do desconto do
+							// extrato (CBDO_VLDESCONTO da tabela COBRANCA_DOCUMENTO).
+							valorDesconto = BigDecimal.ZERO;
+
+							// 2.4.1.1.2.3. Tratar os valores acessórios do extrato (acréscimos,
+							// descontos, taxas de cobrança, sucumbência) antes do processamento do
+							// pagamento dos itens de débito do extrato [SB0028 - Tratar Valores
+							// Acessórios do Extrato].
+							this.tratarValoresAcessoriosDoExtrato(sistemaParametro, parmsDocumentoCobranca, valorAcrescimo,
+											valorAcrescimoOriginalDocCob, valorDesconto, idCobrancaDocumento, valorTaxa, dataEmissao,
+											colecaoPagamentos, colecaoDevolucoes, idImovelNaBase, idLocalidadeImovel,
+											parametroTratarAcrescimosEmissaoDocumento, parametroPermitirSelecaoAcrescimosExtrato,
+											idFormaPagamento, valorPagamento);
 						}
 
-						if(!Util.isVazioOrNulo(colecaoGuiasPagamentoPrestacaoAtualizarVencimento)){
-							try{
-								repositorioCobranca.atualizarGuiaPagamentoPrestacao(colecaoGuiasPagamentoPrestacaoAtualizarVencimento,
-												dataPagamento);
-							}catch(ErroRepositorioException e){
-								throw new ControladorException("erro.sistema", e);
-							}
-						}
+					}else{
+						// 2.4.1.2. Caso contrário, ou seja, a RD associada ao extrato não seja uma
+						// RD cujo desconto depende do período de pagamento do extrato:
+
+						// 2.4.1.2.1. Tratar os valores acessórios do extrato (acréscimos,
+						// descontos, taxas de cobrança, sucumbência) antes do processamento do
+						// pagamento dos itens de débito do extrato [SB0028 - Tratar Valores
+						// Acessórios do Extrato].
+
+						this.tratarValoresAcessoriosDoExtrato(sistemaParametro, parmsDocumentoCobranca, null, valorAcrescimoOriginalDocCob,
+										null, idCobrancaDocumento, valorTaxa, dataEmissao,
+										colecaoPagamentos, colecaoDevolucoes, idImovelNaBase, idLocalidadeImovel,
+										parametroTratarAcrescimosEmissaoDocumento, parametroPermitirSelecaoAcrescimosExtrato,
+										idFormaPagamento, valorPagamento);
 					}
 				}else{
-					if(parmsDocumentoCobranca[0] != null){
-						valorAcrescimo = ((BigDecimal) parmsDocumentoCobranca[0]);
-						valorAcrescimoOriginalDocCob = ((BigDecimal) parmsDocumentoCobranca[0]);
-					}
+					// 2.4.1.2. Caso contrário, ou seja, a RD associada ao extrato não seja uma
+					// RD cujo desconto depende do período de pagamento do extrato:
 
-					if(parmsDocumentoCobranca[1] != null){
-						valorDesconto = ((BigDecimal) parmsDocumentoCobranca[1]);
-					}
+					// 2.4.1.2.1. Tratar os valores acessórios do extrato (acréscimos,
+					// descontos, taxas de cobrança, sucumbência) antes do processamento do
+					// pagamento dos itens de débito do extrato [SB0028 - Tratar Valores
+					// Acessórios do Extrato].
 
-					if(parmsDocumentoCobranca[3] != null){
-						idCobrancaDocumento = ((Integer) parmsDocumentoCobranca[3]);
-					}
-
-					if(parmsDocumentoCobranca[4] != null){
-						valorTaxa = ((BigDecimal) parmsDocumentoCobranca[4]);
-					}
-
-					// caso o valor de acrescimo for maior que zero e a empresa não utilize a regra
-					// de emitir o documento com os acrescimos
-					if((parametroTratarAcrescimosEmissaoDocumento.equals(Short.toString(ConstantesSistema.NAO)) && parametroPermitirSelecaoAcrescimosExtrato
-									.equals(Short.toString(ConstantesSistema.NAO))) && valorAcrescimo.compareTo(BigDecimal.ZERO) == 1){
-
-						// [SB0008 - Alterar vencimento dos itens do documento de cobrança]
-						alterarVencimentoItensDocumentoCobranca(idCobrancaDocumento, dataEmissao);
-					}
-
-					// caso o valor de acrescimos seja maior que o valor dedescontos
-					if(valorAcrescimo.compareTo(valorDesconto) == 1){
-						valorAcrescimo = valorAcrescimo.subtract(valorDesconto);
-						valorDesconto = BigDecimal.ZERO;
-					}else{
-						valorDesconto = valorDesconto.subtract(valorAcrescimo);
-						valorAcrescimo = BigDecimal.ZERO;
-					}
-
-					// caso o valor de acrescimo for maior que zero e a empresa não utilize a regra
-					// de emitir o documento com os acrescimos
-					if((parametroTratarAcrescimosEmissaoDocumento.equals(Short.toString(ConstantesSistema.NAO)) && parametroPermitirSelecaoAcrescimosExtrato
-									.equals(Short.toString(ConstantesSistema.NAO))) && valorAcrescimo.compareTo(BigDecimal.ZERO) == 1){
-
-						// [SB0005 - Processar Recebimento de Acrescimos por Impontualidade]
-						Pagamento pagamento = this.processarRecebimentoAcrescimosImpontualidade(idCobrancaDocumento, dataEmissao,
-										valorAcrescimo, idImovelNaBase, idLocalidadeImovel, sistemaParametro, idFormaPagamento);
-
-						colecaoPagamentos.add(pagamento);
-
-					}
-
-					// Atenção!!!
-					// Este subfluxo foi comentado, visto que a solução de devolução precisa ser
-					// revista e a aplicação hoje não estar preparada para tratar essa situação.
-
-					// // caso o valor de desconto for maior que zero
-					// if(valorDesconto.compareTo(BigDecimal.ZERO) == 1){
-					//
-					// // [SB0006 - Processar Desconto concedido no documento de cobrança]
-					// Devolucao devolucao =
-					// this.processarDescontoConcedidoDocumentoCobranca(idCobrancaDocumento,
-					// dataEmissao,
-					// valorDesconto, idImovelNaBase, idLocalidadeImovel, sistemaParametro,
-					// idFormaPagamento);
-					//
-					// colecaoDevolucoes.add(devolucao);
-					//
-					// }
-
-
-					// caso o valor da taxa referente ao documento de cobrança for maior que zero
-					if(valorTaxa.compareTo(BigDecimal.ZERO) == 1){
-
-						// [SB0007 – Processar Taxa do Documento de Cobrança]
-						Pagamento pagamento = this.processarTaxaDocumentoCobranca(idCobrancaDocumento, dataEmissao, valorTaxa,
-										idImovelNaBase, idLocalidadeImovel, sistemaParametro, idFormaPagamento);
-
-						colecaoPagamentos.add(pagamento);
-
-					}
+					this.tratarValoresAcessoriosDoExtrato(sistemaParametro, parmsDocumentoCobranca, null, valorAcrescimoOriginalDocCob,
+									null, idCobrancaDocumento, valorTaxa, dataEmissao, colecaoPagamentos, colecaoDevolucoes,
+									idImovelNaBase, idLocalidadeImovel, parametroTratarAcrescimosEmissaoDocumento,
+									parametroPermitirSelecaoAcrescimosExtrato, idFormaPagamento, valorPagamento);
 				}
 
 				BigDecimal valorDescontoItensCredito = BigDecimal.ZERO;
@@ -1090,12 +780,319 @@ public class ControladorArrecadacao
 						}
 					}
 				}
+				
+				BigDecimal valorPagamentoAux = valorPagamento.add(valorDescontoItensCredito);
+				/**
+				 * [UC0259] Processar Pagamento com Código de Barras
+				 * [SB0025] Processar Recebimento do Valor de Sucumbência
+				 * 
+				 * @author Gicevalter Couto
+				 * @date 20/08/2014
+				 */
+				if(valorSucumbencia != null && valorPagamentoAux.compareTo(BigDecimal.ZERO) > 0
+								&& valorSucumbencia.compareTo(BigDecimal.ZERO) > 0){
+					/** [SB0027] Gerar Guia de Pagamento de Sucumbência]. **/
+					BigDecimal valorGuiaPagPrestSucumbencia = null;
+
+					FiltroDebitoTipo filtroDebitoTipoSubumbencia = new FiltroDebitoTipo();
+					filtroDebitoTipoSubumbencia.adicionarParametro(new ParametroSimples(FiltroDebitoTipo.ID, DebitoTipo.SUCUMBENCIA));
+					DebitoTipo debitoTipoSucumbencia = (DebitoTipo) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(
+									filtroDebitoTipoSubumbencia, DebitoTipo.class.getName()));
+
+					GuiaPagamentoGeral guiaPagamentoGeralSucumbencia = new GuiaPagamentoGeral();
+					guiaPagamentoGeralSucumbencia.setIndicadorHistorico(new Short("2"));
+					guiaPagamentoGeralSucumbencia.setUltimaAlteracao(new Date());
+
+					guiaPagamentoGeralSucumbencia.setId(((Integer) getControladorUtil().inserir(guiaPagamentoGeralSucumbencia)));
+					
+					GuiaPagamento guiaPagamentoSucumbencia = new GuiaPagamento();
+					guiaPagamentoSucumbencia.setId(guiaPagamentoGeralSucumbencia.getId());
+					guiaPagamentoSucumbencia.setGuiaPagamentoGeral(guiaPagamentoGeralSucumbencia);
+					
+					DebitoCreditoSituacao debitoCreditoSituacaoSubumbencia = new DebitoCreditoSituacao();
+					debitoCreditoSituacaoSubumbencia.setId(DebitoCreditoSituacao.NORMAL);
+					guiaPagamentoSucumbencia.setDebitoCreditoSituacaoAtual(debitoCreditoSituacaoSubumbencia);
+					
+					Imovel imovel;
+					try{
+						imovel = repositorioImovel.pesquisarImovel(idImovelNaBase);
+					}catch(ErroRepositorioException e){
+						e.printStackTrace();
+						throw new ControladorException("erro.sistema", e);
+					}
+					guiaPagamentoSucumbencia.setLocalidade(imovel.getLocalidade());
+					guiaPagamentoSucumbencia.setSetorComercial(imovel.getSetorComercial());
+					guiaPagamentoSucumbencia.setImovel(imovel);
+					
+					if(idCliente != null){
+						guiaPagamentoSucumbencia.setCliente(new Cliente(idCliente));
+					}else{
+						guiaPagamentoSucumbencia.setCliente(null);
+					}
+
+					guiaPagamentoSucumbencia.setRegistroAtendimento(null);
+					guiaPagamentoSucumbencia.setOrdemServico(null);
+					guiaPagamentoSucumbencia.setPagamentos(null);
+
+					guiaPagamentoSucumbencia.setDocumentoTipo(new DocumentoTipo(DocumentoTipo.GUIA_PAGAMENTO));
+					
+					guiaPagamentoSucumbencia.setOrigem(null);
+					guiaPagamentoSucumbencia.setValorDebito(BigDecimal.ZERO);
+					guiaPagamentoSucumbencia.setNumeroPrestacaoTotal(Short.valueOf("1"));
+					guiaPagamentoSucumbencia.setUltimaAlteracao(new Date());
+
+					guiaPagamentoSucumbencia.setId((Integer) getControladorUtil().inserir(guiaPagamentoSucumbencia));
+					/** [SB0025] FIM **/
+
+					FiltroCobrancaDocumentoSucumbencia filtroCobrancaDocumentoSucumbencia = new FiltroCobrancaDocumentoSucumbencia();
+					filtroCobrancaDocumentoSucumbencia.adicionarParametro(new ParametroSimples(
+									FiltroCobrancaDocumentoSucumbencia.ID_COBRANCA_DOCUMENTO, idCobrancaDocumento));
+
+					Collection<CobrancaDocumentoSucumbencia> colecaoCobrancaDocumentoSucumbencia = this.getControladorUtil().pesquisar(
+									filtroCobrancaDocumentoSucumbencia, CobrancaDocumentoSucumbencia.class.getName());
+
+					Collection<GuiaPagamentoPrestacao> colecaoGuiaPagamentoPrestacao = new ArrayList<GuiaPagamentoPrestacao>();
+					if(colecaoCobrancaDocumentoSucumbencia != null && !colecaoCobrancaDocumentoSucumbencia.isEmpty()){
+						Iterator cobrancaDocumentoSucumbenciaIterator = colecaoCobrancaDocumentoSucumbencia.iterator();
+
+						while(cobrancaDocumentoSucumbenciaIterator.hasNext() && valorPagamentoAux.compareTo(BigDecimal.ZERO) > 0){
+
+							CobrancaDocumentoSucumbencia cobrancaDocumentoSucumbencia = (CobrancaDocumentoSucumbencia) cobrancaDocumentoSucumbenciaIterator
+											.next();
+							
+							BigDecimal valorSucumbenciaAtualProcesso = cobrancaDocumentoSucumbencia.getValorSucumbencia();
+							
+							if(dataPagamento.compareTo(dataEmissao) > 0){
+								/**
+								 * [SB0026] Calcular Acréscimos do Valor de Sucumbência
+								 * [UC0216 – Calcular Acréscimos por Impontualidade]
+								 * 
+								 * @author Gicevalter Couto
+								 * @date 20/08/2014
+								 **/
+								Integer referenciaSucumBencia = Util.formataAnoMes(dataEmissao);
+								Date dataVecimentoSucumbencia = dataEmissao;
+								Short indicadorCobrancaMultaSucumbencia = 1;
+
+								CalcularAcrescimoPorImpontualidadeHelper calcularAcrescimoPorImpontualidadeHelper = this
+												.getControladorCobranca()
+												.calcularAcrescimoPorImpontualidadeBancoDeDados(referenciaSucumBencia,
+																dataVecimentoSucumbencia, dataPagamento,
+																cobrancaDocumentoSucumbencia.getValorSucumbencia(), BigDecimal.ZERO,
+																indicadorCobrancaMultaSucumbencia,
+																Integer.toString(anoMesReferenciaArrecadacao), null, null, null,
+																ConstantesSistema.SIM, ConstantesSistema.SIM,
+																ConstantesSistema.SIM);
+
+								if(calcularAcrescimoPorImpontualidadeHelper != null){
+									valorSucumbenciaAtualProcesso = valorSucumbenciaAtualProcesso.add(
+													calcularAcrescimoPorImpontualidadeHelper.getValorJurosMora()).add(
+													calcularAcrescimoPorImpontualidadeHelper.getValorAtualizacaoMonetaria());
+								}
+								/** [SB0026] FIM **/
+							}
+
+							/** [SB0027] Gerar Guia de Pagamento Prestacao de Sucumbência]. **/
+							valorGuiaPagPrestSucumbencia = valorSucumbenciaAtualProcesso;
+
+							if(valorPagamentoAux.compareTo(valorGuiaPagPrestSucumbencia) < 0){
+								valorGuiaPagPrestSucumbencia = valorPagamentoAux;
+							}
+
+							// O valor passado no código de barras vai sendo subtraído pelo valor da
+							// sucumbencias/processos. Isso é necessário para fazer com que o GSAN
+							// so
+							// realize a baixa dos documentos que deram pra ser pagos com o valor do
+							// código de barras
+							valorPagamentoAux = valorPagamentoAux.subtract(valorGuiaPagPrestSucumbencia);
+							//
+							
+							GuiaPagamentoPrestacaoPK comp_idSucumbencia = new GuiaPagamentoPrestacaoPK();
+							comp_idSucumbencia.setGuiaPagamentoId(guiaPagamentoGeralSucumbencia.getId());
+							comp_idSucumbencia.setNumeroPrestacao(new Short("1"));
+							comp_idSucumbencia.setDebitoTipoId(debitoTipoSucumbencia.getId());
+							comp_idSucumbencia.setItemLancamentoContabilId(debitoTipoSucumbencia.getLancamentoItemContabil().getId());
+							comp_idSucumbencia.setNumeroProcessoAdministrativoExecucaoFiscal(cobrancaDocumentoSucumbencia
+											.getNumeroProcessoExecucaoFiscal());
+
+							GuiaPagamentoPrestacao guiaPagPrestSucumbencia = new GuiaPagamentoPrestacao();
+							guiaPagPrestSucumbencia.setComp_id(comp_idSucumbencia);
+							guiaPagPrestSucumbencia.setDebitoCreditoSituacao((new DebitoCreditoSituacao(DebitoCreditoSituacao.NORMAL)));
+							guiaPagPrestSucumbencia.setFinanciamentoTipo(debitoTipoSucumbencia.getFinanciamentoTipo());
+							guiaPagPrestSucumbencia.setValorPrestacao(valorGuiaPagPrestSucumbencia);
+							guiaPagPrestSucumbencia.setDataVencimento(dataPagamento);
+							guiaPagPrestSucumbencia.setIndicadorPagamentoPendente(ConstantesSistema.SIM);
+							guiaPagPrestSucumbencia.setIndicadorCobrancaMulta(ConstantesSistema.NAO);
+							guiaPagPrestSucumbencia.setIndicadorRemuneraCobrancaAdministrativa(ConstantesSistema.NAO);
+							guiaPagPrestSucumbencia.setAnoMesReferenciaFaturamento(sistemaParametro.getAnoMesFaturamento());
+							guiaPagPrestSucumbencia.setDataEmissao(new Date());
+							guiaPagPrestSucumbencia.setUltimaAlteracao(new Date());
+
+							colecaoGuiaPagamentoPrestacao.add(guiaPagPrestSucumbencia);
+							getControladorUtil().inserir(guiaPagPrestSucumbencia);
+
+							// [UC0108] - Obter Quantidade de Economias por Categoria
+							Collection colecaoCategoriasImovel = this.getControladorImovel().obterQuantidadeEconomiasCategoria(imovel);
+
+							// [UC0185] - Obter Valor por Categoria
+							Collection colecaoValoresPorCategoria = getControladorImovel().obterValorPorCategoria(colecaoCategoriasImovel,
+											valorGuiaPagPrestSucumbencia);
+
+							Iterator icolecaoCategorias = colecaoCategoriasImovel.iterator();
+							Iterator icolecaoValoresPorCategoria = colecaoValoresPorCategoria.iterator();
+							while(icolecaoValoresPorCategoria.hasNext() && icolecaoCategorias.hasNext()){
+								Categoria categoria = (Categoria) icolecaoCategorias.next();
+								BigDecimal valor = (BigDecimal) icolecaoValoresPorCategoria.next();
+
+								FiltroGuiaPagamentoCategoria filtroGuiaPagamentoCategoria = new FiltroGuiaPagamentoCategoria();
+								filtroGuiaPagamentoCategoria.adicionarParametro(new ParametroSimples(
+												FiltroGuiaPagamentoCategoria.GUIA_PAGAMENTO_ID, guiaPagamentoGeralSucumbencia.getId()));
+								filtroGuiaPagamentoCategoria.adicionarParametro(new ParametroSimples(
+												FiltroGuiaPagamentoCategoria.NUMERO_PRESTACAO, comp_idSucumbencia.getNumeroPrestacao()));
+								filtroGuiaPagamentoCategoria.adicionarParametro(new ParametroSimples(
+												FiltroGuiaPagamentoCategoria.CATEGORIA_ID, categoria.getId()));
+								filtroGuiaPagamentoCategoria.adicionarParametro(new ParametroSimples(
+												FiltroGuiaPagamentoCategoria.LANCAMENTO_ITEM_CONTABIL_ID, debitoTipoSucumbencia
+																.getLancamentoItemContabil().getId()));
+
+								GuiaPagamentoCategoria guiaPagamentoCategoriaPesq = (GuiaPagamentoCategoria) Util
+												.retonarObjetoDeColecao(getControladorUtil().pesquisar(filtroGuiaPagamentoCategoria,
+																GuiaPagamentoCategoria.class.getName()));
+								if(guiaPagamentoCategoriaPesq == null){
+									GuiaPagamentoCategoriaPK guiaPagamentoCategoriaPK = new GuiaPagamentoCategoriaPK();
+									guiaPagamentoCategoriaPK.setGuiaPagamentoId(guiaPagamentoGeralSucumbencia.getId());
+									guiaPagamentoCategoriaPK.setNumeroPrestacao(comp_idSucumbencia.getNumeroPrestacao());
+									guiaPagamentoCategoriaPK.setCategoriaId(categoria.getId());
+									guiaPagamentoCategoriaPK.setLancamentoItemContabilId(debitoTipoSucumbencia.getLancamentoItemContabil()
+													.getId());
+
+									GuiaPagamentoCategoria guiaPagamentoCategoria = new GuiaPagamentoCategoria();
+									guiaPagamentoCategoria.setComp_id(guiaPagamentoCategoriaPK);
+									guiaPagamentoCategoria.setValorCategoria(valor);
+									guiaPagamentoCategoria.setUltimaAlteracao(new Date());
+
+									getControladorUtil().inserir(guiaPagamentoCategoria);
+								}else{
+									guiaPagamentoCategoriaPesq.setValorCategoria(guiaPagamentoCategoriaPesq.getValorCategoria().add(valor));
+									guiaPagamentoCategoriaPesq.setUltimaAlteracao(new Date());
+									
+									getControladorUtil().atualizar(guiaPagamentoCategoriaPesq);
+								}
+							}
+
+							// 1.3.5. Atualizar o valor de sucumbência pago para o processo (tabela
+							// COBRANCA_DOCUMENTO_SUCUMBENCIA)
+							cobrancaDocumentoSucumbencia.setValorSucumbenciaPago(valorGuiaPagPrestSucumbencia);
+							cobrancaDocumentoSucumbencia.setUltimaAlteracao(new Date());
+							getControladorUtil().atualizar(cobrancaDocumentoSucumbencia);
+
+							// Atualizar o Valor Pago da Guia de Pagamento
+							guiaPagamentoSucumbencia.setValorDebito(guiaPagamentoSucumbencia.getValorDebito().add(
+											valorGuiaPagPrestSucumbencia));
+							guiaPagamentoSucumbencia.setUltimaAlteracao(new Date());
+							getControladorUtil().atualizar(guiaPagamentoSucumbencia);
+
+						}
+					}
+					guiaPagamentoSucumbencia.setGuiasPagamentoPrestacao(new HashSet(colecaoGuiaPagamentoPrestacao));
+
+					// 1.4. Inclui os clientes do imóvel (seleciona a partir da tabela
+					// CLIENTE_IMOVEL)
+					Collection colecaoParmsClienteImovel = null;
+					try{
+						colecaoParmsClienteImovel = repositorioClienteImovel.pesquisarParmsClienteImovel(guiaPagamentoSucumbencia
+										.getImovel().getId());
+					}catch(ErroRepositorioException e){
+						throw new ControladorException("erro.sistema", e);
+					}
+
+					if(colecaoParmsClienteImovel != null && !colecaoParmsClienteImovel.isEmpty()){
+						Iterator clienteImovelIterator = colecaoParmsClienteImovel.iterator();
+
+						while(clienteImovelIterator.hasNext()){
+							Object[] parmsClienteImovel = (Object[]) clienteImovelIterator.next();
+
+							if(parmsClienteImovel != null){
+								Cliente cliente = null;
+								ClienteRelacaoTipo clienteRelacaoTipo = null;
+								if(parmsClienteImovel[0] != null){
+									cliente = new Cliente();
+									cliente.setId((Integer) parmsClienteImovel[0]);
+								}
+								if(parmsClienteImovel[1] != null){
+									clienteRelacaoTipo = new ClienteRelacaoTipo();
+									clienteRelacaoTipo.setId((Integer) parmsClienteImovel[1]);
+								}
+
+								ClienteGuiaPagamento clienteGuiaPagamento = new ClienteGuiaPagamento();
+								clienteGuiaPagamento.setGuiaPagamento(guiaPagamentoSucumbencia);
+								clienteGuiaPagamento.setCliente(cliente);
+								clienteGuiaPagamento.setClienteRelacaoTipo(clienteRelacaoTipo);
+								clienteGuiaPagamento.setUltimaAlteracao(new Date());
+
+								getControladorUtil().inserir(clienteGuiaPagamento);
+							}
+						}
+					}
+
+					// 1.5. Contabiliza a inclusão da guia de pagamento Inclui [UC0207
+					// Gerar/Atualizar Resumo de Faturamento].
+					// Registrando lançamento contábil de guia de pagamento.
+					getControladorContabil().registrarLancamentoContabil(guiaPagamentoSucumbencia, OperacaoContabil.INCLUIR_GUIA_PAGAMENTO);
+
+					guiaPagamentoGeralSucumbencia.setGuiaPagamento(guiaPagamentoSucumbencia);
+
+					// 1.6. O sistema armazena na coleção de pagamentos os dados do pagamento
+					// referente à guia de pagamento gerada para posterior inserção na tabela
+					// PAGAMENTO.
+					// cria o objeto pagamento para setar os dados
+					Pagamento pagamento = new Pagamento();
+					pagamento.setAnoMesReferenciaPagamento(null);
+					pagamento.setAnoMesReferenciaArrecadacao(anoMesReferenciaArrecadacao);
+					pagamento.setValorPagamento(guiaPagamentoSucumbencia.getValorDebito());
+					pagamento.setDataPagamento(dataPagamento);
+					pagamento.setPagamentoSituacaoAtual(null);
+					pagamento.setPagamentoSituacaoAnterior(null);
+					pagamento.setDebitoTipo(debitoTipoSucumbencia);
+					pagamento.setConta(null);
+					pagamento.setGuiaPagamentoGeral(guiaPagamentoGeralSucumbencia);
+					pagamento.setNumeroPrestacao(Integer.valueOf("1"));
+					pagamento.setDebitoACobrar(null);
+					pagamento.setLocalidade(guiaPagamentoSucumbencia.getLocalidade());
+					pagamento.setDocumentoTipo(guiaPagamentoSucumbencia.getDocumentoTipo());
+					pagamento.setAvisoBancario(null);
+					pagamento.setImovel(guiaPagamentoSucumbencia.getImovel());
+					pagamento.setArrecadadorMovimentoItem(null);
+
+					ArrecadacaoForma arrecadacaoForma = new ArrecadacaoForma();
+					arrecadacaoForma.setId(idFormaPagamento);
+					pagamento.setArrecadacaoForma(arrecadacaoForma);
+					pagamento.setCliente(null);
+					pagamento.setUltimaAlteracao(new Date());
+					
+					colecaoPagamentos.add(pagamento);
+					
+					
+					//	1.7.	O sistema atualiza no documento de cobrança correspondente ao extrato de débito.
+					FiltroCobrancaDocumento filtroCobrancaDocumento = new FiltroCobrancaDocumento();
+					filtroCobrancaDocumento.adicionarParametro(new ParametroSimples(FiltroCobrancaDocumento.ID, idCobrancaDocumento));
+					CobrancaDocumento cobrancaoDocumento = (CobrancaDocumento) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(
+									filtroCobrancaDocumento, CobrancaDocumento.class.getName()));
+					
+					cobrancaoDocumento.setGuiaPagamentoSucumbencia(guiaPagamentoSucumbencia);
+					cobrancaoDocumento.setUltimaAlteracao(new Date());
+					getControladorUtil().atualizar(cobrancaoDocumento);
+					
+					/** [SB0027] FIM **/
+				}
+				/** [SB0025] FIM **/
 
 				// verifica se a coleção é diferente de nula
 				if(cobrancaDocumentoItens != null && !cobrancaDocumentoItens.isEmpty()){
-					BigDecimal valorPagamentoAux = valorPagamento.add(valorDescontoItensCredito);
 
 					Iterator cobrancaDocumentoItensIterator = cobrancaDocumentoItens.iterator();
+					int iQuantTotalItensDocCobranca = cobrancaDocumentoItens.size();
+					BigDecimal valorAcrescimoItemTotal = BigDecimal.ZERO;
 
 					while(cobrancaDocumentoItensIterator.hasNext() && valorPagamentoAux.compareTo(BigDecimal.ZERO) > 0){
 
@@ -1116,9 +1113,9 @@ public class ControladorArrecadacao
 							}
 
 							BigDecimal valorAcrescimoItem = BigDecimal.ZERO;
-
 							if(cobrancaDocumentoItem[31] != null){
 								valorAcrescimoItem = (BigDecimal) cobrancaDocumentoItem[31];
+								valorAcrescimoItemTotal = valorAcrescimoItemTotal.add(valorAcrescimoItem);
 							}
 
 							// inicializa as variaveis que veio da pesquisa
@@ -1272,6 +1269,15 @@ public class ControladorArrecadacao
 																	+ ""));
 													debitoACobrarHistoricoTemp.setIdOriginal(idDebitoACobrar);
 													this.getControladorUtil().inserir(debitoACobrarHistoricoTemp);
+
+
+													// ----------------------------------------------------------------------------------------------------------------------
+													Collection colecaoClienteDebitoACobrar = this.getControladorFaturamento()
+																	.pesquisarClienteDebitoACobrar(debitoACobrar);
+
+													this.getControladorCobranca().transferirParaClienteDebitoACobrarHistorico(
+																	colecaoClienteDebitoACobrar, debitoACobrarHistoricoTemp);
+													// ----------------------------------------------------------------------------------------------------------------------
 
 												}
 											}
@@ -1432,11 +1438,21 @@ public class ControladorArrecadacao
 											&& valorAcrescimoItem.compareTo(BigDecimal.ZERO) == 1
 											&& valorAcrescimoOriginalDocCob.compareTo(BigDecimal.ZERO) == 1){
 								valorItemCobrado = valorItemCobrado.add(valorAcrescimoItem);
+								valorAcrescimoItemTotal = BigDecimal.ZERO;
 							}
 
 							if(valorPagamentoAux.compareTo(valorItemCobrado) < 0){
 								valorItemCobrado = valorPagamentoAux;
+							}else{
+								// Verfiicar se é o Ultimo Item de Documento de Cobranca e Inclui
+								// todos os valores de pagamentos
+								// restantes a este item. Com isto será contemplado o pagamento a
+								// maior.
+								if(iQuantTotalItensDocCobranca == 1){
+									valorItemCobrado = valorPagamentoAux.subtract(valorAcrescimoItemTotal);
+								}
 							}
+							iQuantTotalItensDocCobranca = iQuantTotalItensDocCobranca - 1;
 
 							// O valor passado no código de barras vai sendo subtraído pelo valor do
 							// ítem do documento. Isso é necessário para fazer com que o GSAN so
@@ -1980,15 +1996,6 @@ public class ControladorArrecadacao
 
 					/* 4.4 PARTE 2 */
 					getControladorBatch().inserirColecaoObjetoParaBatch(colecaoPagamentoHistorico);
-
-					/*
-					 * TODO
-					 * Pendência na versão 0.07 - Falta Customizar o [UC1015]
-					 * Saulo Lima - 20/11/2008
-					 */
-					// 4.5. Efetuar os lançamentos (contabilização) relativos à baixa da conta
-					// <<Inclui>> [UC1015 – Gerar/Atualizar Resumo da Arrecadação]
-					// System.out.println("# Chamar o UC1015. #");
 
 				}
 			}
@@ -2754,6 +2761,35 @@ public class ControladorArrecadacao
 							}
 
 							/*
+							 * Caso o tipo de movimento (campo A.10) seja igual a "CODIGO DE BARRAS"
+							 * ou , "DEBITO AUTOMATICO"
+							 */
+							if(idTipoMovimento.equals(ConstantesSistema.CODIGO_DE_BARRAS)
+											|| idTipoMovimento.equals(ConstantesSistema.DEBITO_AUTOMATICO)){
+								FiltroArrecadadorMovimento filtroArrecadadorMovimento = new FiltroArrecadadorMovimento();
+								filtroArrecadadorMovimento.adicionarParametro(new ParametroSimples(FiltroArrecadadorMovimento.BANCO,
+												arrecadador.getId()));
+								filtroArrecadadorMovimento.adicionarParametro(new ParametroSimples(
+												FiltroArrecadadorMovimento.SEQUENCIA_ARQUIVO, registroHelperCodigoA
+																.getNumeroSequencialArquivo()));
+								filtroArrecadadorMovimento.adicionarParametro(new ParametroSimples(FiltroArrecadadorMovimento.CONVENIO,
+												registroHelperCodigoA.getCodigoConvenio()));
+								filtroArrecadadorMovimento.adicionarParametro(new ParametroSimples(FiltroArrecadadorMovimento.DATA_GERACAO,
+												Util.formatarData(registroHelperCodigoA.getDataGeracaoArquivo())));
+								filtroArrecadadorMovimento.adicionarParametro(new Intervalo(
+												FiltroArrecadadorMovimento.DATA_ULTIMA_ALTERACAO, Util
+												.subtrairNumeroDiasDeUmaData(new Date(), 7), new Date()));
+								Collection<ArrecadadorMovimento> colecaoArrecadadorMovimentos = getControladorUtil().pesquisar(
+												filtroArrecadadorMovimento, ArrecadadorMovimento.class.getName());
+								if(Util.isNaoNuloBrancoZero(colecaoArrecadadorMovimentos)){
+									log.error("Movimento de NSA " + registroHelperCodigoA.getNumeroSequencialArquivo() + " já processado.");
+									throw new ControladorException("atencao.movimento.nsa.processado", null,
+													registroHelperCodigoA.getNumeroSequencialArquivo());
+								}
+
+							}
+
+							/*
 							 * Se consistir NSA (ARCT_ICCRITICARNSA da Tabela
 							 * ARRECADADOR_CONTRATO=1)
 							 */
@@ -2995,6 +3031,20 @@ public class ControladorArrecadacao
 									descricaoOcorrenciaMovimento = "CÓDIGO DE MOVIMENTO INVÁLIDO";
 								}
 
+								if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString()
+												.equals(ConstantesSistema.NAO.toString())){
+									if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+										if(registroHelperCodigoB.getIdClienteEmpresa().length() < 2
+														|| !registroHelperCodigoB.getIdClienteEmpresa().substring(0, 2).equals("01")){
+											descricaoOcorrenciaMovimento = "CÓDIGO DE IDENTIFICAÇÂO INVÁLIDO";
+										}
+									}
+								}
+
+								if(!Util.isNumero(registroHelperCodigoB.getIdClienteEmpresa(), false, 0)){
+									descricaoOcorrenciaMovimento = "CÓDIGO DE IDENTIFICAÇÂO INVÁLIDO";
+								}
+
 								// valida a data
 								dataInvalida = Util.validarAnoMesDiaSemBarra(registroHelperCodigoB.getDataOpcaoExclusao());
 								if(dataInvalida){
@@ -3004,8 +3054,37 @@ public class ControladorArrecadacao
 								// caso a quantidade de dígitos da matricula do imovel seja
 								// diferente do parâmetro ”P_NUMERO_DIGITOS_MATRICULA_IMOVEL”
 								if(registroHelperCodigoB.getIdClienteEmpresa() != null
-												&& registroHelperCodigoB.getIdClienteEmpresa().length() != numeroDigitosMatriculaImovel){
+												&& StringUtils.stripStart(String.valueOf(registroHelperCodigoB.getIdClienteEmpresa()), "0")
+																.length() > numeroDigitosMatriculaImovel){
 									descricaoOcorrenciaMovimento = "MAT DO IMÓVEL NÃO CONTÉM A QTD DE DÍGITOS ADOTADA";
+								}
+
+								if(descricaoOcorrenciaMovimento.equals("OK")){
+									matriculaImovel = Imovel.obterMatriculaDebitoAutomatico(registroHelperCodigoB.getIdClienteEmpresa());
+
+									String digitoVerificadorCalculado = Imovel.getDigitoVerificadorMatricula(matriculaImovel);
+									String digitoVerificadorString = "";
+
+									if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString()
+													.equals(ConstantesSistema.NAO.toString())){
+										if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+											digitoVerificadorString = registroHelperCodigoB.getIdClienteEmpresa().substring(
+															registroHelperCodigoB.getIdClienteEmpresa().length() - 2,
+															registroHelperCodigoB.getIdClienteEmpresa().length());
+										}else{
+											digitoVerificadorString = registroHelperCodigoB.getIdClienteEmpresa().substring(
+															registroHelperCodigoB.getIdClienteEmpresa().length() - 1,
+															registroHelperCodigoB.getIdClienteEmpresa().length());
+										}
+									}else{
+										digitoVerificadorString = registroHelperCodigoB.getIdClienteEmpresa().substring(
+														registroHelperCodigoB.getIdClienteEmpresa().length() - 1,
+														registroHelperCodigoB.getIdClienteEmpresa().length());
+									}
+
+									if(!digitoVerificadorString.equals(digitoVerificadorCalculado)){
+										descricaoOcorrenciaMovimento = "MAT DO IMÓVEL NÃO È VÀLIDA";
+									}
 								}
 
 								// caso a descricao de movimento
@@ -3017,7 +3096,8 @@ public class ControladorArrecadacao
 									// primeiros digitos da
 									// identificação do cliente na
 									// empresa
-									matriculaImovel = registroHelperCodigoB.getIdClienteEmpresa().trim();
+
+									matriculaImovel = Imovel.obterMatriculaDebitoAutomatico(registroHelperCodigoB.getIdClienteEmpresa());
 
 									// Código do banco
 									String codigoBanco = registroHelperCodigoA.getCodigoBanco();
@@ -3227,29 +3307,30 @@ public class ControladorArrecadacao
 									indicadorAceitacaoRegistroMovimento = Integer.parseInt(pagamentoHelperCodigoBarras
 													.getIndicadorAceitacaoRegistro());
 
-									// caso o indicador de aceitação
-									// for igual a 1(SIM)
-									Short numeroDiasFloat = null;
+									// caso o indicador de aceitação for igual a 1(SIM)
 									Integer codigoBanco = Integer.valueOf(registroHelperCodigoA.getCodigoBanco());
 
-									// verifica se a data prevista é
-									// zero, se for calcula a data
+									// verifica se a data prevista é zero, se for calcula a data
 									// prevista
-									if(Integer.parseInt(registroHelperCodigoG.getDataPrevistaCredito()) == 0){
-										if(arrecadadorContrato != null){
-											Integer idArrecadadorContrato = arrecadadorContrato.getId();
+									// Short numeroDiasFloat = null;
+									// if(Integer.parseInt(registroHelperCodigoG.getDataPrevistaCredito())
+									// == 0){
+									// if(arrecadadorContrato != null){
+									// Integer idArrecadadorContrato = arrecadadorContrato.getId();
+									// numeroDiasFloat =
+									// repositorioArrecadacao.pesquisarNumeroDiasFloat(idArrecadadorContrato,
+									// idFormaPagamento);
+									// }
+									// }else{
+									// numeroDiasFloat = 0;
+									// }
 
-											numeroDiasFloat = repositorioArrecadacao.pesquisarNumeroDiasFloat(idArrecadadorContrato,
-															idFormaPagamento);
-										}
-									}else{
-										numeroDiasFloat = 0;
-									}
-
-									// verifica se a data de
-									// debito/pagamento é superior a
-									// atual
-									Date dataPrevistaCredito = Util.adicionarNumeroDiasDeUmaData(dataDebito, numeroDiasFloat);
+									// verifica se a data de debito/pagamento é superior a atual
+									// Date dataPrevistaCredito =
+									// Util.adicionarNumeroDiasDeUmaData(dataDebito,
+									// numeroDiasFloat);
+									Date dataPrevistaCredito = Util.converteStringInvertidaSemBarraParaDate(registroHelperCodigoG
+													.getDataPrevistaCredito());
 
 									// -------------------------------------------------------------------------------
 									// Tratamento do Aviso Bancário
@@ -4043,6 +4124,42 @@ public class ControladorArrecadacao
 		}
 	}
 
+	// /**
+	// * @param matriculaRegistro
+	// * @return
+	// */
+	// private String obterMatriculaDebitoAutomatico(String matriculaRegistro){
+	//
+	// String matriculaImovel = null;
+	//
+	// try{
+	//
+	// if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+	// if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+	// int quantidadeDigitosVericadores = 2;
+	// int posicaoInicialMatricula = 3; // Neste Caso todas as matriculas começa por
+	// // "01"
+	//
+	// matriculaImovel = Integer.valueOf(matriculaRegistro.substring(posicaoInicialMatricula,
+	// matriculaRegistro.length() - quantidadeDigitosVericadores).trim()).toString();
+	//
+	// }else{
+	// throw new ControladorException("erro.parametro.nao.informado", null,
+	// "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+	// }
+	//
+	// }else{
+	// matriculaImovel = Integer.valueOf(matriculaRegistro.trim()).toString();
+	// }
+	//
+	// }catch(ControladorException e){
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	//
+	// return matriculaImovel;
+	// }
+
 	/**
 	 * [UC0242] - Registrar Movimento dos Arrecadadores [SF0004] - Processar
 	 * Registro Código F
@@ -4223,12 +4340,13 @@ public class ControladorArrecadacao
 					throw new ControladorException("erro.sistema", e);
 				}
 
+				Collection<NacionalFeriado> colecaoNacionalFeriado = this.getControladorUtil().pesquisarFeriadosNacionais();
+
 				Date dataPrevistaCredito = null;
 				if(numeroDiasFloat != null){
-
-					dataPrevistaCredito = Util.adicionarNumeroDiasDeUmaData(dataDebito, numeroDiasFloat);
+					dataPrevistaCredito = Util.adicionarNumeroDiasUteisDeUmaData(dataDebito, numeroDiasFloat, colecaoNacionalFeriado, null);
 				}else{
-					dataPrevistaCredito = Util.adicionarNumeroDiasDeUmaData(dataDebito, 0);
+					dataPrevistaCredito = dataDebito;
 				}
 
 				// 2.5.3.Parte que determina os valores calculado
@@ -6054,6 +6172,7 @@ public class ControladorArrecadacao
 				filtroGuiaPagamento.adicionarParametro(new ParametroSimples(FiltroGuiaPagamento.ID, idGuiaPagamento));
 				filtroGuiaPagamento.adicionarParametro(new ParametroSimplesColecao(FiltroGuiaPagamento.DEBITO_CREDITO_SITUACAO_ATUAL_ID,
 								colecaoDebitoCreditoSituacaoAtual));
+				filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.IMOVEL);
 
 				Collection<GuiaPagamento> colecaoGuiaPagamento = this.getControladorUtil().pesquisar(filtroGuiaPagamento,
 								GuiaPagamento.class.getName());
@@ -6071,6 +6190,7 @@ public class ControladorArrecadacao
 					filtroGuiaPagamentoHistorico.adicionarParametro(new ParametroSimples(FiltroGuiaPagamentoHistorico.ID, idGuiaPagamento));
 					filtroGuiaPagamentoHistorico.adicionarParametro(new ParametroSimplesColecao(
 									FiltroGuiaPagamentoHistorico.DEBITO_CREDITO_SITUACAO_ATUAL_ID, colecaoDebitoCreditoSituacaoAtual));
+					filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.IMOVEL);
 
 					Collection<GuiaPagamentoHistorico> colecaoGuiaPagamentoHistorico = getControladorUtil().pesquisar(
 									filtroGuiaPagamentoHistorico, GuiaPagamentoHistorico.class.getName());
@@ -7090,6 +7210,7 @@ public class ControladorArrecadacao
 				Date dataEmissao = null;
 
 				Iterator cobrancaDocumentoItensIterator = cobrancaDocumentoItens.iterator();
+				int iQuantTotalItensDocCobranca = cobrancaDocumentoItens.size();
 				while(cobrancaDocumentoItensIterator.hasNext() && valorPagamentoAux.compareTo(BigDecimal.ZERO) > 0){
 
 					Object[] cobrancaDocumentoItem = (Object[]) cobrancaDocumentoItensIterator.next();
@@ -7252,6 +7373,14 @@ public class ControladorArrecadacao
 										debitoACobrarHistoricoTemp.setIdOriginal(idDebitoACobrar);
 										this.getControladorUtil().inserir(debitoACobrarHistoricoTemp);
 
+										// ----------------------------------------------------------------------------------------------------------------------
+										Collection colecaoClienteDebitoACobrar = this.getControladorFaturamento()
+														.pesquisarClienteDebitoACobrar(debitoACobrar);
+
+										this.getControladorCobranca().transferirParaClienteDebitoACobrarHistorico(
+														colecaoClienteDebitoACobrar, debitoACobrarHistoricoTemp);
+										// ----------------------------------------------------------------------------------------------------------------------
+
 										// throw new
 										// IllegalArgumentException("Falta os parametros novos do d a cobrar");
 									}
@@ -7397,7 +7526,16 @@ public class ControladorArrecadacao
 
 					if(valorPagamentoAux.compareTo(valorItemCobrado) < 0){
 						valorItemCobrado = valorPagamentoAux;
+					} else{
+						// Verfiicar se é o Ultimo Item de Documento de Cobranca e Inclui
+						// todos os valores de pagamentos
+						// restantes a este item. Com isto será contemplado o pagamento a
+						// maior.
+						if(iQuantTotalItensDocCobranca == 1){
+							valorItemCobrado = valorPagamentoAux;
+						}
 					}
+					iQuantTotalItensDocCobranca = iQuantTotalItensDocCobranca - 1;
 
 					// O valor passado no código de barras vai sendo subtraído pelo valor do ítem do
 					// documento. Isso é necessário para fazer com que o GSAN so realize a baixa dos
@@ -8136,7 +8274,7 @@ public class ControladorArrecadacao
 		DocumentoTipo documentoTipo = new DocumentoTipo();
 		documentoTipo.setId(DocumentoTipo.DEVOLUCAO_VALOR);
 		guiaDevolucao.setDocumentoTipo(documentoTipo);
-		guiaDevolucao.getContaGeral().setConta(null);
+		guiaDevolucao.setContaGeral(null);
 		guiaDevolucao.setGuiaPagamentoGeral(null);
 		guiaDevolucao.setDebitoACobrarGeral(null);
 		DebitoTipo debitoTipo = new DebitoTipo();
@@ -8825,8 +8963,9 @@ public class ControladorArrecadacao
 
 		try{
 			File leitura = File.createTempFile("gcom", ".txt");
-			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(leitura.getAbsolutePath())));
+			BufferedWriter out = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(leitura.getAbsoluteFile())));
 			out.write(arquivo.toString());
+			out.flush();
 			out.close();
 
 			ServicosEmail.enviarMensagemArquivoAnexado(emailReceptor, emailRemetente, tituloMensagem, corpoMensagem, leitura);
@@ -9347,7 +9486,9 @@ public class ControladorArrecadacao
 				// recupera o codigo do registro
 				registroHelperCodigoB.setCodigoRegistro("" + codigoRegistro);
 				// recupera a identificação do cliente na empresa
-				registroHelperCodigoB.setIdClienteEmpresa(linha.substring(1, 26).trim());
+				// Remove os zeros a esquerda e os espaços em branco da string
+				String idClienteEmpresa = linha.substring(1, 26).trim();
+				registroHelperCodigoB.setIdClienteEmpresa(idClienteEmpresa);
 				// recupera a agencia para debito
 				registroHelperCodigoB.setAgenciaDebito(linha.substring(26, 30).trim());
 				// recupera o identificação do cliente no banco
@@ -10161,8 +10302,15 @@ public class ControladorArrecadacao
 			retorno.setTipoPagamento(ConstantesSistema.TIPO_PAGAMENTO_CONTA);
 
 			// Verifica se existe a matricula do imóvel na base
-			Integer matriculaImovel = Integer.valueOf(registroHelperCodigoG.getRegistroHelperCodigoBarras()
-							.getRegistroHelperCodigoBarrasTipoPagamento().getIdPagamento1());
+			Integer matriculaImovelCodBarra = null;
+			if(registroHelperCodigoG.getRegistroHelperCodigoBarras().getRegistroHelperCodigoBarrasTipoPagamento() != null
+							&& registroHelperCodigoG.getRegistroHelperCodigoBarras().getRegistroHelperCodigoBarrasTipoPagamento()
+											.getIdPagamento1() != null){
+				matriculaImovelCodBarra = Integer.valueOf(registroHelperCodigoG.getRegistroHelperCodigoBarras()
+								.getRegistroHelperCodigoBarrasTipoPagamento().getIdPagamento1());
+			}
+				
+			Integer matriculaImovel = matriculaImovelCodBarra;
 
 			// Calcular Digito Verificador da Matricula
 			if(matriculaImovel != null){
@@ -10185,14 +10333,23 @@ public class ControladorArrecadacao
 
 			}
 
-			int anoMesReferenciaConta = this.obterMesAnoReferencia(Integer.parseInt(registroHelperCodigoG.getRegistroHelperCodigoBarras()
+			if(registroHelperCodigoG.getRegistroHelperCodigoBarras().getRegistroHelperCodigoBarrasTipoPagamento() != null
+							&& registroHelperCodigoG.getRegistroHelperCodigoBarras().getRegistroHelperCodigoBarrasTipoPagamento()
+											.getIdPagamento2() != null){
+				int anoMesReferenciaConta = this.obterMesAnoReferencia(Integer.parseInt(registroHelperCodigoG
+								.getRegistroHelperCodigoBarras()
 							.getRegistroHelperCodigoBarrasTipoPagamento().getIdPagamento2()));
 
-			retorno.setMesAnoReferenciaConta(Util.formatarAnoMesParaMesAno(anoMesReferenciaConta));
+				retorno.setMesAnoReferenciaConta(Util.formatarAnoMesParaMesAno(anoMesReferenciaConta));
+			}
 
-			retorno.setDigitoVerificadorContaModulo10(Long.valueOf(
-							registroHelperCodigoG.getRegistroHelperCodigoBarras().getRegistroHelperCodigoBarrasTipoPagamento()
-											.getIdPagamento5()).toString());
+			if(registroHelperCodigoG.getRegistroHelperCodigoBarras().getRegistroHelperCodigoBarrasTipoPagamento() != null
+							&& registroHelperCodigoG.getRegistroHelperCodigoBarras().getRegistroHelperCodigoBarrasTipoPagamento()
+											.getIdPagamento5() != null){
+				retorno.setDigitoVerificadorContaModulo10(Long.valueOf(
+								registroHelperCodigoG.getRegistroHelperCodigoBarras().getRegistroHelperCodigoBarrasTipoPagamento()
+												.getIdPagamento5()).toString());
+			}
 
 		}else if(tipoPagamento != null && tipoPagamento.equals(ConstantesSistema.CODIGO_TIPO_PAGAMENTO_CONTA.toString())){
 
@@ -10512,6 +10669,65 @@ public class ControladorArrecadacao
 		}
 	}
 
+	public Collection<Pagamento> pesquisarPagamentoImovel(String idImovel){
+
+		Collection<Pagamento> pagamentos = null;
+
+		FiltroPagamento filtroPagamento = new FiltroPagamento();
+
+		filtroPagamento.adicionarParametro(new ParametroSimples(FiltroPagamento.IMOVEL_ID, idImovel));
+		filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamento.AVISO_BANCARIO);
+		filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamento.ARRECADADOR_MOVIMENTO_ITEM);
+		filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamento.AVISO_BANCARIO_ARRECADADOR_CLIENTE);
+		filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamento.DOCUMENTO_TIPO);
+		filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamento.CONTA);
+		filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamento.GUIA_PAGAMENTO_GERAL);
+		filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamento.GUIA_PAGAMENTO);
+		filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamento.DEBITO_TIPO);
+		filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamento.DEBITO_A_COBRAR);
+		filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamento.PAGAMENTO_SITUACAO_ATUAL);
+		filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamento.PAGAMENTO_SITUACAO_ANTERIOR);
+		filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamento.IMOVEL);
+
+		pagamentos = Fachada.getInstancia().pesquisar(filtroPagamento, Pagamento.class.getName());
+
+		for(Pagamento pagamento : pagamentos){
+
+			if(pagamento.getGuiaPagamentoGeral() != null && pagamento.getGuiaPagamentoGeral().getGuiaPagamento() != null){
+
+				Integer guiaPagamentoId = pagamento.getGuiaPagamentoGeral().getGuiaPagamento().getId();
+
+				FiltroGuiaPagamentoPrestacao filtroGuiaPagamentoPrestacao = new FiltroGuiaPagamentoPrestacao();
+				filtroGuiaPagamentoPrestacao.adicionarParametro(new ParametroSimples(FiltroGuiaPagamentoPrestacao.GUIA_PAGAMENTO_ID,
+								guiaPagamentoId));
+
+				Collection<GuiaPagamentoPrestacao> guiasPagamentoPrestacao = Fachada.getInstancia().pesquisar(filtroGuiaPagamentoPrestacao,
+								GuiaPagamentoPrestacao.class.getName());
+
+				pagamento.getGuiaPagamentoGeral().getGuiaPagamento()
+								.setGuiasPagamentoPrestacao(new HashSet<GuiaPagamentoPrestacao>(guiasPagamentoPrestacao));
+
+			}else if(pagamento.getGuiaPagamentoGeral() != null && pagamento.getGuiaPagamentoGeral().getGuiaPagamentoHistorico() != null){
+
+				Integer guiaPagamentoHistoricoId = pagamento.getGuiaPagamentoGeral().getGuiaPagamentoHistorico().getId();
+
+				FiltroGuiaPagamentoPrestacaoHistorico filtroGuiaPagamentoPrestacaoHistorico = new FiltroGuiaPagamentoPrestacaoHistorico();
+				filtroGuiaPagamentoPrestacaoHistorico.adicionarParametro(new ParametroSimples(
+								FiltroGuiaPagamentoPrestacaoHistorico.GUIA_PAGAMENTO_ID, guiaPagamentoHistoricoId));
+
+				Collection<GuiaPagamentoPrestacaoHistorico> guiasPagamentoHistorico = Fachada.getInstancia().pesquisar(
+								filtroGuiaPagamentoPrestacaoHistorico, GuiaPagamentoPrestacaoHistorico.class.getName());
+
+				pagamento.getGuiaPagamentoGeral().getGuiaPagamentoHistorico()
+								.setGuiasPagamentoPrestacaoHistorico(new HashSet<GuiaPagamentoPrestacaoHistorico>(guiasPagamentoHistorico));
+
+			}
+
+		}
+
+		return pagamentos;
+	}
+
 	/**
 	 * [UC0235] - Inserir Aviso Bancario Autor: Rhawi Dantas Data: 16/02/2006
 	 */
@@ -10797,16 +11013,7 @@ public class ControladorArrecadacao
 	 */
 	public void removerPagamentos(String[] idsPagamentos, Usuario usuarioLogado) throws ControladorException{
 
-		// ------------ REGISTRAR TRANSAÇÃO ----------------
-		RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_PAGAMENTO_REMOVER,
-						new UsuarioAcaoUsuarioHelper(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
 
-		Operacao operacao = new Operacao();
-		operacao.setId(Operacao.OPERACAO_PAGAMENTO_REMOVER);
-
-		OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
-		operacaoEfetuada.setOperacao(operacao);
-		// ------------ REGISTRAR TRANSAÇÃO ----------------
 
 		if(idsPagamentos != null && idsPagamentos.length > 0){
 			for(int i = 0; i < idsPagamentos.length; i++){
@@ -10826,28 +11033,39 @@ public class ControladorArrecadacao
 
 				Pagamento pagamento;
 
+				Argumento argumento = new Argumento();
 				if(colecaoPagamento != null && !colecaoPagamento.isEmpty()){
 					pagamento = (Pagamento) Util.retonarObjetoDeColecao(colecaoPagamento);
 
-					// Esta validação foi removida do caso de uso UC0266 - ManterPagamentos
-					// [FS0001]
-					// if(pagamento.getPagamentoSituacaoAtual() != null &&
-					// pagamento.getPagamentoSituacaoAnterior() != null){
-					// throw new ControladorException("atencao.pagamento.situacoes.preenchidas",
-					// null, pagamento
-					// .getPagamentoSituacaoAnterior().getDescricao(),
-					// pagamento.getPagamentoSituacaoAtual()
-					// .getDescricao());
-					// }
+					// ------------ REGISTRAR TRANSAÇÃO ----------------
+
+					Operacao operacao = new Operacao();
+					operacao.setId(Operacao.OPERACAO_PAGAMENTO_REMOVER);
+
+					OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
+					operacaoEfetuada.setOperacao(operacao);
+
+					argumento.setId(Argumento.IMOVEL);
+					operacaoEfetuada.setArgumento(argumento);
+					operacaoEfetuada.setArgumentoValor(pagamento.getImovel().getId());
+
+					RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_PAGAMENTO_REMOVER, pagamento
+									.getImovel().getId(), argumento, pagamento.getImovel().getId(), new UsuarioAcaoUsuarioHelper(
+									usuarioLogado,
+									UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+
+
+					pagamento.setOperacaoEfetuada(operacaoEfetuada);
+					pagamento.adicionarUsuario(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+					registradorOperacao.registrarOperacao(pagamento);
+
+
+					// ------------ REGISTRAR TRANSAÇÃO ----------------
 
 					// Alterado por Sávio Luiz data:16/03/2007
 					AvisoBancario avisoBancario = pagamento.getAvisoBancario();
 
-					// ------------ REGISTRAR TRANSAÇÃO ----------------
-					pagamento.setOperacaoEfetuada(operacaoEfetuada);
-					pagamento.adicionarUsuario(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
-					registradorOperacao.registrarOperacao(pagamento);
-					// ------------ REGISTRAR TRANSAÇÃO ----------------
+
 
 					getControladorContabil().registrarLancamentoContabil(pagamento, OperacaoContabil.ESTORNAR_PAGAMENTO_NAO_IDENTIFICADO);
 
@@ -10856,6 +11074,7 @@ public class ControladorArrecadacao
 						getControladorSpcSerasa().atualizarItemDaNegativacao(pagamento.getConta().getReferencia(), pagamento.getImovel(),
 										CobrancaDebitoSituacao.PENDENTE, new Date(), null, Boolean.TRUE, ConstantesSistema.NAO);
 					}
+
 
 					getControladorUtil().remover(pagamento);
 
@@ -10991,6 +11210,7 @@ public class ControladorArrecadacao
 		AvisoBancarioHelper retorno = new AvisoBancarioHelper();
 
 		Integer idAvisoBancario = avisoBancario.getId();
+
 
 		// Obtém dados do Aviso Bancário
 		Object[] dadosAvisoBancario = null;
@@ -12018,9 +12238,9 @@ public class ControladorArrecadacao
 	 * @date 16/09/2013
 	 */
 	public void atualizarPagamento(Pagamento pagamento, Usuario usuario, String gerarDevolucaoValores, Integer idCreditoTipo,
-					PagamentoSituacao situacaoPagamentoOriginal) throws ControladorException{
+					PagamentoSituacao situacaoPagamentoOriginal, boolean gerarDebitoACobrar) throws ControladorException{
 
-		atualizarPagamento(pagamento, usuario, gerarDevolucaoValores, idCreditoTipo, situacaoPagamentoOriginal, null);
+		atualizarPagamento(pagamento, usuario, gerarDevolucaoValores, idCreditoTipo, situacaoPagamentoOriginal, null, gerarDebitoACobrar);
 	}
 
 	/**
@@ -12040,7 +12260,8 @@ public class ControladorArrecadacao
 	 */
 	private void atualizarPagamento(Pagamento pagamento, Usuario usuario, String gerarDevolucaoValores, Integer idCreditoTipo,
 					PagamentoSituacao situacaoPagamentoOriginal,
-					Collection<ClassificarPagamentosNaoClassificadosHelper> colecaoClassificarPagamentosNaoClassificadosHelper)
+					Collection<ClassificarPagamentosNaoClassificadosHelper> colecaoClassificarPagamentosNaoClassificadosHelper,
+					boolean gerarDebitoACobrar)
 					throws ControladorException{
 
 		try{
@@ -12095,7 +12316,8 @@ public class ControladorArrecadacao
 			this.getControladorUtil().atualizar(pagamento);
 
 			// [UC0300] Classificar Pagamentos e Devoluções
-			this.classificarPagamentosRegistroMovimentoArrecadadores(pagamento, colecaoClassificarPagamentosNaoClassificadosHelper);
+			this.classificarPagamentosRegistroMovimentoArrecadadores(pagamento, colecaoClassificarPagamentosNaoClassificadosHelper,
+							gerarDebitoACobrar);
 
 			DocumentoTipo documentoTipo = pagamento.getDocumentoTipo();
 
@@ -12207,6 +12429,33 @@ public class ControladorArrecadacao
 			locator = ServiceLocator.getInstancia();
 
 			localHome = (ControladorBatchLocalHome) locator.getLocalHome(ConstantesJNDI.CONTROLADOR_BATCH_SEJB);
+			local = localHome.create();
+
+			return local;
+		}catch(CreateException e){
+			throw new SistemaException(e);
+		}catch(ServiceLocatorException e){
+			throw new SistemaException(e);
+		}
+	}
+
+	/**
+	 * Retorna o valor de controladorOrdemServico
+	 * 
+	 * @return O valor de controladorOrdemServico
+	 */
+	private ControladorOrdemServicoLocal getControladorOrdemServico(){
+
+		ControladorOrdemServicoLocalHome localHome = null;
+		ControladorOrdemServicoLocal local = null;
+
+		ServiceLocator locator = null;
+
+		try{
+			locator = ServiceLocator.getInstancia();
+
+			localHome = (ControladorOrdemServicoLocalHome) locator.getLocalHome(ConstantesJNDI.CONTROLADOR_ORDEM_SERVICO_SEJB);
+
 			local = localHome.create();
 
 			return local;
@@ -13148,7 +13397,8 @@ public class ControladorArrecadacao
 					Collection<Categoria> colecaoCategoria = this.getControladorImovel().obterQuantidadeEconomiasCategoria(imovel);
 
 					Usuario usuario = new Usuario();
-					usuario.setId(Usuario.ID_USUARIO_ADM_SISTEMA);
+
+					usuario.setId(Usuario.getIdUsuarioBatchParametro());
 
 					getControladorCobranca().classificarContasParaHistorico(contasValoresHelper, usuario, "2");
 
@@ -13180,8 +13430,7 @@ public class ControladorArrecadacao
 					// histórico
 					getControladorFaturamento().atualizarIndicadorCreditosARealizarNoHistorico(colecaoCreditoARealizarParaAtualizacao);
 
-					getControladorCobranca().classificarDebitoACobrarTempParaHistorico(colecaoDebitoACobrarTemp, debitoACobrarValorDivida,
-									null);
+					getControladorCobranca().classificarDebitoACobrarTempParaHistorico(colecaoDebitoACobrarTemp, debitoACobrarValorDivida);
 
 					// ****************************************************
 					// desconto
@@ -13228,6 +13477,13 @@ public class ControladorArrecadacao
 					return pagamento;
 				}else{
 
+					BigDecimal valorSucumbenciaAnterior = BigDecimal.ZERO;
+					Map<Integer, BigDecimal> mapProcessosSucumbencias = null;
+					Short quantidadeParcelasSucumbencia = Short.valueOf("0");
+					Map<Integer, BigDecimal> mapProcessosDiligencias = null;
+					BigDecimal valorAtualizacaoMonetariaSucumbencia = BigDecimal.ZERO;
+					BigDecimal valorJurosMoraSucumbencia = BigDecimal.ZERO;
+
 					parcelamentoId = getControladorCobranca().concluirParcelamentoDebitos(
 									contasValoresHelper,
 									guiasPagamentosValoresHelper,
@@ -13268,7 +13524,9 @@ public class ControladorArrecadacao
 									preParcelamentoOpcao.getNumeroMesesEntreParcelas(), preParcelamentoOpcao.getNumeroParcelasALancar(),
 									preParcelamentoOpcao.getNumeroMesesInicioCobranca(), null, "1", "N",
 									preParcelamentoOpcao.getNumeroDiasVencimentoDaEntrada(), "", null, null, null, null, null, null,
-									valorASerParcelado, null);
+									valorASerParcelado, null, null, null, null, null, valorSucumbenciaAnterior, mapProcessosSucumbencias,
+									quantidadeParcelasSucumbencia, mapProcessosDiligencias, valorAtualizacaoMonetariaSucumbencia,
+									valorJurosMoraSucumbencia);
 					pagamentoSituacao.setId(PagamentoSituacao.VALOR_A_BAIXAR);
 					pagamento.setPagamentoSituacaoAtual(pagamentoSituacao);
 
@@ -13303,6 +13561,10 @@ public class ControladorArrecadacao
 		LancamentoItemContabil lancamentoItemContabil = debitoTipo.getLancamentoItemContabil();
 		Integer idLancamentoItemContabil = lancamentoItemContabil.getId();
 
+
+		// TODO Saulo Lima - Analisar o número do processo neste caso e indicadores de EF e DA
+		Integer numeroProcessoAdministrativoExecucaoFiscal = ConstantesSistema.NUMERO_PROCESSO_ADM_EXEC_FISCAL_ZERO;
+
 		// [UC0185] Obter Valor po Categoria
 		Collection<BigDecimal> colecaoValorCategoria = this.getControladorImovel().obterValorPorCategoria(colecaoCategoria, valorEntrada);
 
@@ -13323,7 +13585,8 @@ public class ControladorArrecadacao
 		if(!mapaValorPorCategoria.isEmpty()){
 
 			LancamentoItemContabilParcelamentoHelper itemContabilHelper = new LancamentoItemContabilParcelamentoHelper(
-							idLancamentoItemContabil, ConstantesSistema.NAO);
+							idLancamentoItemContabil, ConstantesSistema.NAO, numeroProcessoAdministrativoExecucaoFiscal,
+							ConstantesSistema.NAO, ConstantesSistema.NAO);
 			mapaValorEntradaPorItemContabil.put(itemContabilHelper, mapaValorPorCategoria);
 		}
 
@@ -13423,7 +13686,9 @@ public class ControladorArrecadacao
 
 		Collection<Integer> idsPagamentos = null;
 		try{
-			idsPagamentos = this.repositorioArrecadacao.pesquisarClassificarPagamentosAjuste();
+			if(Util.isVazioOrNulo(colecaoPag)){
+				idsPagamentos = this.repositorioArrecadacao.pesquisarClassificarPagamentosAjuste();
+			}
 		}catch(ErroRepositorioException e){
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -13431,20 +13696,22 @@ public class ControladorArrecadacao
 		}
 
 		int contadorColecao = 1;
-		for(Integer idPagamento : idsPagamentos){
+		if(!Util.isVazioOrNulo(idsPagamentos)){
+			for(Integer idPagamento : idsPagamentos){
 
-			System.out.println("### contagem = " + contadorColecao + "/" + idsPagamentos.size() + " :: idPagamento = " + idPagamento);
+				System.out.println("### contagem = " + contadorColecao + "/" + idsPagamentos.size() + " :: idPagamento = " + idPagamento);
 
-			FiltroPagamento filtro = new FiltroPagamento();
-			filtro.adicionarParametro(new ParametroSimples(FiltroPagamento.ID, idPagamento));
-			Collection<Pagamento> colecaoPagamento = this.getControladorUtil().pesquisar(filtro, Pagamento.class.getName());
+				FiltroPagamento filtro = new FiltroPagamento();
+				filtro.adicionarParametro(new ParametroSimples(FiltroPagamento.ID, idPagamento));
+				Collection<Pagamento> colecaoPagamento = this.getControladorUtil().pesquisar(filtro, Pagamento.class.getName());
 
-			Pagamento pagamento = (Pagamento) Util.retonarObjetoDeColecao(colecaoPagamento);
+				Pagamento pagamento = (Pagamento) Util.retonarObjetoDeColecao(colecaoPagamento);
 
-			if(pagamento != null){
-				this.classificarPagamentosRegistroMovimentoArrecadadores(pagamento, null);
+				if(pagamento != null){
+					this.classificarPagamentosRegistroMovimentoArrecadadores(pagamento);
+				}
+				contadorColecao++;
 			}
-			contadorColecao++;
 		}
 
 		int contadorExterno = 1;
@@ -13464,7 +13731,7 @@ public class ControladorArrecadacao
 				Pagamento pagamento = (Pagamento) Util.retonarObjetoDeColecao(colecaoPagamento);
 
 				if(pagamento != null){
-					this.classificarPagamentosRegistroMovimentoArrecadadores(pagamento, null);
+					this.classificarPagamentosRegistroMovimentoArrecadadores(pagamento);
 				}
 			}
 			contadorExterno++;
@@ -13482,7 +13749,7 @@ public class ControladorArrecadacao
 	 */
 	public void classificarPagamentosRegistroMovimentoArrecadadores(Pagamento pagamento) throws ControladorException{
 
-		classificarPagamentosRegistroMovimentoArrecadadores(pagamento, null);
+		classificarPagamentosRegistroMovimentoArrecadadores(pagamento, null, true);
 	}
 
 	/**
@@ -13494,7 +13761,8 @@ public class ControladorArrecadacao
 	 * @throws ControladorException
 	 */
 	private void classificarPagamentosRegistroMovimentoArrecadadores(Pagamento pagamento,
-					Collection<ClassificarPagamentosNaoClassificadosHelper> colecaoClassificarPagamentosNaoClassificadosHelper)
+					Collection<ClassificarPagamentosNaoClassificadosHelper> colecaoClassificarPagamentosNaoClassificadosHelper,
+					boolean gerarDebitoACobrar)
 					throws ControladorException{
 
 		try{
@@ -13625,11 +13893,11 @@ public class ControladorArrecadacao
 						// Pesquisa as coleções de pagamentos para guia de
 						// pagamento e para pagamentos de débito a cobrar para
 						// classificar.
-						if(pagamento.getGuiaPagamentoGeral().getGuiaPagamento() != null && pagamento.getNumeroPrestacao() != null){
+						if(pagamento.getGuiaPagamentoGeral().getId() != null && pagamento.getNumeroPrestacao() != null){
 
 							colecaoPagamentosGuiaPagamentoPreenchida = repositorioArrecadacao
 											.pesquisarPagamentosPorGuiaPagamentoComGuiaInformada(idLocalidade, pagamento
-															.getGuiaPagamentoGeral().getGuiaPagamento().getId(),
+															.getGuiaPagamentoGeral().getId(),
 															pagamento.getNumeroPrestacao());
 
 						}
@@ -13948,6 +14216,15 @@ public class ControladorArrecadacao
 						// =============================================================
 
 						BigDecimal valorDiferencaPagamento = BigDecimal.ZERO;
+
+						// [OC1402662]
+						// Caso não deva gerar débito a cobrar, iguala o "valor total pago" ao
+						// "valor total da conta"
+						// evitando que entre na condição
+						// (valorDiferencaPagamento.compareTo(BigDecimal.ZERO) > 0)
+						if(!gerarDebitoACobrar){
+					       valorTotalPago = conta.getValorTotal();
+						}
 
 						if(conta.getValorTotal() != null && conta.getValorTotal().compareTo(valorTotalPago) > 0){
 							valorDiferencaPagamento = conta.getValorTotal().subtract(valorTotalPago);
@@ -14481,16 +14758,8 @@ public class ControladorArrecadacao
 
 				// 4.3. Para cada conta transferida para o histórico, atualiza o indicador de que a
 				// conta está no histórico
-				this.getControladorFaturamento().atualizarIndicadorContaNoHistorico(Collections.singletonList(conta));
-
-				/*
-				 * TODO
-				 * Pendência na versão 0.07 - Falta Customizar o [UC1015]
-				 * Saulo Lima - 20/11/2008
-				 */
-				// 4.5. Efetuar os lançamentos (contabilização) relativos à baixa da conta
-				// <<Inclui>> [UC1015 – Gerar/Atualizar Resumo da Arrecadação]
-				// System.out.println("# Chamar o UC1015. #");
+				// Indicador atualizado no método transferirContasParaHistorico(...)
+				//this.getControladorFaturamento().atualizarIndicadorContaNoHistorico(Collections.singletonList(conta));
 
 				// # Inicio da remuneração de agentes de cobrança #"
 				ContaHistorico contaHistorico = this.repositorioArrecadacao.consultarContaHistorico(conta.getId());
@@ -15537,14 +15806,16 @@ public class ControladorArrecadacao
 					/* 4.4 PARTE 2 */
 					this.getControladorBatch().inserirColecaoObjetoParaBatch(colecaoPagamentoHistorico);
 
-					/*
-					 * TODO
-					 * Pendência na versão 0.07 - Falta Customizar o [UC1015]
-					 * Saulo Lima - 20/11/2008
-					 */
-					// 3.5. Efetuar os lançamentos (contabilização) relativos à baixa da conta
-					// <<Inclui>> [UC1015 – Gerar/Atualizar Resumo da Arrecadação]
-					// System.out.println("# Chamar o UC1015. #");
+					if(guiaPreenchida != null){
+						Collection colecaoGuiaPagamentoHistorico = new ArrayList();
+
+						GuiaPagamentoHistorico guiaPagamentoHistorico = new GuiaPagamentoHistorico();
+						guiaPagamentoHistorico.setId(guiaPagamento.getId());
+
+						colecaoGuiaPagamentoHistorico.add(guiaPagamentoHistorico);
+
+						getControladorOrdemServico().gerarOrdemServicoAPartirGuiaPagamento(colecaoGuiaPagamentoHistorico);
+					}
 
 					/*
 					 * 3.6. Caso a guia classificada corresponda a uma entrada de parcelamento
@@ -17075,7 +17346,7 @@ public class ControladorArrecadacao
 
 					if(imovel != null){
 						idImovel = imovel.getId();
-						idImovelStr = Integer.toString(idImovel);
+						idImovelStr = Imovel.getMatriculaComDigitoVerificador(idImovel.toString());
 					}
 				}
 			}else{
@@ -17086,12 +17357,23 @@ public class ControladorArrecadacao
 
 					if(imovel != null){
 						idImovel = imovel.getId();
-						idImovelStr = Integer.toString(idImovel);
+						idImovelStr = Imovel.getMatriculaComDigitoVerificador(idImovel.toString());
 					}
 				}
 			}
 
-			identificacaoCliente = Util.adicionarZerosEsquedaNumero(numeroDigitosMatriculaImovel, idImovelStr);
+			if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+				if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+					numeroDigitosMatriculaImovel = (short) (numeroDigitosMatriculaImovel - 2);
+
+					identificacaoCliente = "01" + Util.adicionarZerosEsquedaNumero(numeroDigitosMatriculaImovel, idImovelStr);
+				}else{
+					throw new ControladorException("erro.parametro.nao.informado", null, "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+				}
+			}else{
+				identificacaoCliente = Util.adicionarZerosEsquedaNumero(numeroDigitosMatriculaImovel, idImovelStr);
+			}
+
 		}else{
 			guiaPagamento = debitoAutomaticoMovimento.getGuiaPagamento();
 			if(guiaPagamento != null){
@@ -17381,12 +17663,20 @@ public class ControladorArrecadacao
 	 */
 	public Integer inserirGuiaDevolucao(GuiaDevolucao guiaDevolucao, Usuario usuarioLogado) throws ControladorException{
 
+		return this.inserirGuiaDevolucao(guiaDevolucao, usuarioLogado, true, false, CreditoTipo.DEVOLUCAO_OUTROS_VALORES);
+
+	}
+
+	public Integer inserirGuiaDevolucao(GuiaDevolucao guiaDevolucao, Usuario usuarioLogado, Boolean gerarErro,
+					Boolean gerarLimitePorHistoricoPagamento, Integer constanteCreditoTipo) throws ControladorException{
+
 		String idRegistroAtendimento = guiaDevolucao.getRegistroAtendimento().getId().toString();
 
 		Integer id = null;
 		RegistroAtendimento registroAtendimento = null;
 		OrdemServico ordemServico = null;
 		Localidade localidade = null;
+		Boolean flagInserirGuiaDevolucao = true;
 
 		/** ************************************************************************************ */
 		/** Verificar as permissão especial para inserir uma devolução quando o * */
@@ -17424,11 +17714,19 @@ public class ControladorArrecadacao
 			if(registroAtendimento.getImovel() != null){
 				if(guiaDevolucao.getDocumentoTipo().getId().equals("" + DocumentoTipo.CONTA)
 								|| guiaDevolucao.getDocumentoTipo().getId().equals("" + DocumentoTipo.DEBITO_A_COBRAR)){
-					throw new ControladorException("atencao.registro.atendimento.sem.imovel", null, idRegistroAtendimento);
+					if(gerarErro){
+						throw new ControladorException("atencao.registro.atendimento.sem.imovel", null, idRegistroAtendimento);
+					}else{
+						flagInserirGuiaDevolucao = false;
+					}
 				}
 			}
 		}else{
-			throw new ControladorException("atencao.pesquisa_inexistente", null, "RA - Registro de Atendimento");
+			if(gerarErro){
+				throw new ControladorException("atencao.pesquisa_inexistente", null, "RA - Registro de Atendimento");
+			}else{
+				flagInserirGuiaDevolucao = false;
+			}
 		}
 
 		/*--<merge>--
@@ -17454,7 +17752,11 @@ public class ControladorArrecadacao
 		if(ordemServico != null && registroAtendimento != null){
 			if(ordemServico.getRegistroAtendimento() != null
 							&& !ordemServico.getRegistroAtendimento().getId().equals(registroAtendimento.getId())){
-				throw new ControladorException("atencao.ordem.servico.diferente.registro.atendimento", null, idRegistroAtendimento);
+				if(gerarErro){
+					throw new ControladorException("atencao.ordem.servico.diferente.registro.atendimento", null, idRegistroAtendimento);
+				}else{
+					flagInserirGuiaDevolucao = false;
+				}
 			}
 		}
 
@@ -17467,7 +17769,11 @@ public class ControladorArrecadacao
 			if(colecaoLocalidade != null && !colecaoLocalidade.isEmpty()){
 				localidade = (Localidade) colecaoLocalidade.iterator().next();
 			}else{
-				throw new ControladorException("atencao.pesquisa_inexistente", null, "Localidade");
+				if(gerarErro){
+					throw new ControladorException("atencao.pesquisa_inexistente", null, "Localidade");
+				}else{
+					flagInserirGuiaDevolucao = false;
+				}
 			}
 		}
 
@@ -17477,7 +17783,11 @@ public class ControladorArrecadacao
 			if(guiaDevolucao.getDocumentoTipo().getId().equals(DocumentoTipo.CONTA)){
 
 				if(guiaDevolucao.getContaGeral() == null || guiaDevolucao.getContaGeral().getConta() == null){
-					throw new ControladorException("atencao.Informe_entidade", null, "Conta");
+					if(gerarErro){
+						throw new ControladorException("atencao.Informe_entidade", null, "Conta");
+					}else{
+						flagInserirGuiaDevolucao = false;
+					}
 				}
 
 				// Cria o filtro de conta e seta todos os parâmetros para pesquisar a conta do
@@ -17497,11 +17807,24 @@ public class ControladorArrecadacao
 					Conta conta = (Conta) colecaoConta.iterator().next();
 
 					// [FS0009] - Verificar localidade da conta
-					if(!localidade.getId().equals(conta.getLocalidade().getId())){
-
-						throw new ControladorException("atencao.imovel.localidade.diferente.conta.localidade", null, conta.getLocalidade()
-										.getId().toString(), registroAtendimento.getImovel().getLocalidade().getId().toString(),
-										registroAtendimento.getImovel().getId().toString());
+					if((localidade == null && conta.getLocalidade() != null) || (localidade != null && conta.getLocalidade() == null)){
+						if(gerarErro){
+							throw new ControladorException("atencao.imovel.localidade.diferente.conta.localidade", null, conta
+											.getLocalidade().getId().toString(), registroAtendimento.getImovel().getLocalidade().getId()
+											.toString(), registroAtendimento.getImovel().getId().toString());
+						}else{
+							flagInserirGuiaDevolucao = false;
+						}
+					}else if(localidade != null && conta.getLocalidade() != null){
+						if(!localidade.getId().equals(conta.getLocalidade().getId())){
+							if(gerarErro){
+								throw new ControladorException("atencao.imovel.localidade.diferente.conta.localidade", null, conta
+												.getLocalidade().getId().toString(), registroAtendimento.getImovel().getLocalidade()
+												.getId().toString(), registroAtendimento.getImovel().getId().toString());
+							}else{
+								flagInserirGuiaDevolucao = false;
+							}
+						}
 					}
 
 					BigDecimal valorLimite = BigDecimal.ZERO;
@@ -17511,20 +17834,34 @@ public class ControladorArrecadacao
 					// depois subtraí-lo do valor total do débito e
 					// verificar se o valor digitado é maior do que esse
 					// valor
-					FiltroPagamento filtroPagamento = new FiltroPagamento();
-					filtroPagamento.adicionarParametro(new ParametroSimples(FiltroPagamento.CONTA_ID, conta.getId()));
-					Collection colecaoPagamento = getControladorUtil().pesquisar(filtroPagamento, Pagamento.class.getName());
+					Collection colecaoPagamento = null;
+					if(!gerarLimitePorHistoricoPagamento){
+						FiltroPagamento filtroPagamento = new FiltroPagamento();
+						filtroPagamento.adicionarParametro(new ParametroSimples(FiltroPagamento.CONTA_ID, conta.getId()));
+						colecaoPagamento = getControladorUtil().pesquisar(filtroPagamento, Pagamento.class.getName());
+					}else{
+						FiltroPagamentoHistorico filtroPagamentoHistorico = new FiltroPagamentoHistorico();
+						filtroPagamentoHistorico.adicionarParametro(new ParametroSimples(FiltroPagamentoHistorico.CONTA_ID, conta.getId()));
+						colecaoPagamento = getControladorUtil().pesquisar(filtroPagamentoHistorico, PagamentoHistorico.class.getName());
+					}
 
-					if(colecaoPagamento != null && !colecaoPagamento.isEmpty()){
+					if(colecaoPagamento != null && !colecaoPagamento.isEmpty() && colecaoPagamento.size() > 0){
 
 						Iterator colecaoPagamentoIterator = colecaoPagamento.iterator();
 
 						while(colecaoPagamentoIterator.hasNext()){
-							Pagamento pagamento = (Pagamento) colecaoPagamentoIterator.next();
-							valorLimite = valorLimite.add(pagamento.getValorPagamento());
+							if(!gerarLimitePorHistoricoPagamento){
+								Pagamento pagamento = (Pagamento) colecaoPagamentoIterator.next();
+								valorLimite = valorLimite.add(pagamento.getValorPagamento());
+							}else{
+								PagamentoHistorico pagamento = (PagamentoHistorico) colecaoPagamentoIterator.next();
+								valorLimite = valorLimite.add(pagamento.getValorPagamento());
+							}
 						}
 
-						valorLimite = valorLimite.subtract(conta.getValorTotal());
+						if(conta.getValorTotal() != null){
+							valorLimite = valorLimite.subtract(conta.getValorTotal());
+						}
 
 						FiltroGuiaDevolucao filtroGuiaDevolucao = new FiltroGuiaDevolucao();
 						filtroGuiaDevolucao.adicionarParametro(new ParametroSimples(FiltroGuiaDevolucao.CONTA_ID, conta.getId()));
@@ -17560,17 +17897,29 @@ public class ControladorArrecadacao
 						 */
 
 					}else{
-						throw new ControladorException("atencao.tipo.documento.sem.pagamentos.associados", null, "Conta "
-										+ Util.formatarAnoMesParaMesAno(conta.getReferencia()) + " ");
+						if(gerarErro){
+							throw new ControladorException("atencao.tipo.documento.sem.pagamentos.associados", null, "Conta "
+											+ Util.formatarAnoMesParaMesAno(conta.getReferencia()) + " ");
+						}else{
+							flagInserirGuiaDevolucao = false;
+						}
 					}
 
 					if(guiaDevolucao.getValorDevolucao().compareTo(valorLimite) > 0){
 
 						if(valorLimite.compareTo(BigDecimal.ZERO) > 0 && !temPermissaoIcluirDevolucaoMaiorValorMaximo){
-							throw new ControladorException("atencao.valor. devolucao.superior.valor.pagamento", null, Util
-											.formatarMoedaReal(valorLimite), "Conta");
+							if(gerarErro){
+								throw new ControladorException("atencao.valor. devolucao.superior.valor.pagamento", null,
+												Util.formatarMoedaReal(valorLimite), "Conta");
+							}else{
+								flagInserirGuiaDevolucao = false;
+							}
 						}else{
-							throw new ControladorException("atencao.valor.devolucao.menor.igual.zero");
+							if(gerarErro){
+								throw new ControladorException("atencao.valor.devolucao.menor.igual.zero");
+							}else{
+								flagInserirGuiaDevolucao = false;
+							}
 						}
 						// } else if
 						// (guiaDevolucao.getValorDevolucao().compareTo(
@@ -17581,56 +17930,83 @@ public class ControladorArrecadacao
 					}else{
 
 						FiltroCreditoTipo filtroCreditoTipo = new FiltroCreditoTipo();
-						filtroCreditoTipo.adicionarParametro(new ParametroSimples(FiltroCreditoTipo.ID,
-										CreditoTipo.DEVOLUCAO_PAGAMENTOS_DUPLICIDADE));
+						filtroCreditoTipo.adicionarParametro(new ParametroSimples(FiltroCreditoTipo.ID, constanteCreditoTipo));
 						filtroCreditoTipo.adicionarCaminhoParaCarregamentoEntidade("lancamentoItemContabil");
-						CreditoTipo creditoTipo = (CreditoTipo) getControladorUtil()
-										.pesquisar(filtroCreditoTipo, CreditoTipo.class.getName()).iterator().next();
 
-						// [FS00018] - Verificar valor da devolução
-						if(guiaDevolucao.getValorDevolucao().compareTo(creditoTipo.getValorLimite()) > 0
-										&& !temPermissaoIcluirDevolucaoMaiorValorMaximo){
-							throw new ControladorException("atencao.valor.devolucao.superior.valor.limite.duplicidade", null);
+						Collection<CreditoTipo> ColecaoCreditoTipo = getControladorUtil().pesquisar(filtroCreditoTipo,
+										CreditoTipo.class.getName());
+
+						CreditoTipo creditoTipo = null;
+						if(ColecaoCreditoTipo.size() > 0){
+							creditoTipo = ColecaoCreditoTipo.iterator().next();
+
+							// [FS00018] - Verificar valor da devolução
+							if(guiaDevolucao.getValorDevolucao().compareTo(creditoTipo.getValorLimite()) > 0
+											&& !temPermissaoIcluirDevolucaoMaiorValorMaximo){
+								if(gerarErro){
+									throw new ControladorException("atencao.valor.devolucao.superior.valor.limite.duplicidade", null);
+								}else{
+									flagInserirGuiaDevolucao = false;
+								}
+							}
+						}else{
+							if(gerarErro){
+								throw new ControladorException("erro.cdconstante.inexistente", null, "Tipo de Crédito",
+												CreditoTipoEnum.DEVOLUCAO_PAGAMENTOS_DUPLICIDADE.name() + " ou "
+																+ CreditoTipoEnum.DEVSERVICOFRPRZ.name());
+							}else{
+								flagInserirGuiaDevolucao = false;
+							}
 						}
 
-						DocumentoTipo documentoTipo = new DocumentoTipo();
-						documentoTipo.setId(DocumentoTipo.CONTA);
+						if(flagInserirGuiaDevolucao){
+							DocumentoTipo documentoTipo = new DocumentoTipo();
+							documentoTipo.setId(DocumentoTipo.CONTA);
 
-						int anoMesConta = guiaDevolucao.getContaGeral().getConta().getReferencia();
+							int anoMesConta = guiaDevolucao.getContaGeral().getConta().getReferencia();
 
-						guiaDevolucao.setContaGeral(new ContaGeral(conta.getId()));
-						guiaDevolucao.setImovel(registroAtendimento.getImovel());
-						guiaDevolucao.setLocalidade(registroAtendimento.getImovel().getLocalidade());
-						guiaDevolucao.setAnoMesReferenciaContabil(Integer.valueOf(anoMesArrecadacaoSistemaParametro));
-						guiaDevolucao.setAnoMesReferenciaGuiaDevolucao(Integer.valueOf(anoMesConta));
-						guiaDevolucao.setDataEmissao(dataAtual);
-						guiaDevolucao.setDataValidade(dataValidade);
-						guiaDevolucao.setCreditoTipo(creditoTipo);
-						guiaDevolucao.setLancamentoItemContabil(creditoTipo.getLancamentoItemContabil());
-						guiaDevolucao.setDebitoCreditoSituacaoAtual(debitoCreditoSituacao);
-						guiaDevolucao.setDocumentoTipo(documentoTipo);
-						guiaDevolucao.setUltimaAlteracao(new Date());
+							guiaDevolucao.setContaGeral(new ContaGeral(conta.getId()));
+							guiaDevolucao.setImovel(registroAtendimento.getImovel());
+							guiaDevolucao.setLocalidade(registroAtendimento.getImovel().getLocalidade());
+							guiaDevolucao.setAnoMesReferenciaContabil(Integer.valueOf(anoMesArrecadacaoSistemaParametro));
+							guiaDevolucao.setAnoMesReferenciaGuiaDevolucao(Integer.valueOf(anoMesConta));
+							guiaDevolucao.setDataEmissao(dataAtual);
+							guiaDevolucao.setDataValidade(dataValidade);
+							guiaDevolucao.setCreditoTipo(creditoTipo);
+							guiaDevolucao.setLancamentoItemContabil(creditoTipo.getLancamentoItemContabil());
+							guiaDevolucao.setDebitoCreditoSituacaoAtual(debitoCreditoSituacao);
+							guiaDevolucao.setDocumentoTipo(documentoTipo);
+							guiaDevolucao.setUltimaAlteracao(new Date());
 
-						/**
-						 * alterado por pedro alexandre dia 21/11/2006 alteração
-						 * feita para acoplar o controle de abrangência de
-						 * usuário
-						 */
-						// ------------ CONTROLE DE ABRANGENCIA ----------------
-						Abrangencia abrangencia = new Abrangencia(usuarioLogado, guiaDevolucao.getLocalidade());
+							/**
+							 * alterado por pedro alexandre dia 21/11/2006 alteração
+							 * feita para acoplar o controle de abrangência de
+							 * usuário
+							 */
+							// ------------ CONTROLE DE ABRANGENCIA ----------------
+							Abrangencia abrangencia = new Abrangencia(usuarioLogado, guiaDevolucao.getLocalidade());
 
-						if(!getControladorAcesso().verificarAcessoAbrangencia(abrangencia)){
-							sessionContext.setRollbackOnly();
-							throw new ControladorException("atencao.acesso.negado.abrangencia");
-						}else{
-							id = (Integer) getControladorUtil().inserir(guiaDevolucao);
+							if(!getControladorAcesso().verificarAcessoAbrangencia(abrangencia)){
+								if(gerarErro){
+									sessionContext.setRollbackOnly();
+									throw new ControladorException("atencao.acesso.negado.abrangencia");
+								}else{
+									flagInserirGuiaDevolucao = false;
+								}
+							}else{
+								id = (Integer) getControladorUtil().inserir(guiaDevolucao);
+							}
 						}
 						// ------------ FIM CONTROLE DE ABRANGENCIA
 						// ----------------
 					}
 
 				}else{
-					throw new ControladorException("atencao.pesquisa_inexistente", null, "Conta");
+					if(gerarErro){
+						throw new ControladorException("atencao.pesquisa_inexistente", null, "Conta");
+					}else{
+						flagInserirGuiaDevolucao = false;
+					}
 				}
 			}else if(guiaDevolucao.getDocumentoTipo().getId().equals(DocumentoTipo.GUIA_PAGAMENTO)){
 
@@ -17672,23 +18048,50 @@ public class ControladorArrecadacao
 						// [FS0011] - Verificar imóvel ou cliente da guia de pagamento
 						if(registroAtendimento.getImovel() != null){
 							if(guiaPagamento.getImovel() == null){
-								throw new ControladorException("atencao.guia.pagamento.imovel.inexistente", null);
+								if(gerarErro){
+									throw new ControladorException("atencao.guia.pagamento.imovel.inexistente", null);
+								}else{
+									flagInserirGuiaDevolucao = false;
+								}
 							}else{
 								// Verifica se o id do imóvel do Registro de Atendimento
 								// é diferente do id do imovel da Guia de Pagamento
 								if(!(registroAtendimento.getImovel().getId().equals(guiaPagamento.getImovel().getId()))){
-									throw new ControladorException("atencao.imovel.guia.pagamento.diferente.registro.atendimento.imovel",
-													null, guiaPagamento.getImovel().getId().toString(), registroAtendimento.getImovel()
-																	.getId().toString());
+									if(gerarErro){
+										throw new ControladorException(
+														"atencao.imovel.guia.pagamento.diferente.registro.atendimento.imovel", null,
+														guiaPagamento.getImovel().getId().toString(), registroAtendimento.getImovel()
+																		.getId().toString());
+									}else{
+										flagInserirGuiaDevolucao = false;
+									}
 								}else{
 
 									// Verifica se o id do localidade do imóvel do Registro de
 									// Atendimento
 									// é diferente do id da localidade da Guia de Pagamento
-									if(!(localidade.getId().equals(guiaPagamento.getLocalidade().getId()))){
-										throw new ControladorException("atencao.imovel.localidade.diferente.guia.pagamento.localidade",
-														null, guiaPagamento.getLocalidade().getId().toString(), localidade.getId()
-																		.toString(), registroAtendimento.getImovel().getId().toString());
+									if((localidade == null && guiaPagamento.getLocalidade() != null)
+													|| (localidade != null && guiaPagamento.getLocalidade() == null)){
+										if(gerarErro){
+											throw new ControladorException("atencao.imovel.localidade.diferente.guia.pagamento.localidade",
+															null, guiaPagamento.getLocalidade().getId().toString(), localidade.getId()
+																			.toString(), registroAtendimento.getImovel().getId().toString());
+										}else{
+											flagInserirGuiaDevolucao = false;
+										}
+									}else if(localidade != null && guiaPagamento.getLocalidade() != null){
+
+										if(!(localidade.getId().equals(guiaPagamento.getLocalidade().getId()))){
+											if(gerarErro){
+												throw new ControladorException(
+																"atencao.imovel.localidade.diferente.guia.pagamento.localidade", null,
+																guiaPagamento.getLocalidade().getId().toString(), localidade.getId()
+																				.toString(), registroAtendimento.getImovel().getId()
+																				.toString());
+											}else{
+												flagInserirGuiaDevolucao = false;
+											}
+										}
 									}
 								}
 							}
@@ -17739,18 +18142,34 @@ public class ControladorArrecadacao
 						// depois subtraí-lo do valor total do débito e
 						// verificar se o valor digitado é maior do que esse
 						// valor
-						FiltroPagamento filtroPagamento = new FiltroPagamento();
-						filtroPagamento.adicionarParametro(new ParametroSimples(FiltroPagamento.GUIA_PAGAMENTO_ID, guiaPagamento.getId()));
-						Collection colecaoPagamento = getControladorUtil().pesquisar(filtroPagamento, Pagamento.class.getName());
+						Collection colecaoPagamento = null;
+						if(!gerarLimitePorHistoricoPagamento){
+							FiltroPagamento filtroPagamento = new FiltroPagamento();
+							filtroPagamento.adicionarParametro(new ParametroSimples(FiltroPagamento.GUIA_PAGAMENTO_ID, guiaPagamento
+											.getId()));
+							colecaoPagamento = getControladorUtil().pesquisar(filtroPagamento, Pagamento.class.getName());
+						}else{
+							FiltroPagamentoHistorico filtroPagamentoHistorico = new FiltroPagamentoHistorico();
+							filtroPagamentoHistorico.adicionarParametro(new ParametroSimples(FiltroPagamentoHistorico.GUIA_PAGAMENTO_ID,
+											guiaPagamento.getId()));
+							colecaoPagamento = getControladorUtil().pesquisar(filtroPagamentoHistorico, PagamentoHistorico.class.getName());
+						}
 
-						if(colecaoPagamento != null && !colecaoPagamento.isEmpty()){
+						if(colecaoPagamento != null && !colecaoPagamento.isEmpty() && colecaoPagamento.size() > 0){
 							Iterator colecaoPagamentoIterator = colecaoPagamento.iterator();
 							while(colecaoPagamentoIterator.hasNext()){
-								Pagamento pagamento = (Pagamento) colecaoPagamentoIterator.next();
-								valorLimite = valorLimite.add(pagamento.getValorPagamento());
+								if(!gerarLimitePorHistoricoPagamento){
+									Pagamento pagamento = (Pagamento) colecaoPagamentoIterator.next();
+									valorLimite = valorLimite.add(pagamento.getValorPagamento());
+								}else{
+									PagamentoHistorico pagamento = (PagamentoHistorico) colecaoPagamentoIterator.next();
+									valorLimite = valorLimite.add(pagamento.getValorPagamento());
+								}
 							}
 
-							valorLimite = valorLimite.subtract(guiaPagamento.getValorDebito());
+							if(guiaPagamento.getValorDebito() != null){
+								valorLimite = valorLimite.subtract(guiaPagamento.getValorDebito());
+							}
 
 							FiltroGuiaDevolucao filtroGuiaDevolucao = new FiltroGuiaDevolucao();
 							filtroGuiaDevolucao.adicionarParametro(new ParametroSimples(FiltroGuiaDevolucao.GUIA_PAGAMENTO_ID,
@@ -17788,17 +18207,29 @@ public class ControladorArrecadacao
 							 */
 
 						}else{
-							throw new ControladorException("atencao.tipo.documento.sem.pagamentos.associados", null, "Guia Pagamento "
-											+ guiaPagamento.getId().toString() + " ");
+							if(gerarErro){
+								throw new ControladorException("atencao.tipo.documento.sem.pagamentos.associados", null, "Guia Pagamento "
+												+ guiaPagamento.getId().toString() + " ");
+							}else{
+								flagInserirGuiaDevolucao = false;
+							}
 						}
 
 						if(guiaDevolucao.getValorDevolucao().compareTo(valorLimite) > 0){
 
 							if(valorLimite.compareTo(BigDecimal.ZERO) > 0 && !temPermissaoIcluirDevolucaoMaiorValorMaximo){
-								throw new ControladorException("atencao.valor.devolucao.superior.valor.pagamento", null,
-												Util.formatarMoedaReal(valorLimite), "Guia de Pagamento");
+								if(gerarErro){
+									throw new ControladorException("atencao.valor.devolucao.superior.valor.pagamento", null,
+													Util.formatarMoedaReal(valorLimite), "Guia de Pagamento");
+								}else{
+									flagInserirGuiaDevolucao = false;
+								}
 							}else{
-								throw new ControladorException("atencao.valor.devolucao.menor.igual.zero");
+								if(gerarErro){
+									throw new ControladorException("atencao.valor.devolucao.menor.igual.zero");
+								}else{
+									flagInserirGuiaDevolucao = false;
+								}
 							}
 
 							// } else if
@@ -17810,66 +18241,96 @@ public class ControladorArrecadacao
 						}else{
 
 							FiltroCreditoTipo filtroCreditoTipo = new FiltroCreditoTipo();
-							filtroCreditoTipo.adicionarParametro(new ParametroSimples(FiltroCreditoTipo.ID,
-											CreditoTipo.DEVOLUCAO_PAGAMENTOS_DUPLICIDADE));
+							filtroCreditoTipo.adicionarParametro(new ParametroSimples(FiltroCreditoTipo.ID, constanteCreditoTipo));
 							filtroCreditoTipo.adicionarCaminhoParaCarregamentoEntidade("lancamentoItemContabil");
 
-							CreditoTipo creditoTipo = (CreditoTipo) getControladorUtil()
-											.pesquisar(filtroCreditoTipo, CreditoTipo.class.getName()).iterator().next();
+							Collection<CreditoTipo> colecaoCreditoTipo = getControladorUtil().pesquisar(filtroCreditoTipo,
+											CreditoTipo.class.getName());
 
-							// [FS00018] - Verificar valor da devolução
-							if(guiaDevolucao.getValorDevolucao().compareTo(creditoTipo.getValorLimite()) > 0
-											&& !temPermissaoIcluirDevolucaoMaiorValorMaximo){
-								throw new ControladorException("atencao.valor.devolucao.superior.valor.limite.duplicidade", null);
+							CreditoTipo creditoTipo = null;
+							if(colecaoCreditoTipo.size() > 0){
+								creditoTipo = colecaoCreditoTipo.iterator().next();
+
+								// [FS00018] - Verificar valor da devolução
+								if(guiaDevolucao.getValorDevolucao().compareTo(creditoTipo.getValorLimite()) > 0
+												&& !temPermissaoIcluirDevolucaoMaiorValorMaximo){
+									if(gerarErro){
+										throw new ControladorException("atencao.valor.devolucao.superior.valor.limite.duplicidade", null);
+									}else{
+										flagInserirGuiaDevolucao = false;
+									}
+								}
+							}else{
+								if(gerarErro){
+									throw new ControladorException("erro.cdconstante.inexistente", null, "Tipo de Crédito",
+													CreditoTipoEnum.DEVOLUCAO_PAGAMENTOS_DUPLICIDADE.name() + " ou "
+																	+ CreditoTipoEnum.DEVSERVICOFRPRZ.name());
+								}else{
+									flagInserirGuiaDevolucao = false;
+								}
 							}
 
-							DocumentoTipo documentoTipo = new DocumentoTipo();
-							documentoTipo.setId(DocumentoTipo.GUIA_PAGAMENTO);
+							if(flagInserirGuiaDevolucao){
+								DocumentoTipo documentoTipo = new DocumentoTipo();
+								documentoTipo.setId(DocumentoTipo.GUIA_PAGAMENTO);
 
-							guiaDevolucao.setImovel(registroAtendimento.getImovel());
+								guiaDevolucao.setImovel(registroAtendimento.getImovel());
 
-							/*--<merge>--
-							 guiaDevolucao.setCliente(registroAtendimento
-							 .getCliente());*/
-							guiaDevolucao.setLocalidade(guiaPagamento.getLocalidade());
-							guiaDevolucao.setAnoMesReferenciaContabil(Integer.valueOf(anoMesArrecadacaoSistemaParametro));
-							guiaDevolucao.setDataEmissao(dataAtual);
-							guiaDevolucao.setDataValidade(dataValidade);
-							guiaDevolucao.setCreditoTipo(creditoTipo);
-							guiaDevolucao.setLancamentoItemContabil(creditoTipo.getLancamentoItemContabil());
-							guiaDevolucao.setDebitoCreditoSituacaoAtual(debitoCreditoSituacao);
-							guiaDevolucao.setDocumentoTipo(documentoTipo);
-							// guiaDevolucao.setDebitoTipo(guiaPagamento
-							// .getDebitoTipo());
+								/*--<merge>--
+								 guiaDevolucao.setCliente(registroAtendimento
+								 .getCliente());*/
+								guiaDevolucao.setLocalidade(guiaPagamento.getLocalidade());
+								guiaDevolucao.setAnoMesReferenciaContabil(Integer.valueOf(anoMesArrecadacaoSistemaParametro));
+								guiaDevolucao.setDataEmissao(dataAtual);
+								guiaDevolucao.setDataValidade(dataValidade);
+								guiaDevolucao.setCreditoTipo(creditoTipo);
+								guiaDevolucao.setLancamentoItemContabil(creditoTipo.getLancamentoItemContabil());
+								guiaDevolucao.setDebitoCreditoSituacaoAtual(debitoCreditoSituacao);
+								guiaDevolucao.setDocumentoTipo(documentoTipo);
+								// guiaDevolucao.setDebitoTipo(guiaPagamento
+								// .getDebitoTipo());
 
-							// guiaDevolucao.setGuiaPagamento(guiaPagamento);
-							guiaDevolucao.setUltimaAlteracao(new Date());
-							guiaDevolucao.setCliente(cliente);
-							guiaDevolucao.setImovel(registroAtendimento.getImovel());
-							/**
-							 * alterado por pedro alexandre dia 21/11/2006 alteração feita para
-							 * acoplar o controle de abrangência de usuário
-							 */
-							// ------------ CONTROLE DE ABRANGENCIA
-							// ----------------
-							Abrangencia abrangencia = new Abrangencia(usuarioLogado, guiaDevolucao.getLocalidade());
+								// guiaDevolucao.setGuiaPagamento(guiaPagamento);
+								guiaDevolucao.setUltimaAlteracao(new Date());
+								guiaDevolucao.setCliente(cliente);
+								guiaDevolucao.setImovel(registroAtendimento.getImovel());
+								/**
+								 * alterado por pedro alexandre dia 21/11/2006 alteração feita para
+								 * acoplar o controle de abrangência de usuário
+								 */
+								// ------------ CONTROLE DE ABRANGENCIA
+								// ----------------
+								Abrangencia abrangencia = new Abrangencia(usuarioLogado, guiaDevolucao.getLocalidade());
 
-							if(!getControladorAcesso().verificarAcessoAbrangencia(abrangencia)){
-								sessionContext.setRollbackOnly();
-								throw new ControladorException("atencao.acesso.negado.abrangencia");
-							}else{
-								id = (Integer) getControladorUtil().inserir(guiaDevolucao);
+								if(!getControladorAcesso().verificarAcessoAbrangencia(abrangencia)){
+									if(gerarErro){
+										sessionContext.setRollbackOnly();
+										throw new ControladorException("atencao.acesso.negado.abrangencia");
+									}else{
+										flagInserirGuiaDevolucao = false;
+									}
+								}else{
+									id = (Integer) getControladorUtil().inserir(guiaDevolucao);
+								}
 							}
 							// ------------ FIM CONTROLE DE ABRANGENCIA
 							// ----------------
 						}
 
 					}else{
-						throw new ControladorException("atencao.pesquisa_inexistente", null, "Guia de Pagamento");
+						if(gerarErro){
+							throw new ControladorException("atencao.pesquisa_inexistente", null, "Guia de Pagamento");
+						}else{
+							flagInserirGuiaDevolucao = false;
+						}
 					}
 
 				}else{
-					throw new ControladorException("atencao.Informe_entidade", null, "Guia de Pagamento");
+					if(gerarErro){
+						throw new ControladorException("atencao.Informe_entidade", null, "Guia de Pagamento");
+					}else{
+						flagInserirGuiaDevolucao = false;
+					}
 				}
 
 			}else if(guiaDevolucao.getDocumentoTipo().getId().equals(DocumentoTipo.DEBITO_A_COBRAR)){
@@ -17885,27 +18346,39 @@ public class ControladorArrecadacao
 
 					if(debitoACobrar != null){
 						if(!(registroAtendimento.getImovel().getId().equals(debitoACobrar.getImovel().getId()))){
-							throw new ControladorException("atencao.imovel.debito.a.cobrar.diferente.registro.atendimento.imovel", null,
-											debitoACobrar.getImovel().getId().toString(), registroAtendimento.getImovel().getId()
-															.toString());
+							if(gerarErro){
+								throw new ControladorException("atencao.imovel.debito.a.cobrar.diferente.registro.atendimento.imovel",
+												null, debitoACobrar.getImovel().getId().toString(), registroAtendimento.getImovel().getId()
+																.toString());
+							}else{
+								flagInserirGuiaDevolucao = false;
+							}
 						}else{
 							// [FS0015] - Verificar localidade do débito a
 							// cobrar
 							if(!registroAtendimento.getImovel().getLocalidade().getId().equals(debitoACobrar.getLocalidade().getId())){
-								throw new ControladorException("atencao.imovel.localidade.diferente.debito.a.cobrar.localidade", null,
-												debitoACobrar.getLocalidade().getId().toString(), registroAtendimento.getImovel()
-																.getLocalidade().getId().toString(), registroAtendimento.getImovel()
-																.getId().toString());
+								if(gerarErro){
+									throw new ControladorException("atencao.imovel.localidade.diferente.debito.a.cobrar.localidade", null,
+													debitoACobrar.getLocalidade().getId().toString(), registroAtendimento.getImovel()
+																	.getLocalidade().getId().toString(), registroAtendimento.getImovel()
+																	.getId().toString());
+								}else{
+									flagInserirGuiaDevolucao = false;
+								}
 							}
 						}
 
 						if(ordemServico != null){
 							if(ordemServico.getServicoTipo().getDebitoTipo() != null){
 								if(!(debitoACobrar.getDebitoTipo().getId().equals(ordemServico.getServicoTipo().getDebitoTipo().getId()))){
-									throw new ControladorException(
-													"atencao.debito.tipo.debito.a.cobrar.diferente.ordem.servico.debito.tipo", null,
-													debitoACobrar.getDebitoTipo().getDescricao(), ordemServico.getServicoTipo()
-																	.getDebitoTipo().getDescricao());
+									if(gerarErro){
+										throw new ControladorException(
+														"atencao.debito.tipo.debito.a.cobrar.diferente.ordem.servico.debito.tipo", null,
+														debitoACobrar.getDebitoTipo().getDescricao(), ordemServico.getServicoTipo()
+																		.getDebitoTipo().getDescricao());
+									}else{
+										flagInserirGuiaDevolucao = false;
+									}
 								}
 							}
 						}
@@ -17917,20 +18390,37 @@ public class ControladorArrecadacao
 						// depois subtraí-lo do valor total do débito e
 						// verificar se o valor digitado é maior do que esse
 						// valor
-						FiltroPagamento filtroPagamento = new FiltroPagamento();
-						filtroPagamento.adicionarParametro(new ParametroSimples(FiltroPagamento.DEBITO_A_COBRAR_ID, debitoACobrar.getId()));
+						Collection colecaoPagamento = null;
+						if(!gerarLimitePorHistoricoPagamento){
+							FiltroPagamento filtroPagamento = new FiltroPagamento();
+							filtroPagamento.adicionarParametro(new ParametroSimples(FiltroPagamento.DEBITO_A_COBRAR_ID, debitoACobrar
+											.getId()));
 
-						Collection colecaoPagamento = getControladorUtil().pesquisar(filtroPagamento, Pagamento.class.getName());
+							colecaoPagamento = getControladorUtil().pesquisar(filtroPagamento, Pagamento.class.getName());
+						}else{
+							FiltroPagamentoHistorico filtroPagamentoHistorico = new FiltroPagamentoHistorico();
+							filtroPagamentoHistorico.adicionarParametro(new ParametroSimples(FiltroPagamentoHistorico.DEBITO_A_COBRAR_ID,
+											debitoACobrar.getId()));
 
-						if(colecaoPagamento != null && !colecaoPagamento.isEmpty()){
+							colecaoPagamento = getControladorUtil().pesquisar(filtroPagamentoHistorico, PagamentoHistorico.class.getName());
+						}
+
+						if(colecaoPagamento != null && !colecaoPagamento.isEmpty() && colecaoPagamento.size() > 0){
 							Iterator colecaoPagamentoIterator = colecaoPagamento.iterator();
 
 							while(colecaoPagamentoIterator.hasNext()){
-								Pagamento pagamento = (Pagamento) colecaoPagamentoIterator.next();
-								valorLimite = valorLimite.add(pagamento.getValorPagamento());
+								if(!gerarLimitePorHistoricoPagamento){
+									Pagamento pagamento = (Pagamento) colecaoPagamentoIterator.next();
+									valorLimite = valorLimite.add(pagamento.getValorPagamento());
+								}else{
+									PagamentoHistorico pagamento = (PagamentoHistorico) colecaoPagamentoIterator.next();
+									valorLimite = valorLimite.add(pagamento.getValorPagamento());
+								}
 							}
 
-							valorLimite = valorLimite.subtract(debitoACobrar.getValorTotal());
+							if(debitoACobrar.getValorTotal() != null){
+								valorLimite = valorLimite.subtract(debitoACobrar.getValorTotal());
+							}
 
 							FiltroGuiaDevolucao filtroGuiaDevolucao = new FiltroGuiaDevolucao();
 
@@ -17972,17 +18462,29 @@ public class ControladorArrecadacao
 							 */
 
 						}else{
-							throw new ControladorException("atencao.tipo.documento.sem.pagamentos.associados", null, "Débito a Cobrar "
-											+ debitoACobrar.getId().toString() + " ");
+							if(gerarErro){
+								throw new ControladorException("atencao.tipo.documento.sem.pagamentos.associados", null, "Débito a Cobrar "
+												+ debitoACobrar.getId().toString() + " ");
+							}else{
+								flagInserirGuiaDevolucao = false;
+							}
 						}
 
 						if(guiaDevolucao.getValorDevolucao().compareTo(valorLimite) > 0){
 
 							if(valorLimite.compareTo(BigDecimal.ZERO) > 0 && !temPermissaoIcluirDevolucaoMaiorValorMaximo){
-								throw new ControladorException("atencao.valor.devolucao.superior.valor.pagamento", null,
-												Util.formatarMoedaReal(valorLimite), "Débito a Cobrar");
+								if(gerarErro){
+									throw new ControladorException("atencao.valor.devolucao.superior.valor.pagamento", null,
+													Util.formatarMoedaReal(valorLimite), "Débito a Cobrar");
+								}else{
+									flagInserirGuiaDevolucao = false;
+								}
 							}else{
-								throw new ControladorException("atencao.valor.devolucao.menor.igual.zero");
+								if(gerarErro){
+									throw new ControladorException("atencao.valor.devolucao.menor.igual.zero");
+								}else{
+									flagInserirGuiaDevolucao = false;
+								}
 							}
 							// } else if ( guiaDevolucao.getValorDevolucao().compareTo(valorLimite)
 							// == 0) {
@@ -17991,56 +18493,87 @@ public class ControladorArrecadacao
 						}else{
 
 							FiltroCreditoTipo filtroCreditoTipo = new FiltroCreditoTipo();
-							filtroCreditoTipo.adicionarParametro(new ParametroSimples(FiltroCreditoTipo.ID,
-											CreditoTipo.DEVOLUCAO_PAGAMENTOS_DUPLICIDADE));
+							filtroCreditoTipo.adicionarParametro(new ParametroSimples(FiltroCreditoTipo.ID, constanteCreditoTipo));
 							filtroCreditoTipo.adicionarCaminhoParaCarregamentoEntidade("lancamentoItemContabil");
-							CreditoTipo creditoTipo = (CreditoTipo) getControladorUtil()
-											.pesquisar(filtroCreditoTipo, CreditoTipo.class.getName()).iterator().next();
 
-							// [FS00018] - Verificar valor da devolução
-							if(guiaDevolucao.getValorDevolucao().compareTo(creditoTipo.getValorLimite()) > 0
-											&& !temPermissaoIcluirDevolucaoMaiorValorMaximo){
-								throw new ControladorException("atencao.valor.devolucao.superior.valor.limite.duplicidade", null);
+							Collection<CreditoTipo> colecaoCreditoTipo = getControladorUtil().pesquisar(filtroCreditoTipo,
+											CreditoTipo.class.getName());
+
+							CreditoTipo creditoTipo = null;
+							if(colecaoCreditoTipo.size() > 0){
+								creditoTipo = colecaoCreditoTipo.iterator().next();
+
+								// [FS00018] - Verificar valor da devolução
+								if(guiaDevolucao.getValorDevolucao().compareTo(creditoTipo.getValorLimite()) > 0
+												&& !temPermissaoIcluirDevolucaoMaiorValorMaximo){
+									if(gerarErro){
+										throw new ControladorException("atencao.valor.devolucao.superior.valor.limite.duplicidade", null);
+									}else{
+										flagInserirGuiaDevolucao = false;
+									}
+								}
+							}else{
+								if(gerarErro){
+									throw new ControladorException("erro.cdconstante.inexistente", null, "Tipo de Crédito",
+													CreditoTipoEnum.DEVOLUCAO_PAGAMENTOS_DUPLICIDADE.name() + " ou "
+																	+ CreditoTipoEnum.DEVSERVICOFRPRZ.name());
+								}else{
+									flagInserirGuiaDevolucao = false;
+								}
 							}
 
-							DocumentoTipo documentoTipo = new DocumentoTipo();
-							documentoTipo.setId(DocumentoTipo.DEBITO_A_COBRAR);
+							if(flagInserirGuiaDevolucao){
+								DocumentoTipo documentoTipo = new DocumentoTipo();
+								documentoTipo.setId(DocumentoTipo.DEBITO_A_COBRAR);
 
-							guiaDevolucao.setImovel(registroAtendimento.getImovel());
-							guiaDevolucao.setLocalidade(debitoACobrar.getLocalidade());
-							guiaDevolucao.setAnoMesReferenciaContabil(Integer.valueOf(anoMesArrecadacaoSistemaParametro));
-							guiaDevolucao.setDataEmissao(dataAtual);
-							guiaDevolucao.setDataValidade(dataValidade);
-							guiaDevolucao.setCreditoTipo(creditoTipo);
-							guiaDevolucao.setLancamentoItemContabil(creditoTipo.getLancamentoItemContabil());
-							guiaDevolucao.setDebitoCreditoSituacaoAtual(debitoCreditoSituacao);
-							guiaDevolucao.setDocumentoTipo(documentoTipo);
-							guiaDevolucao.setDebitoTipo(debitoACobrar.getDebitoTipo());
-							// guiaDevolucao.setDebitoACobrar(debitoACobrar);
-							guiaDevolucao.setUltimaAlteracao(new Date());
+								guiaDevolucao.setImovel(registroAtendimento.getImovel());
+								guiaDevolucao.setLocalidade(debitoACobrar.getLocalidade());
+								guiaDevolucao.setAnoMesReferenciaContabil(Integer.valueOf(anoMesArrecadacaoSistemaParametro));
+								guiaDevolucao.setDataEmissao(dataAtual);
+								guiaDevolucao.setDataValidade(dataValidade);
+								guiaDevolucao.setCreditoTipo(creditoTipo);
+								guiaDevolucao.setLancamentoItemContabil(creditoTipo.getLancamentoItemContabil());
+								guiaDevolucao.setDebitoCreditoSituacaoAtual(debitoCreditoSituacao);
+								guiaDevolucao.setDocumentoTipo(documentoTipo);
+								guiaDevolucao.setDebitoTipo(debitoACobrar.getDebitoTipo());
+								// guiaDevolucao.setDebitoACobrar(debitoACobrar);
+								guiaDevolucao.setUltimaAlteracao(new Date());
 
-							/**
-							 * alterado por pedro alexandre dia 21/11/2006 alteração feita para
-							 * acoplar o controle de abrangência de usuário
-							 */
-							// ------------ CONTROLE DE ABRANGENCIA
-							// ----------------
-							Abrangencia abrangencia = new Abrangencia(usuarioLogado, guiaDevolucao.getLocalidade());
+								/**
+								 * alterado por pedro alexandre dia 21/11/2006 alteração feita para
+								 * acoplar o controle de abrangência de usuário
+								 */
+								// ------------ CONTROLE DE ABRANGENCIA
+								// ----------------
+								Abrangencia abrangencia = new Abrangencia(usuarioLogado, guiaDevolucao.getLocalidade());
 
-							if(!getControladorAcesso().verificarAcessoAbrangencia(abrangencia)){
-								sessionContext.setRollbackOnly();
-								throw new ControladorException("atencao.acesso.negado.abrangencia");
-							}else{
-								id = (Integer) getControladorUtil().inserir(guiaDevolucao);
+								if(!getControladorAcesso().verificarAcessoAbrangencia(abrangencia)){
+									if(gerarErro){
+										sessionContext.setRollbackOnly();
+										throw new ControladorException("atencao.acesso.negado.abrangencia");
+									}else{
+										flagInserirGuiaDevolucao = false;
+									}
+								}else{
+									id = (Integer) getControladorUtil().inserir(guiaDevolucao);
+								}
 							}
 							// ------------ FIM CONTROLE DE ABRANGENCIA
 							// -------------
 						}
 					}else{
-						throw new ControladorException("atencao.pesquisa_inexistente", null, "Débito a Cobrar");
+						if(gerarErro){
+							throw new ControladorException("atencao.pesquisa_inexistente", null, "Débito a Cobrar");
+						}else{
+							flagInserirGuiaDevolucao = false;
+						}
 					}
 				}else{
-					throw new ControladorException("atencao.Informe_entidade", null, "Débito a Cobrar");
+					if(gerarErro){
+						throw new ControladorException("atencao.Informe_entidade", null, "Débito a Cobrar");
+					}else{
+						flagInserirGuiaDevolucao = false;
+					}
 				}
 			}else if(guiaDevolucao.getDocumentoTipo().getId().equals(DocumentoTipo.DEVOLUCAO_VALOR)){
 				if(registroAtendimento.getImovel() == null){
@@ -18063,7 +18596,11 @@ public class ControladorArrecadacao
 
 					// LOCALIDADE
 					if(guiaDevolucao.getLocalidade() == null){
-						throw new ControladorException("atencao.Informe_entidade", null, "Localidade");
+						if(gerarErro){
+							throw new ControladorException("atencao.Informe_entidade", null, "Localidade");
+						}else{
+							flagInserirGuiaDevolucao = false;
+						}
 					}else{
 						FiltroLocalidade filtroLocalidade = new FiltroLocalidade();
 						filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, guiaDevolucao.getLocalidade().getId()
@@ -18071,7 +18608,11 @@ public class ControladorArrecadacao
 						Collection colecaoLocalidade = getControladorUtil().pesquisar(filtroLocalidade, Localidade.class.getName());
 
 						if(colecaoLocalidade == null || colecaoLocalidade.isEmpty()){
-							throw new ControladorException("atencao.pesquisa_inexistente", null, "Localidade");
+							if(gerarErro){
+								throw new ControladorException("atencao.pesquisa_inexistente", null, "Localidade");
+							}else{
+								flagInserirGuiaDevolucao = false;
+							}
 						}
 					}
 				}else{
@@ -18087,7 +18628,11 @@ public class ControladorArrecadacao
 						Collection colecaoDebitoTipo = getControladorUtil().pesquisar(filtroDebitoTipo, DebitoTipo.class.getName());
 
 						if(colecaoDebitoTipo == null || colecaoDebitoTipo.isEmpty()){
-							throw new ControladorException("atencao.pesquisa_inexistente", null, "Tipo de Débito");
+							if(gerarErro){
+								throw new ControladorException("atencao.pesquisa_inexistente", null, "Tipo de Débito");
+							}else{
+								flagInserirGuiaDevolucao = false;
+							}
 						}
 					}
 				}
@@ -18101,39 +18646,49 @@ public class ControladorArrecadacao
 				// [FS00018] - Verificar valor da devolução
 				if(guiaDevolucao.getValorDevolucao().compareTo(creditoTipo.getValorLimite()) > 0
 								&& !temPermissaoIcluirDevolucaoMaiorValorMaximo){
-					throw new ControladorException("atencao.valor.devolucao.superior.valor.limite", null);
+					if(gerarErro){
+						throw new ControladorException("atencao.valor.devolucao.superior.valor.limite", null);
+					}else{
+						flagInserirGuiaDevolucao = false;
+					}
 				}
 
-				DocumentoTipo documentoTipo = new DocumentoTipo();
-				documentoTipo.setId(DocumentoTipo.DEVOLUCAO_VALOR);
+				if(flagInserirGuiaDevolucao){
+					DocumentoTipo documentoTipo = new DocumentoTipo();
+					documentoTipo.setId(DocumentoTipo.DEVOLUCAO_VALOR);
 
-				guiaDevolucao.setImovel(registroAtendimento.getImovel());
+					guiaDevolucao.setImovel(registroAtendimento.getImovel());
 
-				/*--<merge>--guiaDevolucao.setCliente(registroAtendimento.getCliente());*/
+					/*--<merge>--guiaDevolucao.setCliente(registroAtendimento.getCliente());*/
 
-				guiaDevolucao.setLocalidade(guiaDevolucao.getLocalidade());
-				guiaDevolucao.setAnoMesReferenciaContabil(Integer.valueOf(anoMesArrecadacaoSistemaParametro));
-				guiaDevolucao.setDataEmissao(dataAtual);
-				guiaDevolucao.setDataValidade(dataValidade);
-				guiaDevolucao.setCreditoTipo(creditoTipo);
-				guiaDevolucao.setLancamentoItemContabil(creditoTipo.getLancamentoItemContabil());
-				guiaDevolucao.setDebitoCreditoSituacaoAtual(debitoCreditoSituacao);
-				guiaDevolucao.setDocumentoTipo(documentoTipo);
-				guiaDevolucao.setDebitoTipo(guiaDevolucao.getDebitoTipo());
-				guiaDevolucao.setUltimaAlteracao(new Date());
+					guiaDevolucao.setLocalidade(guiaDevolucao.getLocalidade());
+					guiaDevolucao.setAnoMesReferenciaContabil(Integer.valueOf(anoMesArrecadacaoSistemaParametro));
+					guiaDevolucao.setDataEmissao(dataAtual);
+					guiaDevolucao.setDataValidade(dataValidade);
+					guiaDevolucao.setCreditoTipo(creditoTipo);
+					guiaDevolucao.setLancamentoItemContabil(creditoTipo.getLancamentoItemContabil());
+					guiaDevolucao.setDebitoCreditoSituacaoAtual(debitoCreditoSituacao);
+					guiaDevolucao.setDocumentoTipo(documentoTipo);
+					guiaDevolucao.setDebitoTipo(guiaDevolucao.getDebitoTipo());
+					guiaDevolucao.setUltimaAlteracao(new Date());
 
-				/**
-				 * alterado por pedro alexandre dia 21/11/2006 alteração feita para acoplar o
-				 * controle de abrangência de usuário
-				 */
-				// ------------ CONTROLE DE ABRANGENCIA ----------------
-				Abrangencia abrangencia = new Abrangencia(usuarioLogado, guiaDevolucao.getLocalidade());
+					/**
+					 * alterado por pedro alexandre dia 21/11/2006 alteração feita para acoplar o
+					 * controle de abrangência de usuário
+					 */
+					// ------------ CONTROLE DE ABRANGENCIA ----------------
+					Abrangencia abrangencia = new Abrangencia(usuarioLogado, guiaDevolucao.getLocalidade());
 
-				if(!getControladorAcesso().verificarAcessoAbrangencia(abrangencia)){
-					sessionContext.setRollbackOnly();
-					throw new ControladorException("atencao.acesso.negado.abrangencia");
-				}else{
-					id = (Integer) getControladorUtil().inserir(guiaDevolucao);
+					if(!getControladorAcesso().verificarAcessoAbrangencia(abrangencia)){
+						if(gerarErro){
+							sessionContext.setRollbackOnly();
+							throw new ControladorException("atencao.acesso.negado.abrangencia");
+						}else{
+							flagInserirGuiaDevolucao = false;
+						}
+					}else{
+						id = (Integer) getControladorUtil().inserir(guiaDevolucao);
+					}
 				}
 				// ------------ CONTROLE DE ABRANGENCIA ----------------
 			}
@@ -26036,7 +26591,8 @@ public class ControladorArrecadacao
 					getControladorFaturamento()
 									.transferirContasParaHistorico(Collections.singletonList(conta), anoMesReferenciaArrecadacao);
 
-					getControladorFaturamento().atualizarIndicadorContaNoHistorico(Collections.singletonList(conta));
+					// Indicador atualizado no método transferirContasParaHistorico(...)
+					// getControladorFaturamento().atualizarIndicadorContaNoHistorico(Collections.singletonList(conta));
 
 					iteratorContas.remove();
 					conta = null;
@@ -26078,7 +26634,8 @@ public class ControladorArrecadacao
 				colecaoGuiasTemporaria.addAll(colecaoGuiasPagamento.subList(limiteInferiorGuia, limiteSuperiorGuia));
 
 				if(colecaoGuiasTemporaria != null && !colecaoGuiasTemporaria.isEmpty()){
-					transferirGuiaPagamentoParaHistorico(colecaoGuiasTemporaria);
+					boolean indicadorParcelamento = false;
+					transferirGuiaPagamentoParaHistorico(colecaoGuiasTemporaria, indicadorParcelamento);
 
 					atualizarIndicadorGuiaPagamentoNoHistorico(colecaoGuiasTemporaria);
 				}
@@ -29763,6 +30320,66 @@ public class ControladorArrecadacao
 		}
 	}
 
+	public Collection<PagamentoHistorico> pesquisarPagamentoHistoricoImovel(String idImovel){
+
+		Collection<PagamentoHistorico> pagamentos = null;
+
+		FiltroPagamentoHistorico filtroPagamentoHistorico = new FiltroPagamentoHistorico();
+
+		filtroPagamentoHistorico.adicionarParametro(new ParametroSimples(FiltroPagamentoHistorico.IMOVEL_ID, idImovel));
+		filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.AVISO_BANCARIO);
+		filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.ARRECADADOR_MOVIMENTO_ITEM);
+		filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.AVISO_BANCARIO_ARRECADADOR_CLIENTE);
+		filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.DOCUMENTO_TIPO);
+		filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.CONTA);
+		filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.GUIA_PAGAMENTO_GERAL);
+		filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.GUIA_PAGAMENTO);
+		filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.DEBITO_TIPO);
+		filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.DEBITO_A_COBRAR);
+		filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.PAGAMENTO_SITUACAO_ATUAL);
+		filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.PAGAMENTO_SITUACAO_ANTERIOR);
+		filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.IMOVEL);
+
+		pagamentos = Fachada.getInstancia().pesquisar(filtroPagamentoHistorico, PagamentoHistorico.class.getName());
+
+		for(PagamentoHistorico pagamento : pagamentos){
+
+			if(pagamento.getGuiaPagamentoGeral() != null && pagamento.getGuiaPagamentoGeral().getGuiaPagamento() != null){
+
+				Integer guiaPagamentoId = pagamento.getGuiaPagamentoGeral().getGuiaPagamento().getId();
+
+				FiltroGuiaPagamentoPrestacaoHistorico filtroGuiaPagamentoPrestacao = new FiltroGuiaPagamentoPrestacaoHistorico();
+				filtroGuiaPagamentoPrestacao.adicionarParametro(new ParametroSimples(
+								FiltroGuiaPagamentoPrestacaoHistorico.GUIA_PAGAMENTO_ID,
+								guiaPagamentoId));
+
+				Collection<GuiaPagamentoPrestacaoHistorico> guiasPagamentoPrestacao = Fachada.getInstancia().pesquisar(
+								filtroGuiaPagamentoPrestacao, GuiaPagamentoPrestacaoHistorico.class.getName());
+
+				pagamento.getGuiaPagamentoGeral().getGuiaPagamento()
+								.setGuiasPagamentoPrestacaoHistorico(new HashSet<GuiaPagamentoPrestacaoHistorico>(guiasPagamentoPrestacao));
+
+			}else if(pagamento.getGuiaPagamentoGeral() != null && pagamento.getGuiaPagamentoGeral().getGuiaPagamentoHistorico() != null){
+
+				Integer guiaPagamentoHistoricoId = pagamento.getGuiaPagamentoGeral().getGuiaPagamentoHistorico().getId();
+
+				FiltroGuiaPagamentoPrestacaoHistorico filtroGuiaPagamentoPrestacaoHistorico = new FiltroGuiaPagamentoPrestacaoHistorico();
+				filtroGuiaPagamentoPrestacaoHistorico.adicionarParametro(new ParametroSimples(
+								FiltroGuiaPagamentoPrestacaoHistorico.GUIA_PAGAMENTO_ID, guiaPagamentoHistoricoId));
+
+				Collection<GuiaPagamentoPrestacaoHistorico> guiasPagamentoHistorico = Fachada.getInstancia().pesquisar(
+								filtroGuiaPagamentoPrestacaoHistorico, GuiaPagamentoPrestacaoHistorico.class.getName());
+
+				pagamento.getGuiaPagamentoGeral().getGuiaPagamentoHistorico()
+								.setGuiasPagamentoPrestacaoHistorico(new HashSet<GuiaPagamentoPrestacaoHistorico>(guiasPagamentoHistorico));
+
+			}
+
+		}
+
+		return pagamentos;
+	}
+
 	/**
 	 * Método que pesquisa os pagamentos histórico para tela de consulta de Imóvel
 	 * 
@@ -32087,9 +32704,10 @@ public class ControladorArrecadacao
 	 * @param colecaoGuiasPagamento
 	 * @throws ControladorException
 	 */
-	public void transferirGuiaPagamentoParaHistorico(Collection<GuiaPagamento> colecaoGuiasPagamento) throws ControladorException{
+	public void transferirGuiaPagamentoParaHistorico(Collection<GuiaPagamento> colecaoGuiasPagamento, boolean indicadorParcelamento)
+					throws ControladorException{
 
-		transferirGuiaPagamentoParaHistoricoRegistrarOperacao(colecaoGuiasPagamento, null, null);
+		transferirGuiaPagamentoParaHistoricoRegistrarOperacao(colecaoGuiasPagamento, null, null, indicadorParcelamento);
 	}
 
 	/**
@@ -32109,10 +32727,10 @@ public class ControladorArrecadacao
 	 * @param colecaoGuiasPagamento
 	 * @throws ControladorException
 	 */
-	public void transferirGuiaPagamentoParaHistorico(Collection<GuiaPagamento> colecaoGuiasPagamento, Usuario usuario, Integer idOperacao)
-					throws ControladorException{
+	public void transferirGuiaPagamentoParaHistorico(Collection<GuiaPagamento> colecaoGuiasPagamento, Usuario usuario, Integer idOperacao,
+					boolean indicadorParcelamento) throws ControladorException{
 
-		transferirGuiaPagamentoParaHistoricoRegistrarOperacao(colecaoGuiasPagamento, usuario, idOperacao);
+		transferirGuiaPagamentoParaHistoricoRegistrarOperacao(colecaoGuiasPagamento, usuario, idOperacao, indicadorParcelamento);
 	}
 
 	/**
@@ -32139,7 +32757,7 @@ public class ControladorArrecadacao
 	 * @throws ControladorException
 	 */
 	private void transferirGuiaPagamentoParaHistoricoRegistrarOperacao(Collection<GuiaPagamento> colecaoGuiasPagamento, Usuario usuario,
-					Integer idOperacao) throws ControladorException{
+					Integer idOperacao, boolean indicadorParcelamento) throws ControladorException{
 
 		try{
 
@@ -32160,7 +32778,8 @@ public class ControladorArrecadacao
 
 					// Transfere as informações das Prestações para o histórico (Prestação e
 					// Categoria)
-					this.enviarGuiaPagamentoPrestacaoParaHistorico(guiaPagamento.getGuiasPagamentoPrestacao(), usuario, idOperacao);
+					this.enviarGuiaPagamentoPrestacaoParaHistorico(guiaPagamento.getGuiasPagamentoPrestacao(), usuario, idOperacao,
+									indicadorParcelamento);
 
 					// Busca as Categorias Correspondentes às Prestações
 					Map mapGuiaPagamentoNumeroPrestacao = new HashMap<String, GuiaPagamentoPrestacao>();
@@ -32222,7 +32841,10 @@ public class ControladorArrecadacao
 
 						}else{
 							List arrayMapNumeroPrestacoes = (ArrayList) mapGuiaPagamentoCancelar.get(guiaPagamento.getId());
-							arrayMapNumeroPrestacoes.add(guiaPrestacao.getComp_id().getNumeroPrestacao());
+
+							if(!arrayMapNumeroPrestacoes.contains(guiaPrestacao.getComp_id().getNumeroPrestacao())){
+								arrayMapNumeroPrestacoes.add(guiaPrestacao.getComp_id().getNumeroPrestacao());
+							}
 						}
 					}
 
@@ -32269,6 +32891,12 @@ public class ControladorArrecadacao
 								}catch(InvocationTargetException itex){
 									sessionContext.setRollbackOnly();
 									throw new ControladorException("erro.sistema");
+								}
+
+								if(indicadorParcelamento){
+									DebitoCreditoSituacao debitoCreditoSituacaoAtual = new DebitoCreditoSituacao();
+									debitoCreditoSituacaoAtual.setId(DebitoCreditoSituacao.PARCELADA);
+									guiaPagamentoHistorico.setDebitoCreditoSituacaoAtual(debitoCreditoSituacaoAtual);
 								}
 
 								guiaPagamentoHistorico.setUltimaAlteracao(new Date());
@@ -32358,8 +32986,7 @@ public class ControladorArrecadacao
 	 * @throws ControladorException
 	 */
 	protected void enviarGuiaPagamentoPrestacaoParaHistorico(Collection<GuiaPagamentoPrestacao> colecaoGuiaPagamentoPrestacoes,
-					Usuario usuario, Integer idOperacao)
-					throws ControladorException{
+					Usuario usuario, Integer idOperacao, boolean indicadorParcelamento) throws ControladorException{
 
 		try{
 			SistemaParametro sistemaParametro = getControladorUtil().pesquisarParametrosDoSistema();
@@ -32375,38 +33002,37 @@ public class ControladorArrecadacao
 
 				if(usuario != null && idOperacao != null){
 					// ------------ REGISTRAR TRANSAÇÃO ----------------
-				Integer valorArgumento = null;
-				Argumento argumento = new Argumento();
-				if(guiaPrestacao.getGuiaPagamento().getImovel() != null){
-					valorArgumento = guiaPrestacao.getGuiaPagamento().getImovel().getId();
-					argumento.setId(Argumento.IMOVEL);
-				}else{
-					valorArgumento = guiaPrestacao.getGuiaPagamento().getCliente().getId();
-					argumento.setId(Argumento.CLIENTE);
-				}
+					Integer valorArgumento = null;
+					Argumento argumento = new Argumento();
+					if(guiaPrestacao.getGuiaPagamento().getImovel() != null){
+						valorArgumento = guiaPrestacao.getGuiaPagamento().getImovel().getId();
+						argumento.setId(Argumento.IMOVEL);
+					}else{
+						valorArgumento = guiaPrestacao.getGuiaPagamento().getCliente().getId();
+						argumento.setId(Argumento.CLIENTE);
+					}
 
-				RegistradorOperacao registradorOperacao = new RegistradorOperacao(idOperacao, valorArgumento, argumento, valorArgumento,
-								new UsuarioAcaoUsuarioHelper(usuario,
-								UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
-				Operacao operacao = new Operacao();
-				operacao.setId(idOperacao);
+					RegistradorOperacao registradorOperacao = new RegistradorOperacao(idOperacao, valorArgumento, argumento,
+									valorArgumento, new UsuarioAcaoUsuarioHelper(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+					Operacao operacao = new Operacao();
+					operacao.setId(idOperacao);
 
-				OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
-				operacaoEfetuada.setOperacao(operacao);
+					OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
+					operacaoEfetuada.setOperacao(operacao);
 
-				operacaoEfetuada.setArgumentoValor(valorArgumento);
-				guiaPrestacao.setOperacaoEfetuada(operacaoEfetuada);
-				guiaPrestacao.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
-				registradorOperacao.registrarOperacao(guiaPrestacao);
+					operacaoEfetuada.setArgumentoValor(valorArgumento);
+					guiaPrestacao.setOperacaoEfetuada(operacaoEfetuada);
+					guiaPrestacao.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+					registradorOperacao.registrarOperacao(guiaPrestacao);
 
 					// ------------ REGISTRAR TRANSAÇÃO ----------------
 				}
 
-
 				// Cria uma Guia Prestacao Histórico
 				GuiaPagamentoPrestacaoHistoricoPK guiaPrestacaoHistoricoPK = new GuiaPagamentoPrestacaoHistoricoPK(guiaPrestacao
 								.getComp_id().getGuiaPagamentoId(), guiaPrestacao.getComp_id().getNumeroPrestacao(), guiaPrestacao
-								.getComp_id().getDebitoTipoId(), guiaPrestacao.getComp_id().getItemLancamentoContabilId());
+								.getComp_id().getDebitoTipoId(), guiaPrestacao.getComp_id().getItemLancamentoContabilId(), guiaPrestacao
+								.getComp_id().getNumeroProcessoAdministrativoExecucaoFiscal());
 				GuiaPagamentoPrestacaoHistorico guiaPrestacaoHistorico = new GuiaPagamentoPrestacaoHistorico();
 				guiaPrestacaoHistorico.setComp_id(guiaPrestacaoHistoricoPK);
 
@@ -32418,10 +33044,20 @@ public class ControladorArrecadacao
 				guiaPrestacaoHistorico.setIndicadorCobrancaMulta(guiaPrestacao.getIndicadorCobrancaMulta());
 				guiaPrestacaoHistorico.setIndicadorPagamentoPendente(guiaPrestacao.getIndicadorPagamentoPendente());
 				guiaPrestacaoHistorico.setValorPrestacao(guiaPrestacao.getValorPrestacao());
-				guiaPrestacaoHistorico.setDebitoCreditoSituacao(guiaPrestacao.getDebitoCreditoSituacao());
+				if(indicadorParcelamento){
+					DebitoCreditoSituacao debitoCreditoSituacaoAtual = new DebitoCreditoSituacao();
+					debitoCreditoSituacaoAtual.setId(DebitoCreditoSituacao.PARCELADA);
+					guiaPrestacaoHistorico.setDebitoCreditoSituacao(debitoCreditoSituacaoAtual);
+				}else{
+					guiaPrestacaoHistorico.setDebitoCreditoSituacao(guiaPrestacao.getDebitoCreditoSituacao());
+				}
 				guiaPrestacaoHistorico.setUltimaAlteracao(new Date());
 				guiaPrestacaoHistorico.setIndicadorCobrancaAdministrativa(guiaPrestacao.getIndicadorCobrancaAdministrativa());
 				guiaPrestacaoHistorico.setIndicadorRemuneraCobrancaAdministrativa(guiaPrestacao.getIndicadorRemuneraCobrancaAdministrativa());
+				guiaPrestacaoHistorico.setIndicadorDividaAtiva(guiaPrestacao.getIndicadorDividaAtiva());
+				guiaPrestacaoHistorico.setDataDividaAtiva(guiaPrestacao.getDataDividaAtiva());
+				guiaPrestacaoHistorico.setIndicadorExecucaoFiscal(guiaPrestacao.getIndicadorExecucaoFiscal());
+				guiaPrestacaoHistorico.setDataExecucaoFiscal(guiaPrestacao.getDataExecucaoFiscal());
 
 				// verifica a maior data entre dataFaturamento e o anoMesReferenciaArrecadacao , e a
 				// Utiliza
@@ -34788,7 +35424,7 @@ public class ControladorArrecadacao
 	 */
 	private Collection<Pagamento> pesquisarPagamentoAvisoBancario(Integer idAvisoBancario) throws ControladorException{
 
-		Calendar tempo = Calendar.getInstance();
+
 		Collection<Pagamento> colecaoPagamentos = new ArrayList<Pagamento>();
 
 		Collection colecaoDadosPagamentos;
@@ -34919,8 +35555,10 @@ public class ControladorArrecadacao
 				throw new ControladorException("atencao.atualizacao.removido");
 			}
 
+			boolean indicadorParcelamento = false;
+
 			// Transfere as informações das Prestações para o histórico (Prestação e Categoria)
-			this.enviarGuiaPagamentoPrestacaoParaHistorico(colecaoGuiaPagamentoPrestacao, null, null);
+			this.enviarGuiaPagamentoPrestacaoParaHistorico(colecaoGuiaPagamentoPrestacao, null, null, indicadorParcelamento);
 
 			// O Set garante que somente 1 categoria por Prestação e Lancamento_item_Contabil será
 			// obtido, mesmo qdo variar somente o tipo de débito
@@ -36476,6 +37114,7 @@ public class ControladorArrecadacao
 			this.getControladorFaturamento().registrarLancamentoContabilDebitoACobrar(idsDebitosACobrar);
 
 		}catch(ErroRepositorioException ex){
+			ex.printStackTrace();
 			throw new ControladorException("erro.sistema", ex);
 		}
 		return null;
@@ -37842,22 +38481,69 @@ public class ControladorArrecadacao
 		}
 	}
 
-	// /**
-	// * Método responsável por consultar conta historico
-	// * @date 02/06/20010
-	// * @author isilva
-	// * @param idContaHistorico
-	// * @return
-	// * @throws ControladorException
-	// */
-	// public ContaHistorico consultarContaHistorico(Integer idContaHistorico) throws
-	// ControladorException {
-	// try {
-	// return this.repositorioArrecadacao.consultarContaHistorico(idContaHistorico);
-	// } catch (ErroRepositorioException e) {
-	// throw new ControladorException("erro.sistema");
-	// }
-	// }
+	/**
+	 * [UC1016] Estornar Pagamentos
+	 * [SB0005] - Verificar Permissão Estornar Pagamento em Dívida Ativa
+	 * 
+	 * @param valorEstorno
+	 * @param dataDividaAtiva
+	 * @param usuarioLogado
+	 * @throws ControladorException
+	 */
+
+	private void verificarPermissaoEstornarPagamento(BigDecimal valorEstorno, Date dataDividaAtiva, Usuario usuarioLogado)
+					throws ControladorException{
+
+
+			if(this.getControladorPermissaoEspecial().verificarPermissaoEstonoDividaAtiva(usuarioLogado)){
+
+				BigDecimal pValorMaxEstornoDividaAtiva = Util
+								.formatarMoedaRealparaBigDecimal((String) ParametroArrecadacao.P_VALOR_MAX_ESTORNO_DIVIDA_ATIVA.executar());
+
+
+				Integer numeroDiasEmDividaAtiva = Util.obterQuantidadeDiasEntreDuasDatas(dataDividaAtiva, new Date());
+
+				Integer pNumeroDiasMaxEmDividaAtiva = Util
+								.converterStringParaInteger((String) ParametroArrecadacao.P_NUM_DIAS_ESTORNO_DIVIDA_ATIVA.executar());
+
+				if(valorEstorno.compareTo(pValorMaxEstornoDividaAtiva) > 0){
+
+					if(numeroDiasEmDividaAtiva.compareTo(pNumeroDiasMaxEmDividaAtiva) > 0){
+
+					if(!this.getControladorPermissaoEspecial().verificarPermissaoEstonoDividaAtivaNumMaxDias(usuarioLogado)){
+
+						sessionContext.setRollbackOnly();
+							throw new ControladorException("atencao.usuario.nao.permitido.estornar.divida.ativa.num.dias.maximo", null,
+											pNumeroDiasMaxEmDividaAtiva.toString());
+						}
+
+					}else{
+					if(!this.getControladorPermissaoEspecial().verificarPermissaoEstonoDividaAtivaValorMaximo(usuarioLogado)){
+
+						sessionContext.setRollbackOnly();
+							throw new ControladorException("atencao.usuario.nao.permitido.estornar.divida.ativa.valor.maximo", null,
+											pValorMaxEstornoDividaAtiva.toString());
+						}
+					}
+
+				}else{
+				if(numeroDiasEmDividaAtiva.compareTo(pNumeroDiasMaxEmDividaAtiva) > 0){
+
+					if(!this.getControladorPermissaoEspecial().verificarPermissaoEstonoDividaAtivaNumMaxDias(usuarioLogado)){
+
+						sessionContext.setRollbackOnly();
+							throw new ControladorException("atencao.usuario.nao.permitido.estornar.divida.ativa.num.dias.maximo", null,
+											pNumeroDiasMaxEmDividaAtiva.toString());
+
+						}
+
+					}
+				}
+
+			}
+
+
+	}
 
 	/**
 	 * [UC1016] Estornar Pagamentos
@@ -37873,14 +38559,19 @@ public class ControladorArrecadacao
 	 */
 	public void estornarPagamento(PagamentoHistorico pagamentoHistorico, Usuario usuarioLogado) throws ControladorException{
 
-		if(pagamentoHistorico == null){
-			throw new ControladorException("atencao.estorno.nao_selecionado");
-		}
-
 		try{
+		
+			if(pagamentoHistorico == null){
+				throw new ControladorException("atencao.estorno.nao_selecionado");
+			}
 
 			// 3.1.1. [SB0004 – Cancelar crédito associado ao pagamento]
 			this.cancelarCreditoAssociadoAoPagamento(pagamentoHistorico, usuarioLogado);
+
+			// 3.1.2. [SB0006 – Cancelar debitos de acréscimo por impontualidade]
+			if(pagamentoHistorico.getImovel() != null){
+				this.cancelarDebitoACobrarDeAcrescimo(pagamentoHistorico, usuarioLogado);
+			}
 
 			AvisoBancario avisoBancario = pagamentoHistorico.getAvisoBancario();
 
@@ -37903,10 +38594,10 @@ public class ControladorArrecadacao
 
 			if(pagamentoInserir.getConta() != null){
 				getControladorContabil().registrarLancamentoContabil(pagamentoHistorico, OperacaoContabil.ESTORNAR_PAGAMENTO);
-			}else{
+				}else{
 				getControladorContabil().registrarLancamentoContabil(pagamentoHistorico,
 								OperacaoContabil.ESTORNAR_PAGAMENTO_NAO_IDENTIFICADO);
-			}
+				}
 
 			/*
 			 * ---------------------------------------
@@ -37932,11 +38623,26 @@ public class ControladorArrecadacao
 
 				if(colecaoContaHistorico == null || colecaoContaHistorico.isEmpty()){
 					throw new ControladorException("atencao.estorno.conta_historico.nao_localizada");
+				}else{
+
+					ContaHistorico contaHistorico = (ContaHistorico) Util.retonarObjetoDeColecao(colecaoContaHistorico);
+
+					contaHistorico.setIndicadorCobrancaMulta(ConstantesSistema.NAO);
+
+					if((contaHistorico.getIndicadorDividaAtiva().equals(ConstantesSistema.SIM) || contaHistorico
+									.getIndicadorExecucaoFiscal().equals(ConstantesSistema.SIM))
+									&& contaHistorico.getDataDividaAtiva() != null){
+						// [SB0005] - Verificar Permissão Estornar Pagamento em Dívida Ativa
+						verificarPermissaoEstornarPagamento(contaHistorico.getValorTotal(), contaHistorico.getDataDividaAtiva(),
+										usuarioLogado);
+					}
+
 				}
 
 				FiltroPagamentoHistorico filtroPagamentoHistorico = new FiltroPagamentoHistorico();
 				filtroPagamentoHistorico.adicionarParametro(new ParametroSimples(FiltroPagamentoHistorico.CONTA_ID, idContaGeral));
 				filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade("avisoBancario");
+				filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade("imovel");
 				colecaoPagamentoHistoricoConsulta = this.getControladorUtil().pesquisar(filtroPagamentoHistorico,
 								PagamentoHistorico.class.getName());
 
@@ -37961,14 +38667,20 @@ public class ControladorArrecadacao
 
 				this.removerImovelCobrancaAdministrivaConta(idContaGeral);
 
-				// Foi removido do caso de uso UC1016 - EstornarPagamentos
-				// FiltroConta filtroConta = new FiltroConta();
-				// filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.ID,
-				// idContaGeral));
-				// Conta conta = (Conta)
-				// Util.retonarObjetoDeColecao(this.getControladorUtil().pesquisar(filtroConta,
-				// Conta.class.getName()));
-				// this.getControladorSpcSerasa().verificarHaRelacaoCancelamentoComItensNegativacaoEstornarPagementos(conta);
+				/**
+				 * [UC1016] Estornar Pagamentos
+				 * Atualizar itens da execução fiscal.
+				 * 
+				 * @author Gicevalter Couto
+				 * @date 12/08/2014
+				 */
+				for(ContaHistorico contaHistorico : colecaoContaHistorico){
+					try{
+						repositorioFaturamento.estornarContaExecucaoFiscalItem(contaHistorico.getId(), new Date());
+					}catch(ErroRepositorioException e){
+						throw new ControladorException(e.getMessage());
+					}
+				}
 
 				// Pagamento de Guia
 			}else if(pagamentoHistorico.getGuiaPagamentoGeral() != null){
@@ -37982,12 +38694,38 @@ public class ControladorArrecadacao
 					numeroPrestacao = Short.valueOf(pagamentoHistorico.getNumeroPrestacao().toString());
 				}
 
+				FiltroGuiaPagamentoPrestacaoHistorico filtroGuiaPagamentoPrestacaoHistorico = new FiltroGuiaPagamentoPrestacaoHistorico();
+				filtroGuiaPagamentoPrestacaoHistorico.adicionarParametro(new ParametroSimples(
+								FiltroGuiaPagamentoPrestacaoHistorico.GUIA_PAGAMENTO_ID, idGuiaPagamentoGeral));
+				filtroGuiaPagamentoPrestacaoHistorico.adicionarParametro(new ParametroSimples(
+								FiltroGuiaPagamentoPrestacaoHistorico.NUMERO_PRESTACAO, numeroPrestacao));
+
+				Collection colecaoGuiaPagamentoPrestacaoHistorico = this.getControladorUtil().pesquisar(
+								filtroGuiaPagamentoPrestacaoHistorico, GuiaPagamentoPrestacaoHistorico.class.getName());
+
+				if(!Util.isVazioOrNulo(colecaoGuiaPagamentoPrestacaoHistorico)){
+					GuiaPagamentoPrestacaoHistorico guiaPagamentoPrestacaoHistorico = (GuiaPagamentoPrestacaoHistorico) Util
+									.retonarObjetoDeColecao(colecaoGuiaPagamentoPrestacaoHistorico);
+
+					if((guiaPagamentoPrestacaoHistorico.getIndicadorDividaAtiva().equals(ConstantesSistema.SIM) || guiaPagamentoPrestacaoHistorico
+									.getIndicadorExecucaoFiscal().equals(ConstantesSistema.SIM))
+									&& guiaPagamentoPrestacaoHistorico.getDataDividaAtiva() != null){
+						// [SB0005] - Verificar Permissão Estornar Pagamento em Dívida Ativa
+						verificarPermissaoEstornarPagamento(guiaPagamentoPrestacaoHistorico.getValorPrestacao(),
+										guiaPagamentoPrestacaoHistorico.getDataDividaAtiva(), usuarioLogado);
+
+					}
+
+				}
+
 				FiltroPagamentoHistorico filtroPagamentoHistorico = new FiltroPagamentoHistorico();
 				filtroPagamentoHistorico.adicionarParametro(new ParametroSimples(FiltroPagamentoHistorico.GUIA_PAGAMENTO_GERAL_ID,
 								idGuiaPagamentoGeral));
 				filtroPagamentoHistorico
 								.adicionarParametro(new ParametroSimples(FiltroPagamentoHistorico.NUMERO_PRESTACAO, numeroPrestacao));
 				filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade("avisoBancario");
+				filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade("imovel");
+				filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.GUIA_PAGAMENTO_GERAL);
 				colecaoPagamentoHistoricoConsulta = this.getControladorUtil().pesquisar(filtroPagamentoHistorico,
 								PagamentoHistorico.class.getName());
 
@@ -38002,14 +38740,27 @@ public class ControladorArrecadacao
 							colecaoPagamentoInserir.add(pagamentoTemporario);
 							colecaoPagamentoHistoricoRemover.add(pagamentoHistoricoTemporario);
 						}
+						}
 					}
-				}
 
 				// Remove os Pagamentos do Histórico e transfere os documentos referentes
 				this.getControladorUtil().removerColecaoObjetos(colecaoPagamentoHistoricoRemover);
 				this.transferirGuiaPagamentoPrestacaoHistoricoParaGuiaPagamentoPrestacao(idGuiaPagamentoGeral, numeroPrestacao);
 
 				this.removerImovelCobrancaAdministrivaGuia(idGuiaPagamentoGeral, numeroPrestacao);
+
+				/**
+				 * [UC1016] Estornar Pagamentos
+				 * Atualizar itens da execução fiscal.
+				 * 
+				 * @author Gicevalter Couto
+				 * @date 12/08/2014
+				 */
+				try{
+					repositorioFaturamento.estornarGuiaPagamentoExecucaoFiscalItem(idGuiaPagamentoGeral, numeroPrestacao, new Date());
+				}catch(ErroRepositorioException e){
+					throw new ControladorException(e.getMessage());
+				}
 
 				// Pagamento de Débido a Cobrar
 			}else if(pagamentoHistorico.getDebitoACobrar() != null){
@@ -38033,7 +38784,14 @@ public class ControladorArrecadacao
 					filtroPagamentoHistorico.adicionarParametro(new ParametroSimples(FiltroPagamentoHistorico.NUMERO_PRESTACAO, 0));
 				}
 				filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade("avisoBancario");
-				colecaoPagamentoHistoricoConsulta = repositorioArrecadacao.pesquisarPagamentoHistoricoCriteria(filtroPagamentoHistorico);
+				filtroPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade("imovel");
+				try{
+					colecaoPagamentoHistoricoConsulta = repositorioArrecadacao
+									.pesquisarPagamentoHistoricoCriteria(filtroPagamentoHistorico);
+				}catch(ErroRepositorioException e1){
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 
 				if(colecaoPagamentoHistoricoConsulta != null && !colecaoPagamentoHistoricoConsulta.isEmpty()){
 
@@ -38046,8 +38804,8 @@ public class ControladorArrecadacao
 							colecaoPagamentoInserir.add(pagamentoTemporario);
 							colecaoPagamentoHistoricoRemover.add(pagamentoHistoricoTemporario);
 						}
+						}
 					}
-				}
 
 				FiltroDebitoACobrarGeral filtroDebitoACobrarGeral = new FiltroDebitoACobrarGeral();
 				filtroDebitoACobrarGeral.adicionarParametro(new ParametroSimples(FiltroDebitoACobrarGeral.ID, idDebitoACobrarGeral));
@@ -38097,7 +38855,7 @@ public class ControladorArrecadacao
 						}
 						debitoACobrar.setUltimaAlteracao(new Date());
 						this.getControladorUtil().atualizar(debitoACobrar);
-					}
+						}
 					// remove os todo os registros do debito a cobrar historico do tipo Juros do
 					// Parcelamento referente ao debito a cobrar da parcela
 					// paga
@@ -38113,7 +38871,7 @@ public class ControladorArrecadacao
 
 					if(colecaoDebitoACobrarhistoricoRemover != null && !colecaoDebitoACobrarhistoricoRemover.isEmpty()){
 						this.getControladorUtil().removerColecaoObjetos(colecaoDebitoACobrarhistoricoRemover);
-					}
+						}
 				}else{
 
 					FiltroDebitoACobrar filtroDebitoACobrar = new FiltroDebitoACobrar();
@@ -38127,9 +38885,15 @@ public class ControladorArrecadacao
 					// e numero de prestacoes diferene de null e diferente de zero retorne para
 					// quantidadeParcelasAntecipadas
 
-					Integer quantidadeParcelasAntecipadas = repositorioArrecadacao
-									.consultarQtdePagamentoHistoricoParaDebitoACobrarParcelamentoComPrestacaoNula(debitoACobrarGeral
-													.getId());
+					Integer quantidadeParcelasAntecipadas = 0;
+					try{
+						quantidadeParcelasAntecipadas = repositorioArrecadacao
+										.consultarQtdePagamentoHistoricoParaDebitoACobrarParcelamentoComPrestacaoNula(debitoACobrarGeral
+														.getId());
+					}catch(ErroRepositorioException e){
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
 					if(debitoACobrar != null){
 
@@ -38139,32 +38903,32 @@ public class ControladorArrecadacao
 						this.getControladorUtil().atualizar(debitoACobrar);
 					}
 
-				}
-			}else{
+					}
+				}else{
 
 				if(colecaoPagamentoHistoricoRemover != null && !colecaoPagamentoHistoricoRemover.isEmpty()){
 					this.getControladorUtil().removerColecaoObjetos(colecaoPagamentoHistoricoRemover);
+					}
+
 				}
 
-			}
-
 			// ------------ REGISTRAR TRANSAÇÃO ------------
-			Operacao operacao = new Operacao();
-			operacao.setId(Operacao.OPERACAO_ESTORNAR_PAGAMENTO);
-
-			RegistradorOperacao registradorOperacao = new RegistradorOperacao(operacao.getId(), new UsuarioAcaoUsuarioHelper(usuarioLogado,
-							UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
-
-			OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
-			operacaoEfetuada.setOperacao(operacao);
 
 			for(Object pagamentoObject : colecaoPagamentoInserir){
+
 				Pagamento pagamento = (Pagamento) pagamentoObject;
-				pagamento.setOperacaoEfetuada(operacaoEfetuada);
+
+				// ------------ REGISTRAR TRANSAÇÃO ----------------
+				RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_ESTORNAR_PAGAMENTO,
+								new UsuarioAcaoUsuarioHelper(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+
+				RegistradorOperacao.set(registradorOperacao);
+
 				pagamento.adicionarUsuario(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
 				registradorOperacao.registrarOperacao(pagamento);
+				// ------------ REGISTRAR TRANSAÇÃO ----------------
+
 			}
-			// ------------ REGISTRAR TRANSAÇÃO ------------
 
 			this.getControladorUtil().inserirColecaoObjetos(colecaoPagamentoInserir);
 
@@ -39114,7 +39878,8 @@ public class ControladorArrecadacao
 										+ "-" + pagamentoNaoClassificado.getPagamentoSituacaoAtual().getDescricao();
 						String valorPagamentoInserido = Util.formatarMoedaReal(pagamentoNaoClassificado.getValorPagamento(), 2);
 						throw new InserirPagamentoException("atencao.pagamento_nao_classificado", null,
-										new String[] {descricaoSituacaoAtualPagamento}, descricaoSituacaoAtualPagamento,
+										new String[] {descricaoSituacaoAtualPagamento, valorPagamentoInserido},
+										descricaoSituacaoAtualPagamento,
 										valorPagamentoInserido);
 					}
 
@@ -39179,6 +39944,7 @@ public class ControladorArrecadacao
 			filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.PAGAMENTO_SITUACAO_ATUAL);
 			filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.PAGAMENTO_SITUACAO_ANTERIOR);
 			filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.LOCALIDADE);
+			filtroPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.CONTA);
 			pagamentoHistoricoBanco = repositorioUtil.pesquisar(filtroPagamentoHistorico, PagamentoHistorico.class.getName());
 
 			if(!pagamentoBanco.isEmpty()){
@@ -39736,11 +40502,13 @@ public class ControladorArrecadacao
 					clienteGuiaPagamentoTemp.setGuiaPagamento(guiaPagamento);
 					clienteGuiaPagamentoTemp.setUltimaAlteracao(new Date());
 
+
 					colecaoClienteGuiaPagamentoInserir.add(clienteGuiaPagamentoTemp);
 				}
 
-				this.getControladorBatch().inserirColecaoObjetoParaBatch(colecaoClienteGuiaPagamentoInserir);
 				this.getControladorBatch().removerColecaoObjetoParaBatch(colecaoClienteGuiaPagamentoHistoricoRemover);
+				this.getControladorBatch().inserirColecaoObjetoParaBatch(colecaoClienteGuiaPagamentoInserir);
+
 
 				colecaoClienteGuiaPagamentoInserir = null;
 				colecaoClienteGuiaPagamentoHistoricoRemover = null;
@@ -40282,7 +41050,8 @@ public class ControladorArrecadacao
 				// Cria uma Guia Prestacao
 				GuiaPagamentoPrestacaoPK guiaPrestacaoPK = new GuiaPagamentoPrestacaoPK(guiaPrestacaoHistorico.getComp_id()
 								.getGuiaPagamentoId(), guiaPrestacaoHistorico.getComp_id().getNumeroPrestacao(), guiaPrestacaoHistorico
-								.getComp_id().getDebitoTipoId(), guiaPrestacaoHistorico.getComp_id().getItemLancamentoContabilId());
+								.getComp_id().getDebitoTipoId(), guiaPrestacaoHistorico.getComp_id().getItemLancamentoContabilId(),
+								guiaPrestacaoHistorico.getComp_id().getNumeroProcessoAdministrativoExecucaoFiscal());
 
 				GuiaPagamentoPrestacao guiaPrestacaoNova = new GuiaPagamentoPrestacao();
 				guiaPrestacaoNova.setComp_id(guiaPrestacaoPK);
@@ -40295,10 +41064,14 @@ public class ControladorArrecadacao
 				guiaPrestacaoNova.setIndicadorCobrancaMulta(guiaPrestacaoHistorico.getIndicadorCobrancaMulta());
 				guiaPrestacaoNova.setIndicadorPagamentoPendente(guiaPrestacaoHistorico.getIndicadorPagamentoPendente());
 				guiaPrestacaoNova.setValorPrestacao(guiaPrestacaoHistorico.getValorPrestacao());
-				guiaPrestacaoNova.setDebitoCreditoSituacao(guiaPrestacaoHistorico.getDebitoCreditoSituacao());
+				guiaPrestacaoNova.setDebitoCreditoSituacao(new DebitoCreditoSituacao(DebitoCreditoSituacao.NORMAL));
 				guiaPrestacaoNova.setUltimaAlteracao(new Date());
 				guiaPrestacaoNova.setIndicadorCobrancaAdministrativa(guiaPrestacaoHistorico.getIndicadorCobrancaAdministrativa());
 				guiaPrestacaoNova.setIndicadorRemuneraCobrancaAdministrativa(guiaPrestacaoHistorico.getIndicadorRemuneraCobrancaAdministrativa());
+				guiaPrestacaoNova.setIndicadorDividaAtiva(guiaPrestacaoHistorico.getIndicadorDividaAtiva());
+				guiaPrestacaoNova.setDataDividaAtiva(guiaPrestacaoHistorico.getDataDividaAtiva());
+				guiaPrestacaoNova.setIndicadorExecucaoFiscal(guiaPrestacaoHistorico.getIndicadorExecucaoFiscal());
+				guiaPrestacaoNova.setDataExecucaoFiscal(guiaPrestacaoHistorico.getDataExecucaoFiscal());
 
 				colecaoGuiasPagamentoPrestacaoInserir.add(guiaPrestacaoNova);
 				colecaoGuiasPagamentoPrestacaoHistoricoRemover.add(guiaPrestacaoHistorico);
@@ -40555,6 +41328,7 @@ public class ControladorArrecadacao
 		String parcela = ConstantesAplicacao.get("empresa.ada_parcela");
 		String notaAvulsa = ConstantesAplicacao.get("empresa.ada_nota_avulsa");
 		String guiaPagamentoADA = ConstantesAplicacao.get("empresa.ada_guia_pagamento");
+		String contaDividaAtiva = ConstantesAplicacao.get("empresa.ada_conta_divida_ativa");
 
 		// Identificação - G.05.7.1
 		String identificacao = idPagamento.substring(0, 20);
@@ -40571,6 +41345,10 @@ public class ControladorArrecadacao
 		// Número identificação do documento pagável - G.05.7.1.3
 		String documentoPagavelADA = identificacao.substring(9, 18);
 
+		// Número de emissão
+		String numeroEmissao = identificacao.substring(18, 20);
+
+
 		RegistroHelperCodigoBarrasTipoPagamento registroHelperCodigoBarrasTipoPagamento = new RegistroHelperCodigoBarrasTipoPagamento();
 		Integer tipoPagamentoAux = null;
 		String descricaoOcorrenciaMovimento = "OK";
@@ -40584,7 +41362,7 @@ public class ControladorArrecadacao
 		// [SB0007] - Distribuir Pagamento Legado ADA
 
 		// Conta e Segunda Via
-		if(tipoDocumento.equals(contaSegundaVia)){
+		if(tipoDocumento.equals(contaSegundaVia) || tipoDocumento.equals(contaDividaAtiva)){
 
 			// [SB0014] – Determinar Valores da Conta
 
@@ -40684,6 +41462,13 @@ public class ControladorArrecadacao
 			filtroAvisoInteligest.adicionarParametro(new ParametroSimples(FiltroAvisoInteligest.ANO, anoDocumentoADA));
 			filtroAvisoInteligest.adicionarParametro(new ParametroSimples(FiltroAvisoInteligest.CODIGO_TRIBUTO, tipoDocumento));
 
+			if(!Util.isVazioOuBranco(numeroEmissao)){
+				filtroAvisoInteligest.adicionarParametro(new ParametroSimples(FiltroAvisoInteligest.NUMERO_EMISSAO, numeroEmissao));
+			}else{
+				numeroEmissao = "1";
+			}
+
+
 			Collection<AvisoInteligest> colecaoAvisoInteligest = this.getControladorUtil().pesquisar(filtroAvisoInteligest,
 							AvisoInteligest.class.getName());
 
@@ -40748,7 +41533,7 @@ public class ControladorArrecadacao
 
 			registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(idImovelStr);
 			registroHelperCodigoBarrasTipoPagamento.setIdPagamento2(idGuiaPagamentoStr);
-			registroHelperCodigoBarrasTipoPagamento.setIdPagamento3("1");
+			registroHelperCodigoBarrasTipoPagamento.setIdPagamento3(numeroEmissao);
 
 			// Tipo de Pagamento
 			tipoPagamentoAux = PagamentoTipo.PAGAMENTO_TIPO_GUIA_PAGAMENTO_MATRICULA_IMOVEL;
@@ -40842,28 +41627,34 @@ public class ControladorArrecadacao
 	 *       Adicionar mais uma identificação: adaTipoDocumento <> "000"
 	 */
 	public boolean validarRegistroLegadoADA(Short codigoEmpresaFebraban, String adaGrupoFaturamentoConstanteLegado,
-					String adaAnoMesReferenciaContaLegado, String adaTipoDocumento){
+					String adaAnoMesReferenciaContaLegado, String adaTipoDocumento, String registroCodigo){
 
 		boolean retorno = false;
 
-		if(Short.parseShort(ConstantesAplicacao.get("empresa.ada_codigo_empresa")) == codigoEmpresaFebraban.shortValue()){
+
+	// if(Short.parseShort(ConstantesAplicacao.get("empresa.ada_codigo_empresa")) ==
+		// codigoEmpresaFebraban.shortValue()){
 
 			if((ConstantesAplicacao.get("empresa.ada_grupo_faturamento_constante_legado1").equals(adaGrupoFaturamentoConstanteLegado) || ConstantesAplicacao
 							.get("empresa.ada_grupo_faturamento_constante_legado2").equals(adaGrupoFaturamentoConstanteLegado))
 							&& ConstantesAplicacao.get("empresa.ada_ano_mes_referencia_conta_legado")
 											.equals(adaAnoMesReferenciaContaLegado)){
 
+			if(registroCodigo == null || !registroCodigo.equals("F")){
 				if(!ConstantesAplicacao.get("empresa.ada_tipo_documento_diferente").equals(adaTipoDocumento)){
 					retorno = true;
 				}else{
 					retorno = false;
 				}
 			}else{
+					retorno = true;
+				}
+			}else{
 				retorno = false;
 			}
-		}else{
-			retorno = false;
-		}
+		// }else{
+		// retorno = false;
+		// }
 
 		return retorno;
 	}
@@ -41216,7 +42007,8 @@ public class ControladorArrecadacao
 
 					if(debitoTipo != null && debitoTipo.getLancamentoItemContabil() != null){
 						GuiaPagamentoPrestacaoPK comp_id = new GuiaPagamentoPrestacaoPK(guiaPagamento.getId(), (short) 1,
-										debitoTipo.getId(), debitoTipo.getLancamentoItemContabil().getId());
+										debitoTipo.getId(), debitoTipo.getLancamentoItemContabil().getId(),
+										ConstantesSistema.NUMERO_PROCESSO_ADM_EXEC_FISCAL_ZERO);
 						GuiaPagamentoPrestacao guiaPagamentoPrestacao = new GuiaPagamentoPrestacao();
 						guiaPagamentoPrestacao.setComp_id(comp_id);
 						guiaPagamentoPrestacao.setDebitoCreditoSituacao(debitoCreditoSituacao);
@@ -41228,6 +42020,13 @@ public class ControladorArrecadacao
 						guiaPagamentoPrestacao.setAnoMesReferenciaFaturamento(sistemaParametro.getAnoMesFaturamento());
 						guiaPagamentoPrestacao.setUltimaAlteracao(new Date());
 						guiaPagamentoPrestacao.setDataEmissao(new Date());
+
+						// TODO Saulo Lima - Confirmar com Fátima os valores abaixo
+						guiaPagamentoPrestacao.setIndicadorDividaAtiva(ConstantesSistema.NAO);
+						guiaPagamentoPrestacao.setDataDividaAtiva(null);
+						guiaPagamentoPrestacao.setIndicadorExecucaoFiscal(ConstantesSistema.NAO);
+						guiaPagamentoPrestacao.setDataExecucaoFiscal(null);
+
 						getControladorUtil().inserir(guiaPagamentoPrestacao);
 					}else{
 						System.out.println("SVTP_ID S/ DBTP_ID E FNTP_ID: "
@@ -42019,10 +42818,14 @@ public class ControladorArrecadacao
 							.getRegistroHelperCodigoBarrasTipoPagamento();
 
 			// Tratamento dos tipos originais do Legado ADA e DESO
-			if(registroHelperCodigoG.getRegistroHelperCodigoBarras().isLegado()){
+			if(registroHelperCodigoG.getRegistroHelperCodigoBarras().isLegado()
+							&& registroHelperCodigoG.getRegistroHelperCodigoBarras().getTipoPagamento() != null){
+
 
 				if(registroHelperCodigoG.getRegistroHelperCodigoBarras().getTipoPagamento()
-								.equals(ConstantesSistema.CODIGO_TIPO_PAGAMENTO_CONTA_ADA)){
+								.equals(ConstantesSistema.CODIGO_TIPO_PAGAMENTO_CONTA_ADA)
+								|| registroHelperCodigoG.getRegistroHelperCodigoBarras().getTipoPagamento()
+												.equals(ConstantesSistema.CODIGO_TIPO_PAGAMENTO_CONTA.toString())){
 
 					arrecadadorMovimentoItemHelper.setIdentificacao(codigoBarrasTipoPagamento.getIdPagamento1() + SEPARADOR_IDENTIFICACAO
 									+ Util.formatarAnoMesParaMesAno(codigoBarrasTipoPagamento.getIdPagamento2()));
@@ -42032,7 +42835,9 @@ public class ControladorArrecadacao
 				}else if(registroHelperCodigoG.getRegistroHelperCodigoBarras().getTipoPagamento()
 								.equals(ConstantesSistema.CODIGO_TIPO_PAGAMENTO_GUIA_PAGAMENTO_PARCELA_ADA)
 								|| registroHelperCodigoG.getRegistroHelperCodigoBarras().getTipoPagamento()
-												.equals(ConstantesSistema.CODIGO_TIPO_PAGAMENTO_GUIA_PAGAMENTO_TAXAS_DIVERSAS_ADA)){
+												.equals(ConstantesSistema.CODIGO_TIPO_PAGAMENTO_GUIA_PAGAMENTO_TAXAS_DIVERSAS_ADA)
+								|| registroHelperCodigoG.getRegistroHelperCodigoBarras().getTipoPagamento()
+												.equals(String.valueOf(ConstantesSistema.CODIGO_TIPO_PAGAMENTO_GUIA_PAGAMENTO))){
 
 					arrecadadorMovimentoItemHelper.setIdentificacao(codigoBarrasTipoPagamento.getIdPagamento1() + SEPARADOR_IDENTIFICACAO
 									+ codigoBarrasTipoPagamento.getIdPagamento2() + SEPARADOR_IDENTIFICACAO
@@ -42041,7 +42846,9 @@ public class ControladorArrecadacao
 					arrecadadorMovimentoItemHelper.setTipoPagamento(ArrecadadorMovimentoItemHelper.TIPO_PAGAMENTO_GUIA_PAGAMENTO_IMOVEL);
 
 				}else if(registroHelperCodigoG.getRegistroHelperCodigoBarras().getTipoPagamento()
-								.equals(ConstantesSistema.CODIGO_TIPO_PAGAMENTO_DOCUMENTO_COBRANCA_ADA)){
+								.equals(ConstantesSistema.CODIGO_TIPO_PAGAMENTO_DOCUMENTO_COBRANCA_ADA)
+								|| registroHelperCodigoG.getRegistroHelperCodigoBarras().getTipoPagamento()
+												.equals(String.valueOf(ConstantesSistema.CODIGO_TIPO_PAGAMENTO_DOCUMENTO_COBRANCA))){
 
 					arrecadadorMovimentoItemHelper.setIdentificacao(codigoBarrasTipoPagamento.getIdPagamento2() + SEPARADOR_IDENTIFICACAO
 									+ codigoBarrasTipoPagamento.getIdPagamento3());
@@ -42335,7 +43142,7 @@ public class ControladorArrecadacao
 		String adaTipoDocumento = linha.substring(66, 69);
 		String adaAnoMesReferenciaContaLegado = linha.substring(69, 74).trim();
 		validarRegistroLegadoADA(codigoEmpresaFebraban, adaGrupoFaturamentoConstanteLegado, adaAnoMesReferenciaContaLegado,
-						adaTipoDocumento);
+						adaTipoDocumento, "F");
 
 		if(registroLegadoADA){
 
@@ -45740,6 +46547,7 @@ public class ControladorArrecadacao
 			int indicadorNotasPromissorias = 2;
 			int indicadorGuiasPagamento = 2;
 			int indicadorCalcularAcrescimoImpontualidade = 2;
+			int indicadorCalcularAcrescimosSucumbenciaAnterior = 2;
 			Boolean indicadorContas = Boolean.TRUE;
 			SistemaParametro sistemaParametro = null;
 
@@ -45749,7 +46557,8 @@ public class ControladorArrecadacao
 							anoMesFinalReferenciaDebito, anoMesInicialVencimentoDebito, anoMesFinalVencimentoDebito, indicadorPagamento,
 							indicadorConta, indicadorDebitoACobrar, indicadorCreditoARealizar, indicadorNotasPromissorias,
 							indicadorGuiasPagamento, indicadorCalcularAcrescimoImpontualidade, indicadorContas, sistemaParametro, null,
-							null, null, ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM);
+							null, null, ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM,
+							indicadorCalcularAcrescimosSucumbenciaAnterior, null);
 
 			Collection<ContaValoresHelper> colecaoContaValores = colecaoDebitoImovel.getColecaoContasValores();
 
@@ -45923,7 +46732,7 @@ public class ControladorArrecadacao
 			guiaPagamentoGeral.setGuiaPagamento(guiaPagamento);
 
 			GuiaPagamentoPrestacaoPK comp_id = new GuiaPagamentoPrestacaoPK(guiaPagamento.getId(), (short) 1, debitoTipo.getId(),
-							debitoTipo.getLancamentoItemContabil().getId());
+							debitoTipo.getLancamentoItemContabil().getId(), ConstantesSistema.NUMERO_PROCESSO_ADM_EXEC_FISCAL_ZERO);
 
 			GuiaPagamentoPrestacao guiaPagamentoPrestacao = new GuiaPagamentoPrestacao();
 			guiaPagamentoPrestacao.setComp_id(comp_id);
@@ -45943,6 +46752,12 @@ public class ControladorArrecadacao
 			guiaPagamentoPrestacao.setAnoMesReferenciaFaturamento(sistemaParametro.getAnoMesFaturamento());
 			guiaPagamentoPrestacao.setUltimaAlteracao(new Date());
 			guiaPagamentoPrestacao.setDataEmissao(new Date());
+
+			// TODO Saulo Lima - Confirmar com Fátima os valores abaixo
+			guiaPagamentoPrestacao.setIndicadorDividaAtiva(ConstantesSistema.NAO);
+			guiaPagamentoPrestacao.setDataDividaAtiva(null);
+			guiaPagamentoPrestacao.setIndicadorExecucaoFiscal(ConstantesSistema.NAO);
+			guiaPagamentoPrestacao.setDataExecucaoFiscal(null);
 
 			// Insere a Guia Pagamento Prestação
 			getControladorUtil().inserir(guiaPagamentoPrestacao);
@@ -46097,6 +46912,7 @@ public class ControladorArrecadacao
 			novaComp_id.setNumeroPrestacao(numeroPrestacao);
 			novaComp_id.setDebitoTipoId(idDebitoTipo);
 			novaComp_id.setItemLancamentoContabilId(idLancamentoItemContabil);
+			novaComp_id.setNumeroProcessoAdministrativoExecucaoFiscal(ConstantesSistema.NUMERO_PROCESSO_ADM_EXEC_FISCAL_ZERO);
 
 			guiaPagamentoPrestacaoInserir.setComp_id(novaComp_id);
 			guiaPagamentoPrestacaoInserir.setLancamentoItemContabil(lancamentoItemContabil);
@@ -46112,19 +46928,20 @@ public class ControladorArrecadacao
 			guiaPagamentoPrestacaoInserir.setFinanciamentoTipo(financiamentoTipo);
 
 			guiaPagamentoPrestacaoInserir.setValorPrestacao(valorAcrescimos);
-
 			guiaPagamentoPrestacaoInserir.setDataVencimento(dataVencimento);
-
 			guiaPagamentoPrestacaoInserir.setIndicadorPagamentoPendente(indicadorPagamentoPendente);
-
 			guiaPagamentoPrestacaoInserir.setIndicadorCobrancaMulta(indicadorCobrancaMulta);
 
 			Integer anoMesReferenciaFaturamento = sistemaParametro.getAnoMesFaturamento();
 			guiaPagamentoPrestacaoInserir.setAnoMesReferenciaFaturamento(anoMesReferenciaFaturamento);
 
 			guiaPagamentoPrestacaoInserir.setDataEmissao(dataEmissao);
-
 			guiaPagamentoPrestacaoInserir.setUltimaAlteracao(new Date());
+
+			guiaPagamentoPrestacaoInserir.setIndicadorDividaAtiva(ConstantesSistema.NAO);
+			guiaPagamentoPrestacaoInserir.setDataDividaAtiva(null);
+			guiaPagamentoPrestacaoInserir.setIndicadorExecucaoFiscal(ConstantesSistema.NAO);
+			guiaPagamentoPrestacaoInserir.setDataExecucaoFiscal(null);
 
 			// Inserir Guia de Pagamento prestação
 			this.getControladorUtil().inserir(guiaPagamentoPrestacaoInserir);
@@ -46564,6 +47381,7 @@ public class ControladorArrecadacao
 					Integer idClienteResponsavel, Integer seqFaturaClienteResponsavel, Short numeroPrestacaoDocumento,
 					Integer idOpcaoPreParcelamento, Integer idGuiaPagamento, Integer idCliente) throws ControladorException{
 
+
 		String paramIndicadorTrataLegado = ParametroArrecadacao.P_INDICADOR_TRATA_LEGADO.executar();
 
 		if(ConstantesSistema.SIM.toString().equals(paramIndicadorTrataLegado)){
@@ -46580,6 +47398,7 @@ public class ControladorArrecadacao
 							matriculaImovel, mesAnoReferenciaConta, digitoVerificadorRefContaModulo10, idTipoDebito,
 							anoEmissaoGuiaPagamento, sequencialDocumentoCobranca, idTipoDocumento, idClienteResponsavel,
 							seqFaturaClienteResponsavel, numeroPrestacaoDocumento, idOpcaoPreParcelamento);
+
 		}else{
 			Object[] arrayCampos = this.distribuirCamposDoCodigoDeBarras(tipoPagamento, idLocalidade, matriculaImovel,
 							mesAnoReferenciaConta, digitoVerificadorRefContaModulo10, idTipoDebito, anoEmissaoGuiaPagamento,
@@ -46588,6 +47407,9 @@ public class ControladorArrecadacao
 
 			return this.obterRepresentacaoNumericaCodigoBarraComParametrizacao(arrayCampos, valorCodigoBarra, idTipoDocumento);
 		}
+
+
+
 	}
 
 	/**
@@ -46629,17 +47451,17 @@ public class ControladorArrecadacao
 
 		Integer indicadorDocumentoCliente = 0;
 		
-		Short sequencial = 0;
-
-		Integer anoLancamento = 0;
-
-		Integer numeroAviso = null;
-
-		Integer numeroEmissao = 0;
-
-		Integer codigoTributo = null;
-		
-		Integer valorFixo = null;
+		// Short sequencial = 0;
+		//
+		// Integer anoLancamento = 0;
+		//
+		// Integer numeroAviso = null;
+		//
+		// Integer numeroEmissao = 0;
+		//
+		// Integer codigoTributo = null;
+		//
+		// Integer valorFixo = null;
 
 		FiltroDocumentoTipo filtroDocumentoTipo = new FiltroDocumentoTipo();
 		filtroDocumentoTipo.adicionarParametro(new ParametroSimples(FiltroDocumentoTipo.ID, idTipoDocumento));
@@ -46666,47 +47488,52 @@ public class ControladorArrecadacao
 				}
 			}
 			
-			codigoTributo = documentoTipo.getCodigo();
-			
-			if(documentoTipo.getId().equals(DocumentoTipo.CONTA)){
-				
-				FiltroConta filtroConta = new FiltroConta();
-				filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.IMOVEL_ID, matriculaImovel));
-				filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.REFERENCIA, Util.formatarMesAnoParaAnoMes(Util
-								.converterStringParaInteger(mesAnoReferenciaConta))));
-
-				Collection<Conta> colecaoConta = this.getControladorUtil().pesquisar(filtroConta,
-								Conta.class.getName());
-				
-				if(!Util.isVazioOrNulo(colecaoConta)){
-					Conta conta = (Conta) Util.retonarObjetoDeColecao(colecaoConta);
-					numeroAviso = conta.getId();
-				}
-				
-				valorFixo = 04;
-
-			}else if(documentoTipo.getId().equals(DocumentoTipo.GUIA_PAGAMENTO)){
-				
-				numeroAviso = idGuiaPagamento;
-				sequencial = numeroPrestacaoDocumento;
-				valorFixo = 04;
-
-			}else if(documentoTipo.getId().equals(DocumentoTipo.FATURA_CLIENTE)){
-				
-				FiltroFatura filtroFatura = new FiltroFatura();
-				filtroFatura.adicionarParametro(new ParametroSimples(FiltroFatura.CLIENTE_ID, idClienteResponsavel));
-				filtroFatura.adicionarParametro(new ParametroSimples(FiltroFatura.SEQUENCIAL, seqFaturaClienteResponsavel));
-
-				Collection<Fatura> colecaoFatura = this.getControladorUtil().pesquisar(filtroFatura, Fatura.class.getName());
-				
-				if(!Util.isVazioOrNulo(colecaoFatura)){
-					Fatura fatura = (Fatura) Util.retonarObjetoDeColecao(colecaoFatura);
-					numeroAviso = fatura.getId();
-					sequencial = fatura.getSequencial().shortValue();
-				}
-
-				valorFixo = 03;
-			}
+			// codigoTributo = documentoTipo.getCodigo();
+			//
+			// if(documentoTipo.getId().equals(DocumentoTipo.CONTA)){
+			//
+			// FiltroConta filtroConta = new FiltroConta();
+			// filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.IMOVEL_ID,
+			// matriculaImovel));
+			// filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.REFERENCIA,
+			// Util.formatarMesAnoParaAnoMes(Util
+			// .converterStringParaInteger(mesAnoReferenciaConta))));
+			//
+			// Collection<Conta> colecaoConta = this.getControladorUtil().pesquisar(filtroConta,
+			// Conta.class.getName());
+			//
+			// if(!Util.isVazioOrNulo(colecaoConta)){
+			// Conta conta = (Conta) Util.retonarObjetoDeColecao(colecaoConta);
+			// numeroAviso = conta.getId();
+			// }
+			//
+			// valorFixo = 04;
+			//
+			// }else if(documentoTipo.getId().equals(DocumentoTipo.GUIA_PAGAMENTO)){
+			//
+			// numeroAviso = idGuiaPagamento;
+			// sequencial = numeroPrestacaoDocumento;
+			// valorFixo = 04;
+			//
+			// }else if(documentoTipo.getId().equals(DocumentoTipo.FATURA_CLIENTE)){
+			//
+			// FiltroFatura filtroFatura = new FiltroFatura();
+			// filtroFatura.adicionarParametro(new ParametroSimples(FiltroFatura.CLIENTE_ID,
+			// idClienteResponsavel));
+			// filtroFatura.adicionarParametro(new ParametroSimples(FiltroFatura.SEQUENCIAL,
+			// seqFaturaClienteResponsavel));
+			//
+			// Collection<Fatura> colecaoFatura = this.getControladorUtil().pesquisar(filtroFatura,
+			// Fatura.class.getName());
+			//
+			// if(!Util.isVazioOrNulo(colecaoFatura)){
+			// Fatura fatura = (Fatura) Util.retonarObjetoDeColecao(colecaoFatura);
+			// numeroAviso = fatura.getId();
+			// sequencial = fatura.getSequencial().shortValue();
+			// }
+			//
+			// valorFixo = 03;
+			// }
 			
 			
 			
@@ -46728,17 +47555,17 @@ public class ControladorArrecadacao
 
 		mapCodigoBarrasCampos.put(CodigoBarrasCampos.INDICADOR_DOCUMENTO_CLIENTE, indicadorDocumentoCliente);
 
-		mapCodigoBarrasCampos.put(CodigoBarrasCampos.SEQUENCIAL, sequencial);
-		
-		mapCodigoBarrasCampos.put(CodigoBarrasCampos.ANO_LANCAMENTO, anoLancamento);
-		
-		mapCodigoBarrasCampos.put(CodigoBarrasCampos.NUMERO_AVISO, numeroAviso);
-		
-		mapCodigoBarrasCampos.put(CodigoBarrasCampos.NUMERO_EMISSAO, numeroEmissao);
-		
-		mapCodigoBarrasCampos.put(CodigoBarrasCampos.CODIGO_TRIBUTO, codigoTributo);
-
-		mapCodigoBarrasCampos.put(CodigoBarrasCampos.VALOR_FIXO, valorFixo);
+		// mapCodigoBarrasCampos.put(CodigoBarrasCampos.SEQUENCIAL, sequencial);
+		//
+		// mapCodigoBarrasCampos.put(CodigoBarrasCampos.ANO_LANCAMENTO, anoLancamento);
+		//
+		// mapCodigoBarrasCampos.put(CodigoBarrasCampos.NUMERO_AVISO, numeroAviso);
+		//
+		// mapCodigoBarrasCampos.put(CodigoBarrasCampos.NUMERO_EMISSAO, numeroEmissao);
+		//
+		// mapCodigoBarrasCampos.put(CodigoBarrasCampos.CODIGO_TRIBUTO, codigoTributo);
+		//
+		// mapCodigoBarrasCampos.put(CodigoBarrasCampos.VALOR_FIXO, valorFixo);
 
 		retorno[0] = mapCodigoBarrasCampos;
 		retorno[1] = indicadorTipoProcessamento;
@@ -47218,41 +48045,41 @@ public class ControladorArrecadacao
 				case PagamentoTipo.PAGAMENTO_TIPO_CONTA:
 					registroHelperCodigoBarrasTipoPagamento = new RegistroHelperCodigoBarrasTipoPagamento();
 
-					if(mapCodigoBarrasCampos.get(CodigoBarrasCampos.NUMERO_AVISO) != null){
-
-						FiltroConta filtroConta = new FiltroConta();
-						filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.ID, mapCodigoBarrasCampos
-										.get(CodigoBarrasCampos.NUMERO_AVISO)));
-
-						Collection<Conta> colecaoConta = this.getControladorUtil().pesquisar(filtroConta, Conta.class.getName());
-
-						if(!Util.isVazioOrNulo(colecaoConta)){
-							Conta conta = (Conta) Util.retonarObjetoDeColecao(colecaoConta);
-							registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(conta.getImovel().getId().toString());
-							registroHelperCodigoBarrasTipoPagamento.setIdPagamento2(Util.formatarAnoMesParaMesAnoSemBarra(conta
-											.getAnoMesReferenciaConta()));
-						}else{
-							FiltroContaHistorico filtroContaHistorico = new FiltroContaHistorico();
-							filtroContaHistorico.adicionarParametro(new ParametroSimples(FiltroContaHistorico.ID, mapCodigoBarrasCampos
-											.get(CodigoBarrasCampos.NUMERO_AVISO)));
-
-							Collection<ContaHistorico> colecaoContaHistorico = this.getControladorUtil().pesquisar(filtroContaHistorico,
-											ContaHistorico.class.getName());
-
-							if(!Util.isVazioOrNulo(colecaoContaHistorico)){
-								ContaHistorico contaHistorico = (ContaHistorico) Util.retonarObjetoDeColecao(colecaoContaHistorico);
-								registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(contaHistorico.getImovel().getId().toString());
-								registroHelperCodigoBarrasTipoPagamento.setIdPagamento2(contaHistorico.getAnoMesReferenciaConta() + "");
-							}
-						}
-
-					}else{
+//					if(mapCodigoBarrasCampos.get(CodigoBarrasCampos.NUMERO_AVISO) != null){
+//
+//						FiltroConta filtroConta = new FiltroConta();
+//						filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.ID, mapCodigoBarrasCampos
+//										.get(CodigoBarrasCampos.NUMERO_AVISO)));
+//
+//						Collection<Conta> colecaoConta = this.getControladorUtil().pesquisar(filtroConta, Conta.class.getName());
+//
+//						if(!Util.isVazioOrNulo(colecaoConta)){
+//							Conta conta = (Conta) Util.retonarObjetoDeColecao(colecaoConta);
+//							registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(conta.getImovel().getId().toString());
+//							registroHelperCodigoBarrasTipoPagamento.setIdPagamento2(Util.formatarAnoMesParaMesAnoSemBarra(conta
+//											.getAnoMesReferenciaConta()));
+//						}else{
+//							FiltroContaHistorico filtroContaHistorico = new FiltroContaHistorico();
+//							filtroContaHistorico.adicionarParametro(new ParametroSimples(FiltroContaHistorico.ID, mapCodigoBarrasCampos
+//											.get(CodigoBarrasCampos.NUMERO_AVISO)));
+//
+//							Collection<ContaHistorico> colecaoContaHistorico = this.getControladorUtil().pesquisar(filtroContaHistorico,
+//											ContaHistorico.class.getName());
+//
+//							if(!Util.isVazioOrNulo(colecaoContaHistorico)){
+//								ContaHistorico contaHistorico = (ContaHistorico) Util.retonarObjetoDeColecao(colecaoContaHistorico);
+//								registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(contaHistorico.getImovel().getId().toString());
+//								registroHelperCodigoBarrasTipoPagamento.setIdPagamento2(contaHistorico.getAnoMesReferenciaConta() + "");
+//							}
+//						}
+//
+//					}else{
 
 						registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(mapCodigoBarrasCampos
 										.get(CodigoBarrasCampos.MATRICULA_DO_IMOVEL));
 						registroHelperCodigoBarrasTipoPagamento.setIdPagamento2(mapCodigoBarrasCampos
 										.get(CodigoBarrasCampos.MES_ANO_REFERENCIA_CONTA));
-					}
+				//	}
 
 					break;
 
@@ -47266,68 +48093,68 @@ public class ControladorArrecadacao
 					 * migração!
 					 */
 
-					if(mapCodigoBarrasCampos.get(CodigoBarrasCampos.NUMERO_AVISO) != null){
-
-						FiltroGuiaPagamento filtroGuiaPagamento = new FiltroGuiaPagamento();
-
-						filtroGuiaPagamento.adicionarParametro(new ParametroSimples(filtroGuiaPagamento.ID,
-										mapCodigoBarrasCampos
-										.get(CodigoBarrasCampos.NUMERO_AVISO)));
-						filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.IMOVEL);
-						filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.CLIENTE);
-
-						Collection<GuiaPagamento> colecaoGuiaPagamento = this.getControladorUtil().pesquisar(filtroGuiaPagamento,
-										GuiaPagamento.class.getName());
-
-						if(!Util.isVazioOrNulo(colecaoGuiaPagamento)){
-
-							GuiaPagamento guiaPagamento = (GuiaPagamento) Util.retonarObjetoDeColecao(colecaoGuiaPagamento);
-
-							if(guiaPagamento.getImovel() != null){
-								registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamento.getImovel().getId().toString());
-							}else if(guiaPagamento.getCliente() != null){
-
-								registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamento.getCliente().getId().toString());
-							}
-
-							registroHelperCodigoBarrasTipoPagamento.setIdPagamento2(mapCodigoBarrasCampos
-											.get(CodigoBarrasCampos.NUMERO_AVISO));
-							registroHelperCodigoBarrasTipoPagamento.setIdPagamento3(mapCodigoBarrasCampos
-											.get(CodigoBarrasCampos.SEQUENCIAL));
-						}else{
-							FiltroGuiaPagamentoHistorico filtroGuiaPagamentoHistorico = new FiltroGuiaPagamentoHistorico();
-
-							filtroGuiaPagamentoHistorico.adicionarParametro(new ParametroSimples(filtroGuiaPagamentoHistorico.ID,
-											mapCodigoBarrasCampos.get(CodigoBarrasCampos.NUMERO_AVISO)));
-							filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.IMOVEL);
-							filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.CLIENTE);
-
-							Collection<GuiaPagamentoHistorico> colecaoGuiaPagamentoHistorico = this.getControladorUtil().pesquisar(
-											filtroGuiaPagamentoHistorico, GuiaPagamentoHistorico.class.getName());
-
-							if(!Util.isVazioOrNulo(colecaoGuiaPagamentoHistorico)){
-								GuiaPagamentoHistorico guiaPagamentoHistorico = (GuiaPagamentoHistorico) Util
-												.retonarObjetoDeColecao(colecaoGuiaPagamentoHistorico);
-
-								if(guiaPagamentoHistorico.getImovel() != null){
-									registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamentoHistorico.getImovel().getId()
-													.toString());
-								}else if(guiaPagamentoHistorico.getCliente() != null){
-
-									registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamentoHistorico.getCliente().getId()
-													.toString());
-								}
-
-								registroHelperCodigoBarrasTipoPagamento.setIdPagamento2(mapCodigoBarrasCampos
-												.get(CodigoBarrasCampos.NUMERO_AVISO));
-								registroHelperCodigoBarrasTipoPagamento.setIdPagamento3(mapCodigoBarrasCampos
-												.get(CodigoBarrasCampos.SEQUENCIAL));
-
-							}
-						}
-
-
-						}else{
+//					if(mapCodigoBarrasCampos.get(CodigoBarrasCampos.NUMERO_AVISO) != null){
+//
+//						FiltroGuiaPagamento filtroGuiaPagamento = new FiltroGuiaPagamento();
+//
+//						filtroGuiaPagamento.adicionarParametro(new ParametroSimples(filtroGuiaPagamento.ID,
+//										mapCodigoBarrasCampos
+//										.get(CodigoBarrasCampos.NUMERO_AVISO)));
+//						filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.IMOVEL);
+//						filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.CLIENTE);
+//
+//						Collection<GuiaPagamento> colecaoGuiaPagamento = this.getControladorUtil().pesquisar(filtroGuiaPagamento,
+//										GuiaPagamento.class.getName());
+//
+//						if(!Util.isVazioOrNulo(colecaoGuiaPagamento)){
+//
+//							GuiaPagamento guiaPagamento = (GuiaPagamento) Util.retonarObjetoDeColecao(colecaoGuiaPagamento);
+//
+//							if(guiaPagamento.getImovel() != null){
+//								registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamento.getImovel().getId().toString());
+//							}else if(guiaPagamento.getCliente() != null){
+//
+//								registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamento.getCliente().getId().toString());
+//							}
+//
+//							registroHelperCodigoBarrasTipoPagamento.setIdPagamento2(mapCodigoBarrasCampos
+//											.get(CodigoBarrasCampos.NUMERO_AVISO));
+//							registroHelperCodigoBarrasTipoPagamento.setIdPagamento3(mapCodigoBarrasCampos
+//											.get(CodigoBarrasCampos.SEQUENCIAL));
+//						}else{
+//							FiltroGuiaPagamentoHistorico filtroGuiaPagamentoHistorico = new FiltroGuiaPagamentoHistorico();
+//
+//							filtroGuiaPagamentoHistorico.adicionarParametro(new ParametroSimples(filtroGuiaPagamentoHistorico.ID,
+//											mapCodigoBarrasCampos.get(CodigoBarrasCampos.NUMERO_AVISO)));
+//							filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.IMOVEL);
+//							filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.CLIENTE);
+//
+//							Collection<GuiaPagamentoHistorico> colecaoGuiaPagamentoHistorico = this.getControladorUtil().pesquisar(
+//											filtroGuiaPagamentoHistorico, GuiaPagamentoHistorico.class.getName());
+//
+//							if(!Util.isVazioOrNulo(colecaoGuiaPagamentoHistorico)){
+//								GuiaPagamentoHistorico guiaPagamentoHistorico = (GuiaPagamentoHistorico) Util
+//												.retonarObjetoDeColecao(colecaoGuiaPagamentoHistorico);
+//
+//								if(guiaPagamentoHistorico.getImovel() != null){
+//									registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamentoHistorico.getImovel().getId()
+//													.toString());
+//								}else if(guiaPagamentoHistorico.getCliente() != null){
+//
+//									registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamentoHistorico.getCliente().getId()
+//													.toString());
+//								}
+//
+//								registroHelperCodigoBarrasTipoPagamento.setIdPagamento2(mapCodigoBarrasCampos
+//												.get(CodigoBarrasCampos.NUMERO_AVISO));
+//								registroHelperCodigoBarrasTipoPagamento.setIdPagamento3(mapCodigoBarrasCampos
+//												.get(CodigoBarrasCampos.SEQUENCIAL));
+//
+//							}
+//						}
+//
+//
+//						}else{
 
 						registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(mapCodigoBarrasCampos
 										.get(CodigoBarrasCampos.MATRICULA_DO_IMOVEL));
@@ -47335,7 +48162,7 @@ public class ControladorArrecadacao
 										.get(CodigoBarrasCampos.IDENTIFICACAO_GUIA_PAGAMENTO));
 						registroHelperCodigoBarrasTipoPagamento.setIdPagamento3(mapCodigoBarrasCampos
 										.get(CodigoBarrasCampos.NUMERO_PRESTACAO_GUIA_PAGAMENTO));
-					}
+					// }
 
 					break;
 
@@ -47353,66 +48180,66 @@ public class ControladorArrecadacao
 				// GUIA DE PAGAMENTO (com código do cliente)
 				case PagamentoTipo.PAGAMENTO_TIPO_GUIA_PAGAMENTO_CODIGO_CLIENTE:
 
-					if(mapCodigoBarrasCampos.get(CodigoBarrasCampos.NUMERO_AVISO) != null){
-
-						FiltroGuiaPagamento filtroGuiaPagamento = new FiltroGuiaPagamento();
-
-						filtroGuiaPagamento.adicionarParametro(new ParametroSimples(filtroGuiaPagamento.ID, mapCodigoBarrasCampos
-										.get(CodigoBarrasCampos.NUMERO_AVISO)));
-						filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.CLIENTE);
-						filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.IMOVEL);
-
-						Collection<GuiaPagamento> colecaoGuiaPagamento = this.getControladorUtil().pesquisar(filtroGuiaPagamento,
-										GuiaPagamento.class.getName());
-
-						if(!Util.isVazioOrNulo(colecaoGuiaPagamento)){
-
-							GuiaPagamento guiaPagamento = (GuiaPagamento) Util.retonarObjetoDeColecao(colecaoGuiaPagamento);
-
-							if(guiaPagamento.getImovel() != null){
-								registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamento.getImovel().getId().toString());
-							}else if(guiaPagamento.getCliente() != null){
-
-								registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamento.getCliente().getId().toString());
-							}
-
-							registroHelperCodigoBarrasTipoPagamento.setIdPagamento2(mapCodigoBarrasCampos
-											.get(CodigoBarrasCampos.NUMERO_AVISO));
-							registroHelperCodigoBarrasTipoPagamento.setIdPagamento3(mapCodigoBarrasCampos
-											.get(CodigoBarrasCampos.SEQUENCIAL));
-						}else{
-							FiltroGuiaPagamentoHistorico filtroGuiaPagamentoHistorico = new FiltroGuiaPagamentoHistorico();
-
-							filtroGuiaPagamentoHistorico.adicionarParametro(new ParametroSimples(filtroGuiaPagamentoHistorico.ID,
-											mapCodigoBarrasCampos.get(CodigoBarrasCampos.NUMERO_AVISO)));
-							filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.CLIENTE);
-							filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.IMOVEL);
-
-							Collection<GuiaPagamentoHistorico> colecaoGuiaPagamentoHistorico = this.getControladorUtil().pesquisar(
-											filtroGuiaPagamentoHistorico, GuiaPagamentoHistorico.class.getName());
-
-							if(!Util.isVazioOrNulo(colecaoGuiaPagamentoHistorico)){
-								GuiaPagamentoHistorico guiaPagamentoHistorico = (GuiaPagamentoHistorico) Util
-												.retonarObjetoDeColecao(colecaoGuiaPagamentoHistorico);
-
-								if(guiaPagamentoHistorico.getImovel() != null){
-									registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamentoHistorico.getImovel().getId()
-													.toString());
-								}else if(guiaPagamentoHistorico.getCliente() != null){
-
-									registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamentoHistorico.getCliente().getId()
-													.toString());
-								}
-
-								registroHelperCodigoBarrasTipoPagamento.setIdPagamento2(mapCodigoBarrasCampos
-												.get(CodigoBarrasCampos.NUMERO_AVISO));
-								registroHelperCodigoBarrasTipoPagamento.setIdPagamento3(mapCodigoBarrasCampos
-												.get(CodigoBarrasCampos.SEQUENCIAL));
-
-							}
-						}
-
-					}else{
+//					if(mapCodigoBarrasCampos.get(CodigoBarrasCampos.NUMERO_AVISO) != null){
+//
+//						FiltroGuiaPagamento filtroGuiaPagamento = new FiltroGuiaPagamento();
+//
+//						filtroGuiaPagamento.adicionarParametro(new ParametroSimples(filtroGuiaPagamento.ID, mapCodigoBarrasCampos
+//										.get(CodigoBarrasCampos.NUMERO_AVISO)));
+//						filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.CLIENTE);
+//						filtroGuiaPagamento.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.IMOVEL);
+//
+//						Collection<GuiaPagamento> colecaoGuiaPagamento = this.getControladorUtil().pesquisar(filtroGuiaPagamento,
+//										GuiaPagamento.class.getName());
+//
+//						if(!Util.isVazioOrNulo(colecaoGuiaPagamento)){
+//
+//							GuiaPagamento guiaPagamento = (GuiaPagamento) Util.retonarObjetoDeColecao(colecaoGuiaPagamento);
+//
+//							if(guiaPagamento.getImovel() != null){
+//								registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamento.getImovel().getId().toString());
+//							}else if(guiaPagamento.getCliente() != null){
+//
+//								registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamento.getCliente().getId().toString());
+//							}
+//
+//							registroHelperCodigoBarrasTipoPagamento.setIdPagamento2(mapCodigoBarrasCampos
+//											.get(CodigoBarrasCampos.NUMERO_AVISO));
+//							registroHelperCodigoBarrasTipoPagamento.setIdPagamento3(mapCodigoBarrasCampos
+//											.get(CodigoBarrasCampos.SEQUENCIAL));
+//						}else{
+//							FiltroGuiaPagamentoHistorico filtroGuiaPagamentoHistorico = new FiltroGuiaPagamentoHistorico();
+//
+//							filtroGuiaPagamentoHistorico.adicionarParametro(new ParametroSimples(filtroGuiaPagamentoHistorico.ID,
+//											mapCodigoBarrasCampos.get(CodigoBarrasCampos.NUMERO_AVISO)));
+//							filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.CLIENTE);
+//							filtroGuiaPagamentoHistorico.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoHistorico.IMOVEL);
+//
+//							Collection<GuiaPagamentoHistorico> colecaoGuiaPagamentoHistorico = this.getControladorUtil().pesquisar(
+//											filtroGuiaPagamentoHistorico, GuiaPagamentoHistorico.class.getName());
+//
+//							if(!Util.isVazioOrNulo(colecaoGuiaPagamentoHistorico)){
+//								GuiaPagamentoHistorico guiaPagamentoHistorico = (GuiaPagamentoHistorico) Util
+//												.retonarObjetoDeColecao(colecaoGuiaPagamentoHistorico);
+//
+//								if(guiaPagamentoHistorico.getImovel() != null){
+//									registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamentoHistorico.getImovel().getId()
+//													.toString());
+//								}else if(guiaPagamentoHistorico.getCliente() != null){
+//
+//									registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(guiaPagamentoHistorico.getCliente().getId()
+//													.toString());
+//								}
+//
+//								registroHelperCodigoBarrasTipoPagamento.setIdPagamento2(mapCodigoBarrasCampos
+//												.get(CodigoBarrasCampos.NUMERO_AVISO));
+//								registroHelperCodigoBarrasTipoPagamento.setIdPagamento3(mapCodigoBarrasCampos
+//												.get(CodigoBarrasCampos.SEQUENCIAL));
+//
+//							}
+//						}
+//
+//					}else{
 						registroHelperCodigoBarrasTipoPagamento = new RegistroHelperCodigoBarrasTipoPagamento();
 						registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(mapCodigoBarrasCampos
 										.get(CodigoBarrasCampos.CODIGO_CLIENTE));
@@ -47420,7 +48247,7 @@ public class ControladorArrecadacao
 										.get(CodigoBarrasCampos.IDENTIFICACAO_GUIA_PAGAMENTO));
 						registroHelperCodigoBarrasTipoPagamento.setIdPagamento3(mapCodigoBarrasCampos
 										.get(CodigoBarrasCampos.NUMERO_PRESTACAO_GUIA_PAGAMENTO));
-					}
+				//	}
 
 
 
@@ -47436,30 +48263,32 @@ public class ControladorArrecadacao
 					 */
 
 					registroHelperCodigoBarrasTipoPagamento = new RegistroHelperCodigoBarrasTipoPagamento();
-					if(mapCodigoBarrasCampos.get(CodigoBarrasCampos.NUMERO_AVISO) != null){
-
-						FiltroFatura filtroFatura = new FiltroFatura();
-						filtroFatura.adicionarParametro(new ParametroSimples(FiltroConta.ID, mapCodigoBarrasCampos
-										.get(CodigoBarrasCampos.NUMERO_AVISO)));
-						filtroFatura.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.CLIENTE);
-
-						Collection<Fatura> colecaoFatura = this.getControladorUtil().pesquisar(filtroFatura, Fatura.class.getName());
-
-						if(!Util.isVazioOrNulo(colecaoFatura)){
-							Fatura fatura = (Fatura) Util.retonarObjetoDeColecao(colecaoFatura);
-
-							registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(fatura.getCliente().getId().toString());
-							registroHelperCodigoBarrasTipoPagamento.setIdPagamento3(fatura.getSequencial().toString());
-
-						}
-
-					}else{
+					// if(mapCodigoBarrasCampos.get(CodigoBarrasCampos.NUMERO_AVISO) != null){
+					//
+					// FiltroFatura filtroFatura = new FiltroFatura();
+					// filtroFatura.adicionarParametro(new ParametroSimples(FiltroConta.ID,
+					// mapCodigoBarrasCampos
+					// .get(CodigoBarrasCampos.NUMERO_AVISO)));
+					// filtroFatura.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamento.CLIENTE);
+					//
+					// Collection<Fatura> colecaoFatura =
+					// this.getControladorUtil().pesquisar(filtroFatura, Fatura.class.getName());
+					//
+					// if(!Util.isVazioOrNulo(colecaoFatura)){
+					// Fatura fatura = (Fatura) Util.retonarObjetoDeColecao(colecaoFatura);
+					//
+					// registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(fatura.getCliente().getId().toString());
+					// registroHelperCodigoBarrasTipoPagamento.setIdPagamento3(fatura.getSequencial().toString());
+					//
+					// }
+					//
+					// }else{
 
 						registroHelperCodigoBarrasTipoPagamento.setIdPagamento1(mapCodigoBarrasCampos
 										.get(CodigoBarrasCampos.CODIGO_CLIENTE_RESPONSAVEL));
 						registroHelperCodigoBarrasTipoPagamento.setIdPagamento3(mapCodigoBarrasCampos
 										.get(CodigoBarrasCampos.SEQUENCIAL_FATURA_CLIENTE_RESPONSAVEL));
-					}
+					// }
 
 
 					break;
@@ -47662,7 +48491,7 @@ public class ControladorArrecadacao
 
 				if(debitoTipo != null && debitoTipo.getLancamentoItemContabil() != null){
 					GuiaPagamentoPrestacaoPK comp_id = new GuiaPagamentoPrestacaoPK(guiaPagamento.getId(), (short) 1, debitoTipo.getId(),
-									debitoTipo.getLancamentoItemContabil().getId());
+									debitoTipo.getLancamentoItemContabil().getId(), ConstantesSistema.NUMERO_PROCESSO_ADM_EXEC_FISCAL_ZERO);
 
 					GuiaPagamentoPrestacao guiaPagamentoPrestacao = new GuiaPagamentoPrestacao();
 					guiaPagamentoPrestacao.setComp_id(comp_id);
@@ -47675,6 +48504,12 @@ public class ControladorArrecadacao
 					guiaPagamentoPrestacao.setAnoMesReferenciaFaturamento(sistemaParametro.getAnoMesFaturamento());
 					guiaPagamentoPrestacao.setDataEmissao(new Date());
 					guiaPagamentoPrestacao.setUltimaAlteracao(new Date());
+
+					// TODO Saulo Lima - Confirmar com Fátima os valores abaixo
+					guiaPagamentoPrestacao.setIndicadorDividaAtiva(ConstantesSistema.NAO);
+					guiaPagamentoPrestacao.setDataDividaAtiva(null);
+					guiaPagamentoPrestacao.setIndicadorExecucaoFiscal(ConstantesSistema.NAO);
+					guiaPagamentoPrestacao.setDataExecucaoFiscal(null);
 
 					this.getControladorUtil().inserir(guiaPagamentoPrestacao);
 				}else{
@@ -47790,6 +48625,7 @@ public class ControladorArrecadacao
 
 		// Obtém o valor dos pagamentos não classificados
 		Collection colecaoPagamentos = this.pesquisarPagamentoAvisoBancario(avisoBancario.getId());
+
 		if(colecaoPagamentos != null){
 
 			Iterator iteratorColecaoPagamentos = colecaoPagamentos.iterator();
@@ -50494,7 +51330,7 @@ public class ControladorArrecadacao
 	 * @date 14/11/2012
 	 */
 	public void classificarLotePagamentosNaoClassificados(ClassificarLotePagamentosNaoClassificadosHelper helper, Usuario usuario,
-					int idFuncionalidadeIniciada) throws ControladorException{
+					int idFuncionalidadeIniciada, boolean gerarDebitoACobrar) throws ControladorException{
 
 		int idUnidadeIniciada = 0;
 
@@ -50505,7 +51341,7 @@ public class ControladorArrecadacao
 							UnidadeProcessamento.FUNCIONALIDADE, 0);
 
 			Collection<ClassificarPagamentosNaoClassificadosHelper> colecaoClassificarPagamentosNaoClassificadosHelper = this
-							.classificarLotePagamentosNaoClassificados(helper, usuario);
+							.classificarLotePagamentosNaoClassificados(helper, usuario, gerarDebitoACobrar);
 
 			String tipoRelatorio = TarefaRelatorio.TIPO_PDF + "";
 
@@ -50559,7 +51395,8 @@ public class ControladorArrecadacao
 	 * @date 30/11/2012
 	 */
 	public Collection<ClassificarPagamentosNaoClassificadosHelper> classificarLotePagamentosNaoClassificados(
-					ClassificarLotePagamentosNaoClassificadosHelper helper, Usuario usuario) throws ControladorException{
+					ClassificarLotePagamentosNaoClassificadosHelper helper, Usuario usuario, boolean gerarDebitoACobrar)
+					throws ControladorException{
 
 		Collection<Pagamento> colecaoPagamentos = null;
 		Collection<ClassificarPagamentosNaoClassificadosHelper> colecaoClassificarPagamentosNaoClassificadosHelper = new ArrayList<ClassificarPagamentosNaoClassificadosHelper>();
@@ -50568,6 +51405,7 @@ public class ControladorArrecadacao
 		// seguintes itens:
 		try{
 			colecaoPagamentos = repositorioArrecadacao.pesquisarPagamentos(helper);
+			colecaoPagamentos = this.verificarLimiteMaximoDiferencaLotePagamento(colecaoPagamentos, helper);
 		}catch(ErroRepositorioException ex){
 			throw new ControladorException("erro.sistema", ex);
 		}
@@ -50579,13 +51417,64 @@ public class ControladorArrecadacao
 
 			// 2.7. Limite máximo da diferença
 			if(helper.getLimiteMaximoDiferenca() != null && !helper.getLimiteMaximoDiferenca().equals("")){
-				colecaoPagamentos = this.verificarLimiteMaximoDiferencaLotePagamento(colecaoPagamentos, helper);
+
+				// [SB0000] Classificar Pagamentos
+				this.classificarPagamentosLote(colecaoPagamentos, colecaoClassificarPagamentosNaoClassificadosHelper, usuario,
+								gerarDebitoACobrar);
 			}
 
-			// [SB0000] Classificar Pagamentos
-			this.classificarPagamentosLote(colecaoPagamentos, colecaoClassificarPagamentosNaoClassificadosHelper, usuario);
 
+		}else{
+			Integer referenciaDebito = null;
+			BigDecimal valorDocumento = BigDecimal.ZERO;
+			BigDecimal valorReajuste = BigDecimal.ZERO;
+
+			for(Pagamento pagamento : colecaoPagamentos){
+
+				// para simular
+				// como solicitado na OC1233261
+				ClassificarPagamentosNaoClassificadosHelper helperSimular = new ClassificarPagamentosNaoClassificadosHelper();
+
+				Imovel imovel = pagamento.getImovel();
+				Object contaAntesClassificacao = this.selecionarContaPorImovelAnoMesReferencia(imovel,
+								pagamento.getAnoMesReferenciaPagamento());
+				// Pagamentos Baixados, gerado na funcionalidade de Classificar Lote de
+				// Pagamentos Não Classificados
+				// Constroi o Helper que será utilizado na geração do Relatório de
+				helperSimular.setPagamento(pagamento);
+				// Captura o valor do documento antes de ser realizada a classifica do pagamento e,
+				// possivelmente, reajuste do valor da conta com acréscimos de impontualidade
+				if(contaAntesClassificacao != null){
+					if(contaAntesClassificacao instanceof Conta){
+						valorDocumento = ((Conta) contaAntesClassificacao).getValorTotal();
+						referenciaDebito = ((Conta) contaAntesClassificacao).getReferencia();
+						helperSimular.setConta((Conta) contaAntesClassificacao);
+
+					}else if(contaAntesClassificacao instanceof ContaHistorico){
+						valorDocumento = ((ContaHistorico) contaAntesClassificacao).getValorTotal();
+						referenciaDebito = ((ContaHistorico) contaAntesClassificacao).getAnoMesReferenciaConta();
+						helperSimular.setContaHistorico((ContaHistorico) contaAntesClassificacao);
+					}
+				}
+
+				// Recupera o valor de reajuste: Soma dos acréscimos de impontualidade gerados
+				valorReajuste = recuperarValorAcrescimosImpontualidade(imovel.getId(), referenciaDebito);
+
+				if(valorReajuste != null && valorReajuste.compareTo(BigDecimal.ZERO) > 0){
+					helperSimular.setValorReajuste(valorReajuste);
+					helperSimular.setValorDocumentoReajustado(valorDocumento.add(valorReajuste));
+				}else{
+					helperSimular.setValorReajuste(BigDecimal.ZERO);
+					helperSimular.setValorDocumentoReajustado(valorDocumento);
+				}
+
+				colecaoClassificarPagamentosNaoClassificadosHelper.add(helperSimular);
+			}
 		}
+
+		Comparator comparator = new BeanComparator("pagamento.localidade.id");
+
+		Collections.sort((List) colecaoClassificarPagamentosNaoClassificadosHelper, comparator);
 
 		return colecaoClassificarPagamentosNaoClassificadosHelper;
 
@@ -50692,7 +51581,7 @@ public class ControladorArrecadacao
 	 */
 	private void classificarPagamentosLote(Collection<Pagamento> colecaoPagamentos,
 					Collection<ClassificarPagamentosNaoClassificadosHelper> colecaoClassificarPagamentosNaoClassificadosHelper,
-					Usuario usuario) throws ControladorException{
+					Usuario usuario, boolean gerarDebitoACobrar) throws ControladorException{
 
 		Conta contaProcessada = null;
 		PagamentoSituacao pagamentoSituacaoAtual = null;
@@ -50772,7 +51661,8 @@ public class ControladorArrecadacao
 
 								// Atualiza o pagamento
 								// [UC0266 Manter Pagamentos] - [SB0004 - Atualiza Pagamento]
-								atualizarPagamento(pagamento, usuario, null, null, null, colecaoClassificarPagamentosNaoClassificadosHelper);
+								atualizarPagamento(pagamento, usuario, null, null, null,
+												colecaoClassificarPagamentosNaoClassificadosHelper, gerarDebitoACobrar);
 							}
 
 						}
@@ -51002,6 +51892,49 @@ public class ControladorArrecadacao
 							pagamentoHistorico.getImovel(), usuarioLogado, true);
 
 		}
+	}
+
+
+	/**
+	 * [UC1016] Estornar Pagamentos
+	 * 3.1.1. [SB0004 – Cancelar débito a cobrar de acréscimo]
+	 * Author: Yara Souza
+	 * Date: 07/07/2017
+	 * 
+	 * @param pagamentoHistorico
+	 * @param usuarioLogado
+	 * @throws ControladorException
+	 */
+	private void cancelarDebitoACobrarDeAcrescimo(PagamentoHistorico pagamentoHistorico, Usuario usuarioLogado) throws ControladorException{
+
+		Collection<Integer> idsDebitoTipo = new ArrayList<Integer>();
+		idsDebitoTipo.add(DebitoTipo.MULTA_IMPONTUALIDADE);
+		idsDebitoTipo.add(DebitoTipo.JUROS_MORA);
+		idsDebitoTipo.add(DebitoTipo.ATUALIZACAO_MONETARIA);
+
+		FiltroDebitoACobrar filtroDebitoACobrar = new FiltroDebitoACobrar();
+		filtroDebitoACobrar.adicionarParametro(new ParametroSimples(FiltroDebitoACobrar.IMOVEL_ID, pagamentoHistorico.getImovel().getId()));
+		filtroDebitoACobrar.adicionarParametro(new ParametroSimples(FiltroDebitoACobrar.REFERENCIA_DEBITO, pagamentoHistorico
+						.getAnoMesReferenciaPagamento()));
+		filtroDebitoACobrar.adicionarParametro(new ParametroSimplesColecao(FiltroDebitoACobrar.DEBITO_TIPO_ID, idsDebitoTipo));
+
+		Collection colecaoDebitoACobrar = getControladorUtil().pesquisar(filtroDebitoACobrar, DebitoACobrar.class.getName());
+
+		if(!Util.isVazioOrNulo(colecaoDebitoACobrar)){
+
+			Iterator it = colecaoDebitoACobrar.iterator();
+			while(it.hasNext()){
+				DebitoACobrar debitoACobrar = (DebitoACobrar) it.next();
+
+				// 1.2. Cancelar o débito a cobrar selecionado <<Inclui>> [US0184] Manter Débito A
+				// Cobrar.
+				this.getControladorFaturamento().cancelarDebitoACobrar(new String[] {debitoACobrar.getId().toString()}, usuarioLogado,
+								pagamentoHistorico.getImovel().getId(), true);
+
+			}
+
+		}
+
 	}
 
 	/**
@@ -51317,8 +52250,8 @@ public class ControladorArrecadacao
 		BigDecimal valorBaseRemuneracaoParcelado = null;
 		BigDecimal valorArrecadadoLote = null;
 
-		BigDecimal percentualAuxiliar = null;
-		BigDecimal valorAuxiliar = null;
+		BigDecimal percentualAuxiliar = BigDecimal.ZERO;
+		BigDecimal valorAuxiliar = BigDecimal.ZERO;
 
 		Short indicadorCobrancaAdministrativa = contaHistorico.getIndicadorCobrancaAdministrativa();
 		Short indicadorRemuneraCobrancaAdministrativa = contaHistorico.getIndicadorRemuneraCobrancaAdministrativa();
@@ -51329,10 +52262,18 @@ public class ControladorArrecadacao
 						|| (indicadorRemuneraCobrancaAdministrativa != null && indicadorRemuneraCobrancaAdministrativa
 										.equals(ConstantesSistema.SIM))){
 
-			percentualAuxiliar = imovelCobrancaSituacao.getPercentualRemuneracao();
+			if(imovelCobrancaSituacao != null){
+				percentualAuxiliar = imovelCobrancaSituacao.getPercentualRemuneracao();
+			}
 
-			valorAuxiliar = valorPagamento.multiply(percentualAuxiliar);
-			valorAuxiliar = valorAuxiliar.divide(new BigDecimal("100"));
+			if(percentualAuxiliar != null){
+				valorAuxiliar = valorPagamento.multiply(percentualAuxiliar);
+			}
+
+			if(valorAuxiliar != null){
+				valorAuxiliar = valorAuxiliar.divide(new BigDecimal("100"));
+
+			}
 
 			// [SB0001 – Gerar Remuneração]
 			percentualRemuneracao = percentualAuxiliar;
@@ -51350,8 +52291,8 @@ public class ControladorArrecadacao
 
 			if(valorDebitos != null && valorDebitos.compareTo(BigDecimal.ZERO) > 0){
 
-				BigDecimal valorPrestacao = null;
-				BigDecimal valorTotalPrestacao = null;
+				BigDecimal valorPrestacao = BigDecimal.ZERO;
+				BigDecimal valorTotalPrestacao = BigDecimal.ZERO;
 
 				// Condição 1 - Caso a conta contenha algum débito remunerável de parcelamento
 
@@ -51369,9 +52310,10 @@ public class ControladorArrecadacao
 								filtroDebitoCobradoHistorico, DebitoCobradoHistorico.class.getName());
 
 				if(!Util.isVazioOrNulo(colecaoDebitoCobradoHistorico)){
-					percentualAuxiliar = imovelCobrancaSituacao.getPercentualRemuneracao();
 
-					valorTotalPrestacao = BigDecimal.ZERO;
+					if(imovelCobrancaSituacao != null){
+						percentualAuxiliar = imovelCobrancaSituacao.getPercentualRemuneracao();
+					}
 
 					for(DebitoCobradoHistorico debitoCobradoHistorico : colecaoDebitoCobradoHistorico){
 						valorPrestacao = debitoCobradoHistorico.getValorPrestacao();
@@ -51381,8 +52323,13 @@ public class ControladorArrecadacao
 						}
 					}
 
-					valorAuxiliar = valorTotalPrestacao.multiply(percentualAuxiliar);
-					valorAuxiliar = valorAuxiliar.divide(new BigDecimal("100"));
+					if(percentualAuxiliar != null){
+						valorAuxiliar = valorTotalPrestacao.multiply(percentualAuxiliar);
+					}
+
+					if(valorAuxiliar.compareTo(BigDecimal.ZERO) > 0){
+						valorAuxiliar = valorAuxiliar.divide(new BigDecimal("100"));
+					}
 
 					// Remuneração
 					percentualRemuneracaoParcelado = percentualAuxiliar;
@@ -51406,9 +52353,12 @@ public class ControladorArrecadacao
 								DebitoCobradoHistorico.class.getName());
 
 				if(!Util.isVazioOrNulo(colecaoDebitoCobradoHistorico)){
-					percentualAuxiliar = null;
 
-					CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComando = imovelCobrancaSituacao.getCobrancaAcaoAtividadeComando();
+
+					CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComando = null;
+					if(imovelCobrancaSituacao != null){
+						cobrancaAcaoAtividadeComando = imovelCobrancaSituacao.getCobrancaAcaoAtividadeComando();
+					}
 
 					if(cobrancaAcaoAtividadeComando != null){
 						Integer idCobrancaAcaoAtividadeComando = cobrancaAcaoAtividadeComando.getId();
@@ -51447,8 +52397,15 @@ public class ControladorArrecadacao
 						valorTotalPrestacao = valorTotalPrestacao.add(valorAgua);
 						valorTotalPrestacao = valorTotalPrestacao.add(valorEsgoto);
 
-						valorAuxiliar = valorTotalPrestacao.multiply(percentualAuxiliar);
-						valorAuxiliar = valorAuxiliar.divide(new BigDecimal("100"));
+						if(percentualAuxiliar != null){
+							valorAuxiliar = valorTotalPrestacao.multiply(percentualAuxiliar);
+						}
+
+
+						if(valorAuxiliar.compareTo(BigDecimal.ZERO) > 0){
+							valorAuxiliar = valorAuxiliar.divide(new BigDecimal("100"));
+						}
+
 
 						// Remuneração
 						percentualRemuneracaoReincidente = percentualAuxiliar;
@@ -51473,7 +52430,10 @@ public class ControladorArrecadacao
 								DebitoCobradoHistorico.class.getName());
 
 				if(!Util.isVazioOrNulo(colecaoDebitoCobradoHistorico)){
-					percentualAuxiliar = imovelCobrancaSituacao.getPercentualRemuneracao();
+
+					if(imovelCobrancaSituacao != null){
+						percentualAuxiliar = imovelCobrancaSituacao.getPercentualRemuneracao();
+					}
 
 					valorTotalPrestacao = BigDecimal.ZERO;
 
@@ -51485,8 +52445,13 @@ public class ControladorArrecadacao
 						}
 					}
 
-					valorAuxiliar = valorTotalPrestacao.multiply(percentualAuxiliar);
-					valorAuxiliar = valorAuxiliar.divide(new BigDecimal("100"));
+					if(percentualAuxiliar != null){
+						valorAuxiliar = valorTotalPrestacao.multiply(percentualAuxiliar);
+					}
+
+					if(valorAuxiliar.compareTo(BigDecimal.ZERO) > 0){
+						valorAuxiliar = valorAuxiliar.divide(new BigDecimal("100"));
+					}
 
 					// Remuneração
 					percentualRemuneracaoEspecial = percentualAuxiliar;
@@ -52114,31 +53079,55 @@ public class ControladorArrecadacao
 									filtroImovelCobrancaSituacao, ImovelCobrancaSituacao.class.getName());
 
 					if(!Util.isVazioOrNulo(colecaoImovelCobrancaSituacaoAtivo)){
-						ImovelCobrancaSituacao imovelCobrancaSituacao = (ImovelCobrancaSituacao) Util
-										.retonarObjetoDeColecao(colecaoImovelCobrancaSituacaoAtivo);
 
-						// Caso o imóvel esteja na cobrança administrativa
 
-						percentualAuxiliar = imovelCobrancaSituacao.getPercentualRemuneracao();
+						// 2.1. Caso não existam itens da cobrança administrativa parcelados (não
+						// existe ocorrência na tabela COBRANCA_DOCUMENTO_ITEM com CDST_ID=(CDST_ID
+						// da tabela COBRANCA_DEBITO_SITUACAO com CDST_DSSITUACAODEBITO="PARCELADO")
+						// e CBDO_ID=CBDO_ID da tabela COBRANCA_DOCUMENTO com IMOV_ID=IMOV_ID da
+						// tabela IMOVEL_COBRANCA_SITUACAO e CACM_ID=CACM_ID da tabela
+						// IMOVEL_COBRANCA_SITUACAO): .....
+						Collection coll = this.getControladorCobranca().pesquisarCobrancaDocumentoItemParcelado(idImovel);
+						if(Util.isVazioOuBranco(coll)){
+							ImovelCobrancaSituacao imovelCobrancaSituacao = (ImovelCobrancaSituacao) Util
+											.retonarObjetoDeColecao(colecaoImovelCobrancaSituacaoAtivo);
 
-						valorAuxiliar = valorPagamento.multiply(percentualAuxiliar);
-						valorAuxiliar = valorAuxiliar.divide(new BigDecimal("100"));
+							// Caso o imóvel esteja na cobrança administrativa
 
-						// [SB0020 – Gerar Remuneração]
+							percentualAuxiliar = imovelCobrancaSituacao.getPercentualRemuneracao();
 
-						percentualRemuneracao = percentualAuxiliar;
-						valorRemuneracao = valorAuxiliar;
-						valorBaseRemuneracao = valorPagamento;
+							valorAuxiliar = valorPagamento.multiply(percentualAuxiliar);
+							valorAuxiliar = valorAuxiliar.divide(new BigDecimal("100"));
 
-						imovelCobrancaAdministrivaItem = this.gerarImovelCobrancaAdministrivaItem(idConta, idGuiaPagamento,
-										numeroPrestacao, idDebitoACobrar, percentualRemuneracao, valorRemuneracao, valorBaseRemuneracao,
-										percentualRemuneracaoReincidente, valorRemuneracaoReincidente, valorBaseRemuneracaoReincidente,
-										percentualRemuneracaoEspecial, valorRemuneracaoEspecial, valorBaseRemuneracaoEspecial,
-										percentualRemuneracaoParcelado, valorRemuneracaoParcelado, valorBaseRemuneracaoParcelado,
-										dataPagamento, documentoTipo, imovelCobrancaSituacao, anoMesReferenciaArrecadacao,
-										valorArrecadadoLote);
+							// [SB0020 – Gerar Remuneração]
 
-						this.getControladorUtil().inserir(imovelCobrancaAdministrivaItem);
+							percentualRemuneracao = percentualAuxiliar;
+							valorRemuneracao = valorAuxiliar;
+							valorBaseRemuneracao = valorPagamento;
+
+							imovelCobrancaAdministrivaItem = this.gerarImovelCobrancaAdministrivaItem(idConta, idGuiaPagamento,
+											numeroPrestacao, idDebitoACobrar, percentualRemuneracao, valorRemuneracao,
+											valorBaseRemuneracao, percentualRemuneracaoReincidente, valorRemuneracaoReincidente,
+											valorBaseRemuneracaoReincidente, percentualRemuneracaoEspecial, valorRemuneracaoEspecial,
+											valorBaseRemuneracaoEspecial, percentualRemuneracaoParcelado, valorRemuneracaoParcelado,
+											valorBaseRemuneracaoParcelado, dataPagamento, documentoTipo, imovelCobrancaSituacao,
+											anoMesReferenciaArrecadacao, valorArrecadadoLote);
+
+							this.getControladorUtil().inserir(imovelCobrancaAdministrivaItem);
+						}else{
+
+							// Caso o pagamento NÃO tenha sido realizado em nenhum dos períodos da
+							// cobrança administrativa
+
+							this.tratarRemuneracaoParcial(colecaoImovelCobrancaSituacaoAtivo, dataPagamento, contaHistorico,
+											guiaPagamentoGeral,
+											debitoACobrar, documentoTipo, anoMesReferenciaArrecadacao, valorPagamento,
+											numeroPrestacaoPagamento);
+						
+
+						}
+
+						
 					}else{
 
 						// Caso o imóvel NÃO esteja na cobrança administrativa
@@ -52203,40 +53192,135 @@ public class ControladorArrecadacao
 
 							this.getControladorUtil().inserir(imovelCobrancaAdministrivaItem);
 						}else{
+
 							// Caso o pagamento NÃO tenha sido realizado em nenhum dos períodos da
 							// cobrança administrativa
-
-							imovelCobrancaSituacao = maiorImovelCobrancaSituacao;
-
-							if(contaHistorico != null){
-								// Caso o item pago seja uma CONTA
-
-								imovelCobrancaAdministrivaItem = this.cobrancaAdministrativaContaModelo1(dataPagamento, valorPagamento,
-												contaHistorico, imovelCobrancaSituacao, documentoTipo, anoMesReferenciaArrecadacao);
-
-							}else if(guiaPagamentoGeral != null){
-								// Caso o item pago seja uma PRESTAÇÃO DE GUIA DE PAGAMENTO
-
-								imovelCobrancaAdministrivaItem = this.processarCobrancaAdministrativaGuiaPagamentoModelo1(dataPagamento,
-												valorPagamento, numeroPrestacaoPagamento, guiaPagamentoGeral, imovelCobrancaSituacao,
-												documentoTipo, anoMesReferenciaArrecadacao);
-
-							}else if(debitoACobrar != null){
-								// Caso o item pago seja um DÉBITO A COBRAR
-
-								imovelCobrancaAdministrivaItem = this.processarCobrancaAdministrativaDebitoACobrarModelo1(dataPagamento,
-												valorPagamento, debitoACobrar, imovelCobrancaSituacao, documentoTipo,
-												anoMesReferenciaArrecadacao);
-							}
-
-							if(imovelCobrancaAdministrivaItem != null){
-								this.getControladorUtil().inserir(imovelCobrancaAdministrivaItem);
-							}
+							this.tratarRemuneracaoParcial(colecaoImovelCobrancaSituacaoAtivo, dataPagamento, contaHistorico,
+											guiaPagamentoGeral, debitoACobrar, documentoTipo, anoMesReferenciaArrecadacao, valorPagamento,
+											numeroPrestacaoPagamento);
+							// // Caso o pagamento NÃO tenha sido realizado em nenhum dos períodos
+							// da
+							// // cobrança administrativa
+							//
+							// imovelCobrancaSituacao = maiorImovelCobrancaSituacao;
+							//
+							// if(contaHistorico != null){
+							// // Caso o item pago seja uma CONTA
+							//
+							// imovelCobrancaAdministrivaItem =
+							// this.cobrancaAdministrativaContaModelo1(dataPagamento,
+							// valorPagamento,
+							// contaHistorico, imovelCobrancaSituacao, documentoTipo,
+							// anoMesReferenciaArrecadacao);
+							//
+							// }else if(guiaPagamentoGeral != null){
+							// // Caso o item pago seja uma PRESTAÇÃO DE GUIA DE PAGAMENTO
+							//
+							// imovelCobrancaAdministrivaItem =
+							// this.processarCobrancaAdministrativaGuiaPagamentoModelo1(dataPagamento,
+							// valorPagamento, numeroPrestacaoPagamento, guiaPagamentoGeral,
+							// imovelCobrancaSituacao,
+							// documentoTipo, anoMesReferenciaArrecadacao);
+							//
+							// }else if(debitoACobrar != null){
+							// // Caso o item pago seja um DÉBITO A COBRAR
+							//
+							// imovelCobrancaAdministrivaItem =
+							// this.processarCobrancaAdministrativaDebitoACobrarModelo1(dataPagamento,
+							// valorPagamento, debitoACobrar, imovelCobrancaSituacao, documentoTipo,
+							// anoMesReferenciaArrecadacao);
+							// }
+							//
+							// if(imovelCobrancaAdministrivaItem != null){
+							// this.getControladorUtil().inserir(imovelCobrancaAdministrivaItem);
+							// }
 						}
 					}
 				}
 			}
 		}
+	}
+
+	/**
+	 * 2.2.1. Tratar a remuneração parcial [SB2100 - Tratar Remuneração Parcial].
+	 */
+
+	private void tratarRemuneracaoParcial(Collection<ImovelCobrancaSituacao> colecaoImovelCobrancaSituacao, Date dataPagamento,
+					ContaHistorico contaHistorico, GuiaPagamentoGeral guiaPagamentoGeral, DebitoACobrar debitoACobrar,
+					DocumentoTipo documentoTipo, Integer anoMesReferenciaArrecadacao, BigDecimal valorPagamento,
+					Integer numeroPrestacaoPagamento){
+
+		ImovelCobrancaSituacao imovelCobrancaSituacao = null;
+		ImovelCobrancaSituacao maiorImovelCobrancaSituacao = null;
+		ImovelCobrancaAdministrivaItem imovelCobrancaAdministrivaItem = null;
+
+		Integer idImovelCobrancaSituacaoAux = null;
+		Integer maiorIdImovelCobrancaSituacao = null;
+
+		Date dataImplantacaoCobranca = null;
+		Date dataRetiradaCobranca = null;
+
+		for(ImovelCobrancaSituacao imovelCobrancaSituacaoAux : colecaoImovelCobrancaSituacao){
+			dataImplantacaoCobranca = imovelCobrancaSituacaoAux.getDataImplantacaoCobranca();
+			dataRetiradaCobranca = imovelCobrancaSituacaoAux.getDataRetiradaCobranca();
+
+			if(dataImplantacaoCobranca != null && dataRetiradaCobranca != null && dataPagamento.compareTo(dataImplantacaoCobranca) >= 0
+							&& dataPagamento.compareTo(dataRetiradaCobranca) <= 0){
+
+				// Pagamento realizado em um dos períodos da cobrança
+				// administrativa
+				// do imóvel
+
+				imovelCobrancaSituacao = imovelCobrancaSituacaoAux;
+
+				break;
+			}else{
+				// Armazena o registro com maior Id
+
+				idImovelCobrancaSituacaoAux = imovelCobrancaSituacaoAux.getId();
+
+				if(maiorIdImovelCobrancaSituacao == null || idImovelCobrancaSituacaoAux > maiorIdImovelCobrancaSituacao){
+					maiorIdImovelCobrancaSituacao = idImovelCobrancaSituacaoAux;
+					maiorImovelCobrancaSituacao = imovelCobrancaSituacaoAux;
+					imovelCobrancaSituacao = maiorImovelCobrancaSituacao;
+				}
+			}
+		}
+
+		if(imovelCobrancaSituacao != null){
+			try{
+				// 2.2.1. Tratar a remuneração parcial [SB2100 - Tratar Remuneração
+				// Parcial].
+				if(contaHistorico != null){
+					// Caso o item pago seja uma CONTA
+
+					imovelCobrancaAdministrivaItem = this.cobrancaAdministrativaContaModelo1(dataPagamento, valorPagamento, contaHistorico,
+									imovelCobrancaSituacao, documentoTipo, anoMesReferenciaArrecadacao);
+
+				}else if(guiaPagamentoGeral != null){
+					// Caso o item pago seja uma PRESTAÇÃO DE GUIA DE PAGAMENTO
+
+					imovelCobrancaAdministrivaItem = this.processarCobrancaAdministrativaGuiaPagamentoModelo1(dataPagamento,
+									valorPagamento, numeroPrestacaoPagamento, guiaPagamentoGeral, imovelCobrancaSituacao, documentoTipo,
+									anoMesReferenciaArrecadacao);
+
+				}else if(debitoACobrar != null){
+					// Caso o item pago seja um DÉBITO A COBRAR
+
+					imovelCobrancaAdministrivaItem = this.processarCobrancaAdministrativaDebitoACobrarModelo1(dataPagamento,
+									valorPagamento, debitoACobrar, imovelCobrancaSituacao, documentoTipo, anoMesReferenciaArrecadacao);
+				}
+
+				if(imovelCobrancaAdministrivaItem != null){
+					this.getControladorUtil().inserir(imovelCobrancaAdministrivaItem);
+				}
+
+			}catch(ControladorException e){
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	/**
@@ -53712,7 +54796,7 @@ public class ControladorArrecadacao
 
 					ExtratoDebitoRelatorioHelper extratoDebitoRelatorioHelper = this.getControladorCobranca().gerarEmitirExtratoDebito(
 									imovel, ConstantesSistema.NAO, colecaoContaValoresHelper, null, null, valorAcrescimosImpontualidade,
-									BigDecimal.ZERO, valorCalculado, null, null, null, null);
+									BigDecimal.ZERO, valorCalculado, null, null, null, null, null);
 
 					CobrancaDocumento documentoCobranca = extratoDebitoRelatorioHelper.getDocumentoCobranca();
 
@@ -54023,5 +55107,511 @@ public class ControladorArrecadacao
 		getControladorBatch().encerrarUnidadeProcessamentoBatch(idUnidadeIniciada, false);
 
 	}
+	
+	
+	/**
+	 * @param idClienteResponsavel
+	 * @param colecaoReferencias
+	 * @return
+	 * @throws ControladorException
+	 */
 
+	public BigDecimal obterValorTotalContasParaCancelamento(Integer idClienteResponsavel,
+					Collection<IntervaloReferenciaHelper> colecaoReferencias) throws ControladorException{
+		
+		BigDecimal retorno = null;
+		try{
+
+			Integer pClienteRelacaoTipo = null;
+			try{
+
+				pClienteRelacaoTipo = Util
+								.converterStringParaInteger((String) ParametroFaturamento.P_TIPO_RELACAO_ATUAL_TITULAR_DEBITO_IMOVEL
+												.executar());
+
+			}catch(ControladorException e){
+
+				throw new ActionServletException("atencao.sistemaparametro_inexistente", null, "P_TIPO_RELACAO_ATUAL_TITULAR_DEBITO_IMOVEL");
+			}
+			
+			retorno = repositorioArrecadacao.obterValorTotalContasParaCancelamento(pClienteRelacaoTipo, idClienteResponsavel,
+							colecaoReferencias);
+
+
+			// erro no hibernate
+		}catch(ErroRepositorioException e){
+			// levanta a exceção para a próxima camada
+			throw new ControladorException("Erro no Hibernate", e);
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ControladorException("Erro no Hibernate", e);
+		}
+
+		return retorno;
+	
+
+		
+	}
+	
+	/**
+	 * [UC0259] - Processar Pagamento com Código de Barras
+	 * [SB0028 - Tratar Valores Acessórios do Extrato].
+	 * 
+	 * @throws ControladorException
+	 */
+
+	protected void tratarValoresAcessoriosDoExtrato(SistemaParametro sistemaParametro, Object[] parmsDocumentoCobranca,
+					BigDecimal valorAcrescimo, BigDecimal valorAcrescimoOriginalDocCob, BigDecimal valorDesconto,
+					Integer idCobrancaDocumento, BigDecimal valorTaxa, Date dataEmissao, Collection colecaoPagamentos,
+					Collection colecaoDevolucoes, Integer idImovelNaBase, Integer idLocalidadeImovel,
+					String parametroTratarAcrescimosEmissaoDocumento, String parametroPermitirSelecaoAcrescimosExtrato,
+					Integer idFormaPagamento, BigDecimal valorPagamento) throws ControladorException{
+
+		// 1. O sistema trata os valores acessórios do extrato de acordo com as seguintes regras:
+		// 1.1. Atribuir o valor do pagamento (campo G.05.5) ao saldo valor pago.
+
+		// 1.3. Valor dos acréscimos = Valor dos acréscimos do documento de cobrança
+		// (CBDO_VLACRESCIMOS da tabela COBRANCA_DOCUMENTO).
+		// Caso o valor dos acréscimos seja nulo, atribuir o valor zero.
+		if(parmsDocumentoCobranca[0] != null && valorAcrescimo == null){
+			valorAcrescimo = ((BigDecimal) parmsDocumentoCobranca[0]);
+			valorAcrescimoOriginalDocCob = ((BigDecimal) parmsDocumentoCobranca[0]);
+		}else{
+			valorAcrescimo = BigDecimal.ZERO;
+		}
+
+		// caso o valor de acrescimo for maior que zero e a empresa não utilize a regra
+		// de emitir o documento com os acrescimos
+		// 1.4. Caso o valor dos acréscimos seja maior que zero [SB0008 - Alterar vencimento dos
+		// itens do documento de cobrança].
+		if((parametroTratarAcrescimosEmissaoDocumento.equals(Short.toString(ConstantesSistema.NAO)) && parametroPermitirSelecaoAcrescimosExtrato
+						.equals(Short.toString(ConstantesSistema.NAO))) && valorAcrescimo.compareTo(BigDecimal.ZERO) == 1){
+
+			// [SB0008 - Alterar vencimento dos itens do documento de cobrança]
+			alterarVencimentoItensDocumentoCobranca(idCobrancaDocumento, dataEmissao);
+		}
+
+		// 1.5. Valor dos descontos = Valor dos descontos do documento de cobrança (CBDO_VLDESCONTO
+		// da tabela COBRANCA_DOCUMENTO).
+		// Caso o valor dos descontos seja nulo, atribuir o valor zero.
+		if(parmsDocumentoCobranca[1] != null && valorDesconto == null){
+			valorDesconto = ((BigDecimal) parmsDocumentoCobranca[1]);
+		}else{
+			valorDesconto = BigDecimal.ZERO;
+		}
+
+		// 1.6. Caso o valor dos acréscimos seja maior que o valor dos descontos:
+		if(valorAcrescimo.compareTo(valorDesconto) == 1){
+			// 1.6.1. Valor dos acréscimos = valor dos acréscimos - valor dos descontos.
+			valorAcrescimo = valorAcrescimo.subtract(valorDesconto);
+			// 1.6.2. Valor dos descontos = zero.
+			valorDesconto = BigDecimal.ZERO;
+		}else{
+			// 1.7. Caso contrário:
+			// 1.7.1. Valor dos descontos = valor dos descontos - valor dos acréscimos;
+			valorDesconto = valorDesconto.subtract(valorAcrescimo);
+			// 1.7.2. Valor dos acréscimos = zero.
+			valorAcrescimo = BigDecimal.ZERO;
+		}
+
+		// 1.8. Caso o valor dos acréscimos seja maior que zero [SB0005 - Processar Recebimento de
+		// Acréscimos por Impontualidade].
+		// caso o valor de acrescimo for maior que zero e a empresa não utilize a regra
+		// de emitir o documento com os acrescimos
+		if((parametroTratarAcrescimosEmissaoDocumento.equals(Short.toString(ConstantesSistema.NAO)) && parametroPermitirSelecaoAcrescimosExtrato
+						.equals(Short.toString(ConstantesSistema.NAO))) && valorAcrescimo.compareTo(BigDecimal.ZERO) == 1){
+
+			// [SB0005 - Processar Recebimento de Acrescimos por Impontualidade]
+			Pagamento pagamento = this.processarRecebimentoAcrescimosImpontualidade(idCobrancaDocumento, dataEmissao, valorAcrescimo,
+							idImovelNaBase, idLocalidadeImovel, sistemaParametro, idFormaPagamento);
+
+			colecaoPagamentos.add(pagamento);
+
+			valorAcrescimo = BigDecimal.ZERO;
+
+		}
+
+		// 1.9. Caso o valor dos descontos seja maior que zero [SB0006 - Processar Desconto
+		// Concedido no Documento de Cobrança].
+		if(valorDesconto.compareTo(BigDecimal.ZERO) == 1){
+			// [SB0006 - Processar Desconto Concedido no Documento de Cobrança].
+			Devolucao devolucao = this.processarDescontoConcedidoDocumentoCobranca(idCobrancaDocumento, dataEmissao, valorPagamento,
+							idImovelNaBase, idLocalidadeImovel, sistemaParametro, idFormaPagamento);
+
+			colecaoDevolucoes.add(devolucao);
+		}
+
+		if(parmsDocumentoCobranca[4] != null){
+			valorTaxa = ((BigDecimal) parmsDocumentoCobranca[4]);
+		}
+
+		// 1.10. Caso o valor da taxa referente ao documento de cobrança seja maior que zero
+		// (CBDO_VLTAXA da tabela COBRANCA_DOCUMENTO) [SB0007 - Processar Taxa do Documento de
+		// Cobrança].
+
+		if(valorTaxa.compareTo(BigDecimal.ZERO) == 1){
+
+			// [SB0007 ? Processar Taxa do Documento de Cobrança]
+			Pagamento pagamento = this.processarTaxaDocumentoCobranca(idCobrancaDocumento, dataEmissao, valorTaxa, idImovelNaBase,
+							idLocalidadeImovel, sistemaParametro, idFormaPagamento);
+
+			colecaoPagamentos.add(pagamento);
+
+		}
+
+	}
+
+	/**
+	 * [UC0259] - Processar Pagamento com Código de Barras
+	 * [SB0023 - Tratar Desconto Extrato Parcelamento].
+	 * 
+	 * @throws ControladorException
+	 */
+
+	protected void tratarDescontoExtratoParcelamento(
+					ResolucaoDiretoriaParametrosPagamentoAVista resolucaoDiretoriaParametrosPagamentoAVista, Integer idImovelNaBase,
+					Integer numeroSequencialDocumento, BigDecimal valorPagamento, Integer idResolucaoDiretoria, Date dataPagamento,
+					SistemaParametro sistemaParametro, Date dataEmissao, Integer anoMesReferenciaArrecadacao) throws ControladorException{
+
+		if(resolucaoDiretoriaParametrosPagamentoAVista != null){
+
+			Imovel imovel = this.getControladorImovel().pesquisarImovel(idImovelNaBase);
+
+			BigDecimal percentualDescontoMulta = resolucaoDiretoriaParametrosPagamentoAVista.getPercentualDescontoMulta();
+			BigDecimal percentualDescontoJurosMora = resolucaoDiretoriaParametrosPagamentoAVista.getPercentualDescontoJurosMora();
+			BigDecimal percentualDescontoCorrecaoMonetaria = resolucaoDiretoriaParametrosPagamentoAVista
+							.getPercentualDescontoCorrecaoMonetaria();
+
+			BigDecimal cem = new BigDecimal("100").setScale(2);
+
+			BigDecimal saldoValorPago = valorPagamento;
+
+			Collection<Conta> contas = this.getControladorCobranca().pesquisarContasCobrancaDocumento(numeroSequencialDocumento);
+
+			if(!Util.isVazioOrNulo(contas)){
+				Conta conta = null;
+
+				BigDecimal valorTotalContaSemImposto = BigDecimal.ZERO;
+
+				Integer referencia = null;
+				Date dataVencimentoConta = null;
+				Short indicadorCobrancaMulta = null;
+				Integer idConta = null;
+
+				FiltroDebitoCobrado filtroDebitoCobrado = null;
+				Collection<DebitoCobrado> debitosCobrados = null;
+				BigDecimal valorDebitosConta = BigDecimal.ZERO;
+
+				CalcularAcrescimoPorImpontualidadeHelper calcularAcrescimoPorImpontualidadeHelper = null;
+
+				BigDecimal valorMulta = BigDecimal.ZERO;
+				BigDecimal valorJurosMora = BigDecimal.ZERO;
+				BigDecimal valorAtualizacaoMonetaria = BigDecimal.ZERO;
+
+				Integer idDebitoTipo = null;
+				DebitoTipo debitoTipo = null;
+
+				Collection<Integer> colecaoIdsContasAtualizarIndicadorMulta = new ArrayList<Integer>();
+				Collection<Conta> colecaoContasAtualizarVencimento = new ArrayList<Conta>();
+
+				Iterator contasIterator = contas.iterator();
+
+				while(contasIterator.hasNext() && saldoValorPago.compareTo(BigDecimal.ZERO) > 0){
+					conta = (Conta) contasIterator.next();
+
+					resolucaoDiretoriaParametrosPagamentoAVista = this.getControladorCobranca()
+									.obterResolucaoDiretoriaParametrosPagamentoAVista(conta.getAnoMesReferenciaConta(),
+													conta.getDataVencimentoConta(), idResolucaoDiretoria, dataPagamento);
+
+					if(resolucaoDiretoriaParametrosPagamentoAVista != null){
+						percentualDescontoMulta = resolucaoDiretoriaParametrosPagamentoAVista.getPercentualDescontoMulta();
+						percentualDescontoJurosMora = resolucaoDiretoriaParametrosPagamentoAVista.getPercentualDescontoJurosMora();
+						percentualDescontoCorrecaoMonetaria = resolucaoDiretoriaParametrosPagamentoAVista
+										.getPercentualDescontoCorrecaoMonetaria();
+
+					}else{
+						continue;
+					}
+
+					valorTotalContaSemImposto = conta.getValorTotalContaSemImposto();
+
+					if(saldoValorPago.compareTo(valorTotalContaSemImposto) < 0){
+						break;
+					}
+
+					saldoValorPago = saldoValorPago.subtract(valorTotalContaSemImposto);
+
+					dataVencimentoConta = conta.getDataVencimentoConta();
+
+					if((percentualDescontoMulta != null && percentualDescontoMulta.compareTo(cem) != 0)
+									|| (percentualDescontoJurosMora != null && percentualDescontoJurosMora.compareTo(cem) != 0)
+									|| (percentualDescontoCorrecaoMonetaria != null && percentualDescontoCorrecaoMonetaria.compareTo(cem) != 0)){
+
+						// [UC0216 ? Calcular Acréscimos por Impontualidade]
+						referencia = conta.getReferencia();
+						indicadorCobrancaMulta = conta.getIndicadorCobrancaMulta();
+						idConta = conta.getId();
+
+						filtroDebitoCobrado = new FiltroDebitoCobrado();
+						filtroDebitoCobrado.adicionarParametro(new ParametroSimples(FiltroDebitoCobrado.CONTA_ID, idConta));
+						filtroDebitoCobrado.adicionarCaminhoParaCarregamentoEntidade(FiltroDebitoCobrado.DEBITO_TIPO);
+
+						debitosCobrados = this.getControladorUtil().pesquisar(filtroDebitoCobrado, DebitoCobrado.class.getName());
+
+						valorDebitosConta = this.getControladorFaturamento().calcularValorTotalMultasCobradasConta(debitosCobrados);
+
+						calcularAcrescimoPorImpontualidadeHelper = this.getControladorCobranca()
+										.calcularAcrescimoPorImpontualidadeBancoDeDados(referencia, dataVencimentoConta, dataEmissao,
+														valorTotalContaSemImposto, valorDebitosConta, indicadorCobrancaMulta,
+														Integer.toString(anoMesReferenciaArrecadacao), idConta, null, null,
+														ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM);
+
+						if(calcularAcrescimoPorImpontualidadeHelper != null){
+							BigDecimal valorAuxiliar = BigDecimal.ZERO;
+
+							valorMulta = calcularAcrescimoPorImpontualidadeHelper.getValorMulta();
+
+							if(valorMulta.compareTo(BigDecimal.ZERO) > 0){
+								valorAuxiliar = cem.subtract(percentualDescontoMulta);
+								valorAuxiliar = valorAuxiliar.divide(cem);
+
+								valorMulta = valorMulta.multiply(valorAuxiliar);
+							}
+
+							valorJurosMora = calcularAcrescimoPorImpontualidadeHelper.getValorJurosMora();
+
+							if(valorJurosMora.compareTo(BigDecimal.ZERO) > 0){
+								valorAuxiliar = cem.subtract(percentualDescontoJurosMora);
+								valorAuxiliar = valorAuxiliar.divide(cem);
+
+								valorJurosMora = valorJurosMora.multiply(valorAuxiliar);
+							}
+
+							valorAtualizacaoMonetaria = calcularAcrescimoPorImpontualidadeHelper.getValorAtualizacaoMonetaria();
+
+							if(valorAtualizacaoMonetaria.compareTo(BigDecimal.ZERO) > 0){
+								valorAuxiliar = cem.subtract(percentualDescontoCorrecaoMonetaria);
+								valorAuxiliar = valorAuxiliar.divide(cem);
+
+								valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.multiply(valorAuxiliar);
+							}
+
+							if(valorMulta.compareTo(BigDecimal.ZERO) > 0){
+								idDebitoTipo = DebitoTipo.MULTA_IMPONTUALIDADE;
+
+								debitoTipo = new DebitoTipo();
+								debitoTipo.setId(idDebitoTipo);
+
+								this.getControladorFaturamento().criarDebitoACobrar(imovel, null, sistemaParametro, debitoTipo, valorMulta,
+												referencia);
+
+								colecaoIdsContasAtualizarIndicadorMulta.add(idConta);
+							}
+
+							if(valorJurosMora.compareTo(BigDecimal.ZERO) > 0){
+								idDebitoTipo = DebitoTipo.JUROS_MORA;
+
+								debitoTipo = new DebitoTipo();
+								debitoTipo.setId(idDebitoTipo);
+
+								this.getControladorFaturamento().criarDebitoACobrar(imovel, null, sistemaParametro, debitoTipo,
+												valorJurosMora, referencia);
+							}
+
+							if(valorAtualizacaoMonetaria.compareTo(BigDecimal.ZERO) > 0){
+								idDebitoTipo = DebitoTipo.ATUALIZACAO_MONETARIA;
+
+								debitoTipo = new DebitoTipo();
+								debitoTipo.setId(idDebitoTipo);
+
+								this.getControladorFaturamento().criarDebitoACobrar(imovel, null, sistemaParametro, debitoTipo,
+												valorAtualizacaoMonetaria, referencia);
+							}
+
+						}
+					}
+
+					if(Util.compararData(dataVencimentoConta, dataPagamento) == -1){
+						colecaoContasAtualizarVencimento.add(conta);
+					}
+				}
+
+				if(!Util.isVazioOrNulo(colecaoIdsContasAtualizarIndicadorMulta)){
+					try{
+						repositorioFaturamento.atualizarIndicadorMultaDeConta(colecaoIdsContasAtualizarIndicadorMulta);
+					}catch(ErroRepositorioException e){
+						throw new ControladorException(e.getMessage());
+					}
+				}
+
+				// [UC0151] Alterar Vencimento de Conta
+				if(!Util.isVazioOrNulo(colecaoContasAtualizarVencimento)){
+					this.getControladorFaturamento().alterarVencimentoConta(colecaoContasAtualizarVencimento, null, dataPagamento, null);
+				}
+			}
+
+			Collection<GuiaPagamentoPrestacao> guiasPagamentoPrestacao = this.getControladorCobranca()
+							.pesquisarGuiasPagamentoPrestacaoCobrancaDocumento(numeroSequencialDocumento);
+
+			if(!Util.isVazioOrNulo(guiasPagamentoPrestacao)){
+				GuiaPagamentoPrestacao guiaPagamentoPrestacao = null;
+
+				GuiaPagamentoPrestacaoPK guiaPagamentoPrestacaoPK = null;
+
+				BigDecimal valorPrestacao = BigDecimal.ZERO;
+
+				Integer anoMesReferenciaFaturamento = null;
+				Date dataVencimento = null;
+				Short indicadorCobrancaMulta = null;
+
+				CalcularAcrescimoPorImpontualidadeHelper calcularAcrescimoPorImpontualidadeHelper = null;
+
+				BigDecimal valorMulta = BigDecimal.ZERO;
+				BigDecimal valorJurosMora = BigDecimal.ZERO;
+				BigDecimal valorAtualizacaoMonetaria = BigDecimal.ZERO;
+
+				Integer idDebitoTipo = null;
+				DebitoTipo debitoTipo = null;
+
+				Collection<GuiaPagamentoPrestacaoPK> colecaoIdsGuiasPagamentosAtualizarIndicadorMulta = new ArrayList<GuiaPagamentoPrestacaoPK>();
+				Collection<Object[]> colecaoGuiasPagamentoPrestacaoAtualizarVencimento = new ArrayList<Object[]>();
+
+				Iterator<GuiaPagamentoPrestacao> guiasPagamentoPrestacaoIterator = guiasPagamentoPrestacao.iterator();
+
+				while(guiasPagamentoPrestacaoIterator.hasNext() && saldoValorPago.compareTo(BigDecimal.ZERO) > 0){
+					guiaPagamentoPrestacao = (GuiaPagamentoPrestacao) guiasPagamentoPrestacaoIterator.next();
+
+					resolucaoDiretoriaParametrosPagamentoAVista = this.getControladorCobranca()
+									.obterResolucaoDiretoriaParametrosPagamentoAVista(
+													guiaPagamentoPrestacao.getAnoMesReferenciaFaturamento(),
+													guiaPagamentoPrestacao.getDataVencimento(), idResolucaoDiretoria, dataPagamento);
+
+					if(resolucaoDiretoriaParametrosPagamentoAVista != null){
+						percentualDescontoMulta = resolucaoDiretoriaParametrosPagamentoAVista.getPercentualDescontoMulta();
+						percentualDescontoJurosMora = resolucaoDiretoriaParametrosPagamentoAVista.getPercentualDescontoJurosMora();
+						percentualDescontoCorrecaoMonetaria = resolucaoDiretoriaParametrosPagamentoAVista
+										.getPercentualDescontoCorrecaoMonetaria();
+
+					}else{
+						continue;
+					}
+
+					guiaPagamentoPrestacaoPK = guiaPagamentoPrestacao.getComp_id();
+
+					valorPrestacao = guiaPagamentoPrestacao.getValorPrestacao();
+
+					if(saldoValorPago.compareTo(valorPrestacao) < 0){
+						break;
+					}
+
+					saldoValorPago = saldoValorPago.subtract(valorPrestacao);
+
+					dataVencimento = guiaPagamentoPrestacao.getDataVencimento();
+
+					if((percentualDescontoMulta != null && percentualDescontoMulta.compareTo(cem) != 0)
+									|| (percentualDescontoJurosMora != null && percentualDescontoJurosMora.compareTo(cem) != 0)
+									|| (percentualDescontoCorrecaoMonetaria != null && percentualDescontoCorrecaoMonetaria.compareTo(cem) != 0)){
+
+						// [UC0216 ? Calcular Acréscimos por Impontualidade]
+						anoMesReferenciaFaturamento = guiaPagamentoPrestacao.getAnoMesReferenciaFaturamento();
+						indicadorCobrancaMulta = guiaPagamentoPrestacao.getIndicadorCobrancaMulta();
+
+						calcularAcrescimoPorImpontualidadeHelper = this.getControladorCobranca()
+										.calcularAcrescimoPorImpontualidadeBancoDeDados(anoMesReferenciaFaturamento, dataVencimento,
+														dataEmissao, valorPrestacao, BigDecimal.ZERO, indicadorCobrancaMulta,
+														Integer.toString(anoMesReferenciaArrecadacao), null, null, null,
+														ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM);
+
+						if(calcularAcrescimoPorImpontualidadeHelper != null){
+							BigDecimal valorAuxiliar = BigDecimal.ZERO;
+
+							valorMulta = calcularAcrescimoPorImpontualidadeHelper.getValorMulta();
+
+							if(valorMulta.compareTo(BigDecimal.ZERO) > 0){
+								valorAuxiliar = cem.subtract(percentualDescontoMulta);
+								valorAuxiliar = valorAuxiliar.divide(cem);
+
+								valorMulta = valorMulta.multiply(valorAuxiliar);
+							}
+
+							valorJurosMora = calcularAcrescimoPorImpontualidadeHelper.getValorJurosMora();
+
+							if(valorJurosMora.compareTo(BigDecimal.ZERO) > 0){
+								valorAuxiliar = cem.subtract(percentualDescontoJurosMora);
+								valorAuxiliar = valorAuxiliar.divide(cem);
+
+								valorJurosMora = valorJurosMora.multiply(valorAuxiliar);
+							}
+
+							valorAtualizacaoMonetaria = calcularAcrescimoPorImpontualidadeHelper.getValorAtualizacaoMonetaria();
+
+							if(valorAtualizacaoMonetaria.compareTo(BigDecimal.ZERO) > 0){
+								valorAuxiliar = cem.subtract(percentualDescontoCorrecaoMonetaria);
+								valorAuxiliar = valorAuxiliar.divide(cem);
+
+								valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.multiply(valorAuxiliar);
+							}
+
+							if(valorMulta.compareTo(BigDecimal.ZERO) > 0){
+								idDebitoTipo = DebitoTipo.MULTA_IMPONTUALIDADE;
+
+								debitoTipo = new DebitoTipo();
+								debitoTipo.setId(idDebitoTipo);
+
+								this.getControladorFaturamento().criarDebitoACobrar(imovel, null, sistemaParametro, debitoTipo, valorMulta,
+												anoMesReferenciaFaturamento);
+
+								colecaoIdsGuiasPagamentosAtualizarIndicadorMulta.add(guiaPagamentoPrestacaoPK);
+							}
+
+							if(valorJurosMora.compareTo(BigDecimal.ZERO) > 0){
+								idDebitoTipo = DebitoTipo.JUROS_MORA;
+
+								debitoTipo = new DebitoTipo();
+								debitoTipo.setId(idDebitoTipo);
+
+								this.getControladorFaturamento().criarDebitoACobrar(imovel, null, sistemaParametro, debitoTipo,
+												valorJurosMora, anoMesReferenciaFaturamento);
+							}
+
+							if(valorAtualizacaoMonetaria.compareTo(BigDecimal.ZERO) > 0){
+								idDebitoTipo = DebitoTipo.ATUALIZACAO_MONETARIA;
+
+								debitoTipo = new DebitoTipo();
+								debitoTipo.setId(idDebitoTipo);
+
+								this.getControladorFaturamento().criarDebitoACobrar(imovel, null, sistemaParametro, debitoTipo,
+												valorAtualizacaoMonetaria, anoMesReferenciaFaturamento);
+							}
+						}
+					}
+
+					if(Util.compararData(dataVencimento, dataPagamento) == -1){
+						colecaoGuiasPagamentoPrestacaoAtualizarVencimento
+										.add(new Object[] {guiaPagamentoPrestacaoPK.getGuiaPagamentoId(), guiaPagamentoPrestacaoPK
+														.getNumeroPrestacao()});
+					}
+				}
+
+				if(!Util.isVazioOrNulo(colecaoIdsGuiasPagamentosAtualizarIndicadorMulta)){
+					try{
+						repositorioFaturamento
+										.atualizarIndicadorMultaDeGuiaPagamentoPrestacao(colecaoIdsGuiasPagamentosAtualizarIndicadorMulta);
+					}catch(ErroRepositorioException e){
+						throw new ControladorException("erro.sistema", e);
+					}
+				}
+
+				if(!Util.isVazioOrNulo(colecaoGuiasPagamentoPrestacaoAtualizarVencimento)){
+					try{
+						repositorioCobranca.atualizarGuiaPagamentoPrestacao(colecaoGuiasPagamentoPrestacaoAtualizarVencimento,
+										dataPagamento);
+					}catch(ErroRepositorioException e){
+						throw new ControladorException("erro.sistema", e);
+					}
+				}
+			}
+
+		}
+	}
 }

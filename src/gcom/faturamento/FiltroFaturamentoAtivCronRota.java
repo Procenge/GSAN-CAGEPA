@@ -170,4 +170,6 @@ public class FiltroFaturamentoAtivCronRota
 	 * Description of the Field
 	 */
 	public final static String SETOR_COMERCIAL_CODIGO = "rota.setorComercial.codigo";
+
+	public final static String COMP_ID_FATURAMENTO_ATIVIDADE_CRONOGRAMA_FATURAMENTO_GRUPO_CRONOGRAMA_MENSAL = "faturamentoAtividadeCronograma.faturamentoGrupoCronogramaMensal";
 }

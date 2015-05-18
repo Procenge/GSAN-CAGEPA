@@ -52,6 +52,14 @@
         column="cltp_tmultimaalteracao"
         length="8"
     />
+    
+    <property
+        name="codigoConstante"
+        type="java.lang.String"
+        column="cltp_cdconstante"
+        length="60"
+        not-null="false"
+    />    
 
     <!-- associations -->
     <!-- bi-directional many-to-one association to EsferaPoder -->

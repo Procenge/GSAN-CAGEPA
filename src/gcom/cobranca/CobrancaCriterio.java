@@ -148,6 +148,10 @@ public class CobrancaCriterio
 
 	/** nullable persistent field */
 	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CRITERIO})
+	private Short indicadorDividaAtiva;
+
+	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CRITERIO})
 	private Short indicadorEmissaoInquilinoDebitoContaMes;
 
 	/** nullable persistent field */
@@ -161,6 +165,10 @@ public class CobrancaCriterio
 	/** nullable persistent field */
 	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CRITERIO})
 	private Short indicadorComTelefone;
+
+	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CRITERIO})
+	private Short indicadorCriterioCobranca;
 
 	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CRITERIO})
 	private Short indicadorConsiderarApenasDebitoTitularAtual;
@@ -207,7 +215,8 @@ public class CobrancaCriterio
 	public CobrancaCriterio(String descricaoCobrancaCriterio, Date dataInicioVigencia, Short indicadorUso, Short numeroContaAntiga,
 							Short indicadorEmissaoImovelParalisacao, Date ultimaAlteracao, Short indicadorEmissaoImovelSituacaoCobranca,
 							Short indicadorEmissaoDebitoContaMes, Short indicadorEmissaoContaRevisao,
-							Short indicadorEmissaoInquilinoDebitoContaMes, Short indicadorEmissaoDebitoContaAntiga) {
+							Short indicadorEmissaoInquilinoDebitoContaMes, Short indicadorEmissaoDebitoContaAntiga,
+							Short indicadorDividaAtiva) {
 
 		this.descricaoCobrancaCriterio = descricaoCobrancaCriterio;
 		this.dataInicioVigencia = dataInicioVigencia;
@@ -220,6 +229,7 @@ public class CobrancaCriterio
 		this.indicadorEmissaoContaRevisao = indicadorEmissaoContaRevisao;
 		this.indicadorEmissaoInquilinoDebitoContaMes = indicadorEmissaoInquilinoDebitoContaMes;
 		this.indicadorEmissaoDebitoContaAntiga = indicadorEmissaoDebitoContaAntiga;
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
 		// this.cobrancaAcao = cobrancaAcao;
 	}
 
@@ -326,6 +336,16 @@ public class CobrancaCriterio
 	public void setIndicadorEmissaoContaRevisao(Short indicadorEmissaoContaRevisao){
 
 		this.indicadorEmissaoContaRevisao = indicadorEmissaoContaRevisao;
+	}
+
+	public Short getIndicadorDividaAtiva(){
+
+		return this.indicadorDividaAtiva;
+	}
+
+	public void setIndicadorDividaAtiva(Short indicadorDividaAtiva){
+
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
 	}
 
 	public Short getIndicadorEmissaoInquilinoDebitoContaMes(){
@@ -483,6 +503,16 @@ public class CobrancaCriterio
 	public void setIndicadorComTelefone(Short indicadorComTelefone){
 
 		this.indicadorComTelefone = indicadorComTelefone;
+	}
+
+	public Short getIndicadorCriterioCobranca(){
+
+		return indicadorCriterioCobranca;
+	}
+
+	public void setIndicadorCriterioCobranca(Short indicadorCriterioCobranca){
+
+		this.indicadorCriterioCobranca = indicadorCriterioCobranca;
 	}
 
 	public Integer getQtdDiasCortado(){

@@ -79,6 +79,8 @@
 
 package gcom.gui.cadastro.funcionario;
 
+import gcom.util.ConstantesSistema;
+
 import org.apache.struts.validator.ValidatorActionForm;
 
 /**
@@ -100,6 +102,12 @@ public class InserirFuncionarioActionForm
 	private String idUnidade;
 
 	private String nomeUnidade;
+
+	private Integer idEquipeTipo;
+
+	private String nomeResumido;
+
+	private String jornadaTipo = ConstantesSistema.SIM.toString();
 
 	public String getDescricaoCargo(){
 
@@ -159,6 +167,36 @@ public class InserirFuncionarioActionForm
 	public void setMatricula(String matricula){
 
 		this.matricula = matricula;
+	}
+
+	public Integer getIdEquipeTipo(){
+
+		return idEquipeTipo;
+	}
+
+	public void setIdEquipeTipo(Integer idEquipeTipo){
+
+		this.idEquipeTipo = idEquipeTipo;
+	}
+
+	public String getNomeResumido(){
+
+		return nomeResumido;
+	}
+
+	public void setNomeResumido(String nomeResumido){
+
+		this.nomeResumido = nomeResumido;
+	}
+
+	public String getJornadaTipo(){
+
+		return jornadaTipo;
+	}
+
+	public void setJornadaTipo(String jornadaTipo){
+
+		this.jornadaTipo = jornadaTipo;
 	}
 
 }

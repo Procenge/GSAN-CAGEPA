@@ -6,6 +6,7 @@
 <%@ page import="gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao" %>
 <%@ page import="gcom.gui.cobranca.BoletoBancarioHelper" %>
 <%@ page import="gcom.cadastro.cliente.ClienteTipo"%>
+<%@ page import="gcom.cadastro.cliente.ClienteImovel" isELIgnored="false"%>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -19,7 +20,8 @@
 
 <script language="JavaScript" src="<bean:message key="caminho.js"/>util.js" ></script>
 <script language="JavaScript" src="<bean:message key="caminho.js"/>Calendario.js" ></script>
-<script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/regras_validator.js"></script><html:javascript staticJavascript="false"  formName="EfetuarParcelamentoDebitosActionForm" dynamicJavascript="false" />
+<script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/regras_validator.js"></script>
+<html:javascript staticJavascript="false"  formName="EfetuarParcelamentoDebitosActionForm" dynamicJavascript="false" />
 
 <logic:equal name="exibirParcelamentoCobrancaBancaria" value="S">
 
@@ -97,7 +99,8 @@ function verificaExistenciaMatricula(){
 	    document.getElementById("valorDebitoACobrarParcelamento").innerHTML = '&nbsp;';
 	    document.getElementById("valorCreditoARealizar").innerHTML = '&nbsp;';
 	    document.getElementById("valorDebitoTotalAtualizado").innerHTML = '&nbsp;';
-
+	    document.getElementById("valorTotalSucumbencia").innerHTML = '&nbsp;';
+	    document.getElementById("valorAcrescimosSucumbencia").innerHTML = '&nbsp;';
 	}
 
 	//if(!form.indicadorCreditoARealizar[0].checked && !form.indicadorCreditoARealizar[1].checked){
@@ -246,7 +249,8 @@ function verificaExistenciaMatricula(){
 	    document.getElementById("valorDebitoACobrarParcelamento").innerHTML = '&nbsp;';
 	    document.getElementById("valorCreditoARealizar").innerHTML = '&nbsp;';
 	    document.getElementById("valorDebitoTotalAtualizado").innerHTML = '&nbsp;';
-
+	    document.getElementById("valorTotalSucumbencia").innerHTML = '&nbsp;';
+	    document.getElementById("valorAcrescimosSucumbencia").innerHTML = '&nbsp;';
 	}
 
 	//if(!form.indicadorCreditoARealizar[0].checked && !form.indicadorCreditoARealizar[1].checked){
@@ -401,6 +405,22 @@ function validaTodosRadioButton(){
 	</script>
 </logic:notEqual>
 
+<script>
+
+	function validaEnterMatriculaImovel() {
+		var form = document.forms[0];
+		
+		var obj = form.idClienteRelacaoImovelSelecionado;
+		if(obj != null && obj != undefined && obj != 'undefined'){
+			form.idClienteRelacaoImovelSelecionado.value = '';
+		}
+		
+		validaEnterComMensagem(event, 'exibirEfetuarParcelamentoDebitosAction.do?menu=sim', 'matriculaImovel','Matrícula do Imóvel');
+	}
+	
+</script>
+
+
 <script language="JavaScript">
 <!-- Begin 
  
@@ -517,6 +537,12 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
     if(tipoConsulta == 'imovel'){
       limparForm();      
       form.matriculaImovel.value = codigoRegistro;
+      
+      var obj = form.idClienteRelacaoImovelSelecionado;
+      if(obj != null && obj != undefined && obj != 'undefined'){
+      	form.idClienteRelacaoImovelSelecionado.value = '';
+      }
+      
       form.action = 'exibirEfetuarParcelamentoDebitosAction.do'
       form.submit();
     }
@@ -606,7 +632,8 @@ function verificaExistenciaMatricula(){
 	    document.getElementById("valorDebitoACobrarParcelamento").innerHTML = '&nbsp;';
 	    document.getElementById("valorCreditoARealizar").innerHTML = '&nbsp;';
 	    document.getElementById("valorDebitoTotalAtualizado").innerHTML = '&nbsp;';
-
+	    document.getElementById("valorTotalSucumbencia").innerHTML = '&nbsp;';
+	    document.getElementById("valorAcrescimosSucumbencia").innerHTML = '&nbsp;';
 	}
 	if(!form.indicadorCreditoARealizar[0].checked && !form.indicadorCreditoARealizar[1].checked){
 		form.indicadorCreditoARealizar[0].checked = true;
@@ -744,6 +771,36 @@ function reload() {
 
 -->
 </script>
+
+<logic:present name="indicadorFauramentoTitularDebito" scope="request">
+	<SCRIPT LANGUAGE="JavaScript">
+	<!--
+	
+	  	function marcarClienteOrigemId(objeto) {
+	  		var form = document.forms[0];
+	  		
+	  		if (document.forms[0].idClienteImovel.length != undefined && document.forms[0].idClienteImovel.length != null) {
+				var i = 0;
+				for (i = 0; i < document.forms[0].idClienteImovel.length; i++) { 
+				    if (document.forms[0].idClienteImovel[i].checked == true) {
+				    	form.idClienteRelacaoImovelSelecionado.value = document.forms[0].valorClienteImovel[i].value;
+				    	
+				    	form.action = 'exibirEfetuarParcelamentoDebitosAction.do?menu=sim'
+				    	form.submit();
+				    }
+				}
+			} else {
+		    	form.idClienteRelacaoImovelSelecionado.value = document.forms[0].valorClienteImovel.value;
+		    	
+		    	form.action = 'exibirEfetuarParcelamentoDebitosAction.do?menu=sim'
+		    	form.submit();				
+			}
+	  	}
+
+	//-->
+	</SCRIPT>
+</logic:present>
+
 </head>
 
 <logic:present name="parametrizacaoParcelamentoCobrancaBancaria" scope="session">
@@ -766,6 +823,8 @@ function reload() {
 
 <html:hidden property="situacoesCobrancaDescricoes"/>
 <html:hidden property="indicadorPrimeiroAcesso"/>
+<html:hidden property="indicadorImovelEmExecucaoFiscal"/>
+<html:hidden property="atendimentoSemPreencherDocumentosObrigatorios"/>
 
 <%@ include file="/jsp/util/cabecalho.jsp"%>
 
@@ -842,7 +901,7 @@ function reload() {
 								<td>
 									<html:hidden property="codigoImovelAntes" />
 									<html:text property="matriculaImovel" maxlength="9" size="9"
-										onkeypress="validaEnterComMensagem(event, 'exibirEfetuarParcelamentoDebitosAction.do?menu=sim', 'matriculaImovel','Matrícula do Imóvel');" 
+										onkeypress="validaEnterMatriculaImovel();" 
 										onkeyup="verificaNumeroInteiro(this);" onchange="javascript:verificaLimparForm();"/>
 									<a href="javascript:abrirPopup('exibirPesquisarImovelAction.do', 400, 800);">
 										<img width="23" height="21" src="<bean:message key='caminho.imagens'/>pesquisa.gif" border="0" /></a>	
@@ -875,21 +934,97 @@ function reload() {
 								</td>
 							</tr>
 							
+						    <logic:present name="indicadorFauramentoTitularDebito" scope="request">
+							<td colspan="3">			    
+								<table width="100%" align="center" bgcolor="#90c7fc" border="0">
+								<tr>
+									<td align="center" ><strong>Clientes com Débitos</strong></td>
+								</tr>
+							    </table>
+						    	<html:hidden property="idClienteRelacaoImovelSelecionado"/>
+								<%int cont = 0;%>
+								<table width="100%" bgcolor="#99CCFF">
+									<tr bgcolor="#90c7fc">
+										<td align="center" width="7%"><strong></strong></td>
+										<td align="center" width="18%"><strong>Tipo de Relação</strong></td>
+										<td align="left" width="75%"><strong>Nome</strong></td>
+									</tr>
+									
+									<logic:notEmpty name="colecaoRelacaoImovel" scope="session">
+									<tr>
+										<td height="100" colspan="3" >
+										<div style="width: 100%; height: 100%; overflow: auto;">
+										<table width="100%">
+											<logic:iterate name="colecaoRelacaoImovel" type="ClienteImovel" id="clienteImovel">
+												<%cont = cont + 1;
+												if (cont % 2 == 0) {%>
+												<tr bgcolor="#cbe5fe" width="100%">
+												<%} else {%>
+												<tr bgcolor="#FFFFFF" width="100%">
+												<%}%>
+								
+												<td align="center" height="20" width="7%">
+													<input type="hidden" name="valorClienteImovel"
+														value="<bean:write name="clienteImovel" property="clienteRelacaoTipo.id"/>.<bean:write name="clienteImovel" property="cliente.id"/>" 
+														 >
+													
+													<input type="radio" id="idClienteImovel" 
+														name="idClienteImovel" 
+														 onclick="javascript:marcarClienteOrigemId(this);">
+					
+												</td>
+												<td align="center" height="20" width="18%">
+													<bean:write name="clienteImovel" property="clienteRelacaoTipo.descricao"/>
+												</td>
+												<td align="center" height="20" width="75%">
+													<bean:write name="clienteImovel" property="cliente.descricao"/>
+												</td>																				
+												</tr>
+											</logic:iterate>							
+										</table>
+										</div>
+										</td>
+									</tr>
+									</logic:notEmpty>							
+								</table>			
+							</td>
+							</tr>				       
+						   </logic:present>								
 	
 							<tr>
 								<td><strong>Cliente Responsável pelo Parcelamento:<font color="#FF0000">*</font></strong></td>
 								<td>
-									<logic:present name="idClienteParcelamento" scope="request">
-										<html:text property="idClienteParcelamento" size="9" maxlength="9" readonly="true"
+									<logic:present name="permiteInformarCliente" scope="session">
+										<html:text property="idClienteParcelamento" size="9" maxlength="9"
 											onkeyup="validaEnterComMensagem(event, 
 											'efetuarParcelamentoDebitosWizardAction.do?action=exibirEfetuarParcelamentoDebitosProcesso1Action', 'idClienteParcelamento','Cliente');"
 											onkeypress="document.forms[0].nomeClienteParcelamento.value='';
 											document.forms[0].foneClienteParcelamento.value='';
 											document.forms[0].cpfClienteParcelamento.value='';
-											document.forms[0].cpfClienteParcelamentoDigitado.value='';"
-											style="background-color:#EFEFEF; border:0; color: #000000" />
+											document.forms[0].cpfClienteParcelamentoDigitado.value='';" />
+										
+										<a href="javascript:habilitarPesquisaCliente(document.forms[0]);" >
+											<img width="23" height="21"	src="<bean:message key='caminho.imagens'/>pesquisa.gif" border="0" />
+										</a>
+										
+										<logic:present name="clienteInexistente" scope="request">
+											<html:text property="nomeClienteParcelamento" size="35" maxlength="35"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										</logic:present> 
+										<logic:notPresent name="clienteInexistente"
+											scope="request">
+											<html:text property="nomeClienteParcelamento" size="35" maxlength="35"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #000000" />
+										</logic:notPresent>
+										
+										<a href="javascript:limparCliente();">
+											<img src="<bean:message key="caminho.imagens"/>limparcampo.gif" border="0" />
+										</a>
 									</logic:present>
-									<logic:notPresent name="idClienteParcelamento" scope="request">
+									
+									<logic:notPresent name="permiteInformarCliente" scope="session">
 										<html:text property="idClienteParcelamento" size="9" maxlength="9" readonly="true"
 											onkeyup="validaEnterComMensagem(event, 
 											'efetuarParcelamentoDebitosWizardAction.do?action=exibirEfetuarParcelamentoDebitosProcesso1Action', 'idClienteParcelamento','Cliente');"
@@ -898,27 +1033,24 @@ function reload() {
 											document.forms[0].cpfClienteParcelamento.value='';
 											document.forms[0].cpfClienteParcelamentoDigitado.value='';"
 											style="background-color:#EFEFEF; border:0; color: #000000" />
+										
+										<img width="23" height="21"	src="<bean:message key='caminho.imagens'/>pesquisa.gif" border="0" />
+										
+										<logic:present name="clienteInexistente" scope="request">
+											<html:text property="nomeClienteParcelamento" size="35" maxlength="35"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										</logic:present>
+										<logic:notPresent name="clienteInexistente"
+											scope="request">
+											<html:text property="nomeClienteParcelamento" size="35" maxlength="35"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #000000" />
+										</logic:notPresent>
+										
+										<img src="<bean:message key="caminho.imagens"/>limparcampo.gif" border="0" />
 									</logic:notPresent>
-									<!-- <a href="javascript:habilitarPesquisaCliente(document.forms[0]);" > -->
-										<img width="23" height="21"	src="<bean:message key='caminho.imagens'/>pesquisa.gif" border="0" /> <!-- title="Pesquisar Cliente" -->
-									<!-- </a> -->		
-									
-									<logic:present name="clienteInexistente" scope="request">
-										<html:text property="nomeClienteParcelamento" size="35" maxlength="35"
-											readonly="true"
-											style="background-color:#EFEFEF; border:0; color: #ff0000" />
-											
-									</logic:present> 
-									<logic:notPresent name="clienteInexistente"
-										scope="request">
-										<html:text property="nomeClienteParcelamento" size="35" maxlength="35"
-											readonly="true"
-											style="background-color:#EFEFEF; border:0; color: #000000" />
-									</logic:notPresent>
-									<!-- <a href="javascript:limparCliente();"> -->
-										<img src="<bean:message key="caminho.imagens"/>limparcampo.gif"
-											border="0" /> <!-- title="Apagar" -->
-									<!-- </a> -->
+
 								</td>
 							</tr>
 							<tr>
@@ -1331,6 +1463,49 @@ function reload() {
 								</td>
 							</tr>
 						</table>
+
+						<logic:notEqual name="EfetuarParcelamentoDebitosActionForm" property="valorTotalSucumbenciaImovel" value="0,00">
+						<br>
+						<table width="100%" bgcolor="#99CCFF">
+							<tr bgcolor="#90c7fc">  
+								<td align="center" width="50%">
+									<strong>Sucumbência Anterior</strong>
+								</td>
+								<td align="center" width="50%">
+									<strong>Acr&eacute;scimos Sucumbência Ant.</strong>
+								</td>
+							</tr>
+							<tr bgcolor="#cbe5fe"> 
+								<td align="right" height="20" bgcolor="#FFFFFF">
+									<span id="valorTotalSucumbencia">
+									<bean:write name="EfetuarParcelamentoDebitosActionForm" 
+										property="valorTotalSucumbenciaImovel"/>
+									</span>	
+								</td>
+								<td align="right" bgcolor="#FFFFFF">
+									<span id="valorAcrescimosSucumbencia">
+									<logic:notEqual
+										name="EfetuarParcelamentoDebitosActionForm" property="valorAcrescimosSucumbenciaImovel"
+										value="0,00">
+										<a href="javascript:abrirPopup('exibirValorAtualizacaoConsultarPopupAction.do?
+											multa=<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorMultaSucumbenciaImovel" />&
+											juros=<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorJurosMoraSucumbenciaImovel" />&
+											atualizacao=<bean:write name="EfetuarParcelamentoDebitosActionForm" property="valorAtualizacaoMonetariaSucumbenciaImovel" />', 220, 605);">
+										<bean:write name="EfetuarParcelamentoDebitosActionForm"
+											property="valorAcrescimosSucumbenciaImovel" formatKey="money.format" />
+										</a>
+									</logic:notEqual> 
+									<logic:equal name="EfetuarParcelamentoDebitosActionForm"
+										property="valorAcrescimosSucumbenciaImovel" value="0,00">
+										<bean:write name="EfetuarParcelamentoDebitosActionForm"
+											property="valorAcrescimosSucumbenciaImovel" formatKey="money.format" />
+									</logic:equal>
+									</span>	
+								</td>
+							</tr>
+						</table>
+						</logic:notEqual>
+
 					</td>
 				</tr>
 				
@@ -1477,10 +1652,44 @@ function reload() {
 								</logic:equal>
 							</logic:present>
 							<logic:notPresent name="parametrizacaoParcelamentoPadrao" scope="session">
+								<logic:present name="indicadorImovelEmExecucaoFiscal" scope="session">
+									<logic:equal name="indicadorImovelEmExecucaoFiscal" value="S">
+										<logic:present name="indicadorPermissaoExecucaoFiscalCobrancaConta" scope="session">
+											<logic:equal name="indicadorPermissaoExecucaoFiscalCobrancaConta" value="S">
+											<strong>
+												<logic:notPresent name="indicadorTitularidadeDifenteDeUsuarioAtual" scope="session">
+													<html:radio property="indicadorCobrancaParcelamento" value="1" onclick="javascript:tratarOpcaoMeioCobrancaParcelamento();" />D&eacute;bito a Cobrar
+													<html:radio property="indicadorCobrancaParcelamento" value="2" onclick="javascript:tratarOpcaoMeioCobrancaParcelamento();" />Guia de Pagamento
+												</logic:notPresent>
+												
+												<logic:present name="indicadorTitularidadeDifenteDeUsuarioAtual" scope="session">
+													<html:radio property="indicadorCobrancaParcelamento" value="1" onclick="javascript:tratarOpcaoMeioCobrancaParcelamento();" disabled="true" />D&eacute;bito a Cobrar
+													<html:radio property="indicadorCobrancaParcelamento" value="2" onclick="javascript:tratarOpcaoMeioCobrancaParcelamento();" disabled="true" />Guia de Pagamento
+												</logic:present>												
+											</strong>
+											</logic:equal>
+										</logic:present>
+										<logic:notPresent name="indicadorPermissaoExecucaoFiscalCobrancaConta" scope="session">
+										<strong>
+											<html:radio property="indicadorCobrancaParcelamento" value="1" disabled="true" />D&eacute;bito a Cobrar
+											<html:radio property="indicadorCobrancaParcelamento" value="2" disabled="true" />Guia de Pagamento
+										</strong>
+										</logic:notPresent>
+								</logic:equal>
+								</logic:present>
+								<logic:notPresent name="indicadorImovelEmExecucaoFiscal" scope="session">
 								<strong>
-									<html:radio property="indicadorCobrancaParcelamento" value="1" onclick="javascript:tratarOpcaoMeioCobrancaParcelamento();" />D&eacute;bito a Cobrar
-									<html:radio property="indicadorCobrancaParcelamento" value="2" onclick="javascript:tratarOpcaoMeioCobrancaParcelamento();" />Guia de Pagamento
+									<logic:notPresent name="indicadorTitularidadeDifenteDeUsuarioAtual" scope="session">
+										<html:radio property="indicadorCobrancaParcelamento" value="1" onclick="javascript:tratarOpcaoMeioCobrancaParcelamento();" />D&eacute;bito a Cobrar
+										<html:radio property="indicadorCobrancaParcelamento" value="2" onclick="javascript:tratarOpcaoMeioCobrancaParcelamento();" />Guia de Pagamento
+									</logic:notPresent>
+									
+									<logic:present name="indicadorTitularidadeDifenteDeUsuarioAtual" scope="session">
+										<html:radio property="indicadorCobrancaParcelamento" value="1" onclick="javascript:tratarOpcaoMeioCobrancaParcelamento();" disabled="true" />D&eacute;bito a Cobrar
+										<html:radio property="indicadorCobrancaParcelamento" value="2" onclick="javascript:tratarOpcaoMeioCobrancaParcelamento();" disabled="true" />Guia de Pagamento
+									</logic:present>									
 								</strong>
+								</logic:notPresent>
 							</logic:notPresent>
 						</logic:notPresent>
 					</td>
@@ -1764,11 +1973,38 @@ function reload() {
 		</tr>
 	</table>
 	<%@ include file="/jsp/util/rodape.jsp"%>
+	
+	<logic:present name="indicadorFauramentoTitularDebito" scope="request">
+		<SCRIPT LANGUAGE="JavaScript">
+		<!--
+		
+			if (document.forms[0].idClienteImovel != undefined) {
+				if (document.forms[0].idClienteImovel.length != undefined) {
+					var i = 0;
+					for (i = 0; i < document.forms[0].valorClienteImovel.length; i++) { 
+					    if (document.forms[0].valorClienteImovel[i].value == document.forms[0].idClienteRelacaoImovelSelecionado.value) {
+					    	document.forms[0].idClienteImovel[i].checked = true;
+					    } else {
+					    	document.forms[0].idClienteImovel[i].checked = false;
+					    }
+					}				
+				} else {
+				    if (document.forms[0].valorClienteImovel.value == document.forms[0].idClienteRelacaoImovelSelecionado.value) {
+				    	document.forms[0].idClienteImovel.checked = true;			    	
+				    }				
+				}
+			}
+	
+		//-->
+		</SCRIPT>
+	</logic:present>		
+		
 </html:form>
 </div>
 <%@ include file="/jsp/util/telaespera.jsp"%>
 
 <script>
+document.getElementById('botaoConcluir').style.visibility='hidden';
 document.getElementById('botaoConcluir').onclick = function() { botaoAvancarTelaEspera('/gsan/efetuarParcelamentoDebitosWizardAction.do?concluir=true&action=processarProcesso1Action'); }
 </script>
 

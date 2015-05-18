@@ -79,6 +79,7 @@ package gcom.gui.gerencial.cadastro;
 import gcom.fachada.Fachada;
 import gcom.gerencial.bean.InformarDadosGeracaoRelatorioConsultaHelper;
 import gcom.gerencial.cadastro.bean.ResumoLigacaoEconomiaConsultarHelper;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
 
@@ -109,6 +110,14 @@ public class ConsultarResumoLigacoesEconomiasAction
 
 		InformarDadosGeracaoRelatorioConsultaHelper informarDadosGeracaoRelatorioConsultaHelper = (InformarDadosGeracaoRelatorioConsultaHelper) sessao
 						.getAttribute("informarDadosGeracaoRelatorioConsultaHelper");
+
+		Integer quantidadeRegistros = fachada.consultarQtdRegistrosResumoLigacoesEconomias(informarDadosGeracaoRelatorioConsultaHelper);
+
+		if(quantidadeRegistros == 0){
+
+			throw new ActionServletException("atencao.pesquisa.nenhumresultado");
+
+		}
 
 		List<ResumoLigacaoEconomiaConsultarHelper> retornoConsulta = fachada
 						.consultarResumoLigacoesEconomias(informarDadosGeracaoRelatorioConsultaHelper);

@@ -111,6 +111,7 @@ public class FiltrarImovelCobrancaAdministrativaActionForm
 
 	private String campoOrigem;
 
+
 	public String getIdComando(){
 
 		return idComando;
@@ -580,6 +581,7 @@ public class FiltrarImovelCobrancaAdministrativaActionForm
 
 		this.campoOrigem = campoOrigem;
 	}
+
 
 	public void reset(){
 

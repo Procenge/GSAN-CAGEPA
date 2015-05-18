@@ -97,6 +97,44 @@ public class MovimentoArrecadadoresRelatorioHelper {
 
 	private String concessionaria;
 
+	private BigDecimal valorDividaInscrita;
+
+	private BigDecimal valorDividaExecutada;
+
+	/**
+	 * @return Retorna o campo valorDividaInscrita.
+	 */
+	public BigDecimal getValorDividaInscrita(){
+
+		return valorDividaInscrita;
+	}
+
+	/**
+	 * @param valorDividaInscrita
+	 *            O valorDividaInscrita a ser setado.
+	 */
+	public void setValorDividaInscrita(BigDecimal valorDividaInscrita){
+
+		this.valorDividaInscrita = valorDividaInscrita;
+	}
+
+	/**
+	 * @return Retorna o campo valorDividaExecutada.
+	 */
+	public BigDecimal getValorDividaExecutada(){
+
+		return valorDividaExecutada;
+	}
+
+	/**
+	 * @param valorPagamento
+	 *            O valorDividaExecutada a ser setado.
+	 */
+	public void setValorDividaExecutada(BigDecimal valorDividaExecutada){
+
+		this.valorDividaExecutada = valorDividaExecutada;
+	}
+
 	/**
 	 * @return Retorna o campo valorPagamento.
 	 */

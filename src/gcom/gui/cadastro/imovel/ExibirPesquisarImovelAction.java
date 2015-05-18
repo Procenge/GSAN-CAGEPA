@@ -86,12 +86,7 @@ import gcom.cadastro.geografico.Bairro;
 import gcom.cadastro.geografico.FiltroBairro;
 import gcom.cadastro.geografico.FiltroMunicipio;
 import gcom.cadastro.geografico.Municipio;
-import gcom.cadastro.localidade.FiltroLocalidade;
-import gcom.cadastro.localidade.FiltroQuadra;
-import gcom.cadastro.localidade.FiltroSetorComercial;
-import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.localidade.Quadra;
-import gcom.cadastro.localidade.SetorComercial;
+import gcom.cadastro.localidade.*;
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
 import gcom.micromedicao.hidrometro.FiltroHidrometro;
@@ -165,7 +160,8 @@ public class ExibirPesquisarImovelAction
 			retorno = actionMapping.findForward("pesquisarImovel");
 		}
 
-		if(httpServletRequest.getParameter("objetoConsulta") == null && httpServletRequest.getParameter("tipoConsulta") == null){
+		if(httpServletRequest.getParameter("objetoConsulta") == null && httpServletRequest.getParameter("tipoConsulta") == null
+						&& httpServletRequest.getParameter("retornoTelaConsulta") == null){
 
 			pesquisarActionForm.set("idLocalidade", "");
 			pesquisarActionForm.set("descricaoLocalidade", "");

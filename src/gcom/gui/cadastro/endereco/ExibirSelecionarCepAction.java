@@ -141,6 +141,8 @@ public class ExibirSelecionarCepAction
 		 * o mesmo deverá ser mantido para realização da filtragem dos bairros
 		 */
 		String idMunicipio = httpServletRequest.getParameter("idMunicipio");
+		String nomeLogradouro = httpServletRequest.getParameter("logradouro");
+
 		Collection colecaoMunicipio = null;
 		Municipio municipio = null;
 
@@ -161,6 +163,10 @@ public class ExibirSelecionarCepAction
 				selecionarCepActionForm.setIdMunicipio(municipio.getId().toString());
 				selecionarCepActionForm.setNomeMunicipio(municipio.getNome());
 			}
+		}
+
+		if(nomeLogradouro != null){
+			selecionarCepActionForm.setNomeLogradouro(nomeLogradouro);
 		}
 
 		return retorno;

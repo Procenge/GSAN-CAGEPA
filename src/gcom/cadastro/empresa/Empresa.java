@@ -138,6 +138,11 @@ public class Empresa
 		this.indicadorEmpresaPrincipal = indicadorEmpresaPrincipal;
 	}
 
+	public Empresa(Integer id) {
+
+		this.id = id;
+	}
+
 	@Override
 	public boolean equals(Object obj){
 

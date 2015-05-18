@@ -295,6 +295,14 @@ function voltar(){
 										</logic:notEqual>
 									</td>
 									<td>
+										<logic:equal name="cobrancaCriterio" property="indicadorDividaAtiva" value="1"> 
+											<div align="center">SIM</div>
+										</logic:equal>
+										<logic:notEqual name="cobrancaCriterio" property="indicadorDividaAtiva" value="1"> 
+											<div align="center">NÃO</div>
+										</logic:notEqual>
+									</td>
+									<td>
 										<logic:equal name="cobrancaCriterio" property="indicadorEmissaoDebitoContaMes" value="1"> 
 											<div align="center">SIM</div>
 										</logic:equal>

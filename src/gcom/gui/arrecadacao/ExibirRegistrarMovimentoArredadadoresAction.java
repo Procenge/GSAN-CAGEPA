@@ -80,7 +80,11 @@ import gcom.arrecadacao.Arrecadador;
 import gcom.arrecadacao.FiltroArrecadador;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
+import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.arrecadacao.ParametroArrecadacao;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -164,11 +168,13 @@ public class ExibirRegistrarMovimentoArredadadoresAction
 				if(arrecadadorEncontrado != null && !arrecadadorEncontrado.isEmpty()){
 
 					// O arrecadador foi encontrado
-					httpServletRequest.setAttribute("parametroidArrecadador", ""
-									+ ((Arrecadador) ((List) arrecadadorEncontrado).get(0)).getCodigoAgente());
+					httpServletRequest.setAttribute("parametroidArrecadador",
+									"" + ((Arrecadador) ((List) arrecadadorEncontrado).get(0)).getCodigoAgente());
 
-					httpServletRequest.setAttribute("parametroNomeArrecadador", ""
-									+ ((Arrecadador) ((List) arrecadadorEncontrado).get(0)).getCliente().getNome());
+					if((((Arrecadador) ((List) arrecadadorEncontrado).get(0)).getCliente()) != null){
+						httpServletRequest.setAttribute("parametroNomeArrecadador",
+										"" + ((Arrecadador) ((List) arrecadadorEncontrado).get(0)).getCliente().getNome());
+					}
 
 					httpServletRequest.setAttribute("idArrecadadorNaoEncontrado", "true");
 					httpServletRequest.setAttribute("nomeCampo", "idTipoMovimento");
@@ -195,6 +201,28 @@ public class ExibirRegistrarMovimentoArredadadoresAction
 		tiposMovimentos.add("COBRANCA BANCARIA");
 
 		sessao.setAttribute("tiposMovimentos", tiposMovimentos);
+
+		// P_REGISTRAR_POR_DIRETORIO
+		String pRegistrarPorDiretorio = null;
+
+		try{
+			pRegistrarPorDiretorio = ((String) ParametroArrecadacao.P_REGISTRAR_POR_DIRETORIO.executar());
+		}catch(ControladorException ex){
+			throw new ActionServletException("atencao.sistemaparametro_inexistente", "P_REGISTRAR_POR_DIRETORIO");
+		}
+
+		String tipoDeProcessamento = "1";
+		if(pRegistrarPorDiretorio.equals(ConstantesSistema.SIM.toString())){
+			if(!Util.isVazioOuBranco(httpServletRequest.getParameter("tipoDeProcessamento"))){
+				tipoDeProcessamento = httpServletRequest.getParameter("tipoDeProcessamento");
+				httpServletRequest.setAttribute("tipoDeProcessamento", tipoDeProcessamento);
+			}
+		}else{
+			httpServletRequest.setAttribute("tipoDeProcessamento", tipoDeProcessamento);
+			sessao.setAttribute("desabilitarTipoDeProcessamento", true);
+		}
+
+
 
 		return retorno;
 	}

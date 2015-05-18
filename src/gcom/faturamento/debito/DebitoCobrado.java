@@ -177,6 +177,8 @@ public class DebitoCobrado
 
 	private Short numeroPrestacaoTemp;
 
+	private Integer numeroProcessoAdministrativoExecucaoFiscal;
+
 	/** full constructor */
 	public DebitoCobrado(Date debitoCobrado, Integer codigoSetorComercial, Integer numeroQuadra, Short numeroLote, Short numeroSubLote,
 							Integer anoMesReferenciaDebito, Integer anoMesCobrancaDebito, BigDecimal valorPrestacao, short numeroPrestacao,
@@ -568,6 +570,16 @@ public class DebitoCobrado
 	public void setNumeroPrestacaoTemp(Short numeroPrestacaoTemp){
 
 		this.numeroPrestacaoTemp = numeroPrestacaoTemp;
+	}
+
+	public Integer getNumeroProcessoAdministrativoExecucaoFiscal(){
+
+		return numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public void setNumeroProcessoAdministrativoExecucaoFiscal(Integer numeroProcessoAdministrativoExecucaoFiscal){
+
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
 	}
 
 }

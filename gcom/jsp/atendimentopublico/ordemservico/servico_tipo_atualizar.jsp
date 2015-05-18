@@ -22,6 +22,18 @@
 
 <script language="JavaScript">
 
+	function validarIndicadorPagamentoAntecipado() {
+			var form=document.forms[0];
+			
+		if (form.indicadorPagamentoAntecipado[0].checked) {
+			form.numeroMaximoGuiaPrestacaoAntecipadaPermitidas.readOnly  = false;	
+		} else if (form.indicadorPagamentoAntecipado[1].checked) {
+			form.numeroMaximoGuiaPrestacaoAntecipadaPermitidas.value = "";			
+			form.numeroMaximoGuiaPrestacaoAntecipadaPermitidas.readOnly = true;
+		}	
+		
+	}
+
 	function chamarPopup(url, tipo, objeto, codigoObjeto, altura, largura, msg,objetoRelacionado) {
 		if(objetoRelacionado.disabled != true) {
 			if (objeto == null || codigoObjeto == null) {
@@ -245,6 +257,19 @@
 			alert("Informe Indicativo de Vistoria.");
 			return false;
 		}
+		
+		if (!form.indicadorAfericaoHidrometro[0].checked
+				&& !form.indicadorAfericaoHidrometro[1].checked) {
+			alert("Informe Indicativo de Aferição de Hidrômetro.");
+			return false;
+		}
+		
+		if (!form.indicadorPagamentoAntecipado[0].checked
+				&& !form.indicadorPagamentoAntecipado[1].checked) {
+			alert("Informe Indicativo de Pagamento Antecipado.");		
+			return false;
+		}		
+		
 		if (!form.indicadorFiscalizacaoInfracao[0].checked
 				&& !form.indicadorFiscalizacaoInfracao[1].checked) {
 			alert("Informe Indicativo de Fiscalização de Infração.");
@@ -307,6 +332,15 @@
 			alert("Informe Indicador Serviço Crítico");
 			return false;
 		}
+		
+		if (!form.indicadorPermiteAlterarValor[0].checked
+				&& !form.indicadorPermiteAlterarValor[1].checked) {
+			alert("Informe Indicador Permitir Alterar Valor do Débito");
+			return false;
+		}
+		
+		
+		
 		return true;
    	}
    	
@@ -397,7 +431,7 @@
 
 </head>
 
-<body leftmargin="5" topmargin="5" onload="setarFoco('descricao');">
+<body leftmargin="5" topmargin="5" onload="setarFoco('descricao');validarIndicadorPagamentoAntecipado();">
 
 <html:form action="/atualizarTipoServicoAction.do"
 	name="AtualizarTipoServicoActionForm"
@@ -735,6 +769,41 @@
 						value="2" /> <strong>Não</strong></label></td>
 				</tr>
 				
+				<!-- Indicativo de Aferição de Hidrômetro -->
+				<tr>
+					<td><strong><span class="style2">Indicativo de Aferição de Hidrômetro:<font color="#FF0000">*</font></span></strong></td>
+					<td align="left" width="20%">
+						<label> 
+							<html:radio property="indicadorAfericaoHidrometro" value="1"/> 
+								<strong>Sim</strong>
+						</label>
+					</td>
+					<td align="left">
+						<label> 
+							<html:radio property="indicadorAfericaoHidrometro" value="2" /> 
+								<strong>Não</strong>
+						</label>
+					</td>
+				</tr>
+				
+				<!-- Indicativo de Pagamento Antecipado -->
+
+				<tr>
+					<td><strong><span class="style2">Indicativo de Pagamento Antecipado:<font color="#FF0000">*</font></span></strong></td>
+					<td align="left" width="20%">
+						<label> 
+							<html:radio property="indicadorPagamentoAntecipado" onchange="validarIndicadorPagamentoAntecipado()" value="1"/>
+								<strong>Sim</strong>
+						</label>
+					</td>
+					<td align="left">
+						<label> 
+							<html:radio property="indicadorPagamentoAntecipado" onchange="validarIndicadorPagamentoAntecipado()" value="2" /> 
+								<strong>Não</strong>
+						</label>
+					</td>
+				</tr>				
+				
 				<!-- Indicativo de Fiscalizacao de Infração -->
 				<tr>
 					<td><strong><span class="style2">Indicativo de Fiscalização de Infração:<font
@@ -770,6 +839,22 @@
 								onkeyup="javascript:verificaNumeroInteiro(this);"/>
 		          </td>
 		        </tr>
+		        
+		        <tr>
+		          <td><strong>Número Maximo de Visitas Improdutivas Permitidas:</strong></td>
+		          <td colspan="3"><html:text
+								property="numeroMaximoVisitasImprodutivasPermitidas" size="10" maxlength="4"
+								onkeyup="javascript:verificaNumeroInteiro(this);"/>
+		          </td>
+		        </tr>	
+		        
+		        <tr>
+		          <td><strong>Número Maximo de Prestações de Guia de pagamento Permitidas:</strong></td>
+		          <td colspan="3"><html:text
+								property="numeroMaximoGuiaPrestacaoAntecipadaPermitidas" size="10" maxlength="3" readonly="true"
+								onkeyup="javascript:verificaNumeroInteiro(this);"/>
+		          </td>
+		        </tr>		        	        
 		        
 		        <tr>
 					<td><strong><span class="style2">Indicador Tipo Remuneração:<font color="#FF0000">*</font></span></strong></td>
@@ -915,6 +1000,18 @@
 						<label> <html:radio property="indicadorServicoCritico" value="2" /> <strong>Não</strong></label>
 					</td>
 				</tr>
+				
+				<tr>
+					<td><strong><span class="style2">Indicador Permitir Alterar Valor do Débito:<font color="#FF0000">*</font></span></strong></td>
+					<td align="left" width="20%">
+						<label> <html:radio property="indicadorPermiteAlterarValor" value="1"/> <strong>Sim</strong></label>
+					</td>
+					<td align="left">
+						<label> <html:radio property="indicadorPermiteAlterarValor" value="2" /> <strong>Não</strong></label>
+					</td>
+				</tr>
+				
+				
 
 				<tr>
 					<td colspan="4">&nbsp;</td>
@@ -1246,23 +1343,29 @@
 						<table width="100%" id="tableServicoTipoTramite" align="center" bgcolor="#99CCFF">
 							<!--corpo da quarta tabela-->
 							<tr bordercolor="#FFFFFF" bgcolor="#79BBFD">
-								<td width="12%">
+								<td width="6%">
 								 <div align="center"><strong>Remover</strong></div>
 								</td>
-								<td width="12%">
+								<td width="10%">
 									<div align="center"><strong>Editar</strong></div>
 								</td>
-								<td width="19%">
+								<td width="12%">
 								 <div align="center"><strong>Localidade</strong></div>
 								</td>
-								<td width="19%">
+								<td width="12%">
 								 <div align="center"><strong>Setor Comercial</strong></div>
 								</td>
-								<td width="19%">
+								<td width="12%">
 								 <div align="center"><strong>Unidade Origem</strong></div>
 								</td>
-								<td width="19%">
+								<td width="12%">
 								 <div align="center"><strong>Unidade Destino</strong></div>
+								</td>
+								<td width="16%">
+								 <div align="center"><strong>Bairro</strong></div>
+								</td>
+								<td width="12%">
+								 <div align="center"><strong>Primeiro Tramite</strong></div>
 								</td>
 							</tr>
 							<tbody>
@@ -1306,6 +1409,25 @@
 									<td>
 										<logic:notEmpty name="servicoTipoTramite" property="unidadeOrganizacionalDestino">
 											<div align="center" title="${servicoTipoTramite.unidadeOrganizacionalDestino.descricao}">${servicoTipoTramite.unidadeOrganizacionalDestino.id}</div>
+										</logic:notEmpty>
+									</td>
+									<td>
+										<logic:notEmpty name="servicoTipoTramite" property="bairro">
+											<div align="center" title="${servicoTipoTramite.bairro.nome}">${servicoTipoTramite.bairro.nome}</div>
+										</logic:notEmpty>
+									</td>
+									<td>
+										<logic:notEmpty name="servicoTipoTramite" property="indicadorPrimeiroTramite">
+											<div align="center" title="${servicoTipoTramite.indicadorPrimeiroTramite}">
+														
+											
+											<logic:equal name="servicoTipoTramite" property="indicadorPrimeiroTramite" value="1">
+												SIM
+											</logic:equal>
+											<logic:equal name="servicoTipoTramite" property="indicadorPrimeiroTramite" value="2">	
+											    NÃO
+											</logic:equal>
+											</div>
 										</logic:notEmpty>
 									</td>
 								</logic:iterate>

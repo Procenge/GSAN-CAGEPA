@@ -89,6 +89,22 @@ public class GerarRelatorioQuadroHidrometrosSituacaoActionForm
 
 	private String mesAno;
 
+	private String idHidrometroDiametro;
+
+	private String idHidrometroCapacidade;
+
+	private String idHidrometroMarca;
+
+	private String idGerenciaRegional;
+
+	private String idUnidadeNegocio;
+
+	private String idUnidadeFederacao;
+
+	private String idLocalidade;
+
+	private String descricaoLocalidade;
+
 	public String getMesAno(){
 
 		return mesAno;
@@ -97,6 +113,86 @@ public class GerarRelatorioQuadroHidrometrosSituacaoActionForm
 	public void setMesAno(String mesAno){
 
 		this.mesAno = mesAno;
+	}
+
+	public String getIdHidrometroDiametro(){
+
+		return idHidrometroDiametro;
+	}
+
+	public void setIdHidrometroDiametro(String idHidrometroDiametro){
+
+		this.idHidrometroDiametro = idHidrometroDiametro;
+	}
+
+	public String getIdHidrometroCapacidade(){
+
+		return idHidrometroCapacidade;
+	}
+
+	public void setIdHidrometroCapacidade(String idHidrometroCapacidade){
+
+		this.idHidrometroCapacidade = idHidrometroCapacidade;
+	}
+
+	public String getIdHidrometroMarca(){
+
+		return idHidrometroMarca;
+	}
+
+	public void setIdHidrometroMarca(String idHidrometroMarca){
+
+		this.idHidrometroMarca = idHidrometroMarca;
+	}
+
+	public String getIdGerenciaRegional(){
+
+		return idGerenciaRegional;
+	}
+
+	public void setIdGerenciaRegional(String idGerenciaRegional){
+
+		this.idGerenciaRegional = idGerenciaRegional;
+	}
+
+	public String getIdUnidadeNegocio(){
+
+		return idUnidadeNegocio;
+	}
+
+	public void setIdUnidadeNegocio(String idUnidadeNegocio){
+
+		this.idUnidadeNegocio = idUnidadeNegocio;
+	}
+
+	public String getIdUnidadeFederacao(){
+
+		return idUnidadeFederacao;
+	}
+
+	public void setIdUnidadeFederacao(String idUnidadeFederacao){
+
+		this.idUnidadeFederacao = idUnidadeFederacao;
+	}
+
+	public String getIdLocalidade(){
+
+		return idLocalidade;
+	}
+
+	public void setIdLocalidade(String idLocalidade){
+
+		this.idLocalidade = idLocalidade;
+	}
+
+	public String getDescricaoLocalidade(){
+
+		return descricaoLocalidade;
+	}
+
+	public void setDescricaoLocalidade(String descricaoLocalidade){
+
+		this.descricaoLocalidade = descricaoLocalidade;
 	}
 
 	/**

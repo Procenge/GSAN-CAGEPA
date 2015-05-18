@@ -88,8 +88,10 @@ import gcom.gui.GcomAction;
 import gcom.gui.faturamento.consumotarifa.bean.CategoriaFaixaConsumoTarifaHelper;
 import gcom.micromedicao.consumo.CalculoTipo;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -127,6 +129,20 @@ public class ManterConsumoTarifaExistenteAction
 		HttpSession sessao = httpServletRequest.getSession(false);
 		// Variavel para testar se o campo naum obrigatorio esta vazio
 
+		String indicadorTarifaCosumoPorSubCategoria = ConstantesSistema.NAO.toString();
+		try{
+			indicadorTarifaCosumoPorSubCategoria = (String) ParametroFaturamento.P_INDICADOR_TARIFA_CONSUMO_SUBCATEGORIA.executar();
+			if(indicadorTarifaCosumoPorSubCategoria.equals(ConstantesSistema.SIM.toString())){
+				sessao.setAttribute("indicadorTarifaCosumoPorSubCategoria", "S");
+			}else{
+				sessao.removeAttribute("indicadorTarifaCosumoPorSubCategoria");
+			}
+
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
+
 		String descTarifa = inserirConsumoTarifaActionForm.getDescTarifa();
 		String dataVigencia = inserirConsumoTarifaActionForm.getDataVigencia();
 		String slcCalculoTipo = inserirConsumoTarifaActionForm.getSlcCalculoTipo();
@@ -139,6 +155,7 @@ public class ManterConsumoTarifaExistenteAction
 		consumoTarifaVigencia.getConsumoTarifa().setDescricao(descTarifa);
 		consumoTarifaVigencia.getConsumoTarifa().setIcTarifaEsgotoPropria(
 						Short.parseShort(inserirConsumoTarifaActionForm.getInTarifaEsgotoPropria()));
+		consumoTarifaVigencia.setDescricaoAtoAdministrativo(inserirConsumoTarifaActionForm.getDescricaoAtoAdministrativo());
 
 		// ------------------------------------------------------------------
 		FiltroCalculoTipo filtroCalculoTipo = new FiltroCalculoTipo();
@@ -168,12 +185,21 @@ public class ManterConsumoTarifaExistenteAction
 		while(iteratorColecaoCategoriaFaixaConsumoTarifaHelper.hasNext()){
 			categoriaFaixaConsumoTarifaHelper = (CategoriaFaixaConsumoTarifaHelper) iteratorColecaoCategoriaFaixaConsumoTarifaHelper.next();
 
+			String nomeSubCategoria = "";
+			if(indicadorTarifaCosumoPorSubCategoria.equals(ConstantesSistema.SIM.toString())){
+				if(categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getSubCategoria() != null){
+					nomeSubCategoria = "." + categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getSubCategoria().getDescricao();
+				}
+			}
+
 			// valor minimo
 			if(requestMap.get("ValorConMinimo."
-							+ categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getDescricao()) != null){
+							+ categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getDescricao()
+							+ nomeSubCategoria) != null){
 
 				consumoMinimo = (requestMap.get("ValorConMinimo."
-								+ categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getDescricao()))[0];
+								+ categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getDescricao()
+								+ nomeSubCategoria))[0];
 
 				if(consumoMinimo == null || consumoMinimo.equalsIgnoreCase("")){
 					throw new ActionServletException("atencao.required", null, "Consumo Mínimo");
@@ -182,26 +208,41 @@ public class ManterConsumoTarifaExistenteAction
 				categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().setNumeroConsumoMinimo(new Integer(consumoMinimo));
 			}
 
+			String pQuantidadeDecimaisValorTarifa = null;
+
+			try{
+
+				pQuantidadeDecimaisValorTarifa = (String) ParametroFaturamento.P_QUANTIDADE_DECIMAIS_VALOR_TARIFA.executar();
+			}catch(ControladorException e){
+
+				throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(
+								new String[e.getParametroMensagem().size()]));
+			}
+
 			// valor da tarifa minima
-			if(requestMap.get("ValorTarMin." + categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getDescricao()) != null){
+			if(requestMap.get("ValorTarMin." + categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getDescricao()
+							+ nomeSubCategoria) != null){
 
 				tarifaMinima = (requestMap.get("ValorTarMin."
-								+ categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getDescricao()))[0];
+								+ categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getDescricao()
+								+ nomeSubCategoria))[0];
 
 				if(tarifaMinima == null || tarifaMinima.equalsIgnoreCase("")){
 					throw new ActionServletException("atencao.required", null, "Tarifa Mínima");
 				}
 
 				categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().setValorTarifaMinima(
-								Util.formatarMoedaRealparaBigDecimal(tarifaMinima, 4));
+								Util.formatarMoedaRealparaBigDecimal(tarifaMinima, Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
 			}
 
 			// valor da tarifa minima ESGOTO
 			if(requestMap.get("ValorTarMinEsgoto."
-							+ categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getDescricao()) != null){
+							+ categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getDescricao()
+							+ nomeSubCategoria) != null){
 
 				tarifaMinimaEsgoto = (requestMap.get("ValorTarMinEsgoto."
-								+ categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getDescricao()))[0];
+								+ categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getDescricao()
+								+ nomeSubCategoria))[0];
 
 				if(inserirConsumoTarifaActionForm.getInTarifaEsgotoPropria().equals(ConstantesSistema.SIM.toString())
 								&& (tarifaMinimaEsgoto == null || tarifaMinimaEsgoto.equalsIgnoreCase(""))){
@@ -210,7 +251,8 @@ public class ManterConsumoTarifaExistenteAction
 
 				if(tarifaMinimaEsgoto != null && !tarifaMinimaEsgoto.equals("")){
 					categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().setValorTarifaMinimaEsgoto(
-									Util.formatarMoedaRealparaBigDecimal(tarifaMinimaEsgoto, 4));
+									Util.formatarMoedaRealparaBigDecimal(tarifaMinimaEsgoto,
+													Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
 				}else{
 					categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().setValorTarifaMinimaEsgoto(null);
 				}
@@ -246,8 +288,9 @@ public class ManterConsumoTarifaExistenteAction
 
 		}
 
-		fachada.atualizarConsumoTarifa(consumoTarifaVigencia, (Collection<CategoriaFaixaConsumoTarifaHelper>) sessao
-						.getAttribute("colecaoCategoria"));
+		fachada.atualizarConsumoTarifa(consumoTarifaVigencia,
+						(Collection<CategoriaFaixaConsumoTarifaHelper>) sessao.getAttribute("colecaoCategoria"),
+						this.getUsuarioLogado(httpServletRequest));
 
 		montarPaginaSucesso(httpServletRequest, consumoTarifaVigencia.getConsumoTarifa().getDescricao() + " de vigência "
 						+ gcom.util.Util.formatarData(consumoTarifaVigencia.getDataVigencia()) + " atualizada com sucesso.",

@@ -86,8 +86,10 @@ import gcom.relatorio.RelatorioDataSource;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaException;
 import gcom.tarefa.TarefaRelatorio;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.ParametroGeral;
 import gcom.util.tabelaauxiliar.abreviada.FiltroTabelaAuxiliarAbreviada;
 
 import java.util.*;
@@ -185,6 +187,15 @@ public class RelatorioManterFeriado
 
 		if(tipoFormatoRelatorio == TIPO_PDF){
 			parametros.put("tipoFormatoRelatorio", "PDF");
+		}
+
+		parametros.put("P_NM_ESTADO", sistemaParametro.getNomeEstado());
+
+		try{
+			parametros.put("P_NOME_EMPRESA_RELATORIO", ParametroGeral.P_NOME_EMPRESA_RELATORIO.executar());
+		}catch(ControladorException e1){
+			e1.printStackTrace();
+			throw new TarefaException("Erro ao gravar relatório no sistema", e1);
 		}
 
 		// cria uma instância do dataSource do relatório

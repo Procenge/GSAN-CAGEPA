@@ -80,6 +80,7 @@
 package gcom.arrecadacao.pagamento;
 
 import gcom.atendimentopublico.ordemservico.OrdemServico;
+import gcom.atendimentopublico.ordemservico.ServicoTipo;
 import gcom.atendimentopublico.registroatendimento.RegistroAtendimento;
 import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.imovel.Imovel;
@@ -219,6 +220,8 @@ public class GuiaPagamento
 	private PrescricaoComando prescricaoComando;
 
 	private DebitoCreditoSituacao debitoCreditoSituacaoAnterior;
+
+	private ServicoTipo servicoTipo;
 
 	// Alteração v0.03
 	/*
@@ -389,6 +392,16 @@ public class GuiaPagamento
 	public void setDebitoCreditoSituacaoAtual(DebitoCreditoSituacao debitoCreditoSituacaoAtual){
 
 		this.debitoCreditoSituacaoAtual = debitoCreditoSituacaoAtual;
+	}
+
+	public ServicoTipo getServicoTipo(){
+
+		return this.servicoTipo;
+	}
+
+	public void setServicoTipo(ServicoTipo servicoTipo){
+
+		this.servicoTipo = servicoTipo;
 	}
 
 	public Set getClientesGuiaPagamento(){

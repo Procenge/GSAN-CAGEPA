@@ -374,6 +374,8 @@ public class DadosRelatorioOrdemServico {
 
 	private String exibirCodigoBarras;
 
+	private String tipoAssinaturaRodape;
+
 	// Carta Hidrômetro Modelo1
 	private String ordemServico;
 
@@ -2955,6 +2957,16 @@ public class DadosRelatorioOrdemServico {
 	public void setExibirCodigoBarras(String exibirCodigoBarras){
 
 		this.exibirCodigoBarras = exibirCodigoBarras;
+	}
+
+	public void setTipoAssinaturaRodape(String tipoAssinaturaRodape){
+
+		this.tipoAssinaturaRodape = tipoAssinaturaRodape;
+	}
+
+	public String getTipoAssinaturaRodape(){
+
+		return tipoAssinaturaRodape;
 	}
 
 	public String getTipoServico1(){

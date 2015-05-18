@@ -4,6 +4,8 @@ import gcom.cadastro.funcionario.FiltroFuncionario;
 import gcom.cadastro.funcionario.Funcionario;
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
+import gcom.seguranca.acesso.usuario.FiltroUsuario;
+import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
@@ -34,6 +36,26 @@ public class ExibirConsultarAuditoriaParcelamentoContasAction
 		if(form.getDataInicial() == null && form.getDataFinal() == null){
 			form.setDataInicial(Util.formatarData(new Date()));
 			form.setDataFinal(Util.formatarData(new Date()));
+		}
+
+		String idUsuario = form.getIdUsuario();
+
+		// Filtro Usuario
+		if(!Util.isVazioOuBranco(idUsuario)){
+
+			FiltroUsuario filtroUsuario = new FiltroUsuario();
+			filtroUsuario.adicionarParametro(new ParametroSimples(FiltroUsuario.ID, idUsuario));
+			Usuario usuario = (Usuario) Util.retonarObjetoDeColecao(fachada.pesquisar(filtroUsuario, Usuario.class.getName()));
+			if(!Util.isVazioOuBranco(usuario)){
+				form.setIdUsuario(usuario.getId().toString());
+				form.setNomeUsuario(usuario.getNomeUsuario());
+			}else{
+				form.setIdUsuario("");
+				form.setNomeUsuario("Usuário inexistente");
+				httpServletRequest.setAttribute("usuarioNaoEncontrado", true);
+				httpServletRequest.setAttribute("nomeCampo", "idUsuario");
+			}
+
 		}
 
 		// Recupera os valores do funcionário do form

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+
+	<form-beans>
+		<form-bean name="SimularCalculoContaDadosReaisFiltrarActionForm"
+			type="gcom.gui.faturamento.conta.SimularCalculoContaDadosReaisFiltrarActionForm" />
+			
+		<form-bean name="SimularCalculoContaDadosReaisDadosAdicionaisActionForm"
+			type="gcom.gui.faturamento.conta.SimularCalculoContaDadosReaisDadosAdicionaisActionForm" />
+	</form-beans>
+
+	<!--******************* PAGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="SimularCalculoContaDadosReaisFiltrarActionForm"
+			type="gcom.gui.faturamento.conta.ExibirSimularCalculoContaDadosReaisFiltrarAction"
+			validate="true" path="/exibirSimularCalculoContaDadosReaisFiltrarAction">
+
+			<forward name="exibirSimularCalculoContaDadosReaisFiltrar"
+				path="/jsp/faturamento/conta/conta_simular_calculo_dados_reais_filtrar.jsp" />
+
+		</action>
+		
+		<action name="SimularCalculoContaDadosReaisFiltrarActionForm"
+			type="gcom.gui.faturamento.conta.SimularCalculoContaDadosReaisFiltrarAction"
+			validate="true" path="/simularCalculoContaDadosReaisFiltrarAction">
+
+			<forward name="simularCalculoContaDadosReaisFiltrar"
+				path="/exibirSimularCalculoContaDadosReaisDadosAdicionaisAction.do" />
+
+		</action>
+		
+		<action name="SimularCalculoContaDadosReaisDadosAdicionaisActionForm"
+			type="gcom.gui.faturamento.conta.ExibirSimularCalculoContaDadosReaisDadosAdicionaisAction"
+			validate="true" path="/exibirSimularCalculoContaDadosReaisDadosAdicionaisAction">
+
+			<forward name="exibirSimularCalculoContaDadosReaisDadosAdicionais"
+				path="/jsp/faturamento/conta/conta_simular_calculo_dados_reais_filtrar_dados_adicionais.jsp" />
+
+		</action>
+		
+		<action name="SimularCalculoContaDadosReaisDadosAdicionaisActionForm"
+			type="gcom.gui.faturamento.conta.SimularCalculoContaDadosReaisAction"
+			validate="true" path="/simularCalculoContaDadosReaisAction">
+
+			<forward name="simularCalculoContaDadosReais"
+				path="/jsp/faturamento/conta/conta_simular_calculo_dados_reais_exibir_dados.jsp" />
+
+		</action>
+		
+		<action name="SimularCalculoContaDadosReaisDadosAdicionaisActionForm" 
+			type="gcom.gui.relatorio.faturamento.conta.GerarRelatorioContasRecalculadasAction"
+					scope="session" path="/gerarRelatorioContasRecalculadasAction" />
+
+	</action-mappings>
+	<message-resources null="false" parameter="gcom.properties.application" />
+
+</struts-config>

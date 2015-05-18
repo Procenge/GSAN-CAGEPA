@@ -432,6 +432,18 @@ function caracteresespeciais () {
 						<html:text maxlength="14" property="cnpj" size="14" />
 					</logic:notPresent></td>
 				</tr>
+				
+				<tr>
+					<td><strong>CPF/CNPJ Validado:</strong></td>
+					<td colspan="3">
+						<strong> 
+							<label> <html:radio value="" property="documentoValidado" /> Ambos</label> 
+							<label> <html:radio	value="<%=ConstantesSistema.SIM.toString()%>" property="documentoValidado" /> Sim</label> 
+							<label> <html:radio	value="<%=ConstantesSistema.NAO.toString()%>" property="documentoValidado" /> Não</label> 
+						</strong>
+					</td>
+				</tr>								
+				
 				<tr>
 					<td><strong>RG: </strong></td>
 					<td><logic:present name="pessoaJuridica" scope="request">

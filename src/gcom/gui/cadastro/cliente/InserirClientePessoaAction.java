@@ -76,17 +76,14 @@
 
 package gcom.gui.cadastro.cliente;
 
-import gcom.cadastro.cliente.Cliente;
-import gcom.cadastro.cliente.ClienteTipo;
-import gcom.cadastro.cliente.EsferaPoder;
-import gcom.cadastro.cliente.FiltroCliente;
-import gcom.cadastro.cliente.FiltroClienteTipo;
+import gcom.cadastro.cliente.*;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
 import gcom.util.Util;
+import gcom.util.filtro.ComparacaoTexto;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
@@ -137,6 +134,17 @@ public class InserirClientePessoaAction
 		String rg = (String) form.get("rg");
 		String cnpj = (String) form.get("cnpj");
 
+		// Seta o documentoValidado
+		String documentoValidado = null;
+		if(httpServletRequest.getParameter("documentoValidado") != null && httpServletRequest.getParameter("documentoValidado").equals("1")){
+
+			documentoValidado = new String("1");
+
+		}else{
+			documentoValidado = new String("2");
+		}
+		form.set("documentoValidado", documentoValidado);
+
 		// Seta o clienteTipo
 		ClienteTipo clienteTipo = new ClienteTipo();
 
@@ -152,7 +160,6 @@ public class InserirClientePessoaAction
 			FiltroCliente filtroCliente = new FiltroCliente();
 
 			filtroCliente.adicionarParametro(new ParametroSimples(FiltroCliente.CPF, cpf));
-
 			Collection<Cliente> colecaoClienteComCpf = fachada.pesquisar(filtroCliente, Cliente.class.getName());
 
 			if(!colecaoClienteComCpf.isEmpty()){
@@ -273,8 +280,7 @@ public class InserirClientePessoaAction
 				Cliente clienteComCnpj = colecaoClienteComCnpj.iterator().next();
 				try{
 					if(ParametroCadastro.P_PERMITE_DUPLICIDADE_CNPJ.executar().equals(ConstantesSistema.SIM.toString())
-									&& !EsferaPoder.PARTICULAR.toString().equals(
-													clienteTipo.getEsferaPoder().getId().toString())){
+									&& !EsferaPoder.PARTICULAR.toString().equals(clienteTipo.getEsferaPoder().getId().toString())){
 
 						permiteDuplicidade = true;
 
@@ -287,6 +293,52 @@ public class InserirClientePessoaAction
 				if((encontrado == null || !clienteComCnpj.getCnpj().equals(encontrado.getCnpj())) && !permiteDuplicidade){
 
 					throw new ActionServletException("atencao.cnpj.cliente.ja_cadastrado", null, "" + clienteComCnpj.getId());
+				}
+			}
+
+			String pIndicadorAtividadeEconomicaObrigatorio = null;
+
+			try{
+
+				pIndicadorAtividadeEconomicaObrigatorio = (String) ParametroCadastro.P_CNAE_OBRIGATORIO.executar();
+			}catch(ControladorException e){
+
+				throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(
+								new String[e.getParametroMensagem().size()]));
+			}
+
+			// Atividade Econômica (CNAE)
+			if(pIndicadorAtividadeEconomicaObrigatorio.equals(ConstantesSistema.SIM.toString())){
+
+				httpServletRequest.setAttribute("obrigatorioAtividadeEcocnomica", "true");
+				String codigoAtividadeEconomica = (String) form.get("codigoAtividadeEconomica");
+
+				if(!Util.isVazioOuBranco(codigoAtividadeEconomica)){
+
+					if(httpServletRequest.getParameter("pesquisaAtividadeEconomica") != null
+									&& !httpServletRequest.getParameter("pesquisaAtividadeEconomica").equals("")){
+
+						codigoAtividadeEconomica = httpServletRequest.getParameter("pesquisaAtividadeEconomica");
+					}
+
+					FiltroAtividadeEconomica filtroAtividadeEconomica = new FiltroAtividadeEconomica();
+					filtroAtividadeEconomica.adicionarParametro(new ComparacaoTexto(FiltroAtividadeEconomica.CODIGO,
+									codigoAtividadeEconomica));
+					filtroAtividadeEconomica.adicionarParametro(new ParametroSimples(FiltroAtividadeEconomica.INDICADOR_USO,
+									ConstantesSistema.INDICADOR_USO_ATIVO));
+
+					Collection<AtividadeEconomica> colecaoAtividadeEconomica = fachada.pesquisar(filtroAtividadeEconomica,
+									AtividadeEconomica.class.getName());
+
+					// [FS0001 - Verificar existência de dados]
+					if(Util.isVazioOrNulo(colecaoAtividadeEconomica)){
+
+						throw new ActionServletException("atencao.pesquisa_inexistente", null, "Atividade Ecônomica");
+
+					}
+				}else{
+
+					throw new ActionServletException("atencao.required", null, "Atividade Ecônomica");
 				}
 			}
 		}

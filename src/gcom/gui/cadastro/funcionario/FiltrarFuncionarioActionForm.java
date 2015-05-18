@@ -104,6 +104,8 @@ public class FiltrarFuncionarioActionForm
 
 	private String nomeUnidade;
 
+	private Integer idEquipeTipo;
+
 	public String getDescricaoCargo(){
 
 		return descricaoCargo;
@@ -172,6 +174,16 @@ public class FiltrarFuncionarioActionForm
 	public void setAtualizar(String atualizar){
 
 		this.atualizar = atualizar;
+	}
+
+	public Integer getIdEquipeTipo(){
+
+		return idEquipeTipo;
+	}
+
+	public void setIdEquipeTipo(Integer idEquipeTipo){
+
+		this.idEquipeTipo = idEquipeTipo;
 	}
 
 }

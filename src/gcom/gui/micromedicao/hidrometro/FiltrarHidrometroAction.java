@@ -78,15 +78,12 @@ package gcom.gui.micromedicao.hidrometro;
 
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.micromedicao.hidrometro.FiltroHidrometro;
+import gcom.micromedicao.bean.FiltroHidrometroHelper;
+import gcom.micromedicao.hidrometro.HidrometroSituacao;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
-import gcom.util.filtro.ComparacaoTexto;
-import gcom.util.filtro.ParametroSimples;
 
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -155,10 +152,11 @@ public class FiltrarHidrometroAction
 		String faixaInicial = hidrometroActionForm.getFaixaInicial();
 		String faixaFinal = hidrometroActionForm.getFaixaFinal();
 		String codigoFormatoNumeracao = hidrometroActionForm.getCodigoFormatoNumeracao();
+		String dataInstalacao = hidrometroActionForm.getDataInstalacao();
+		String numeroNotaFiscal = hidrometroActionForm.getNumeroNotaFiscal();
+		String loteEntrega = hidrometroActionForm.getLoteEntrega();
 
-		FiltroHidrometro filtroHidrometro = new FiltroHidrometro(FiltroHidrometro.NUMERO_HIDROMETRO);
-		filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade(FiltroHidrometro.HIDROMETRO_SITUACAO);
-		filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade(FiltroHidrometro.HIDROMETRO_LOCAL_ARMAZENAGEM);
+		FiltroHidrometroHelper filtroHidrometroHelper = new FiltroHidrometroHelper();
 
 		boolean peloMenosUmParametroInformado = false;
 		// SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
@@ -179,28 +177,30 @@ public class FiltrarHidrometroAction
 		}else{
 			// Insere os parâmetros informados no filtro
 			if(numeroHidrometro != null && !numeroHidrometro.trim().equalsIgnoreCase("")){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ComparacaoTexto(FiltroHidrometro.NUMERO_HIDROMETRO, numeroHidrometro));
+				filtroHidrometroHelper.setNumero(numeroHidrometro);
 			}
 
-			Date dataAquisicaoDate = Util.converteStringParaDate(dataAquisicao);
-			Calendar dataAtual = new GregorianCalendar();
+			Date dataAquisicaoDate = Util.converteStringParaDate(dataAquisicao, true);
+
 			if(dataAquisicao != null && !dataAquisicao.trim().equalsIgnoreCase("")){
 
-				// caso a data de aquisição seja menor que a data atual
+				// Caso a data de aquisição seja maior que a data corrente
 				if(dataAquisicaoDate.after(new Date())){
 					throw new ActionServletException("atencao.data.aquisicao.nao.superior.data.corrente");
 				}
 
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.DATA_AQUISICAO, dataAquisicaoDate));
+				filtroHidrometroHelper.setDataAquisicao(dataAquisicaoDate);
 			}
 
 			if(anoFabricacao != null && !anoFabricacao.trim().equalsIgnoreCase("")){
-				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.ANO_FABRICACAO, anoFabricacao));
 
-				int anoAtual = dataAtual.get(Calendar.YEAR);
+				peloMenosUmParametroInformado = true;
+				filtroHidrometroHelper.setAnoFabricacao(Util.obterShort(anoFabricacao));
+
+				int anoAtual = Util.getAno(new Date());
 				Integer anoFabricacaoInteger = new Integer(anoFabricacao);
 				// caso o ano de fabricação seja maior que o atual
 				if(anoFabricacaoInteger > anoAtual){
@@ -218,70 +218,105 @@ public class FiltrarHidrometroAction
 
 			if(indicadorMacromedidor != null && !indicadorMacromedidor.trim().equalsIgnoreCase("")
 							&& !indicadorMacromedidor.trim().equalsIgnoreCase("-1")){
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.INDICADOR_MACROMEDIDOR, indicadorMacromedidor));
+
+				filtroHidrometroHelper.setIndicadorMacromedidor(Util.obterShort(indicadorMacromedidor));
 			}
 
 			if(idHidrometroClasseMetrologica != null
 							&& Integer.parseInt(idHidrometroClasseMetrologica) > ConstantesSistema.NUMERO_NAO_INFORMADO){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.HIDROMETRO_CLASSE_METROLOGICA_ID,
-								idHidrometroClasseMetrologica));
+				filtroHidrometroHelper.setIdHidrometroClasseMetrologica(Util.obterInteger(idHidrometroClasseMetrologica));
 			}
 
 			if(idHidrometroMarca != null && Integer.parseInt(idHidrometroMarca) > ConstantesSistema.NUMERO_NAO_INFORMADO){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.HIDROMETRO_MARCA_ID, idHidrometroMarca));
+				filtroHidrometroHelper.setIdHidrometroMarca(Util.obterInteger(idHidrometroMarca));
 			}
 
 			if(idHidrometroDiametro != null && Integer.parseInt(idHidrometroDiametro) > ConstantesSistema.NUMERO_NAO_INFORMADO){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.HIDROMETRO_DIAMETRO_ID, idHidrometroDiametro));
+				filtroHidrometroHelper.setIdHidrometroDiametro(Util.obterInteger(idHidrometroDiametro));
 			}
 
 			if(idHidrometroCapacidade != null && Integer.parseInt(idHidrometroCapacidade) > ConstantesSistema.NUMERO_NAO_INFORMADO){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro
-								.adicionarParametro(new ParametroSimples(FiltroHidrometro.HIDROMETRO_CAPACIDADE_ID, idHidrometroCapacidade));
-			}
-			if(idHidrometroTipo != null && Integer.parseInt(idHidrometroTipo) > ConstantesSistema.NUMERO_NAO_INFORMADO){
-				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.HIDROMETRO_TIPO_ID, idHidrometroTipo));
+				filtroHidrometroHelper.setIdHidrometroCapacidade(Util.obterInteger(idHidrometroCapacidade));
 			}
 
-			if(idHidrometroSituacao != null && Integer.parseInt(idHidrometroSituacao) > ConstantesSistema.NUMERO_NAO_INFORMADO){
+			if(idHidrometroTipo != null && Integer.parseInt(idHidrometroTipo) > ConstantesSistema.NUMERO_NAO_INFORMADO){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.HIDROMETRO_SITUACAO_ID, idHidrometroSituacao));
+				filtroHidrometroHelper.setIdHidrometroTipo(Util.obterInteger(idHidrometroTipo));
+			}
+
+			if(!Util.isVazioOuBranco(idHidrometroSituacao)){
+
+				peloMenosUmParametroInformado = true;
+				filtroHidrometroHelper.setIdHidrometroSituacao(Util.obterInteger(idHidrometroSituacao));
 			}
 
 			if(idLocalArmazenagem != null && !idLocalArmazenagem.equals("")){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.HIDROMETRO_LOCAL_ARMAZENAGEM_ID,
-								idLocalArmazenagem));
+				filtroHidrometroHelper.setIdHidrometroLocalArmazenagem(Util.obterInteger(idLocalArmazenagem));
 			}
 
 			if(!Util.isVazioOuBranco(idHidrometroTipoTurbina)
 							&& Integer.parseInt(idHidrometroTipoTurbina) > ConstantesSistema.NUMERO_NAO_INFORMADO){
+
 				peloMenosUmParametroInformado = true;
-				filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.HIDROMETRO_TIPO_TURBINA_ID,
-								idHidrometroTipoTurbina));
+				filtroHidrometroHelper.setIdHidrometroTipoTurbina(Util.obterInteger(idHidrometroTipoTurbina));
+			}
+
+			if(!Util.isVazioOuBranco(dataInstalacao)
+							&& (filtroHidrometroHelper.getIdHidrometroSituacao() == null || filtroHidrometroHelper
+											.getIdHidrometroSituacao().equals(HidrometroSituacao.INSTALADO))){
+
+				Date dataInstalacaoDate = Util.converteStringParaDate(dataInstalacao, true);
+
+				// Caso a data de instalção seja maior que a data corrente
+				if(dataInstalacaoDate.after(new Date())){
+
+					throw new ActionServletException("atencao.data.instalacao.nao.superior.data.corrente");
+				}
+
+				peloMenosUmParametroInformado = true;
+				filtroHidrometroHelper.setDataInstalacao(dataInstalacaoDate);
+				filtroHidrometroHelper.setConsultarHistoricoInstalacao(true);
+			}else{
+
+				filtroHidrometroHelper.setDataInstalacao(null);
+			}
+
+			if(!Util.isVazioOuBranco(numeroNotaFiscal)){
+
+				peloMenosUmParametroInformado = true;
+				filtroHidrometroHelper.setNumeroNotaFiscal(Util.obterInteger(numeroNotaFiscal));
+			}
+
+			if(!Util.isVazioOuBranco(loteEntrega)){
+				peloMenosUmParametroInformado = true;
+				filtroHidrometroHelper.setLoteEntrega((loteEntrega));
+
 			}
 
 			// Erro caso o usuário mandou filtrar sem nenhum parâmetro
 			if(!peloMenosUmParametroInformado){
-				/*
-				 * if(sessao.getAttribute("parametroInformado") != "sim")
-				 * {
-				 */
+				
 				throw new ActionServletException("atencao.filtro.nenhum_parametro_informado");
-				// }
 			}
 
 			if(retorno.getName().equalsIgnoreCase("movimentarHidrometro")){
-				filtroHidrometro.setConsultaSemLimites(true);
+
+				filtroHidrometroHelper.setConsultaSemLimites(true);
 			}
 
 			// Manda o filtro pela sessão para o ExibirManterHidrometroAction
-			sessao.setAttribute("filtroHidrometro", filtroHidrometro);
+			sessao.setAttribute("filtroHidrometroHelper", filtroHidrometroHelper);
 
 			sessao.setAttribute("voltarFiltrar", "1");
 

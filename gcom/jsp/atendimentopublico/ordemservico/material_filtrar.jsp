@@ -156,6 +156,12 @@
 					<td colspan="2"><html:text property="abrevMaterial"
 						size="7" maxlength="5" tabindex="2" /></td>
 				</tr>
+<%-- 				<logic:equal name="permiteCobrarMaterial" value="1" scope="session"> --%>
+<!-- 				<tr> -->
+<!-- 					<td><strong>Valor do Material:</strong></td> -->
+<%-- 					<td colspan="2"><html:text property="materialValor" --%>
+<%-- 						size="7" maxlength="11" tabindex="2" onkeyup="javascript:formataValorMonetario(this, 11)"/></td> --%>
+<%-- 				</tr></logic:equal> --%>
 
 				<tr>
 					<td><strong>Unidade do Material:</strong></td>

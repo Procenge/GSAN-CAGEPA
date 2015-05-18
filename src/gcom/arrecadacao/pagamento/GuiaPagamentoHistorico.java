@@ -77,6 +77,7 @@
 package gcom.arrecadacao.pagamento;
 
 import gcom.atendimentopublico.ordemservico.OrdemServico;
+import gcom.atendimentopublico.ordemservico.ServicoTipo;
 import gcom.atendimentopublico.registroatendimento.RegistroAtendimento;
 import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.cliente.ClienteGuiaPagamentoHistorico;
@@ -172,6 +173,8 @@ public class GuiaPagamentoHistorico
 
 	private DebitoCreditoSituacao debitoCreditoSituacaoAnterior;
 
+	private ServicoTipo servicoTipo;
+
 	/**
 	 * Default Constructor
 	 */
@@ -182,6 +185,16 @@ public class GuiaPagamentoHistorico
 	public String toString(){
 
 		return new ToStringBuilder(this).append("gpagId", getId()).toString();
+	}
+
+	public ServicoTipo getServicoTipo(){
+
+		return this.servicoTipo;
+	}
+
+	public void setServicoTipo(ServicoTipo servicoTipo){
+
+		this.servicoTipo = servicoTipo;
 	}
 
 	/**

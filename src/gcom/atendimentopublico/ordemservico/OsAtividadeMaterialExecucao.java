@@ -99,6 +99,8 @@ public class OsAtividadeMaterialExecucao
 	/** nullable persistent field */
 	private Date ultimaAlteracao;
 
+	private BigDecimal valorMaterial;
+
 	/** persistent field */
 	private gcom.atendimentopublico.ordemservico.OrdemServicoAtividade ordemServicoAtividade;
 
@@ -187,6 +189,16 @@ public class OsAtividadeMaterialExecucao
 	public String getUltimaAlteracaoFormatada(){
 
 		return Util.formatarDataComHora(this.ultimaAlteracao);
+	}
+
+	public BigDecimal getValorMaterial(){
+
+		return valorMaterial;
+	}
+
+	public void setValorMaterial(BigDecimal valorMaterial){
+
+		this.valorMaterial = valorMaterial;
 	}
 
 }

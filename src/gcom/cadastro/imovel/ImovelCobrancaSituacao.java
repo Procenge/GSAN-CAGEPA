@@ -171,6 +171,12 @@ public class ImovelCobrancaSituacao
 
 	private FaturamentoGrupoCronogramaMensal faturamentoGrupoCronogramaMensal;
 
+	private Integer numeroProcessoAdministrativoExecucaoFiscal;
+
+	private BigDecimal valorProcessoAdministrativoExecucaoFiscal;
+
+	private Integer numeroVara;
+
 	/** full constructor */
 	public ImovelCobrancaSituacao(Date dataImplantacaoCobranca, Date dataRetiradaCobranca, Integer cpfCobranca, Integer cnpjCobranca,
 									Date ultimaAlteracao, gcom.cadastro.imovel.Imovel imovel, CobrancaSituacao cobrancaSituacao,
@@ -508,4 +514,35 @@ public class ImovelCobrancaSituacao
 
 		return retorno;
 	}
+
+	public Integer getNumeroProcessoAdministrativoExecucaoFiscal(){
+
+		return numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public void setNumeroProcessoAdministrativoExecucaoFiscal(Integer numeroProcessoAdministrativoExecucaoFiscal){
+
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public BigDecimal getValorProcessoAdministrativoExecucaoFiscal(){
+
+		return valorProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public void setValorProcessoAdministrativoExecucaoFiscal(BigDecimal valorProcessoAdministrativoExecucaoFiscal){
+
+		this.valorProcessoAdministrativoExecucaoFiscal = valorProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public Integer getNumeroVara(){
+
+		return numeroVara;
+	}
+
+	public void setNumeroVara(Integer numeroVara){
+
+		this.numeroVara = numeroVara;
+	}
+
 }

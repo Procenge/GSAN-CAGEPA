@@ -1142,4 +1142,48 @@ public class ControladorPermissaoEspecialSEJB
 
 		return temPermissao;
 	}
+
+	/**
+	 * Verifica permissão especial para estornar em dívida ativa
+	 * 
+	 * @author Yara Souza
+	 * @date 17/02/2014
+	 * @param usuario
+	 */
+	public boolean verificarPermissaoEstonoDividaAtiva(Usuario usuario) throws ControladorException{
+
+		boolean temPermissao = this.verificarPermissaoEspecial(PermissaoEspecial.ESTORNAR_PAGAMENTO_DIVIDA_ATIVA, usuario);
+
+		return temPermissao;
+	}
+
+	/**
+	 * Verifica permissão especial para estornar em dívida ativa
+	 * 
+	 * @author Yara Souza
+	 * @date 17/02/2014
+	 * @param usuario
+	 */
+	public boolean verificarPermissaoEstonoDividaAtivaNumMaxDias(Usuario usuario) throws ControladorException{
+
+		boolean temPermissao = this.verificarPermissaoEspecial(PermissaoEspecial.ESTORNAR_PAGAMENTO_DIVIDA_ATIVA_NUM_MAX_DIAS, usuario);
+
+		return temPermissao;
+	}
+
+	/**
+	 * Verifica permissão especial para estornar em dívida ativa
+	 * 
+	 * @author Yara Souza
+	 * @date 17/02/2014
+	 * @param usuario
+	 */
+	public boolean verificarPermissaoEstonoDividaAtivaValorMaximo(Usuario usuario) throws ControladorException{
+
+		boolean temPermissao = this.verificarPermissaoEspecial(PermissaoEspecial.ESTORNAR_PAGAMENTO_DIVIDA_ATIVA_VALOR_MAX, usuario);
+
+		return temPermissao;
+	}
+
+
 }

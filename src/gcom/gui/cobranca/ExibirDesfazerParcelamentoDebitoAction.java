@@ -111,6 +111,7 @@ import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
@@ -144,6 +145,8 @@ public class ExibirDesfazerParcelamentoDebitoAction
 		// Seta o mapeamento de retorno
 		ActionForward retorno = actionMapping.findForward("telaSucesso");
 
+		HttpSession sessao = httpServletRequest.getSession(false);
+
 		Fachada fachada = Fachada.getInstancia();
 
 		Usuario usuario = getUsuarioLogado(httpServletRequest);
@@ -154,6 +157,25 @@ public class ExibirDesfazerParcelamentoDebitoAction
 		String codigo = httpServletRequest.getParameter("codigoParcelamento").trim();
 
 		String motivo = httpServletRequest.getParameter("motivo").trim();
+
+		/**
+		 * [UC0252] Consultar Parcelamentos de Débitos
+		 * [SB0010] Verificar Existência de Conta em Execução Fiscal
+		 * 
+		 * @author Gicevalter Couto
+		 * @date 07/08/2014
+		 */
+		if(codigo != null && !codigo.equals("")){
+			boolean temPermissaoAtualizarDebitosExecFiscal = fachada.verificarPermissaoEspecial(
+							PermissaoEspecial.ATUALIZAR_DEBITOS_EXECUCAO_FISCAL, this.getUsuarioLogado(httpServletRequest));
+
+			if(sessao.getAttribute("indicadorParcelamentoExecucaoFiscal") != null
+							&& !sessao.getAttribute("indicadorParcelamentoExecucaoFiscal").toString().equals('S')
+							&& !temPermissaoAtualizarDebitosExecFiscal){
+				throw new ActionServletException("atencao.parcelamento.nao.pode.ser.desfeito.debito.execucao.fiscal", usuario
+								.getNomeUsuario().toString());
+			}
+		}
 
 		// [SB0001] – Verificar possibilidade de desfazer o parcelamento.
 		if(this.permiteDesfazerParcelamento(Integer.valueOf(codigo), fachada)){

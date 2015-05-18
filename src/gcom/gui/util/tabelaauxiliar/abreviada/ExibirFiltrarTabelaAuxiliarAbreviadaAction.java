@@ -160,6 +160,8 @@ public class ExibirFiltrarTabelaAuxiliarAbreviadaAction
 		sessao.setAttribute("tamMaxCampoDescricao", tamMaxCampoDescricao);
 		sessao.setAttribute("tamMaxCampoDescricaoAbreviada", tamMaxCampoDescricaoAbreviada);
 
+		sessao.setAttribute("indicadorUso", "Indicador de Uso");
+
 		// funcionalidadeTabelaAuxiliarAbreviadaManter
 		sessao.setAttribute("pacoteNomeObjeto", dados.getTabelaAuxiliar().getClass().getName());
 		sessao.setAttribute("funcionalidadeTabelaAuxiliarAbreviadaFiltrar", dados.getFuncionalidadeTabelaAuxFiltrar());

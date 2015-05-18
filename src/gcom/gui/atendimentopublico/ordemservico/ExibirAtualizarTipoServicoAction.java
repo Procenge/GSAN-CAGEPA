@@ -193,6 +193,8 @@ public class ExibirAtualizarTipoServicoAction
 			filtroServicoTipoTramite.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoTipoTramite.SETOR_COMERCIAL);
 			filtroServicoTipoTramite.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoTipoTramite.UNIDADE_ORGANIZACIONAL_ORIGEM);
 			filtroServicoTipoTramite.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoTipoTramite.UNIDADE_ORGANIZACIONAL_DESTINO);
+			filtroServicoTipoTramite.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoTipoTramite.BAIRRO);
+			filtroServicoTipoTramite.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoTipoTramite.MUNICIPIO);
 			filtroServicoTipoTramite.setCampoOrderBy(filtroServicoTipoTramite.LOCALIDADE);
 
 			Collection<ServicoTipoTramite> colecaoServicoTipoTramite = fachada.pesquisar(filtroServicoTipoTramite, ServicoTipoTramite.class
@@ -262,6 +264,9 @@ public class ExibirAtualizarTipoServicoAction
 			atualizarTipoServicoActionForm.setServicoTerceirizado("" + servicoTipo.getIndicadorTerceirizado());
 			atualizarTipoServicoActionForm.setIndicadorFiscalizacaoInfracao("" + servicoTipo.getIndicadorFiscalizacaoInfracao());
 			atualizarTipoServicoActionForm.setIndicadorVistoria("" + servicoTipo.getIndicadorVistoria());
+			atualizarTipoServicoActionForm.setIndicadorAfericaoHidrometro("" + servicoTipo.getIndicadorAfericaoHidrometro());
+			atualizarTipoServicoActionForm.setIndicadorPagamentoAntecipado("" + servicoTipo.getIndicadorPagamentoAntecipado());
+
 			atualizarTipoServicoActionForm.setCodigoServico("" + servicoTipo.getCodigoServicoTipo());
 			atualizarTipoServicoActionForm.setTempoMedioExecucao("" + servicoTipo.getTempoMedioExecucao());
 			atualizarTipoServicoActionForm.setIdPrioridadeServico(servicoTipo.getServicoTipoPrioridade().getId().toString());
@@ -278,6 +283,9 @@ public class ExibirAtualizarTipoServicoAction
 			atualizarTipoServicoActionForm.setIndicadorVala(String.valueOf(servicoTipo.getIndicadorVala()));
 			atualizarTipoServicoActionForm.setIndicadorOrdemSeletiva(String.valueOf(servicoTipo.getIndicadorOrdemSeletiva()));
 			atualizarTipoServicoActionForm.setIndicadorServicoCritico(String.valueOf(servicoTipo.getIndicadorServicoCritico()));
+
+			atualizarTipoServicoActionForm.setIndicadorPermiteAlterarValor(String.valueOf(servicoTipo.getIndicadorPermiteAlterarValor()));
+
 			atualizarTipoServicoActionForm.setIndicadorGerarHistoricoImovel(servicoTipo.getIndicadorGerarHistoricoImovel());
 
 			if(servicoTipo.getValorRemuneracao() != null && !servicoTipo.getValorRemuneracao().equals("")){
@@ -290,6 +298,20 @@ public class ExibirAtualizarTipoServicoAction
 
 			if(servicoTipo.getPrazoExecucao() != null){
 				atualizarTipoServicoActionForm.setPrazoExecucao("" + servicoTipo.getPrazoExecucao().toString());
+			}
+
+			if(servicoTipo.getNumeroMaximoVisitasImprodutivasPermitidas() != null){
+				atualizarTipoServicoActionForm.setNumeroMaximoVisitasImprodutivasPermitidas(""
+								+ servicoTipo.getNumeroMaximoVisitasImprodutivasPermitidas().toString());
+			}else{
+				atualizarTipoServicoActionForm.setNumeroMaximoVisitasImprodutivasPermitidas("");
+			}
+
+			if(servicoTipo.getNumeroMaximoGuiaPrestacaoAntecipadaPermitidas() != null){
+				atualizarTipoServicoActionForm.setNumeroMaximoGuiaPrestacaoAntecipadaPermitidas(""
+								+ servicoTipo.getNumeroMaximoGuiaPrestacaoAntecipadaPermitidas().toString());
+			}else{
+				atualizarTipoServicoActionForm.setNumeroMaximoGuiaPrestacaoAntecipadaPermitidas("");
 			}
 
 			atualizarTipoServicoActionForm.setTipoRemuneracao("" + servicoTipo.getTipoRemuneracao());
@@ -378,6 +400,8 @@ public class ExibirAtualizarTipoServicoAction
 			filtroServicoTipoTramite.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoTipoTramite.SETOR_COMERCIAL);
 			filtroServicoTipoTramite.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoTipoTramite.UNIDADE_ORGANIZACIONAL_ORIGEM);
 			filtroServicoTipoTramite.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoTipoTramite.UNIDADE_ORGANIZACIONAL_DESTINO);
+			filtroServicoTipoTramite.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoTipoTramite.BAIRRO);
+			filtroServicoTipoTramite.adicionarCaminhoParaCarregamentoEntidade(FiltroServicoTipoTramite.MUNICIPIO);
 			filtroServicoTipoTramite.setCampoOrderBy(FiltroServicoTipoTramite.LOCALIDADE);
 
 			Collection<ServicoTipoTramite> colecaoServicoTipoTramite = fachada.pesquisar(filtroServicoTipoTramite, ServicoTipoTramite.class

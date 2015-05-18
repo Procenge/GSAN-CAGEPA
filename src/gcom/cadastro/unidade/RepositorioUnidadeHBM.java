@@ -451,23 +451,54 @@ public class RepositorioUnidadeHBM
 			idGerenciaRegional = gerenciaRegional.getId();
 		}
 
+		String telefone = "";
+		if(unidadeOrganizacional.getTelefone() != null){
+			telefone = unidadeOrganizacional.getTelefone();
+		}
+
+		String ddd = "";
+		if(unidadeOrganizacional.getDdd() != null){
+			ddd = unidadeOrganizacional.getDdd();
+		}
+
+		String ramal = "";
+		if(unidadeOrganizacional.getRamal() != null){
+			ramal = unidadeOrganizacional.getRamal();
+		}
+
+		String fax = "";
+		if(unidadeOrganizacional.getFax() != null){
+			fax = unidadeOrganizacional.getFax();
+		}
+
+		String observacao = "";
+		if(unidadeOrganizacional.getObservacao() != null){
+			observacao = unidadeOrganizacional.getObservacao();
+		}
+
 		try{
 			update = " update gcom.cadastro.unidade.UnidadeOrganizacional" + " set unid_idsuperior = " + unidadeSuperior
 							+ " ,unid_idcentralizadora = " + unidCentralizadora
 							+ " ,unid_icesgoto = :unidaEsgoto,unid_ictramite = :unidTramite, unid_dsunidade = :descricao"
-							+ " ,unid_dssiglaunidade = '" + sigla + "'" + ",empr_id = :idEmpresa, meso_id = " + idMeioSolicitacao
+							+ " ,unid_dssiglaunidade = '" + sigla + "'" + " ,empr_id = :idEmpresa, meso_id = " + idMeioSolicitacao
 							+ " ,untp_id = :idTipoUnidade, unid_icabertura = :unidAbertura, unid_icuso = :indicadorUso "
-							+ ", loca_id = "+ idLocalidade + ", greg_id =  "+idGerenciaRegional
-							+ ", unid_tmultimaalteracao = :datahoracorrente where unid_id = :id ";
+ + ", loca_id = "
+							+ idLocalidade + ", greg_id =  " + idGerenciaRegional + ", unid_tmultimaalteracao = :datahoracorrente "
 
-			Query query = session.createQuery(update).setInteger("unidaEsgoto", unidadeOrganizacional.getIndicadorEsgoto())
-							.setInteger("unidTramite",
-							unidadeOrganizacional.getIndicadorTramite()).setString("descricao", unidadeOrganizacional.getDescricao())
-							.setInteger("idEmpresa", unidadeOrganizacional.getEmpresa().getId().intValue()).setInteger("idTipoUnidade",
-											unidadeOrganizacional.getUnidadeTipo().getId().intValue()).setInteger("unidAbertura",
-											unidadeOrganizacional.getIndicadorAberturaRa()).setInteger("indicadorUso",
-											unidadeOrganizacional.getIndicadorUso()).setDate("datahoracorrente", new Date()).setInteger(
-"id", unidadeOrganizacional.getId());
+							+ ", UNID_NNFONE =  " + telefone + ", UNID_CDDDD =  " + ddd + ", UNID_NNFONERAMAL =  " + ramal
+							+ ", UNID_NNFAX =  " + fax + ", UNID_DSOBSERVACAO =  " + observacao
+							+ " where unid_id = :id ";
+
+			Query query = session.createQuery(update)
+							.setInteger("unidaEsgoto", unidadeOrganizacional.getIndicadorEsgoto())
+							.setInteger("unidTramite", unidadeOrganizacional.getIndicadorTramite())
+							.setString("descricao", unidadeOrganizacional.getDescricao())
+							.setInteger("idEmpresa", unidadeOrganizacional.getEmpresa().getId().intValue())
+							.setInteger("idTipoUnidade", unidadeOrganizacional.getUnidadeTipo().getId().intValue())
+							.setInteger("unidAbertura", unidadeOrganizacional.getIndicadorAberturaRa())
+							.setInteger("indicadorUso", unidadeOrganizacional.getIndicadorUso())
+.setDate("datahoracorrente", new Date())
+							.setInteger("id", unidadeOrganizacional.getId());
 
 			query.executeUpdate();
 

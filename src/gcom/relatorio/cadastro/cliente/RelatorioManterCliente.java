@@ -77,13 +77,7 @@
 package gcom.relatorio.cadastro.cliente;
 
 import gcom.batch.Relatorio;
-import gcom.cadastro.cliente.Cliente;
-import gcom.cadastro.cliente.ClienteEndereco;
-import gcom.cadastro.cliente.ClienteFone;
-import gcom.cadastro.cliente.ClienteImovel;
-import gcom.cadastro.cliente.FiltroCliente;
-import gcom.cadastro.cliente.FiltroClienteEndereco;
-import gcom.cadastro.cliente.FiltroClienteFone;
+import gcom.cadastro.cliente.*;
 import gcom.cadastro.geografico.Municipio;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
@@ -98,14 +92,7 @@ import gcom.util.agendadortarefas.AgendadorTarefas;
 import gcom.util.filtro.ParametroSimples;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -348,6 +335,17 @@ public class RelatorioManterCliente
 									// Indicador de Uso
 									"" + clienteNovo.getIndicadorUso(), clienteNovo.getClienteTipo() == null ? "" : ""
 													+ clienteNovo.getClienteTipo().getIndicadorPessoaFisicaJuridica());
+					
+					if(clienteNovo.getDocumentoValidado() != null && !clienteNovo.getDocumentoValidado().equals("")){
+						if(clienteNovo.getDocumentoValidado().equals(new Short("1"))){
+							relatorioBean.setDescricaoDocumentoValidado("Sim");
+						}else{
+							relatorioBean.setDescricaoDocumentoValidado("Não");
+						}
+					}else{
+						relatorioBean.setDescricaoDocumentoValidado("Não");
+					}
+
 					// adiciona o bean a coleção
 					relatorioBeans.add(relatorioBean);
 				}else{
@@ -391,6 +389,17 @@ public class RelatorioManterCliente
 
 									"" + clienteNovo.getIndicadorUso(), clienteNovo.getClienteTipo() == null ? "" : ""
 													+ clienteNovo.getClienteTipo().getIndicadorPessoaFisicaJuridica());
+
+					if(clienteNovo.getDocumentoValidado() != null && !clienteNovo.getDocumentoValidado().equals("")){
+						if(clienteNovo.getDocumentoValidado().equals(new Short("1"))){
+							relatorioBean.setDescricaoDocumentoValidado("Sim");
+						}else{
+							relatorioBean.setDescricaoDocumentoValidado("Não");
+						}
+					}else{
+						relatorioBean.setDescricaoDocumentoValidado("Não");
+					}
+
 					// adiciona o bean a coleção
 					relatorioBeans.add(relatorioBean);
 				}

@@ -44,17 +44,17 @@ public class CodigoBarrasCampos
 
 	public static Integer INDICADOR_DOCUMENTO_CLIENTE = 15;
 
-	public static Integer SEQUENCIAL = 16;
-
-	public static Integer ANO_LANCAMENTO = 17;
-
-	public static Integer NUMERO_AVISO = 18;
-
-	public static Integer NUMERO_EMISSAO = 19;
-
-	public static Integer CODIGO_TRIBUTO = 20;
-
-	public static Integer VALOR_FIXO = 21;
+	// public static Integer SEQUENCIAL = 16;
+	//
+	// public static Integer ANO_LANCAMENTO = 17;
+	//
+	// public static Integer NUMERO_AVISO = 18;
+	//
+	// public static Integer NUMERO_EMISSAO = 19;
+	//
+	// public static Integer CODIGO_TRIBUTO = 20;
+	//
+	// public static Integer VALOR_FIXO = 21;
 
 	public String[] retornaCamposChavePrimaria(){
 

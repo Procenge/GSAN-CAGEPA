@@ -55,7 +55,33 @@ function limparForm(){
 	form.action = 'consultarImovelWizardAction.do?action=exibirConsultarImovelHistoricoFaturamentoAction&limparForm=OK'
 	form.submit();
 }
- 
+
+function limparImovelTecla() {
+
+	var form = document.forms[0];
+	
+	form.matriculaImovelHistoricoFaturamento.value = "";
+
+	if (form.digitoVerificadorImovelHistoricoFaturamento != undefined) {
+		form.digitoVerificadorImovelHistoricoFaturamento.value = "";
+	}
+		
+	form.situacaoAguaHistoricoFaturamento.value = "";
+	form.situacaoEsgotoHistoricoFaturamento.value = "";
+	form.tipoLigacao.value = "";
+
+}
+
+
+function verificarExibicaoRelatorio() {
+    var form = document.forms[0];
+    
+    if (form.idImovelHistoricoFaturamento.value.length > 0) {
+        toggleBox('demodiv',1);
+    } else {
+        alert('Informe Imóvel');
+    }  
+}
 //-->
 </SCRIPT>
 
@@ -164,7 +190,8 @@ function limparForm(){
 										color="#FF0000">*</font></strong></td>
 									<td width="75%" colspan="3"><html:text
 										property="idImovelHistoricoFaturamento" maxlength="9" size="9"
-										onkeypress="validaEnterComMensagem(event, 'consultarImovelWizardAction.do?action=exibirConsultarImovelHistoricoFaturamentoAction&indicadorNovo=OK&limparForm=S','idImovelHistoricoFaturamento','Im&oacute;vel');" />
+										onkeypress="validaEnterComMensagem(event, 'consultarImovelWizardAction.do?action=exibirConsultarImovelHistoricoFaturamentoAction&indicadorNovo=OK&limparForm=S','idImovelHistoricoFaturamento','Im&oacute;vel');" 
+										onkeyup="limparImovelTecla();"/>
 									<a
 										href="javascript:abrirPopup('exibirPesquisarImovelAction.do', 400, 800);">
 									<img width="23" height="21"
@@ -172,25 +199,66 @@ function limparForm(){
 										border="0" /></a> <logic:present
 										name="idImovelHistoricoFaturamentoNaoEncontrado"
 										scope="request">
-										<html:text property="matriculaImovelHistoricoFaturamento"
-											size="40" readonly="true"
-											style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+											<html:text property="matriculaImovelHistoricoFaturamento"
+												size="40" readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										</logic:equal>
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+											<html:text property="digitoVerificadorImovelHistoricoFaturamento"
+												size="2" readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+												
+											<html:text property="matriculaImovelHistoricoFaturamento"
+												size="31" readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />																						
+										</logic:equal>
 
 									</logic:present> <logic:notPresent
 										name="idImovelHistoricoFaturamentoNaoEncontrado"
 										scope="request">
 										<logic:present name="valorMatriculaImovelHistoricoFaturamento"
 											scope="request">
-											<html:text property="matriculaImovelHistoricoFaturamento"
-												size="40" readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">											
+												<html:text property="matriculaImovelHistoricoFaturamento"
+													size="40" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>		
+													
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelHistoricoFaturamento"
+													size="2" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+													
+												<html:text property="matriculaImovelHistoricoFaturamento"
+													size="31" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />																								
+											</logic:equal>
+																							
 										</logic:present>
 										<logic:notPresent
 											name="valorMatriculaImovelHistoricoFaturamento"
 											scope="request">
-											<html:text property="matriculaImovelHistoricoFaturamento"
-												size="40" readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">											
+												<html:text property="matriculaImovelHistoricoFaturamento"
+													size="40" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelHistoricoFaturamento"
+													size="2" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+																								
+												<html:text property="matriculaImovelHistoricoFaturamento"
+													size="31" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />																								
+											</logic:equal>											
+											
 										</logic:notPresent>
 									</logic:notPresent> <a href="javascript:limparForm();"> <img
 										src="<bean:message key="caminho.imagens"/>limparcampo.gif"
@@ -211,6 +279,20 @@ function limparForm(){
 										style="background-color:#EFEFEF; border:0; color: #000000"
 										size="15" maxlength="15" /></td>
 								</tr>
+								<tr>
+								
+								<td height="10">
+									<div class="style9"><strong>Tipo de Ligação:</strong></div>
+									</td>
+									<td><html:text property="tipoLigacao"
+										readonly="true"
+										style="background-color:#EFEFEF; border:0; color: #000000"
+										size="15" maxlength="15" /></td>
+							
+									<td width="90"></td>
+									<td width="120"></td>
+								</tr>
+								
 							</table>
 							</td>
 						</tr>
@@ -970,22 +1052,32 @@ function limparForm(){
 					</td>
 				</tr>
 			</table>
-			<p>&nbsp;</p>
-			<table width="100%" border="0">
-				<tr>
-					<td colspan="2">
-					<div align="right"><jsp:include
-						page="/jsp/util/wizard/navegacao_botoes_wizard_consulta.jsp?numeroPagina=4" /></div>
-					</td>
-				</tr>
-			</table>
+            <p>&nbsp;</p>
+            <table width="100%" border="0">
+                <tr>
+                    <td align="right">
+                        <div align="right">
+                            <a href="javascript:verificarExibicaoRelatorio();">
+                                <img border="0" src="<bean:message key="caminho.imagens"/>print.gif" title="Imprimir Pagamentos" /> 
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                    <div align="right"><jsp:include
+                        page="/jsp/util/wizard/navegacao_botoes_wizard_consulta.jsp?numeroPagina=4" /></div>
+                    </td>
+                </tr>
+            </table>
 
-			</td>
-		</tr>
-	</table>
-
-<logic:notPresent name="montarPopUp">	
-		<%@ include file="/jsp/util/rodape.jsp"%>
+            </td>
+        </tr>
+    </table>
+<jsp:include
+        page="/jsp/relatorio/escolher_tipo_relatorio.jsp?relatorio=gerarRelatorioHistoricoFaturamentoAction.do" />
+<logic:notPresent name="montarPopUp">   
+        <%@ include file="/jsp/util/rodape.jsp"%>
 </logic:notPresent>
 
 </html:form>

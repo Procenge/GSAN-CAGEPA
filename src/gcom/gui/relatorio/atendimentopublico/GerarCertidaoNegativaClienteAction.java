@@ -209,7 +209,7 @@ public class GerarCertidaoNegativaClienteAction
 						ObterDebitoImovelOuClienteHelper obterDebitoImovelOuClienteHelper = fachada.obterDebitoImovelOuCliente(tipoCliente,
 										null, idCliente.toString(), null, "000101", "999912", dataInicioVencimentoDebito.getTime(),
 										dataFimVencimentoDebito.getTime(), 1, 2, 2, 2, 1, 1, 2, null, null, null, null, null,
-										ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM);
+										ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM, 2, null);
 
 						if(obterDebitoImovelOuClienteHelper != null){
 							if((obterDebitoImovelOuClienteHelper.getColecaoContasValores() != null && !obterDebitoImovelOuClienteHelper

@@ -200,6 +200,7 @@ function limparForm(){
 								readonly="true"
 								style="background-color:#cbe5fe; border:0; color: #000000" /></td>
 						</tr>
+						
 						<tr>
 							<td>
 							<table border="0" width="100%">
@@ -285,6 +286,16 @@ function limparForm(){
 								</div>
 								</td>
 							</tr>
+							<tr>
+								<td align="left" height="10">
+									<div class="style9"><strong>Número do Benefício:</strong></div>
+								</td>
+								<td align="left">
+									<div class="style9">
+								 		 <html:text property="numeroBeneficio" size="10" readonly="true" style="background-color:#cbe5fe; border:0; color: #000000" />
+									</div>
+								</td>
+							</tr>
 						</logic:equal>
 						<logic:notEqual name="indicadorTipoCliente" value="1"
 							scope="request">
@@ -300,6 +311,15 @@ function limparForm(){
 								</td>
 								<td colspan="2" align="left"><html:text
 									property="ramoAtividadeCliente" size="20" readonly="true"
+									style="background-color:#cbe5fe; border:0; color: #000000" />
+								</td>
+							</tr>
+							<tr>
+								<td align="left" height="10" width="18%">
+								<div class="style9"><strong>Atividade Econômica (CNAE):</strong></div>
+								</td>
+								<td colspan="2" align="left"><html:text
+									property="atividadeEconomicaCliente" size="60" readonly="true"
 									style="background-color:#cbe5fe; border:0; color: #000000" />
 								</td>
 							</tr>

@@ -142,6 +142,9 @@ public class Cliente
 	@ControleAlteracao(funcionalidade = {ATRIBUTOS_CLIENTE_INSERIR, ATRIBUTOS_CLIENTE_ATUALIZAR, ATRIBUTOS_CLIENTE_REMOVER})
 	private Short indicadorUso;
 
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_CLIENTE_INSERIR, ATRIBUTOS_CLIENTE_ATUALIZAR, ATRIBUTOS_CLIENTE_REMOVER})
+	private Short documentoValidado;
+
 	private Date ultimaAlteracao;
 
 	@ControleAlteracao(funcionalidade = {ATRIBUTOS_CLIENTE_INSERIR, ATRIBUTOS_CLIENTE_ATUALIZAR, ATRIBUTOS_CLIENTE_REMOVER})
@@ -217,6 +220,11 @@ public class Cliente
 	@ControleAlteracao(funcionalidade = {ATRIBUTOS_CLIENTE_INSERIR, ATRIBUTOS_CLIENTE_ATUALIZAR, ATRIBUTOS_CLIENTE_REMOVER})
 	private Short indicadorContaBraille = 2;
 
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_CLIENTE_INSERIR, ATRIBUTOS_CLIENTE_ATUALIZAR, ATRIBUTOS_CLIENTE_REMOVER})
+	private AtividadeEconomica atividadeEconomica;
+
+	private String numeroBeneficio;
+
 	/**
 	 * GSANPCG
 	 * full constructor
@@ -226,7 +234,7 @@ public class Cliente
 					gcom.cadastro.cliente.Cliente cliente, gcom.cadastro.cliente.PessoaSexo pessoaSexo,
 					gcom.cadastro.cliente.Profissao profissao, UnidadeFederacao unidadeFederacao,
 					gcom.cadastro.cliente.ClienteTipo clienteTipo, gcom.cadastro.cliente.RamoAtividade ramoAtividade, Short diaVencimento,
-					String inscricaoEstadual, Short indicadorContaBraille) {
+					String inscricaoEstadual, Short indicadorContaBraille, Short documentoValidado) {
 
 		this.nome = nome;
 		this.nomeAbreviado = nomeAbreviado;
@@ -248,6 +256,7 @@ public class Cliente
 		this.diaVencimento = diaVencimento;
 		this.inscricaoEstadual = inscricaoEstadual;
 		this.indicadorContaBraille = indicadorContaBraille;
+		this.documentoValidado = documentoValidado;
 	}
 
 	/**
@@ -257,7 +266,8 @@ public class Cliente
 					String email, Short indicadorUso, Date ultimaAlteracao, gcom.cadastro.cliente.OrgaoExpedidorRg orgaoExpedidorRg,
 					gcom.cadastro.cliente.Cliente cliente, gcom.cadastro.cliente.PessoaSexo pessoaSexo,
 					gcom.cadastro.cliente.Profissao profissao, UnidadeFederacao unidadeFederacao,
-					gcom.cadastro.cliente.ClienteTipo clienteTipo, gcom.cadastro.cliente.RamoAtividade ramoAtividade) {
+					gcom.cadastro.cliente.ClienteTipo clienteTipo, gcom.cadastro.cliente.RamoAtividade ramoAtividade,
+					Short documentoValidado) {
 
 		this.nome = nome;
 		this.nomeAbreviado = nomeAbreviado;
@@ -276,6 +286,7 @@ public class Cliente
 		this.unidadeFederacao = unidadeFederacao;
 		this.clienteTipo = clienteTipo;
 		this.ramoAtividade = ramoAtividade;
+		this.documentoValidado = documentoValidado;
 	}
 
 	/**
@@ -577,6 +588,28 @@ public class Cliente
 	public void setIndicadorUso(Short indicadorUso){
 
 		this.indicadorUso = indicadorUso;
+	}
+
+	/**
+	 * Retorna o valor de DocumentoValidado
+	 * 
+	 * @return O valor de DocumentoValidado
+	 */
+
+	public Short getDocumentoValidado(){
+
+		return documentoValidado;
+	}
+
+	/**
+	 * Seta o valor de DocumentoValidado
+	 * 
+	 * @param indicadorUso
+	 *            O novo valor de DocumentoValidado
+	 */
+	public void setDocumentoValidado(Short documentoValidado){
+
+		this.documentoValidado = documentoValidado;
 	}
 
 	/**
@@ -1137,6 +1170,16 @@ public class Cliente
 		this.indicadorContaBraille = indicadorContaBraille;
 	}
 
+	public AtividadeEconomica getAtividadeEconomica(){
+
+		return atividadeEconomica;
+	}
+
+	public void setAtividadeEconomica(AtividadeEconomica atividadeEconomica){
+
+		this.atividadeEconomica = atividadeEconomica;
+	}
+
 	public String[] retornarAtributosInformacoesOperacaoEfetuada(){
 
 		String[] atributos = {"descricao"};
@@ -1162,6 +1205,7 @@ public class Cliente
 		filtroCliente.adicionarCaminhoParaCarregamentoEntidade(FiltroCliente.RAMO_ATIVIDADE);
 		filtroCliente.adicionarCaminhoParaCarregamentoEntidade(FiltroCliente.CLIENTE_ENDERECOS);
 		filtroCliente.adicionarCaminhoParaCarregamentoEntidade(FiltroCliente.CLIENTE_TIPO_ESPECIAL);
+		filtroCliente.adicionarCaminhoParaCarregamentoEntidade(FiltroCliente.ATIVIDADE_ECONOMICA);
 		return filtroCliente;
 	}
 
@@ -1190,6 +1234,16 @@ public class Cliente
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
+	}
+
+	public String getNumeroBeneficio(){
+
+		return numeroBeneficio;
+	}
+
+	public void setNumeroBeneficio(String numeroBeneficio){
+
+		this.numeroBeneficio = numeroBeneficio;
 	}
 
 }

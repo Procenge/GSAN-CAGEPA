@@ -64,9 +64,7 @@ public class ExibirInformarDadosLeituraAnormalidadeAction
 
 		HttpSession sessao = httpServletRequest.getSession(false);
 
-
-
-			inicializarFormulario(httpServletRequest, form, sessao);
+		inicializarFormulario(httpServletRequest, form, sessao);
 
 		popularEmpresaLeiturista(httpServletRequest, form, sessao);
 
@@ -196,13 +194,13 @@ public class ExibirInformarDadosLeituraAnormalidadeAction
 
 			try{
 				String indicadoPermitirInformarDadosLeituraLote = ParametroMicromedicao.P_PERMITE_INFORMAR_DADOS_LEITURA_EM_LOTE.executar();
-					if(indicadoPermitirInformarDadosLeituraLote.equals("1")){
+				if(indicadoPermitirInformarDadosLeituraLote.equals("1")){
 					form.setIndicadorEntradaDados("3");
 					sessao.setAttribute("indicadoPermitirInformarDadosLeituraLote", ConstantesSistema.ATIVO);
-					}else{
+				}else{
 					form.setIndicadorEntradaDados("2");
 					sessao.setAttribute("indicadoPermitirInformarDadosLeituraLote", ConstantesSistema.INATIVO);
-					}
+				}
 
 			}catch(ControladorException e){
 				// TODO Auto-generated catch block
@@ -233,9 +231,7 @@ public class ExibirInformarDadosLeituraAnormalidadeAction
 
 			form.setDataLeitura(movimentoRoteiroEmpresa.getDataLeitura() != null ? Util.formatarData(movimentoRoteiroEmpresa
 							.getDataLeitura()) : dataLeituraSugerida);
-			form
-							.setLeitura(movimentoRoteiroEmpresa.getNumeroLeitura() != null ? movimentoRoteiroEmpresa.getNumeroLeitura()
-											.toString() : "");
+			form.setLeitura(movimentoRoteiroEmpresa.getNumeroLeitura() != null ? movimentoRoteiroEmpresa.getNumeroLeitura().toString() : "");
 			form.setIdOcorrencia(movimentoRoteiroEmpresa.getLeituraAnormalidade() != null ? movimentoRoteiroEmpresa
 							.getLeituraAnormalidade().getId().toString() : ConstantesSistema.NUMERO_NAO_INFORMADO + "");
 			form.setReferenciaMovimento(Util.formatarAnoMesParaMesAno(movimentoRoteiroEmpresa.getAnoMesMovimento()));
@@ -246,8 +242,8 @@ public class ExibirInformarDadosLeituraAnormalidadeAction
 
 		if(httpServletRequest.getParameter(InformarDadosLeituraAnormalidadeActionForm.PROXIMO_IMOVEL_ROTA) != null){
 			Integer prox = (Integer) sessao.getAttribute(InformarDadosLeituraAnormalidadeActionForm.PROXIMO);
-			sessao.setAttribute(InformarDadosLeituraAnormalidadeActionForm.IMOVEL_ROTA, ((Object[]) sessao
-							.getAttribute(InformarDadosLeituraAnormalidadeActionForm.LISTA_IMOVEIS_ROTA))[prox]);
+			sessao.setAttribute(InformarDadosLeituraAnormalidadeActionForm.IMOVEL_ROTA,
+							((Object[]) sessao.getAttribute(InformarDadosLeituraAnormalidadeActionForm.LISTA_IMOVEIS_ROTA))[prox]);
 			sessao.setAttribute(InformarDadosLeituraAnormalidadeActionForm.PROXIMO, (prox + 1));
 			Integer anter = (Integer) sessao.getAttribute(InformarDadosLeituraAnormalidadeActionForm.ANTERIOR);
 			sessao.setAttribute(InformarDadosLeituraAnormalidadeActionForm.ANTERIOR, (anter + 1));
@@ -259,8 +255,8 @@ public class ExibirInformarDadosLeituraAnormalidadeAction
 
 		if(httpServletRequest.getParameter(InformarDadosLeituraAnormalidadeActionForm.ANTERIOR_IMOVEL_ROTA) != null){
 			Integer anter = (Integer) sessao.getAttribute(InformarDadosLeituraAnormalidadeActionForm.ANTERIOR);
-			sessao.setAttribute(InformarDadosLeituraAnormalidadeActionForm.IMOVEL_ROTA, ((Object[]) sessao
-							.getAttribute(InformarDadosLeituraAnormalidadeActionForm.LISTA_IMOVEIS_ROTA))[anter]);
+			sessao.setAttribute(InformarDadosLeituraAnormalidadeActionForm.IMOVEL_ROTA,
+							((Object[]) sessao.getAttribute(InformarDadosLeituraAnormalidadeActionForm.LISTA_IMOVEIS_ROTA))[anter]);
 			Integer prox = (Integer) sessao.getAttribute(InformarDadosLeituraAnormalidadeActionForm.PROXIMO);
 			sessao.setAttribute(InformarDadosLeituraAnormalidadeActionForm.PROXIMO, (prox - 1));
 			sessao.setAttribute(InformarDadosLeituraAnormalidadeActionForm.ANTERIOR, (anter - 1));
@@ -312,8 +308,7 @@ public class ExibirInformarDadosLeituraAnormalidadeAction
 				FiltroLeiturista filtroLeiturista = new FiltroLeiturista();
 				filtroLeiturista.adicionarCaminhoParaCarregamentoEntidade(FiltroLeiturista.FUNCIONARIO);
 				filtroLeiturista.adicionarCaminhoParaCarregamentoEntidade(FiltroLeiturista.CLIENTE);
-				filtroLeiturista
-								.adicionarParametro(new ParametroSimples(FiltroLeiturista.EMPRESA_ID, Integer.valueOf(form.getIdEmpresa())));
+				filtroLeiturista.adicionarParametro(new ParametroSimples(FiltroLeiturista.EMPRESA_ID, Integer.valueOf(form.getIdEmpresa())));
 				filtroLeiturista.adicionarParametro(new ParametroSimples(FiltroLeiturista.INDICADOR_USO, ConstantesSistema.SIM));
 
 				Collection<Leiturista> leituristas = getFachada().pesquisar(filtroLeiturista, Leiturista.class.getName());
@@ -373,9 +368,7 @@ public class ExibirInformarDadosLeituraAnormalidadeAction
 			FiltroRota filtroRota = new FiltroRota();
 			filtroRota.adicionarParametro(new ParametroSimples(FiltroRota.INDICADOR_USO, ConstantesSistema.SIM));
 			filtroRota.adicionarParametro(new ParametroSimples(FiltroRota.EMPRESA_ID, Integer.valueOf(form.getIdEmpresa())));
-			filtroRota
-							.adicionarParametro(new ParametroSimples(FiltroRota.CODIGO_LEITURISTA_ID, Integer.valueOf(form
-											.getCodigoLeiturista())));
+			filtroRota.adicionarParametro(new ParametroSimples(FiltroRota.CODIGO_LEITURISTA_ID, Integer.valueOf(form.getCodigoLeiturista())));
 			filtroRota.setCampoOrderBy(FiltroRota.FATURAMENTO_GRUPO_ID, FiltroRota.SETOR_COMERCIAL_ID, FiltroRota.CODIGO_ROTA);
 
 			Collection rotas = getFachada().pesquisar(filtroRota, Rota.class.getName());
@@ -393,8 +386,7 @@ public class ExibirInformarDadosLeituraAnormalidadeAction
 	}
 
 	private void pesquisarImovelRota(HttpServletRequest httpServletRequest, ActionForward actionForward,
-					InformarDadosLeituraAnormalidadeActionForm form,
-					HttpSession sessao){
+					InformarDadosLeituraAnormalidadeActionForm form, HttpSession sessao){
 
 		if(httpServletRequest.getParameter(InformarDadosLeituraAnormalidadeActionForm.PESQUISAR_IMOVEL_ROTA) != null){
 			FiltroMovimentoRoteiroEmpresa filtroMovimentoRoteiroEmpresa = new FiltroMovimentoRoteiroEmpresa();
@@ -425,8 +417,8 @@ public class ExibirInformarDadosLeituraAnormalidadeAction
 
 					Leiturista leiturista = (Leiturista) Util.retonarObjetoDeColecao(getFachada().pesquisar(filtroLeiturista,
 									Leiturista.class.getName()));
-					levantarExcecaoUrlSetada(new ActionServletException("atencao.rota_leiturista_diferente_rota_selecionada", leiturista
-									.getNomeLeiturista()));
+					levantarExcecaoUrlSetada(new ActionServletException("atencao.rota_leiturista_diferente_rota_selecionada",
+									leiturista.getNomeLeiturista()));
 				}
 			}
 
@@ -462,22 +454,18 @@ public class ExibirInformarDadosLeituraAnormalidadeAction
 							&& httpServletRequest.getParameter("indicadorEntradaDados").equals("3")){
 
 				if(sessao.getAttribute(InformarDadosLeituraAnormalidadeActionForm.LISTA_IMOVEIS_ROTA) != null){
-					Object[] listaImoveisRotasDaTela = (Object[]) sessao
-									.getAttribute(InformarDadosLeituraAnormalidadeActionForm.LISTA_IMOVEIS_ROTA);
+					Object[] listaImoveisRotasDaTela = (Object[]) sessao.getAttribute(InformarDadosLeituraAnormalidadeActionForm.LISTA_IMOVEIS_ROTA);
 					sessao.setAttribute("listaImoveisRotasDaTela", listaImoveisRotasDaTela);
 				}
 
-					if(Util.isVazioOrNulo(Fachada.getInstancia().pesquisar(filtroMovimentoRoteiroEmpresa,
-									MovimentoRoteiroEmpresa.class.getName()))){
-					ActionServletException actionServletException = new ActionServletException(
-									"atencao.nao_ha_dados_leitura_leiturista_rota");
-						actionServletException
-										.setUrlBotaoVoltar("/gsan/exibirInformarDadosLeituraAnormalidadeAction.do?manter=sim&menu=sim&indicadorEntradaDados=3");
-						throw actionServletException;
-					}
+				Map resultado = controlarPaginacao(httpServletRequest, actionForward, filtroMovimentoRoteiroEmpresa, MovimentoRoteiroEmpresa.class.getName(), 200);
+				
+				if(resultado == null){
+					ActionServletException actionServletException = new ActionServletException("atencao.nao_ha_dados_leitura_leiturista_rota");
+					actionServletException.setUrlBotaoVoltar("/gsan/exibirInformarDadosLeituraAnormalidadeAction.do?manter=sim&menu=sim&indicadorEntradaDados=3");
+					throw actionServletException;
+				}
 
-				Map resultado = controlarPaginacao(httpServletRequest, actionForward, filtroMovimentoRoteiroEmpresa,
-								MovimentoRoteiroEmpresa.class.getName(), 200);
 				colecaoImoveisRota = (Collection) resultado.get("colecaoRetorno");
 				Map<Integer, LigacaoAgua> mapLigacaoAgua = new HashMap<Integer, LigacaoAgua>();
 				Map<Integer, Hidrometro> mapHidrometro = new HashMap<Integer, Hidrometro>();
@@ -486,7 +474,7 @@ public class ExibirInformarDadosLeituraAnormalidadeAction
 					LigacaoAgua ligacaoAgua = getFachada().pesquisarLigacaoAgua(movimentoRoteiroEmpresa.getImovel().getId());
 					mapLigacaoAgua.put(movimentoRoteiroEmpresa.getId(), ligacaoAgua);
 					Hidrometro hidrometro = null;
-					if(ligacaoAgua.getHidrometroInstalacaoHistorico() != null
+					if(ligacaoAgua != null && ligacaoAgua.getHidrometroInstalacaoHistorico() != null
 									&& ligacaoAgua.getHidrometroInstalacaoHistorico().getHidrometro() != null){
 						hidrometro = getFachada().pesquisarHidrometroPeloId(
 										ligacaoAgua.getHidrometroInstalacaoHistorico().getHidrometro().getId());
@@ -527,8 +515,8 @@ public class ExibirInformarDadosLeituraAnormalidadeAction
 			}else{
 				levantarExcecaoUrlSetada(new ActionServletException("atencao.nao_ha_dados_leitura_leiturista_rota"));
 			}
-			sessao.setAttribute(InformarDadosLeituraAnormalidadeActionForm.PESQUISAR_IMOVEL_ROTA, httpServletRequest
-							.getParameter(InformarDadosLeituraAnormalidadeActionForm.PESQUISAR_IMOVEL_ROTA));
+			sessao.setAttribute(InformarDadosLeituraAnormalidadeActionForm.PESQUISAR_IMOVEL_ROTA,
+							httpServletRequest.getParameter(InformarDadosLeituraAnormalidadeActionForm.PESQUISAR_IMOVEL_ROTA));
 
 			if(sessao.getAttribute("listaImoveisRotasDadosDigitados") != null){
 				Object[] listaImoveisRotasDadosDigitados = (Object[]) sessao.getAttribute("listaImoveisRotasDadosDigitados");
@@ -754,7 +742,8 @@ public class ExibirInformarDadosLeituraAnormalidadeAction
 										&& mapLigacaoAgua.get(movimentoRoteiroEmpresa.getId()).getHidrometroInstalacaoHistorico() == null
 										&& movimentoRoteiroEmpresa.getImovel().getHidrometroInstalacaoHistorico() == null){
 							int pageOffSet = Integer.valueOf(httpServletRequest.getParameter("page.offsetAtual"));
-							ActionServletException actionServletException = new ActionServletException("atencao.anormalidade_nao_permitida_imovel_sem_hidrometro");
+							ActionServletException actionServletException = new ActionServletException(
+											"atencao.anormalidade_nao_permitida_imovel_sem_hidrometro");
 							actionServletException
 											.setUrlBotaoVoltar("/gsan/exibirInformarDadosLeituraAnormalidadeAction.do?indicadorEntradaDados=3&pesquisaImovelRota=1&page.offset="
 															+ pageOffSet);
@@ -814,7 +803,7 @@ public class ExibirInformarDadosLeituraAnormalidadeAction
 					}
 
 				}
-				
+
 				movimentoRoteiroEmpresa.setUltimaAlteracao(new Date());
 				getFachada().atualizar(movimentoRoteiroEmpresa);
 			}
@@ -985,13 +974,6 @@ public class ExibirInformarDadosLeituraAnormalidadeAction
 	}
 
 	private void validarArquivoUpload(FormFile arquivo){
-
-		String nomeArquivo = arquivo.getFileName();
-		String extensaoArquivo = nomeArquivo.substring(nomeArquivo.lastIndexOf(".") + 1).toUpperCase();
-
-		if((!extensaoArquivo.equals("TXT") && !extensaoArquivo.equals("DAT"))){
-			throw new ActionServletException("atencao.arquivo_extensao_invalida");
-		}
 
 		if(arquivo.getFileSize() == 0){
 			levantarExcecaoUrlSetada(new ActionServletException("atencao.arquivo_vazio"));

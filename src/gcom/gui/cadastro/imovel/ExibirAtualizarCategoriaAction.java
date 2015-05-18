@@ -178,6 +178,17 @@ public class ExibirAtualizarCategoriaAction
 				categoriaActionForm.setConsumoMedioEconomiaMes(formatarResultado(((Categoria) ((List) categorias).get(0))
 								.getConsumoMedioEconomiaMes().toString()));
 
+				categoriaActionForm.setConsumoViradaHidrometro(((Categoria) ((List) categorias).get(0)).getConsumoViradaHidrometro());
+				
+				categoriaActionForm.setQuantidadeMaximoEconomiasValidacao(((Categoria) ((List) categorias).get(0))
+								.getQuantidadeMaximoEconomiasValidacao());
+
+				categoriaActionForm.setNumeroVezesMediaViradaHidrometro(((Categoria) ((List) categorias).get(0))
+								.getNumeroVezesMediaViradaHidrometro());
+
+				categoriaActionForm.setIndicadorValidarViradaHidrometro(((Categoria) ((List) categorias).get(0))
+								.getIndicadorValidarViradaHidrometro());
+
 				Categoria categoria = ((Categoria) ((List) categorias).get(0));
 
 				sessao.setAttribute("categoria", categoria);

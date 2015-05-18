@@ -152,7 +152,7 @@ public class ExibirAtualizarUnidadeOrganizacionalAction
 				idUnidadeOrganizacional = (String) httpServletRequest.getAttribute("idRegistroAtualizacao").toString();
 			}
 
-			}
+		}
 
 		String modificouTipoUnidade = httpServletRequest.getParameter("modificouTipoUnidade");
 
@@ -175,7 +175,11 @@ public class ExibirAtualizarUnidadeOrganizacionalAction
 								new Integer(idUnidadeOrganizacional));
 
 				if(unidadeOrganizacional != null && !unidadeOrganizacional.equals("")){
+
 					sessao.setAttribute("unidadeOrganizacional", unidadeOrganizacional);
+
+					obterDadosContatoUnidadeOrganizacional(unidadeOrganizacional, form);
+
 					form.setId(formatarResultado("" + unidadeOrganizacional.getId()));
 					form.setUnidadeTipo(formatarResultado("" + unidadeOrganizacional.getUnidadeTipo().getId()));
 					if(unidadeOrganizacional.getLocalidade() != null && !unidadeOrganizacional.getLocalidade().equals("")){
@@ -448,6 +452,8 @@ public class ExibirAtualizarUnidadeOrganizacionalAction
 				// Obtém o objeto da coleção pesquisada
 				UnidadeOrganizacional unidadeSuperior = (UnidadeOrganizacional) Util.retonarObjetoDeColecao(colecaoUnidadeSuperior);
 
+				obterDadosContatoUnidadeOrganizacional(unidadeSuperior, form);
+
 				// Exibe o código e a descrição pesquisa na página
 				httpServletRequest.setAttribute("corUnidadeSuperior", "valor");
 				form.setIdUnidadeSuperior(unidadeSuperior.getId().toString());
@@ -499,6 +505,17 @@ public class ExibirAtualizarUnidadeOrganizacionalAction
 			}
 		}
 		return colecaoGerenciaRegional;
+	}
+
+	private void obterDadosContatoUnidadeOrganizacional(UnidadeOrganizacional unidadeOrganizacional,
+					AtualizarUnidadeOrganizacionalActionForm form){
+
+		form.setDdd(unidadeOrganizacional.getDdd());
+		form.setFax(unidadeOrganizacional.getFax());
+		form.setTelefone(unidadeOrganizacional.getTelefone());
+		form.setRamal(unidadeOrganizacional.getRamal());
+		form.setObservacao(unidadeOrganizacional.getObservacao());
+
 	}
 
 }

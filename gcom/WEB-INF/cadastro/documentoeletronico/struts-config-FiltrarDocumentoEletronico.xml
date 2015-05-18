@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="FiltrarDocumentoEletronicoActionForm"
+			type="gcom.gui.cadastro.documentoeletronico.FiltrarDocumentoEletronicoActionForm" />
+	</form-beans>
+	<global-forwards />
+	<action-mappings>
+
+		<action name="FiltrarDocumentoEletronicoActionForm"
+				type="gcom.gui.cadastro.documentoeletronico.ExibirFiltrarDocumentoEletronicoAction"
+				validate="true" scope="session"
+				path="/exibirFiltrarDocumentoEletronicoAction">
+			<forward name="filtrarDocumentoEletronico"	path="/jsp/cadastro/documentoeletronico/documento_eletronico_filtrar.jsp" />
+		</action>
+		
+		<action name="FiltrarDocumentoEletronicoActionForm"
+				type="gcom.gui.cadastro.documentoeletronico.FiltrarDocumentoEletronicoAction"
+				validate="true" 
+				scope="session"
+				path="/filtrarDocumentoEletronicoAction">
+			<forward name="exibirManterDocumentoEletronico" path="/exibirManterDocumentoEletronicoAction.do" />
+		</action>
+
+	</action-mappings>
+	<message-resources null="false" parameter="gcom.properties.application" />
+</struts-config>

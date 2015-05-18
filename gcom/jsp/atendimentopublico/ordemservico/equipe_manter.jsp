@@ -152,6 +152,9 @@ function verficarSelecao(objeto){
 							<td width="18%" bgcolor="#90c7fc">
 							<div align="center"><strong>Tipo de Perfil Serviço</strong></div>
 							</td>
+							<td width="18%" bgcolor="#90c7fc">
+							<div align="center"><strong>Tipo da Equipe</strong></div>
+							</td>
 						</tr>
 						<%--Esquema de paginação--%>
 						<pg:pager isOffset="true" index="half-full" maxIndexPages="10"
@@ -186,6 +189,7 @@ function verficarSelecao(objeto){
 											<td width="14%" align="left">${equipe.placaVeiculo}</td>
 											<td width="18%" align="left">${equipe.unidadeOrganizacional.id}</td>
 											<td width="18%" align="left">${equipe.servicoPerfilTipo.id}</td>
+											<td width="18%" align="left">${equipe.equipeTipo.descricao}</td>
 										</tr>
 									</pg:item>
 								</logic:iterate>

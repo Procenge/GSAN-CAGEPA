@@ -85,8 +85,12 @@
           <td height="24" colspan="2">
           	<INPUT TYPE="button" class="bottonRightCol" value="Limpar" onclick="limparForm();"/>&nbsp;&nbsp;
           	<logic:present name="caminhoRetornoTelaPesquisaQuadra">
-          		<INPUT TYPE="button" class="bottonRightCol" value="Voltar" onclick="redirecionarSubmit('${caminhoRetornoTelaPesquisaQuadra}.do')"/>
+          		<INPUT TYPE="button" class="bottonRightCol" value="Voltar" onclick="redirecionarSubmit('${caminhoRetornoTelaPesquisaQuadra}.do?retornoTelaConsulta=1')"/>
           	</logic:present>
+          	
+          	<logic:notPresent name="caminhoRetornoTelaPesquisaQuadra">
+          		<input type="button" class="bottonRightCol" value="Fechar" onclick="javascript:window.close();"/>
+          	</logic:notPresent>	          	
           </td>
           <td align="right"><INPUT TYPE="submit" class="bottonRightCol" value="Pesquisar"/></td>
         </tr>

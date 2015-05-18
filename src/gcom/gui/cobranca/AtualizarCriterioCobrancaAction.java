@@ -148,7 +148,7 @@ public class AtualizarCriterioCobrancaAction
 		if(campoDesabilitado == null || campoDesabilitado.equals("")){
 			Date dataInicio = null;
 
-			if(criterioCobrancaActionForm.getDataInicioVigencia() != null && !criterioCobrancaActionForm.getDataInicioVigencia().equals("")){
+			if(!Util.isVazioOuBranco(criterioCobrancaActionForm.getDataInicioVigencia())){
 				String dataInicioVigencia = criterioCobrancaActionForm.getDataInicioVigencia();
 
 				if(Util.validarDiaMesAno(dataInicioVigencia)){
@@ -170,8 +170,7 @@ public class AtualizarCriterioCobrancaAction
 				throw new ActionServletException("atencao.required", null, "Data de Início da Vigência");
 			}
 
-			if(criterioCobrancaActionForm.getNumeroAnoContaAntiga() != null
-							&& !criterioCobrancaActionForm.getNumeroAnoContaAntiga().equals("")){
+			if(!Util.isVazioOuBranco(criterioCobrancaActionForm.getNumeroAnoContaAntiga())){
 
 				boolean valorNaoNumerico = Util.validarValorNaoNumerico(criterioCobrancaActionForm.getNumeroAnoContaAntiga());
 
@@ -184,8 +183,7 @@ public class AtualizarCriterioCobrancaAction
 				throw new ActionServletException("atencao.required", null, "Número Ano Conta Antiga");
 			}
 
-			if(criterioCobrancaActionForm.getValorLimitePrioridade() != null
-							&& !criterioCobrancaActionForm.getValorLimitePrioridade().equalsIgnoreCase("")){
+			if(!Util.isVazioOuBranco(criterioCobrancaActionForm.getValorLimitePrioridade())){
 				BigDecimal valorLimitePrioridade = Util.formatarMoedaRealparaBigDecimal(criterioCobrancaActionForm
 								.getValorLimitePrioridade());
 				cobrancaCriterio.setValorLimitePrioridade(valorLimitePrioridade);
@@ -193,8 +191,7 @@ public class AtualizarCriterioCobrancaAction
 				throw new ActionServletException("atencao.required", null, "Valor do Limite da Prioridade");
 			}
 
-			if(criterioCobrancaActionForm.getPercentualValorMinimoPagoParceladoCancelado() != null
-							&& !criterioCobrancaActionForm.getPercentualValorMinimoPagoParceladoCancelado().equals("")){
+			if(!Util.isVazioOuBranco(criterioCobrancaActionForm.getPercentualValorMinimoPagoParceladoCancelado())){
 
 				BigDecimal percentualValorMinimoPagoParceladoCancelado = Util.formatarMoedaRealparaBigDecimal(criterioCobrancaActionForm
 								.getPercentualValorMinimoPagoParceladoCancelado());
@@ -203,8 +200,7 @@ public class AtualizarCriterioCobrancaAction
 				throw new ActionServletException("atencao.required", null, "Percentual Valor");
 			}
 
-			if(criterioCobrancaActionForm.getPercentualQuantidadeMinimoPagoParceladoCancelado() != null
-							&& !criterioCobrancaActionForm.getPercentualQuantidadeMinimoPagoParceladoCancelado().equals("")){
+			if(!Util.isVazioOuBranco(criterioCobrancaActionForm.getPercentualQuantidadeMinimoPagoParceladoCancelado())){
 
 				BigDecimal percentualQuantidadeMinimoPagoParceladoCancelado = Util
 								.formatarMoedaRealparaBigDecimal(criterioCobrancaActionForm
@@ -214,7 +210,7 @@ public class AtualizarCriterioCobrancaAction
 				throw new ActionServletException("atencao.required", null, "Percentual Quantidade");
 			}
 
-			if(criterioCobrancaActionForm.getQtdDiasCortado() != null && !criterioCobrancaActionForm.getQtdDiasCortado().equals("")){
+			if(!Util.isVazioOuBranco(criterioCobrancaActionForm.getQtdDiasCortado())){
 				Integer qtdDiasCortado = Util.converterStringParaInteger(criterioCobrancaActionForm.getQtdDiasCortado());
 				cobrancaCriterio.setQtdDiasCortado(qtdDiasCortado);
 			}
@@ -255,22 +251,26 @@ public class AtualizarCriterioCobrancaAction
 				throw new ActionServletException("atencao.required", null, "Emissão da Ação para Imóvel com Situação de Cobrança");
 			}
 
-			if(criterioCobrancaActionForm.getOpcaoContasRevisao() != null && !criterioCobrancaActionForm.getOpcaoContasRevisao().equals("")){
-				cobrancaCriterio.setIndicadorEmissaoContaRevisao(Short.valueOf(criterioCobrancaActionForm.getOpcaoAcaoImovelSitEspecial()));
+			if(!Util.isVazioOuBranco(criterioCobrancaActionForm.getOpcaoContasRevisao())){
+				cobrancaCriterio.setIndicadorEmissaoContaRevisao(Short.valueOf(criterioCobrancaActionForm.getOpcaoContasRevisao()));
 			}else{
 				throw new ActionServletException("atencao.required", null, "Considerar Contas em Revisão");
 			}
 
-			if(criterioCobrancaActionForm.getOpcaoAcaoImovelDebitoMesConta() != null
-							&& !criterioCobrancaActionForm.getOpcaoAcaoImovelDebitoMesConta().equals("")){
+			if(criterioCobrancaActionForm.getOpcaoDividaAtiva() != null && !criterioCobrancaActionForm.getOpcaoDividaAtiva().equals("")){
+				cobrancaCriterio.setIndicadorDividaAtiva(Short.valueOf(criterioCobrancaActionForm.getOpcaoDividaAtiva()));
+			}else{
+				throw new ActionServletException("atencao.required", null, "Considerar Debitos em Divida Ativa");
+			}
+
+			if(!Util.isVazioOuBranco(criterioCobrancaActionForm.getOpcaoAcaoImovelDebitoMesConta())){
 				cobrancaCriterio.setIndicadorEmissaoDebitoContaMes(Short.valueOf(criterioCobrancaActionForm
 								.getOpcaoAcaoImovelDebitoMesConta()));
 			}else{
 				throw new ActionServletException("atencao.required", null, "Emissão da Ação para Imóvel com Débito só da Conta do Mês");
 			}
 
-			if(criterioCobrancaActionForm.getOpcaoAcaoInquilinoDebitoMesConta() != null
-							&& !criterioCobrancaActionForm.getOpcaoAcaoInquilinoDebitoMesConta().equals("")){
+			if(!Util.isVazioOuBranco(criterioCobrancaActionForm.getOpcaoAcaoInquilinoDebitoMesConta())){
 				cobrancaCriterio.setIndicadorEmissaoInquilinoDebitoContaMes(Short.valueOf(criterioCobrancaActionForm
 								.getOpcaoAcaoInquilinoDebitoMesConta()));
 			}else{
@@ -278,24 +278,29 @@ public class AtualizarCriterioCobrancaAction
 								"Emissão da Ação para Inquilino Com Débito só da Conta do Mês Independentemente do Valor da Conta");
 			}
 
-			if(criterioCobrancaActionForm.getOpcaoAcaoImovelDebitoContasAntigas() != null
-							&& !criterioCobrancaActionForm.getOpcaoAcaoImovelDebitoContasAntigas().equals("")){
+			if(!Util.isVazioOuBranco(criterioCobrancaActionForm.getOpcaoAcaoImovelDebitoContasAntigas())){
 				cobrancaCriterio.setIndicadorEmissaoDebitoContaAntiga(Short.valueOf(criterioCobrancaActionForm
 								.getOpcaoAcaoImovelDebitoContasAntigas()));
 			}else{
 				throw new ActionServletException("atencao.required", null, "Emissão da Ação para Imóvel com Débito só de Contas Antigas");
 			}
 
-			if(criterioCobrancaActionForm.getComCpf() != null && !criterioCobrancaActionForm.getComCpf().equals("")){
+			if(!Util.isVazioOuBranco(criterioCobrancaActionForm.getComCpf())){
 				cobrancaCriterio.setIndicadorComCpf(Short.valueOf(criterioCobrancaActionForm.getComCpf()));
 			}else{
 				throw new ActionServletException("atencao.required", null, "Com CPF");
 			}
 
-			if(criterioCobrancaActionForm.getComTelefone() != null && !criterioCobrancaActionForm.getComTelefone().equals("")){
+			if(!Util.isVazioOuBranco(criterioCobrancaActionForm.getComTelefone())){
 				cobrancaCriterio.setIndicadorComTelefone(Short.valueOf(criterioCobrancaActionForm.getComTelefone()));
 			}else{
 				throw new ActionServletException("atencao.required", null, "Com Telefone");
+			}
+
+			if(!Util.isVazioOuBranco(criterioCobrancaActionForm.getCriterioCobranca())){
+				cobrancaCriterio.setIndicadorCriterioCobranca(Short.parseShort(criterioCobrancaActionForm.getCriterioCobranca()));
+			}else{
+				throw new ActionServletException("atencao.required", null, "Criterio Cobranca");
 			}
 
 			if(colecaoCobrancaCriterioLinha == null || colecaoCobrancaCriterioLinha.isEmpty()){
@@ -320,8 +325,7 @@ public class AtualizarCriterioCobrancaAction
 			}
 
 			// verificando se houveram situacoes de ligacao de agua para este criterio
-			if(criterioCobrancaActionForm.getIdsSituacaoLigacaoAgua() != null
-							&& criterioCobrancaActionForm.getIdsSituacaoLigacaoAgua().length > 0){
+			if(!Util.isVazioOuBrancoOuZero(criterioCobrancaActionForm.getIdsSituacaoLigacaoAgua())){
 
 				for(int i = 0; i < criterioCobrancaActionForm.getIdsSituacaoLigacaoAgua().length; i++){
 					CriterioSituacaoLigacaoAgua csla = new CriterioSituacaoLigacaoAgua();
@@ -336,8 +340,7 @@ public class AtualizarCriterioCobrancaAction
 			}
 
 			// verificando se houveram situacoes de ligacao de esgoto para este criterio
-			if(criterioCobrancaActionForm.getIdsSituacaoLigacaoEsgoto() != null
-							&& criterioCobrancaActionForm.getIdsSituacaoLigacaoEsgoto().length > 0){
+			if(!Util.isVazioOuBrancoOuZero(criterioCobrancaActionForm.getIdsSituacaoLigacaoEsgoto())){
 
 				for(int i = 0; i < criterioCobrancaActionForm.getIdsSituacaoLigacaoEsgoto().length; i++){
 					CriterioSituacaoLigacaoEsgoto csle = new CriterioSituacaoLigacaoEsgoto();
@@ -354,8 +357,7 @@ public class AtualizarCriterioCobrancaAction
 			
 			// Verificando se houve situacoes de cobranca escolhidas para o criterio
 			if(criterioCobrancaActionForm.getOpcaoAcaoImovelSit() != null && criterioCobrancaActionForm.getOpcaoAcaoImovelSit().equals("1")
-							&& criterioCobrancaActionForm.getIdsCobrancaSituacao() != null
-							&& criterioCobrancaActionForm.getIdsCobrancaSituacao().length > 0){
+							&& !Util.isVazioOuBrancoOuZero(criterioCobrancaActionForm.getIdsCobrancaSituacao())){
 
 				for(int i = 0; i < criterioCobrancaActionForm.getIdsCobrancaSituacao().length; i++){
 					CriterioSituacaoCobranca csc = new CriterioSituacaoCobranca();
@@ -370,8 +372,7 @@ public class AtualizarCriterioCobrancaAction
 			}
 
 			// verificando se houveram situacoes de ligacao de agua para este criterio
-						if(criterioCobrancaActionForm.getIdsSituacaoLigacaoAgua() != null
-										&& criterioCobrancaActionForm.getIdsSituacaoLigacaoAgua().length > 0){
+			if(!Util.isVazioOuBrancoOuZero(criterioCobrancaActionForm.getIdsSituacaoLigacaoAgua())){
 
 							for(int i = 0; i < criterioCobrancaActionForm.getIdsSituacaoLigacaoAgua().length; i++){
 								CriterioSituacaoLigacaoAgua csla = new CriterioSituacaoLigacaoAgua();
@@ -386,8 +387,7 @@ public class AtualizarCriterioCobrancaAction
 						}
 
 						// verificando se houveram situacoes de ligacao de esgoto para este criterio
-						if(criterioCobrancaActionForm.getIdsSituacaoLigacaoEsgoto() != null
-										&& criterioCobrancaActionForm.getIdsSituacaoLigacaoEsgoto().length > 0){
+			if(!Util.isVazioOuBrancoOuZero(criterioCobrancaActionForm.getIdsSituacaoLigacaoEsgoto())){
 
 							for(int i = 0; i < criterioCobrancaActionForm.getIdsSituacaoLigacaoEsgoto().length; i++){
 								CriterioSituacaoLigacaoEsgoto csle = new CriterioSituacaoLigacaoEsgoto();

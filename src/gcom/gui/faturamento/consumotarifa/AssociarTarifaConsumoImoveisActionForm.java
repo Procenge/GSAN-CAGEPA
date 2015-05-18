@@ -170,6 +170,10 @@ public class AssociarTarifaConsumoImoveisActionForm
 
 	private String dataValidadeTarifaEspecial;
 
+	private String[] idCategoria;
+
+	private String[] idSubCategoria;
+
 	/**
 	 * @return Retorna o campo tarifaAnteriorHidden.
 	 */
@@ -817,6 +821,40 @@ public class AssociarTarifaConsumoImoveisActionForm
 	public void setDataValidadeTarifaEspecial(String dataValidadeTarifaEspecial){
 
 		this.dataValidadeTarifaEspecial = dataValidadeTarifaEspecial;
+	}
+
+	/**
+	 * @return the idCategoria
+	 */
+	public String[] getIdCategoria(){
+
+		return idCategoria;
+	}
+
+	/**
+	 * @param idCategoria
+	 *            the idCategoria to set
+	 */
+	public void setIdCategoria(String[] idCategoria){
+
+		this.idCategoria = idCategoria;
+	}
+
+	/**
+	 * @return the idSubCategoria
+	 */
+	public String[] getIdSubCategoria(){
+
+		return idSubCategoria;
+	}
+
+	/**
+	 * @param idSubCategoria
+	 *            the idSubCategoria to set
+	 */
+	public void setIdSubCategoria(String[] idSubCategoria){
+
+		this.idSubCategoria = idSubCategoria;
 	}
 
 }

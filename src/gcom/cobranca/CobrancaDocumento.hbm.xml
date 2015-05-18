@@ -340,6 +340,20 @@
 	<many-to-one name="resolucaoDiretoria" class="gcom.cobranca.ResolucaoDiretoria" not-null="false">
 		<column name="rdir_id" />
 	</many-to-one>      
+
+    <property
+        name="valorSucumbencia"
+        type="java.math.BigDecimal"
+        column="CBDO_VLSUCUMBENCIA"
+        length="13"
+    />	
+	
+	<!--
+		bi-directional many-to-one association to ResolucaoDiretoria
+	-->
+	<many-to-one name="guiaPagamentoSucumbencia" class="gcom.arrecadacao.pagamento.GuiaPagamento" not-null="false">
+		<column name="GPAG_IDSUCUMBENCIA" />
+	</many-to-one>	
     
 </class>
 </hibernate-mapping>

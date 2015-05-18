@@ -99,6 +99,11 @@ public class FiltroFatura
 	/**
 	 * Description of the Field
 	 */
+	public final static String ID = "id";
+	
+	/**
+	 * Description of the Field
+	 */
 	public final static String ANO_MES_REFERENCIA = "anoMesReferencia";
 
 	/**

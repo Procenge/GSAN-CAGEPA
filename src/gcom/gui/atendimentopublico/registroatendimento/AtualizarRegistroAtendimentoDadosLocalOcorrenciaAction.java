@@ -89,6 +89,7 @@ import gcom.gui.GcomAction;
 import gcom.operacional.DivisaoEsgoto;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
+import gcom.util.FachadaException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
@@ -162,13 +163,22 @@ public class AtualizarRegistroAtendimentoDadosLocalOcorrenciaAction
 		String idUnidadeDestino = atualizarRegistroAtendimentoActionForm.getIdUnidadeAtual();
 		Collection colecaoEnderecos = (Collection) sessao.getAttribute("colecaoEnderecos");
 
-		fachada.validarCamposObrigatoriosRA_2ABA(idImovel, pontoReferencia, idMunicipio, descricaoMunicipio, cdBairro, descricaoBairro,
-						idAreaBairro, idlocalidade, descricaoLocalidade, cdSetorComercial, descricaoSetorComercial, numeroQuadra,
-						idDivisaoEsgoto, "", "", idLocalOcorrencia, idPavimentoRua, idPavimentoCalcada, descricaoLocalOcorrencia,
-						imovelObrigatorio, pavimentoRuaObrigatorio, pavimentoCalcadaObrigatorio, solicitacaoTipoRelativoFaltaAgua,
-						solicitacaoTipoRelativoAreaEsgoto, desabilitarMunicipioBairro, indRuaLocalOcorrencia, indCalcadaLocalOcorrencia,
-						new Integer(idEspecificacao), new Integer(numeroRA), colecaoEnderecos, null, idUnidadeDestino);
+		try{
 
+			fachada.validarCamposObrigatoriosRA_2ABA(idImovel, pontoReferencia, idMunicipio, descricaoMunicipio, cdBairro, descricaoBairro,
+							idAreaBairro, idlocalidade, descricaoLocalidade, cdSetorComercial, descricaoSetorComercial, numeroQuadra,
+							idDivisaoEsgoto, "", "", idLocalOcorrencia, idPavimentoRua, idPavimentoCalcada, descricaoLocalOcorrencia,
+							imovelObrigatorio, pavimentoRuaObrigatorio, pavimentoCalcadaObrigatorio, solicitacaoTipoRelativoFaltaAgua,
+							solicitacaoTipoRelativoAreaEsgoto, desabilitarMunicipioBairro, indRuaLocalOcorrencia,
+							indCalcadaLocalOcorrencia, new Integer(idEspecificacao), new Integer(numeroRA), colecaoEnderecos, null,
+							idUnidadeDestino);
+
+		}catch(FachadaException e){
+			throw new ActionServletException(
+							e.getMessage(),
+							"atualizarRegistroAtendimentoWizardAction.do?action=exibirAtualizarRegistroAtendimentoDadosLocalOcorrenciaAction&pagina=2",
+							e, e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
 		// -----------------------------------------------------------------------
 
 		// valida os campos de enter(caso tenha mudado algum valor validar)

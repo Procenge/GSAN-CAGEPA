@@ -76,17 +76,18 @@
 
 package gcom.gui.atendimentopublico.registroatendimento;
 
+import gcom.cadastro.unidade.UnidadeOrganizacional;
+import gcom.fachada.Fachada;
+import gcom.gui.ActionServletException;
+import gcom.gui.GcomAction;
+import gcom.util.FachadaException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-
-import gcom.cadastro.unidade.UnidadeOrganizacional;
-import gcom.fachada.Fachada;
-import gcom.gui.ActionServletException;
-import gcom.gui.GcomAction;
 
 /**
  * Esta classe tem por finalidade validar as informações da primeira aba do
@@ -107,10 +108,18 @@ public class AtualizarRegistroAtendimentoDadosGeraisAction
 
 		Fachada fachada = Fachada.getInstancia();
 
-		fachada.validarInserirRegistroAtendimentoDadosGerais(atualizarRegistroAtendimentoActionForm.getDataAtendimento(),
-						atualizarRegistroAtendimentoActionForm.getHora(), atualizarRegistroAtendimentoActionForm.getTempoEsperaInicial(),
-						atualizarRegistroAtendimentoActionForm.getTempoEsperaFinal(), atualizarRegistroAtendimentoActionForm.getUnidade(),
-						null, atualizarRegistroAtendimentoActionForm.getEspecificacao(), null);
+		try{
+			fachada.validarInserirRegistroAtendimentoDadosGerais(atualizarRegistroAtendimentoActionForm.getDataAtendimento(),
+							atualizarRegistroAtendimentoActionForm.getHora(),
+							atualizarRegistroAtendimentoActionForm.getTempoEsperaInicial(),
+							atualizarRegistroAtendimentoActionForm.getTempoEsperaFinal(),
+							atualizarRegistroAtendimentoActionForm.getUnidade(), null,
+							atualizarRegistroAtendimentoActionForm.getEspecificacao(), null);
+		}catch(FachadaException e){
+			throw new ActionServletException(e.getMessage(),
+							"atualizarRegistroAtendimentoWizardAction.do?action=exibirAtualizarRegistroAtendimentoDadosGeraisAction&pagina=1",
+							e, e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
 
 		String idUnidade = atualizarRegistroAtendimentoActionForm.getUnidade();
 		String descricaoUnidade = atualizarRegistroAtendimentoActionForm.getDescricaoUnidade();

@@ -1,0 +1,332 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.parcelamento.ParcelamentoDadosTermo" 
+    table="parcelamento_dados_termo"
+    dynamic-insert="true" dynamic-update="true"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="PCDT_ID"
+    >
+	    <generator class="sequence">
+	       <param name="sequence">SQ_PARCELAMENTO_DADOS_TERMO</param>
+	    </generator>
+    </id>
+    
+    <!-- bi-directional many-to-one association to ParcelamentoAcordoTipo -->
+    <many-to-one
+        name="parcelamentoAcordoTipo"
+        class="gcom.cobranca.parcelamento.ParcelamentoAcordoTipo"
+        not-null="true"
+    >
+        <column name="PATP_ID" />
+    </many-to-one>    
+
+	<!-- bi-directional many-to-one association to Parcelamento -->
+	<many-to-one class="gcom.cobranca.parcelamento.Parcelamento"
+		name="parcelamento" not-null="true">
+		<column name="PARC_ID" />
+	</many-to-one>
+	
+    <property
+        name="indicadorProcurador"
+        type="java.lang.Integer"
+        column="PCDT_ICPROCURADOR"
+        length="4"
+    />	
+
+    <!-- bi-directional many-to-one association to Cliente -->
+    <many-to-one
+        name="cliente"
+        class="gcom.cadastro.cliente.Cliente"
+        not-null="true"
+    >
+        <column name="CLIE_ID" />
+    </many-to-one>
+
+    <property
+        name="nomeCliente"
+        type="java.lang.String"
+        column="PCDT_NMCLIENTE"
+        length="50"
+        not-null="true"  
+    />
+
+    <property
+        name="numeroRgCliente"
+        type="java.lang.String"
+        column="PCDT_NNRG"
+        length="13"
+        not-null="true"  
+    />
+
+    <!-- bi-directional many-to-one association to OrgaoExpedidorRg -->
+    <many-to-one
+        name="orgaoExpedidorRgCliente"
+        class="gcom.cadastro.cliente.OrgaoExpedidorRg"
+        not-null="true"
+    >
+        <column name="OERG_ID" />
+    </many-to-one>
+
+
+    <!-- bi-directional many-to-one association to UnidadeFederacao -->
+    <many-to-one
+        name="unidadeFederacaoCliente"
+        class="gcom.cadastro.geografico.UnidadeFederacao"
+        not-null="true"
+    >
+        <column name="UNFE_ID" />
+    </many-to-one>
+    
+    <property
+        name="numeroCpfCliente"
+        type="java.lang.String"
+        column="PCDT_NNCPF"
+        length="11"
+        not-null="true"  
+    />    
+    
+    <!-- bi-directional many-to-one association to EnderecoTipo -->
+    <many-to-one
+        name="enderecoTipoCliente"
+        class="gcom.cadastro.endereco.EnderecoTipo"
+        not-null="true"
+    >
+        <column name="EDTP_ID" />
+    </many-to-one>    
+
+    <property
+        name="indicadorEnderecoCorrespondenciaCliente"
+        type="java.lang.Integer"
+        column="PCDT_ICENDERECOCORRESPONDENCIA"
+        length="4"
+    />	
+    
+    <property
+        name="descricaoEnderecoCliente"
+        type="java.lang.String"
+        column="PCDT_DSENDERECO"
+        length="100"
+        not-null="true"  
+    />     
+    
+    <!-- bi-directional many-to-one association to EstadoCivil -->
+    <many-to-one
+        name="estadoCivilCliente"
+        class="gcom.cadastro.cliente.EstadoCivil"
+        not-null="false"
+    >
+        <column name="ESTC_ID" />
+    </many-to-one>  
+    
+    <!-- bi-directional many-to-one association to Profissao -->
+    <many-to-one
+        name="profissaoCliente"
+        class="gcom.cadastro.cliente.Profissao"
+        not-null="false"
+    >
+        <column name="PROF_ID" />
+    </many-to-one>  
+    
+    <!-- bi-directional many-to-one association to Nacionalidade -->
+    <many-to-one
+        name="nacionalidadeCliente"
+        class="gcom.cadastro.cliente.Nacionalidade"
+        not-null="false"
+    >
+        <column name="NACI_ID" />
+    </many-to-one>             
+
+    <property
+        name="numeroProcesso"
+        type="java.lang.String"
+        column="PCDT_NNPROCESSO"
+        length="30"
+        not-null="false"  
+    />
+    
+	<property
+        name="numeroVara"
+        type="java.lang.Integer"
+        column="PCDT_NNVARA"
+        length="4"
+        not-null="false"        
+    />
+    
+    <property
+        name="nomeExecutado"
+        type="java.lang.String"
+        column="PCDT_NNMEXECUTADO"
+        length="50"
+        not-null="false"  
+    />    
+    
+    <property
+        name="tituloPosse"
+        type="java.lang.String"
+        column="PCDT_NMTITULOPOSSE"
+        length="50"
+        not-null="false"  
+    />   
+    
+    <!-- bi-directional many-to-one association to Cliente -->
+    <many-to-one
+        name="clienteEmpresa"
+        class="gcom.cadastro.cliente.Cliente"
+        not-null="false"
+    >
+        <column name="CLIE_IDEMPRESA" />
+    </many-to-one>    
+    
+    <property
+        name="nomeClienteEmpresa"
+        type="java.lang.String"
+        column="PCDT_NMEMPRESA"
+        length="50"
+        not-null="false"  
+    />     
+    
+    <!-- bi-directional many-to-one association to Cliente -->
+    <many-to-one
+        name="ramoAtividadeClienteEmpresa"
+        class="gcom.cadastro.cliente.RamoAtividade"
+        not-null="false"
+    >
+        <column name="RATV_IDEMPRESA" />
+    </many-to-one> 
+    
+    <property
+        name="numeroCnpjClienteEmpresa"
+        type="java.lang.String"
+        column="PCDT_NNCNPJ"
+        length="14"
+        not-null="false"  
+    />  
+    
+    <!-- bi-directional many-to-one association to EnderecoTipo -->
+    <many-to-one
+        name="enderecoTipoClienteEmpresa"
+        class="gcom.cadastro.endereco.EnderecoTipo"
+        not-null="false"
+    >
+        <column name="EDTP_IDEMPRESA" />
+    </many-to-one>  
+    
+    <property
+        name="indicadorEnderecoCorrespondenciaClienteEmpresa"
+        type="java.lang.Integer"
+        column="PCDT_ICENDERCORRESPONDENCIAEMP"
+        length="4"
+    />	 
+    
+    <property
+        name="descricaoEnderecoClienteEmpresa"
+        type="java.lang.String"
+        column="PCDT_DSENDERECOEMPRESA"
+        length="100"
+        not-null="false"  
+    />  
+    
+    <property
+        name="nomeProcurador"
+        type="java.lang.String"
+        column="PCDT_NMPROCURADOR"
+        length="50"
+        not-null="false"  
+    />    
+    
+    <property
+        name="numeroRgProcurador"
+        type="java.lang.String"
+        column="PCDT_NNRGPROCURADOR"
+        length="13"
+        not-null="false"  
+    />  
+    
+    <!-- bi-directional many-to-one association to OrgaoExpedidorRg -->
+    <many-to-one
+        name="orgaoExpedidorRgProcurador"
+        class="gcom.cadastro.cliente.OrgaoExpedidorRg"
+        not-null="false"
+    >
+        <column name="OERG_IDPROCURADOR" />
+    </many-to-one>
+
+
+    <!-- bi-directional many-to-one association to UnidadeFederacao -->
+    <many-to-one
+        name="unidadeFederacaoProcurador"
+        class="gcom.cadastro.geografico.UnidadeFederacao"
+        not-null="false"
+    >
+        <column name="UNFE_IDPROCURADOR" />
+    </many-to-one>  
+    
+    <property
+        name="numeroCpfProcurador"
+        type="java.lang.String"
+        column="PCDT_NNCPFPROCURADOR"
+        length="11"
+        not-null="false"  
+    />  
+    
+    <property
+        name="descricaoEnderecoProcurador"
+        type="java.lang.String"
+        column="PCDT_DSENDERECOPROCURADOR"
+        length="100"
+        not-null="false"  
+    />     
+    
+    <!-- bi-directional many-to-one association to EstadoCivil -->
+    <many-to-one
+        name="estadoCivilProcurador"
+        class="gcom.cadastro.cliente.EstadoCivil"
+        not-null="false"
+    >
+        <column name="ESTC_IDPROCURADOR" />
+    </many-to-one>  
+    
+    <!-- bi-directional many-to-one association to Profissao -->
+    <many-to-one
+        name="profissaoProcurador"
+        class="gcom.cadastro.cliente.Profissao"
+        not-null="false"
+    >
+        <column name="PROF_IDPROCURADOR" />
+    </many-to-one>  
+    
+    <!-- bi-directional many-to-one association to Nacionalidade -->
+    <many-to-one
+        name="nacionalidadeProcurador"
+        class="gcom.cadastro.cliente.Nacionalidade"
+        not-null="false"
+    >
+        <column name="NACI_IDPROCURADOR" />
+    </many-to-one>                           	                 
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="PCDT_TMULTIMAALTERACAO"
+        length="8"
+        not-null="true"
+    />
+
+</class>
+</hibernate-mapping>

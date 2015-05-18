@@ -440,6 +440,18 @@
 												style="background-color:#EFEFEF; border:0; text-align:right;"
 												size="8" /> % </span></b> </strong></td>
 										</tr>
+										
+										<logic:present name="imovelPossuiPoco" scope="session">
+											<tr>
+												<td class="style3"><b>Consumo Fixo Poço:</b></td>
+
+												<td colspan="2"><html:text property="consumoFixoPoco"
+													style="border:0;text-align: right;"
+													size="9" maxlength="9" />
+												</td>
+											</tr>
+										</logic:present>
+										
 										<tr>
 											<td><strong>Com Caixa de Gordura?<font color="#FF0000">*</font></strong></td>
 											<td><strong> <html:radio property="indicadorCaixaGordura"

@@ -647,7 +647,18 @@
 						</html:radio>
 					</td>
 				</tr>				
-				
+				<tr>
+					<td><strong>Formato do Relatório:<font color="#FF0000">*</font></strong></td>
+					
+					<td>
+						<html:radio property="formatoRelatorio" value="1" tabindex="5">
+							<strong> PDF </strong> 
+						</html:radio>
+						<html:radio property="formatoRelatorio" value="3" tabindex="5">
+							<strong> XLS </strong> 
+						</html:radio>
+					</td>
+				</tr>		
 				<tr><td><br></td></tr>
 				<tr>
 					<td height="24" >

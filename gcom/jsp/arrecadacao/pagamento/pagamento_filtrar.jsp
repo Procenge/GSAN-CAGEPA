@@ -19,6 +19,11 @@
 <script language="JavaScript" src="<bean:message key="caminho.js"/>Calendario.js"></script>
 <script language="JavaScript" src="<bean:message key="caminho.js"/>util.js"></script><script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/regras_validator.js"></script><html:javascript staticJavascript="false"  formName="ConsultarPagamentoActionForm" />
 
+<script type='text/javascript' src='${pageContext.request.contextPath}/dwr/engine.js'> </script>
+<script type='text/javascript' src='${pageContext.request.contextPath}/dwr/util.js'> </script>
+<script type='text/javascript' src='${pageContext.request.contextPath}/dwr/interface/AjaxService.js'> </script>
+
+
 <script language="JavaScript">
 <!-- Begin 
 var bCancel = false; 
@@ -653,6 +658,27 @@ function validarForm(form){
 	//}
 	//End --> 
 }
+
+
+function enviarTotalizador(){
+	var form = document.ConsultarPagamentoActionForm;
+	var indicadorTotalizarPorDataPagamento = form.indicadorTotalizarPorDataPagamento.value;
+	AjaxService.carregaTotalizadorDiarioPagamento(indicadorTotalizarPorDataPagamento, {callback: 
+		function(indicadorTotalizarPorDataPagamento) {
+		
+			form.totalizadorMes[0].disabled =  indicadorTotalizarPorDataPagamento != "1";
+			form.totalizadorMes[1].disabled =  indicadorTotalizarPorDataPagamento != "1";
+			
+			
+			if(indicadorTotalizarPorDataPagamento == "1"){
+				form.totalizadorMes[0].click();
+				
+			}
+				
+		}
+	});
+	
+}
 </script>
 </head>
 <body leftmargin="5" topmargin="5" onload="setarFoco('${requestScope.nomeCampo}');verificarChecado('${sessionScope.indicadorAtualizar}');">
@@ -1216,10 +1242,18 @@ function validarForm(form){
 							</tr>
 							<tr>
 								<td><strong>Totalizar por Data de Pagamento?<font color="#FF0000">*</font></strong></td>
-								<td><strong> <html:radio property="indicadorTotalizarPorDataPagamento" value="1"/> Sim
-								<html:radio property="indicadorTotalizarPorDataPagamento" value="2"/> N&atilde;o
+								<td><strong> <html:radio property="indicadorTotalizarPorDataPagamento" value="1" onchange="enviarTotalizador();" /> Sim
+								<html:radio property="indicadorTotalizarPorDataPagamento" value="2" onchange="enviarTotalizador();" /> N&atilde;o
 								</strong></td>
 							</tr>
+							
+							<tr>
+								<td><strong> <html:radio property="totalizadorMes" value="false" disabled="${indicadorTotalizarPorDataPagamento != 1}" /> Di&aacute;rio
+								<html:radio property="totalizadorMes" value="true" disabled="${indicadorTotalizarPorDataPagamento != 1}" /> Mensal
+								</strong></td>
+							</tr>
+							
+							
 							<tr>
 								<td>&nbsp;</td>
 							</tr>

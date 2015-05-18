@@ -90,7 +90,6 @@ import gcom.faturamento.GuiaPagamentoGeral;
 import gcom.faturamento.conta.Conta;
 import gcom.faturamento.conta.ContaGeral;
 import gcom.faturamento.conta.Fatura;
-import gcom.faturamento.conta.FiltroConta;
 import gcom.faturamento.conta.MotivoNaoEntregaDocumento;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
@@ -254,6 +253,7 @@ public class InformarNaoEntregaDocumentosAction
 		String qtTentativas18 = informarNaoEntregaDocumentosActionForm.getQtTentativas18();
 		String qtTentativas19 = informarNaoEntregaDocumentosActionForm.getQtTentativas19();
 		String qtTentativas20 = informarNaoEntregaDocumentosActionForm.getQtTentativas20();
+		String responsavelEntrega = informarNaoEntregaDocumentosActionForm.getResponsavelEntrega();
 
 		// Tipo do Documento
 		DocumentoTipo documentoTipo = new DocumentoTipo();
@@ -363,6 +363,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue1.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue1.setNumeroTentativa(new Short(qtTentativas1));
 			documentoNaoEntregue1.setUltimaAlteracao(new Date());
+			documentoNaoEntregue1.setResponsavelEntrega(responsavelEntrega);
 
 			motivoNaoEntregaDocumento1.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo1()));
 
@@ -419,6 +420,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue2.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue2.setNumeroTentativa(new Short(qtTentativas2));
 			documentoNaoEntregue2.setUltimaAlteracao(new Date());
+			documentoNaoEntregue2.setResponsavelEntrega(responsavelEntrega);
 
 			motivoNaoEntregaDocumento2.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo2()));
 
@@ -473,6 +475,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue3.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue3.setNumeroTentativa(new Short(qtTentativas3));
 			documentoNaoEntregue3.setUltimaAlteracao(new Date());
+			documentoNaoEntregue3.setResponsavelEntrega(responsavelEntrega);
 
 			motivoNaoEntregaDocumento3.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo3()));
 
@@ -529,6 +532,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue4.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue4.setNumeroTentativa(new Short(qtTentativas4));
 			documentoNaoEntregue4.setUltimaAlteracao(new Date());
+			documentoNaoEntregue4.setResponsavelEntrega(responsavelEntrega);
 
 			motivoNaoEntregaDocumento4.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo4()));
 
@@ -585,7 +589,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue5.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue5.setNumeroTentativa(new Short(qtTentativas5));
 			documentoNaoEntregue5.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue5.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento5.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo5()));
 
 			documentoNaoEntregue5.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento5);
@@ -640,7 +644,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue6.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue6.setNumeroTentativa(new Short(qtTentativas6));
 			documentoNaoEntregue6.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue6.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento6.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo6()));
 
 			documentoNaoEntregue6.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento6);
@@ -695,7 +699,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue7.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue7.setNumeroTentativa(new Short(qtTentativas7));
 			documentoNaoEntregue7.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue7.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento7.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo7()));
 
 			documentoNaoEntregue7.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento7);
@@ -750,7 +754,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue8.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue8.setNumeroTentativa(new Short(qtTentativas8));
 			documentoNaoEntregue8.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue8.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento8.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo8()));
 
 			documentoNaoEntregue8.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento8);
@@ -805,7 +809,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue9.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue9.setNumeroTentativa(new Short(qtTentativas9));
 			documentoNaoEntregue9.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue9.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento9.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo9()));
 
 			documentoNaoEntregue9.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento9);
@@ -860,7 +864,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue10.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue10.setNumeroTentativa(new Short(qtTentativas10));
 			documentoNaoEntregue10.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue10.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento10.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo10()));
 
 			documentoNaoEntregue10.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento10);
@@ -916,7 +920,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue11.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue11.setNumeroTentativa(new Short(qtTentativas11));
 			documentoNaoEntregue11.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue11.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento11.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo11()));
 
 			documentoNaoEntregue11.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento11);
@@ -971,7 +975,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue12.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue12.setNumeroTentativa(new Short(qtTentativas12));
 			documentoNaoEntregue12.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue12.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento12.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo12()));
 
 			documentoNaoEntregue12.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento12);
@@ -1026,7 +1030,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue13.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue13.setNumeroTentativa(new Short(qtTentativas13));
 			documentoNaoEntregue13.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue13.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento13.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo13()));
 
 			documentoNaoEntregue13.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento13);
@@ -1081,7 +1085,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue14.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue14.setNumeroTentativa(new Short(qtTentativas14));
 			documentoNaoEntregue14.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue14.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento14.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo14()));
 
 			documentoNaoEntregue14.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento14);
@@ -1136,7 +1140,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue15.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue15.setNumeroTentativa(new Short(qtTentativas15));
 			documentoNaoEntregue15.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue15.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento15.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo15()));
 
 			documentoNaoEntregue15.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento15);
@@ -1191,7 +1195,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue16.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue16.setNumeroTentativa(new Short(qtTentativas16));
 			documentoNaoEntregue16.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue16.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento16.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo16()));
 
 			documentoNaoEntregue16.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento16);
@@ -1246,7 +1250,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue17.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue17.setNumeroTentativa(new Short(qtTentativas17));
 			documentoNaoEntregue17.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue17.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento17.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo17()));
 
 			documentoNaoEntregue17.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento17);
@@ -1301,7 +1305,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue18.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue18.setNumeroTentativa(new Short(qtTentativas18));
 			documentoNaoEntregue18.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue18.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento18.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo18()));
 
 			documentoNaoEntregue18.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento18);
@@ -1356,7 +1360,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue19.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue19.setNumeroTentativa(new Short(qtTentativas19));
 			documentoNaoEntregue19.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue19.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento19.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo19()));
 
 			documentoNaoEntregue19.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento19);
@@ -1411,7 +1415,7 @@ public class InformarNaoEntregaDocumentosAction
 			documentoNaoEntregue20.setDocumentoTipo(documentoTipo);
 			documentoNaoEntregue20.setNumeroTentativa(new Short(qtTentativas20));
 			documentoNaoEntregue20.setUltimaAlteracao(new Date());
-
+			documentoNaoEntregue20.setResponsavelEntrega(responsavelEntrega);
 			motivoNaoEntregaDocumento20.setId(new Integer(informarNaoEntregaDocumentosActionForm.getIdCodigo20()));
 
 			documentoNaoEntregue20.setMotivoNaoEntregaDocumento(motivoNaoEntregaDocumento20);

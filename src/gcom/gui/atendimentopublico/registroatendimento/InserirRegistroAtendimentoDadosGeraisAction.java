@@ -76,15 +76,17 @@
 
 package gcom.gui.atendimentopublico.registroatendimento;
 
+import gcom.fachada.Fachada;
+import gcom.gui.ActionServletException;
+import gcom.gui.GcomAction;
+import gcom.util.FachadaException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-
-import gcom.fachada.Fachada;
-import gcom.gui.GcomAction;
 
 /**
  * Esta classe tem por finalidade validar as informações da primeira aba do processo de inserção
@@ -105,18 +107,33 @@ public class InserirRegistroAtendimentoDadosGeraisAction
 		httpServletRequest.getSession().setAttribute("incompleta", httpServletRequest.getParameter("incompleta"));
 
 		Fachada fachada = Fachada.getInstancia();
-		if(httpServletRequest.getParameter("incompleta") != null){
-			fachada.validarInserirRegistroAtendimentoDadosGeraisIncompleto(inserirRegistroAtendimentoActionForm.getDataAtendimento(),
-							inserirRegistroAtendimentoActionForm.getHora(), inserirRegistroAtendimentoActionForm.getTempoEsperaInicial(),
-							inserirRegistroAtendimentoActionForm.getTempoEsperaFinal(), inserirRegistroAtendimentoActionForm.getUnidade(),
-							inserirRegistroAtendimentoActionForm.getNumeroAtendimentoManual(), inserirRegistroAtendimentoActionForm
-											.getEspecificacao(), inserirRegistroAtendimentoActionForm.getIdRaReiteracao());
-		}else{
-			fachada.validarInserirRegistroAtendimentoDadosGerais(inserirRegistroAtendimentoActionForm.getDataAtendimento(),
-							inserirRegistroAtendimentoActionForm.getHora(), inserirRegistroAtendimentoActionForm.getTempoEsperaInicial(),
-							inserirRegistroAtendimentoActionForm.getTempoEsperaFinal(), inserirRegistroAtendimentoActionForm.getUnidade(),
-							inserirRegistroAtendimentoActionForm.getNumeroAtendimentoManual(), inserirRegistroAtendimentoActionForm
-											.getEspecificacao(), inserirRegistroAtendimentoActionForm.getIdRaReiteracao());
+		try{
+			
+			if(httpServletRequest.getParameter("incompleta") != null){
+				fachada.validarInserirRegistroAtendimentoDadosGeraisIncompleto(inserirRegistroAtendimentoActionForm.getDataAtendimento(),
+								inserirRegistroAtendimentoActionForm.getHora(),
+								inserirRegistroAtendimentoActionForm.getTempoEsperaInicial(),
+								inserirRegistroAtendimentoActionForm.getTempoEsperaFinal(),
+								inserirRegistroAtendimentoActionForm.getUnidade(),
+								inserirRegistroAtendimentoActionForm.getNumeroAtendimentoManual(),
+								inserirRegistroAtendimentoActionForm.getEspecificacao(),
+								inserirRegistroAtendimentoActionForm.getIdRaReiteracao());
+			}else{
+				fachada.validarInserirRegistroAtendimentoDadosGerais(inserirRegistroAtendimentoActionForm.getDataAtendimento(),
+								inserirRegistroAtendimentoActionForm.getHora(),
+								inserirRegistroAtendimentoActionForm.getTempoEsperaInicial(),
+								inserirRegistroAtendimentoActionForm.getTempoEsperaFinal(),
+								inserirRegistroAtendimentoActionForm.getUnidade(),
+								inserirRegistroAtendimentoActionForm.getNumeroAtendimentoManual(),
+								inserirRegistroAtendimentoActionForm.getEspecificacao(),
+								inserirRegistroAtendimentoActionForm.getIdRaReiteracao());
+			}
+			
+		}catch(FachadaException e){
+			throw new ActionServletException(e.getMessage(),
+							"inserirRegistroAtendimentoWizardAction.do?action=exibirInserirRegistroAtendimentoDadosGeraisAction&pagina=1",
+							e, e
+							.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
 		}
 
 		return retorno;

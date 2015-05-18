@@ -137,6 +137,11 @@ function facilitador(objeto){
 									<td bgcolor="#90c7fc">
 									<div align="center"><strong>Descrição Abreviada</strong></div>
 									</td>
+									<logic:equal name="permiteCobrarHora" value="1" scope="session">
+									<td bgcolor="#90c7fc">
+									<div align="center"><strong>Valor Hora</strong></div>
+									</td>
+									</logic:equal>
 									<td bgcolor="#90c7fc">
 									<div align="center"><strong>Atividade Única</strong></div>
 									</td>
@@ -173,6 +178,9 @@ function facilitador(objeto){
 													
 													
 													<td width="37%" align="center">${atividade.descricaoAbreviada}</td>
+													<logic:equal name="permiteCobrarHora" value="1" scope="session">
+													<td width="37%" align="center">${atividade.valorHora}</td>
+													</logic:equal>
 													<td width="50%" align="center"><logic:equal
 														name="atividade"
 														property="indicadorAtividadeUnica" value="1">

@@ -79,6 +79,8 @@ package gcom.gui.atendimentopublico.ordemservico;
 import gcom.atendimentopublico.ordemservico.bean.ObterDadosAtividadeOSHelper;
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
+import gcom.util.ControladorException;
+import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 
 import java.util.Collection;
 
@@ -116,7 +118,14 @@ public class ExibirDetalharMaterialUtilizadoPopupAction
 		DetalharMaterialUtilizadoPopupActionForm detalharMaterialUtilizadoPopupActionForm = (DetalharMaterialUtilizadoPopupActionForm) actionForm;
 		Integer idOS = new Integer(detalharMaterialUtilizadoPopupActionForm.getNumeroOS());
 		Integer idAtividade = new Integer(detalharMaterialUtilizadoPopupActionForm.getAtividadeId());
-
+		String permiteCobrarMaterial = "0";
+		try{
+			permiteCobrarMaterial = ParametroAtendimentoPublico.P_PERMITE_COBRAR_MATERIAL_OS.executar();
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		httpServletRequest.setAttribute("permiteCobrarMaterial", permiteCobrarMaterial);
 		Collection<ObterDadosAtividadeOSHelper> colecaoObterDadosAtividadeOSHelper = fachada.obterDadosAtividadeOS(idOS, idAtividade,
 						ObterDadosAtividadeOSHelper.INDICADOR_MATERIAL.intValue());
 		if(colecaoObterDadosAtividadeOSHelper != null && !colecaoObterDadosAtividadeOSHelper.isEmpty()){

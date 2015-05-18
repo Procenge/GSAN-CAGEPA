@@ -83,9 +83,7 @@ package gcom.cadastro.imovel;
 import gcom.arrecadacao.banco.Agencia;
 import gcom.arrecadacao.banco.Banco;
 import gcom.arrecadacao.debitoautomatico.DebitoAutomatico;
-import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao;
-import gcom.arrecadacao.pagamento.Pagamento;
-import gcom.arrecadacao.pagamento.PagamentoHistorico;
+import gcom.arrecadacao.pagamento.*;
 import gcom.atendimentopublico.ControladorAtendimentoPublicoLocal;
 import gcom.atendimentopublico.ControladorAtendimentoPublicoLocalHome;
 import gcom.atendimentopublico.ligacaoagua.FiltroLigacaoAgua;
@@ -118,6 +116,7 @@ import gcom.cobranca.bean.ObterDebitoImovelOuClienteHelper;
 import gcom.cobranca.bean.SituacaoEspecialCobrancaHelper;
 import gcom.cobranca.contrato.CobrancaContrato;
 import gcom.cobranca.contrato.FiltroCobrancaContrato;
+import gcom.fachada.Fachada;
 import gcom.faturamento.*;
 import gcom.faturamento.bean.SituacaoEspecialFaturamentoHelper;
 import gcom.faturamento.consumofaixaareacategoria.ConsumoFaixaAreaCategoria;
@@ -125,6 +124,7 @@ import gcom.faturamento.consumotarifa.ConsumoTarifa;
 import gcom.faturamento.conta.Conta;
 import gcom.faturamento.conta.ContaHistorico;
 import gcom.faturamento.conta.ContaMotivoRevisao;
+import gcom.faturamento.credito.CreditoARealizar;
 import gcom.faturamento.debito.DebitoACobrar;
 import gcom.faturamento.debito.DebitoCobrado;
 import gcom.faturamento.debito.DebitoCreditoSituacao;
@@ -159,6 +159,7 @@ import gcom.util.*;
 import gcom.util.filtro.*;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
+import gcom.util.parametrizacao.micromedicao.ParametroMicromedicao;
 import gcom.util.parametrizacao.webservice.ParametrosAgenciaVirtual;
 
 import java.math.BigDecimal;
@@ -169,6 +170,8 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
+
+import org.apache.log4j.Logger;
 
 import br.com.procenge.comum.exception.NegocioException;
 import br.com.procenge.util.Constantes;
@@ -200,6 +203,8 @@ public class ControladorImovelSEJB
 	private IRepositorioLigacaoEsgoto repositorioLigacaoEsgoto;
 
 	private IRepositorioUtil repositorioUtil;
+
+	private static Logger logger = Logger.getLogger(ControladorImovelSEJB.class);
 
 	/**
 	 * [SB001] Atualizar Imóvel Campos Atualiza campos de imovel na execução de
@@ -853,13 +858,17 @@ public class ControladorImovelSEJB
 			OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
 			operacaoEfetuada.setOperacao(operacao);
 
-			imovel.setOperacaoEfetuada(operacaoEfetuada);
-			imovel.adicionarUsuario(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
-			registradorOperacao.registrarOperacao(imovel);
+
 			// ------------ REGISTRAR TRANSAÇÃO ----------------
 
 			id = (Integer) getControladorUtil().inserir(imovel);
 			imovel.setId(id);
+
+			operacaoEfetuada.setIdObjetoPrincipal(id);
+			operacaoEfetuada.setArgumentoValor(id);
+			imovel.setOperacaoEfetuada(operacaoEfetuada);
+			imovel.adicionarUsuario(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+			registradorOperacao.registrarOperacao(imovel);
 		}
 		/** fim alteração de controle de abrangência ************************* */
 
@@ -915,6 +924,7 @@ public class ControladorImovelSEJB
 
 				OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
 				operacaoEfetuada.setOperacao(operacao);
+				operacaoEfetuada.setArgumentoValor(imovelConsumoFaixaAreaCategoria.getComp_id().getImovel().getId());
 
 				imovelConsumoFaixaAreaCategoria.setOperacaoEfetuada(operacaoEfetuada);
 				imovelConsumoFaixaAreaCategoria.adicionarUsuario(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
@@ -1050,8 +1060,8 @@ public class ControladorImovelSEJB
 
 			// [UC] - Registrar Transação
 			// Início - Registrando as transações
-			RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_IMOVEL_ATUALIZAR, imovel.getId(), imovel
-							.getId(), new UsuarioAcaoUsuarioHelper(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+			RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_IMOVEL_ATUALIZAR, imovel.getId(),
+							imovel.getId(), new UsuarioAcaoUsuarioHelper(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
 
 			Operacao operacao = new Operacao();
 			operacao.setId(Operacao.OPERACAO_IMOVEL_ATUALIZAR);
@@ -1101,10 +1111,16 @@ public class ControladorImovelSEJB
 			// filtro imovel
 			FiltroImovel filtroImovel = new FiltroImovel();
 
+			Boolean indicadorInserirDataRelacaoFim = false;
+			if(ParametroCadastro.P_INDICADOR_INFORMAR_DATA_RELACAO_FIM_INSERIR_CLIENTE_IMOVEL.executar().equals(
+							ConstantesSistema.SIM.toString())){
+				indicadorInserirDataRelacaoFim = true;
+			}
+
 			// [UC] - Registrar Transação
 			// Início - Registrando as transações
-			RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_IMOVEL_ATUALIZAR, imovel.getId(), imovel
-							.getId(), new UsuarioAcaoUsuarioHelper(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+			RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_IMOVEL_ATUALIZAR, imovel.getId(),
+							imovel.getId(), new UsuarioAcaoUsuarioHelper(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
 
 			Operacao operacao = new Operacao();
 			operacao.setId(Operacao.OPERACAO_IMOVEL_ATUALIZAR);
@@ -1132,6 +1148,13 @@ public class ControladorImovelSEJB
 			if(imovelNaBase.getUltimaAlteracao().after(imovel.getUltimaAlteracao())){
 				sessionContext.setRollbackOnly();
 				throw new ControladorException("atencao.atualizacao.timestamp");
+			}
+
+			if(indicadorInserirDataRelacaoFim){
+				if(!this.verificarTipoRelacaoUsuariaAtivo(clientes)){
+					sessionContext.setRollbackOnly();
+					throw new ControladorException("atencao.data_fim_relacao_valida.cliente_imovel_usuario");
+				}
 			}
 
 			this.verificarAlteracaoRota(imovel.getLocalidade().getId(), imovel.getSetorComercial().getCodigo(), imovel.getQuadra()
@@ -1187,6 +1210,7 @@ public class ControladorImovelSEJB
 					filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteImovel.IMOVEL);
 					filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.IMOVEL_ID, imovel.getId()));
 					filtroClienteImovel.adicionarParametro(new ParametroNulo(FiltroClienteImovel.DATA_FIM_RELACAO));
+
 					Collection colecaoClienteImovel = getControladorUtil().pesquisar(filtroClienteImovel, ClienteImovel.class.getName());
 
 					boolean existe = this.verificarExistenciaClienteImovel(colecaoClienteImovel, clienteImovelRemovido);
@@ -1200,17 +1224,35 @@ public class ControladorImovelSEJB
 										.getId()));
 						filtroClienteImovelDuplicidade.adicionarParametro(new ParametroSimples(FiltroClienteImovel.CLIENTE_ID,
 										clienteImovelRemovido.getCliente().getId()));
+
+						if(indicadorInserirDataRelacaoFim){
+							filtroClienteImovelDuplicidade.adicionarParametro(new ParametroSimplesDiferenteDe(FiltroClienteImovel.ID,
+											clienteImovelRemovido.getId()));
+						}
+
 						if(clienteImovelRemovido.getDataInicioRelacao() == null){
 							filtroClienteImovelDuplicidade.adicionarParametro(new ParametroNulo(FiltroClienteImovel.DATA_INICIO_RELACAO));
 						}else{
-							filtroClienteImovelDuplicidade.adicionarParametro(new ParametroSimples(FiltroClienteImovel.DATA_INICIO_RELACAO,
-											simpleDateFormat.format(clienteImovelRemovido.getDataInicioRelacao())));
+							if(!indicadorInserirDataRelacaoFim){
+								filtroClienteImovelDuplicidade.adicionarParametro(new ParametroSimples(
+												FiltroClienteImovel.DATA_INICIO_RELACAO, simpleDateFormat.format(clienteImovelRemovido
+																.getDataInicioRelacao())));
+							}else{
+								filtroClienteImovelDuplicidade.adicionarParametro(new MaiorQue(FiltroClienteImovel.DATA_INICIO_RELACAO,
+												simpleDateFormat.format(clienteImovelRemovido.getDataInicioRelacao())));
+							}
 						}
 						if(clienteImovelRemovido.getDataFimRelacao() == null){
 							filtroClienteImovelDuplicidade.adicionarParametro(new ParametroNulo(FiltroClienteImovel.DATA_FIM_RELACAO));
 						}else{
-							filtroClienteImovelDuplicidade.adicionarParametro(new ParametroSimples(FiltroClienteImovel.DATA_FIM_RELACAO,
-											simpleDateFormat.format(clienteImovelRemovido.getDataFimRelacao())));
+							if(!indicadorInserirDataRelacaoFim){
+								filtroClienteImovelDuplicidade.adicionarParametro(new ParametroSimples(
+												FiltroClienteImovel.DATA_FIM_RELACAO, simpleDateFormat.format(clienteImovelRemovido
+																.getDataFimRelacao())));
+							}else{
+								filtroClienteImovelDuplicidade.adicionarParametro(new MaiorQue(FiltroClienteImovel.DATA_FIM_RELACAO,
+												simpleDateFormat.format(clienteImovelRemovido.getDataInicioRelacao())));
+							}
 						}
 						filtroClienteImovelDuplicidade.adicionarParametro(new ParametroSimples(FiltroClienteImovel.CLIENTE_RELACAO_TIPO_ID,
 										clienteImovelRemovido.getClienteRelacaoTipo().getId()));
@@ -1256,8 +1298,8 @@ public class ControladorImovelSEJB
 
 						// ------------ REGISTRAR TRANSAÇÃO ----------------
 						RegistradorOperacao registradorOperacaoClienteImovel = new RegistradorOperacao(
-										Operacao.OPERACAO_CLIENTE_IMOVEL_ATUALIZAR, clienteImovelRemovido.getId(), clienteImovelRemovido
-														.getId(), new UsuarioAcaoUsuarioHelper(usuarioLogado,
+										Operacao.OPERACAO_CLIENTE_IMOVEL_ATUALIZAR, clienteImovelRemovido.getId(),
+										clienteImovelRemovido.getId(), new UsuarioAcaoUsuarioHelper(usuarioLogado,
 														UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
 
 						Operacao operacaoClienteImovel = new Operacao();
@@ -1289,6 +1331,7 @@ public class ControladorImovelSEJB
 				filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteImovel.CLIENTE_IMOVEL_FIM_RELACAO_MOTIVO);
 				filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.IMOVEL_ID, imovel.getId()));
 				filtroClienteImovel.adicionarParametro(new ParametroNulo(FiltroClienteImovel.DATA_FIM_RELACAO));
+
 				Collection colecaoClienteImovel = this.getControladorUtil().pesquisar(filtroClienteImovel, ClienteImovel.class.getName());
 
 				// atualiza ou insere o cliente imovel
@@ -1345,6 +1388,167 @@ public class ControladorImovelSEJB
 						// ------------ REGISTRAR TRANSAÇÃO ----------------
 
 						getControladorUtil().inserir(clienteImovel);
+
+						// Transereir Débitos para o novo Cliente
+						if(clienteImovel.indicadorAtualizarDebitos != null
+										&& clienteImovel.indicadorAtualizarDebitos.equals(ConstantesSistema.SIM)){
+							Calendar dataRelacaoCliente = Calendar.getInstance();
+
+							// Vencimeto
+							dataRelacaoCliente.setTime(clienteImovel.getDataInicioRelacao());
+
+							Date dataVencimentoInicial = dataRelacaoCliente.getTime();
+							Date dataVencimentoFinal = Util.criarData(31, 12, 9999);
+							
+							if(clienteImovel.getDataFimRelacao() != null){
+								dataRelacaoCliente.setTime(clienteImovel.getDataFimRelacao());
+								dataVencimentoFinal = dataRelacaoCliente.getTime();
+							}
+
+							// Referencia
+							SimpleDateFormat dataFormatada = new SimpleDateFormat("yyyyMM");
+							dataRelacaoCliente.setTime(clienteImovel.getDataInicioRelacao());
+
+							String dataInicioReferencia = dataFormatada.format(dataRelacaoCliente.getTime());
+							String dataFimReferencia = "999912";
+
+							if(clienteImovel.getDataFimRelacao() != null){
+								dataRelacaoCliente.setTime(clienteImovel.getDataFimRelacao());
+								dataFimReferencia = dataFormatada.format(dataRelacaoCliente.getTime());
+							}
+							
+							Integer idImovelOrigemTransf = clienteImovel.getImovel().getId();
+							Integer idClienteDestinoTransf = clienteImovel.getCliente().getId();
+							
+							List<Integer> colecaoIdsClienteOrigem = new ArrayList();
+							List<Integer> colecaoIdsRelacaoClienteOrigem = new ArrayList();
+							List<String> colecaoIdsContas = new ArrayList();
+							List<String> colecaoIdsDebitosCobrar = new ArrayList();
+							List<String> colecaoIdsCreditoARealizar = new ArrayList();
+							List<String> colecaoIdsGuiasPagamento = new ArrayList();
+
+							Collection<ClienteImovel> colecaoRelacaoImovel = new ArrayList<ClienteImovel>();
+							colecaoRelacaoImovel = getControladorCobranca().obterListaClientesRelacaoDevedor(idImovelOrigemTransf, Integer.valueOf("000101"),
+											Integer.valueOf("999912"), 1, 1, 1, 1, 1, 1, 1, null, ConstantesSistema.SIM, ConstantesSistema.SIM,
+											ConstantesSistema.SIM, 2, null, null);							
+							
+							for(ClienteImovel clienteImovelTransf : colecaoRelacaoImovel){
+								if (clienteImovelTransf.getClienteRelacaoTipo().getId().equals(clienteImovel.getClienteRelacaoTipo().getId())) {
+									/////////////////////////////////////////
+									// Carregar variáveis transferencia
+									//////////////////////////////////////////
+									colecaoIdsClienteOrigem.add(clienteImovelTransf.getCliente().getId());
+									colecaoIdsRelacaoClienteOrigem.add(clienteImovelTransf.getClienteRelacaoTipo().getId());
+									
+									ObterDebitoImovelOuClienteHelper imovelDebitoCredito = this.getControladorCobranca()
+													.obterDebitoImovelOuCliente(1, imovel.getId().toString(),
+																	clienteImovelTransf.getCliente().getId().toString(),
+																	clienteImovelTransf.getClienteRelacaoTipo().getId(),
+																	dataInicioReferencia,
+																	dataFimReferencia, dataVencimentoInicial, dataVencimentoFinal, 1, 1, 1,
+																	1, 1, 1, 1, true, null, null, null, null, ConstantesSistema.SIM,
+																	ConstantesSistema.SIM, ConstantesSistema.SIM, 2, null);
+									
+									// Carregar Ids Débitos e Crétidos
+									// Carregar Contas
+									String sSeparador = "";
+									String sIdsContas = "";
+
+									if(imovelDebitoCredito.getColecaoContasValoresImovel() != null){
+										Iterator itColecaoContas = imovelDebitoCredito.getColecaoContasValoresImovel().iterator();
+										ContaValoresHelper contaValoresHelper = null;
+
+										while(itColecaoContas.hasNext()){
+											contaValoresHelper = (ContaValoresHelper) itColecaoContas.next();
+											
+											sIdsContas = sIdsContas + sSeparador + contaValoresHelper.getConta().getId().toString();
+											sSeparador = ",";
+										}
+									}	
+									
+									colecaoIdsContas.add(sIdsContas);
+									
+									
+									// Carregar Debitos A Cobrar
+									sSeparador = "";
+									String sIdsDebitoCobrar = "";
+
+									if(imovelDebitoCredito.getColecaoDebitoACobrar() != null){
+										Iterator itColecaoDebitosCobrar = imovelDebitoCredito.getColecaoDebitoACobrar().iterator();
+										DebitoACobrar debitoACobrar = null;
+
+										while(itColecaoDebitosCobrar.hasNext()){
+											debitoACobrar = (DebitoACobrar) itColecaoDebitosCobrar.next();
+											
+											sIdsDebitoCobrar = sIdsDebitoCobrar + sSeparador + debitoACobrar.getId().toString();
+											sSeparador = ",";
+										}
+									}
+									
+									colecaoIdsDebitosCobrar.add(sIdsDebitoCobrar);
+									
+									
+									// Carregar Credito a Realizar
+									sSeparador = "";
+									String sIdsCreditoRealizar = "";
+
+									if(imovelDebitoCredito.getColecaoCreditoARealizar() != null){
+										Iterator itColecaoCreditoRealizar = imovelDebitoCredito.getColecaoCreditoARealizar().iterator();
+										CreditoARealizar creditoRealizar = null;
+
+										while(itColecaoCreditoRealizar.hasNext()){
+											creditoRealizar = (CreditoARealizar) itColecaoCreditoRealizar.next();
+											
+											sIdsCreditoRealizar = sIdsCreditoRealizar + sSeparador + creditoRealizar.getId().toString();
+											sSeparador = ",";
+										}
+									}
+									
+									colecaoIdsCreditoARealizar.add(sIdsCreditoRealizar);
+									
+									sSeparador = "";
+									String sIdsGuiaPagamentos = "";									
+									
+									// Carregar Guias
+									if(imovelDebitoCredito.getColecaoGuiasPagamentoValores() != null){
+										Iterator itColecaoGuias = imovelDebitoCredito.getColecaoGuiasPagamentoValores().iterator();
+										GuiaPagamentoValoresHelper guiaPagamentoValoresHelper = null;
+
+										while(itColecaoGuias.hasNext()){
+											guiaPagamentoValoresHelper = (GuiaPagamentoValoresHelper) itColecaoGuias.next();
+
+											FiltroGuiaPagamento filtroGuiaPagamento = new FiltroGuiaPagamento();
+											filtroGuiaPagamento.adicionarParametro(new ParametroSimples(FiltroGuiaPagamento.ID,
+															guiaPagamentoValoresHelper.getIdGuiaPagamento()));
+											Collection<GuiaPagamento> colecaoGuiaPesquisada = getControladorUtil().pesquisar(filtroGuiaPagamento,
+															GuiaPagamento.class.getName());
+											if(colecaoGuiaPesquisada != null && !colecaoGuiaPesquisada.isEmpty()){
+												sIdsGuiaPagamentos = sIdsGuiaPagamentos + sSeparador + colecaoGuiaPesquisada.iterator().next().getId().toString();
+												sSeparador = ",";
+											}
+
+										}
+									}
+									
+									colecaoIdsCreditoARealizar.add(sIdsGuiaPagamentos);
+									
+								}
+							}
+							
+
+
+							if (!colecaoIdsClienteOrigem.isEmpty() && !colecaoIdsRelacaoClienteOrigem.isEmpty() &&
+											colecaoIdsClienteOrigem.size()>0 && colecaoIdsRelacaoClienteOrigem.size()>0) {
+								
+								this.getControladorCobranca().transferirDebitosCreditosCliente(null, idImovelOrigemTransf,
+												colecaoIdsClienteOrigem, colecaoIdsRelacaoClienteOrigem, idClienteDestinoTransf,
+												colecaoIdsContas, colecaoIdsDebitosCobrar, colecaoIdsCreditoARealizar,
+												colecaoIdsGuiasPagamento, usuarioLogado);
+								
+								
+
+							}
+						}
 
 						if(imovel.getDiaVencimento() != null){
 
@@ -1647,7 +1851,48 @@ public class ControladorImovelSEJB
 		}catch(ErroRepositorioException ex){
 			sessionContext.setRollbackOnly();
 			throw new ControladorException("erro.sistema", ex);
+		}catch(ControladorException e){
+			sessionContext.setRollbackOnly();
+			throw e;
 		}
+	}
+	
+	/**
+	 * @author Gicevalter Couto
+	 * @date 17/09/2014
+	 */
+	public boolean verificarTipoRelacaoUsuariaAtivo(Collection<ClienteImovel> colecaoClientesImovel) throws ControladorException{
+
+		boolean retorno = false;
+		Calendar dataCorrente = Calendar.getInstance();
+		Calendar dataFimRelacao = Calendar.getInstance();
+
+		dataCorrente.set(Calendar.SECOND, 0);
+		dataCorrente.set(Calendar.MILLISECOND, 0);
+		dataCorrente.set(Calendar.HOUR, 0);
+		dataCorrente.set(Calendar.HOUR_OF_DAY, 0);
+		dataCorrente.set(Calendar.MINUTE, 0);
+
+		for(ClienteImovel clienteImovel : colecaoClientesImovel){
+			if(clienteImovel.getClienteRelacaoTipo().getId().equals(ConstantesSistema.CLIENTE_IMOVEL_TIPO_USUARIO)){
+				if(clienteImovel.getDataFimRelacao() == null){
+					retorno = true;
+				}else{
+					dataFimRelacao.setTime(clienteImovel.getDataFimRelacao());
+					dataFimRelacao.set(Calendar.SECOND, 0);
+					dataFimRelacao.set(Calendar.MILLISECOND, 0);
+					dataFimRelacao.set(Calendar.HOUR, 0);
+					dataFimRelacao.set(Calendar.HOUR_OF_DAY, 0);
+					dataFimRelacao.set(Calendar.MINUTE, 0);
+
+					if(dataFimRelacao.after(dataCorrente) || dataFimRelacao.equals(dataCorrente)){
+						retorno = true;
+					}
+				}
+			}
+		}
+
+		return retorno;
 	}
 
 	private boolean verificarExistenciaImovelConsumoFaixaAreaCategoria(Collection colecaoImovelConsumoFaixaAreaCategoria,
@@ -1757,10 +2002,11 @@ public class ControladorImovelSEJB
 
 		OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
 		operacaoEfetuada.setOperacao(operacao);
-
+		operacaoEfetuada.setArgumentoValor(imovelSubcategoria.getComp_id().getImovel().getId());
 		imovelSubcategoria.setOperacaoEfetuada(operacaoEfetuada);
 		imovelSubcategoria.adicionarUsuario(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
 		registradorOperacao.registrarOperacao(imovelSubcategoria);
+
 		// ------------ REGISTRAR TRANSAÇÃO ----------------
 
 		getControladorUtil().inserir(imovelSubcategoria);
@@ -1911,7 +2157,7 @@ public class ControladorImovelSEJB
 					categoria.setConsumoMedioEconomiaMes((Integer) imovelSubcategoriaArray[14]);
 
 					categoria.setConsumoMinimo((Integer) imovelSubcategoriaArray[15]);
-					categoria.setConsumoMaximoEconomiasValidacao((Integer) imovelSubcategoriaArray[16]);
+					categoria.setQuantidadeMaximoEconomiasValidacao((Integer) imovelSubcategoriaArray[16]);
 					categoria.setConsumoViradaHidrometro((Integer) imovelSubcategoriaArray[17]);
 					categoria.setNumeroVezesMediaViradaHidrometro((Integer) imovelSubcategoriaArray[18]);
 					categoria.setIndicadorValidarViradaHidrometro((Short) imovelSubcategoriaArray[19]);
@@ -2375,8 +2621,8 @@ public class ControladorImovelSEJB
 				}else{
 
 					// ------------ REGISTRAR TRANSAÇÃO ----------------
-					RegistradorOperacao registradorBacia = new RegistradorOperacao(Operacao.OPERACAO_IMOVEL_REMOVER, imovel.getId(), imovel
-									.getId(), new UsuarioAcaoUsuarioHelper(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+					RegistradorOperacao registradorBacia = new RegistradorOperacao(Operacao.OPERACAO_IMOVEL_REMOVER, imovel.getId(),
+									imovel.getId(), new UsuarioAcaoUsuarioHelper(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
 
 					Operacao operacao = new Operacao();
 					operacao.setId(Operacao.OPERACAO_IMOVEL_REMOVER);
@@ -2419,8 +2665,8 @@ public class ControladorImovelSEJB
 		Collection<Imovel> colecaoRetorno = new ArrayList();
 
 		try{
-			colecaoImovelArray = repositorioImovel.pesquisarImovel(idLocalidade, idSetorComercial, idQuadra, lote, Imovel.IMOVEL_EXCLUIDO
-							.intValue());
+			colecaoImovelArray = repositorioImovel.pesquisarImovel(idLocalidade, idSetorComercial, idQuadra, lote,
+							Imovel.IMOVEL_EXCLUIDO.intValue());
 		}catch(ErroRepositorioException ex){
 			sessionContext.setRollbackOnly();
 			throw new ControladorException("erro.sistema", ex);
@@ -4012,8 +4258,8 @@ public class ControladorImovelSEJB
 		// Seta o filtro para buscar Subcategoria na base
 		filtroSubcategoria.adicionarParametro(new ParametroSimples(FiltroSubCategoria.ID, subcategoria.getId()));
 
-		Subcategoria subcategoriaNaBase = (Subcategoria) ((List) (getControladorUtil().pesquisar(filtroSubcategoria, Subcategoria.class
-						.getName()))).get(0);
+		Subcategoria subcategoriaNaBase = (Subcategoria) ((List) (getControladorUtil().pesquisar(filtroSubcategoria,
+						Subcategoria.class.getName()))).get(0);
 
 		// Verificar se Subcategoria já foi atualizada por outro usuário durante
 		// esta atualização
@@ -4164,18 +4410,77 @@ public class ControladorImovelSEJB
 	 * @param collectionFaturmentoSituaoHistorico
 	 *            Alteração para inserir o registro de transação
 	 */
-	public void atualizarFaturamentoSituacaoTipo(Collection colecaoIdsImoveis, Integer idFaturamentoTipo,
-					Collection<FaturamentoSituacaoHistorico> collectionFaturmentoSituaoHistorico, Usuario usuarioLogado,
-					Collection<SituacaoEspecialFaturamentoHelper> helperParaSeremRemovidos)
-					throws ControladorException{
+	public void atualizarFaturamentoSituacaoTipo(Integer idFaturamentoTipo,
+					Collection<SituacaoEspecialFaturamentoHelper> helperParaSeremInseridos, Usuario usuarioLogado,
+					Collection<SituacaoEspecialFaturamentoHelper> helperParaSeremRemovidos) throws ControladorException{
+
+		Collection<Integer> imoveisParaSerInseridos = null;
+		Collection<FaturamentoSituacaoHistorico> collectionFaturmentoSituaoHistorico = null;
 
 		try{
+
+			collectionFaturmentoSituaoHistorico = new ArrayList<FaturamentoSituacaoHistorico>();
+
+			if(!Util.isVazioOrNulo(helperParaSeremInseridos)){
+
+				imoveisParaSerInseridos = new ArrayList<Integer>();
+
+				Iterator<SituacaoEspecialFaturamentoHelper> iterator = helperParaSeremInseridos.iterator();
+
+				while(iterator.hasNext()){
+
+					SituacaoEspecialFaturamentoHelper helper = iterator.next();
+
+
+					// Inicio - Setando as Variaveis
+
+					// Inicio - Construindo as variaveis
+					FaturamentoSituacaoHistorico faturamentoSituacaoHistorico = new FaturamentoSituacaoHistorico();
+					Imovel imovel = new Imovel();
+					imovel.setId(new Integer(helper.getIdImovel()));
+
+					imoveisParaSerInseridos.add(new Integer(helper.getIdImovel()));
+
+					FaturamentoSituacaoMotivo faturamentoSituacaoMotivo = new FaturamentoSituacaoMotivo();
+					faturamentoSituacaoMotivo.setId(new Integer(helper.getIdFaturamentoSituacaoMotivo()));
+
+					FaturamentoSituacaoTipo faturamentoSituacaoTipo = new FaturamentoSituacaoTipo();
+					faturamentoSituacaoTipo.setId(new Integer(helper.getIdFaturamentoSituacaoTipo()));
+
+
+					faturamentoSituacaoHistorico.setImovel(imovel);
+					faturamentoSituacaoHistorico.setAnoMesFaturamentoSituacaoInicio(new Integer(Util
+									.formatarMesAnoComBarraParaAnoMes(helper.getMesAnoReferenciaFaturamentoInicial())));
+					faturamentoSituacaoHistorico.setAnoMesFaturamentoSituacaoFim(new Integer(Util.formatarMesAnoComBarraParaAnoMes(helper
+									.getMesAnoReferenciaFaturamentoInicial())));
+					faturamentoSituacaoHistorico.setAnoMesFaturamentoRetirada(null);
+					faturamentoSituacaoHistorico.setFaturamentoSituacaoMotivo(faturamentoSituacaoMotivo);
+					faturamentoSituacaoHistorico.setFaturamentoSituacaoTipo(faturamentoSituacaoTipo);
+					faturamentoSituacaoHistorico.setUltimaAlteracao(Calendar.getInstance().getTime());
+					faturamentoSituacaoHistorico.setUsuario(usuarioLogado);
+
+					if(helper.getVolume() != null && !helper.getVolume().equals("")){
+						faturamentoSituacaoHistorico.setVolume(new Integer(helper.getVolume()));
+					}
+					if(helper.getPercentualEsgoto() != null && !helper.getPercentualEsgoto().equals("")){
+
+						Double pctEsgotoDouble = Double.parseDouble(helper.getPercentualEsgoto().replace(',', '.'));
+						faturamentoSituacaoHistorico.setPercentualEsgoto(new BigDecimal(pctEsgotoDouble));
+					}
+					// Fim - Setando as Variaveis
+
+					// Inicio - Adiciona à coleção
+					collectionFaturmentoSituaoHistorico.add(faturamentoSituacaoHistorico);
+					// Fim - Adiciona à coleção
+				}
+
+			}
 
 			RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_VALIDAR_SITUACAO_ESPECIAL_FATURAMENTO,
 							new UsuarioAcaoUsuarioHelper(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
 
 			getControladorFaturamento().inserirFaturamentoSituacaoHistorico(collectionFaturmentoSituaoHistorico, registradorOperacao);
-			this.repositorioImovel.atualizarFaturamentoSituacaoTipo(colecaoIdsImoveis, idFaturamentoTipo);
+			this.repositorioImovel.atualizarFaturamentoSituacaoTipo(imoveisParaSerInseridos, idFaturamentoTipo);
 
 			if(helperParaSeremRemovidos != null && !helperParaSeremRemovidos.isEmpty()){
 				this.retirarSituacaoEspecialFaturamento(helperParaSeremRemovidos, usuarioLogado);
@@ -4216,8 +4521,7 @@ public class ControladorImovelSEJB
 	 * @created 16/01/2006
 	 */
 	public void retirarSituacaoEspecialFaturamento(Collection<SituacaoEspecialFaturamentoHelper> colecaoSituacaoEspecialFaturamentoHelper,
-					Usuario usuarioLogado)
-					throws ControladorException{
+					Usuario usuarioLogado) throws ControladorException{
 
 		try{
 			Collection pesquisarImoveisParaSerRemovidos = new ArrayList();
@@ -4240,8 +4544,8 @@ public class ControladorImovelSEJB
 					FiltroFaturamentoSituacaoHistorico filtroFaturamentoSituacaoHistorico = new FiltroFaturamentoSituacaoHistorico();
 					filtroFaturamentoSituacaoHistorico.adicionarParametro(new ParametroSimples("imovel.id", helper.getIdImovel()));
 					filtroFaturamentoSituacaoHistorico.adicionarParametro(new ParametroNulo("anoMesFaturamentoRetirada"));
-					Collection colecaoFaturamentoSituacaoHistorico = repositorioUtil.pesquisar(
-									filtroFaturamentoSituacaoHistorico, FaturamentoSituacaoHistorico.class.getName());
+					Collection colecaoFaturamentoSituacaoHistorico = repositorioUtil.pesquisar(filtroFaturamentoSituacaoHistorico,
+									FaturamentoSituacaoHistorico.class.getName());
 					for(Object object : colecaoFaturamentoSituacaoHistorico){
 						FaturamentoSituacaoHistorico faturamentoSituacaoHistorico = (FaturamentoSituacaoHistorico) object;
 						faturamentoSituacaoHistorico.setAnoMesFaturamentoRetirada(anoMesReferenciaFaturamentoGrupo);
@@ -4265,8 +4569,8 @@ public class ControladorImovelSEJB
 							FiltroFaturamentoSituacaoHistorico filtroFaturamentoSituacaoHistorico = new FiltroFaturamentoSituacaoHistorico();
 							filtroFaturamentoSituacaoHistorico.adicionarParametro(new ParametroSimples("imovel.id", id));
 							filtroFaturamentoSituacaoHistorico.adicionarParametro(new ParametroNulo("anoMesFaturamentoRetirada"));
-							Collection colecaoFaturamentoSituacaoHistorico = repositorioUtil.pesquisar(
-											filtroFaturamentoSituacaoHistorico, FaturamentoSituacaoHistorico.class.getName());
+							Collection colecaoFaturamentoSituacaoHistorico = repositorioUtil.pesquisar(filtroFaturamentoSituacaoHistorico,
+											FaturamentoSituacaoHistorico.class.getName());
 							for(Object object : colecaoFaturamentoSituacaoHistorico){
 								FaturamentoSituacaoHistorico faturamentoSituacaoHistorico = (FaturamentoSituacaoHistorico) object;
 
@@ -4871,7 +5175,8 @@ public class ControladorImovelSEJB
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String cdRotaInicial,
 					String cdRotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal) throws ControladorException{
+					String segmentoFinal, String subloteInicial, String subloteFinal, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal) throws ControladorException{
 
 		Collection colecaoImoveis = null;
 
@@ -4893,7 +5198,7 @@ public class ControladorImovelSEJB
 							diaVencimento, idCliente, idClienteTipo, idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal,
 							numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa, idUnidadeNegocio, cdRotaInicial,
 							cdRotaFinal, sequencialRotaInicial, sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial,
-							subloteFinal);
+							subloteFinal, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 		}catch(ErroRepositorioException e){
 			sessionContext.setRollbackOnly();
 			throw new ControladorException("erro.sistema", e);
@@ -5295,6 +5600,12 @@ public class ControladorImovelSEJB
 					imovelRelatorioHelper.setConsumoMedioImovel(consumoMedio);
 				}
 
+				// Consumo Fixado Poço
+				if(contasDadosRelatorio[89] != null){
+
+					imovelRelatorioHelper.setConsumoFixadoPoco(contasDadosRelatorio[89].toString());
+				}
+
 				Imovel imovel = new Imovel();
 
 				Localidade localidadeImovel = new Localidade();
@@ -5389,7 +5700,8 @@ public class ControladorImovelSEJB
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, Integer relatorio,
 					String cdRotaInicial, String cdRotaFinal, String sequencialRotaInicial, String sequencialRotaFinal,
-					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal) throws ControladorException{
+					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal) throws ControladorException{
 
 		Integer quantidade = null;
 
@@ -5407,7 +5719,8 @@ public class ControladorImovelSEJB
 							idCategoria, quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 							idAreaConstruidaFaixa, idUnidadeNegocio, relatorio, cdRotaInicial, cdRotaFinal, sequencialRotaInicial,
-							sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+							sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
+							consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 		}catch(ErroRepositorioException e){
 			sessionContext.setRollbackOnly();
 			throw new ControladorException("erro.sistema", e);
@@ -5553,21 +5866,21 @@ public class ControladorImovelSEJB
 	 */
 	public Collection gerarRelatorioDadosEconomiaImovel(String idImovelCondominio, String idImovelPrincipal,
 					String[] idSituacaoLigacaoAgua, String consumoMinimoInicialAgua, String consumoMinimoFinalAgua,
-					String[] idSituacaoLigacaoEsgoto,
-					String consumoMinimoInicialEsgoto, String consumoMinimoFinalEsgoto, String intervaloValorPercentualEsgotoInicial,
-					String intervaloValorPercentualEsgotoFinal, String intervaloMediaMinimaImovelInicial,
-					String intervaloMediaMinimaImovelFinal, String intervaloMediaMinimaHidrometroInicial,
-					String intervaloMediaMinimaHidrometroFinal, String idImovelPerfil, String idPocoTipo, String idFaturamentoSituacaoTipo,
-					String idCobrancaSituacaoTipo, String idSituacaoEspecialCobranca, String idEloAnormalidade,
-					String areaConstruidaInicial, String areaConstruidaFinal, String idCadastroOcorrencia, String idConsumoTarifa,
-					String idGerenciaRegional, String idLocalidadeInicial, String idLocalidadeFinal, String setorComercialInicial,
-					String setorComercialFinal, String quadraInicial, String quadraFinal, String loteOrigem, String loteDestno, String cep,
-					String logradouro, String bairro, String municipio, String idTipoMedicao, String indicadorMedicao,
-					String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial, String quantidadeEconomiasFinal,
-					String diaVencimento, String idCliente, String idClienteTipo, String idClienteRelacaoTipo, String numeroPontosInicial,
-					String numeroPontosFinal, String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa,
-					String idUnidadeNegocio, String segmentoInicial, String segmentoFinal, String rotaInicial, String rotaFinal,
-					String sequencialRotaInicial, String sequencialRotaFinal, String subloteInicial, String subloteFinal)
+					String[] idSituacaoLigacaoEsgoto, String consumoMinimoInicialEsgoto, String consumoMinimoFinalEsgoto,
+					String intervaloValorPercentualEsgotoInicial, String intervaloValorPercentualEsgotoFinal,
+					String intervaloMediaMinimaImovelInicial, String intervaloMediaMinimaImovelFinal,
+					String intervaloMediaMinimaHidrometroInicial, String intervaloMediaMinimaHidrometroFinal, String idImovelPerfil,
+					String idPocoTipo, String idFaturamentoSituacaoTipo, String idCobrancaSituacaoTipo, String idSituacaoEspecialCobranca,
+					String idEloAnormalidade, String areaConstruidaInicial, String areaConstruidaFinal, String idCadastroOcorrencia,
+					String idConsumoTarifa, String idGerenciaRegional, String idLocalidadeInicial, String idLocalidadeFinal,
+					String setorComercialInicial, String setorComercialFinal, String quadraInicial, String quadraFinal, String loteOrigem,
+					String loteDestno, String cep, String logradouro, String bairro, String municipio, String idTipoMedicao,
+					String indicadorMedicao, String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial,
+					String quantidadeEconomiasFinal, String diaVencimento, String idCliente, String idClienteTipo,
+					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
+					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String segmentoInicial,
+					String segmentoFinal, String rotaInicial, String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal,
+					String subloteInicial, String subloteFinal, String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal)
 					throws ControladorException{
 
 		Collection colecaoImoveis = null;
@@ -5581,25 +5894,23 @@ public class ControladorImovelSEJB
 
 		try{
 			// remove primeiro as linhas do critério cobrança
-			colecaoImoveis = repositorioImovel
-							.gerarRelatorioDadosEconomiasImovelOutrosCriterios(idImovelCondominio, idImovelPrincipal,
-											idSituacaoLigacaoAgua, consumoMinimoInicialAgua, consumoMinimoFinalAgua,
-											idSituacaoLigacaoEsgoto, consumoMinimoInicialEsgoto, consumoMinimoFinalEsgoto,
-											intervaloValorPercentualEsgotoInicial, intervaloValorPercentualEsgotoFinal,
+			colecaoImoveis = repositorioImovel.gerarRelatorioDadosEconomiasImovelOutrosCriterios(idImovelCondominio, idImovelPrincipal,
+							idSituacaoLigacaoAgua, consumoMinimoInicialAgua, consumoMinimoFinalAgua, idSituacaoLigacaoEsgoto,
+							consumoMinimoInicialEsgoto, consumoMinimoFinalEsgoto, intervaloValorPercentualEsgotoInicial,
+							intervaloValorPercentualEsgotoFinal,
 
-											intervaloMediaMinimaImovelInicial, intervaloMediaMinimaImovelFinal,
-											intervaloMediaMinimaHidrometroInicial, intervaloMediaMinimaHidrometroFinal,
+							intervaloMediaMinimaImovelInicial, intervaloMediaMinimaImovelFinal, intervaloMediaMinimaHidrometroInicial,
+							intervaloMediaMinimaHidrometroFinal,
 
-											idImovelPerfil, idPocoTipo, idFaturamentoSituacaoTipo, idCobrancaSituacaoTipo,
-											idSituacaoEspecialCobranca, idEloAnormalidade, areaConstruidaInicial, areaConstruidaFinal,
-											idCadastroOcorrencia, idConsumoTarifa, idGerenciaRegional, idLocalidadeInicial,
-											idLocalidadeFinal, setorComercialInicial, setorComercialFinal, quadraInicial, quadraFinal,
-											loteOrigem, loteDestno, cep, logradouro, bairro, municipio, idTipoMedicao, indicadorMedicao,
-											idSubCategoria, idCategoria, quantidadeEconomiasInicial, quantidadeEconomiasFinal,
-											diaVencimento, idCliente, idClienteTipo, idClienteRelacaoTipo, numeroPontosInicial,
-											numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa,
-											idUnidadeNegocio, segmentoInicial, segmentoFinal, rotaInicial, rotaFinal,
-											sequencialRotaInicial, sequencialRotaFinal, subloteInicial, subloteFinal);
+							idImovelPerfil, idPocoTipo, idFaturamentoSituacaoTipo, idCobrancaSituacaoTipo, idSituacaoEspecialCobranca,
+							idEloAnormalidade, areaConstruidaInicial, areaConstruidaFinal, idCadastroOcorrencia, idConsumoTarifa,
+							idGerenciaRegional, idLocalidadeInicial, idLocalidadeFinal, setorComercialInicial, setorComercialFinal,
+							quadraInicial, quadraFinal, loteOrigem, loteDestno, cep, logradouro, bairro, municipio, idTipoMedicao,
+							indicadorMedicao, idSubCategoria, idCategoria, quantidadeEconomiasInicial, quantidadeEconomiasFinal,
+							diaVencimento, idCliente, idClienteTipo, idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal,
+							numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa, idUnidadeNegocio, segmentoInicial,
+							segmentoFinal, rotaInicial, rotaFinal, sequencialRotaInicial, sequencialRotaFinal, subloteInicial,
+							subloteFinal, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 		}catch(ErroRepositorioException e){
 			sessionContext.setRollbackOnly();
 			throw new ControladorException("erro.sistema", e);
@@ -5886,6 +6197,7 @@ public class ControladorImovelSEJB
 		FiltroEntidadeBeneficente filtroEntidadeBeneficente = null;
 
 		filtroEntidadeBeneficente = new FiltroEntidadeBeneficente();
+		filtroEntidadeBeneficente.adicionarCaminhoParaCarregamentoEntidade(FiltroEntidadeBeneficente.CLIENTE);
 
 		/** * Avalia se o parãmetro idEntidadeBeneficente veio preenchido ** */
 		if((idEntidadeBeneficente != null) && (idEntidadeBeneficente.intValue() != 0)){
@@ -5936,14 +6248,15 @@ public class ControladorImovelSEJB
 	 * @param idImovel
 	 *            -
 	 *            Código do imóvel
-	 * @param idEntidadeBeneficente
+	 * @param idEntidadeBeneficenteContrato
 	 *            -
-	 *            Código da entidade beneficente
+	 *            Código do Contrato da Entidade Beneficente
 	 * @return ImovelDoacao - Retorna um imóvel doação caso a combinação de
 	 *         imóvel e entidade beneficente exista.
 	 * @throws ControladorException
 	 */
-	public ImovelDoacao verificarExistenciaImovelDoacao(Integer idImovel, Integer idEntidadeBeneficente) throws ControladorException{
+	public ImovelDoacao verificarExistenciaImovelDoacao(Integer idImovel, Integer idEntidadeBeneficenteContrato)
+					throws ControladorException{
 
 		/** * Declara as variáveis locais ** */
 		ImovelDoacao retorno = null;
@@ -5953,8 +6266,11 @@ public class ControladorImovelSEJB
 		/** * Prepara o filtro com os parâmetros passados ** */
 		filtroImovelDoacao = new FiltroImovelDoacao();
 		filtroImovelDoacao.adicionarParametro(new ParametroSimples(FiltroImovelDoacao.ID_IMOVEL, idImovel));
-		filtroImovelDoacao.adicionarParametro(new ParametroSimples(FiltroImovelDoacao.ID_ENTIDADE_BENEFICENTE, idEntidadeBeneficente));
-
+		filtroImovelDoacao.adicionarParametro(new ParametroSimples(FiltroImovelDoacao.ID_ENTIDADE_BENEFICENTE_CONTRATO,
+						idEntidadeBeneficenteContrato));
+		filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelDoacao.ENTIDADE_BENEFICENTE_CONTRATO);
+		filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelDoacao.ENTIDADE_BENEFICENTE);
+		
 		try{
 			/** * Executa a pesquisa de imóvel doação ** */
 			colecaoImovelDoacao = repositorioImovel.pesquisarImovelDoacao(filtroImovelDoacao);
@@ -6302,8 +6618,8 @@ public class ControladorImovelSEJB
 			if(!LigacaoAguaSituacao.POTENCIAL.equals(imovel.getLigacaoAguaSituacao().getId())
 							&& !LigacaoAguaSituacao.FACTIVEL.equals(imovel.getLigacaoAguaSituacao().getId())){
 			}else{
-				throw new ControladorException("atencao.imovel.ligacao_agua_situacao.incompativel", null, new String[] {Integer
-								.toString(imovel.getId()), imovel.getLigacaoAguaSituacao().getDescricao()});
+				throw new ControladorException("atencao.imovel.ligacao_agua_situacao.incompativel", null,
+								new String[] {Integer.toString(imovel.getId()), imovel.getLigacaoAguaSituacao().getDescricao()});
 			}
 
 			/*
@@ -7431,6 +7747,11 @@ public class ControladorImovelSEJB
 					imovelCobrancaSituacao.setAdvogado(cliente);
 				}
 
+				// 9 - Numero do Processo
+				if(array[9] != null){
+					imovelCobrancaSituacao.setNumeroProcessoAdministrativoExecucaoFiscal((Integer) array[9]);
+				}
+
 				imoveisSituacoesCobranca.add(imovelCobrancaSituacao);
 
 			}// fim do while
@@ -7783,6 +8104,20 @@ public class ControladorImovelSEJB
 				// 8 - Data hora Exclusão
 				if(array[8] != null){
 					cobrancaSituacaoHistorico.setDataHoraExclusao((Date) array[8]);
+				}
+
+				// 12 - descricao do orgão externo
+				if(array[12] != null){
+					OrgaoExterno orgaoExterno = new OrgaoExterno();
+					orgaoExterno.setId((Integer) array[11]);
+					orgaoExterno.setDescricao((String) array[12]);
+
+					cobrancaSituacaoHistorico.setOrgaoExterno(orgaoExterno);
+				}
+
+				// 13 - Número do Process
+				if(array[13] != null){
+					cobrancaSituacaoHistorico.setNumeroProcesso((String) array[13]);
 				}
 
 				imoveisCobrancasSituacaoHistorico.add(cobrancaSituacaoHistorico);
@@ -8694,10 +9029,21 @@ public class ControladorImovelSEJB
 		Object quantidade = null;
 		Integer retorno = null;
 
+		String pCriterioSelecaoVinculoRateio = null;
+
+		try{
+
+			pCriterioSelecaoVinculoRateio = ParametroMicromedicao.P_CRITERIO_SELECAO_VINCULO_RATEIO.executar();
+		}catch(ControladorException e){
+
+			throw new ControladorException("atencao.sistemaparametro_inexistente", null, "P_CRITERIO_SELECAO_VINCULO_RATEIO");
+		}
+
 		try{
 			quantidade = repositorioImovel.pesquisarQuantidadeImovel(idImovel, idLocalidade, codigoSetorComercial, numeroQuadra,
 							idHidrometroHistInst, lote, subLote, codigoCliente, idMunicipio, cep, idBairro, idLogradouro,
-							pesquisarImovelManterVinculo, pesquisarImovelCondominio, numeroHidrometroImovel, numeroImovel);
+							pesquisarImovelManterVinculo, pesquisarImovelCondominio, numeroHidrometroImovel, numeroImovel,
+							pCriterioSelecaoVinculoRateio);
 
 		}catch(ErroRepositorioException ex){
 			throw new ControladorException("erro.sistema", ex);
@@ -9338,8 +9684,8 @@ public class ControladorImovelSEJB
 		if(clienteEscritorio != null && !clienteEscritorio.equals("")){
 
 			if(clienteEscritorio.getClienteTipo() == null
-							|| !clienteEscritorio.getClienteTipo().getIndicadorPessoaFisicaJuridica().equals(
-											ClienteTipo.INDICADOR_PESSOA_JURIDICA)){
+							|| !clienteEscritorio.getClienteTipo().getIndicadorPessoaFisicaJuridica()
+											.equals(ClienteTipo.INDICADOR_PESSOA_JURIDICA)){
 				throw new ControladorException("atencao.escritorio_pessoa_juridica");
 			}else if(clienteEscritorio.getRamoAtividade() == null
 							|| !clienteEscritorio.getRamoAtividade().getId().equals(RamoAtividade.ASSESSORIA_JURIDICA)){
@@ -9354,8 +9700,8 @@ public class ControladorImovelSEJB
 		if(clienteAdvogado != null && !clienteAdvogado.equals("")){
 
 			if(clienteAdvogado.getClienteTipo() == null
-							|| !clienteAdvogado.getClienteTipo().getIndicadorPessoaFisicaJuridica().equals(
-											ClienteTipo.INDICADOR_PESSOA_FISICA)){
+							|| !clienteAdvogado.getClienteTipo().getIndicadorPessoaFisicaJuridica()
+											.equals(ClienteTipo.INDICADOR_PESSOA_FISICA)){
 				throw new ControladorException("atencao.advogado_pessoa_fisica");
 			}else if(clienteAdvogado.getProfissao() == null || !clienteAdvogado.getProfissao().getId().equals(Profissao.ADVOGADO)){
 				throw new ControladorException("atencao.profissao_advogado");
@@ -9374,8 +9720,8 @@ public class ControladorImovelSEJB
 
 		if(anoMesFim != null){
 			if(sistemaParametro.getAnoMesFaturamento().intValue() < anoMesFim){
-				throw new ControladorException("atencao.ano_mes_informado_maior_que.ano.mes.faturamento", null, Util
-								.formatarAnoMesParaMesAno(sistemaParametro.getAnoMesFaturamento().intValue()));
+				throw new ControladorException("atencao.ano_mes_informado_maior_que.ano.mes.faturamento", null,
+								Util.formatarAnoMesParaMesAno(sistemaParametro.getAnoMesFaturamento().intValue()));
 			}else{
 				imovelCobrancaSituacao.setAnoMesReferenciaFinal(anoMesFim);
 			}
@@ -9483,8 +9829,8 @@ public class ControladorImovelSEJB
 									&& imovelCobrancaSituacao.getAnoMesReferenciaFinal() != null){
 
 						Collection colecaoContasEmRevisao = (Collection) getControladorFaturamento()
-										.obterContasImovelIntervalo(imovel.getId(),
-										DebitoCreditoSituacao.NORMAL, DebitoCreditoSituacao.INCLUIDA, DebitoCreditoSituacao.RETIFICADA,
+										.obterContasImovelIntervalo(imovel.getId(), DebitoCreditoSituacao.NORMAL,
+														DebitoCreditoSituacao.INCLUIDA, DebitoCreditoSituacao.RETIFICADA,
 										imovelCobrancaSituacao.getAnoMesReferenciaInicio(),
 														imovelCobrancaSituacao.getAnoMesReferenciaFinal(),
 														cobrancaSituacao.getContaMotivoRevisao().getId());
@@ -9593,15 +9939,15 @@ public class ControladorImovelSEJB
 
 	public Collection pesquisarImoveisTarifaConsumo(String idLocalidadeInicial, String idLocalidadeFinal,
 					String codigoSetorComercialInicial, String codigoSetorComercialFinal, String quadraInicial, String quadraFinal,
-					String loteInicial, String loteFinal, String subLoteInicial, String subLoteFinal, String idTarifaAnterior)
-					throws ControladorException{
+					String loteInicial, String loteFinal, String subLoteInicial, String subLoteFinal, String idTarifaAnterior,
+					String idsCategorias, String idsSubcategorias) throws ControladorException{
 
 		Collection colecaoDadosImoveis = null;
 
 		try{
 			colecaoDadosImoveis = repositorioImovel.pesquisarImoveisTarifaConsumo(idLocalidadeInicial, idLocalidadeFinal,
 							codigoSetorComercialInicial, codigoSetorComercialFinal, quadraInicial, quadraFinal, loteInicial, loteFinal,
-							subLoteInicial, subLoteFinal, idTarifaAnterior);
+							subLoteInicial, subLoteFinal, idTarifaAnterior, idsCategorias, idsSubcategorias);
 		}catch(ErroRepositorioException ex){
 			throw new ControladorException("erro.sistema", ex);
 		}
@@ -9985,18 +10331,9 @@ public class ControladorImovelSEJB
 	public ImovelSubcategoria obterPrincipalSubcategoria(Integer idCategoria, Integer idImovel) throws ControladorException{
 
 		try{
-			Collection<ImovelSubcategoria> colSubCategorias = repositorioImovel.obterSubCategoriasPorCategoria(idCategoria, idImovel);
 
-			ImovelSubcategoria subcategoriaPrincipal = null;
+			return repositorioImovel.obterSubCategoriasPorCategoria(idCategoria, idImovel);
 
-			// Selecionamos o de maior quantidade de economias
-			if(colSubCategorias != null && colSubCategorias.size() > 0){
-				for(ImovelSubcategoria sub : colSubCategorias){
-					if(subcategoriaPrincipal == null || subcategoriaPrincipal.getQuantidadeEconomias() < sub.getQuantidadeEconomias()) subcategoriaPrincipal = sub;
-				}
-			}
-
-			return subcategoriaPrincipal;
 		}catch(ErroRepositorioException ex){
 			throw new ControladorException("erro.sistema", ex);
 		}
@@ -10241,8 +10578,8 @@ public class ControladorImovelSEJB
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String rotaInicial,
 					String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal, Short tipoEmpresa, String indicadorOrdenacao)
-					throws ControladorException{
+					String segmentoFinal, String subloteInicial, String subloteFinal, Short tipoEmpresa, String indicadorOrdenacao,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal) throws ControladorException{
 
 		Collection colecaoImoveis = null;
 
@@ -10264,7 +10601,7 @@ public class ControladorImovelSEJB
 							diaVencimento, idCliente, idClienteTipo, idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal,
 							numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa, idUnidadeNegocio, rotaInicial, rotaFinal,
 							sequencialRotaInicial, sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
-							indicadorOrdenacao);
+							indicadorOrdenacao, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 		}catch(ErroRepositorioException e){
 			sessionContext.setRollbackOnly();
 			throw new ControladorException("erro.sistema", e);
@@ -10941,7 +11278,7 @@ public class ControladorImovelSEJB
 				ObterDebitoImovelOuClienteHelper obterDebitoImovelOuClienteHelper = getControladorCobranca().obterDebitoImovelOuCliente(1,
 								imovelClientesEspeciaisRelatorioHelper.getIdImovel().toString(), null, null, "000101", "999912",
 								dataInicioVencimentoDebito.getTime(), dataFimVencimentoDebito.getTime(), 1, 1, 2, 2, 1, 1, 1, null, null,
-								null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM);
+								null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM, 2, null);
 
 				Integer qtdeDebitos = Integer.valueOf("0");
 				BigDecimal valorDebitos = new BigDecimal("0.00");
@@ -11174,8 +11511,8 @@ public class ControladorImovelSEJB
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String rotaInicial,
 					String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal, String indicadorOrdenacao)
-					throws ControladorException{
+					String segmentoFinal, String subloteInicial, String subloteFinal, String indicadorOrdenacao,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal) throws ControladorException{
 
 		Collection colecaoImoveis = null;
 
@@ -11197,7 +11534,7 @@ public class ControladorImovelSEJB
 							diaVencimento, idCliente, idClienteTipo, idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal,
 							numeroMoradoresInicial, numeroMoradoresFinal, idAreaConstruidaFaixa, idUnidadeNegocio, rotaInicial, rotaFinal,
 							sequencialRotaInicial, sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
-							indicadorOrdenacao);
+							indicadorOrdenacao, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 		}catch(ErroRepositorioException e){
 			throw new ControladorException("erro.sistema", e);
 		}
@@ -12124,8 +12461,8 @@ public class ControladorImovelSEJB
 						relatorioAnaliseConsumoHelper.setQtdEconomias(String.valueOf(imoveleRota[8]));
 					}
 
-					Cliente cliente = this.pesquisarClienteUsuarioImovel(Integer
-									.valueOf(relatorioAnaliseConsumoHelper.getMatriculaImovel()));
+					Cliente cliente = this
+									.pesquisarClienteUsuarioImovel(Integer.valueOf(relatorioAnaliseConsumoHelper.getMatriculaImovel()));
 
 					if(cliente != null){
 						if(cliente.getNome() != null && !"".equals(cliente.getNome())){
@@ -12384,8 +12721,7 @@ public class ControladorImovelSEJB
 
 	public Collection<Object[]> pesquisarImoveisPorSetorComercialCriterioCobranca(Integer idSetorComercial, Integer idCriterioCobranca,
 					Date dataCortado, Integer idGrupoCobranca, Integer[] idsTipoDocumentoAIgnorar, Integer idAcaoCobranca,
-					CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComando)
-					throws ControladorException{
+					CobrancaAcaoAtividadeComando cobrancaAcaoAtividadeComando) throws ControladorException{
 
 		try{
 			return this.repositorioImovel.pesquisarImoveisPorSetorComercialCriterioCobranca(idSetorComercial, idCriterioCobranca,
@@ -12738,13 +13074,16 @@ public class ControladorImovelSEJB
 			Date dataAtual = new Date();
 			Date dataImplantacao = vencimentoAlternativo.getDataImplantacao();
 
-			int diferencaMes = Util.dataDiff(dataAtual, dataImplantacao);
+			int diferencaMes = 0;
+			if(dataImplantacao != null){
+				diferencaMes = Util.dataDiff(dataAtual, dataImplantacao);
+			}
 
 			if(diferencaMes < numeroMesesMinimoVencimentoAlternativo
 							&& (!temPermissaoInformarVencimentoAlternativoAntesDoPeriodoValido && usuario != Usuario.USUARIO_AGENCIA_VIRTUAL)){
 				sessionContext.setRollbackOnly();
-				throw new ControladorException("atencao.imovel.vencimento.alterado", null, numeroMesesMinimoVencimentoAlternativo
-								.toString());
+				throw new ControladorException("atencao.imovel.vencimento.alterado", null,
+								numeroMesesMinimoVencimentoAlternativo.toString());
 			}else{
 				vencimentoAlternativo.setCliente(cliente);
 
@@ -12833,7 +13172,7 @@ public class ControladorImovelSEJB
 		this.getControladorUtil().atualizar(imovel);
 
 		// Atualizando Vencimento Alternativo
-		vencimentoAlternativo.setDateExclusao(null);
+		vencimentoAlternativo.setDateExclusao(new Date());
 		vencimentoAlternativo.setUltimaAlteracao(new Date());
 
 		// ------------ REGISTRAR TRANSAÇÃO ----------------
@@ -12941,7 +13280,8 @@ public class ControladorImovelSEJB
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String rotaInicial,
 					String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal) throws ControladorException{
+					String segmentoFinal, String subloteInicial, String subloteFinal, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal) throws ControladorException{
 
 		Integer retorno = null;
 		try{
@@ -12958,7 +13298,8 @@ public class ControladorImovelSEJB
 							idCategoria, quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 							idAreaConstruidaFaixa, idUnidadeNegocio, rotaInicial, rotaFinal, sequencialRotaInicial, sequencialRotaFinal,
-							segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+							segmentoInicial, segmentoFinal, subloteInicial, subloteFinal, consumoFixadoEsgotoPocoInicial,
+							consumoFixadoEsgotoPocoFinal);
 
 		}catch(ErroRepositorioException ex){
 			throw new ControladorException("erro.sistema", ex);
@@ -13754,6 +14095,23 @@ public class ControladorImovelSEJB
 		}
 	}
 
+	/**
+	 * Verifica se um cliente representado pelo CNPJ/CPF tem relação ativa com o imóvel representado
+	 * pela matrícula.
+	 * 
+	 * @author Marlos Ribeiro
+	 * @param cpfCnpjCliente
+	 * @param matriculaImovel
+	 * @exception ControladorException
+	 *                se o cliente nao tiver relações com o imóvel.
+	 * @throws NegocioException
+	 */
+	public void validarPermissaoClienteImovel(String matriculaImovel) throws ControladorException, NegocioException{
+
+		verificarMatriculaImovel(matriculaImovel);
+
+	}
+
 	private void verificarFormatoCpfCnpj(String cpfCnpjCliente) throws NegocioException{
 
 		if(Util.isVazioOuBranco(cpfCnpjCliente)){
@@ -13810,8 +14168,8 @@ public class ControladorImovelSEJB
 			}
 			String documento = cpfCnpjCliente.length() == 11 ? cliente.getCpf() : cliente.getCnpj();
 			if(cpfCnpjCliente.equals(documento)
-							&& (clienteImovelSimplificado.getDataFimRelacao() == null || Calendar.getInstance().getTime().compareTo(
-											clienteImovelSimplificado.getDataFimRelacao()) < 1)){
+							&& (clienteImovelSimplificado.getDataFimRelacao() == null || Calendar.getInstance().getTime()
+											.compareTo(clienteImovelSimplificado.getDataFimRelacao()) < 1)){
 				clienteOk = true;
 				break;
 			}
@@ -13825,6 +14183,8 @@ public class ControladorImovelSEJB
 			throw new NegocioException(MensagemUtil.obterMensagem(Constantes.RESOURCE_BUNDLE, "atencao.cleinte_relacao_imovel_inexistente"));
 		}
 	}
+
+
 
 	/**
 	 * [UC0630] Solicitar Emissão do Extrato de Débitos
@@ -14010,22 +14370,22 @@ public class ControladorImovelSEJB
 	 */
 	public int gerarRelatorioImovelOutrosCriteriosCount(String idImovelCondominio, String idImovelPrincipal,
 					String[] idSituacaoLigacaoAgua, String consumoMinimoInicialAgua, String consumoMinimoFinalAgua,
-					String[] idSituacaoLigacaoEsgoto,
-					String consumoMinimoInicialEsgoto, String consumoMinimoFinalEsgoto, String intervaloValorPercentualEsgotoInicial,
-					String intervaloValorPercentualEsgotoFinal, String intervaloMediaMinimaImovelInicial,
-					String intervaloMediaMinimaImovelFinal, String intervaloMediaMinimaHidrometroInicial,
-					String intervaloMediaMinimaHidrometroFinal, String idImovelPerfil, String idPocoTipo, String idFaturamentoSituacaoTipo,
-					String idCobrancaSituacaoTipo, String idSituacaoEspecialCobranca, String idEloAnormalidade,
-					String areaConstruidaInicial, String areaConstruidaFinal, String idCadastroOcorrencia, String idConsumoTarifa,
-					String idGerenciaRegional, String idLocalidadeInicial, String idLocalidadeFinal, String setorComercialInicial,
-					String setorComercialFinal, String quadraInicial, String quadraFinal, String loteOrigem, String loteDestno, String cep,
-					String logradouro, String bairro, String municipio, String idTipoMedicao, String indicadorMedicao,
-					String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial, String quantidadeEconomiasFinal,
-					String diaVencimento, String idCliente, String idClienteTipo, String idClienteRelacaoTipo, String numeroPontosInicial,
-					String numeroPontosFinal, String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa,
-					String idUnidadeNegocio, String cdRotaInicial, String cdRotaFinal, String sequencialRotaInicial,
-					String sequencialRotaFinal, String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal)
-					throws ControladorException{
+					String[] idSituacaoLigacaoEsgoto, String consumoMinimoInicialEsgoto, String consumoMinimoFinalEsgoto,
+					String intervaloValorPercentualEsgotoInicial, String intervaloValorPercentualEsgotoFinal,
+					String intervaloMediaMinimaImovelInicial, String intervaloMediaMinimaImovelFinal,
+					String intervaloMediaMinimaHidrometroInicial, String intervaloMediaMinimaHidrometroFinal, String idImovelPerfil,
+					String idPocoTipo, String idFaturamentoSituacaoTipo, String idCobrancaSituacaoTipo, String idSituacaoEspecialCobranca,
+					String idEloAnormalidade, String areaConstruidaInicial, String areaConstruidaFinal, String idCadastroOcorrencia,
+					String idConsumoTarifa, String idGerenciaRegional, String idLocalidadeInicial, String idLocalidadeFinal,
+					String setorComercialInicial, String setorComercialFinal, String quadraInicial, String quadraFinal, String loteOrigem,
+					String loteDestno, String cep, String logradouro, String bairro, String municipio, String idTipoMedicao,
+					String indicadorMedicao, String idSubCategoria, String idCategoria, String quantidadeEconomiasInicial,
+					String quantidadeEconomiasFinal, String diaVencimento, String idCliente, String idClienteTipo,
+					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
+					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String cdRotaInicial,
+					String cdRotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
+					String segmentoFinal, String subloteInicial, String subloteFinal, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal) throws ControladorException{
 
 		int quantidadeRegistros = 0;
 
@@ -14042,7 +14402,8 @@ public class ControladorImovelSEJB
 							idCategoria, quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimento, idCliente, idClienteTipo,
 							idClienteRelacaoTipo, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 							idAreaConstruidaFaixa, idUnidadeNegocio, cdRotaInicial, cdRotaFinal, sequencialRotaInicial,
-							sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal);
+							sequencialRotaFinal, segmentoInicial, segmentoFinal, subloteInicial, subloteFinal,
+							consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 		}catch(ErroRepositorioException e){
 			sessionContext.setRollbackOnly();
 			throw new ControladorException("erro.sistema", e);
@@ -14716,7 +15077,7 @@ public class ControladorImovelSEJB
 		filtroImovel.adicionarParametro(new ParametroSimples(FiltroImovel.QUADRA_ID, imovelInscricaoAlterada.getQuadraAtual().getId()));
 		filtroImovel.adicionarParametro(new ParametroSimples(FiltroImovel.LOTE, imovelInscricaoAlterada.getLoteAtual()));
 		filtroImovel.adicionarParametro(new ParametroSimples(FiltroImovel.SUBLOTE, imovelInscricaoAlterada.getSubLoteAtual()));
-
+		filtroImovel.adicionarParametro(new ParametroSimples(FiltroImovel.ROTA_ID, imovelInscricaoAlterada.getRotaAtual().getId()));
 		filtroImovel.adicionarParametro(new ParametroSimples(FiltroImovel.INDICADOR_IMOVEL_EXCLUIDO, new Integer("2")));
 
 		Collection<Imovel> colecaoImoveis = getControladorUtil().pesquisar(filtroImovel, Imovel.class.getName());
@@ -14980,4 +15341,350 @@ public class ControladorImovelSEJB
 			throw new ControladorException("erro.sistema", ex);
 		}
 	}
+
+	/**
+	 * Retorna o ImovelSubcategoria principal (O registro com maior quantidade de economias).
+	 * 
+	 * @author Anderson Italo
+	 * @date 14/06/2014
+	 * @param idImovel
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public ImovelSubcategoria pesquisarImovelSubcategoriaPrincipal(Integer idImovel) throws ControladorException{
+
+		try{
+
+			return this.repositorioImovel.pesquisarImovelSubcategoriaPrincipal(idImovel);
+		}catch(ErroRepositorioException e){
+
+			throw new ControladorException("erro.sistema", e);
+		}
+
+	}
+
+	/**
+	 * @author Gicevalter Couto
+	 * @date 21/09/2014
+	 * @throws ControladorException
+	 */
+	public void ajustarRelacaoUsuarioClienteImovel(int idFuncionalidadeIniciada) throws ControladorException{
+
+		int idUnidadeIniciada = 0;
+		try{
+
+			idUnidadeIniciada = getControladorBatch().iniciarUnidadeProcessamentoBatch(idFuncionalidadeIniciada,
+							UnidadeProcessamento.FUNCIONALIDADE, 0);
+
+			//
+			// 1 - Obtem a Lista de Usuário Cliente/Imoveis Vencidos
+			//
+			Calendar dataCorrente = Calendar.getInstance();
+			dataCorrente.setTime(new Date());
+
+			dataCorrente.set(Calendar.SECOND, 0);
+			dataCorrente.set(Calendar.MILLISECOND, 0);
+			dataCorrente.set(Calendar.HOUR, 0);
+			dataCorrente.set(Calendar.HOUR_OF_DAY, 0);
+			dataCorrente.set(Calendar.MINUTE, 0);
+
+			FiltroClienteImovel filtroClienteImovel = new FiltroClienteImovel();
+			filtroClienteImovel.adicionarParametro(new ParametroNulo(FiltroClienteImovel.DATA_FIM_RELACAO));
+			filtroClienteImovel.adicionarParametro(new ParametroNaoNulo(FiltroClienteImovel.DATA_PREVISTA_FIM_RELACAO));
+
+			filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteImovel.IMOVEL);
+			filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteImovel.CLIENTE);
+			filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteImovel.CLIENTE_RELACAO_TIPO);
+
+			Collection<ClienteImovel> colecaoClienteImoveis = this.getControladorUtil().pesquisar(filtroClienteImovel,
+							ClienteImovel.class.getName());
+
+			for(ClienteImovel clienteImovel : colecaoClienteImoveis){
+				Calendar dataPrevistaFimRelacao = Calendar.getInstance();
+				dataPrevistaFimRelacao.setTime(clienteImovel.getDataPrevistaFimRelacao());
+
+				dataPrevistaFimRelacao.set(Calendar.SECOND, 0);
+				dataPrevistaFimRelacao.set(Calendar.MILLISECOND, 0);
+				dataPrevistaFimRelacao.set(Calendar.HOUR, 0);
+				dataPrevistaFimRelacao.set(Calendar.HOUR_OF_DAY, 0);
+				dataPrevistaFimRelacao.set(Calendar.MINUTE, 0);
+
+				if(dataPrevistaFimRelacao.before(dataCorrente)){
+
+					clienteImovel.setDataFimRelacao(clienteImovel.getDataPrevistaFimRelacao());
+					getControladorUtil().atualizar(clienteImovel);
+
+					ClienteImovel clienteImovelNovo = new ClienteImovel();
+
+					clienteImovelNovo.setImovel(clienteImovel.getImovel());
+					clienteImovelNovo.setClienteRelacaoTipo(clienteImovel.getClienteRelacaoTipo());
+					clienteImovelNovo.setIndicadorNomeConta(clienteImovel.getIndicadorNomeConta());
+
+					dataPrevistaFimRelacao.add(Calendar.DAY_OF_YEAR, 1);
+					clienteImovelNovo.setDataInicioRelacao(dataPrevistaFimRelacao.getTime());
+
+					FiltroClienteImovel filtroClienteImovelProprietario = new FiltroClienteImovel();
+					filtroClienteImovelProprietario.adicionarParametro(new ParametroSimples(FiltroClienteImovel.IMOVEL_ID, clienteImovel
+									.getImovel().getId()));
+					filtroClienteImovelProprietario.adicionarParametro(new ParametroNulo(FiltroClienteImovel.DATA_FIM_RELACAO));
+					filtroClienteImovelProprietario.adicionarParametro(new ParametroSimples(FiltroClienteImovel.CLIENTE_RELACAO_TIPO_ID, ClienteRelacaoTipo.PROPRIETARIO ) );
+					filtroClienteImovelProprietario.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteImovel.CLIENTE);
+					
+					ClienteImovel clienteImovelProprietario = (ClienteImovel) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(
+									filtroClienteImovelProprietario, ClienteImovel.class.getName()));
+					clienteImovelNovo.setCliente(clienteImovelProprietario.getCliente());
+					
+					clienteImovelNovo.setUltimaAlteracao(new Date());
+					
+					getControladorUtil().inserir(clienteImovelNovo);
+
+				}
+			}
+
+
+			// --------------------------------------------------------
+			//
+			// Registrar o fim da execução da Unidade de Processamento
+			//
+			// --------------------------------------------------------
+			getControladorBatch().encerrarUnidadeProcessamentoBatch(idUnidadeIniciada, false);
+
+		}catch(Exception e){
+			// Este catch serve para interceptar qualquer exceção que o processo
+			// batch venha a lançar e garantir que a unidade de processamento do
+			// batch será atualizada com o erro ocorrido
+			e.printStackTrace();
+			sessionContext.setRollbackOnly();
+
+			getControladorBatch().encerrarUnidadeProcessamentoBatch(idUnidadeIniciada, true);
+
+			throw new EJBException(e);
+		}
+	}
+
+	/**
+	 * <p>
+	 * [OC1372979]
+	 * </p>
+	 * 
+	 * @author Magno Silveira (magno.silveira@procenge.com.br)
+	 * @since 22/10/2014
+	 * @param imovelCondominioId
+	 * @return
+	 * @throws ControladorException
+	 */
+	public Collection pesquisarImoveisSubcategoriasParaCondominio(Integer imovelCondominioId) throws ControladorException{
+
+		try{
+			return this.repositorioImovel.pesquisarImoveisSubcategoriasParaCondominio(imovelCondominioId);
+		}catch(ErroRepositorioException e){
+
+			throw new ControladorException("erro.sistema", e);
+		}
+
+	}
+
+
+	/**
+	 * <p>
+	 * [OC1366820]
+	 * </p>
+	 * 
+	 * @author Magno Silveira { @literal <magno.silveira@procenge.com.br> }
+	 * @since 07/10/2014
+	 * @param idFuncionalidadeIniciada
+	 * @throws ControladorException
+	 */
+	public void atualizarImoveisComSupressaoDefinitiva(int idFuncionalidadeIniciada) throws ControladorException{
+
+		int idUnidadeIniciada = 0;
+
+		try{
+			
+			logger.info("*** Iniciando Supressão Definitiva de Imóveis");
+
+			idUnidadeIniciada = getControladorBatch().iniciarUnidadeProcessamentoBatch(idFuncionalidadeIniciada,
+							UnidadeProcessamento.FUNCIONALIDADE, 0);
+			logger.info("*** Unidade Iniciada: " + idUnidadeIniciada);
+			
+			Integer last_id = LigacaoAguaSituacao.SUPRIMIDO_DEFINITIVO;
+			logger.info("*** Ligação Água Situação (last_id): " + last_id);
+
+			if(!Util.isVazioOuBrancoOuZero(last_id)){
+
+				FiltroImovel filtroImovel = new FiltroImovel();
+				filtroImovel.adicionarParametro(new ParametroSimples(FiltroImovel.LIGACAO_AGUA_SITUACAO_ID, last_id));
+				filtroImovel.adicionarParametro(new ParametroSimples(FiltroImovel.INDICADOR_IMOVEL_EXCLUIDO, ConstantesSistema.NAO));
+				Collection<Imovel> imoveis = getControladorUtil().pesquisar(filtroImovel, Imovel.class.getName());
+
+				logger.info("*** Imóveis filtrados: " + imoveis.size());
+
+				if(!Util.isVazioOrNulo(imoveis)){
+
+					String log = "";
+
+					boolean imovelPossuiDebitos = false;
+
+					for(Imovel imovel : imoveis){
+						imovelPossuiDebitos = this.getControladorCobranca().imovelPossuiDebitos(imovel.getId());
+
+						log = "*** Imóvel " + imovel.getId() + ((imovelPossuiDebitos) ? " " : " não ") + "possui débitos ";
+
+						if(!imovelPossuiDebitos){
+							imovel.setIndicadorExclusao(ConstantesSistema.SIM);
+							imovel.setUltimaAlteracao(new Date());
+							Fachada.getInstancia().atualizar(imovel);
+
+							log += "e foi removido!";
+						}
+
+						logger.info(log);
+					}
+				}
+			}
+			
+			this.getControladorBatch().encerrarUnidadeProcessamentoBatch(idUnidadeIniciada, false);
+			logger.info("*** Unidade de Processamento encerrada normalmente!");
+		}catch(Exception e){
+			e.printStackTrace();
+			sessionContext.setRollbackOnly();
+			this.getControladorBatch().encerrarUnidadeProcessamentoBatch(idUnidadeIniciada, true);
+			logger.info("*** Unidade de Processamento encerrada com erro!");
+			throw new EJBException(e);
+		}
+	}
+
+	/**
+	 * @param idImovel
+	 * @return
+	 * @throws ControladorException
+	 */
+	public Collection pesquisarImovelSubcategorias(Integer idImovel) throws ControladorException{
+
+		try{
+			return this.repositorioImovel.pesquisarImovelSubcategorias(idImovel);
+		}catch(ErroRepositorioException e){
+			sessionContext.setRollbackOnly();
+			throw new ControladorException("erro.sistema", e);
+		}
+
+	}
+
+	/**
+	 * @param idImovel
+	 * @param idRotaAtualizar
+	 * @throws ControladorException
+	 */
+
+	public void atualizarRotaImovel(Integer idImovel, Integer idRotaAtualizar) throws ControladorException{
+
+		try{
+			this.repositorioImovel.atualizarRotaImovel(idImovel, idRotaAtualizar);
+		}catch(ErroRepositorioException e){
+			sessionContext.setRollbackOnly();
+			throw new ControladorException("erro.sistema", e);
+		}
+
+	}
+
+	public Collection<Categoria> obterCategorias(Integer idImovel, Integer anoMesMovimento){
+
+		ArrayList<Categoria> categorias = new ArrayList<Categoria>();
+
+		FiltroMovimentoRoteiroEmpresa filtroMovimentoRoteiroEmpresa = new FiltroMovimentoRoteiroEmpresa();
+
+		filtroMovimentoRoteiroEmpresa.adicionarParametro(new ParametroSimples(FiltroMovimentoRoteiroEmpresa.IMOVEL_ID, idImovel));
+		filtroMovimentoRoteiroEmpresa.adicionarParametro(new ParametroSimples(FiltroMovimentoRoteiroEmpresa.ANO_MES_MOVIMENTO,
+						anoMesMovimento));
+
+		ArrayList<MovimentoRoteiroEmpresa> colecaoMovimentoRoteiroEmpresa = (ArrayList<MovimentoRoteiroEmpresa>) Fachada.getInstancia()
+						.pesquisar(filtroMovimentoRoteiroEmpresa, MovimentoRoteiroEmpresa.class.getName());
+
+		if(!Util.isVazioOrNulo(colecaoMovimentoRoteiroEmpresa)){
+			for(MovimentoRoteiroEmpresa movimentoRoteiroEmpresa : colecaoMovimentoRoteiroEmpresa){
+
+				Short comercial = movimentoRoteiroEmpresa.getQuantidadeEconomiasComercial();
+				Short industrial = movimentoRoteiroEmpresa.getQuantidadeEconomiasIndustrial();
+				Short publica = movimentoRoteiroEmpresa.getQuantidadeEconomiasPublica();
+				Short residencial = movimentoRoteiroEmpresa.getQuantidadeEconomiasResidencial();
+
+				if(comercial != null && comercial > 0){
+
+					FiltroCategoria filtroCategoria = new FiltroCategoria();
+					filtroCategoria.adicionarParametro(new ParametroSimples(FiltroCategoria.CODIGO, Categoria.COMERCIAL_INT));
+					Collection<Categoria> categoriaCollecion = Fachada.getInstancia().pesquisar(filtroCategoria, Categoria.class.getName());
+
+					for(Categoria categoria : categoriaCollecion){
+						categoria.setQuantidadeEconomiasCategoria(new Integer(comercial));
+					}
+
+					categorias.addAll(categoriaCollecion);
+
+				}
+
+				if(industrial != null && industrial > 0){
+
+					FiltroCategoria filtroCategoria = new FiltroCategoria();
+					filtroCategoria.adicionarParametro(new ParametroSimples(FiltroCategoria.CODIGO, Categoria.INDUSTRIAL_INT));
+					Collection<Categoria> categoriaCollecion = Fachada.getInstancia().pesquisar(filtroCategoria, Categoria.class.getName());
+
+					for(Categoria categoria : categoriaCollecion){
+						categoria.setQuantidadeEconomiasCategoria(new Integer(industrial));
+					}
+
+					categorias.addAll(categoriaCollecion);
+
+				}
+
+				if(publica != null && publica > 0){
+
+					FiltroCategoria filtroCategoria = new FiltroCategoria();
+					filtroCategoria.adicionarParametro(new ParametroSimples(FiltroCategoria.CODIGO, Categoria.PUBLICO_INT));
+					Collection<Categoria> categoriaCollecion = Fachada.getInstancia().pesquisar(filtroCategoria, Categoria.class.getName());
+
+					for(Categoria categoria : categoriaCollecion){
+						categoria.setQuantidadeEconomiasCategoria(new Integer(publica));
+					}
+
+					categorias.addAll(categoriaCollecion);
+
+				}
+
+				if(residencial != null && residencial > 0){
+
+					FiltroCategoria filtroCategoria = new FiltroCategoria();
+					filtroCategoria.adicionarParametro(new ParametroSimples(FiltroCategoria.CODIGO, Categoria.RESIDENCIAL_INT));
+					Collection<Categoria> categoriaCollecion = Fachada.getInstancia().pesquisar(filtroCategoria, Categoria.class.getName());
+
+					for(Categoria categoria : categoriaCollecion){
+						categoria.setQuantidadeEconomiasCategoria(new Integer(residencial));
+					}
+
+					categorias.addAll(categoriaCollecion);
+
+				}
+
+			}
+		}
+
+		return categorias;
+	}
+
+	public Integer retornarAnoMesReferenciaFaturamentoGrupoImovel(Integer idImovel) throws ControladorException{
+
+		Integer amReferenciaFaturamentoGrupoImovel = null;
+
+		try{
+
+			amReferenciaFaturamentoGrupoImovel = this.repositorioImovel.retornarAnoMesReferenciaFaturamentoGrupoImovel(idImovel);
+
+		}catch(ErroRepositorioException ex){
+
+			ex.printStackTrace();
+			throw new ControladorException("erro.sistema", ex);
+		}
+
+		return amReferenciaFaturamentoGrupoImovel;
+	}
+
 }

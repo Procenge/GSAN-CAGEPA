@@ -45,9 +45,9 @@ package gcom.arrecadacao.pagamento;
  * @date 24/07/2008
  *
  */
-import org.apache.commons.lang.builder.ToStringBuilder;
-
 import gcom.interceptor.ObjetoGcom;
+
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class GuiaPagamentoPrestacaoPK
 				extends ObjetoGcom {
@@ -66,18 +66,22 @@ public class GuiaPagamentoPrestacaoPK
 	/** identifier field */
 	private Integer itemLancamentoContabilId;
 
+	private Integer numeroProcessoAdministrativoExecucaoFiscal;
+
 	/**
 	 * @param guiaPagamentoId
 	 * @param numeroPrestacao
 	 * @param debitoTipoId
 	 * @param itemLancamentoContabilId
 	 */
-	public GuiaPagamentoPrestacaoPK(Integer guiaPagamentoId, Short numeroPrestacao, Integer debitoTipoId, Integer itemLancamentoContabilId) {
+	public GuiaPagamentoPrestacaoPK(Integer guiaPagamentoId, Short numeroPrestacao, Integer debitoTipoId, Integer itemLancamentoContabilId,
+									Integer numeroProcessoAdministrativoExecucaoFiscal) {
 
 		this.guiaPagamentoId = guiaPagamentoId;
 		this.numeroPrestacao = numeroPrestacao;
 		this.debitoTipoId = debitoTipoId;
 		this.itemLancamentoContabilId = itemLancamentoContabilId;
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
 	}
 
 	/**
@@ -89,11 +93,12 @@ public class GuiaPagamentoPrestacaoPK
 
 	public String[] retornaCamposChavePrimaria(){
 
-		String[] retorno = new String[4];
+		String[] retorno = new String[5];
 		retorno[0] = "guiaPagamentoId";
 		retorno[1] = "numeroPrestacaoId";
 		retorno[2] = "debitoTipoId";
 		retorno[3] = "itemLancamentoContabilId";
+		retorno[4] = "numeroProcessoAdministrativoExecucaoFiscal";
 		return retorno;
 	}
 
@@ -137,6 +142,16 @@ public class GuiaPagamentoPrestacaoPK
 		this.itemLancamentoContabilId = itemLancamentoContabilId;
 	}
 
+	public Integer getNumeroProcessoAdministrativoExecucaoFiscal(){
+
+		return numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public void setNumeroProcessoAdministrativoExecucaoFiscal(Integer numeroProcessoAdministrativoExecucaoFiscal){
+
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
 	@Override
 	public int hashCode(){
 
@@ -146,6 +161,9 @@ public class GuiaPagamentoPrestacaoPK
 		result = prime * result + ((guiaPagamentoId == null) ? 0 : guiaPagamentoId.hashCode());
 		result = prime * result + ((itemLancamentoContabilId == null) ? 0 : itemLancamentoContabilId.hashCode());
 		result = prime * result + ((numeroPrestacao == null) ? 0 : numeroPrestacao.hashCode());
+		result = prime
+						* result
+						+ ((numeroProcessoAdministrativoExecucaoFiscal == null) ? 0 : numeroProcessoAdministrativoExecucaoFiscal.hashCode());
 		return result;
 	}
 
@@ -171,6 +189,9 @@ public class GuiaPagamentoPrestacaoPK
 		if(numeroPrestacao == null){
 			if(other.numeroPrestacao != null) return false;
 		}else if(!numeroPrestacao.equals(other.numeroPrestacao)) return false;
+		if(numeroProcessoAdministrativoExecucaoFiscal == null){
+			if(other.numeroProcessoAdministrativoExecucaoFiscal != null) return false;
+		}else if(!numeroProcessoAdministrativoExecucaoFiscal.equals(other.numeroProcessoAdministrativoExecucaoFiscal)) return false;
 
 		return true;
 	}
@@ -180,6 +201,7 @@ public class GuiaPagamentoPrestacaoPK
 
 		return new ToStringBuilder(this).append("guiaPagamentoId", getGuiaPagamentoId()).append("numeroPrestacao", getNumeroPrestacao())
 						.append("debitoTipoId", getDebitoTipoId()).append("itemLancamentoContabilId", getItemLancamentoContabilId())
+						.append("numeroProcessoAdministrativoExecucaoFiscal", getNumeroProcessoAdministrativoExecucaoFiscal())
 						.toString();
 	}
 

@@ -131,7 +131,7 @@ public class ImovelDoacao
 	private Date ultimaAlteracao;
 
 	/** persistent field */
-	private EntidadeBeneficente entidadeBeneficente;
+	private EntidadeBeneficenteContrato entidadeBeneficenteContrato;
 
 	/** persistent field */
 	private Usuario usuarioAdesao;
@@ -142,15 +142,23 @@ public class ImovelDoacao
 	/** persistent field */
 	private Imovel imovel;
 
+	private Integer referenciaInicial;
+
+	private String referenciaInicialFormatada;
+
+	private Integer referenciaFinal;
+
+	private String referenciaFinalFormatada;
+
 	/** full constructor */
-	public ImovelDoacao(Imovel imovel, BigDecimal valorDoacao, EntidadeBeneficente entidadeBeneficente, Date dataAdesao,
+	public ImovelDoacao(Imovel imovel, BigDecimal valorDoacao, EntidadeBeneficenteContrato entidadeBeneficenteContrato, Date dataAdesao,
 						Usuario usuarioIdAdesao, Date dataCancelamento, Usuario usuarioIdCancelamento, Date ultimaAlteracao) {
 
 		this.valorDoacao = valorDoacao;
 		this.dataAdesao = dataAdesao;
 		this.dataCancelamento = dataCancelamento;
 		this.ultimaAlteracao = ultimaAlteracao;
-		this.entidadeBeneficente = entidadeBeneficente;
+		this.entidadeBeneficenteContrato = entidadeBeneficenteContrato;
 		this.usuarioAdesao = usuarioIdAdesao;
 		this.usuarioCancelamento = usuarioIdCancelamento;
 		this.imovel = imovel;
@@ -162,15 +170,48 @@ public class ImovelDoacao
 	}
 
 	/** minimal constructor */
-	public ImovelDoacao(Imovel imovel, BigDecimal valorDoacao, EntidadeBeneficente entidadeBeneficente, Date dataAdesao,
+	public ImovelDoacao(Imovel imovel, BigDecimal valorDoacao, EntidadeBeneficenteContrato entidadeBeneficenteContrato, Date dataAdesao,
 						Usuario usuarioAdesao, Date ultimaAlteracao) {
 
 		this.valorDoacao = valorDoacao;
 		this.dataAdesao = dataAdesao;
 		this.ultimaAlteracao = ultimaAlteracao;
-		this.entidadeBeneficente = entidadeBeneficente;
+		this.entidadeBeneficenteContrato = entidadeBeneficenteContrato;
 		this.usuarioAdesao = usuarioAdesao;
 		this.imovel = imovel;
+	}
+
+	public String getReferenciaFinalFormatada(){
+
+		return referenciaFinalFormatada;
+	}
+
+	public Integer getReferenciaFinal(){
+
+		return this.referenciaFinal;
+	}
+
+	public void setReferenciaFinal(Integer referenciaFinal){
+
+		this.referenciaFinal = referenciaFinal;
+		referenciaFinalFormatada = Util.formatarAnoMesSemBarraParaMesAnoComBarra(referenciaFinal);
+	}
+
+	public Integer getReferenciaInicial(){
+
+		return this.referenciaInicial;
+	}
+
+	public String getReferenciaInicialFormatada(){
+
+		return referenciaInicialFormatada;
+
+	}
+
+	public void setReferenciaInicial(Integer referenciaInicial){
+
+		this.referenciaInicial = referenciaInicial;
+		this.referenciaInicialFormatada = Util.formatarAnoMesSemBarraParaMesAnoComBarra(referenciaInicial);
 	}
 
 	public Integer getId(){
@@ -238,14 +279,14 @@ public class ImovelDoacao
 		this.ultimaAlteracao = ultimaAlteracao;
 	}
 
-	public EntidadeBeneficente getEntidadeBeneficente(){
+	public EntidadeBeneficenteContrato getEntidadeBeneficenteContrato(){
 
-		return this.entidadeBeneficente;
+		return this.entidadeBeneficenteContrato;
 	}
 
-	public void setEntidadeBeneficente(EntidadeBeneficente entidadeBeneficente){
+	public void setEntidadeBeneficenteContrato(EntidadeBeneficenteContrato entidadeBeneficenteContrato){
 
-		this.entidadeBeneficente = entidadeBeneficente;
+		this.entidadeBeneficenteContrato = entidadeBeneficenteContrato;
 	}
 
 	public Usuario getUsuarioAdesao(){
@@ -295,7 +336,7 @@ public class ImovelDoacao
 		FiltroImovelDoacao filtroImovelDoacao = new FiltroImovelDoacao();
 
 		filtroImovelDoacao.adicionarParametro(new ParametroSimples(FiltroImovelDoacao.ID, this.getId()));
-		filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade("entidadeBeneficente");
+		filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade("entidadeBeneficenteContrato");
 		filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade("imovel");
 
 		return filtroImovelDoacao;

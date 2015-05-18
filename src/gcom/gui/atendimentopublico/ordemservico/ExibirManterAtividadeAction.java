@@ -5,6 +5,8 @@ import gcom.atendimentopublico.ordemservico.Atividade;
 import gcom.atendimentopublico.ordemservico.FiltroAtividade;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ControladorException;
+import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,6 +61,16 @@ public class ExibirManterAtividadeAction
 			// Caso a pesquisa não retorne nenhum objeto comunica ao usuário;
 			throw new ActionServletException("atencao.pesquisa.nenhumresultado");
 		}
+
+		String permiteCobrarHora = "0";
+		try{
+			permiteCobrarHora = ParametroAtendimentoPublico.P_PERMITE_COBRAR_HORA_OS.executar();
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		sessao.setAttribute("permiteCobrarHora", permiteCobrarHora);
 
 		return retorno;
 	}

@@ -28,6 +28,15 @@
 	src="<bean:message key="caminho.js"/>util.js"></script>
 	
 <script language="Javascript">
+
+	function limparPesquisaRA() {
+
+		var form = document.forms[0];
+
+		form.numeroRA.value = "";
+		form.descricaoRA.value = "";
+	
+	}
 	
 	function validarForm(formulario){
 
@@ -252,7 +261,12 @@
    	    	form.idLocalidade.value = codigoRegistro;
    	        form.nomeLocalidade.value = descricaoRegistro;
    	        form.nomeLocalidade.style.color = "#000000";
-   	    }
+   	    } if (tipoConsulta == 'registroAtendimento') {
+
+		    form.numeroRA.value = codigoRegistro;
+  		    form.descricaoRA.value = descricaoRegistro;
+  		    form.descricaoRA.style.color = "#000000";
+  	    }
 	}
 
 	function habilitarPesquisaClienteImovel(campo){
@@ -608,6 +622,52 @@
 						</a>			
 					</td>
 				</tr>
+				
+								<tr>
+									<td><strong>N&uacute;mero do RA:</strong></td>
+									
+									<td width="1453">
+										
+										<html:text maxlength="9" 
+											tabindex="1"
+											property="numeroRA" 
+											size="9"
+											onkeypress="validaEnterComMensagem(event, 'exibirFiltrarGuiaPagamentoAction.do?ConsultarRA=S','numeroRA','Numero RA');"  />
+											
+											<a href="javascript:chamarPopup('exibirPesquisarRegistroAtendimentoAction.do', 'registroAtendimento', null, null, 600, 730, '', document.forms[0].numeroRA);">
+												
+												<img width="23" 
+													height="21" 
+													border="0"
+													src="<bean:message key="caminho.imagens"/>pesquisa.gif"
+													title="Pesquisar RA" /></a> 
+				
+											<logic:present name="numeroRAEncontrada" scope="request">
+												
+												<html:text property="descricaoRA" 
+													size="45"
+													maxlength="45" 
+													readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:present> 
+				
+											<logic:notPresent name="numeroRAEncontrada" scope="request">
+												
+												<html:text property="descricaoRA" 
+													size="45"
+													maxlength="45" 
+													readonly="true"
+													style="background-color:#EFEFEF; border:0; color: red" />
+													
+											</logic:notPresent>
+				
+											<a href="javascript:limparPesquisaRA();"> 
+												<img src="<bean:message key="caminho.imagens"/>limparcampo.gif"
+													border="0" 
+													title="Apagar" /></a>
+										</td>
+								</tr>				
+				
 				<tr>
 					<td><strong>Localidade:</strong></td>
 					

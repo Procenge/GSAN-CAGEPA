@@ -3,6 +3,7 @@
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 
+<img src="<bean:message key="caminho.imagens"/>print_topo.gif" id="btn_printscreen" alt="Imprimir Tela" style="padding-bottom: 2px; cursor: pointer;" />
 <logic:present name="urlHelpOnLine">
 
 	<logic:notEmpty name="urlHelpOnLine">

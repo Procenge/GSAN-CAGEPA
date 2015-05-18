@@ -65,6 +65,10 @@
 			type="java.lang.Integer" column="mdhi_nnconsumomediohidrometro"
 			length="4" />
 			
+		<property name="consumoMedioMedido"
+			type="java.lang.Integer" column="MDHI_NNCONSUMOMEDIOMEDIDO"
+			length="4" />			
+			
 		<property
 	        name="leituraProcessamentoMovimento"
         	type="java.sql.Date"

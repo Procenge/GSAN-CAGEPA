@@ -93,6 +93,7 @@ import gcom.faturamento.conta.ContaMotivoRevisao;
 import gcom.faturamento.conta.FiltroMotivoRevisaoConta;
 import gcom.faturamento.credito.CreditoARealizar;
 import gcom.faturamento.debito.DebitoACobrar;
+import gcom.faturamento.debito.DebitoTipo;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.Grupo;
@@ -108,6 +109,7 @@ import gcom.util.parametrizacao.cobranca.ExecutorParametrosCobranca;
 import gcom.util.parametrizacao.cobranca.ParametroCobranca;
 import gcom.util.parametrizacao.cobranca.parcelamento.ParametroParcelamento;
 import gcom.util.parametrizacao.faturamento.ExecutorParametrosFaturamento;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -147,6 +149,17 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 		HttpSession sessao = httpServletRequest.getSession(false);
 
 		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
+
+		Boolean indicadorFauramentoTitularDebito = false;
+		try{
+			if(ParametroFaturamento.P_INDICADOR_FATURAMENTO_ATUAL_TITULAR_DEBITO_IMOVEL.executar().equals("1")){
+				indicadorFauramentoTitularDebito = true;
+			}
+		}catch(ControladorException e){
+			e.printStackTrace();
+		}
+
+		Collection<ClienteImovel> colecaoRelacaoImovel = new ArrayList<ClienteImovel>();
 
 		// -----------------------------------------------------------
 		// Verificar as permissões especiais da página
@@ -194,6 +207,11 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 			sessao.setAttribute("popupEfetuarParcelamento", "sim");
 		}
 
+		if(sessao.getAttribute("atendimentoSemPreencherDocumentosObrigatorios") != null
+						&& sessao.getAttribute("atendimentoSemPreencherDocumentosObrigatorios").toString().equals("S")){
+			efetuarParcelamentoDebitosActionForm.set("atendimentoSemPreencherDocumentosObrigatorios", "S");
+		}
+
 		// Pega o codigo que o usuario digitou para a pesquisa direta de imovel
 		String codigoImovel = null;
 		// if(httpServletRequest.getParameter("confirmado") != null &&
@@ -234,6 +252,18 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 			boolean existeImovel = this.pesquisarImovel(codigoImovel, actionForm, httpServletRequest, sessao, usuario);
 
 			if(existeImovel){
+				// [FS0050] Verificar imóvel em execução fiscal
+				Short indicadorImovelEmExecucaoFiscal = fachada.verificarImovelEmExecucaoFiscal(Integer.valueOf(codigoImovel));
+				boolean temPermissaoParcelarEmExecucaoFiscal = fachada.verificarPermissaoEspecial(
+								PermissaoEspecial.PARCELAR_IMOVEL_EM_EXECUCAO_FISCAL, usuario);
+
+				if(indicadorImovelEmExecucaoFiscal.equals(Short.valueOf("1")) && !temPermissaoParcelarEmExecucaoFiscal){
+					throw new ActionServletException("atencao.usuario_sem_permissao_parcelar_em_execucao_fiscal", codigoImovel,
+									usuario.getLogin());
+				}
+
+				efetuarParcelamentoDebitosActionForm
+								.set("indicadorImovelEmExecucaoFiscal", Short.toString(indicadorImovelEmExecucaoFiscal));
 
 				Short pVerificaParcelamentoMesFatCorrente;
 				try{
@@ -260,16 +290,81 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 
 				Short indicadorConsiderarPagamentoNaoClassificado = 2;
 				ObterDebitoImovelOuClienteHelper colecaoDebitoImovel = null;
+				int indicadorDebito = 1;
+				
+				Integer tipoRelacaoTitularDebito=null;
+				
+				try{
+					tipoRelacaoTitularDebito = Integer.valueOf(ParametroFaturamento.P_TIPO_RELACAO_ATUAL_TITULAR_DEBITO_IMOVEL.executar()
+									.toString());
+				}catch(NumberFormatException e1){
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}catch(ControladorException e1){
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+				colecaoRelacaoImovel = fachada.obterListaClientesRelacaoDevedor(Integer.valueOf(codigoImovel), Integer.valueOf("000101"),
+								Integer.valueOf("999912"), 1, 1, 1, 1, 1, 1, 1, indicadorConsiderarPagamentoNaoClassificado,
+								ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM, 1, null, tipoRelacaoTitularDebito);
+
+				String idClienteDebito = null;
+				Integer idRelacaoClienteDebito = null;
+
+				if(efetuarParcelamentoDebitosActionForm.get("idClienteRelacaoImovelSelecionado") != null
+								&& !((String) efetuarParcelamentoDebitosActionForm.get("idClienteRelacaoImovelSelecionado")).equals("")){
+					String[] dados = ((String) efetuarParcelamentoDebitosActionForm.get("idClienteRelacaoImovelSelecionado")).split("\\.");
+
+					idClienteDebito = (dados[1]).toString();
+					idRelacaoClienteDebito = Integer.valueOf(dados[0]);
+
+					indicadorDebito = 2;
+
+					boolean flagModificarFormaPagamento = false;
+
+					if(colecaoRelacaoImovel.size() > 0){
+						for(ClienteImovel clienteImovel : colecaoRelacaoImovel){
+							if(clienteImovel.getCliente().getId().toString().equals(idClienteDebito)){
+								flagModificarFormaPagamento = true;
+
+								efetuarParcelamentoDebitosActionForm.set("idClienteParcelamento", clienteImovel.getCliente().getId()
+												.toString());
+								efetuarParcelamentoDebitosActionForm.set("nomeCliente", clienteImovel.getCliente().getNome());
+								if(clienteImovel.getCliente().getCpf() != null && !clienteImovel.getCliente().getCpf().equals("")){
+									efetuarParcelamentoDebitosActionForm.set("cpfCnpj",
+													Util.formatarCpf(clienteImovel.getCliente().getCpf()));
+								}else if(clienteImovel.getCliente().getCnpj() != null && !clienteImovel.getCliente().getCnpj().equals("")){
+									efetuarParcelamentoDebitosActionForm.set("cpfCnpj",
+													Util.formatarCnpj(clienteImovel.getCliente().getCnpj()));
+								}
+
+								inicioIntervaloParcelamento = "";
+								fimIntervaloParcelamento = "";
+							}
+						}
+					}
+
+					if(flagModificarFormaPagamento){
+						// Implementar Regra para deixar habilitado Guia e Debito a Cobrar
+						sessao.removeAttribute("indicadorTitularidadeDifenteDeUsuarioAtual");
+					}else{
+						// Implementar Regra para deixar habilitado Guia
+						sessao.setAttribute("indicadorTitularidadeDifenteDeUsuarioAtual", "S");
+						efetuarParcelamentoDebitosActionForm.set("indicadorCobrancaParcelamento", "2");
+					}
+				}
+
 				if((!inicioIntervaloParcelamento.equals(inicioIntervaloParcelamentoOriginal))
 								|| (!fimIntervaloParcelamento.equals(fimIntervaloParcelamentoOriginal))){
 					// [UC0067] Obter Débito do Imóvel ou Cliente
 					colecaoDebitoImovel = fachada.obterDebitoImovelOuCliente(
-									1, // Indicador
+									indicadorDebito, // Indicador
 									// débito
 									// imóvel
 									codigoImovel, // Matrícula do imóvel
-									null, // Código do cliente
-									null, // Tipo de relação do cliento com o
+									idClienteDebito, // Código do cliente
+									idRelacaoClienteDebito, // Tipo de relação do cliento com o
 									// imóvel
 									!Util.isVazioOuBranco(inicioIntervaloParcelamento) ? Util
 													.formatarMesAnoParaAnoMesSemBarra(inicioIntervaloParcelamento) : "000101",
@@ -290,16 +385,17 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 									1, // Indicador acréscimos por impontualidade
 									null, // Indicador Contas
 									null, null, null, indicadorConsiderarPagamentoNaoClassificado, ConstantesSistema.SIM,
-									ConstantesSistema.SIM, ConstantesSistema.SIM); // Sistema
+									ConstantesSistema.SIM, ConstantesSistema.SIM, 1, // indicadorSucumbencia
+									null); // Sistema
 				}else{
 					// [UC0067] Obter Débito do Imóvel ou Cliente
 					colecaoDebitoImovel = fachada.obterDebitoImovelOuCliente(
-									1, // Indicador
+									indicadorDebito, // Indicador
 									// débito
 									// imóvel
 									codigoImovel, // Matrícula do imóvel
-									null, // Código do cliente
-									null, // Tipo de relação do cliento com o
+									idClienteDebito, // Código do cliente
+									idRelacaoClienteDebito, // Tipo de relação do cliento com o
 									// imóvel
 									"000101", // Referência inicial do débito
 									"999912", // Referência final do débito
@@ -316,7 +412,8 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 									1, // Indicador acréscimos por impontualidade
 									null, // Indicador Contas
 									null, null, null, indicadorConsiderarPagamentoNaoClassificado, ConstantesSistema.SIM,
-									ConstantesSistema.SIM, ConstantesSistema.SIM); // Sistema
+									ConstantesSistema.SIM, ConstantesSistema.SIM, 1, // indicadorSucumbencia
+									null); // Sistema
 				}
 				
 				// [FS0049] - Verificar retirada de débitos prescritos do débito do parcelamento
@@ -415,10 +512,12 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 				// [FS0042] - Verificar existência de créditos a realizar correspondentes a desconto
 				// nos acréscimos concedido no parcelamento
 				// ----------------------------------------------------------------------------------------------
-				Collection colecaoCreditoARealizarRemover = fachada
-								.verificarCreditoARealiazarComConcessaoDesconto(colecaoCreditoARealizarAux);
+				if(colecaoCreditoARealizarAux != null){
+					Collection colecaoCreditoARealizarRemover = fachada
+									.verificarCreditoARealiazarComConcessaoDesconto(colecaoCreditoARealizarAux);
 
-				colecaoDebitoImovel.setColecaoCreditoARealizar(colecaoCreditoARealizarRemover);
+					colecaoDebitoImovel.setColecaoCreditoARealizar(colecaoCreditoARealizarRemover);
+				}
 
 				// ----------------------------------------------------------------------------------------------
 
@@ -451,38 +550,45 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 				BigDecimal valorAtualizacaoMonetaria = new BigDecimal("0.00");
 				BigDecimal valorJurosMora = new BigDecimal("0.00");
 				BigDecimal valorMulta = new BigDecimal("0.00");
+				BigDecimal valorAtualizacaoMonetariaSucumbencia = new BigDecimal("0.00");
+				BigDecimal valorJurosMoraSucumbencia = new BigDecimal("0.00");
+				BigDecimal valorSucumbencia = new BigDecimal("0.00");
 
 				// Dados do Débito do Imóvel - Contas
 				// colecaoContasImovel = colecaoDebitoImovel.getColecaoContasValoresImovel();
 
+				Set<String> chavesSucumbenciasContaSet = new HashSet<String>();
 				if(colecaoContasImovel != null && !colecaoContasImovel.isEmpty()){
 					Iterator contaValores = colecaoContasImovel.iterator();
 					while(contaValores.hasNext()){
-						ContaValoresHelper contaValoresHelper = (ContaValoresHelper) contaValores.next();
-						valorTotalContas.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-						valorTotalContas = valorTotalContas.add(contaValoresHelper.getValorTotalConta());
-						if(contaValoresHelper.getValorAtualizacaoMonetaria() != null
-										&& !contaValoresHelper.getValorAtualizacaoMonetaria().equals("")){
-							valorAtualizacaoMonetaria.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-							valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.add(contaValoresHelper.getValorAtualizacaoMonetaria()
-											.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
-						}
-						if(contaValoresHelper.getValorJurosMora() != null && !contaValoresHelper.getValorJurosMora().equals("")){
-							valorJurosMora.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-							valorJurosMora = valorJurosMora.add(contaValoresHelper.getValorJurosMora().setScale(
-											Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
-						}
-						if(contaValoresHelper.getValorMulta() != null && !contaValoresHelper.getValorMulta().equals("")){
-							valorMulta.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-							valorMulta = valorMulta.add(contaValoresHelper.getValorMulta().setScale(Parcelamento.CASAS_DECIMAIS,
-											Parcelamento.TIPO_ARREDONDAMENTO));
-						}
 
-						// Para cálculo do Acrescimo de Impontualidade
-						valorTotalAcrescimoImpontualidadeContas.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-						valorTotalAcrescimoImpontualidadeContas = valorTotalAcrescimoImpontualidadeContas.add(contaValoresHelper
-										.getValorTotalContaValoresParcelamento());
+						ContaValoresHelper contaValoresHelper = (ContaValoresHelper) contaValores.next();
+
+						BigDecimal[] arrayValores = ContaValoresHelper.retornarArrayValores(contaValoresHelper);
+
+						valorTotalContas = valorTotalContas.add(arrayValores[0]);
+						valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.add(arrayValores[1]).add(arrayValores[4]);
+						valorJurosMora = valorJurosMora.add(arrayValores[2]).add(arrayValores[5]);
+						valorMulta = valorMulta.add(arrayValores[3]);
+						valorAtualizacaoMonetariaSucumbencia = valorAtualizacaoMonetariaSucumbencia.add(arrayValores[4]);
+						valorJurosMoraSucumbencia = valorJurosMoraSucumbencia.add(arrayValores[5]);
+						valorSucumbencia = valorSucumbencia.add(arrayValores[6]);
+						valorTotalAcrescimoImpontualidadeContas = valorTotalAcrescimoImpontualidadeContas.add(arrayValores[7]);
+
+						// contaValoresHelper.getConta().getIndicadorDividaAtiva().equals(Short.valueOf("1"))||
+						if(contaValoresHelper.getConta().getIndicadorExecucaoFiscal().equals(Short.valueOf("1"))){
+							chavesSucumbenciasContaSet.add(contaValoresHelper.getConta().getId().toString());
+						}
 					}
+
+					String chavesSucumbenciasContaString = "";
+					if(!chavesSucumbenciasContaSet.isEmpty()){
+						for(String chave : chavesSucumbenciasContaSet){
+							chavesSucumbenciasContaString += chave + "$";
+						}
+						chavesSucumbenciasContaString = chavesSucumbenciasContaString.substring(0, chavesSucumbenciasContaString.length() - 1);
+					}
+					efetuarParcelamentoDebitosActionForm.set("chavesSucumbenciasConta", chavesSucumbenciasContaString);
 
 					sessao.setAttribute("colecaoContaValoresImovel", colecaoContasImovel);
 
@@ -493,12 +599,27 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 
 				// Guias de Pagamento
 				Set<String> chavesPrestacoesSet = new HashSet<String>();
+				Set<String> chavesSucumbenciasGuiaSet = new HashSet<String>();
 				if(colecaoGuiaPagamentoValoresImovel != null && !colecaoGuiaPagamentoValoresImovel.isEmpty()){
 
 					Iterator<GuiaPagamentoValoresHelper> guiaPagamentoValores = colecaoGuiaPagamentoValoresImovel.iterator();
 
 					while(guiaPagamentoValores.hasNext()){
 						GuiaPagamentoValoresHelper guiaPagamentoValoresHelper = guiaPagamentoValores.next();
+
+						BigDecimal atualizacaoSucumbencia = BigDecimal.ZERO;
+						if(guiaPagamentoValoresHelper.getValorAtualizacaoMonetariaSucumbencia() != null){
+							atualizacaoSucumbencia.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+							atualizacaoSucumbencia = guiaPagamentoValoresHelper.getValorAtualizacaoMonetariaSucumbencia().setScale(
+											Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+						}
+						BigDecimal jurosMoraSucumbencia = BigDecimal.ZERO;
+						if(guiaPagamentoValoresHelper.getValorJurosMoraSucumbencia() != null){
+							jurosMoraSucumbencia.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+							jurosMoraSucumbencia = guiaPagamentoValoresHelper.getValorJurosMoraSucumbencia().setScale(
+											Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+						}
+
 						if(guiaPagamentoValoresHelper.getValorTotalPrestacao() != null){
 							valorTotalGuiasPagamento.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
 							valorTotalGuiasPagamento = valorTotalGuiasPagamento.add(guiaPagamentoValoresHelper.getValorTotalPrestacao()
@@ -508,18 +629,29 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 										&& !guiaPagamentoValoresHelper.getValorAtualizacaoMonetaria().equals("")){
 							valorAtualizacaoMonetaria.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
 							valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.add(guiaPagamentoValoresHelper
-											.getValorAtualizacaoMonetaria().setScale(Parcelamento.CASAS_DECIMAIS,
-															Parcelamento.TIPO_ARREDONDAMENTO));
+											.getValorAtualizacaoMonetaria().add(atualizacaoSucumbencia));
 						}
 						if(guiaPagamentoValoresHelper.getValorJurosMora() != null
 										&& !guiaPagamentoValoresHelper.getValorJurosMora().equals("")){
 							valorJurosMora.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-							valorJurosMora = valorJurosMora.add(guiaPagamentoValoresHelper.getValorJurosMora().setScale(
-											Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
+							valorJurosMora = valorJurosMora.add(guiaPagamentoValoresHelper.getValorJurosMora().add(jurosMoraSucumbencia));
 						}
 						if(guiaPagamentoValoresHelper.getValorMulta() != null && !guiaPagamentoValoresHelper.getValorMulta().equals("")){
 							valorMulta.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
 							valorMulta = valorMulta.add(guiaPagamentoValoresHelper.getValorMulta());
+						}
+						if(guiaPagamentoValoresHelper.getValorAtualizacaoMonetariaSucumbencia() != null){
+							valorAtualizacaoMonetariaSucumbencia.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+							valorAtualizacaoMonetariaSucumbencia = valorAtualizacaoMonetariaSucumbencia.add(atualizacaoSucumbencia);
+						}
+						if(guiaPagamentoValoresHelper.getValorJurosMoraSucumbencia() != null){
+							valorJurosMoraSucumbencia.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+							valorJurosMoraSucumbencia = valorJurosMoraSucumbencia.add(jurosMoraSucumbencia);
+						}
+						if(guiaPagamentoValoresHelper.getValorSucumbencia() != null){
+							valorSucumbencia.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+							valorSucumbencia = valorSucumbencia.add(guiaPagamentoValoresHelper.getValorSucumbencia().setScale(
+											Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
 						}
 
 						// Para cálculo do Acrescimo de Impontualidade
@@ -531,7 +663,22 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 						}
 						chavesPrestacoesSet.add(guiaPagamentoValoresHelper.getIdGuiaPagamento() + "-"
 										+ guiaPagamentoValoresHelper.getNumeroPrestacao());
+
+						// guiaPagamentoValoresHelper.getIndicadorDividaAtiva().equals(Short.valueOf("1"))||
+						if(guiaPagamentoValoresHelper.getIndicadorExecucaoFiscal().equals(Short.valueOf("1"))){
+							chavesSucumbenciasGuiaSet.add(guiaPagamentoValoresHelper.getIdGuiaPagamento().toString() + "-"
+											+ guiaPagamentoValoresHelper.getNumeroPrestacao().toString());
+						}
 					}
+
+					String chavesSucumbenciasGuiaString = "";
+					if(!chavesSucumbenciasGuiaSet.isEmpty()){
+						for(String chave : chavesSucumbenciasGuiaSet){
+							chavesSucumbenciasGuiaString += chave + "$";
+						}
+						chavesSucumbenciasGuiaString = chavesSucumbenciasGuiaString.substring(0, chavesSucumbenciasGuiaString.length() - 1);
+					}
+					efetuarParcelamentoDebitosActionForm.set("chavesSucumbenciasGuia", chavesSucumbenciasGuiaString);
 
 					/*
 					 * String contendo o 'Id da guia' e o 'número da prestação' separados por '-' de
@@ -590,27 +737,27 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 
 							colecaoFinanciamentosTiposParcelamento.add(Integer.valueOf(parametroFinanciamentoTipo));
 						}
-
-						Integer tipoDebitoJurosParcelamento = Integer
-										.valueOf(ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_JUROS_PARCELAMENTO.executar());
-						Integer tipoDebitoJurosParcelamentoCobrancaAdministrativa = Integer
-										.valueOf(ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_JUROS_PARCELAMENTO_COBRANCA_ADMINISTRATIVA
-														.executar());
-
+						
+						ArrayList<Integer> colecaoDebitoTiposJuros = this.pesquisarDebitoTiposJuros();
+						ArrayList<Integer> colecaoDebitoTiposSucumbencia = this.pesquisarDebitoTiposSucumbencias();
+						
 						while(debitoACobrarValores.hasNext()){
 							DebitoACobrar debitoACobrar = (DebitoACobrar) debitoACobrarValores.next();
 
-							// [FS0022]-Verificar existência de juros sobre imóvel
-							if(debitoACobrar.getDebitoTipo().getId() != null
-											&& !debitoACobrar.getDebitoTipo().getId().equals(tipoDebitoJurosParcelamento)
-											&& !debitoACobrar.getDebitoTipo().getId().equals(
-															tipoDebitoJurosParcelamentoCobrancaAdministrativa)){
+							Integer idDebitoTipo = debitoACobrar.getDebitoTipo().getId();
+							Integer idFinanciamentoTipo = debitoACobrar.getFinanciamentoTipo().getId();
 
-								if(!Util.isVazioOrNulo(colecaoFinanciamentosTiposParcelamento)){
-									// Debitos A Cobrar - Serviço
-									// Caso o financiamento tipo não seja de parcelamento
-									// Acumula como Serviço
-									if(!colecaoFinanciamentosTiposParcelamento.contains(debitoACobrar.getFinanciamentoTipo().getId())){
+							// [FS0022]-Verificar existência de juros sobre imóvel
+							// if(!colecaoDebitoTiposServicos.contains(idDebitoTipo)){
+
+							if(!Util.isVazioOrNulo(colecaoFinanciamentosTiposParcelamento)){
+
+								// Debitos A Cobrar - Serviço
+								// Caso o financiamento tipo não seja de parcelamento
+								// Acumula como Serviço
+								if(!colecaoFinanciamentosTiposParcelamento.contains(idFinanciamentoTipo)
+												&& !colecaoDebitoTiposSucumbencia.contains(idDebitoTipo)
+												&& !colecaoDebitoTiposJuros.contains(idDebitoTipo)){
 										// [SB0001] Obter Valores de Curto e Longo Prazo
 										valorRestanteACobrar = debitoACobrar.getValorTotal();
 
@@ -625,29 +772,32 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 														Parcelamento.TIPO_ARREDONDAMENTO);
 										valorTotalRestanteServicosACobrarLongoPrazo = valorTotalRestanteServicosACobrarLongoPrazo
 														.add(valoresDeCurtoELongoPrazo[indiceLongoPrazo]);
-									}
+								}
+
+								if(colecaoFinanciamentosTiposParcelamento.contains(idFinanciamentoTipo)
+												|| colecaoDebitoTiposSucumbencia.contains(idDebitoTipo)){
 
 									// Debitos A Cobrar - Parcelamento
 									// Caso o financiamento tipo seja de parcelamento
 									// Acumula como Parcelamento
-									if(colecaoFinanciamentosTiposParcelamento.contains(debitoACobrar.getFinanciamentoTipo().getId())){
-										// [SB0001] Obter Valores de Curto e Longo Prazo
-										valorRestanteACobrar = debitoACobrar.getValorTotal();
 
-										BigDecimal[] valoresDeCurtoELongoPrazo = fachada.obterValorACobrarDeCurtoELongoPrazo(debitoACobrar
-														.getNumeroPrestacaoDebito(), debitoACobrar.getNumeroPrestacaoCobradas(),
-														valorRestanteACobrar);
-										valorTotalRestanteParcelamentosACobrarCurtoPrazo.setScale(Parcelamento.CASAS_DECIMAIS,
-														Parcelamento.TIPO_ARREDONDAMENTO);
-										valorTotalRestanteParcelamentosACobrarCurtoPrazo = valorTotalRestanteParcelamentosACobrarCurtoPrazo
-														.add(valoresDeCurtoELongoPrazo[indiceCurtoPrazo]);
-										valorTotalRestanteParcelamentosACobrarLongoPrazo.setScale(Parcelamento.CASAS_DECIMAIS,
-														Parcelamento.TIPO_ARREDONDAMENTO);
-										valorTotalRestanteParcelamentosACobrarLongoPrazo = valorTotalRestanteParcelamentosACobrarLongoPrazo
-														.add(valoresDeCurtoELongoPrazo[indiceLongoPrazo]);
-									}
+									// [SB0001] Obter Valores de Curto e Longo Prazo
+									valorRestanteACobrar = debitoACobrar.getValorTotal();
+
+									BigDecimal[] valoresDeCurtoELongoPrazo = fachada.obterValorACobrarDeCurtoELongoPrazo(
+													debitoACobrar.getNumeroPrestacaoDebito(), debitoACobrar.getNumeroPrestacaoCobradas(),
+													valorRestanteACobrar);
+									valorTotalRestanteParcelamentosACobrarCurtoPrazo.setScale(Parcelamento.CASAS_DECIMAIS,
+													Parcelamento.TIPO_ARREDONDAMENTO);
+									valorTotalRestanteParcelamentosACobrarCurtoPrazo = valorTotalRestanteParcelamentosACobrarCurtoPrazo
+													.add(valoresDeCurtoELongoPrazo[indiceCurtoPrazo]);
+									valorTotalRestanteParcelamentosACobrarLongoPrazo.setScale(Parcelamento.CASAS_DECIMAIS,
+													Parcelamento.TIPO_ARREDONDAMENTO);
+									valorTotalRestanteParcelamentosACobrarLongoPrazo = valorTotalRestanteParcelamentosACobrarLongoPrazo
+													.add(valoresDeCurtoELongoPrazo[indiceLongoPrazo]);
 								}
 							}
+							// }
 						}
 					}catch(ControladorException e){
 						e.printStackTrace();
@@ -838,6 +988,27 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 					}
 				}
 
+				// Caso seja parcelamento de imóvel em execução fiscal
+				if(indicadorImovelEmExecucaoFiscal.equals(Short.valueOf("1"))){
+
+					sessao.removeAttribute("parametrizacaoParcelamentoPadrao");
+					sessao.setAttribute("indicadorImovelEmExecucaoFiscal", "S");
+
+					if(efetuarParcelamentoDebitosActionForm.get("indicadorCobrancaParcelamento") == null
+									|| efetuarParcelamentoDebitosActionForm.get("indicadorCobrancaParcelamento").equals("")){
+						efetuarParcelamentoDebitosActionForm.set("indicadorCobrancaParcelamento", "2");
+					}
+
+					boolean permissaoExecucaoFiscalCobrancaConta = fachada.verificarPermissaoEspecial(
+									PermissaoEspecial.PARCELAR_IMOVEL_EM_EXECUCAO_FISCAL_COM_COBRANCA_EM_CONTA, usuario);
+
+					// Caso o usuário possua permissão especial para efetuar o parcelamento de
+					// imóvel em execução fiscal com cobrança em conta
+					if(permissaoExecucaoFiscalCobrancaConta){
+						sessao.setAttribute("indicadorPermissaoExecucaoFiscalCobrancaConta", "S");
+					}
+				}
+
 				httpServletRequest.setAttribute("exibirParcelamentoCobrancaBancaria", exibirParcelamentoCobrancaBancaria);
 				sessao.setAttribute("exibirParcelamentoCobrancaBancaria", exibirParcelamentoCobrancaBancaria);
 
@@ -846,6 +1017,15 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 				efetuarParcelamentoDebitosActionForm.set("valorJurosMoraImovel", Util.formatarMoedaReal(valorJurosMora));
 				efetuarParcelamentoDebitosActionForm.set("valorMultaImovel", Util.formatarMoedaReal(valorMulta));
 				efetuarParcelamentoDebitosActionForm.set("matriculaImovel", codigoImovel);
+
+				efetuarParcelamentoDebitosActionForm.set("valorAtualizacaoMonetariaSucumbenciaImovel",
+								Util.formatarMoedaReal(valorAtualizacaoMonetariaSucumbencia));
+				efetuarParcelamentoDebitosActionForm.set("valorJurosMoraSucumbenciaImovel",
+								Util.formatarMoedaReal(valorJurosMoraSucumbencia));
+				efetuarParcelamentoDebitosActionForm.set("valorMultaSucumbenciaImovel", "0,00");
+				efetuarParcelamentoDebitosActionForm.set("valorAcrescimosSucumbenciaImovel",
+								Util.formatarMoedaReal(valorJurosMoraSucumbencia.add(valorAtualizacaoMonetariaSucumbencia)));
+				efetuarParcelamentoDebitosActionForm.set("valorTotalSucumbenciaImovel", Util.formatarMoedaReal(valorSucumbencia));
 
 				if(httpServletRequest.getParameter("idBoletoNegociacao") != null
 								&& !httpServletRequest.getParameter("idBoletoNegociacao").equals("")){
@@ -866,96 +1046,124 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 					this.tratarOpcaoMeioDeCobrancaParcelamento(efetuarParcelamentoDebitosActionForm, usuario, Util
 									.converterStringParaInteger(codigoImovel), fachada, sessao, httpServletRequest);
 				}
-			}
 
-			// Atualizando o código do imóvel na varíavel hidden do formulário
-			codigoImovelAntes = codigoImovel;
-			efetuarParcelamentoDebitosActionForm.set("codigoImovelAntes", codigoImovelAntes);
+				// Atualizando o código do imóvel na varíavel hidden do formulário
+				codigoImovelAntes = codigoImovel;
+				efetuarParcelamentoDebitosActionForm.set("codigoImovelAntes", codigoImovelAntes);
 
-			FiltroClienteImovel filtroClienteImovel = new FiltroClienteImovel();
-
-			filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.IMOVEL_ID, codigoImovel));
-			filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.CLIENTE_RELACAO_TIPO_ID,
-							ClienteRelacaoTipo.USUARIO));
-			filtroClienteImovel.adicionarParametro(new ParametroNulo(FiltroClienteImovel.DATA_FIM_RELACAO));
-			filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteImovel.CLIENTE);
-			filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteImovel.CLIENTE_CLIENTE_TIPO);
-			Collection<ClienteImovel> clientesImoveis = fachada.pesquisar(filtroClienteImovel, ClienteImovel.class.getName());
-
-			if(clientesImoveis != null && !clientesImoveis.isEmpty()){
-
-				Cliente cliente = clientesImoveis.iterator().next().getCliente();
-
-				efetuarParcelamentoDebitosActionForm.set("idClienteParcelamento", "" + cliente.getId());
-				efetuarParcelamentoDebitosActionForm.set("nomeClienteParcelamento", cliente.getNome());
-				efetuarParcelamentoDebitosActionForm.set("foneClienteParcelamento", fachada.pesquisarClienteFonePrincipal(cliente.getId()));
-				efetuarParcelamentoDebitosActionForm.set("cpfClienteParcelamentoDigitado", httpServletRequest
-								.getParameter("cpfClienteParcelamentoDigitado"));
-
-				String cpfCnpjCliente = "";
-				String indicadorPessoaFisicaJuridicaStr = "";
-
-				ClienteTipo clienteTipo = cliente.getClienteTipo();
-
-				if(clienteTipo != null){
-					Short indicadorPessoaFisicaJuridica = clienteTipo.getIndicadorPessoaFisicaJuridica();
-					indicadorPessoaFisicaJuridicaStr = Short.toString(indicadorPessoaFisicaJuridica);
-
-					if(ClienteTipo.INDICADOR_PESSOA_FISICA.equals(indicadorPessoaFisicaJuridica)){
-						cpfCnpjCliente = cliente.getCpfFormatado();
-					}else{
-						cpfCnpjCliente = cliente.getCnpjFormatado();
-					}
-				}
-
-				String indicadorPermitirCpfCnpjManual = null;
+				Integer permiteInformarCliente = null;
 				try{
-					indicadorPermitirCpfCnpjManual = ParametroCobranca.P_PERMITIR_CPFCNPJ_MANUAL_PARC_DEBITOS.executar();
+					permiteInformarCliente = Integer.valueOf(ParametroParcelamento.P_PERMITIR_INFORMAR_CLIENTE_RESPONSAVEL_PARCELAMENTO
+									.executar());
+					if(permiteInformarCliente.equals(Integer.valueOf(1))){
+						sessao.setAttribute("permiteInformarCliente", "S");
+					}
 				}catch(ControladorException e){
 					e.printStackTrace();
 				}
 
-				if(indicadorPermitirCpfCnpjManual.equals("2") && (cliente.getCpf() == null && cliente.getCnpj() == null)){
+				if(!permiteInformarCliente.equals(Integer.valueOf(1))
+								|| (permiteInformarCliente.equals(Integer.valueOf(1)) && (efetuarParcelamentoDebitosActionForm
+												.get("idClienteParcelamento") == null || efetuarParcelamentoDebitosActionForm.get(
+												"idClienteParcelamento").equals("")))){
 
-					httpServletRequest.setAttribute("caminhoActionConclusao", "/gsan/filtrarClienteAction.do");
-					httpServletRequest.setAttribute("nomeBotao1", "Sim");
-					httpServletRequest.setAttribute("urlBotaoVoltar", "/gsan/exibirEfetuarParcelamentoDebitosAction.do");
-					sessao.setAttribute("idClienteAtualizacaoCpfCnpj", cliente.getId().toString());
+					FiltroClienteImovel filtroClienteImovel = new FiltroClienteImovel();
+					filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.IMOVEL_ID, codigoImovel));
+					filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.CLIENTE_RELACAO_TIPO_ID,
+									ClienteRelacaoTipo.USUARIO));
+					filtroClienteImovel.adicionarParametro(new ParametroNulo(FiltroClienteImovel.DATA_FIM_RELACAO));
+					filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteImovel.CLIENTE);
+					filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteImovel.CLIENTE_CLIENTE_TIPO);
+					Collection<ClienteImovel> clientesImoveis = fachada.pesquisar(filtroClienteImovel, ClienteImovel.class.getName());
 
-					return montarPaginaConfirmacao("atencao.parcelamento.cliente_sem_cpf_cnpj", httpServletRequest, actionMapping,
-									new String[] {cliente.getId().toString()});
+					Cliente cliente = null;
+					if(clientesImoveis != null && !clientesImoveis.isEmpty()){
+						cliente = clientesImoveis.iterator().next().getCliente();
 
-				}
-
-				efetuarParcelamentoDebitosActionForm.set("indicadorPessoaFisicaJuridica", indicadorPessoaFisicaJuridicaStr);
-				efetuarParcelamentoDebitosActionForm.set("cpfClienteParcelamento", cpfCnpjCliente);
-				efetuarParcelamentoDebitosActionForm.set("cpfClienteParcelamentoDigitado", "");
-
-				if(!Util.isVazioOuBranco(cpfCnpjCliente)){
-					httpServletRequest.setAttribute("cpfCliente", "true");
-				}
-
-			}else{
-
-				efetuarParcelamentoDebitosActionForm.set("nomeClienteParcelamento", "");
-
-				if(cpfClienteParcelamento != null && !cpfClienteParcelamento.equals("")){
-					efetuarParcelamentoDebitosActionForm.set("cpfClienteParcelamento", cpfClienteParcelamento);
-					Cliente clienteParcelamento = fachada.obterIdENomeCliente(cpfClienteParcelamento);
-
-					if(clienteParcelamento != null){
-						httpServletRequest.setAttribute("cpfCliente", "true");
-						efetuarParcelamentoDebitosActionForm.set("idClienteParcelamento", clienteParcelamento.getId().toString());
-						efetuarParcelamentoDebitosActionForm.set("nomeClienteParcelamento", clienteParcelamento.getNome());
-						efetuarParcelamentoDebitosActionForm.set("foneClienteParcelamento", fachada
-										.pesquisarClienteFonePrincipal(clienteParcelamento.getId()));
-						efetuarParcelamentoDebitosActionForm.set("cpfClienteParcelamentoDigitado", httpServletRequest
-										.getParameter("cpfClienteParcelamentoDigitado"));
+						efetuarParcelamentoDebitosActionForm.set("nomeCliente", cliente.getNome());
+						if(cliente.getCpf() != null && !cliente.getCpf().equals("")){
+							efetuarParcelamentoDebitosActionForm.set("cpfCnpj", cliente.getCpfFormatado());
+						}else if(cliente.getCnpj() != null && !cliente.getCnpj().equals("")){
+							efetuarParcelamentoDebitosActionForm.set("cpfCnpj", cliente.getCnpjFormatado());
+						}else if(httpServletRequest.getParameter("cpfClienteParcelamentoDigitado") != null
+										&& !httpServletRequest.getParameter("cpfClienteParcelamentoDigitado").equals("")){
+							efetuarParcelamentoDebitosActionForm.set("cpfCnpj",
+											httpServletRequest.getParameter("cpfClienteParcelamentoDigitado"));
+						}else{
+							efetuarParcelamentoDebitosActionForm.set("cpfCnpj", "NÃO INFORMADO");
+						}
 					}else{
-						efetuarParcelamentoDebitosActionForm.set("cpfClienteParcelamento", "");
-						efetuarParcelamentoDebitosActionForm.set("cpfClienteParcelamentoDigitado", "");
-						httpServletRequest.setAttribute("cpfInexistente", "CPF INEXISTENTE");
+						throw new ActionServletException("atencao.nao_existe_cliente_usuario_imovel", codigoImovel);
 					}
+
+					boolean verificar = this.preencherCliente(actionMapping, efetuarParcelamentoDebitosActionForm, httpServletRequest,
+									sessao, cliente, cpfClienteParcelamento, fachada);
+
+					if(verificar){
+						return montarPaginaConfirmacao("atencao.parcelamento.cliente_sem_cpf_cnpj", httpServletRequest, actionMapping,
+										new String[] {cliente.getId().toString()});
+					}
+
+				}else{
+
+					String idClienteDigitado = (String) efetuarParcelamentoDebitosActionForm.get("idClienteParcelamento");
+
+					FiltroCliente filtroCliente = new FiltroCliente();
+					filtroCliente.adicionarParametro(new ParametroSimples(FiltroCliente.ID, idClienteDigitado));
+					filtroCliente.adicionarCaminhoParaCarregamentoEntidade(FiltroCliente.CLIENTE_TIPO);
+					Collection<Cliente> clientes = fachada.pesquisar(filtroCliente, Cliente.class.getName());
+
+					Cliente cliente = null;
+					if(clientes != null && !clientes.isEmpty()){
+						cliente = clientes.iterator().next();
+					}
+
+					boolean verificar = this.preencherCliente(actionMapping, efetuarParcelamentoDebitosActionForm, httpServletRequest,
+									sessao, cliente, cpfClienteParcelamento, fachada);
+
+					if(verificar){
+						return montarPaginaConfirmacao("atencao.parcelamento.cliente_sem_cpf_cnpj", httpServletRequest, actionMapping,
+										new String[] {cliente.getId().toString()});
+					}
+
+					/*
+					 * if(cliente != null){
+					 * Integer indicadorTipoPessoaCliente = null;
+					 * try{
+					 * indicadorTipoPessoaCliente = Integer
+					 * .valueOf(ParametroParcelamento.P_TIPO_PESSOA_CLIENTE_RESPONSAVEL_PARCELAMENTO.
+					 * executar());
+					 * }catch(ControladorException e){
+					 * e.printStackTrace();
+					 * }
+					 * // Caso o Cliente responsável pelo parcelamento tenha que ser pessoa física
+					 * if(indicadorTipoPessoaCliente.equals(Integer.valueOf(1))){
+					 * if(!(cliente.getClienteTipo().getIndicadorPessoaFisicaJuridica().intValue()
+					 * == ClienteTipo.INDICADOR_PESSOA_FISICA
+					 * .intValue())){
+					 * throw new ActionServletException("atencao.cliente_tipo.parcelamento.fisica",
+					 * cliente.getId().toString(),
+					 * cliente.getClienteTipo().getDescricao());
+					 * }
+					 * }else if(indicadorTipoPessoaCliente.equals(Integer.valueOf(2))){
+					 * // Caso o Cliente responsável pelo parcelamento tenha que ser pessoa
+					 * // jurídica
+					 * if(!(cliente.getClienteTipo().getIndicadorPessoaFisicaJuridica().intValue()
+					 * == ClienteTipo.INDICADOR_PESSOA_JURIDICA
+					 * .intValue())){
+					 * throw new
+					 * ActionServletException("atencao.cliente_tipo.parcelamento.juridica",
+					 * cliente.getId().toString(),
+					 * cliente.getClienteTipo().getDescricao());
+					 * }
+					 * }
+					 * // else{
+					 * // throw new
+					 * // ActionServletException("erro.parametro.sistema.valor.invalido",
+					 * // null, "P_INDICADOR_TIPO_PESSOA_CLIENTE_RESPONSAVEL_PARCELAMENTO");
+					 * // }
+					 * }
+					 */
 				}
 			}
 
@@ -1046,6 +1254,80 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 		}
 
 		// ---------------------------------------------------------------------------------------
+
+		/**
+		 * [UC0214] Efetuar Parcelamento de Débitos
+		 * [SB0066] Obter Condição Referente à Quantidade
+		 * Reparcelamentos do Imóvel
+		 * 
+		 * @param parcelamento
+		 * @author Gicevalter Couto
+		 * @date 04/09/2014
+		 */
+		Short indicadorRestricaoQtdMaximaParcelamento;
+		try{
+			indicadorRestricaoQtdMaximaParcelamento = Short
+							.valueOf(ParametroParcelamento.P_INDICADOR_RESTRICAO_NUMERO_MAXIMO_REPARCELAMENTO.executar());
+
+			if(indicadorRestricaoQtdMaximaParcelamento.equals(ConstantesSistema.SIM)){
+				Short quantidadePermitidoReparcPerfil = 0;
+				String idResolucaoDiretoria = (String) efetuarParcelamentoDebitosActionForm.get("resolucaoDiretoria");
+				ParcelamentoPerfil parcelamentoPerfilAtual = null;
+
+				if(!Util.isVazioOuBranco(idResolucaoDiretoria)){
+					ResolucaoDiretoria resolucaoDiretoria = EfetuarParcelamentoDebitosWizardAction.obterResolucaoDiretoria(fachada,
+									efetuarParcelamentoDebitosActionForm);
+
+					parcelamentoPerfilAtual = EfetuarParcelamentoDebitosWizardAction.obterPerfilParcelamentoImovel(resolucaoDiretoria,
+									codigoImovel, fachada, sessao, efetuarParcelamentoDebitosActionForm);
+				}
+
+				if(parcelamentoPerfilAtual != null){
+					FiltroParcelamentoQuantidadeReparcelamento filtroParcQtdReparcelamento = new FiltroParcelamentoQuantidadeReparcelamento();
+					filtroParcQtdReparcelamento.adicionarParametro(new ParametroSimples(
+									FiltroParcelamentoQuantidadeReparcelamento.PARCELAMENTO_PERFIL, parcelamentoPerfilAtual.getId()));
+					ParcelamentoQuantidadeReparcelamento parcelamentoQtdReparcelamento = (ParcelamentoQuantidadeReparcelamento) Util
+									.retonarObjetoDeColecao(fachada.pesquisar(filtroParcQtdReparcelamento,
+													ParcelamentoQuantidadeReparcelamento.class.getName()));
+
+					if(parcelamentoQtdReparcelamento.getQuantidadeMaximaReparcelamento() != null){
+						quantidadePermitidoReparcPerfil = parcelamentoQtdReparcelamento.getQuantidadeMaximaReparcelamento();
+					}
+
+					Short numeroReparcelamentoConsecutivosImovel = 0;
+					if(efetuarParcelamentoDebitosActionForm.get("numeroReparcelamentoConsecutivos") != null){
+						numeroReparcelamentoConsecutivosImovel = Short.valueOf(efetuarParcelamentoDebitosActionForm.get(
+										"numeroReparcelamentoConsecutivos").toString());
+					}
+
+					if(numeroReparcelamentoConsecutivosImovel.compareTo(quantidadePermitidoReparcPerfil) > 0){
+						boolean temPermissaoSuperiorQtdMaximaParcelamento = fachada.verificarPermissaoEspecial(
+										PermissaoEspecial.EFETUAR_REPARCELAMENTO_QTDE_SUPERIOR_QTDE_MAX_PERMITIDA, usuario);
+						if(!temPermissaoSuperiorQtdMaximaParcelamento){
+							throw new ActionServletException("atencao.repacelamento_qtd_superior_qtd_permitida", codigoImovel,
+											numeroReparcelamentoConsecutivosImovel.toString(), quantidadePermitidoReparcPerfil.toString());
+						}
+					}
+				}
+
+
+			}
+
+			if(indicadorFauramentoTitularDebito){
+				httpServletRequest.setAttribute("indicadorFauramentoTitularDebito", "S");
+			}else{
+				httpServletRequest.removeAttribute("indicadorFauramentoTitularDebito");
+			}
+
+			sessao.setAttribute("colecaoRelacaoImovel", colecaoRelacaoImovel);
+
+		}catch(NumberFormatException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		return retorno;
 	}
@@ -1241,39 +1523,6 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 					efetuarParcelamentoDebitosActionForm.set("numeroReparcelamentoConsecutivos", "0");
 				}
 
-				// Filtro para recuperar informação do cliente relacionado com o
-				// imóvel
-				FiltroClienteImovel filtroClienteImovel = new FiltroClienteImovel();
-
-				filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.IMOVEL_ID, idImovel));
-				filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.CLIENTE_RELACAO_TIPO,
-								ClienteRelacaoTipo.USUARIO));
-				filtroClienteImovel.adicionarParametro(new ParametroNulo(FiltroClienteImovel.DATA_FIM_RELACAO));
-				filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade("cliente.clienteTipo");
-
-				Collection<ClienteImovel> clientesImovel = fachada.pesquisar(filtroClienteImovel, ClienteImovel.class.getName());
-
-				if(Util.isVazioOrNulo(clientesImovel)){
-					throw new ActionServletException("atencao.nao_existe_cliente_usuario_imovel", idImovel);
-				}
-				Cliente cliente = clientesImovel.iterator().next().getCliente();
-
-				// Manda os dados do cliente para a página
-				if(cliente != null){
-					sessao.setAttribute("idClienteImovel", cliente.getId());
-					efetuarParcelamentoDebitosActionForm.set("nomeCliente", cliente.getNome());
-					if(cliente.getCpf() != null && !cliente.getCpf().equals("")){
-						efetuarParcelamentoDebitosActionForm.set("cpfCnpj", cliente.getCpfFormatado());
-					}else if(cliente.getCnpj() != null && !cliente.getCnpj().equals("")){
-						efetuarParcelamentoDebitosActionForm.set("cpfCnpj", cliente.getCnpjFormatado());
-					}else if(httpServletRequest.getParameter("cpfClienteParcelamentoDigitado") != null
-									&& !httpServletRequest.getParameter("cpfClienteParcelamentoDigitado").equals("")){
-						efetuarParcelamentoDebitosActionForm.set("cpfCnpj", httpServletRequest
-										.getParameter("cpfClienteParcelamentoDigitado"));
-					}else{
-						efetuarParcelamentoDebitosActionForm.set("cpfCnpj", "NÃO INFORMADO");
-					}
-				}
 			}
 		}
 
@@ -1283,8 +1532,7 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 			if(imovel.getAreaConstruida() != null){
 				efetuarParcelamentoDebitosActionForm.set("areaConstruidaImovel", imovel.getAreaConstruida().toString());
 			}else if(imovel.getAreaConstruidaFaixa() != null && imovel.getAreaConstruidaFaixa().getVolumeMaiorFaixa() != null){
-				efetuarParcelamentoDebitosActionForm
-.set("areaConstruidaImovel", imovel.getAreaConstruidaFaixa().getVolumeMaiorFaixa()
+				efetuarParcelamentoDebitosActionForm.set("areaConstruidaImovel", imovel.getAreaConstruidaFaixa().getVolumeMaiorFaixa()
 								.toString());
 			}
 
@@ -2368,6 +2616,143 @@ public class ExibirEfetuarParcelamentoDebitosProcesso1Action
 		}
 
 		form.set("situacoesCobrancaDescricoes", situacoesCobrancaDescricoes);
+	}
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * 
+	 * @author Saulo Lima
+	 * @date 25/06/2014
+	 */
+	private ArrayList<Integer> pesquisarDebitoTiposJuros(){
+
+		ArrayList<Integer> colecaoDebitoTiposServicos = new ArrayList<Integer>();
+
+		try{
+			Integer tipoDebitoJurosParcelamento = Integer.valueOf(ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_JUROS_PARCELAMENTO
+							.executar());
+			Integer tipoDebitoJurosParcelamentoCA = Integer
+							.valueOf(ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_JUROS_PARCELAMENTO_COBRANCA_ADMINISTRATIVA.executar());
+			Integer tipoDebitoJurosParcelamentoDA = Integer
+							.valueOf(ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_JUROS_PARCELAMENTO_DIVIDA_ATIVA.executar());
+			Integer tipoDebitoJurosParcelamentoEF = Integer
+							.valueOf(ParametroParcelamento.P_TIPO_DEBITO_PARCELAMENTO_JUROS_PARCELAMENTO_EXECUCAO_FISCAL.executar());
+
+			colecaoDebitoTiposServicos.add(tipoDebitoJurosParcelamento);
+			colecaoDebitoTiposServicos.add(tipoDebitoJurosParcelamentoCA);
+			colecaoDebitoTiposServicos.add(tipoDebitoJurosParcelamentoDA);
+			colecaoDebitoTiposServicos.add(tipoDebitoJurosParcelamentoEF);
+
+		}catch(ControladorException e){
+			e.printStackTrace();
+		}
+
+		return colecaoDebitoTiposServicos;
+	}
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * 
+	 * @author Saulo Lima
+	 * @date 25/06/2014
+	 */
+	private ArrayList<Integer> pesquisarDebitoTiposSucumbencias(){
+
+		ArrayList<Integer> colecaoDebitoTiposServicos = new ArrayList<Integer>();
+
+		Integer tipoDebitoSucumbencia = DebitoTipo.SUCUMBENCIA;
+		Integer tipoDebitoDiligencias = DebitoTipo.DILIGENCIAS;
+
+		colecaoDebitoTiposServicos.add(tipoDebitoSucumbencia);
+		colecaoDebitoTiposServicos.add(tipoDebitoDiligencias);
+
+		return colecaoDebitoTiposServicos;
+	}
+
+	private boolean preencherCliente(ActionMapping actionMapping, DynaActionForm efetuarParcelamentoDebitosActionForm,
+					HttpServletRequest httpServletRequest, HttpSession sessao, Cliente cliente, String cpfClienteParcelamento,
+					Fachada fachada){
+
+		boolean retorno = false;
+
+		if(cliente != null){
+
+			efetuarParcelamentoDebitosActionForm.set("idClienteParcelamento", "" + cliente.getId());
+			efetuarParcelamentoDebitosActionForm.set("nomeClienteParcelamento", cliente.getNome());
+			efetuarParcelamentoDebitosActionForm.set("foneClienteParcelamento", fachada.pesquisarClienteFonePrincipal(cliente.getId()));
+			efetuarParcelamentoDebitosActionForm.set("cpfClienteParcelamentoDigitado",
+							httpServletRequest.getParameter("cpfClienteParcelamentoDigitado"));
+
+			String cpfCnpjCliente = "";
+			String indicadorPessoaFisicaJuridicaStr = "";
+
+			ClienteTipo clienteTipo = cliente.getClienteTipo();
+
+			if(clienteTipo != null){
+				Short indicadorPessoaFisicaJuridica = clienteTipo.getIndicadorPessoaFisicaJuridica();
+				indicadorPessoaFisicaJuridicaStr = Short.toString(indicadorPessoaFisicaJuridica);
+
+				if(ClienteTipo.INDICADOR_PESSOA_FISICA.equals(indicadorPessoaFisicaJuridica)){
+					cpfCnpjCliente = cliente.getCpfFormatado();
+				}else{
+					cpfCnpjCliente = cliente.getCnpjFormatado();
+				}
+			}
+
+			String indicadorPermitirCpfCnpjManual = null;
+			try{
+				indicadorPermitirCpfCnpjManual = ParametroCobranca.P_PERMITIR_CPFCNPJ_MANUAL_PARC_DEBITOS.executar();
+			}catch(ControladorException e){
+				e.printStackTrace();
+			}
+
+			if(indicadorPermitirCpfCnpjManual.equals("2") && (cliente.getCpf() == null && cliente.getCnpj() == null)){
+
+				httpServletRequest.setAttribute("caminhoActionConclusao", "/gsan/filtrarClienteAction.do");
+				httpServletRequest.setAttribute("nomeBotao1", "Sim");
+				httpServletRequest.setAttribute("urlBotaoVoltar", "/gsan/exibirEfetuarParcelamentoDebitosAction.do");
+				sessao.setAttribute("idClienteAtualizacaoCpfCnpj", cliente.getId().toString());
+
+				// return montarPaginaConfirmacao("atencao.parcelamento.cliente_sem_cpf_cnpj",
+				// httpServletRequest, actionMapping, new String[] {cliente.getId().toString()});
+				retorno = true;
+
+			}
+
+			efetuarParcelamentoDebitosActionForm.set("indicadorPessoaFisicaJuridica", indicadorPessoaFisicaJuridicaStr);
+			efetuarParcelamentoDebitosActionForm.set("cpfClienteParcelamento", cpfCnpjCliente);
+
+			if(!Util.isVazioOuBranco(cpfCnpjCliente)){
+				efetuarParcelamentoDebitosActionForm.set("cpfClienteParcelamentoDigitado", "");
+				httpServletRequest.setAttribute("cpfCliente", "true");
+			}
+
+		}else{
+
+			httpServletRequest.setAttribute("clienteInexistente", "true");
+			efetuarParcelamentoDebitosActionForm.set("nomeClienteParcelamento", "CLIENTE INEXISTENTE");
+
+			if(cpfClienteParcelamento != null && !cpfClienteParcelamento.equals("")){
+				efetuarParcelamentoDebitosActionForm.set("cpfClienteParcelamento", cpfClienteParcelamento);
+				Cliente clienteParcelamento = fachada.obterIdENomeCliente(cpfClienteParcelamento);
+
+				if(clienteParcelamento != null){
+					httpServletRequest.setAttribute("cpfCliente", "true");
+					efetuarParcelamentoDebitosActionForm.set("idClienteParcelamento", clienteParcelamento.getId().toString());
+					efetuarParcelamentoDebitosActionForm.set("nomeClienteParcelamento", clienteParcelamento.getNome());
+					efetuarParcelamentoDebitosActionForm.set("foneClienteParcelamento",
+									fachada.pesquisarClienteFonePrincipal(clienteParcelamento.getId()));
+					efetuarParcelamentoDebitosActionForm.set("cpfClienteParcelamentoDigitado",
+									httpServletRequest.getParameter("cpfClienteParcelamentoDigitado"));
+				}else{
+					efetuarParcelamentoDebitosActionForm.set("cpfClienteParcelamento", "");
+					efetuarParcelamentoDebitosActionForm.set("cpfClienteParcelamentoDigitado", "");
+					httpServletRequest.setAttribute("cpfInexistente", "CPF INEXISTENTE");
+				}
+			}
+		}
+
+		return retorno;
 	}
 
 }

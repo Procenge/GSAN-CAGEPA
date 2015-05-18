@@ -164,7 +164,7 @@
 			   form.nomeSetorComercialOrigem.value = "";
 			   //form.quadraOrigemNM.value = "";
 			   form.nomeQuadraOrigem.value = "";
-			   form.quadraOrigemID.value = "";
+			   //form.quadraOrigemID.value = "";
 			  
 			   //Coloca o foco no objeto selecionado
 			   form.setorComercialOrigemCD.focus();
@@ -185,7 +185,7 @@
 			   form.setorComercialOrigemID.value = "";
 			   form.nomeSetorComercialOrigem.value = "";
 			   form.nomeQuadraOrigem.value = "";
-			   form.quadraOrigemID.value = "";
+			   //form.quadraOrigemID.value = "";
 			   
 			   form.cdRotaInicial.value = "";
 			   form.sequencialRotaInicial.value = "";
@@ -205,7 +205,7 @@
 			   break;
 			case 5:
 			   form.nomeQuadraOrigem.value = "";
-			   form.quadraOrigemID.value = "";
+			   ////form.quadraOrigemID.value = "";
 		
 			   //Coloca o foco no objeto selecionado
 			   form.quadraOrigemID.focus();
@@ -222,7 +222,7 @@
 			   form.setorComercialOrigemID.value = "";
 			   form.nomeSetorComercialOrigem.value = "";
 			   form.nomeQuadraOrigem.value = "";
-			   form.quadraOrigemID.value = "";
+			   ////form.quadraOrigemID.value = "";
 			   
 			   form.loteOrigem.value = "";
 			   form.subloteOrigem.value = "";
@@ -231,7 +231,7 @@
 			   break;
 			case 8:
 			   form.nomeQuadraOrigem.value = "";
-			   form.quadraOrigemID.value = "";
+			   ////form.quadraOrigemID.value = "";
 	
 			   form.loteOrigem.value = "";
 			   form.subloteOrigem.value = "";
@@ -275,7 +275,11 @@
 			 case 13:
 
 				form.arquivoDownload.value = null;
-				
+				break;
+			 case 14:
+				 form.idBairro.value="";
+				 form.nomeBairro.value="";
+				 break;
 		   default:
 	          break;
 		}
@@ -397,10 +401,27 @@
 		  desabilitaIntervaloDiferente(2);
 	  	  form.quadraDestinoID.focus();
 		}
+		 if(tipoConsulta == 'bairro') {
+			    form.idBairro.value = codigoRegistro;
+			    form.nomeBairro.value = descricaoRegistro;
+	   			form.nomeBairro.style.color = "#000000";
+		    
+		    } 
+		
 	}
 	
+	/* Recuperar Popup */
 	function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
 		var form = document.SituacaoEspecialFaturamentoInformarActionForm;
+		
+		 if(tipoConsulta == 'bairro') {
+			    form.idBairro.value = codigoRegistro;
+			    form.nomeBairro.value = descricaoRegistro;
+	   			form.nomeBairro.style.color = "#000000";
+		    
+		    } 
+		
+		
 		if (tipoConsulta == 'localidadeOrigem') {
 	      form.localidadeOrigemID.value = codigoRegistro;
 		  form.nomeLocalidadeOrigem.value = descricaoRegistro;
@@ -426,6 +447,9 @@
 	         document.SituacaoEspecialFaturamentoInformarActionForm.action = 'exibirSituacaoEspecialFaturamentoInformarAction.do?bloquear=todos';
 	         //document.SituacaoEspecialFaturamentoInformarActionForm.submit();
 	    }
+		
+		
+		
 	}
 	
 	function validarRota(form){
@@ -670,7 +694,7 @@
 			case 3://De quadra pra baixo
 			   if(!form.setorComercialOrigemCD.disabled){
 			   form.nomeQuadraOrigem.value = "";
-			   form.quadraOrigemID.value = "";
+			   ////form.quadraOrigemID.value = "";
 	
 			   form.loteOrigem.value = "";
 			   form.subloteOrigem.value = "";
@@ -732,7 +756,7 @@
 			   form.nomeSetorComercialDestino.value = "";
 			  // form.quadraOrigemNM.value = "";
 			   form.nomeQuadraOrigem.value = "";
-			   form.quadraOrigemID.value = "";
+			   ////form.quadraOrigemID.value = "";
 	///		   alert("limpar origem 2");
 			case 3://De quadra pra baixo
 	
@@ -817,7 +841,7 @@
 	             	form.loteOrigem.value = "";
 	             	form.subloteOrigem.value = "";
 	             	form.nomeQuadraOrigem.value = "";	
-	             	form.quadraOrigemID.value = "";
+	             	//form.quadraOrigemID.value = "";
 	             	form.loteDestino.value = "";
 	             	form.subloteDestino.value = "";
 	             	form.quadraDestinoNM.value = "";	
@@ -941,7 +965,14 @@
         form.submit();
 	}
 	
+	function limparBairro(){
+		var form = document.forms[0];
+		
+		form.idBairro.value = null;
+		form.nomeBairro.value = null;
+	}
 
+	
 -->    
 </script>
 <script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/regras_validator.js"></script><html:javascript staticJavascript="false"  formName="SituacaoEspecialFaturamentoInformarActionForm"
@@ -1093,7 +1124,30 @@
 				</tr>
 				<tr>
 					<td><strong>Bairro:</strong></td>
-					<td colspan="3"><html:text maxlength="30" property="nomeBairro" size="56" tabindex="2" onkeyup = "javascript:bloquearM();" /> 	
+					<td>
+						<html:text maxlength="9" property="idBairro" size="6"
+							onkeypress="validaEnterComMensagem(event, 'exibirSituacaoEspecialFaturamentoInformarAction.do?objetoConsulta=4&inscricaoTipo=bairro', 'idBairro','Código da Bairro');"
+							onkeyup="bloquearLSQLS();"/>
+							<a href="javascript:redirecionarSubmit('recuperarDadosPesquisarImoveisSituacaoEspecialAction.do?caminhoRetornoTelaPesquisaBairro=exibirSituacaoEspecialFaturamentoInformarAction&tipo=bairro');"><img
+							width="23" height="21" border="0"
+							src="<bean:message key="caminho.imagens"/>pesquisa.gif"
+							title="Pesquisar Bairro" /></a>
+							
+							<logic:equal name="corBairro" value="exception">
+								<html:text property="nomeBairro" size="25" readonly="true"
+									style="background-color:#EFEFEF; border:0; color: #ff0000"
+									 />
+							</logic:equal>
+	
+							<logic:notEqual name="corBairro" value="exception">
+								<html:text property="nomeBairro" size="25" readonly="true"
+									style="background-color:#EFEFEF; border:0; color: #000000"
+									/>
+							</logic:notEqual>
+
+							<a href="javascript:limpar(14);"> <img
+								src="<bean:message key="caminho.imagens"/>limparcampo.gif"
+								border="0" title="Apagar Bairro" /></a>					
 					</td>
 				</tr>
 				<tr>

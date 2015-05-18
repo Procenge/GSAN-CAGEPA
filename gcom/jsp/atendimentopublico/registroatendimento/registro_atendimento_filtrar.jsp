@@ -762,6 +762,82 @@
 		            </strong></span>
 		           </td>
 		      </tr>
+		      
+		      
+              <tr> 
+                <td height="24" colspan="7" bordercolor="#000000" class="style1"> 
+                  <hr></td>
+              </tr>		 
+              <tr>
+              	<td colspan="7"> 
+              		<strong>
+              			Situação da Guia de Pagamento para Geração do Serviço:
+              		</strong>
+                </td>
+              </tr>
+              
+              <tr>              
+				<td colspan="7">                
+                	&nbsp 
+                </td>
+              </tr>                   
+		   	  <tr> 
+		        <td><strong>Vencida?</strong></td>
+		           <td colspan="6">
+		            <span class="style2"><strong> 
+		             <label>
+		             <html:radio property="indicadorRaVencidas" value="<%=ConstantesSistema.SIM.toString()%>"/> Sim
+		             </label>
+				  	 <label> 
+				 		 &nbsp;&nbsp; 
+				 		 <html:radio property="indicadorRaVencidas" value="<%=ConstantesSistema.NAO.toString()%>"/> Não
+				  	 </label>
+				  	 <label> 
+				 		 &nbsp;&nbsp; 
+				 		 <html:radio property="indicadorRaVencidas" value="<%=ConstantesSistema.TODOS.toString()%>"/> Ambas
+				  	 </label>
+		            </strong></span>
+		           </td>
+		      </tr>		
+		      
+		   	  <tr> 
+		        <td><strong>Com Pagamento?</strong></td>
+		           <td colspan="6">
+		            <span class="style2"><strong> 
+		             <label>
+		             <html:radio property="indicadorRaPagamento" value="<%=ConstantesSistema.SIM.toString()%>"/> Sim
+		             </label>
+				  	 <label> 
+				 		 &nbsp;&nbsp; 
+				 		 <html:radio property="indicadorRaPagamento" value="<%=ConstantesSistema.NAO.toString()%>"/> Não
+				  	 </label>
+				  	 <label> 
+				 		 &nbsp;&nbsp; 
+				 		 <html:radio property="indicadorRaPagamento" value="<%=ConstantesSistema.TODOS.toString()%>"/> Ambos
+				  	 </label>
+		            </strong></span>
+		           </td>
+		      </tr>		
+		      
+		   	  <tr> 
+		        <td><strong>Com Devolução do Valor?</strong></td>
+		           <td colspan="6">
+		            <span class="style2"><strong> 
+		             <label>
+		             <html:radio property="indicadorRaDevolucao" value="<%=ConstantesSistema.SIM.toString()%>"/> Sim
+		             </label>
+				  	 <label> 
+				 		 &nbsp;&nbsp; 
+				 		 <html:radio property="indicadorRaDevolucao" value="<%=ConstantesSistema.NAO.toString()%>"/> Não
+				  	 </label>
+				  	 <label> 
+				 		 &nbsp;&nbsp; 
+				 		 <html:radio property="indicadorRaDevolucao" value="<%=ConstantesSistema.TODOS.toString()%>"/> Ambos
+				  	 </label>
+		            </strong></span>
+		           </td>
+		      </tr>			      	            
+		      
               <tr> 
                 <td height="24" colspan="7" bordercolor="#000000" class="style1"> 
                   <hr></td>

@@ -83,6 +83,7 @@ import gcom.util.Util;
 
 import java.util.Date;
 
+import org.apache.struts.upload.FormFile;
 import org.apache.struts.validator.ValidatorActionForm;
 
 /**
@@ -106,6 +107,8 @@ public class InserirFeriadoActionForm
 	private String dataFeriado;
 
 	private String descricaoFeriado;
+
+	private FormFile arquivoFeriadosImportar;
 
 	public String getDataFeriado(){
 
@@ -190,4 +193,15 @@ public class InserirFeriadoActionForm
 		}
 		return nacionalFeriado;
 	}
+
+	public FormFile getArquivoFeriadosImportar(){
+
+		return arquivoFeriadosImportar;
+	}
+
+	public void setArquivoFeriadosImportar(FormFile arquivoFeriadosImportar){
+
+		this.arquivoFeriadosImportar = arquivoFeriadosImportar;
+	}
+
 }

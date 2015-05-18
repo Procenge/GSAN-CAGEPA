@@ -82,7 +82,10 @@
 package gcom.atendimentopublico.registroatendimento;
 
 import gcom.acquagis.atendimento.RegistroAtendimentoJSONHelper;
-import gcom.atendimentopublico.imovelcomentario.ImovelComentario;
+import gcom.arrecadacao.pagamento.FiltroGuiaPagamento;
+import gcom.arrecadacao.pagamento.FiltroGuiaPagamentoPrestacao;
+import gcom.arrecadacao.pagamento.GuiaPagamento;
+import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao;
 import gcom.atendimentopublico.ligacaoagua.CorteTipo;
 import gcom.atendimentopublico.ligacaoagua.LigacaoAgua;
 import gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao;
@@ -117,6 +120,7 @@ import gcom.faturamento.RepositorioFaturamentoHBM;
 import gcom.faturamento.conta.Conta;
 import gcom.faturamento.conta.ContaMotivoRevisao;
 import gcom.faturamento.conta.FiltroConta;
+import gcom.faturamento.credito.CreditoARealizar;
 import gcom.faturamento.debito.DebitoACobrar;
 import gcom.gerencial.atendimentopublico.ligacaoagua.GLigacaoAguaPerfil;
 import gcom.gerencial.atendimentopublico.ligacaoagua.GLigacaoAguaSituacao;
@@ -135,7 +139,9 @@ import gcom.gerencial.cadastro.imovel.GImovelPerfil;
 import gcom.gerencial.cadastro.imovel.GSubcategoria;
 import gcom.gerencial.cadastro.localidade.*;
 import gcom.gerencial.micromedicao.GRota;
+import gcom.gui.ActionServletException;
 import gcom.gui.atendimentopublico.ordemservico.GerarRelatorioEstatisticoAtendimentoPorRacaCorActionForm;
+import gcom.gui.faturamento.bean.GuiaPagamentoPrestacaoHelper;
 import gcom.integracao.acquagis.DadosAcquaGis;
 import gcom.interceptor.RegistradorOperacao;
 import gcom.micromedicao.Rota;
@@ -156,6 +162,7 @@ import gcom.util.*;
 import gcom.util.filtro.ParametroNaoNulo;
 import gcom.util.filtro.ParametroNulo;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.filtro.ParametroSimplesDiferenteDe;
 import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 import gcom.util.parametrizacao.webservice.ParametrosAgenciaVirtual;
 
@@ -926,7 +933,7 @@ public class ControladorRegistroAtendimentoSEJB
 				ObterDebitoImovelOuClienteHelper imovelDebitos = this.getControladorCobranca().obterDebitoImovelOuCliente(1,
 								idImovel.toString(), null, null, "000101", "999912", dataVencimentoInicial, dataVencimentoFinal, 1, 1, 1,
 								1, 1, 1, 1, true, null, null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM,
-								ConstantesSistema.SIM);
+								ConstantesSistema.SIM, 2, null);
 
 				// [FS0043] – Verifica imóvel com débito
 				if(/*
@@ -986,9 +993,14 @@ public class ControladorRegistroAtendimentoSEJB
 			// Imóvel com a mesma especificação
 			this.verificarExistenciaRAImovelMesmaEspecificacao(imovel.getId(), idSolicitacaoTipoEspecificacao);
 
+			this.verificarExistenciaOSImovelMesmaEspecificacao(imovel.getId(), idSolicitacaoTipoEspecificacao);
+
 			// [FS0053] - Verificar existência de serviço em andamento para solicitações do tipo
 			// religação ou restabelecimento
 			this.verificarExistenciaServicoReligacaoRestabelecimento(idImovel, idSolicitacaoTipo);
+
+			// [FS0055 - Verificar abertura de RA de corte]
+			this.verificarAberturaRACorte(idImovel, idSolicitacaoTipo, idSolicitacaoTipoEspecificacao);
 
 			retorno.setImovel(imovel);
 
@@ -1073,6 +1085,10 @@ public class ControladorRegistroAtendimentoSEJB
 			// [FS0053] - Verificar existência de serviço em andamento para solicitações do tipo
 			// religação ou restabelecimento
 			this.verificarExistenciaServicoReligacaoRestabelecimento(idImovel, idSolicitacaoTipo);
+
+			// [FS0055 - Verificar abertura de RA de corte]
+			// [FS0051 - Verificar abertura de RA de corte],
+			this.verificarAberturaRACorte(idImovel, idSolicitacaoTipo, idSolicitacaoTipoEspecificacao);
 
 			retorno.setImovel(imovel);
 
@@ -1196,6 +1212,59 @@ public class ControladorRegistroAtendimentoSEJB
 			throw new ControladorException("atencao.imovel_ja_possui_ra_com_mesma_especificacao", null, registroAtendimento
 							.getSolicitacaoTipoEspecificacao().getDescricao(), registroAtendimento.getId().toString(), registroAtendimento
 							.getImovel().getId().toString());
+		}
+	}
+
+	/**
+	 * Caso exista ordem de serviço pendente para o Imóvel com a mesma
+	 * especificação (existe ocorrência na tabela ORDEM_SERVICO com
+	 * IMOV_ID=matrícula do Imóvel e SVTP_ID contido entre os possíveis
+	 * resulados da tabela ESPECIFICACAO_SERVICO_TIPO STEP_ID=Id da Especificação selecionada e
+	 * ORSE_CDSITUACAO=1).
+	 * 
+	 * @param idImovel
+	 *            ,
+	 *            idSolicitacaoTipoEspecificacao
+	 * @return void
+	 * @throws ControladorException
+	 */
+	public void verificarExistenciaOSImovelMesmaEspecificacao(Integer idImovel, Integer idSolicitacaoTipoEspecificacao)
+					throws ControladorException{
+
+		FiltroEspecificacaoServicoTipo filtroEspecificacaoServicoTipo = new FiltroEspecificacaoServicoTipo();
+
+		filtroEspecificacaoServicoTipo.adicionarParametro(new ParametroSimples(
+						FiltroEspecificacaoServicoTipo.SOLICITACAO_TIPO_ESPECIFICACAO_ID, idSolicitacaoTipoEspecificacao));
+		filtroEspecificacaoServicoTipo.adicionarParametro(new ParametroSimples(FiltroEspecificacaoServicoTipo.INDICADOR_GERACAO_AUTOMATICA,
+						ConstantesSistema.SIM));
+
+		Collection tipos = Fachada.getInstancia().pesquisar(filtroEspecificacaoServicoTipo, EspecificacaoServicoTipo.class.getName());
+
+		for(Object tipo : tipos){
+
+			EspecificacaoServicoTipo tipoEspecificacao = (EspecificacaoServicoTipo) tipo;
+
+			FiltroOrdemServico filtroOrdemServico = new FiltroOrdemServico();
+
+			filtroOrdemServico.adicionarParametro(new ParametroSimples(FiltroOrdemServico.ID_IMOVEL, idImovel));
+			filtroOrdemServico.adicionarParametro(new ParametroSimples(FiltroOrdemServico.SERVICO_TIPO_ID, tipoEspecificacao
+							.getServicoTipo().getId()));
+			filtroOrdemServico.adicionarParametro(new ParametroSimples(FiltroOrdemServico.SITUACAO, OrdemServico.SITUACAO_PENDENTE));
+
+			Collection<Object> ordensServico = Fachada.getInstancia().pesquisar(filtroOrdemServico, OrdemServico.class.getName());
+
+			if(!ordensServico.isEmpty()){
+
+				Iterator<Object> iterator = ordensServico.iterator();
+
+				while(iterator.hasNext()){
+
+					OrdemServico os = (OrdemServico) iterator.next();
+					throw new ControladorException("atencao.imovel_ja_possui_os_com_mesma_especificacao", null, os.getId().toString(), os
+									.getImovel().getId().toString());
+
+				}
+			}
 		}
 	}
 
@@ -1339,7 +1408,6 @@ public class ControladorRegistroAtendimentoSEJB
 
 		return idTipoSolicitacao;
 	}
-
 
 	/**
 	 * [UC3096] AcquaGIS
@@ -2056,7 +2124,7 @@ public class ControladorRegistroAtendimentoSEJB
 				if((idSituacaoAguaCriterio != null && imovel.getLigacaoAguaSituacao().getId().equals(idSituacaoAguaCriterio))
 								|| idSituacaoAguaCriterio == null){
 					correspondencia1 = true;
-					
+
 				}
 
 				// LigacaoEsgotoSituacao
@@ -2064,7 +2132,7 @@ public class ControladorRegistroAtendimentoSEJB
 								|| idSituacaoEsgotoCriterio == null){
 
 					correspondencia2 = true;
-					
+
 				}
 
 				// hidrometroLigacaoAguaCriterio
@@ -2072,7 +2140,7 @@ public class ControladorRegistroAtendimentoSEJB
 								|| hidrometroLigacaoAguaCriterio == null){
 
 					correspondencia3 = true;
-					
+
 				}
 
 				// hidrometroLigacaoPocoCriterio
@@ -2080,7 +2148,7 @@ public class ControladorRegistroAtendimentoSEJB
 								|| hidrometroLigacaoPocoCriterio == null){
 
 					correspondencia4 = true;
-					
+
 				}
 
 				if(correspondencia1 & correspondencia2 & correspondencia3 & correspondencia4){
@@ -2613,12 +2681,10 @@ public class ControladorRegistroAtendimentoSEJB
 			 * exibir a mensagem: "Prazo previsto para o atendimento ainda não
 			 * expirou. não possível reiterá-lo."
 			 */
-			// if (Util.compararDataTime(registroAtendimento
-			// .getDataPrevistaAtual(), dataAtual) > 0) {
-			// sessionContext.setRollbackOnly();
-			// throw new ControladorException(
-			// "atencao.registro_atendimento.prazo_nao_expirado");
-			// }
+			if(Util.compararDataTime(registroAtendimento.getDataPrevistaAtual(), dataAtual) > 0){
+				sessionContext.setRollbackOnly();
+				throw new ControladorException("atencao.registro_atendimento.prazo_nao_expirado");
+			}
 
 			// [FS0003] - Verificar se o RA já foi realizado no mesmo dia
 
@@ -4936,7 +5002,6 @@ public class ControladorRegistroAtendimentoSEJB
 					throw new ControladorException("atencao.required", null, "Endereço");
 				}
 
-
 				if(solicitacaoTipoRelativoFaltaAgua != null && solicitacaoTipoRelativoFaltaAgua.equals("SIM")){
 					if(desabilitarMunicipioBairro == null){
 						if(idMunicipio == null || idMunicipio.equals("")){
@@ -5097,6 +5162,31 @@ public class ControladorRegistroAtendimentoSEJB
 			throw new ControladorException("atencao.dados_solicitante_nao_informado");
 		}
 
+		SolicitacaoTipoEspecificacao solicitacaoTipoEspecificacao = null;
+		if(idEspecificacao != null){
+			FiltroSolicitacaoTipoEspecificacao filtroSolicitacaoTipoEspecificacao = new FiltroSolicitacaoTipoEspecificacao();
+			filtroSolicitacaoTipoEspecificacao.adicionarParametro(new ParametroSimples(FiltroSolicitacaoTipoEspecificacao.ID,
+							idEspecificacao));
+
+			solicitacaoTipoEspecificacao = (SolicitacaoTipoEspecificacao) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(
+							filtroSolicitacaoTipoEspecificacao, SolicitacaoTipoEspecificacao.class.getName()));
+		}else{
+			if(idRegistroAtendimento != null){
+				FiltroRegistroAtendimento filtroRegistroAtendimento = new FiltroRegistroAtendimento();
+				filtroRegistroAtendimento.adicionarParametro(new ParametroSimples(FiltroRegistroAtendimento.ID, idRegistroAtendimento));
+				filtroRegistroAtendimento
+								.adicionarCaminhoParaCarregamentoEntidade(FiltroRegistroAtendimento.SOLICITACAO_TIPO_ESPECIFICACAO);
+
+				RegistroAtendimento registroAtendimento = (RegistroAtendimento) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(
+								filtroRegistroAtendimento, RegistroAtendimento.class.getName()));
+
+				// [FS0027] Verificar informação do Imóvel
+				if(registroAtendimento != null){
+					solicitacaoTipoEspecificacao = registroAtendimento.getSolicitacaoTipoEspecificacao();
+				}
+			}
+		}
+
 		if(indicadorClienteEspecificacao != null && indicadorClienteEspecificacao.equals(ConstantesSistema.INDICADOR_USO_ATIVO)
 						&& idCliente == null){
 			throw new ControladorException("atencao.required", null, "Cliente");
@@ -5122,8 +5212,20 @@ public class ControladorRegistroAtendimentoSEJB
 			}
 
 			// [FS0027] Verificar informação do Imóvel
-			if(idImovel != null){
+			if((idImovel != null)
+							&& (solicitacaoTipoEspecificacao == null || solicitacaoTipoEspecificacao.getIndicadorCliente().equals(
+											ConstantesSistema.SIM))){
 				this.verificarInformacaoImovel(idCliente, idImovel, true);
+			}else{
+				Cliente cliente = null;
+
+				if(idCliente != null){
+					cliente = getControladorCliente().pesquisarClienteDigitado(idCliente);
+				}
+
+				if(cliente == null){
+					throw new ActionServletException("atencao.cliente.inexistente", null, idImovel.toString());
+				}
 			}
 		}
 
@@ -5538,7 +5640,7 @@ public class ControladorRegistroAtendimentoSEJB
 					BigDecimal coordenadaNorte, BigDecimal coordenadaLeste, Integer sequenceRA, Integer idRaReiterada, String tipoCliente,
 					String numeroCpf, String numeroRg, String orgaoExpedidorRg, String unidadeFederacaoRG, String numeroCnpj,
 					Collection<Conta> colecaoContas, String identificadores, ContaMotivoRevisao contaMotivoRevisao,
-					String indicadorProcessoAdmJud, String numeroProcessoAgencia)
+					String indicadorProcessoAdmJud, String numeroProcessoAgencia, Short quantidadePrestacoesGuiaPagamento)
 					throws ControladorException{
 
 		this.verificarDebitosImovelCliente(idSolicitacaoTipoEspecificacao, idImovel, idCliente);
@@ -5903,7 +6005,8 @@ public class ControladorRegistroAtendimentoSEJB
 				}
 
 				idOrdemServico = this.getControladorOrdemServico().gerarOrdemServico(osGeradaAutomatica, usuario, null, idLocalidade,
-								idSetorComercial, idBairro, idUnidadeAtendimento, idUnidadeDestino, parecerUnidadeDestino);
+								idSetorComercial, idBairro, idUnidadeAtendimento, idUnidadeDestino, parecerUnidadeDestino, null, false,
+								quantidadePrestacoesGuiaPagamento);
 
 				// this.gerarTramiteOrdemServico(idLocalidade, idSetorComercial,
 				// idUnidadeAtendimento, idUnidadeDestino, parecerUnidadeDestino, usuario,
@@ -6026,7 +6129,8 @@ public class ControladorRegistroAtendimentoSEJB
 									.getId();
 				}
 			}else{
-				filtroUsuario.adicionarParametro(new ParametroSimples(FiltroUsuario.ID, Usuario.ID_USUARIO_ADM_SISTEMA + ""));
+
+				filtroUsuario.adicionarParametro(new ParametroSimples(FiltroUsuario.ID, Usuario.getIdUsuarioBatchParametro() + ""));
 			}
 
 			Usuario usuarioLogado = (Usuario) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(filtroUsuario,
@@ -6034,7 +6138,7 @@ public class ControladorRegistroAtendimentoSEJB
 
 			if(usuarioLogado == null){
 				filtroUsuario.limparListaParametros();
-				filtroUsuario.adicionarParametro(new ParametroSimples(FiltroUsuario.ID, Usuario.ID_USUARIO_ADM_SISTEMA + ""));
+				filtroUsuario.adicionarParametro(new ParametroSimples(FiltroUsuario.ID, Usuario.getIdUsuarioBatchParametro() + ""));
 				usuarioLogado = (Usuario) Util.retonarObjetoDeColecao(getControladorUtil()
 								.pesquisar(filtroUsuario, Usuario.class.getName()));
 			}
@@ -6141,7 +6245,7 @@ public class ControladorRegistroAtendimentoSEJB
 							idUnidadeOrganizacional, usuarioLogado.getId(), idCliente, null, null, false, null, null, colecaoFones, null,
 							unidadeOrganizacional, null, colecaoIdServicoTipo, null, null, registroAtendimentoColetor.getCoordenadaNorte(),
 							registroAtendimentoColetor.getCoordenadaLeste(), registroAtendimentoColetor.getId(), null, null, null, null,
-							null, null, null, null, null, null, indicadorProcessoAdmJud, numeroProcessoAgencia);
+							null, null, null, null, null, null, indicadorProcessoAdmJud, numeroProcessoAgencia, null);
 
 			Date data = new Date();
 			registroAtendimentoColetor.setDataGeracaoRegistroAtendimento(data);
@@ -6667,6 +6771,88 @@ public class ControladorRegistroAtendimentoSEJB
 	}
 
 	/**
+	 * [UC0435] Encerrar Registro de Atendimento
+	 * 
+	 * @author Leonardo Regis
+	 * @date 26/08/2006
+	 * @param registroAtendimento
+	 * @param registroAtendimentoUnidade
+	 * @param usuarioLogado
+	 */
+	public void encerrarRegistroAtendimento(Collection<RegistroAtendimento> colecaoRegistroAtendimento,
+					Collection<RegistroAtendimentoUnidade> colecaoRegistroAtendimentoUnidade, Usuario usuarioLogado)
+					throws ControladorException{
+
+		try{
+
+			Iterator iteratorRegistroAtendimento = colecaoRegistroAtendimento.iterator();
+			Iterator iteratorRegistroAtendimentoUnidade = colecaoRegistroAtendimentoUnidade.iterator();
+			while(iteratorRegistroAtendimento.hasNext()){
+				RegistroAtendimento registroAtendimento = (RegistroAtendimento) iteratorRegistroAtendimento.next();
+				RegistroAtendimentoUnidade registroAtendimentoUnidade = (RegistroAtendimentoUnidade) iteratorRegistroAtendimentoUnidade
+								.next();
+
+				this.encerrarRegistroAtendimento(registroAtendimento, registroAtendimentoUnidade, usuarioLogado);
+
+				// Cancelar Guia
+				// Cancelar as outras prestacoes da Guia
+				FiltroGuiaPagamento filtroGuiaPagamento = new FiltroGuiaPagamento();
+				filtroGuiaPagamento.adicionarParametro(new ParametroSimples(FiltroGuiaPagamento.REGISTRO_ATENDIMENTO_ID,
+								registroAtendimento.getId()));
+
+				Collection<GuiaPagamento> colecaoGuiaPagamento = getControladorUtil().pesquisar(filtroGuiaPagamento,
+								GuiaPagamento.class.getName());
+
+				for(GuiaPagamento guiaPagamento : colecaoGuiaPagamento){
+					Collection<GuiaPagamentoPrestacaoHelper> colecaoGuiasPrestacoes = getControladorFaturamento()
+									.pesquisarGuiasPagamentoPrestacaoFiltrar(guiaPagamento.getId());
+
+					if(colecaoGuiasPrestacoes != null && colecaoGuiasPrestacoes.size() > 0){
+						Collection<String> colecaoGuiasPrestacoesRemovidas = new ArrayList<String>();
+
+						for(GuiaPagamentoPrestacaoHelper guiaPagamentoHelper : colecaoGuiasPrestacoes){
+							FiltroGuiaPagamentoPrestacao filtroGuiaPagamentoPrestacao = new FiltroGuiaPagamentoPrestacao();
+							filtroGuiaPagamentoPrestacao.adicionarParametro(new ParametroSimples(
+											FiltroGuiaPagamentoPrestacao.GUIA_PAGAMENTO_ID, guiaPagamentoHelper.getIdGuiaPagamento()));
+							filtroGuiaPagamentoPrestacao.adicionarParametro(new ParametroSimples(
+											FiltroGuiaPagamentoPrestacao.NUMERO_PRESTACAO, guiaPagamentoHelper.getNumeroPrestacao()));
+
+							GuiaPagamentoPrestacao guiaPagamentoPrestacaoPesquisada = (GuiaPagamentoPrestacao) Util
+											.retonarObjetoDeColecao(getControladorUtil().pesquisar(filtroGuiaPagamentoPrestacao,
+															GuiaPagamentoPrestacao.class.getName()));
+
+							if(guiaPagamentoPrestacaoPesquisada != null){
+								colecaoGuiasPrestacoesRemovidas.add(guiaPagamentoHelper.getIdGuiaPagamento().toString()
+												+ guiaPagamentoHelper.getNumeroPrestacao().toString());
+
+							}
+						}
+
+						String[] registrosRemocao = new String[colecaoGuiasPrestacoesRemovidas.size()];
+						int contLinha = 0;
+						for(String guiaPagamentoRemovida : colecaoGuiasPrestacoesRemovidas){
+							registrosRemocao[contLinha] = guiaPagamentoRemovida;
+
+							contLinha = contLinha + 1;
+						}
+
+						if(contLinha > 0){
+							getControladorFaturamento()
+											.cancelarGuiaPagamento(colecaoGuiasPrestacoes, registrosRemocao, true, usuarioLogado);
+						}
+					}
+				}
+
+			}
+
+		}catch(ControladorException ex){
+			sessionContext.setRollbackOnly();
+			ex.printStackTrace();
+			throw new ControladorException("erro.sistema", ex);
+		}
+	}
+
+	/**
 	 * [UC0440] Consultar Programação de Abastecimento
 	 * Caso exista Programação de Abastecimento de uma determinada Área de Bairro
 	 * 
@@ -7117,6 +7303,9 @@ public class ControladorRegistroAtendimentoSEJB
 
 		if(raNaBase.getNumeroImovel() != null) ra.setNumeroImovel(raNaBase.getNumeroImovel());
 
+		if(raNaBase.getRegistroAtendimentoReativacao() != null) ra.setRegistroAtendimentoReativacao(raNaBase
+						.getRegistroAtendimentoReativacao());
+
 		Integer[] retorno = null;
 
 		/*
@@ -7446,7 +7635,7 @@ public class ControladorRegistroAtendimentoSEJB
 				}
 
 				idOrdemServico = this.getControladorOrdemServico().gerarOrdemServico(osGeradaAutomatica, usuarioLogado, null, idLocalidade,
-								idSetorComercial, idBairro, idUnidadeAtendimento, null, null);
+								idSetorComercial, idBairro, idUnidadeAtendimento, null, null, null, false, null);
 
 				// Definido pelo Analista que não tem problema retornar apenas um dos Ids
 				retorno[1] = idOrdemServico;
@@ -7955,7 +8144,7 @@ public class ControladorRegistroAtendimentoSEJB
 					}
 
 					idOrdemServico = this.getControladorOrdemServico().gerarOrdemServico(osGeradaAutomatica, usuario, null, idLocalidade,
-									idSetorComercial, idBairro, idUnidadeAtendimento, null, null);
+									idSetorComercial, idBairro, idUnidadeAtendimento, null, null, null, false, null);
 
 					// Definido pelo Analista que não tem problema retornar apenas um dos Ids
 					retorno[1] = idOrdemServico;
@@ -8276,8 +8465,27 @@ public class ControladorRegistroAtendimentoSEJB
 				this.verificarExistenciaClienteSolicitanteAtualizar(idRegistroAtendimento, idCliente, idRASolicitante);
 			}
 
+			FiltroRegistroAtendimento filtroRegistroAtendimento = new FiltroRegistroAtendimento();
+			filtroRegistroAtendimento.adicionarParametro(new ParametroSimples(FiltroRegistroAtendimento.ID, idRegistroAtendimento));
+			filtroRegistroAtendimento.adicionarCaminhoParaCarregamentoEntidade(FiltroRegistroAtendimento.SOLICITACAO_TIPO_ESPECIFICACAO);
+
+			RegistroAtendimento registroAtendimento = (RegistroAtendimento) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(
+							filtroRegistroAtendimento, RegistroAtendimento.class.getName()));
+
 			// [FS0027] Verificar informação do Imóvel
-			this.verificarInformacaoImovel(idCliente, idImovel, true);
+			if((registroAtendimento == null) || (registroAtendimento.getSolicitacaoTipoEspecificacao() == null)
+							|| (registroAtendimento.getSolicitacaoTipoEspecificacao().getIndicadorCliente().equals(ConstantesSistema.SIM))){
+				this.verificarInformacaoImovel(idCliente, idImovel, true);
+			}else{
+				Cliente cliente = null;
+				if(idCliente != null){
+					cliente = getControladorCliente().pesquisarClienteDigitado(idCliente);
+				}
+
+				if(cliente == null){
+					throw new ActionServletException("atencao.cliente.inexistente", null, idImovel.toString());
+				}
+			}
 		}
 
 		if(idUnidadeSolicitante != null){
@@ -10865,75 +11073,6 @@ public class ControladorRegistroAtendimentoSEJB
 	}
 
 	/**
-	 * Consultar os comentários do imóvel.
-	 * 
-	 * @author Virgínia Melo
-	 * @date 01/02/2009
-	 * @param idImovel
-	 *            - id do imóvel
-	 * @return Collection - coleção contendo comentários do imóvel
-	 * @throws ControladorException
-	 */
-	public Collection consultarImovelComentario(Integer idImovel) throws ControladorException{
-
-		Collection colecaoImovelComentario = null;
-		try{
-
-			colecaoImovelComentario = repositorioRegistroAtendimento.consultarImovelComentario(idImovel);
-
-		}catch(ErroRepositorioException ex){
-			sessionContext.setRollbackOnly();
-			ex.printStackTrace();
-			throw new ControladorException("erro.sistema", ex);
-		}
-
-		Collection imovelComentarios = null;
-
-		if(colecaoImovelComentario != null && !colecaoImovelComentario.isEmpty()){
-
-			imovelComentarios = new ArrayList();
-
-			Iterator iteratorColecaoImovelComentario = colecaoImovelComentario.iterator();
-
-			ImovelComentario imovelComentario = null;
-			while(iteratorColecaoImovelComentario.hasNext()){
-
-				Object[] array = (Object[]) iteratorColecaoImovelComentario.next();
-
-				imovelComentario = new ImovelComentario();
-
-				// id
-				if(array[0] != null){
-					imovelComentario.setId((Integer) array[0]);
-				}
-
-				// descricao
-				if(array[2] != null){
-					imovelComentario.setDescricao((String) array[2]);
-				}
-
-				// ultima alteracao
-				if(array[3] != null){
-					imovelComentario.setUltimaAlteracao((Date) array[3]);
-				}
-
-				// usuario
-				Usuario usuario = null;
-				if(array[4] != null){
-					// seta usuario
-					usuario = new Usuario();
-					usuario.setNomeUsuario((String) array[4]);
-					imovelComentario.setUsuario(usuario);
-				}
-
-				imovelComentarios.add(imovelComentario);
-			}
-		}
-		return imovelComentarios;
-
-	}
-
-	/**
 	 * Pesquisa um Registro de Atendimento
 	 * 
 	 * @author eduardo henrique
@@ -11554,13 +11693,14 @@ public class ControladorRegistroAtendimentoSEJB
 	 * @return
 	 * @throws ControladorException
 	 */
-	public Collection<UnidadeOrganizacional> obterUnidadeDestinoPorEspecificacao(EspecificacaoTramite especificacaoTramite)
-					throws ControladorException{
+	public Collection<UnidadeOrganizacional> obterUnidadeDestinoPorEspecificacao(EspecificacaoTramite especificacaoTramite,
+					boolean checarIndicadorPrimeiroTramite) throws ControladorException{
 
 		Collection<UnidadeOrganizacional> colecaoUnidadeOrganizacional = null;
 
 		try{
-			colecaoUnidadeOrganizacional = repositorioRegistroAtendimento.pesquisarUnidadeDestinoPorEspecificacao(especificacaoTramite);
+			colecaoUnidadeOrganizacional = repositorioRegistroAtendimento.pesquisarUnidadeDestinoPorEspecificacao(especificacaoTramite,
+							checarIndicadorPrimeiroTramite);
 
 		}catch(ErroRepositorioException ex){
 			throw new ControladorException("erro.sistema", ex);
@@ -11676,12 +11816,19 @@ public class ControladorRegistroAtendimentoSEJB
 							ObterDebitoImovelOuClienteHelper imovelDebitos = this.getControladorCobranca().obterDebitoImovelOuCliente(1,
 											idImovel.toString(), null, null, "000101", "999912", dataVencimentoInicial,
 											dataVencimentoFinal, 2, 2, 2, 2, 2, 1, 1, true, null, null, null, null, ConstantesSistema.SIM,
-											ConstantesSistema.SIM, ConstantesSistema.SIM);
+											ConstantesSistema.SIM, ConstantesSistema.SIM, 2, null);
+
+							Collection<ContaValoresHelper> colecaoContasValores = imovelDebitos.getColecaoContasValores();
+							Collection<DebitoACobrar> colecaoDebitoACobrar = imovelDebitos.getColecaoDebitoACobrar();
+							Collection<GuiaPagamentoValoresHelper> colecaoGuiasPagamentoValores = imovelDebitos
+											.getColecaoGuiasPagamentoValores();
+							Collection<CreditoARealizar> colecaoCreditoARealizar = null;
 
 							// [SB0041 - Verificar Titularidade do Débito]
 							this.verificarTitularidadeDebito(idImovel,
 											solicitacaoTipoEspecificacao.getIndicadorConsiderarApenasDebitoTitularAtual(),
-											solicitacaoTipoEspecificacao.getClienteRelacaoTipo(), imovelDebitos);
+											solicitacaoTipoEspecificacao.getClienteRelacaoTipo(), imovelDebitos, colecaoContasValores,
+											colecaoDebitoACobrar, colecaoGuiasPagamentoValores, colecaoCreditoARealizar);
 
 							/*
 							 * [FS0043] – Verifica imóvel com débito
@@ -11708,7 +11855,7 @@ public class ControladorRegistroAtendimentoSEJB
 											.obterDebitoImovelOuCliente(2, null, idCliente.toString(), null, "000101", "999912",
 															dataVencimentoInicial, dataVencimentoFinal, 2, 2, 2, 2, 2, 1, 1, null, null,
 															null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM,
-															ConstantesSistema.SIM);
+															ConstantesSistema.SIM, 2, null);
 
 							if(obterDebitoImovelOuClienteHelper != null){
 
@@ -11740,12 +11887,19 @@ public class ControladorRegistroAtendimentoSEJB
 							ObterDebitoImovelOuClienteHelper imovelDebitos = this.getControladorCobranca().obterDebitoImovelOuCliente(1,
 											idImovel.toString(), null, null, "000101", "999912", dataVencimentoInicial,
 											dataVencimentoFinal, 2, 2, 2, 2, 2, 1, 1, true, null, null, null, null, ConstantesSistema.SIM,
-											ConstantesSistema.SIM, ConstantesSistema.SIM);
+											ConstantesSistema.SIM, ConstantesSistema.SIM, 2, null);
+
+							Collection<ContaValoresHelper> colecaoContasValores = imovelDebitos.getColecaoContasValores();
+							Collection<DebitoACobrar> colecaoDebitoACobrar = imovelDebitos.getColecaoDebitoACobrar();
+							Collection<GuiaPagamentoValoresHelper> colecaoGuiasPagamentoValores = imovelDebitos
+											.getColecaoGuiasPagamentoValores();
+							Collection<CreditoARealizar> colecaoCreditoARealizar = null;
 
 							// [SB0041 - Verificar Titularidade do Débito]
 							this.verificarTitularidadeDebito(idImovel,
 											solicitacaoTipoEspecificacao.getIndicadorConsiderarApenasDebitoTitularAtual(),
-											solicitacaoTipoEspecificacao.getClienteRelacaoTipo(), imovelDebitos);
+											solicitacaoTipoEspecificacao.getClienteRelacaoTipo(), imovelDebitos, colecaoContasValores,
+											colecaoDebitoACobrar, colecaoGuiasPagamentoValores, colecaoCreditoARealizar);
 
 							/*
 							 * [FS0043] – Verifica imóvel com débito
@@ -11769,7 +11923,7 @@ public class ControladorRegistroAtendimentoSEJB
 											.obterDebitoImovelOuCliente(2, null, idCliente.toString(), null, "000101", "999912",
 															dataVencimentoInicial, dataVencimentoFinal, 2, 2, 2, 2, 2, 1, 1, null, null,
 															null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM,
-															ConstantesSistema.SIM);
+															ConstantesSistema.SIM, 2, null);
 
 							if(obterDebitoImovelOuClienteHelper != null){
 
@@ -11807,22 +11961,20 @@ public class ControladorRegistroAtendimentoSEJB
 	}
 
 	/**
-	 * [UC0366] Inserir Registro de Atendimento
-	 * [SB0041 - Verificar Titularidade do Débito]
-	 * [UC0251] Gerar Atividade de Ação de Cobrança
+	 * [UC0366] - Inserir Registro de Atendimento
+	 * [SB0041] - Verificar Titularidade do Débito]
+	 * [UC0251] - Gerar Atividade de Ação de Cobrança
 	 * [SB0013] - Verificar Titularidade do Débito
+	 * [UC3153] - Verificar Titularidade Débito/Crédito
 	 * 
 	 * @author Anderson Italo
 	 * @created 16/01/2014
 	 */
 	public void verificarTitularidadeDebito(Integer idImovel, Short indicadorConsiderarApenasDebitoTitularAtual,
-					ClienteRelacaoTipo clienteRelacaoTipo, ObterDebitoImovelOuClienteHelper obterDebitoImovelOuClienteHelper)
-					throws ControladorException{
-
-		Collection<ContaValoresHelper> colecaoContasValores = obterDebitoImovelOuClienteHelper.getColecaoContasValores();
-		Collection<DebitoACobrar> colecaoDebitoACobrar = obterDebitoImovelOuClienteHelper.getColecaoDebitoACobrar();
-		Collection<GuiaPagamentoValoresHelper> colecaoGuiasPagamentoValores = obterDebitoImovelOuClienteHelper
-						.getColecaoGuiasPagamentoValores();
+					ClienteRelacaoTipo clienteRelacaoTipo, ObterDebitoImovelOuClienteHelper obterDebitoImovelOuClienteHelper,
+					Collection<ContaValoresHelper> colecaoContasValores, Collection<DebitoACobrar> colecaoDebitoACobrar,
+					Collection<GuiaPagamentoValoresHelper> colecaoGuiasPagamentoValores,
+					Collection<CreditoARealizar> colecaoCreditoARealizar) throws ControladorException{
 
 		// Caso esteja indicado para considerar apenas o débito do titular atual do imóvel
 		if(indicadorConsiderarApenasDebitoTitularAtual.equals(ConstantesSistema.SIM)){
@@ -11909,41 +12061,67 @@ public class ControladorRegistroAtendimentoSEJB
 						}
 					}
 
-					// // Trecho Comentado até entrar na versão as ocorrências de titularidade
-					// // (OC1077233),
-					// // pois no momento dessa implementação ainda não existia a tabela de
-					// // cliente_debito_a_cobrar
-					// Collection<DebitoACobrar> colecaoDebitoACobrarRemover = new ArrayList();
-					// Integer idClienteDebitoACobrar = null;
-					//
-					// if(!Util.isVazioOrNulo(colecaoDebitoACobrar)){
-					//
-					// // Retirar da lista de débitos a cobrar retornada pelo [UC0067] os débitos a
-					// // cobrar com cliente diverso do cliente atual indicado para emissão na
-					// // conta
-					// if(clienteComNomeConta == null){
-					//
-					// colecaoDebitoACobrarRemover.addAll(colecaoDebitoACobrar);
-					// }else{
-					// for(DebitoACobrar debitoACobrar : colecaoDebitoACobrar){
-					//
-					// idClienteDebitoACobrar =
-					// repositorioCobranca.pesquisarIdClienteDebitoACobrarComNomeConta(debitoACobrar
-					// .getId());
-					//
-					// if(idClienteDebitoACobrar == null ||
-					// !idClienteDebitoACobrar.equals(clienteComNomeConta.getId())){
-					//
-					// colecaoDebitoACobrarRemover.add(debitoACobrar);
-					// }
-					// }
-					// }
-					//
-					// if(!Util.isVazioOrNulo(colecaoDebitoACobrarRemover)){
-					//
-					// colecaoDebitoACobrar.removeAll(colecaoDebitoACobrarRemover);
-					// }
-					// }
+					Collection<DebitoACobrar> colecaoDebitoACobrarRemover = new ArrayList();
+					Integer idClienteDebitoACobrar = null;
+
+					if(!Util.isVazioOrNulo(colecaoDebitoACobrar)){
+
+						// Retirar da lista de débitos a cobrar retornada pelo [UC0067] os débitos a
+						// cobrar com cliente diverso do cliente atual indicado para emissão na
+						// conta
+						if(clienteComNomeConta == null){
+
+							colecaoDebitoACobrarRemover.addAll(colecaoDebitoACobrar);
+						}else{
+							for(DebitoACobrar debitoACobrar : colecaoDebitoACobrar){
+
+								idClienteDebitoACobrar = repositorioCobranca.pesquisarIdClienteDebitoACobrarComNomeConta(debitoACobrar
+												.getId());
+
+								if(idClienteDebitoACobrar == null || !idClienteDebitoACobrar.equals(clienteComNomeConta.getId())){
+
+									colecaoDebitoACobrarRemover.add(debitoACobrar);
+								}
+							}
+						}
+
+						if(!Util.isVazioOrNulo(colecaoDebitoACobrarRemover)){
+
+							colecaoDebitoACobrar.removeAll(colecaoDebitoACobrarRemover);
+						}
+					}
+
+					Collection<CreditoARealizar> colecaoCreditoARealizarRemover = new ArrayList();
+					Integer idClienteCreditoARealizar = null;
+
+					if(!Util.isVazioOrNulo(colecaoCreditoARealizar)){
+
+						// Retirar da lista de creditos a realizar retornada pelo [UC0067] os
+						// débitos a
+						// cobrar com cliente diverso do cliente atual indicado para emissão na
+						// conta
+						if(clienteComNomeConta == null){
+
+							colecaoCreditoARealizarRemover.addAll(colecaoCreditoARealizar);
+						}else{
+							for(CreditoARealizar creditoARealizar : colecaoCreditoARealizar){
+
+								idClienteCreditoARealizar = repositorioCobranca
+												.pesquisarIdClienteCreditoARealizarComNomeConta(creditoARealizar.getId());
+
+								if(idClienteCreditoARealizar == null || !idClienteCreditoARealizar.equals(clienteComNomeConta.getId())){
+
+									colecaoCreditoARealizarRemover.add(creditoARealizar);
+								}
+							}
+						}
+
+						if(!Util.isVazioOrNulo(colecaoCreditoARealizarRemover)){
+
+							colecaoCreditoARealizar.removeAll(colecaoCreditoARealizarRemover);
+						}
+					}
+
 				}catch(ErroRepositorioException e){
 
 					e.printStackTrace();
@@ -12034,41 +12212,67 @@ public class ControladorRegistroAtendimentoSEJB
 						}
 					}
 
-					// // Trecho Comentado até entrar na versão as ocorrências de titularidade,
-					// // (OC1077233),
-					// // pois no momento dessa implementação ainda não existia a tabela de
-					// // cliente_debito_a_cobrar
-					// Collection<DebitoACobrar> colecaoDebitoACobrarRemover = new ArrayList();
-					// Integer idClienteDebitoACobrar = null;
-					//
-					// if(!Util.isVazioOrNulo(colecaoDebitoACobrar)){
-					//
-					// // Retirar da lista de débitos a cobrar retornada pelo [UC0067] os débitos a
-					// // cobrar com cliente diverso do cliente indicado como atual titular do
-					// // débito do imóvel
-					// if(idClienteTitularIndicado == null){
-					//
-					// colecaoDebitoACobrarRemover.addAll(colecaoDebitoACobrar);
-					// }else{
-					// for(DebitoACobrar debitoACobrar : colecaoDebitoACobrar){
-					//
-					// idClienteDebitoACobrar =
-					// repositorioCobranca.pesquisarIdClienteDebitoACobrarTitularRelacao(
-					// debitoACobrar.getId(), clienteRelacaoTipo.getId());
-					//
-					// if(idClienteDebitoACobrar == null ||
-					// !idClienteDebitoACobrar.equals(idClienteTitularIndicado)){
-					//
-					// colecaoDebitoACobrarRemover.add(debitoACobrar);
-					// }
-					// }
-					// }
-					//
-					// if(!Util.isVazioOrNulo(colecaoDebitoACobrarRemover)){
-					//
-					// colecaoDebitoACobrar.removeAll(colecaoDebitoACobrarRemover);
-					// }
-					// }
+					Collection<DebitoACobrar> colecaoDebitoACobrarRemover = new ArrayList();
+					Integer idClienteDebitoACobrar = null;
+
+					if(!Util.isVazioOrNulo(colecaoDebitoACobrar)){
+
+						// Retirar da lista de débitos a cobrar retornada pelo [UC0067] os débitos a
+						// cobrar com cliente diverso do cliente indicado como atual titular do
+						// débito do imóvel
+						if(idClienteTitularIndicado == null){
+
+							colecaoDebitoACobrarRemover.addAll(colecaoDebitoACobrar);
+						}else{
+							for(DebitoACobrar debitoACobrar : colecaoDebitoACobrar){
+
+								idClienteDebitoACobrar = repositorioCobranca.pesquisarIdClienteDebitoACobrarTitularRelacao(
+												debitoACobrar.getId(), clienteRelacaoTipo.getId());
+
+								if(idClienteDebitoACobrar == null || !idClienteDebitoACobrar.equals(idClienteTitularIndicado)){
+
+									colecaoDebitoACobrarRemover.add(debitoACobrar);
+								}
+							}
+						}
+
+						if(!Util.isVazioOrNulo(colecaoDebitoACobrarRemover)){
+
+							colecaoDebitoACobrar.removeAll(colecaoDebitoACobrarRemover);
+						}
+					}
+
+					Collection<CreditoARealizar> colecaoCreditoARealizarRemover = new ArrayList();
+					Integer idClienteCreditoARealizar = null;
+
+					if(!Util.isVazioOrNulo(colecaoCreditoARealizar)){
+
+						// Retirar da lista de créditos a realizar retornada pelo [UC0067] os
+						// débitos a
+						// cobrar com cliente diverso do cliente indicado como atual titular do
+						// débito do imóvel
+						if(idClienteTitularIndicado == null){
+
+							colecaoCreditoARealizarRemover.addAll(colecaoCreditoARealizar);
+						}else{
+							for(CreditoARealizar creditoARealizar : colecaoCreditoARealizar){
+
+								idClienteCreditoARealizar = repositorioCobranca.pesquisarIdClienteCreditoARealizarTitularRelacao(
+												creditoARealizar.getId(), clienteRelacaoTipo.getId());
+
+								if(idClienteCreditoARealizar == null || !idClienteCreditoARealizar.equals(idClienteTitularIndicado)){
+
+									colecaoCreditoARealizarRemover.add(creditoARealizar);
+								}
+							}
+						}
+
+						if(!Util.isVazioOrNulo(colecaoCreditoARealizarRemover)){
+
+							colecaoCreditoARealizar.removeAll(colecaoCreditoARealizarRemover);
+						}
+					}
+
 				}catch(ErroRepositorioException e){
 
 					e.printStackTrace();
@@ -12076,9 +12280,13 @@ public class ControladorRegistroAtendimentoSEJB
 				}
 			}
 
-			obterDebitoImovelOuClienteHelper.setColecaoContasValores(colecaoContasValores);
-			obterDebitoImovelOuClienteHelper.setColecaoDebitoACobrar(colecaoDebitoACobrar);
-			obterDebitoImovelOuClienteHelper.setColecaoGuiasPagamentoValores(colecaoGuiasPagamentoValores);
+			if(obterDebitoImovelOuClienteHelper != null){
+				obterDebitoImovelOuClienteHelper.setColecaoContasValores(colecaoContasValores);
+				obterDebitoImovelOuClienteHelper.setColecaoDebitoACobrar(colecaoDebitoACobrar);
+				obterDebitoImovelOuClienteHelper.setColecaoGuiasPagamentoValores(colecaoGuiasPagamentoValores);
+				obterDebitoImovelOuClienteHelper.setColecaoCreditoARealizar(colecaoCreditoARealizar);
+			}
+
 		}
 	}
 
@@ -12288,13 +12496,7 @@ public class ControladorRegistroAtendimentoSEJB
 	public Integer inserirRegistroAtendimento(Integer matricula, String cpfcnpj, String pontoReferencia, String nomeSolicitante,
 					String foneSolicitante, String emailSolicitante, Integer idSolicitacaoTipoEspecificacao, Integer idMunicio,
 					Integer idBairro, Integer idLogradouro, Integer numero, String descricao, Integer tipoPavimentoRua)
-					throws ControladorException,
-					NegocioException{
-
-		// VALIDAR VINCULO DE IMOVEL E CPF / CNPJ (SE INFORMADOS)
-		if(!Util.isVazioOuBranco(matricula) || !Util.isVazioOuBranco(cpfcnpj)){
-			ServiceLocator.getInstancia().getControladorImovel().validarPermissaoClienteImovel(cpfcnpj, String.valueOf(matricula));
-		}
+					throws ControladorException, NegocioException{
 
 		Imovel imovel = Util.isVazioOuBranco(matricula) ? null : ServiceLocator.getInstancia().getControladorImovel()
 						.pesquisarImovel(matricula);
@@ -12302,6 +12504,14 @@ public class ControladorRegistroAtendimentoSEJB
 		if(solicitacaoTipoEspecificacao == null){
 			throw new NegocioException(Constantes.RESOURCE_BUNDLE, "atencao.naocadastrado", "Especificação do Tipo de Solicitação");
 		}
+
+		// VALIDAR VINCULO DE IMOVEL E CPF / CNPJ (SE INFORMADOS) e Indicador de Cliente ser
+		// Obrigatório
+		if((!Util.isVazioOuBranco(matricula) || !Util.isVazioOuBranco(cpfcnpj))
+						&& solicitacaoTipoEspecificacao.getIndicadorCliente().equals(ConstantesSistema.SIM)){
+			ServiceLocator.getInstancia().getControladorImovel().validarPermissaoClienteImovel(cpfcnpj, String.valueOf(matricula));
+		}
+
 		Date dataAtendimento = Calendar.getInstance().getTime();
 		Collection colecaoEnderecoImovel = Util.isVazioOuBranco(matricula) ? null : buscarEnderecosImovel(matricula);
 		Cliente cliente = Util.isVazioOuBranco(matricula) || Util.isVazioOuBranco(cpfcnpj) ? null : obterClienteImovel(matricula, cpfcnpj);
@@ -12327,9 +12537,9 @@ public class ControladorRegistroAtendimentoSEJB
 		String cnpj = cliente == null ? null : cliente.getCnpj();
 
 		// Campos inseridos através da funcionalidade Inserir RA
-		String indicadorProcessoAdmJud =  ConstantesSistema.NAO.toString();
+		String indicadorProcessoAdmJud = ConstantesSistema.NAO.toString();
 		String numeroProcessoAgencia = null;
-		
+
 		Integer[] retorno = inserirRegistroAtendimento(//
 						Short.valueOf("1"), // indicadorAtendimentoOnLine,
 						Util.formatarData(dataAtendimento), // dataAtendimento,
@@ -12383,7 +12593,8 @@ public class ControladorRegistroAtendimentoSEJB
 						null, // identificadores,
 						null, // contaMotivoRevisao
 						indicadorProcessoAdmJud, // indicadorProcessoAdmJud
-						numeroProcessoAgencia // numeroProcessoAgencia
+						numeroProcessoAgencia, // numeroProcessoAgencia
+						null // numeroPrestacoesGuiaPagamento
 		);
 		return retorno[0];
 	}
@@ -12483,7 +12694,8 @@ public class ControladorRegistroAtendimentoSEJB
 						null, // identificadores,
 						null, // contaMotivoRevisao
 						ConstantesSistema.NAO.toString(), // indicadorProcessoAdmJud
-						null // numeroProcessoAgencia
+						null, // numeroProcessoAgencia
+						null // numeroPrestacoesGuiaPagamento
 		);
 		return retorno[0];
 	}
@@ -12705,7 +12917,7 @@ public class ControladorRegistroAtendimentoSEJB
 
 				retorno.setDataAtendimento((Date) array[7]);
 				retorno.setDescricaoEspecificacao((String) array[8]);
-				
+
 				StringBuilder telefoneContato = new StringBuilder("");
 				Short ddd = (Short) array[9];
 				if(Util.isNaoNuloBrancoZero(ddd)){
@@ -12801,16 +13013,19 @@ public class ControladorRegistroAtendimentoSEJB
 					Integer idImovel = (Integer) dadosRegistroAtendimento[1];
 
 					/*
-					 * Caso o registro de atendimento esteja associado a um logradouro, obter o endereço da ocorrência 
+					 * Caso o registro de atendimento esteja associado a um logradouro, obter o
+					 * endereço da ocorrência
 					 * a partir do registro de atendimento
 					 */
 					if(idLogradouroBairro != null && !idLogradouroBairro.equals("")){
-						RegistroAtendimento ra = this.getControladorEndereco().pesquisarRegistroAtendimentoDadosEnderecoFormatado(idRegistroAtendimento);
+						RegistroAtendimento ra = this.getControladorEndereco().pesquisarRegistroAtendimentoDadosEnderecoFormatado(
+										idRegistroAtendimento);
 						enderecoOcorrencia[1] = ra.getNumeroImovel();
 						ra.setNumeroImovel(null);
 						enderecoOcorrencia[0] = ra.getEnderecoFormatado();
 					}
-					// Caso contrário, obter a endereço da ocorrência a partir do Imóvel associado ao RA
+					// Caso contrário, obter a endereço da ocorrência a partir do Imóvel associado
+					// ao RA
 					else if(idImovel != null && !idImovel.equals("")){
 						Object[] itens = this.getControladorEndereco().pesquisarEnderecoFormatadoLista(idImovel);
 						enderecoOcorrencia[0] = (String) itens[0];
@@ -12873,8 +13088,8 @@ public class ControladorRegistroAtendimentoSEJB
 
 		try{
 
-			parametroVerificarOsAndamentoAberturaRa = Integer
-							.valueOf(ParametroAtendimentoPublico.P_VERIFICAR_OS_ANDAMENTO_ABERTURA_RA.executar());
+			parametroVerificarOsAndamentoAberturaRa = Integer.valueOf(ParametroAtendimentoPublico.P_VERIFICAR_OS_ANDAMENTO_ABERTURA_RA
+							.executar());
 
 			parametroTipoSolicitacaoReligacao = Integer.valueOf(ParametroAtendimentoPublico.P_TIPO_SOLICITACAO_RELIGACAO.executar());
 
@@ -12889,9 +13104,96 @@ public class ControladorRegistroAtendimentoSEJB
 		}
 
 		if((idSolicitacaoTipo.equals(parametroTipoSolicitacaoReligacao) || idSolicitacaoTipo
-						.equals(parametroTipoSolicitacaoRestabelecimento))
-						&& colecaoOs != null && !colecaoOs.isEmpty()){
+						.equals(parametroTipoSolicitacaoRestabelecimento)) && colecaoOs != null && !colecaoOs.isEmpty()){
 			throw new ControladorException("atencao.imovel_possui_os_religacao_restabelecimento_em_andamento");
+		}
+
+	}
+
+	/**
+	 * [UC0366] Inserir Registro Atendimento
+	 * [FS0055] Verificar abertura de RA de corte
+	 * 
+	 * @author Gicevalter Couto
+	 * @date 23/04/2015
+	 */
+	private void verificarAberturaRACorte(Integer idImovel, Integer idSolicitacaoTipo, Integer idSolicitacaoTipoEspecificacao)
+					throws ControladorException{
+
+		Integer pIdTipoSolicitacao = null;
+		try{
+			pIdTipoSolicitacao = Integer.valueOf(ParametroAtendimentoPublico.P_SOLICITACAO_TIPO_GRUPO_CORTE.executar());
+
+		}catch(ControladorException e1){
+			throw new ControladorException("erro.sistema", e1);
+		}
+
+		if(pIdTipoSolicitacao != null && !pIdTipoSolicitacao.equals(Integer.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+			FiltroSolicitacaoTipo filtroSolicitacaoTipo = new FiltroSolicitacaoTipo();
+			filtroSolicitacaoTipo.adicionarParametro(new ParametroSimples(FiltroSolicitacaoTipo.ID, idSolicitacaoTipo));
+
+			SolicitacaoTipo solicitacaoTipo = (SolicitacaoTipo) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(
+							filtroSolicitacaoTipo, SolicitacaoTipo.class.getName()));
+
+			if(pIdTipoSolicitacao.equals(solicitacaoTipo.getSolicitacaoTipoGrupo().getId())){
+				FiltroCobrancaAcao filtroCobrancaAcao = new FiltroCobrancaAcao();
+				filtroCobrancaAcao.adicionarParametro(new ParametroSimples(filtroCobrancaAcao.ID, CobrancaAcao.AVISO_CORTE));
+				filtroCobrancaAcao.adicionarCaminhoParaCarregamentoEntidade(FiltroCobrancaAcao.DOCUMENTO_TIPO);
+
+				CobrancaAcao cobrancaAcao = (CobrancaAcao) Util.retonarObjetoDeColecao(getControladorUtil().pesquisar(filtroCobrancaAcao,
+								CobrancaAcao.class.getName()));
+
+				FiltroCobrancaDocumento filtroCobrancaDocumento = new FiltroCobrancaDocumento();
+				filtroCobrancaDocumento.adicionarParametro(new ParametroSimples(FiltroCobrancaDocumento.IMOVEL_ID, idImovel));
+				filtroCobrancaDocumento.adicionarParametro(new ParametroSimples(FiltroCobrancaDocumento.DOCUMENTO_TIPO_ID, cobrancaAcao
+								.getDocumentoTipo().getId()));
+				filtroCobrancaDocumento.adicionarParametro(new ParametroSimplesDiferenteDe(FiltroCobrancaDocumento.COBRANCA_SITUACAO_ID,
+								CobrancaAcaoSituacao.CANCELADA_PRAZO));
+				filtroCobrancaDocumento.adicionarParametro(new ParametroSimplesDiferenteDe(FiltroCobrancaDocumento.COBRANCA_SITUACAO_ID,
+								CobrancaAcaoSituacao.CANCELADA));
+				filtroCobrancaDocumento.adicionarParametro(new ParametroSimplesDiferenteDe(FiltroCobrancaDocumento.COBRANCA_SITUACAO_ID,
+								CobrancaAcaoSituacao.NAO_ENTREGUE));
+
+				Collection<CobrancaDocumento> colecaoCobrancaDocumento = (Collection<CobrancaDocumento>) getControladorUtil().pesquisar(
+								filtroCobrancaDocumento, CobrancaDocumento.class.getName());
+
+				if(cobrancaAcao.getNumeroDiasValidade() != null){
+					for(CobrancaDocumento cobrancaDocumento : colecaoCobrancaDocumento){
+						if(cobrancaDocumento.getEmissao() != null){
+							Calendar dataEmissaoDocumento = Calendar.getInstance();
+							dataEmissaoDocumento.setTime(cobrancaDocumento.getEmissao());
+							dataEmissaoDocumento.add(Calendar.DAY_OF_YEAR, cobrancaAcao.getNumeroDiasValidade().intValue());
+
+							if(!(dataEmissaoDocumento.getTime().before(Calendar.getInstance().getTime()))){
+								String descricaoMsgErro = "";
+								if(solicitacaoTipo.getDescricao() != null){
+									descricaoMsgErro = solicitacaoTipo.getDescricao();
+								}
+
+								FiltroSolicitacaoTipoEspecificacao filtroSolicitacaoTipoEspecificacao = new FiltroSolicitacaoTipoEspecificacao();
+								filtroSolicitacaoTipoEspecificacao.adicionarParametro(new ParametroSimples(
+												FiltroSolicitacaoTipoEspecificacao.ID, idSolicitacaoTipoEspecificacao));
+
+								SolicitacaoTipoEspecificacao solicitacaoTipoEspecificacao = (SolicitacaoTipoEspecificacao) Util
+												.retonarObjetoDeColecao(getControladorUtil().pesquisar(filtroSolicitacaoTipoEspecificacao,
+																SolicitacaoTipoEspecificacao.class.getName()));
+								if(solicitacaoTipoEspecificacao.getDescricao() != null){
+									if(!descricaoMsgErro.equals("")){
+										descricaoMsgErro = descricaoMsgErro + "/" + solicitacaoTipoEspecificacao.getDescricao();
+									}else{
+										descricaoMsgErro = solicitacaoTipoEspecificacao.getDescricao();
+									}
+								}
+
+								throw new ControladorException("atencao.imovel_possui_aviso_corte_valido", null, descricaoMsgErro,
+												idImovel.toString());
+							}
+						}
+
+					}
+				}
+
+			}
 		}
 
 	}
@@ -12953,8 +13255,7 @@ public class ControladorRegistroAtendimentoSEJB
 	 * @return
 	 */
 	public int consultarQuantidadeRAComProcessoAdmJud(RelatorioRAComProcessoAdmJudHelper registroAtendimentoHelper)
-					throws ControladorException,
-					NegocioException{
+					throws ControladorException, NegocioException{
 
 		try{
 			validarCamposObrigatoriosHelperRA(registroAtendimentoHelper);
@@ -12983,8 +13284,7 @@ public class ControladorRegistroAtendimentoSEJB
 
 		// consulta os dados agrupados por unidade superior e unidade de atendimento
 		dadosConsolidados
-						.addAll(consultaDadosRAComProcessoAdmJudConsolidados(qtdTotalRA, relatorioRAComProcessoAdmJudHelper,
-						Boolean.FALSE));
+						.addAll(consultaDadosRAComProcessoAdmJudConsolidados(qtdTotalRA, relatorioRAComProcessoAdmJudHelper, Boolean.FALSE));
 
 		// consulta os dados agrupados apenas por unidade superior
 		if(relatorioRAComProcessoAdmJudHelper.getUnidadeSuperior() != null){
@@ -13006,8 +13306,8 @@ public class ControladorRegistroAtendimentoSEJB
 	 * @throws ControladorException
 	 */
 	private List<RelatorioRAComProcessoAdmJudBean> consultaDadosRAComProcessoAdmJudConsolidados(int qtdTotalRA,
-					RelatorioRAComProcessoAdmJudHelper relatorioRAComProcessoAdmJudHelper,
-					boolean apenasUnidadeSuperior) throws ControladorException{
+					RelatorioRAComProcessoAdmJudHelper relatorioRAComProcessoAdmJudHelper, boolean apenasUnidadeSuperior)
+					throws ControladorException{
 
 		Collection<Object[]> dados;
 		try{
@@ -13082,8 +13382,7 @@ public class ControladorRegistroAtendimentoSEJB
 	 * @throws ControladorException
 	 */
 	public List<RelatorioEstatisticoAtendimentoPorRacaCorBean> pesquisarDadosRelatorioEstatisticoAtendimentoPorRacaCor(
-					GerarRelatorioEstatisticoAtendimentoPorRacaCorActionForm form)
-					throws ControladorException{
+					GerarRelatorioEstatisticoAtendimentoPorRacaCorActionForm form) throws ControladorException{
 
 		try{
 			return this.repositorioRegistroAtendimento.pesquisarDadosRelatorioEstatisticoAtendimentoPorRacaCor(form);
@@ -13092,5 +13391,114 @@ public class ControladorRegistroAtendimentoSEJB
 			throw new ControladorException("erro.sistema", e);
 		}
 
+	}
+
+	/**
+	 * @author Yara Souza
+	 * @date 18/02/2014
+	 * @throws ControladorException
+	 */
+	public List<ServicoAssociadoValorHelper> pesquisarServicoAssociado(Integer idSolicitacaoTipoEspecificacao) throws ControladorException{
+
+		try{
+			return this.repositorioRegistroAtendimento.pesquisarServicoAssociado(idSolicitacaoTipoEspecificacao);
+		}catch(ErroRepositorioException e){
+			sessionContext.setRollbackOnly();
+			throw new ControladorException("erro.sistema", e);
+		}
+
+	}
+
+	/**
+	 * @param idSolicitacaoTipoEspecificacao
+	 * @param usuarioLogado
+	 * @param cliente
+	 * @return
+	 * @throws NumberFormatException
+	 * @throws ControladorException
+	 */
+	public Integer inserirRAPorSolicitacaoTipoEspecificacao(Integer idSolicitacaoTipoEspecificacao, Usuario usuarioLogado, Cliente cliente,
+					Imovel imovel) throws NumberFormatException, ControladorException{
+
+		Date dataAtendimento = Calendar.getInstance().getTime();
+
+		SolicitacaoTipoEspecificacao solicitacaoTipoEspecificacao = buscarSolicitacaoTipoEspecificacao(idSolicitacaoTipoEspecificacao);
+
+		Integer idMeioSolicitacao = MeioSolicitacao.INTERNO;
+		Date dataPrevista = definirDataPrevistaRA(dataAtendimento, idSolicitacaoTipoEspecificacao);
+		String dataPrevistaFormatada = Util.formatarData(dataPrevista) + " " + Util.formatarHoraSemSegundos(dataPrevista);
+		Integer idSolicitacaoTipo = solicitacaoTipoEspecificacao.getSolicitacaoTipo().getId();
+		Integer unidadeOrganizacionalAbertura = usuarioLogado.getUnidadeOrganizacional().getId();
+		Integer usuarioAbertura = usuarioLogado.getId();
+		Integer idCliente = cliente.getId();
+		Collection colecaoFones = null;
+		String cpf = cliente.getCpf();
+		String rg = cliente.getRg();
+		String orgExpRg = (cliente.getOrgaoExpedidorRg() == null ? ConstantesSistema.NUMERO_NAO_INFORMADO + "" : cliente
+						.getOrgaoExpedidorRg().getId().toString());
+		String ufRg = (cliente.getUnidadeFederacao() == null ? ConstantesSistema.NUMERO_NAO_INFORMADO + "" : cliente.getUnidadeFederacao()
+						.getId().toString());
+		String cnpj = cliente.getCnpj();
+		String nomeSolicitante = cliente.getNome();
+		Collection colecaoEnderecoImovel = Util.isVazioOuBranco(imovel.getId()) ? null : buscarEnderecosImovel(imovel.getId());
+
+		Integer[] retorno = inserirRegistroAtendimento(//
+						Short.valueOf("1"), // indicadorAtendimentoOnLine,
+						Util.formatarData(dataAtendimento), // dataAtendimento,
+						Util.formatarHoraSemSegundos(dataAtendimento), // horaAtendimento,
+						null,// tempoEsperaInicial,
+						null, // tempoEsperaFinal,
+						idMeioSolicitacao, // idMeioSolicitacao,
+						null, // senhaAtendimento,
+						idSolicitacaoTipoEspecificacao, // idSolicitacaoTipoEspecificacao,
+						dataPrevistaFormatada, // dataPrevista,
+						"SOLICITAÇÃO CONTA BRAILLE", // observacao,
+						imovel.getId(), // idImovel,
+						null, // descricaoLocalOcorrencia,
+						idSolicitacaoTipo, // idSolicitacaoTipo,
+						colecaoEnderecoImovel, // colecaoEndereco,
+						null, // pontoReferenciaLocalOcorrencia,
+						null, // idBairroArea,
+						null, // idLocalidade,
+						null, // idSetorComercial,
+						null, // idQuadra,
+						null, // idDivisaoEsgoto,
+						null, // idLocalOcorrencia,
+						null, // idPavimentoRua,
+						null, // idPavimentoCalcada,
+						unidadeOrganizacionalAbertura, // idUnidadeAtendimento,
+						usuarioAbertura, // idUsuarioLogado, TODO DEFINIR Ususario de WS.
+						idCliente, // idCliente,
+						null, // pontoReferenciaSolicitante,
+						nomeSolicitante, // nomeSolicitante,
+						false, // novoSolicitante,
+						null, // idUnidadeSolicitante,
+						null, // idFuncionario,
+						colecaoFones, // colecaoFone,
+						null, // colecaoEnderecoSolicitante,
+						null, // idUnidadeDestino,
+						null, // parecerUnidadeDestino,
+						null, // colecaoIdServicoTipo,
+						null, // numeroRAManual,
+						null, // idRAJAGerado,
+						null, // coordenadaNorte,
+						null, // coordenadaLeste,
+						obterSequenceRA(), // sequenceRA,
+						null, // idRaReiterada,
+						cliente.getClienteTipo().getIndicadorPessoaFisicaJuridica().toString(), // tipoCliente,
+						cpf, // numeroCpf,
+						rg, // numeroRg,
+						orgExpRg, // orgaoExpedidorRg,
+						ufRg, // unidadeFederacaoRG,
+						cnpj, // numeroCnpj,
+						null, // colecaoContas,
+						null, // identificadores,
+						null, // contaMotivoRevisao
+						ConstantesSistema.NAO.toString(), // indicadorProcessoAdmJud
+						null, // numeroProcessoAgencia
+						null // quantidadePrestacoesGuiaPagamento
+		);
+
+		return retorno[0];
 	}
 }

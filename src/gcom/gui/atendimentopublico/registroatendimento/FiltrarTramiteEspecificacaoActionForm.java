@@ -34,21 +34,6 @@ public class FiltrarTramiteEspecificacaoActionForm
 
 	private String nomeBairro;
 
-	private String idSistemaAbastecimento;
-
-	private String idDistritoOperacional;
-
-	private String idZonaAbastecimento;
-
-	private String idSetorAbastecimento;
-
-	private String idSistemaEsgoto;
-
-	private String idSubsistemaEsgoto;
-
-	private String idBacia;
-
-	private String idSubBacia;
 
 	private String idUnidadeOrganizacionalOrigem;
 
@@ -57,6 +42,8 @@ public class FiltrarTramiteEspecificacaoActionForm
 	private String idUnidadeOrganizacionalDestino;
 
 	private String descricaoUnidadeOrganizacionalDestino;
+
+	private String indicadorPrimeiroTramite;
 
 	private boolean atualizar = true;
 
@@ -230,141 +217,6 @@ public class FiltrarTramiteEspecificacaoActionForm
 		this.nomeBairro = nomeBairro;
 	}
 
-	/**
-	 * @return the idSistemaAbastecimento
-	 */
-	public String getIdSistemaAbastecimento(){
-
-		return idSistemaAbastecimento;
-	}
-
-	/**
-	 * @param idSistemaAbastecimento
-	 *            the idSistemaAbastecimento to set
-	 */
-	public void setIdSistemaAbastecimento(String idSistemaAbastecimento){
-
-		this.idSistemaAbastecimento = idSistemaAbastecimento;
-	}
-
-	/**
-	 * @return the idDistritoOperacional
-	 */
-	public String getIdDistritoOperacional(){
-
-		return idDistritoOperacional;
-	}
-
-	/**
-	 * @param idDistritoOperacional
-	 *            the idDistritoOperacional to set
-	 */
-	public void setIdDistritoOperacional(String idDistritoOperacional){
-
-		this.idDistritoOperacional = idDistritoOperacional;
-	}
-
-	/**
-	 * @return the idZonaAbastecimento
-	 */
-	public String getIdZonaAbastecimento(){
-
-		return idZonaAbastecimento;
-	}
-
-	/**
-	 * @param idZonaAbastecimento
-	 *            the idZonaAbastecimento to set
-	 */
-	public void setIdZonaAbastecimento(String idZonaAbastecimento){
-
-		this.idZonaAbastecimento = idZonaAbastecimento;
-	}
-
-	/**
-	 * @return the idSetorAbastecimento
-	 */
-	public String getIdSetorAbastecimento(){
-
-		return idSetorAbastecimento;
-	}
-
-	/**
-	 * @param idSetorAbastecimento
-	 *            the idSetorAbastecimento to set
-	 */
-	public void setIdSetorAbastecimento(String idSetorAbastecimento){
-
-		this.idSetorAbastecimento = idSetorAbastecimento;
-	}
-
-	/**
-	 * @return the idSistemaEsgoto
-	 */
-	public String getIdSistemaEsgoto(){
-
-		return idSistemaEsgoto;
-	}
-
-	/**
-	 * @param idSistemaEsgoto
-	 *            the idSistemaEsgoto to set
-	 */
-	public void setIdSistemaEsgoto(String idSistemaEsgoto){
-
-		this.idSistemaEsgoto = idSistemaEsgoto;
-	}
-
-	/**
-	 * @return the idSubsistemaEsgoto
-	 */
-	public String getIdSubsistemaEsgoto(){
-
-		return idSubsistemaEsgoto;
-	}
-
-	/**
-	 * @param idSubsistemaEsgoto
-	 *            the idSubsistemaEsgoto to set
-	 */
-	public void setIdSubsistemaEsgoto(String idSubsistemaEsgoto){
-
-		this.idSubsistemaEsgoto = idSubsistemaEsgoto;
-	}
-
-	/**
-	 * @return the idBacia
-	 */
-	public String getIdBacia(){
-
-		return idBacia;
-	}
-
-	/**
-	 * @param idBacia
-	 *            the idBacia to set
-	 */
-	public void setIdBacia(String idBacia){
-
-		this.idBacia = idBacia;
-	}
-
-	/**
-	 * @return the idSubBacia
-	 */
-	public String getIdSubBacia(){
-
-		return idSubBacia;
-	}
-
-	/**
-	 * @param idSubBacia
-	 *            the idSubBacia to set
-	 */
-	public void setIdSubBacia(String idSubBacia){
-
-		this.idSubBacia = idSubBacia;
-	}
 
 	/**
 	 * @return the idUnidadeOrganizacionalOrigem
@@ -449,6 +301,16 @@ public class FiltrarTramiteEspecificacaoActionForm
 	public void setAtualizar(boolean atualizar){
 
 		this.atualizar = atualizar;
+	}
+
+	public String getIndicadorPrimeiroTramite(){
+
+		return indicadorPrimeiroTramite;
+	}
+
+	public void setIndicadorPrimeiroTramite(String indicadorPrimeiroTramite){
+
+		this.indicadorPrimeiroTramite = indicadorPrimeiroTramite;
 	}
 
 }

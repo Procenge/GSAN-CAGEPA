@@ -96,10 +96,7 @@ import gcom.integracao.piramide.bean.RetencaoHelper;
 import gcom.util.ControladorException;
 import gcom.util.ErroRepositorioException;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Interface para o repositório contabil
@@ -372,4 +369,62 @@ public interface IRepositorioContabil {
 	 */
 	ContaBancaria obterContaBancaria(LancamentoContabilSintetico lancamentoContabilSintetico) throws ErroRepositorioException;
 
+	/**
+	 * Método usado para obter os Lancamentos Contabeis Sinteticos Duplicados
+	 * 
+	 * @param LancamentoContabilSinteticoConsultaHelper
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<LancamentoContabilSinteticoConsultaHelper> consultarLancamentoContabilSinteticoDuplicado()
+					throws ErroRepositorioException;
+
+	/**
+	 * Método usado para obter os Lancamentos Contabeis Sinteticos Duplicados
+	 * 
+	 * @param
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<LancamentoContabilSintetico> consultarLancamentoContabilSinteticoDulicadoDetalhe(Map<String, Object> filtro)
+					throws ErroRepositorioException;
+
+
+		/**
+	 * Método usado para ajustar o valor do Lancamento Sintético Analitico
+	 * 
+	 * @param
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public void atualizarValorLancamentoContabilSintetico(Long idLancamentoContabilSinteticoNovo)
+					throws ErroRepositorioException;
+
+	/**
+	 * Método usado para ajustar os Lancamentos Conabeis vinculados ao sintetico
+	 * 
+	 * @param
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public void atualizarLancamentoContabilAnaliticoSintetico(Long idLancamentoContabilSinteticoNovo,
+					ArrayList<Long> listaIdLancamentoContabilSinteticoAtual) throws ErroRepositorioException;
+
+	/**
+	 * Método usado para apaga uma
+	 * 
+	 * @param
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public void apagarLancamentoContabilSintetico(ArrayList<Long> listaIdLancamentoContabilSintetico) throws ErroRepositorioException;
+	
+	/**
+	 * Método usado para Consultar os Itens Sinteticos com valores incorretos em relacao aos Analiticos
+	 * 
+	 * @param
+	 * @return
+	 * @throws ErroRepositorioException
+	 */	
+	public Collection<LancamentoContabilSintetico> consultarLancamentoContabilSinteticoValorIncorreto() throws ErroRepositorioException;
 }

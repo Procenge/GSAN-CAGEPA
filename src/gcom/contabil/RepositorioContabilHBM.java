@@ -93,6 +93,7 @@ import gcom.faturamento.ImpostoTipo;
 import gcom.faturamento.conta.Conta;
 import gcom.faturamento.conta.ContaHistorico;
 import gcom.faturamento.credito.CreditoRealizado;
+import gcom.faturamento.credito.CreditoRealizadoCategoriaHistorico;
 import gcom.faturamento.credito.CreditoRealizadoHistorico;
 import gcom.faturamento.debito.*;
 import gcom.financeiro.lancamento.LancamentoItemContabil;
@@ -173,6 +174,8 @@ public class RepositorioContabilHBM
 		try{
 
 			StringBuffer consulta = montarConsultaLancamentoContabilSinteticoInserir(filtro);
+			consulta.append(" order by lancamentoContabilSintetico.id asc ");
+
 			// executa o hql
 			Query query = session.createQuery(consulta.toString());
 			montarClausulasQuery(filtro, query);
@@ -182,6 +185,108 @@ public class RepositorioContabilHBM
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
 
 		}catch(ControladorException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * Método responsável por consultar os consultarLancamentoContabilSinteticoDulicadoDetalhe
+	 * apartir de um filtro
+	 * 
+	 * @param filtro
+	 *            o filtro de pesquisa
+	 * @return os LancamentoContabilSintetico que se enquadram nos parâmetros passados no filtro
+	 * @throws ErroRepositorioException
+	 */
+	@SuppressWarnings("unchecked")
+	public Collection<LancamentoContabilSintetico> consultarLancamentoContabilSinteticoDulicadoDetalhe(Map<String, Object> filtro)
+					throws ErroRepositorioException{
+		Collection retorno = null;
+
+		// cria uma sessão com o hibernate
+		Session session = HibernateUtil.getSession();
+		try{
+
+			StringBuffer consulta = new StringBuffer();
+
+			consulta.append(" select lancamentoContabilSintetico ");
+			consulta.append(" from LancamentoContabilSintetico lancamentoContabilSintetico ");
+			consulta.append(" WHERE lancamentoContabilSintetico.dataGeracao = :dataGeracao ");
+			consulta.append(" AND lancamentoContabilSintetico.dataContabil = :dataContabil ");
+			consulta.append(" AND lancamentoContabilSintetico.idUnidadeContabilAgrupamento = :idUnidadeContabilAgrupamento ");
+			consulta.append(" AND lancamentoContabilSintetico.eventoComercial.id = :idEventoComercial ");
+
+			Integer idCategoria = (Integer) filtro.get("idCategoria");
+			if(idCategoria != null){
+				consulta.append(" AND lancamentoContabilSintetico.categoria.id = :idCategoria ");
+			}else{
+				consulta.append(" AND lancamentoContabilSintetico.categoria is null ");
+			}
+
+			Integer idLancamentoItemContabil = (Integer) filtro.get("idLancamentoItemContabil");
+			if(idLancamentoItemContabil != null){
+				consulta.append(" AND lancamentoContabilSintetico.lancamentoItemContabil.id = :idLancamentoItemContabil ");
+			}else{
+				consulta.append(" AND lancamentoContabilSintetico.lancamentoItemContabil is null ");
+			}
+
+			Integer idImpostoTipo = (Integer) filtro.get("idImpostoTipo");
+			if(idImpostoTipo != null){
+				consulta.append(" AND lancamentoContabilSintetico.impostoTipo.id = :idImpostoTipo ");
+			}else{
+				consulta.append(" AND lancamentoContabilSintetico.impostoTipo is null ");
+			}
+
+			Integer idContaBancaria = (Integer) filtro.get("idContaBancaria");
+			if(idContaBancaria != null){
+				consulta.append(" AND lancamentoContabilSintetico.contaBancaria.id = :idContaBancaria ");
+			}else{
+				consulta.append(" AND lancamentoContabilSintetico.contaBancaria is null ");
+			}
+
+			String cnpj = (String) filtro.get("cnpj");
+			if(cnpj != null && !cnpj.trim().equals("")){
+				consulta.append(" AND lancamentoContabilSintetico.lancamentoContabilSintetico.numeroCNPJ = :numeroCNPJ ");
+			}
+
+			consulta.append(" order by lancamentoContabilSintetico.id asc ");
+
+			// executa o hql
+			Query query = session.createQuery(consulta.toString());
+			montarClausulasQuery(filtro, query);
+			retorno = query.list();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	public Collection<LancamentoContabilSintetico> consultarLancamentoContabilSinteticoValorIncorreto() throws ErroRepositorioException{
+
+		Collection retorno = null;
+
+		// cria uma sessão com o hibernate
+		Session session = HibernateUtil.getSession();
+		try{
+
+			String sql = "select lancamentoSintetico from LancamentoContabilSintetico lancamentoSintetico ";
+			sql = sql + " where valor <>  (select sum(lancamentoAnalitico.valor) from LancamentoContabilAnalitico lancamentoAnalitico ";
+			sql = sql + "  				    where lancamentoContabilSintetico.id = lancamentoSintetico.id)";
+			sql = sql + " order by id asc ";
+			
+			// executa o hql
+			Query query = session.createQuery(sql);
+			retorno = query.list();
+
+		}catch(HibernateException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
 		}finally{
 			HibernateUtil.closeSession(session);
@@ -914,6 +1019,11 @@ public class RepositorioContabilHBM
 			CreditoRealizadoHistorico creditoRealizado = (CreditoRealizadoHistorico) objeto;
 			session.refresh(creditoRealizado);
 			Hibernate.initialize(creditoRealizado.getCreditoRealizadoCategoriasHistorico());
+			for(Object objeto2 : creditoRealizado.getCreditoRealizadoCategoriasHistorico()){
+				CreditoRealizadoCategoriaHistorico creditoRealizadoCategoriaHistorico = (CreditoRealizadoCategoriaHistorico) objeto2;
+				session.refresh(creditoRealizadoCategoriaHistorico);
+				Hibernate.initialize(creditoRealizadoCategoriaHistorico.getCategoria());
+			}
 		}
 		Hibernate.initialize(conta.getContaImpostosDeduzidosHistoricos());
 
@@ -1554,6 +1664,159 @@ public class RepositorioContabilHBM
 
 		}catch(ControladorException e){
 			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void atualizarValorLancamentoContabilSintetico(Long idLancamentoContabilSintetico)
+					throws ErroRepositorioException{
+
+		// cria uma sessão com o hibernate
+		Session session = HibernateUtil.getSession();
+		int qtdtAlterada = 0;
+		try{
+
+			// Atualiza o valor para o nova somatoria
+			String sql = "update LancamentoContabilSintetico ";
+			sql = sql + " set valor = (select sum(valor) from LancamentoContabilAnalitico ";
+			sql = sql + " 				where lancamentoContabilSintetico.id = :idLancamentoContabilSintetico), ";
+			sql = sql +  "     ultimaAlteracao = :data_alteracao ";
+			sql = sql + "where id = :idLancamentoContabilSintetico";
+
+			Query queryUpdateSintetico = session.createQuery(sql.toString());
+			queryUpdateSintetico.setLong("idLancamentoContabilSintetico", idLancamentoContabilSintetico);
+			queryUpdateSintetico.setDate("data_alteracao", new Date());
+			qtdtAlterada = queryUpdateSintetico.executeUpdate();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void apagarLancamentoContabilSintetico(ArrayList<Long> listaIdLancamentoContabilSintetico) throws ErroRepositorioException{
+
+		// cria uma sessão com o hibernate
+		Session session = HibernateUtil.getSession();
+		int qtdtDeletados = 0;
+		try{
+			
+			String listaId="";
+			String separador="";
+			for(Long idLancamento : listaIdLancamentoContabilSintetico)
+			{  
+				listaId = listaId + separador + idLancamento;
+				separador = " , ";
+			} 
+
+			// Apaga os Sinteticos Incorretos
+			String sql = "delete LancamentoContabilSintetico where id in ( " + listaId.toString() + ")";
+			Query queryDelete = session.createQuery(sql);
+			qtdtDeletados = queryDelete.executeUpdate();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void atualizarLancamentoContabilAnaliticoSintetico(Long idLancamentoContabilSinteticoNovo,
+					ArrayList<Long> listaIdLancamentoContabilSinteticoAtual) throws ErroRepositorioException{
+
+		// cria uma sessão com o hibernate
+		Session session = HibernateUtil.getSession();
+		int qtdAlterada = 0;
+		try{
+
+			String listaId = "";
+			String separador = "";
+			for(Long idLancamento : listaIdLancamentoContabilSinteticoAtual){
+				listaId = listaId + separador + idLancamento;
+				separador = " , ";
+			}
+
+			// Atualiza o valor para o nova somatoria
+			String sql = "update LancamentoContabilAnalitico set lancamentoContabilSintetico.id = :idLancamentoContabilSintetico, ultimaAlteracao = :data_alteracao "
+							+ " where lancamentoContabilSintetico.id in ( " + listaId.toString() + ")";
+			Query queryUpdate = session.createQuery(sql);
+			queryUpdate.setLong("idLancamentoContabilSintetico", idLancamentoContabilSinteticoNovo);
+			queryUpdate.setDate("data_alteracao", new Date());
+			qtdAlterada = queryUpdate.executeUpdate();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+		}
+	}
+
+	/**
+	 * Método responsável por consultar os LancamentoContabilSintetico Duplicados
+	 * 
+	 * @return os LancamentoContabilSintetico que possui dados duplicados de
+	 *         dataContabil, dataGeracao, idUnidadeContabilAgrupamento, eventoComercial.id
+	 *         categoria.id , lancamentoItemContabil.id, impostoTipo.id e contaBancaria.id
+	 * @throws ErroRepositorioException
+	 */
+	@SuppressWarnings("unchecked")
+	public Collection consultarLancamentoContabilSinteticoDuplicado()
+					throws ErroRepositorioException{
+
+		Collection<LancamentoContabilSinteticoConsultaHelper> retorno = null;
+		
+		// cria uma sessão com o hibernate
+		Session session = HibernateUtil.getSession();
+		try{
+
+			StringBuffer consulta = new StringBuffer();
+
+			consulta.append(" select lancamentoContabilSintetico.dataContabil, ");
+			consulta.append("  		 lancamentoContabilSintetico.dataGeracao, ");
+			consulta.append("        lancamentoContabilSintetico.idUnidadeContabilAgrupamento, ");
+			consulta.append("        lancamentoContabilSintetico.eventoComercial.id, ");
+			consulta.append("        lancamentoContabilSintetico.categoria.id, ");
+			consulta.append("        lancamentoContabilSintetico.lancamentoItemContabil.id,  ");
+			consulta.append("        lancamentoContabilSintetico.impostoTipo.id,  ");
+			consulta.append("        lancamentoContabilSintetico.contaBancaria.id  ");
+			consulta.append(" from LancamentoContabilSintetico lancamentoContabilSintetico ");
+			consulta.append(" group by 	lancamentoContabilSintetico.dataContabil, ");
+			consulta.append("  		 	lancamentoContabilSintetico.dataGeracao, ");
+			consulta.append("        	lancamentoContabilSintetico.idUnidadeContabilAgrupamento, ");
+			consulta.append("        	lancamentoContabilSintetico.eventoComercial.id, ");
+			consulta.append("        	lancamentoContabilSintetico.categoria.id, ");
+			consulta.append("        	lancamentoContabilSintetico.lancamentoItemContabil.id,  ");
+			consulta.append("       	lancamentoContabilSintetico.impostoTipo.id,  ");
+			consulta.append("        	lancamentoContabilSintetico.contaBancaria.id  ");
+			consulta.append(" having Count(*) > 1");
+			consulta.append(" order by 	lancamentoContabilSintetico.dataContabil, ");
+			consulta.append("  		 	lancamentoContabilSintetico.dataGeracao, ");
+			consulta.append("        	lancamentoContabilSintetico.idUnidadeContabilAgrupamento, ");
+			consulta.append("        	lancamentoContabilSintetico.eventoComercial.id, ");
+			consulta.append("        	lancamentoContabilSintetico.categoria.id, ");
+			consulta.append("        	lancamentoContabilSintetico.lancamentoItemContabil.id,  ");
+			consulta.append("       	lancamentoContabilSintetico.impostoTipo.id,  ");
+			consulta.append("        	lancamentoContabilSintetico.contaBancaria.id  ");
+
+			Query query = session.createQuery(consulta.toString());
+			retorno = query.list();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+
 		}finally{
 			HibernateUtil.closeSession(session);
 		}

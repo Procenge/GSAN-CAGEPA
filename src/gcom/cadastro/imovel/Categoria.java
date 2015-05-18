@@ -112,7 +112,7 @@ public class Categoria
 	private Integer consumoEstouro;
 
 	@ControleAlteracao(funcionalidade = {Imovel.ATRIBUTOS_IMOVEL_INSERIR, Imovel.ATRIBUTOS_IMOVEL_ATUALIZAR, Imovel.ATRIBUTOS_IMOVEL_REMOVER})
-	private Integer consumoMaximoEconomiasValidacao;
+	private Integer quantidadeMaximoEconomiasValidacao;
 
 	@ControleAlteracao(funcionalidade = {Imovel.ATRIBUTOS_IMOVEL_INSERIR, Imovel.ATRIBUTOS_IMOVEL_ATUALIZAR, Imovel.ATRIBUTOS_IMOVEL_REMOVER})
 	private BigDecimal vezesMediaEstouro;
@@ -138,20 +138,25 @@ public class Categoria
 	@ControleAlteracao(funcionalidade = {Imovel.ATRIBUTOS_IMOVEL_INSERIR, Imovel.ATRIBUTOS_IMOVEL_ATUALIZAR, Imovel.ATRIBUTOS_IMOVEL_REMOVER})
 	private Integer numeroConsumoMaximoEc;
 
-	@ControleAlteracao(value = FiltroCategoria.TIPO_CATEGORIA, funcionalidade = {Imovel.ATRIBUTOS_IMOVEL_INSERIR, Imovel.ATRIBUTOS_IMOVEL_ATUALIZAR, Imovel.ATRIBUTOS_IMOVEL_REMOVER})
+	@ControleAlteracao(funcionalidade = {Imovel.ATRIBUTOS_IMOVEL_INSERIR, Imovel.ATRIBUTOS_IMOVEL_ATUALIZAR, Imovel.ATRIBUTOS_IMOVEL_REMOVER})
 	private CategoriaTipo categoriaTipo;
 
 	@ControleAlteracao(funcionalidade = {Imovel.ATRIBUTOS_IMOVEL_INSERIR, Imovel.ATRIBUTOS_IMOVEL_ATUALIZAR, Imovel.ATRIBUTOS_IMOVEL_REMOVER})
 	private Short indicadorCobrancaAcrescimos;
 
+	@ControleAlteracao(funcionalidade = {Imovel.ATRIBUTOS_IMOVEL_INSERIR, Imovel.ATRIBUTOS_IMOVEL_ATUALIZAR, Imovel.ATRIBUTOS_IMOVEL_REMOVER})
 	private Integer consumoMedioEconomiaMes;
 
+	@ControleAlteracao(funcionalidade = {Imovel.ATRIBUTOS_IMOVEL_INSERIR, Imovel.ATRIBUTOS_IMOVEL_ATUALIZAR, Imovel.ATRIBUTOS_IMOVEL_REMOVER})
 	private String descricaoComId;
 
+	@ControleAlteracao(funcionalidade = {Imovel.ATRIBUTOS_IMOVEL_INSERIR, Imovel.ATRIBUTOS_IMOVEL_ATUALIZAR, Imovel.ATRIBUTOS_IMOVEL_REMOVER})
 	private Integer consumoViradaHidrometro;
 
+	@ControleAlteracao(funcionalidade = {Imovel.ATRIBUTOS_IMOVEL_INSERIR, Imovel.ATRIBUTOS_IMOVEL_ATUALIZAR, Imovel.ATRIBUTOS_IMOVEL_REMOVER})
 	private Integer numeroVezesMediaViradaHidrometro;
 
+	@ControleAlteracao(funcionalidade = {Imovel.ATRIBUTOS_IMOVEL_INSERIR, Imovel.ATRIBUTOS_IMOVEL_ATUALIZAR, Imovel.ATRIBUTOS_IMOVEL_REMOVER})
 	private Short indicadorValidarViradaHidrometro;
 
 	// constantes
@@ -246,6 +251,32 @@ public class Categoria
 		this.numeroConsumoMaximoEc = numeroConsumoMaximoEc;
 	}
 
+	
+	public Categoria(String descricao, String descricaoAbreviada, Integer consumoMinimo, Integer consumoEstouro,
+						BigDecimal vezesMediaEstouro, Integer mediaBaixoConsumo, BigDecimal porcentagemMediaBaixoConsumo,
+						Integer consumoAlto, BigDecimal vezesMediaAltoConsumo, Short indicadorUso, Date ultimaAlteracao,
+						CategoriaTipo categoriaTipo, Integer consumoViradaHidrometro, Integer numeroVezesMediaViradaHidrometro,
+						Short indicadorValidarViradaHidrometro) {
+
+		this.descricao = descricao;
+		this.descricaoAbreviada = descricaoAbreviada;
+		this.consumoMinimo = consumoMinimo;
+		this.consumoEstouro = consumoEstouro;
+		this.vezesMediaEstouro = vezesMediaEstouro;
+		this.mediaBaixoConsumo = mediaBaixoConsumo;
+		this.porcentagemMediaBaixoConsumo = porcentagemMediaBaixoConsumo;
+		this.consumoAlto = consumoAlto;
+		this.vezesMediaAltoConsumo = vezesMediaAltoConsumo;
+		this.indicadorUso = indicadorUso;
+		this.ultimaAlteracao = ultimaAlteracao;
+		this.categoriaTipo = categoriaTipo;
+		this.consumoViradaHidrometro = consumoViradaHidrometro;
+		this.numeroVezesMediaViradaHidrometro = numeroVezesMediaViradaHidrometro;
+		this.indicadorValidarViradaHidrometro = indicadorValidarViradaHidrometro;
+
+	}
+
+	
 	public Categoria(Integer id) {
 
 		this.id = id;
@@ -477,6 +508,7 @@ public class Categoria
 		FiltroCategoria filtroCategoria = new FiltroCategoria();
 
 		filtroCategoria.adicionarParametro(new ParametroSimples(FiltroCategoria.CODIGO, this.getId()));
+		filtroCategoria.adicionarCaminhoParaCarregamentoEntidade("categoriaTipo");
 		return filtroCategoria;
 	}
 
@@ -531,14 +563,14 @@ public class Categoria
 		getDescricao();
 	}
 
-	public Integer getConsumoMaximoEconomiasValidacao(){
+	public Integer getQuantidadeMaximoEconomiasValidacao(){
 
-		return consumoMaximoEconomiasValidacao;
+		return quantidadeMaximoEconomiasValidacao;
 	}
 
-	public void setConsumoMaximoEconomiasValidacao(Integer consumoMaximoEconomiasValidacao){
+	public void setQuantidadeMaximoEconomiasValidacao(Integer quantidadeMaximoEconomiasValidacao){
 
-		this.consumoMaximoEconomiasValidacao = consumoMaximoEconomiasValidacao;
+		this.quantidadeMaximoEconomiasValidacao = quantidadeMaximoEconomiasValidacao;
 	}
 
 	public Integer getConsumoMedioEconomiaMes(){

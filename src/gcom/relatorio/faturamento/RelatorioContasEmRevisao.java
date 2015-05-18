@@ -92,6 +92,7 @@ import gcom.tarefa.TarefaRelatorio;
 import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.agendadortarefas.AgendadorTarefas;
+import gcom.util.parametrizacao.ParametroGeral;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -816,7 +817,10 @@ public class RelatorioContasEmRevisao
 								idPerfilImovel,
 
 								// descrição do Perfil do imóvel
-								descricaoPerfilImovel);
+								descricaoPerfilImovel,
+
+								// existe pagamento
+								contasEmRevisaoRelatorioHelper.getExistePagamento());
 
 				// adiciona o bean a coleção
 				relatorioBeans.add(relatorioBean);
@@ -840,6 +844,13 @@ public class RelatorioContasEmRevisao
 		parametros.put("referenciaFinal", Util.formatarAnoMesParaMesAno(referenciaFinal));
 
 		parametros.put("P_NM_ESTADO", sistemaParametro.getNomeEstado());
+
+		try{
+			parametros.put("P_NOME_EMPRESA_RELATORIO", ParametroGeral.P_NOME_EMPRESA_RELATORIO.executar());
+		}catch(ControladorException e1){
+			e1.printStackTrace();
+			throw new TarefaException("Erro ao gravar relatório no sistema", e1);
+		}
 
 		// cria uma instância do dataSource do relatório
 		RelatorioDataSource ds = new RelatorioDataSource(relatorioBeans);

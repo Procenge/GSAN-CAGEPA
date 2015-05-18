@@ -76,6 +76,10 @@
 
 package gcom.gui.faturamento.conta;
 
+import gcom.cadastro.endereco.Logradouro;
+
+import java.util.Collection;
+
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.upload.FormFile;
 
@@ -147,6 +151,31 @@ public class FiltrarImovelContaActionForm
 	private String enderecoArquivoDownload;
 
 	private String arquivoDownload;
+
+	private String[] faturamentoGrupo;
+
+	private String idLogradouro;
+
+	private String descricaoLogradouro;
+
+	private String municipio;
+
+	private String bairro;
+
+	private String logradouro;
+
+	private Collection<Logradouro> colecaoLogradouro;
+
+	private String idBairroFiltro;
+
+	private String bairroFiltro;
+
+	private String idMunicipioFiltro;
+
+	private String municipioFiltro;
+
+	// Controle
+	private String selectedFaturamentoGrupoSize = "0";
 
 	public FormFile getArquivoMatricula(){
 
@@ -613,6 +642,135 @@ public class FiltrarImovelContaActionForm
 	public void setNomeBairro(String nomeBairro){
 
 		this.nomeBairro = nomeBairro;
+	}
+
+
+	public String[] getFaturamentoGrupo(){
+
+		return faturamentoGrupo;
+	}
+
+	public void setFaturamentoGrupo(String[] faturamentoGrupo){
+
+		this.faturamentoGrupo = faturamentoGrupo;
+	}
+
+	public String getSelectedFaturamentoGrupoSize(){
+
+		return selectedFaturamentoGrupoSize;
+	}
+
+	public void setSelectedFaturamentoGrupoSize(String selectedFaturamentoGrupoSize){
+
+		this.selectedFaturamentoGrupoSize = selectedFaturamentoGrupoSize;
+	}
+
+
+
+	
+	public String getIdLogradouro(){
+
+		return idLogradouro;
+	}
+
+	public void setIdLogradouro(String idLogradouro){
+
+		this.idLogradouro = idLogradouro;
+	}
+
+	public String getDescricaoLogradouro(){
+
+		return descricaoLogradouro;
+	}
+
+	public void setDescricaoLogradouro(String descricaoLogradouro){
+
+		this.descricaoLogradouro = descricaoLogradouro;
+	}
+
+	public String getMunicipio(){
+
+		return municipio;
+	}
+
+	public void setMunicipio(String municipio){
+
+		this.municipio = municipio;
+	}
+
+	public String getBairro(){
+
+		return bairro;
+	}
+
+	public void setBairro(String bairro){
+
+		this.bairro = bairro;
+	}
+
+	public String getLogradouro(){
+
+		return logradouro;
+	}
+
+	public void setLogradouro(String logradouro){
+
+		this.logradouro = logradouro;
+	}
+
+	public Collection<Logradouro> getColecaoLogradouro(){
+
+		return colecaoLogradouro;
+	}
+
+	public void setColecaoLogradouro(Collection<Logradouro> colecaoLogradouro){
+
+		this.colecaoLogradouro = colecaoLogradouro;
+	}
+
+	public String getIdBairroFiltro(){
+
+		return idBairroFiltro;
+	}
+
+	public void setIdBairroFiltro(String idBairroFiltro){
+
+		this.idBairroFiltro = idBairroFiltro;
+	}
+
+	public String getBairroFiltro(){
+
+		return bairroFiltro;
+	}
+
+	public void setBairroFiltro(String bairroFiltro){
+
+		this.bairroFiltro = bairroFiltro;
+	}
+
+	public String getIdMunicipioFiltro(){
+
+		return idMunicipioFiltro;
+	}
+
+	public void setIdMunicipioFiltro(String idMunicipioFiltro){
+
+		this.idMunicipioFiltro = idMunicipioFiltro;
+	}
+
+	public String getMunicipioFiltro(){
+
+		return municipioFiltro;
+	}
+
+	public void setMunicipioFiltro(String municipioFiltro){
+
+		this.municipioFiltro = municipioFiltro;
+	}
+
+	public static long getSerialversionuid(){
+
+		return serialVersionUID;
 	}
 
 }

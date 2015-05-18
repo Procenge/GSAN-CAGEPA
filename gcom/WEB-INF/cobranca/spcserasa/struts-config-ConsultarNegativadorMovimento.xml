@@ -49,7 +49,10 @@
 		  		path="/exibirConsultarDadosRegistroSPCAction.do" />
 		  		
 			<forward name="consultarDadosRegistroSERASA"
-		  		path="/exibirConsultarDadosRegistroSERASAAction.do" />	
+		  		path="/exibirConsultarDadosRegistroSERASAAction.do" />
+		  		
+			<forward name="consultarDadosRegistroBOAVISTA"
+		  		path="/exibirConsultarDadosRegistroBOAVISTAAction.do" />			  			
 		</action>
 	
 		<action name="ConsultarDadosRegistroActionForm" 
@@ -74,6 +77,18 @@
 			<forward name="consultarDadosRegistroSERASADetalhe" path="/jsp/cobranca/spcserasa/negativador_movimento_consultar_reg_serasa_d.jsp" />			
 			<forward name="consultarDadosRegistroSERASATrailler" path="/jsp/cobranca/spcserasa/negativador_movimento_consultar_reg_serasa_t.jsp" />		
 		</action>	
+		
+		<action name="ConsultarDadosRegistroActionForm" 
+			type="gcom.gui.cobranca.spcserasa.ExibirConsultarDadosRegistroBOAVISTAAction" 
+			scope="session" validate="false"
+			path="/exibirConsultarDadosRegistroBOAVISTAAction">
+			
+			<forward name="consultarDadosRegistroBOAVISTAHeader" path="/jsp/cobranca/spcserasa/negativador_movimento_consultar_reg_boavista_h.jsp" />				
+			<forward name="consultarDadosRegistroBOAVISTADetalheNome" path="/jsp/cobranca/spcserasa/negativador_movimento_consultar_reg_boavista_d_nome.jsp" />
+			<forward name="consultarDadosRegistroBOAVISTADetalheEndereco" path="/jsp/cobranca/spcserasa/negativador_movimento_consultar_reg_boavista_d_endereco.jsp" />
+			<forward name="consultarDadosRegistroBOAVISTADetalheOcorrencia" path="/jsp/cobranca/spcserasa/negativador_movimento_consultar_reg_boavista_d_ocorrencia.jsp" />			
+			<forward name="consultarDadosRegistroBOAVISTATrailler" path="/jsp/cobranca/spcserasa/negativador_movimento_consultar_reg_boavista_t.jsp" />		
+		</action>			
 	 			
 	 		
     	<action name="ConsultarDadosRegistroActionForm" 
@@ -83,9 +98,18 @@
 			
 			<forward name="atualizarDadosRegistro"
 		  		path="/atualizarDadosRegistroAction.do" />	
+		  		
+			<forward name="consultarDadosRegistroSPC"
+		  		path="/exibirConsultarDadosRegistroSPCAction.do" />
+		  		
+			<forward name="consultarDadosRegistroSERASA"
+		  		path="/exibirConsultarDadosRegistroSERASAAction.do" />
+		  		
+			<forward name="consultarDadosRegistroBOAVISTA"
+		  		path="/exibirConsultarDadosRegistroBOAVISTAAction.do" />		  		
 		</action>
 
-	
+				
 	</action-mappings>
 	<!--******************* ARQUIVO DE PROPRIEDADES *******************-->
 	<message-resources null="false" parameter="gcom.properties.application" />

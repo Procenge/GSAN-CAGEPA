@@ -669,6 +669,12 @@ public class MovimentoRoteiroEmpresa
 
 	private Short quantidadeEconomiaPublicaAlteracao;// 281
 
+	private Integer numeroConsumoFixoPoco;
+
+	private Integer idCategoriaAtualizacaoCadastral;
+
+	private Integer idSubCategoriaAtualizacaoCadastral;
+
 	public static final Short FASE_GERADO = Short.valueOf("4");
 
 	public static final Short FASE_PROGRAMADO = Short.valueOf("3");
@@ -4759,6 +4765,36 @@ public class MovimentoRoteiroEmpresa
 	public String getDataLeituraAnteriorFormatada(){
 
 		return Util.formatarData(getDataLeituraAnterior());
+	}
+
+	public Integer getNumeroConsumoFixoPoco(){
+
+		return numeroConsumoFixoPoco;
+	}
+
+	public void setNumeroConsumoFixoPoco(Integer numeroConsumoFixoPoco){
+
+		this.numeroConsumoFixoPoco = numeroConsumoFixoPoco;
+	}
+
+	public Integer getIdCategoriaAtualizacaoCadastral(){
+
+		return idCategoriaAtualizacaoCadastral;
+	}
+
+	public void setIdCategoriaAtualizacaoCadastral(Integer idCategoriaAtualizacaoCadastral){
+
+		this.idCategoriaAtualizacaoCadastral = idCategoriaAtualizacaoCadastral;
+	}
+
+	public Integer getIdSubCategoriaAtualizacaoCadastral(){
+
+		return idSubCategoriaAtualizacaoCadastral;
+	}
+
+	public void setIdSubCategoriaAtualizacaoCadastral(Integer idSubCategoriaAtualizacaoCadastral){
+
+		this.idSubCategoriaAtualizacaoCadastral = idSubCategoriaAtualizacaoCadastral;
 	}
 
 }

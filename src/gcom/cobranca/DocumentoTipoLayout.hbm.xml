@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.DocumentoTipoLayout" 
+    table="documento_tipo_layout"
+    dynamic-insert="true" dynamic-update="true"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="DTLA_ID"
+    >
+	    <generator class="sequence">
+	       <param name="sequence">SQ_DOCUMENTO_TIPO_LAYOUT</param>
+	    </generator>
+    </id>
+    
+
+    <!-- bi-directional many-to-one association to documentoTipo -->
+    <many-to-one
+        name="documentoTipo"
+        class="gcom.cobranca.DocumentoTipo"
+        not-null="true"
+    >
+        <column name="DOTP_ID" />
+    </many-to-one>    
+    
+    <property
+        name="descricaoLayout"
+        type="java.lang.String"
+        column="DTLA_DSLAYOUT"
+        length="60"
+    />	
+
+
+    <property
+        name="descricaoCIControleDocumento"
+        type="java.lang.String"
+        column="DTLA_DSCICONTROLE "
+        length="60"
+        not-null="true"  
+    />
+
+    <property
+        name="indicadorPadrao"
+        type="java.lang.Short"
+        column="DTLA_ICPADRAO"
+        length="13"
+        not-null="true"  
+    />
+    
+    <property
+        name="conteudoDocumentoTipoLayout"
+        type="java.lang.String"
+        column="DTLA_CNDOCUMENTO"
+        not-null="false"
+        length="-1"        
+    />    
+    
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="DTLA_ICUSO"
+        length="2"
+    />    
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="DTLA_TMULTIMAALTERACAO"
+        length="8"
+        not-null="true"
+    />
+    
+
+</class>
+</hibernate-mapping>

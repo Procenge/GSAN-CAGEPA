@@ -93,13 +93,7 @@ import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -266,30 +260,41 @@ public class ExibirDadosAnaliseExcecoesLeituraResumidoAction
 				}
 
 				// caso
-				if(index == colecaoIdsImovel.size() || index == -1){
+				if(index < colecaoIdsImovel.size()){
+					if(index == -1){
+						if(colecaoIdsImovel != null && !colecaoIdsImovel.isEmpty()){
 
-					if(colecaoIdsImovel != null && !colecaoIdsImovel.isEmpty()){
+							// recupera o id do imovel
+							codigoImovel = ((ImovelMicromedicao) ((List) colecaoIdsImovel).get(index)).getImovel().getId().toString();
+							if(((ImovelMicromedicao) ((List) colecaoIdsImovel).get(index)).getMedicaoHistorico().getMedicaoTipo() != null){
+								idMedicaoTipo = ((ImovelMicromedicao) ((List) colecaoIdsImovel).get(index)).getMedicaoHistorico()
+												.getMedicaoTipo().getId().toString();
+							}
+							sessao.setAttribute("index", index);
+						}
+					}else{
 
 						// recupera o id do imovel
 						codigoImovel = ((ImovelMicromedicao) ((List) colecaoIdsImovel).get(index)).getImovel().getId().toString();
+
 						if(((ImovelMicromedicao) ((List) colecaoIdsImovel).get(index)).getMedicaoHistorico().getMedicaoTipo() != null){
-							idMedicaoTipo = ((ImovelMicromedicao) ((List) colecaoIdsImovel).get(index)).getMedicaoHistorico()
-											.getMedicaoTipo().getId().toString();
+							if(((ImovelMicromedicao) ((List) colecaoIdsImovel).get(index)).getMedicaoHistorico().getMedicaoTipo().getId() != null){
+								idMedicaoTipo = ((ImovelMicromedicao) ((List) colecaoIdsImovel).get(index)).getMedicaoHistorico()
+												.getMedicaoTipo().getId().toString();
+							}
 						}
 						sessao.setAttribute("index", index);
 					}
 				}else{
+					if(httpServletRequest.getParameter("imovelAnterior") != null){
 
-					// recupera o id do imovel
-					codigoImovel = ((ImovelMicromedicao) ((List) colecaoIdsImovel).get(index)).getImovel().getId().toString();
+						index = index + 1;
 
-					if(((ImovelMicromedicao) ((List) colecaoIdsImovel).get(index)).getMedicaoHistorico().getMedicaoTipo() != null){
-						if(((ImovelMicromedicao) ((List) colecaoIdsImovel).get(index)).getMedicaoHistorico().getMedicaoTipo().getId() != null){
-							idMedicaoTipo = ((ImovelMicromedicao) ((List) colecaoIdsImovel).get(index)).getMedicaoHistorico()
-											.getMedicaoTipo().getId().toString();
-						}
 					}
-					sessao.setAttribute("index", index);
+					if(httpServletRequest.getParameter("proximoImovel") != null){
+						index = index - 1;
+
+					}
 				}
 			}
 			sessao.setAttribute("indiceImovel", "" + (index + 1));
@@ -306,6 +311,7 @@ public class ExibirDadosAnaliseExcecoesLeituraResumidoAction
 				// Rota e Seq de Rota
 				FiltroImovel filtroImovel = new FiltroImovel();
 				filtroImovel.adicionarCaminhoParaCarregamentoEntidade("rota");
+				filtroImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroImovel.POCO_TIPO);
 				filtroImovel.adicionarParametro(new ParametroSimples(FiltroImovel.ID, Integer.valueOf(codigoImovel)));
 				Collection imoveis = fachada.pesquisar(filtroImovel, Imovel.class.getName());
 				if(!imoveis.isEmpty()){
@@ -323,6 +329,12 @@ public class ExibirDadosAnaliseExcecoesLeituraResumidoAction
 
 				sessao.setAttribute("ligacaoAgua", ligacaoAgua);
 				sessao.setAttribute("tipoMedicao", idMedicaoTipo);
+
+				if(idMedicaoTipo == null){
+					sessao.setAttribute("naoValidarLeitura", "false");
+				}else{
+					sessao.removeAttribute("naoValidarLeitura");
+				}
 
 				// Cria as istancias dos objetos q receberam os dados q iram compor a tela
 				ImovelMicromedicao imovelMicromedicaoDadosResumo = new ImovelMicromedicao();
@@ -350,12 +362,12 @@ public class ExibirDadosAnaliseExcecoesLeituraResumidoAction
 				sessao.setAttribute("idImovel", codigoImovel);
 				sessao.setAttribute("imovelMicromedicaoCarregaMedicaoResumo", imovelMicromedicaoCarregaMedicaoResumo);
 
-				if(imovelMicromedicaoDadosResumo.getImovel() != null
-								&& imovelMicromedicaoDadosResumo.getImovel().getHidrometroInstalacaoHistorico() != null
-								&& imovelMicromedicaoDadosResumo.getImovel().getHidrometroInstalacaoHistorico().getId() != null){
+				if(imovelMicromedicaoDadosResumo.getImovel() != null && imovelMicromedicaoDadosResumo.getImovel().getPocoTipo() != null								&& imovelMicromedicaoDadosResumo.getImovel().getPocoTipo().getId() != null){
 					sessao.setAttribute("poco", true);
+					sessao.setAttribute("pocoDescricao", imovelMicromedicaoDadosResumo.getImovel().getPocoTipo().getDescricao());
 				}else{
 					sessao.removeAttribute("poco");
+					sessao.removeAttribute("pocoDescricao");
 				}
 
 				Imovel imovel = new Imovel();
@@ -412,6 +424,14 @@ public class ExibirDadosAnaliseExcecoesLeituraResumidoAction
 														.getConsumoMinimoCreditado().toString());
 									}else{
 										leituraConsumoActionForm.setCreditoFaturado("");
+									}
+
+									if(imovelMicromedicao.getMedicaoHistorico() != null
+													&& imovelMicromedicao.getMedicaoHistorico().getConsumoCreditoGerado() != null){
+										leituraConsumoActionForm.setCreditoGerado(imovelMicromedicao.getMedicaoHistorico()
+														.getConsumoCreditoGerado().toString());
+									}else{
+										leituraConsumoActionForm.setCreditoGerado("");
 									}
 
 									if(imovelMicromedicao.getConsumoHistorico().getConsumoMedio() != null){

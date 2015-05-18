@@ -311,10 +311,16 @@ public class EfetuarRestabelecimentoLigacaoAguaAction
 
 		IntegracaoComercialHelper integracaoComercialHelper = new IntegracaoComercialHelper();
 
-		if(efetuarRestabelecimentoLigacaoAguaActionForm.getDataRestabelecimento() != null
-						&& !efetuarRestabelecimentoLigacaoAguaActionForm.getDataRestabelecimento().equals("")){
-			ordemServico.setDataEncerramento(Util.converteStringParaDate(efetuarRestabelecimentoLigacaoAguaActionForm
+
+		if(Util.isNaoNuloBrancoZero(efetuarRestabelecimentoLigacaoAguaActionForm.getDataRestabelecimento())){
+			ordemServico.setDataEncerramento(Util.converterStringParaData(efetuarRestabelecimentoLigacaoAguaActionForm
 							.getDataRestabelecimento()));
+		}else{
+			ordemServico.setDataEncerramento(ordemServico.getDataExecucao());
+		}
+
+		if(ordemServico.getDataExecucao() == null){
+			ordemServico.setDataExecucao(ordemServico.getDataEncerramento());
 		}
 
 		String idFuncionario = efetuarRestabelecimentoLigacaoAguaActionForm.getIdFuncionario();

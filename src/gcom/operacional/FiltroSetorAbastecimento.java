@@ -141,5 +141,20 @@ public class FiltroSetorAbastecimento
 	public static final String DESCRICAO = "descricao";
 
 	public static final String DESCRICAO_ABREVIADA = "descricaoAbreviada";
+	
+	public static final String EXTENSAO_REDE= "extensaoRede";
+	
+	public static final String PRESSAO_MAXIMA = "pressaoMaxima";
+
+	public static final String PRESSAO_MEDIA = "pressaoMedia";
+
+	public static final String PRESSAO_MINIMA = "pressaoMinima";
+
+	public static final String MONITORAMENTO_INICIAL = "monitoramentoInicial";
+
+	public static final String MONITORAMENTO_FINAL = "monitoramentoFinal";
+
+	public static final String ID_DIAMENTRO = "diametroRedeAgua.id";
+	
 
 }

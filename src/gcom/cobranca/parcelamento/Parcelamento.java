@@ -271,7 +271,31 @@ public class Parcelamento
 
 	private BigDecimal percentualDescontoCorrecaoMonetaria;
 
+	private BigDecimal valorAtualizacaoMonetariaSucumbenciaAnterior;
+
+	private BigDecimal valorJurosMoraSucumbenciaAnterior;
+
+	private BigDecimal valorSucumbenciaAnterior;
+
+	private BigDecimal valorSucumbenciaAtual;
+
+	private BigDecimal valorDiligencias;
+
+	private Short numeroParcelasSucumbencia;
+
+	private byte[] conteudoTermoParcelamentoInicial;
+
+	private byte[] conteudoTermoParcelamentoFinal;
+
+	private BigDecimal valorNegociado;
+
+	private BigDecimal valorParcelado;
+
+	private BigDecimal valorSucumbenciaAtualEP;
+
 	private transient ParcelamentoTermoTestemunhas parcelamentoTermoTestemunhas;
+
+	private transient ParcelamentoDadosTermo parcelamentoDadosTermo;
 
 	/** full constructor */
 	public Parcelamento(Date parcelamento, Integer anoMesReferenciaFaturamento, BigDecimal valorConta, BigDecimal valorServicosACobrar,
@@ -878,28 +902,41 @@ public class Parcelamento
 	}
 
 	/* Metodo que calcula o valor do negociado - Fernanda Paiva */
-	public BigDecimal getValorNegociado(){
+	public BigDecimal getValorNegociadoCalculado(){
 
 		BigDecimal retorno = new BigDecimal("0.00");
 
-		retorno = this.valorDebitoAtualizado.subtract(getValorDesconto());
+		if(this.valorNegociado == null || this.valorNegociado.compareTo(BigDecimal.ZERO) == 0){
+			retorno = this.valorDebitoAtualizado.subtract(getValorDesconto());
 
-		retorno = retorno.setScale(2, BigDecimal.ROUND_HALF_UP);
+			retorno = retorno.setScale(2, BigDecimal.ROUND_HALF_UP);
+		}else{
+			retorno = this.getValorNegociado().setScale(2, BigDecimal.ROUND_HALF_UP);
+		}
 
 		return retorno;
 	}
 
 	/* Metodo que calcula o valor do parcelado - Fernanda Paiva */
-	public BigDecimal getValorParcelado(){
+	public BigDecimal getValorParceladoCalculado(){
 
 		BigDecimal retorno = new BigDecimal("0.00");
-		BigDecimal retornoSubtracao = new BigDecimal("0.00");
 
-		retornoSubtracao = getValorNegociado().subtract(this.valorEntrada);
+		if(this.valorParcelado == null || this.valorParcelado.compareTo(BigDecimal.ZERO) == 0){
+			BigDecimal retornoSubtracao = new BigDecimal("0.00");
 
-		retorno = retornoSubtracao.add(this.valorJurosParcelamento);
+			if(this.valorEntrada != null){
+				retornoSubtracao = getValorNegociadoCalculado().subtract(this.valorEntrada);
+			}
 
-		retorno = retorno.setScale(2, BigDecimal.ROUND_HALF_UP);
+			if(this.valorJurosParcelamento != null){
+				retorno = retornoSubtracao.add(this.valorJurosParcelamento);
+			}
+
+			retorno = retorno.setScale(2, BigDecimal.ROUND_HALF_UP);
+		}else{
+			retorno = this.getValorParcelado().setScale(2, BigDecimal.ROUND_HALF_UP);
+		}
 
 		return retorno;
 	}
@@ -1051,4 +1088,131 @@ public class Parcelamento
 		this.parcelamentoTermoTestemunhas = parcelamentoTermoTestemunhas;
 	}
 
+	public ParcelamentoDadosTermo getParcelamentoDadosTermo(){
+
+		return parcelamentoDadosTermo;
+	}
+
+	public void setParcelamentoDadosTermo(ParcelamentoDadosTermo parcelamentoDadosTermo){
+
+		this.parcelamentoDadosTermo = parcelamentoDadosTermo;
+	}
+
+	public void setConteudoTermoParcelamentoInicial(byte[] conteudoTermoParcelamentoInicial){
+
+		this.conteudoTermoParcelamentoInicial = conteudoTermoParcelamentoInicial;
+	}
+
+	public byte[] getConteudoTermoParcelamentoInicial(){
+
+		return conteudoTermoParcelamentoInicial;
+	}
+
+	public void setConteudoTermoParcelamentoFinal(byte[] conteudoTermoParcelamentoFinal){
+
+		this.conteudoTermoParcelamentoFinal = conteudoTermoParcelamentoFinal;
+	}
+
+	public byte[] getConteudoTermoParcelamentoFinal(){
+
+		return conteudoTermoParcelamentoFinal;
+	}
+
+	public BigDecimal getValorAtualizacaoMonetariaSucumbenciaAnterior(){
+
+		return valorAtualizacaoMonetariaSucumbenciaAnterior;
+	}
+
+	public void setValorAtualizacaoMonetariaSucumbenciaAnterior(BigDecimal valorAtualizacaoMonetariaSucumbenciaAnterior){
+
+		this.valorAtualizacaoMonetariaSucumbenciaAnterior = valorAtualizacaoMonetariaSucumbenciaAnterior;
+	}
+
+	public BigDecimal getValorJurosMoraSucumbenciaAnterior(){
+
+		return valorJurosMoraSucumbenciaAnterior;
+	}
+
+	public void setValorJurosMoraSucumbenciaAnterior(BigDecimal valorJurosMoraSucumbenciaAnterior){
+
+		this.valorJurosMoraSucumbenciaAnterior = valorJurosMoraSucumbenciaAnterior;
+	}
+
+	public BigDecimal getValorSucumbenciaAnterior(){
+
+		return valorSucumbenciaAnterior;
+	}
+
+	public void setValorSucumbenciaAnterior(BigDecimal valorSucumbenciaAnterior){
+
+		this.valorSucumbenciaAnterior = valorSucumbenciaAnterior;
+	}
+
+	public BigDecimal getValorSucumbenciaAtual(){
+
+		return valorSucumbenciaAtual;
+	}
+
+	public void setValorSucumbenciaAtual(BigDecimal valorSucumbenciaAtual){
+
+		this.valorSucumbenciaAtual = valorSucumbenciaAtual;
+	}
+
+	public BigDecimal getValorDiligencias(){
+
+		return valorDiligencias;
+	}
+
+	public void setValorDiligencias(BigDecimal valorDiligencias){
+
+		this.valorDiligencias = valorDiligencias;
+	}
+
+	public Short getNumeroParcelasSucumbencia(){
+
+		return numeroParcelasSucumbencia;
+	}
+
+	public void setNumeroParcelasSucumbencia(Short numeroParcelasSucumbencia){
+
+		this.numeroParcelasSucumbencia = numeroParcelasSucumbencia;
+	}
+
+	public BigDecimal getValorNegociado(){
+
+		if(valorNegociado == null || valorNegociado.compareTo(BigDecimal.ZERO) == 0){
+			valorNegociado = this.getValorNegociadoCalculado();
+		}
+
+		return valorNegociado;
+	}
+
+	public void setValorNegociado(BigDecimal valorNegociado){
+
+		this.valorNegociado = valorNegociado;
+	}
+
+	public BigDecimal getValorParcelado(){
+
+		if(valorParcelado == null || valorParcelado.compareTo(BigDecimal.ZERO) == 0){
+			valorParcelado = this.getValorParceladoCalculado();
+		}
+
+		return valorParcelado;
+	}
+
+	public void setValorParcelado(BigDecimal valorParcelado){
+
+		this.valorParcelado = valorParcelado;
+	}
+
+	public BigDecimal getValorSucumbenciaAtualEP(){
+
+		return valorSucumbenciaAtualEP;
+	}
+
+	public void setValorSucumbenciaAtualEP(BigDecimal valorSucumbenciaAtualEP){
+
+		this.valorSucumbenciaAtualEP = valorSucumbenciaAtualEP;
+	}
 }

@@ -155,6 +155,25 @@ public class FaturamentoLigacoesMedicaoIndividualizadaRelatorioHelper
 
 	private String diferencaConsumoMacroMicros;
 
+	// OC0970503
+	private String consumoMedio;
+
+	private String categoria;
+
+	private String numeroEconomias;
+
+	private String anormalidadeLeitura;
+
+	public String getAnormalidadeLeitura(){
+
+		return anormalidadeLeitura;
+	}
+
+	public void setAnormalidadeLeitura(String anormalidadeLeitura){
+
+		this.anormalidadeLeitura = anormalidadeLeitura;
+	}
+
 	public String getAnormalidadeConsumo(){
 
 		return anormalidadeConsumo;
@@ -570,6 +589,36 @@ public class FaturamentoLigacoesMedicaoIndividualizadaRelatorioHelper
 	public void setDiferencaConsumoMacroMicros(String diferencaConsumoMacroMicros){
 
 		this.diferencaConsumoMacroMicros = diferencaConsumoMacroMicros;
+	}
+
+	public String getConsumoMedio(){
+
+		return consumoMedio;
+	}
+
+	public void setConsumoMedio(String consumoMedio){
+
+		this.consumoMedio = consumoMedio;
+	}
+
+	public String getCategoria(){
+
+		return categoria;
+	}
+
+	public void setCategoria(String categoria){
+
+		this.categoria = categoria;
+	}
+
+	public String getNumeroEconomias(){
+
+		return numeroEconomias;
+	}
+
+	public void setNumeroEconomias(String numeroEconomias){
+
+		this.numeroEconomias = numeroEconomias;
 	}
 
 }

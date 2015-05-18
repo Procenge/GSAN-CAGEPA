@@ -85,6 +85,8 @@ import gcom.faturamento.debito.DebitoACobrar;
 import gcom.faturamento.debito.FiltroDebitoACobrar;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.seguranca.acesso.PermissaoEspecial;
+import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
@@ -121,6 +123,9 @@ public class ManterDebitoACobrarAction
 		ActionForward retorno = actionMapping.findForward("telaSucesso");
 
 		HttpSession sessao = httpServletRequest.getSession(false);
+
+		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
+
 		Imovel imovel = null;
 
 		if(sessao.getAttribute("imovelPesquisado") != null){
@@ -187,19 +192,55 @@ public class ManterDebitoACobrarAction
 				}
 			}
 		}
+
+		boolean temPermissaoAtualizarDebitosExecFiscal = fachada.verificarPermissaoEspecial(
+						PermissaoEspecial.ATUALIZAR_DEBITOS_EXECUCAO_FISCAL, this.getUsuarioLogado(httpServletRequest));
+
+		StringBuffer parametroExecucaoFiscal = new StringBuffer();
+
 		FiltroDebitoACobrar filtroDebitoACobrar = new FiltroDebitoACobrar();
 		filtroDebitoACobrar.adicionarCaminhoParaCarregamentoEntidade("financiamentoTipo");
 		filtroDebitoACobrar.adicionarCaminhoParaCarregamentoEntidade("debitoTipo");
 		for(int i = 0; i < ids.length; i++){
 			filtroDebitoACobrar.limparListaParametros();
 			filtroDebitoACobrar.adicionarParametro(new ParametroSimples(FiltroDebitoACobrar.ID, ids[i]));
+			filtroDebitoACobrar.adicionarCaminhoParaCarregamentoEntidade(FiltroDebitoACobrar.DEBITO_TIPO);
+
 			DebitoACobrar debitoACobrar = (DebitoACobrar) Util.retonarObjetoDeColecao(getFachada().pesquisar(filtroDebitoACobrar,
 							DebitoACobrar.class.getName()));
 			if(debitoACobrar.getFinanciamentoTipo().getIndicadorCancelaDebito().equals(ConstantesSistema.NAO)){
 				throw new ActionServletException("atencao.nao_permitido_cancelar_debito_a_cobrar", null, debitoACobrar.getDebitoTipo()
 								.getDescricao());
 			}
+
+			/*
+			 * [UC0184] Manter Débito A Cobrar
+			 * [SB0001] Verificar Existência de Conta em Execução Fiscal
+			 */
+			// DebitoACobrarValoresHelper debitoACobrarValores = new DebitoACobrarValoresHelper();
+			// debitoACobrarValores.setIdDebitoTipo(debitoACobrar.getDebitoTipo().getId());
+			// debitoACobrarValores.setDescricaoDebitoTipo(debitoACobrar.getDebitoTipo().getDescricao());
+
+			Collection<DebitoACobrar> colecaoDebitoACobrar = new ArrayList<DebitoACobrar>();
+			colecaoDebitoACobrar.add(debitoACobrar);
+
+			if(fachada.verificarExecucaoFiscal(null, null, colecaoDebitoACobrar) && !temPermissaoAtualizarDebitosExecFiscal){
+				parametroExecucaoFiscal.append(debitoACobrar.getFormatarAnoMesReferenciaDebito() + " - "
+								+ debitoACobrar.getDebitoTipo().getDescricao());
+				parametroExecucaoFiscal.append(", ");
+			}
+
 		}
+
+		String parametroMensagemExecFiscal = parametroExecucaoFiscal.toString();
+
+		if(!Util.isVazioOuBranco(parametroMensagemExecFiscal)){
+			parametroMensagemExecFiscal = parametroMensagemExecFiscal.substring(0, parametroMensagemExecFiscal.length() - 2);
+
+			throw new ActionServletException("atencao.debito_a_cobrar.debito.execucao.fiscal", usuario.getNomeUsuario().toString(),
+							parametroMensagemExecFiscal);
+		}
+
 		Integer matriculaImovel = null;
 		if(imovel != null){
 			matriculaImovel = imovel.getId();

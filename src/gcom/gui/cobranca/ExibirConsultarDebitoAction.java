@@ -76,18 +76,18 @@
 
 package gcom.gui.cobranca;
 
-import gcom.cadastro.cliente.Cliente;
-import gcom.cadastro.cliente.ClienteRelacaoTipo;
-import gcom.cadastro.cliente.FiltroCliente;
-import gcom.cadastro.cliente.FiltroClienteRelacaoTipo;
+import gcom.cadastro.cliente.*;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -134,15 +134,17 @@ public class ExibirConsultarDebitoAction
 
 		Fachada fachada = Fachada.getInstancia();
 
+		Boolean indicadorFauramentoTitularDebito = false;
+		try{
+			if(ParametroFaturamento.P_INDICADOR_FATURAMENTO_ATUAL_TITULAR_DEBITO_IMOVEL.executar().equals("1")){
+				indicadorFauramentoTitularDebito = true;
+			}
+		}catch(ControladorException e){
+			e.printStackTrace();
+		}
+
+		Collection<ClienteImovel> colecaoRelacaoImovel = new ArrayList<ClienteImovel>();
 		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
-
-		if(!Util.isVazioOuBranco(httpServletRequest.getParameter("voltar"))){
-			consultarDebitoActionForm.setTipoRelacao("-1");
-		}
-
-		if(!fachada.verificarPermissaoConsultarDebitosIndicadoNaContaOuTodos(usuario)){
-			sessao.setAttribute("semPermissao", true);
-		}
 
 		// Remove as coleções e os valores da sessão
 		sessao.removeAttribute("colecaoContaValores");
@@ -235,6 +237,10 @@ public class ExibirConsultarDebitoAction
 				consultarDebitoActionForm.setCodigoImovel(idDigitadoEnterImovel);
 				consultarDebitoActionForm.setCodigoImovelClone(idDigitadoEnterImovel);
 				consultarDebitoActionForm.setInscricaoImovel(imovelEncontrado);
+
+				colecaoRelacaoImovel = fachada.obterListaClientesRelacaoDevedor(Integer.valueOf(idDigitadoEnterImovel),
+								Integer.valueOf("000101"), Integer.valueOf("999912"), 1, 1, 1, 1, 1, 1, 1, null, ConstantesSistema.SIM,
+								ConstantesSistema.SIM, ConstantesSistema.SIM, 2, null, null);
 			}else{
 				httpServletRequest.setAttribute("corImovel", "exception");
 				consultarDebitoActionForm.setInscricaoImovel(ConstantesSistema.CODIGO_IMOVEL_INEXISTENTE);
@@ -254,6 +260,15 @@ public class ExibirConsultarDebitoAction
 		}else{
 			throw new ActionServletException("atencao.collectionClienteRelacaoTipo_inexistente", null, "id");
 		}
+
+		if(indicadorFauramentoTitularDebito){
+			httpServletRequest.setAttribute("indicadorFauramentoTitularDebito", "S");
+		}else{
+			httpServletRequest.removeAttribute("indicadorFauramentoTitularDebito");
+		}
+
+		sessao.setAttribute("colecaoRelacaoImovel", colecaoRelacaoImovel);
+
 		return retorno;
 	}
 }

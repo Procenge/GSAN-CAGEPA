@@ -50,6 +50,8 @@ public class EmitirAvisoCobrancaHelper
 
 	private Integer numeroPagina;
 
+	private String cep;
+
 	public String getRepresentacaoNumericaCodBarraFormatada(){
 
 		return representacaoNumericaCodBarraFormatada;
@@ -254,6 +256,16 @@ public class EmitirAvisoCobrancaHelper
 	public Integer getNumeroPagina(){
 
 		return numeroPagina;
+	}
+
+	public String getCep(){
+
+		return cep;
+	}
+
+	public void setCep(String cep){
+
+		this.cep = cep;
 	}
 
 }

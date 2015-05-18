@@ -70,6 +70,8 @@ public class ExecutorParametrosArrecadacao
 		// identificação do cliente na empresa
 		matriculaImovel = registroHelperCodigoF.getIdClienteEmpresa().substring(0, numeroDigitosMatriculaImovel);
 
+		matriculaImovel = Imovel.obterMatriculaDebitoAutomatico(matriculaImovel);
+
 		retorno[1] = matriculaImovel;
 
 		descricaoOcorrenciaMovimento = validarMatriculaImovel(descricaoOcorrenciaMovimento, matriculaImovel);
@@ -82,7 +84,7 @@ public class ExecutorParametrosArrecadacao
 		String adaTipoDocumento = linhaRegistro.substring(66, 69);
 		String adaAnoMesReferenciaContaLegado = linhaRegistro.substring(69, 74).trim();
 		boolean registroLegadoAda = getControladorArrecadacao().validarRegistroLegadoADA(codigoEmpresaFebraban,
-						adaGrupoFaturamentoConstanteLegado, adaAnoMesReferenciaContaLegado, adaTipoDocumento);
+						adaGrupoFaturamentoConstanteLegado, adaAnoMesReferenciaContaLegado, adaTipoDocumento, "F");
 
 		if(registroLegadoAda){
 
@@ -664,7 +666,7 @@ public class ExecutorParametrosArrecadacao
 			String adaTipoDocumento = idPagamento.substring(20, 23);
 			String adaGrupoFaturamentoConstanteLegado = idPagamento.substring(23, 25);
 			boolean registroLegadoAda = this.getControladorArrecadacao().validarRegistroLegadoADA(codigoEmpresaFebraban,
-							adaGrupoFaturamentoConstanteLegado, adaAnoMesReferenciaContaLegado, adaTipoDocumento);
+							adaGrupoFaturamentoConstanteLegado, adaAnoMesReferenciaContaLegado, adaTipoDocumento, "");
 
 			if(registroLegadoAda){
 				// redefine o Tipo de Pagamento do Documento Legado e atribui o helper como legado
@@ -685,6 +687,7 @@ public class ExecutorParametrosArrecadacao
 				registroHelperCodigoBarrasTipoPagamento = (RegistroHelperCodigoBarrasTipoPagamento) pagamentoCodigoBarras[0];
 				tipoPagamentoAux = (Integer) pagamentoCodigoBarras[1];
 				descricaoOcorrenciaMovimento = (String) pagamentoCodigoBarras[2];
+
 			}
 		}else{
 			// [SB0020] – Distribuir Código de Barras – Modelo Gsan Parametrizado

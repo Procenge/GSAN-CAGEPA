@@ -123,6 +123,16 @@ public class InserirUnidadeOrganizacionalActionForm
 
 	private String codigoUnidadeTipo = "";
 
+	private String ddd;
+
+	private String telefone;
+
+	private String ramal;
+
+	private String fax;
+
+	private String observacao;
+
 	public String getCodigoUnidadeTipo(){
 
 		return codigoUnidadeTipo;
@@ -291,6 +301,56 @@ public class InserirUnidadeOrganizacionalActionForm
 	public void setUnidadeTarifaSocial(String unidadeTarifaSocial){
 
 		this.unidadeTarifaSocial = unidadeTarifaSocial;
+	}
+
+	public String getDdd(){
+
+		return ddd;
+	}
+
+	public void setDdd(String ddd){
+
+		this.ddd = ddd;
+	}
+
+	public String getTelefone(){
+
+		return telefone;
+	}
+
+	public void setTelefone(String telefone){
+
+		this.telefone = telefone;
+	}
+
+	public String getRamal(){
+
+		return ramal;
+	}
+
+	public void setRamal(String ramal){
+
+		this.ramal = ramal;
+	}
+
+	public String getFax(){
+
+		return fax;
+	}
+
+	public void setFax(String fax){
+
+		this.fax = fax;
+	}
+
+	public String getObservacao(){
+
+		return observacao;
+	}
+
+	public void setObservacao(String observacao){
+
+		this.observacao = observacao;
 	}
 
 }

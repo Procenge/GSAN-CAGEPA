@@ -65,7 +65,15 @@
 		var form = document.forms[0];
 		form.idMunicipio.value = "";
 		form.descricaoMunicipio.value = "";
-	}  
+	}
+	
+	function importarArquivo(){
+		
+		var form = document.forms[0];
+		
+		form.action = "exibirInserirFeriadoAction.do?importarArquivoComFeriados=1";
+		form.submit();
+	}
   
      function validarForm() {
       var form = document.forms[0];
@@ -76,7 +84,7 @@
 		  	submeterFormPadrao(form); 
 		  }
    	 }  		  
-   	} 
+   	}
    	
 </script>
 
@@ -86,8 +94,8 @@
 
 <html:form action="/inserirFeriadoAction.do"
 	name="InserirFeriadoActionForm" type="gcom.gui.cadastro.geografico.InserirFeriadoActionForm"
-	method="post" onsubmit="return validateInserirFeriadoActionForm(this);">
-
+	method="post" onsubmit="return validateInserirFeriadoActionForm(this);"
+	enctype="multipart/form-data">
 
 	<%@ include file="/jsp/util/cabecalho.jsp"%>
 	<%@ include file="/jsp/util/menu.jsp"%>
@@ -215,31 +223,42 @@
 				   <td width="70%" colspan="2"><strong><b><span class="style2"> 
 				  		<html:text property="descricaoFeriado" size="20" maxlength="20" tabindex="5"/> </span></b></strong></td>
 				</tr>
-            
-           
-				<table width="100%">
-						<tr>
-								<td height="19"><strong> <font color="#FF0000"></font></strong></td>
-								
-								<td align="right"><div align="left"><strong><font color="#FF0000">*</font></strong>
-								Campos obrigat&oacute;rios</div>
-								</td>
-						</tr>
-						<tr>
-							  <td width="40%" align="left">				
-								<input type="button" name="ButtonReset" class="bottonRightCol"
-								value="Desfazer" onClick="window.location.href='/gsan/exibirInserirFeriadoAction.do?menu=sim'"> 
-								
-								<input type="button"
-								name="ButtonCancelar" class="bottonRightCol" value="Cancelar"
-								onClick="javascript:window.location.href='/gsan/telaPrincipal.do'">
-							  </td>
-							  
-							  <td align="right"><input type="button" name="Button" class="bottonRightCol"
-									value="Inserir" onclick="validarForm();" tabindex="11"/>
-							  </td>
-						</tr>
-				</table>
+				
+				<tr bgcolor="#cbe5fe">
+					<td height="10">
+						<strong>
+							Arquivo de Feriados:
+						</strong>
+					</td>
+					<td>
+						<html:file property="arquivoFeriadosImportar" size="40"/>
+					</td>
+				</tr>
+				
+				<tr>
+						<td height="19"><strong> <font color="#FF0000"></font></strong></td>
+						
+						<td align="right"><div align="left"><strong><font color="#FF0000">*</font></strong>
+						Campos obrigat&oacute;rios</div>
+						</td>
+				</tr>
+				<tr>
+					  <td width="40%" align="left">				
+						<input type="button" name="ButtonReset" class="bottonRightCol"
+						value="Desfazer" onClick="window.location.href='/gsan/exibirInserirFeriadoAction.do?menu=sim'"> 
+						
+						<input type="button"
+						name="ButtonCancelar" class="bottonRightCol" value="Cancelar"
+						onClick="javascript:window.location.href='/gsan/telaPrincipal.do'">
+					  </td>
+					  
+					  <td align="right"><input type="button" name="Button" class="bottonRightCol"
+							value="Inserir" onclick="validarForm();" tabindex="11"/>
+							<input type="button" name="ButtonImportarArquivoFeriado" class="bottonRightCol"
+							value="Importar Arquivo de Feriados" onclick="importarArquivo();" tabindex="12"/>
+					  </td>
+				</tr>
+				
 			
           </table>
 	</table>

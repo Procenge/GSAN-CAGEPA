@@ -76,22 +76,13 @@
 
 package gcom.gui.seguranca.acesso.usuario;
 
-import gcom.cadastro.localidade.FiltroGerenciaRegional;
-import gcom.cadastro.localidade.FiltroLocalidade;
-import gcom.cadastro.localidade.FiltroUnidadeNegocio;
-import gcom.cadastro.localidade.GerenciaRegional;
-import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.localidade.UnidadeNegocio;
+import gcom.cadastro.localidade.*;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.FiltroGrupo;
 import gcom.seguranca.acesso.Grupo;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioAbrangencia;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioGrupo;
-import gcom.seguranca.acesso.usuario.Usuario;
-import gcom.seguranca.acesso.usuario.UsuarioAbrangencia;
-import gcom.seguranca.acesso.usuario.UsuarioGrupo;
+import gcom.seguranca.acesso.usuario.*;
 import gcom.util.ConstantesSistema;
 import gcom.util.filtro.ParametroSimples;
 
@@ -303,6 +294,11 @@ public class ExibirInserirUsuarioAcessosUsuarioAction
 
 			Collection colecaoUnidadeNegocio = Fachada.getInstancia().pesquisar(filtroUnidadeNegocio, UnidadeNegocio.class.getName());
 			sessao.setAttribute("collUnidadeNegocio", colecaoUnidadeNegocio);
+		}
+
+		if(sessao.getAttribute("colecaoUsuarioAcesso") == null || sessao.getAttribute("colecaoUsuarioAcesso").equals("")){
+			Collection<UsuarioAcesso> colecaoUsuarioAcesso = Fachada.getInstancia().criarColecaoUsuarioAcesso(1);
+			sessao.setAttribute("colecaoUsuarioAcesso", colecaoUsuarioAcesso);
 		}
 
 		return retorno;

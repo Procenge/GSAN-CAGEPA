@@ -80,12 +80,17 @@ import gcom.arrecadacao.Devolucao;
 import gcom.arrecadacao.DevolucaoHistorico;
 import gcom.arrecadacao.FiltroDevolucao;
 import gcom.arrecadacao.FiltroDevolucaoHistorico;
+import gcom.atendimentopublico.registroatendimento.bean.ObterIndicadorExistenciaHidrometroHelper;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cobranca.DocumentoTipo;
 import gcom.fachada.Fachada;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
 import java.util.*;
 
@@ -171,8 +176,10 @@ public class ExibirConsultarImovelDevolucoesAction
 
 			consultarImovelActionForm.setIdImovelDevolucoesImovel(null);
 			consultarImovelActionForm.setMatriculaImovelDevolucoesImovel(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelDevolucoesImovel(null);
 			consultarImovelActionForm.setSituacaoAguaDevolucoesImovel(null);
 			consultarImovelActionForm.setSituacaoEsgotoDevolucoesImovel(null);
+			consultarImovelActionForm.setTipoLigacao(null);
 			sessao.removeAttribute("colecaoConsultarImovelDevolucoesImovelHelper");
 
 			consultarImovelActionForm.setSituacaoCobrancaDadosComplementares(null);
@@ -253,6 +260,7 @@ public class ExibirConsultarImovelDevolucoesAction
 
 					consultarImovelActionForm.setSituacaoAguaDevolucoesImovel(null);
 					consultarImovelActionForm.setSituacaoEsgotoDevolucoesImovel(null);
+					consultarImovelActionForm.setTipoLigacao(null);
 					sessao.removeAttribute("colecaoConsultarImovelDevolucoesImovelHelper");
 					// Fim CR92570
 					// seta na tela a inscrição do imovel
@@ -261,6 +269,20 @@ public class ExibirConsultarImovelDevolucoesAction
 					consultarImovelActionForm.setMatriculaImovelDevolucoesImovel(fachada.pesquisarInscricaoImovel(new Integer(
 									idImovelDevolucoesImovel.trim()), true));
 
+					try{
+						if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString()
+										.equals(ConstantesSistema.NAO.toString())){
+							if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+								consultarImovelActionForm.setDigitoVerificadorImovelDevolucoesImovel(Imovel
+												.getDigitoVerificadorMatricula(idImovelDevolucoesImovel.trim()));
+							}
+						}
+					}catch(ControladorException e1){
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						throw new ActionServletException(e1.getMessage(), e1);
+					}
+
 					// seta a situação de agua
 					if(imovel.getLigacaoAguaSituacao() != null){
 						consultarImovelActionForm.setSituacaoAguaDevolucoesImovel(imovel.getLigacaoAguaSituacao().getDescricao());
@@ -268,6 +290,21 @@ public class ExibirConsultarImovelDevolucoesAction
 					// seta a situação de esgoto
 					if(imovel.getLigacaoEsgotoSituacao() != null){
 						consultarImovelActionForm.setSituacaoEsgotoDevolucoesImovel(imovel.getLigacaoEsgotoSituacao().getDescricao());
+					}
+
+					// seta o tipo de ligação
+					if(idImovelDevolucoesImovel != null || idImovelDevolucoesImovel != ""){
+						boolean tipoLigacaoBoolean = false;
+						ObterIndicadorExistenciaHidrometroHelper obterIndicadorExistenciaHidrometroHelper = fachada
+										.obterIndicadorExistenciaHidrometroLigacaoAguaPoco(Util.obterInteger(idImovelDevolucoesImovel),
+														tipoLigacaoBoolean);
+						if(obterIndicadorExistenciaHidrometroHelper.getIndicadorLigacaoAgua().intValue() == 1
+										|| obterIndicadorExistenciaHidrometroHelper.getIndicadorPoco().intValue() == 1){
+							consultarImovelActionForm.setTipoLigacao("Hidrometrado");
+						}else{
+							consultarImovelActionForm.setTipoLigacao("Consumo Fixo");
+						}
+
 					}
 
 					FiltroDevolucao filtroDevolucao = new FiltroDevolucao();
@@ -1180,9 +1217,11 @@ public class ExibirConsultarImovelDevolucoesAction
 				sessao.removeAttribute("qtdeDevDebitoACobrar");
 				sessao.removeAttribute("qtdeDevDevolucaoValores");
 
+				consultarImovelActionForm.setDigitoVerificadorImovelDevolucoesImovel(null);
 				consultarImovelActionForm.setIdImovelDevolucoesImovel(null);
 				consultarImovelActionForm.setSituacaoAguaDevolucoesImovel(null);
 				consultarImovelActionForm.setSituacaoEsgotoDevolucoesImovel(null);
+				consultarImovelActionForm.setTipoLigacao(null);
 
 			}
 		}else{
@@ -1207,10 +1246,29 @@ public class ExibirConsultarImovelDevolucoesAction
 			sessao.removeAttribute("qtdeDevDevolucaoValores");
 
 			consultarImovelActionForm.setMatriculaImovelDevolucoesImovel(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelDevolucoesImovel(null);
 			consultarImovelActionForm.setSituacaoAguaDevolucoesImovel(null);
 			consultarImovelActionForm.setSituacaoEsgotoDevolucoesImovel(null);
+			consultarImovelActionForm.setTipoLigacao(null);
 			sessao.removeAttribute("colecaoConsultarImovelDevolucoesImovelHelper");
 
+		}
+
+		try{
+			if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+				if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+					httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '1');
+				}else{
+					throw new ControladorException("erro.parametro.nao.informado", null, "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+				}
+
+			}else{
+				httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '0');
+			}
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new ActionServletException(e.getMessage(), e);
 		}
 
 		return retorno;

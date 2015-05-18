@@ -161,10 +161,7 @@ public class RetirarDebitoCobradoConjuntoContaAction
 				dataVencimentoContaFim = (Date) sessao.getAttribute("dataVencimentoContaFinal");
 			}
 
-			if(sessao.getAttribute("idGrupoFaturamento") != null){
 
-				idGrupoFaturamento = (Integer) sessao.getAttribute("idGrupoFaturamento");
-			}
 
 			// Retificar uma ou várias contas
 			// Usuario logado no sistema

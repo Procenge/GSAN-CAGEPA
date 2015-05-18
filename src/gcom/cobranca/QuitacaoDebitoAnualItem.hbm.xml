@@ -97,6 +97,24 @@
     >
         <column name="cnta_id" />
     </many-to-one>
+    
+      <many-to-one
+        name="guiaPagamentoGeral"
+        class="gcom.faturamento.GuiaPagamentoGeral"
+        not-null="true"
+    >
+        <column name="gpag_id" />
+    </many-to-one>
+    
+     <property
+        name="numeroPrestacao"
+         column="PGHI_NNPRESTACAO" 
+            type="java.lang.Short"
+            length="3"
+    />
+    
+    
+    
   
  </class>
 </hibernate-mapping>

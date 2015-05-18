@@ -180,6 +180,8 @@ public class LigacaoAguaSituacao
 
 	public static Integer CORTADO_A_PEDIDO;
 
+	public static Integer PROVISORIA;
+
 
 	// Indicadores de Situação de Faturamento --
 	public final static Short FATURAMENTO_ATIVO = Short.valueOf("1");
@@ -474,7 +476,7 @@ public class LigacaoAguaSituacao
 	public static enum LigacaoAguaSituacaoEnum {
 
 		POTENCIAL, FACTIVEL, LIGADO, EM_FISCALIZACAO, CORTADO, SUPRIMIDO, SUPR_PARC, SUPR_PARC_PEDIDO, EM_CANCELAMENTO, CORTADO_A_PEDIDO,
-		SUPRIMIDO_DEFINITIVO, VIRTUAL, CORT_MED_INDIVIDUAL;
+		SUPRIMIDO_DEFINITIVO, VIRTUAL, CORT_MED_INDIVIDUAL, PROVISORIA;
 
 		private Integer id = -1;
 

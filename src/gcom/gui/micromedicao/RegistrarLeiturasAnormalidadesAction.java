@@ -79,25 +79,22 @@
 
 package gcom.gui.micromedicao;
 
+import gcom.batch.DadoComplementarEnumerator;
+import gcom.batch.Processo;
+import gcom.batch.ProcessoIniciado;
+import gcom.batch.ProcessoIniciadoDadoComplementarHelper;
 import gcom.fachada.Fachada;
-import gcom.faturamento.FaturamentoAtividade;
-import gcom.faturamento.FaturamentoGrupo;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.micromedicao.FiltroRota;
 import gcom.micromedicao.Rota;
 import gcom.micromedicao.leitura.LeituraTipo;
-import gcom.micromedicao.medicao.MedicaoHistorico;
 import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.filtro.ParametroSimplesDiferenteDe;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -142,18 +139,14 @@ public class RegistrarLeiturasAnormalidadesAction
 		try{
 
 			String idFaturamentoGrupo = null;
-
 			DiskFileUpload upload = new DiskFileUpload();
-
-			String anoMesLeitura = null;
 			Integer anoMesReferenciaGrupo = null;
 
 			// Parse the request
 			List items = upload.parseRequest(httpServletRequest);
 
 			Fachada fachada = Fachada.getInstancia();
-			Collection<MedicaoHistorico> colecaoMedicaoHistorico = new ArrayList();
-			Collection<Rota> colecaoRotaFaturamentoImediato = new ArrayList();
+			Collection<Rota> colecaoRotasRegistrarLeiturasAnormalidades = new ArrayList<Rota>();
 
 			FileItem item = null;
 
@@ -186,101 +179,80 @@ public class RegistrarLeiturasAnormalidadesAction
 
 					FiltroRota filtroRota = new FiltroRota();
 					filtroRota.adicionarParametro(new ParametroSimples(FiltroRota.FATURAMENTO_GRUPO_ID, idFaturamentoGrupo));
-					filtroRota
-									.adicionarParametro(new ParametroSimples(FiltroRota.LEITURA_TIPO_ID,
-													LeituraTipo.LEITURA_E_ENTRADA_SIMULTANEA));
-					colecaoRotaFaturamentoImediato = fachada.pesquisar(filtroRota, Rota.class.getName());
-					filtroRota.limparListaParametros();
-					filtroRota.adicionarParametro(new ParametroSimples(FiltroRota.FATURAMENTO_GRUPO_ID, idFaturamentoGrupo));
 					filtroRota.adicionarParametro(new ParametroSimplesDiferenteDe(FiltroRota.LEITURA_TIPO_ID,
 									LeituraTipo.LEITURA_E_ENTRADA_SIMULTANEA));
-					Collection<Rota> colecaoRota = fachada.pesquisar(filtroRota, Rota.class.getName());
+					colecaoRotasRegistrarLeiturasAnormalidades = fachada.pesquisar(filtroRota, Rota.class.getName());
 
 					anoMesReferenciaGrupo = fachada.pesquisarAnoMesPorIdFaturamentoGrupo(Integer.valueOf(idFaturamentoGrupo));
 					if(anoMesReferenciaGrupo == null){
 						throw new ActionServletException("atencao.anomes.faturamento.invalido");
 					}
-					anoMesLeitura = anoMesReferenciaGrupo.toString();
-					if(Util.isVazioOrNulo(colecaoRota) && Util.isVazioOrNulo(colecaoRotaFaturamentoImediato)){
-						throw new ActionServletException("atencao.nao_ha_rotas_grupo_faturamento", idFaturamentoGrupo);
-					}
-					if(!Util.isVazioOrNulo(colecaoRota)){
-						colecaoMedicaoHistorico = fachada.criarMedicoesHistoricoRegistrarLeituraAnormalidade(Integer
-										.valueOf(idFaturamentoGrupo), anoMesReferenciaGrupo, colecaoRota);
-					}
 
+					if(Util.isVazioOrNulo(colecaoRotasRegistrarLeiturasAnormalidades)){
+
+						ActionServletException actionServletException = new ActionServletException(
+										"atencao.grupo_nao_permite_registrar_leituras_anormalidades", idFaturamentoGrupo);
+
+						actionServletException.setUrlBotaoVoltar("/gsan/exibirRegistrarLeiturasAnormalidadesAction.do");
+						throw actionServletException;
+					}
 				}
-
-			}
-			if(!Util.isVazioOrNulo(colecaoMedicaoHistorico)){
-				fachada.registrarLeituraAnormalidade(colecaoMedicaoHistorico, Integer.valueOf(idFaturamentoGrupo),
-								anoMesLeitura == null ? null : Integer.valueOf(anoMesLeitura), getUsuarioLogado(httpServletRequest));
 			}
 
-			if(!Util.isVazioOrNulo(colecaoRotaFaturamentoImediato)){
-				// Faturamento Imediato
-				FaturamentoGrupo faturamentoGrupo = fachada.pesquisarFaturamentoGrupoPorID(Integer.valueOf(idFaturamentoGrupo));
+			ProcessoIniciado processoIniciado = new ProcessoIniciado();
 
-				fachada.registrarFaturamentoImediatoGrupoFaturamento(colecaoRotaFaturamentoImediato, faturamentoGrupo,
-								anoMesReferenciaGrupo, FaturamentoAtividade.REGISTRAR_FATURAMENTO_IMEDIATO);
+			Processo processo = new Processo();
+			processo.setId(Processo.REGISTRA_LEITURAS_ANORMALIDADES);
+			processoIniciado.setDataHoraAgendamento(new Date());
+
+			// Verificar restrição de execução simultânea de processos
+			if(fachada.isProcessoComRestricaoExecucaoSimultanea(processo.getId())){
+
+				throw new ActionServletException("atencao.processo_restricao_execucao");
 			}
 
-			/*
-			 * byte[] relatorioRetorno = null;
-			 * OutputStream out = null;
-			 * try { // cria uma instância da classe do relatório
-			 * RelatorioRegistrarLeiturasAnormalidades
-			 * relatorioRegistrarLeiturasAnormalidades = new
-			 * RelatorioRegistrarLeiturasAnormalidades( (Usuario)
-			 * (httpServletRequest.getSession(false))
-			 * .getAttribute("usuarioLogado"));
-			 * relatorioRegistrarLeiturasAnormalidades.addParametro(
-			 * "colecaoMedicaoHistoricoRelatorio", dadosParaRelatorio);
-			 * relatorioRegistrarLeiturasAnormalidades.addParametro(
-			 * "idFaturamentoGrupo", idFaturamentoGrupo);
-			 * relatorioRegistrarLeiturasAnormalidades.addParametro(
-			 * "anoMesLeitura", anoMesLeitura); String tipoRelatorio =
-			 * httpServletRequest .getParameter("tipoRelatorio"); if
-			 * (tipoRelatorio == null) { tipoRelatorio =
-			 * TarefaRelatorio.TIPO_PDF + ""; }
-			 * relatorioRegistrarLeiturasAnormalidades
-			 * .addParametro("tipoFormatoRelatorio", Integer
-			 * .parseInt(tipoRelatorio)); // chama o metódo de gerar relatório
-			 * passando o código da // analise // como parâmetro
-			 * relatorioRetorno = (byte[])
-			 * relatorioRegistrarLeiturasAnormalidades .executar();
-			 * if (retorno == null) { // prepara a resposta para o popup
-			 * httpServletResponse.setContentType("application/pdf"); out =
-			 * httpServletResponse.getOutputStream();
-			 * out.write(relatorioRetorno); out.flush(); out.close(); } } catch
-			 * (IOException ex) { // manda o erro para a página no request atual
-			 * ex.printStackTrace(); reportarErros(httpServletRequest,
-			 * "erro.sistema"); // seta o mapeamento de retorno para a tela de
-			 * erro de popup retorno =
-			 * actionMapping.findForward("telaErroPopup"); } catch
-			 * (SistemaException ex) { ex.printStackTrace(); // manda o erro
-			 * para a página no request atual reportarErros(httpServletRequest,
-			 * "erro.sistema"); // seta o mapeamento de retorno para a tela de
-			 * erro de popup retorno =
-			 * actionMapping.findForward("telaErroPopup"); } catch
-			 * (RelatorioVazioException ex1) { // manda o erro para a página no
-			 * request atual ex1.printStackTrace();
-			 * reportarErros(httpServletRequest, "erro.relatorio.vazio"); //
-			 * seta o mapeamento de retorno para a tela de atenção de popup
-			 * retorno = actionMapping.findForward("telaAtencaoPopup"); }
-			 */
+			processoIniciado.setProcesso(processo);
+			processoIniciado.setUsuario(this.getUsuarioLogado(httpServletRequest));
+
+			if(idFaturamentoGrupo != null){
+				processoIniciado.setCodigoGrupoProcesso(Util.obterInteger(idFaturamentoGrupo));
+			}
+
+			List<Object> colecaoParametros = new ArrayList<Object>();
+			colecaoParametros.add(colecaoRotasRegistrarLeiturasAnormalidades);
+			colecaoParametros.add(Util.obterInteger(idFaturamentoGrupo));
+			colecaoParametros.add(anoMesReferenciaGrupo);
+			colecaoParametros.add(this.getUsuarioLogado(httpServletRequest));
+
+			ProcessoIniciadoDadoComplementarHelper helper = new ProcessoIniciadoDadoComplementarHelper();
+			helper.adcionarDadoComplementar(DadoComplementarEnumerator.GRUPO_DESCRICAO, idFaturamentoGrupo);
+			helper.adcionarDadoComplementar(DadoComplementarEnumerator.ANO_MES_REFERENCIA, anoMesReferenciaGrupo.toString());
+			processoIniciado.setDescricaoDadosComplementares(helper.getStringFormatoPesistencia());
+
+			Integer codigoProcessoIniciadoGerado = (Integer) fachada.inserirProcessoIniciadoOnline(processoIniciado, colecaoParametros);
+
+			if(codigoProcessoIniciadoGerado > 0){
+
+				// montando página de sucesso
+				montarPaginaSucesso(httpServletRequest, "Leituras e Anormalidades do Grupo " + idFaturamentoGrupo + " da Referência "
+								+ anoMesReferenciaGrupo.toString() + " Enviado para Processamento em batch. Processo "
+								+ Processo.REGISTRA_LEITURAS_ANORMALIDADES, "Voltar",
+								"exibirRegistrarLeiturasAnormalidadesAction.do");
+			}else{
+
+				ActionServletException actionServletException = new ActionServletException("atencao.erro_iniciar_processo_online",
+								String.valueOf(Processo.REGISTRA_LEITURAS_ANORMALIDADES) + " - REGISTRAR LEITURAS E ANORMALIDADES");
+
+				actionServletException.setUrlBotaoVoltar("/gsan/exibirRegistrarLeiturasAnormalidadesAction.do");
+				throw actionServletException;
+			}
+
 		}catch(FileUploadException e){
+
 			e.printStackTrace();
 			throw new ActionServletException("erro.sistema", e);
 		}
-		// montarPaginaSucesso(httpServletRequest,
-		// "Leitura(s) e Anormalidade(s) importado(s) com sucesso",
-		// "Importar outra(s) leitura(s) e anormalidade(s)",
-		// "exibirRegistrarLeiturasAnormalidadesAction.do");
 
-		// montando página de sucesso
-		montarPaginaSucesso(httpServletRequest, "Leituras e Anormalidades Enviado para Processamento", "Voltar",
-						"/exibirRegistrarLeiturasAnormalidadesAction.do");
 		return retorno;
 	}
 

@@ -381,6 +381,163 @@ public class ExibidorProcessamentoTarefaRelatorio
 			}
 		}
 		return retorno;
+
+	}
+
+	private ActionForward processarRelatorioGridOrdemServico(TarefaRelatorio tarefaRelatorio, int tipoRelatorio,
+					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, ActionMapping actionMapping,
+					ActionForward retorno){
+
+		RelatorioProcessado relatorioProcessado = GerenciadorExecucaoTarefaRelatorio.analisarExecucaoRelatorioOrdemServico(tarefaRelatorio,
+						tipoRelatorio);
+
+		if(relatorioProcessado == null){
+
+			retorno = actionMapping.findForward("telaApresentacaoBatch");
+
+		}else{
+			OutputStream out = null;
+			try{
+				// httpServletResponse.addHeader("Content-Disposition","attachment;
+				// filename=relatorio");
+
+				String mimeType = null;
+				switch(tipoRelatorio){
+					case TarefaRelatorio.TIPO_PDF:
+						httpServletResponse.addHeader("Content-Disposition", "attachment; filename=relatorio.pdf");
+						mimeType = "application/pdf";
+						break;
+
+					case TarefaRelatorio.TIPO_RTF:
+						httpServletResponse.addHeader("Content-Disposition", "attachment; filename=relatorio.rtf");
+
+						mimeType = "application/rtf";
+						break;
+					case TarefaRelatorio.TIPO_XLS:
+						httpServletResponse.addHeader("Content-Disposition", "attachment; filename=relatorio.xls");
+
+						mimeType = "application/vnd.ms-excel";
+						break;
+					case TarefaRelatorio.TIPO_HTML:
+						httpServletResponse.addHeader("Content-Disposition", "attachment; filename=relatorio.zip");
+
+						mimeType = "application/zip";
+						break;
+				}
+
+				httpServletResponse.setContentType(mimeType);
+				out = httpServletResponse.getOutputStream();
+				// out.write((byte[])
+				// Util.retonarObjetoDeColecao(relatorioRetorno.values()));
+				out.write(relatorioProcessado.getDados());
+				out.flush();
+				out.close();
+			}catch(IOException ex){
+				// manda o erro para a página no request atual
+				reportarErros(httpServletRequest, "erro.sistema");
+
+				// seta o mapeamento de retorno para a tela de erro de popup
+				retorno = actionMapping.findForward("telaErroPopup");
+
+			}catch(SistemaException ex){
+				// manda o erro para a página no request atual
+				reportarErros(httpServletRequest, "erro.sistema");
+
+				// seta o mapeamento de retorno para a tela de erro de popup
+				retorno = actionMapping.findForward("telaErroPopup");
+
+			}catch(RelatorioVazioException ex1){
+				// manda o erro para a página no request atual
+				reportarErros(httpServletRequest, "erro.relatorio.vazio");
+
+				// seta o mapeamento de retorno para a tela de atenção de popup
+				retorno = actionMapping.findForward("telaAtencaoPopup");
+			}
+		}
+		return retorno;
+	}
+
+	private ActionForward processarRelatorioResumoOrdemServico(TarefaRelatorio tarefaRelatorio, int tipoRelatorio,
+					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, ActionMapping actionMapping,
+					ActionForward retorno){
+
+		RelatorioProcessado relatorioProcessado = GerenciadorExecucaoTarefaRelatorio.analisarExecucaoRelatorioResumoOrdemServico(
+						tarefaRelatorio,
+						tipoRelatorio);
+
+		if(relatorioProcessado == null){
+
+			retorno = actionMapping.findForward("telaApresentacaoBatch");
+
+		}else{
+			OutputStream out = null;
+			try{
+				// httpServletResponse.addHeader("Content-Disposition","attachment;
+				// filename=relatorio");
+
+				String mimeType = null;
+				switch(tipoRelatorio){
+					case TarefaRelatorio.TIPO_PDF:
+						httpServletResponse.addHeader("Content-Disposition", "attachment; filename=relatorio.pdf");
+						mimeType = "application/pdf";
+						break;
+
+					case TarefaRelatorio.TIPO_RTF:
+						httpServletResponse.addHeader("Content-Disposition", "attachment; filename=relatorio.rtf");
+
+						mimeType = "application/rtf";
+						break;
+					case TarefaRelatorio.TIPO_XLS:
+						httpServletResponse.addHeader("Content-Disposition", "attachment; filename=relatorio.xls");
+
+						mimeType = "application/vnd.ms-excel";
+						break;
+					case TarefaRelatorio.TIPO_HTML:
+						httpServletResponse.addHeader("Content-Disposition", "attachment; filename=relatorio.zip");
+
+						mimeType = "application/zip";
+						break;
+				}
+
+				httpServletResponse.setContentType(mimeType);
+				out = httpServletResponse.getOutputStream();
+				// out.write((byte[])
+				// Util.retonarObjetoDeColecao(relatorioRetorno.values()));
+				out.write(relatorioProcessado.getDados());
+				out.flush();
+				out.close();
+			}catch(IOException ex){
+				// manda o erro para a página no request atual
+				reportarErros(httpServletRequest, "erro.sistema");
+
+				// seta o mapeamento de retorno para a tela de erro de popup
+				retorno = actionMapping.findForward("telaErroPopup");
+
+			}catch(SistemaException ex){
+				// manda o erro para a página no request atual
+				reportarErros(httpServletRequest, "erro.sistema");
+
+				// seta o mapeamento de retorno para a tela de erro de popup
+				retorno = actionMapping.findForward("telaErroPopup");
+
+			}catch(RelatorioVazioException ex1){
+				// manda o erro para a página no request atual
+				reportarErros(httpServletRequest, "erro.relatorio.vazio");
+
+				// seta o mapeamento de retorno para a tela de atenção de popup
+				retorno = actionMapping.findForward("telaAtencaoPopup");
+			}
+		}
+		return retorno;
+	}
+
+	public ActionForward processarExibicaoRelatorioResumoOrdemServico(TarefaRelatorio tarefaRelatorio, int tipoRelatorio,
+					HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, ActionMapping actionMapping){
+
+		ActionForward retorno = null;
+		retorno = processarRelatorioResumoOrdemServico(tarefaRelatorio, tipoRelatorio, httpServletRequest, httpServletResponse,
+						actionMapping, retorno);
+		return retorno;
 	}
 
 }

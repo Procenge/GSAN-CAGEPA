@@ -81,6 +81,7 @@ import gcom.operacional.DistritoOperacional;
 import gcom.operacional.SetorAbastecimento;
 import gcom.operacional.SistemaAbastecimento;
 import gcom.operacional.ZonaAbastecimento;
+import gcom.util.Util;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -112,6 +113,20 @@ public class InserirSetorAbastecimentoActionForm
 	private String sistemaAbastecimento;
 
 	private String zonaAbastecimento;
+
+	private String extensaoRede;
+
+	private String pressaoMaxima;
+
+	private String pressaoMedia;
+
+	private String pressaoMinima;
+
+	private String monitoramentoInicial;
+
+	private String monitoramentoFinal;
+
+	private String idDiametro;
 
 	public String getCodigo(){
 
@@ -183,7 +198,78 @@ public class InserirSetorAbastecimentoActionForm
 		this.zonaAbastecimento = zonaAbastecimento;
 	}
 
+	public String getExtensaoRede(){
+
+		return extensaoRede;
+	}
+
+	public void setExtensaoRede(String extensaoRede){
+
+		this.extensaoRede = extensaoRede;
+	}
+
+	public String getPressaoMaxima(){
+
+		return pressaoMaxima;
+	}
+
+	public void setPressaoMaxima(String pressaoMaxima){
+
+		this.pressaoMaxima = pressaoMaxima;
+	}
+
+	public String getPressaoMedia(){
+
+		return pressaoMedia;
+	}
+
+	public void setPressaoMedia(String pressaoMedia){
+
+		this.pressaoMedia = pressaoMedia;
+	}
+
+	public String getPressaoMinima(){
+
+		return pressaoMinima;
+	}
+
+	public void setPressaoMinima(String pressaoMinima){
+
+		this.pressaoMinima = pressaoMinima;
+	}
+
+	public String getMonitoramentoInicial(){
+
+		return monitoramentoInicial;
+	}
+
+	public void setMonitoramentoInicial(String monitoramentoInicial){
+
+		this.monitoramentoInicial = monitoramentoInicial;
+	}
+
+	public String getMonitoramentoFinal(){
+
+		return monitoramentoFinal;
+	}
+
+	public void setMonitoramentoFinal(String monitoramentoFinal){
+
+		this.monitoramentoFinal = monitoramentoFinal;
+	}
+
+	public String getIdDiametro(){
+
+		return idDiametro;
+	}
+
+	public void setIdDiametro(String idDiametro){
+
+		this.idDiametro = idDiametro;
+	}
+
 	public SetorAbastecimento setFormValues(SetorAbastecimento setorAbastecimento){
+
 
 		setorAbastecimento.setCodigoSetorAbastecimento(Integer.parseInt(codigo));
 		setorAbastecimento.setDescricao(descricao);
@@ -197,6 +283,17 @@ public class InserirSetorAbastecimentoActionForm
 		ZonaAbastecimento zonaAbastecimentoSetor = new ZonaAbastecimento();
 		zonaAbastecimentoSetor.setId(Integer.parseInt(zonaAbastecimento));
 		setorAbastecimento.setZonaAbastecimento(zonaAbastecimentoSetor);
+		setorAbastecimento.setExtensaoRede(Integer.parseInt(extensaoRede));
+		setorAbastecimento.setPressaoMaxima(Util.formatarStringParaBigDecimal(pressaoMaxima, 2, true));
+		setorAbastecimento.setPressaoMedia(Util.formatarStringParaBigDecimal(pressaoMedia, 2, true));
+		setorAbastecimento.setPressaoMinima(Util.formatarStringParaBigDecimal(pressaoMinima, 2, true));
+		if(!Util.isVazioOuBranco(monitoramentoInicial)){
+			setorAbastecimento.setMonitoramentoInicial(Util.converterStringParaData(monitoramentoInicial));
+		}
+		if(!Util.isVazioOuBranco(monitoramentoFinal)){
+			setorAbastecimento.setMonitoramentoFinal(Util.converterStringParaData(monitoramentoFinal));
+		}
+		setorAbastecimento.setIdDiametro(Integer.parseInt(idDiametro));
 		return setorAbastecimento;
 	}
 

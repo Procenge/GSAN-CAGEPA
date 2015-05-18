@@ -158,7 +158,10 @@ public class FiltrarExcecoesLeiturasConsumosAction
 		String indicadorRateio = null;
 
 		if(leituraConsumoActionForm.getIndicadorImovelCondominioFiltro() != null
-						&& leituraConsumoActionForm.getIndicadorImovelCondominioFiltro().equalsIgnoreCase("S")){
+						&& (leituraConsumoActionForm.getIndicadorImovelCondominioFiltro().equalsIgnoreCase("S") || (leituraConsumoActionForm
+										.getImovelCondominioFiltro() != null && !leituraConsumoActionForm.getImovelCondominioFiltro()
+										.equals("")))){
+
 			indicadorImovelCondominio = "1";
 		}else if(leituraConsumoActionForm.getIndicadorImovelCondominioFiltro() != null
 						&& leituraConsumoActionForm.getIndicadorImovelCondominioFiltro().equalsIgnoreCase("N")){
@@ -464,7 +467,7 @@ public class FiltrarExcecoesLeiturasConsumosAction
 				filtroMedicaoHistoricoSql.adicionarParametro(new ParametroNaoNulo(FiltroMedicaoHistoricoSql.MH_ANORMALIDADE_FATURADA));
 			}else if(tipoAnormalidade.trim().equalsIgnoreCase(ConstantesSistema.ANORMALIDADE_CONSUMO)){
 				peloMenosUmParametro = true;
-				filtroConsumoHistorico.adicionarParametro(new ParametroNaoNulo(FiltroConsumoHistorico.ANORMALIDADE_CONSUMO));
+				filtroMedicaoHistoricoSql.adicionarParametro(new ParametroNaoNulo(FiltroMedicaoHistoricoSql.MH_ANORMALIDADE_CONSUMO));
 			}
 		}
 

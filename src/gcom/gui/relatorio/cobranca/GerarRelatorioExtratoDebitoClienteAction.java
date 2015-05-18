@@ -137,12 +137,15 @@ public class GerarRelatorioExtratoDebitoClienteAction
 		String dataEmissao = "";
 
 		Collection<ContaValoresHelper> colecaoContas = null;
-		BigDecimal contasValor = new BigDecimal("0.00");
 		BigDecimal acrescimoImpontualidade = new BigDecimal("0.00");
 
 		// Consultar Débito
 		colecaoContas = (Collection<ContaValoresHelper>) sessao.getAttribute("colecaoContaValores");
 		String debitosACobrar = (String) sessao.getAttribute("valorDebitoACobrar");
+		String guiaPagamento = (String) sessao.getAttribute("valorGuiaPagamento");
+		String totalDebitoACobrarGuiaPagamento = (String) sessao.getAttribute("valorTotalDebitoACobrarGuiaPagamento");
+		BigDecimal valorTotalDocumento = Util.formatarMoedaRealparaBigDecimal(String.valueOf(sessao.getAttribute("valorTotalDocumento")));
+
 		acrescimoImpontualidade = Util.formatarMoedaRealparaBigDecimal(sessao.getAttribute("valorAcrescimo").toString());
 		String valorContas = (String) sessao.getAttribute("valorConta");
 
@@ -175,11 +178,9 @@ public class GerarRelatorioExtratoDebitoClienteAction
 
 		String tipo = (String) httpServletRequest.getParameter("tipo");
 
-		BigDecimal valorDocumento = null;
-		BigDecimal valorAcrescimosImpontualidade = null;
-
+		BigDecimal valorAcrescimosImpontualidade = BigDecimal.ZERO;
 		if(httpServletRequest.getParameter("tipo") != null && tipo.equalsIgnoreCase("conta")){
-			contasValor = Util.formatarMoedaRealparaBigDecimal((String) sessao.getAttribute("valorConta"));
+			valorTotalDocumento = Util.formatarMoedaRealparaBigDecimal(valorContas);
 
 			// Parâmetro que identifica se a empresa emite o documento com acrescimos
 			String parametroTratarAcrescimosEmissaoDocumento = "";
@@ -208,22 +209,16 @@ public class GerarRelatorioExtratoDebitoClienteAction
 							|| parametroPermitirSelecaoAcrescimosExtrato.equals(Short.toString(ConstantesSistema.SIM))){
 
 				if(Short.toString(ConstantesSistema.SIM).equals(pIndicadorEmissaoExtratoDebitoSemAcrescimo)){
-					valorDocumento = contasValor.add(acrescimoImpontualidade);
+					valorTotalDocumento = valorTotalDocumento.add(acrescimoImpontualidade);
 					valorAcrescimosImpontualidade = acrescimoImpontualidade;
 
 					relatorioExtratoDebitoCliente.addParametro("acrescimoImpontualidade", Util.formatarMoedaReal(acrescimoImpontualidade));
-				}else{
-					valorDocumento = contasValor;
-					valorAcrescimosImpontualidade = BigDecimal.ZERO;
 				}
-			}else{
-				valorDocumento = contasValor;
-				valorAcrescimosImpontualidade = BigDecimal.ZERO;
 			}
 
 			ExtratoDebitoRelatorioHelper extratoDebitoRelatorioHelper = fachada.gerarEmitirExtratoDebito(null, new Short("0"),
-							colecaoContas, null, null, valorAcrescimosImpontualidade, new BigDecimal("0.00"), valorDocumento, null,
-							cliente, null, null);
+							colecaoContas, null, null, valorAcrescimosImpontualidade, new BigDecimal("0.00"), valorTotalDocumento, null,
+							cliente, null, null, null);
 
 			CobrancaDocumento documentoCobranca = extratoDebitoRelatorioHelper.getColecaoCobrancaDocumentoItemContas().iterator().next()
 							.getCobrancaDocumento();
@@ -243,7 +238,8 @@ public class GerarRelatorioExtratoDebitoClienteAction
 
 			// [UC0229] Obtém a representação numérica do código de barra
 
-			representacaoNumericaCodBarra = fachada.obterRepresentacaoNumericaCodigoBarra(8, valorDocumento, 0, null, null, null, null,
+			representacaoNumericaCodBarra = fachada.obterRepresentacaoNumericaCodigoBarra(8, valorTotalDocumento, 0, null, null, null,
+							null,
 							null, seqDocCobranca, documentoCobranca.getDocumentoTipo().getId(), idCliente, null, null, null, null);
 
 			// Formata a representação númerica do código de barras
@@ -261,8 +257,10 @@ public class GerarRelatorioExtratoDebitoClienteAction
 
 			relatorioExtratoDebitoCliente.addParametro("representacaoNumericaCodBarraSemDigito", representacaoNumericaCodBarraSemDigito);
 		}else{
-			valorDocumento = Util.formatarMoedaRealparaBigDecimal((String) sessao.getAttribute("valorTotalComAcrescimo"));
+			valorTotalDocumento = Util.formatarMoedaRealparaBigDecimal((String) sessao.getAttribute("valorTotalComAcrescimo"));
 			relatorioExtratoDebitoCliente.addParametro("debitosACobrar", debitosACobrar);
+			relatorioExtratoDebitoCliente.addParametro("guiaPagamento", guiaPagamento);
+			relatorioExtratoDebitoCliente.addParametro("totalDebitoACobrarGuiaPagamento", totalDebitoACobrarGuiaPagamento);
 			relatorioExtratoDebitoCliente.addParametro("acrescimoImpontualidade", Util.formatarMoedaReal(acrescimoImpontualidade));
 		}
 
@@ -280,7 +278,7 @@ public class GerarRelatorioExtratoDebitoClienteAction
 		relatorioExtratoDebitoCliente.addParametro("dataEmissao", dataEmissao);
 		relatorioExtratoDebitoCliente.addParametro("valorContas", valorContas);
 
-		relatorioExtratoDebitoCliente.addParametro("valorTotalContas", Util.formatarMoedaReal(valorDocumento));
+		relatorioExtratoDebitoCliente.addParametro("valorTotalContas", Util.formatarMoedaReal(valorTotalDocumento));
 
 		relatorioExtratoDebitoCliente.addParametro("colecaoContas", colecaoContas);
 

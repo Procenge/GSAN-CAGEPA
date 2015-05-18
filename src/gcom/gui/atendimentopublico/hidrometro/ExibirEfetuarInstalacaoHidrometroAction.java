@@ -193,6 +193,11 @@ public class ExibirEfetuarInstalacaoHidrometroAction
 			veioEncerrarOS = Boolean.FALSE;
 		}
 
+		if(httpServletRequest.getParameter("submitAutomatico2") != null
+						&& httpServletRequest.getParameter("submitAutomatico2").equals("ok")){
+			httpServletRequest.setAttribute("submitAutomatico2", "ok");
+		}
+
 		// Colocado por Vivianne Sousa em 05/12/2007
 		// ------------------------------------------------------------
 		if(efetuarInstalacaoHidrometroActionForm.getIndicadorTrocaProtecao() == null){

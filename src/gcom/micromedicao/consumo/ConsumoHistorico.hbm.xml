@@ -119,6 +119,13 @@
         column="cshi_nnconsumocredito"
         length="4"
     />
+    
+     <property
+        name="consumoPoco"
+        type="java.lang.Integer"
+        column="cshi_nnconsumopoco"
+        length="9"
+    />
 
     <!-- associations -->
     <many-to-one

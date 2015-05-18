@@ -129,6 +129,11 @@ public class FiltrarOrdemServicoAction
 			parametroInformado = true;
 		}
 
+		// ordenador
+		if(!Util.isVazioOuBranco(filtrarOrdemServicoActionForm.getOrdenador())){
+			sessao.setAttribute("ordenador", filtrarOrdemServicoActionForm.getOrdenador());
+		}
+
 		// Numero RA
 		Integer numeroRA = null;
 		if(filtrarOrdemServicoActionForm.getNumeroRA() != null && !filtrarOrdemServicoActionForm.getNumeroRA().equals("")){
@@ -171,6 +176,11 @@ public class FiltrarOrdemServicoAction
 		Integer idBairro = null;
 		Integer idAreaBairro = null;
 		Integer idLogradouro = null;
+		String indicadorReparo = null;
+		String situacaoDocumentoCobranca = null;
+		Date dataPrevisaoInicial = null;
+		Date dataPrevisaoFinal = null;
+		Integer quantidadeDiasUnidade = null;
 
 		if(Util.isVazioOuBranco(filtrarOrdemServicoActionForm.getDesabilitaCampos())
 						|| filtrarOrdemServicoActionForm.getDesabilitaCampos().equals("false")){
@@ -367,6 +377,26 @@ public class FiltrarOrdemServicoAction
 				parametroInformado = true;
 			}
 
+			// Data de Previsão
+			if(filtrarOrdemServicoActionForm.getPeriodoPrevisaoInicial() != null
+							&& !filtrarOrdemServicoActionForm.getPeriodoPrevisaoInicial().equals("")){
+
+				dataPrevisaoInicial = Util.converteStringParaDate(filtrarOrdemServicoActionForm.getPeriodoPrevisaoInicial(), true);
+
+				dataPrevisaoFinal = null;
+
+				if(filtrarOrdemServicoActionForm.getPeriodoPrevisaoFinal() != null
+								&& !filtrarOrdemServicoActionForm.getPeriodoPrevisaoFinal().equals("")){
+
+					dataPrevisaoFinal = Util.converteStringParaDate(filtrarOrdemServicoActionForm.getPeriodoPrevisaoFinal(), true);
+
+				}else{
+					dataPrevisaoFinal = new Date();
+				}
+
+				parametroInformado = true;
+			}
+
 			// Município
 			if(filtrarOrdemServicoActionForm.getMunicipio() != null && !filtrarOrdemServicoActionForm.getMunicipio().equals("")){
 
@@ -446,6 +476,31 @@ public class FiltrarOrdemServicoAction
 					}
 				}
 
+				if(dataPrevisaoInicial != null && dataPrevisaoFinal != null){
+					long qtdDias = Util.diferencaDias(dataPrevisaoInicial, dataPrevisaoFinal);
+
+					if(qtdDias > 30){
+						throw new ActionServletException("atencao.periodo.data.deve.ser.limitado.um.mes", null,
+										"Período de Previsão para Cliente");
+					}
+				}
+
+			}
+
+			// Situacao da Ordem de Servico
+			if(filtrarOrdemServicoActionForm.getIndicadorReparo() != null){
+				indicadorReparo = filtrarOrdemServicoActionForm.getIndicadorReparo();
+
+			}
+
+			if(filtrarOrdemServicoActionForm.getSituacaoDocumentoCobranca() != null){
+				situacaoDocumentoCobranca = filtrarOrdemServicoActionForm.getSituacaoDocumentoCobranca();
+
+			}
+
+			if(filtrarOrdemServicoActionForm.getQuantidadeDiasUnidade() != null
+							&& !filtrarOrdemServicoActionForm.getQuantidadeDiasUnidade().equals("")){
+				quantidadeDiasUnidade = Integer.valueOf(filtrarOrdemServicoActionForm.getQuantidadeDiasUnidade());
 			}
 		}
 
@@ -475,6 +530,8 @@ public class FiltrarOrdemServicoAction
 		pesquisarOrdemServicoHelper.setDataEncerramentoFinal(dataEncerramentoFinal);
 		pesquisarOrdemServicoHelper.setDataExecucaoInicial(dataExecucaoInicial);
 		pesquisarOrdemServicoHelper.setDataExecucaoFinal(dataExecucaoFinal);
+		pesquisarOrdemServicoHelper.setDataPrevisaoClienteInicial(dataPrevisaoInicial);
+		pesquisarOrdemServicoHelper.setDataPrevisaoClienteFinal(dataPrevisaoFinal);
 
 		pesquisarOrdemServicoHelper.setMunicipio(idMunicipio);
 		pesquisarOrdemServicoHelper.setBairro(idBairro);
@@ -484,6 +541,11 @@ public class FiltrarOrdemServicoAction
 		pesquisarOrdemServicoHelper.setProgramado(programado);
 		pesquisarOrdemServicoHelper.setEquipe(equipe);
 		pesquisarOrdemServicoHelper.setDiasAtraso(diasAtraso);
+
+		pesquisarOrdemServicoHelper.setIndicadorReparo(indicadorReparo);
+
+		pesquisarOrdemServicoHelper.setSituacaoDocumentoCobranca(situacaoDocumentoCobranca);
+		pesquisarOrdemServicoHelper.setQuantidadeDiasUnidade(quantidadeDiasUnidade);
 
 		// Pesquisar Ordem Servico
 		if(sessao.getAttribute("parametroInformado") != null){
@@ -506,7 +568,14 @@ public class FiltrarOrdemServicoAction
 			if(httpServletRequest.getParameter("page.offset") != null){
 				tamanho = (Integer) sessao.getAttribute("totalRegistros");
 			}else{
-				tamanho = Fachada.getInstancia().pesquisarOrdemServicoTamanho(pesquisarOrdemServicoHelper);
+				Collection<OrdemServico> colecaoOrdemServico = Fachada.getInstancia().pesquisarOrdemServico(pesquisarOrdemServicoHelper);
+				if(colecaoOrdemServico != null){
+					tamanho = colecaoOrdemServico.size();
+				}else{
+					tamanho = 0;
+				}
+				// tamanho =
+				// Fachada.getInstancia().pesquisarOrdemServicoTamanho(pesquisarOrdemServicoHelper);
 			}
 
 			if(tamanho == null || tamanho == 0){

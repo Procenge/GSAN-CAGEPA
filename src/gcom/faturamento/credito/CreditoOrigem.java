@@ -109,6 +109,8 @@ public class CreditoOrigem
 
 	public final static Integer DESCONTOS_CONDICIONAIS = new Integer(10);
 
+	public final static Integer DEVOLUCAO_SERVICO = new Integer(12);
+
 	// >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 	/** identifier field */

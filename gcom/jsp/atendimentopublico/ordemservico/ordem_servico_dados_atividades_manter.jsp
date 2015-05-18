@@ -14,6 +14,7 @@
 <%@ page import="gcom.atendimentopublico.ordemservico.OrdemServicoInterrupcaoExecucao"%>
 <%@ page import="gcom.atendimentopublico.ordemservico.OsAtividadeMaterialExecucao"%>
 <%@ page import="gcom.gui.GcomAction"%>
+<%@ page import="gcom.atendimentopublico.ordemservico.EquipeComponentes"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -28,6 +29,8 @@
 	
 <script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/regras_validator.js"></script>
 
+<script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/ManutencaoRegistro.js"></script>
+
 <script language="JavaScript">
 
 	function limparAtividade(){
@@ -37,7 +40,7 @@
 		form.idAtividade.value = "";
 		form.descricaoAtividade.value = "";
 		form.idAtividade.focus();
-	}
+	}		
 
 	function limparDescricaoAtividade(){
 		
@@ -54,7 +57,71 @@
 			form.submit();
 		}
 	}
+	
+	/* Recupera Dados Popup */	
+	function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
+	    var form = document.forms[0];
+	    
+	    form.action='exibirEncerrarOrdemServicoAction.do';
+	    if (tipoConsulta == 'unidadeOrganizacional') {
+			form.idUnidade.value = codigoRegistro;
+			form.nomeUnidade.value = descricaoRegistro;
+			form.nomeUnidade.style.color = "#000000";
+	    } else if (tipoConsulta == 'servicoPerfilTipo') {
+	    	form.idServicoPerfilTipo.value = codigoRegistro;
+	    	form.descricaoServicoPerfilTipo.value = descricaoRegistro;
+	    	form.descricaoServicoPerfilTipo.style.color = "#000000";
+	    } else if (tipoConsulta == 'equipeComponente') {
+	    	form.idEquipeComponente.value = codigoRegistro;
+	    	form.idFuncionario.value = descricaoRegistro[0];
+	    	form.nomeComponente.value = descricaoRegistro[1];
+	    	form.indicadorResponsavel.value = descricaoRegistro[2];
+	    	form.action='exibirEncerrarOrdemServicoAction.do?adicionarComponente=sim&popUpAdicionarComponente=sim';
+	    } else if (tipoConsulta == 'equipeComponenteAtualizar') {
+	    	form.idEquipeComponente.value = codigoRegistro;
+	    	form.idFuncionario.value = descricaoRegistro[0];
+	    	form.nomeComponente.value = descricaoRegistro[1];
+	    	form.indicadorResponsavel.value = descricaoRegistro[2];
+	    	form.action='exibirAtualizarEquipeAction.do?atualizarComponente=sim&popUpAtualizarComponente=sim';
+	    }
+	    submeterFormPadrao(form);
+	}
 
+	function carregarEquipeComponente(){
+		var form = document.forms[0];
+		form.action = "/gsan/exibirEncerrarOrdemServicoAction.do?carregarComponente=OK";
+		form.submit();
+	}
+	
+	/* Remove Componente da grid */	
+	function remover(id){
+		var form = document.forms[0];
+		var where_to= confirm("Deseja realmente remover este componente ?");
+		if (where_to== true) {
+		    form.action='exibirEncerrarOrdemServicoAction.do?deleteComponente='+id;
+		    form.submit();
+ 		}
+	}
+	
+	function addComponente() {
+		chamarPopup('exibirEncerrarOrdemServicoAction.do?popUpAdicionarComponente=sim', 'equipeComponente', null, null, 270, 590, '',document.forms[0].idEquipeComponente);
+	}
+	
+	/* Chama Popup */ 
+	function chamarPopup(url, tipo, objeto, codigoObjeto, altura, largura, msg,objetoRelacionado){
+		if(objetoRelacionado.disabled != true){
+			if (objeto == null || codigoObjeto == null){
+				abrirPopup(url + "&" + "tipo=" + tipo, altura, largura);
+			} else{
+				if (codigoObjeto.length < 1 || isNaN(codigoObjeto)){
+					alert(msg);
+				} else{
+					abrirPopup(url + "&" + "tipo=" + tipo + "&" + objeto + "=" + codigoObjeto + "&caminhoRetornoTelaPesquisa=" + tipo, altura, largura);
+				}
+			}
+		}
+	}
+	
 	function adicionarAtividade(){
 
 		var form = document.forms[0];
@@ -308,6 +375,13 @@
 	<html:hidden property="idAtividadeSelecionada"/>
 	<html:hidden property="mostrarMateriais"/>
 	
+	<html:hidden property="idEquipeComponente" />
+	<html:hidden property="nomeComponente" />
+	<html:hidden property="idFuncionario" />
+	<html:hidden property="nomeFuncionario" />
+	<html:hidden property="indicadorResponsavel" />
+	<html:hidden property="tamanhoColecao" />
+	
 	<table width="100%" border="0" bgcolor="#99CCFF">
 		
 		<tr bgcolor="#99CCFF">
@@ -494,7 +568,7 @@
 																					        <tr bgcolor="#cbe5fe">
 																					          <td colspan="2"><strong>Equipe Programada:</strong></td>
 																					          <td colspan="3">
-																					          	<html:select property="idEquipeProgramada" style="width: 200px;" >
+																					          	<html:select property="idEquipeProgramada" style="width: 200px;" onchange="carregarEquipeComponente();">
 																									<html:option value="">&nbsp;</html:option>
 																									<logic:present name="colecaoEquipe">
 																										<html:options collection="colecaoEquipe" labelProperty="nome" property="id"/>
@@ -502,6 +576,92 @@
 																								</html:select>
 																					          </td>
 																					        </tr>
+																					        <!-- ----------------------------- 
+																					        <tr bgcolor="#cbe5fe">
+																								<td><strong> <font color="#000000">Componentes da Equipe </font>
+																								</strong></td>
+																								<td colspan="3" align="right">
+																								<div align="right"><input type="button" name="Submit24"
+																									class="bottonRightCol" value="Adicionar"
+																									onclick="javascript:addComponente();"></div>
+																								</td>
+																								<td></td>
+																							</tr>
+																							<tr bgcolor="#cbe5fe">
+																								<td width="100%" colspan="3">
+																								<div align="center"><strong> <font color="#FF0000"></font> </strong>
+																								<table width="100%" align="center" bgcolor="#cbe5fe">
+																									
+																									<tr bordercolor="#FFFFFF" bgcolor="#79BBFD">
+																										<td width="11%">
+																										<div align="center"><strong>Remover</strong></div>
+																										</td>
+																										<td width="15%">
+																										<div align="center"><strong>Respons&aacute;vel</strong></div>
+																										</td>
+																										<td width="16%">
+																										<div align="center"><strong>Funcion&aacute;rio</strong></div>
+																										</td>
+																										<td width="58%">
+																										<div align="center"><strong>Nome do Componente</strong></div>
+																										</td>
+																									</tr>
+																									<logic:present name="colecaoEquipeComponentes">
+																										<logic:iterate name="colecaoEquipeComponentes"
+																											id="equipeComponente" type="EquipeComponentes">
+																											<c:set var="count" value="${count+1}" />
+																											<c:choose>
+																												<c:when test="${count%2 == '1'}">
+																													<tr bgcolor="#FFFFFF">
+																												</c:when>
+																												<c:otherwise>
+																													<tr bgcolor="#cbe5fe">
+																												</c:otherwise>
+																											</c:choose>
+																											<td bordercolor="#90c7fc">
+																											<div align="center"><img
+																												src="<bean:message key='caminho.imagens'/>Error.gif"
+																												width="14" height="14" style="cursor:hand;" name="imagem"
+																												onclick="remover('${count}');" alt="Remover"></div>
+																											</td>
+																											<td bordercolor="#90c7fc">
+																											<div align="center"><c:choose>
+																												<c:when
+																													test="${equipeComponente.indicadorResponsavel == '1'}">
+																								                        				SIM
+																								                        			</c:when>
+																												<c:otherwise>
+																								                        				N&Atilde;O
+																								                        			</c:otherwise>
+																											</c:choose></div>
+																											</td>
+																											<td bordercolor="#90c7fc">
+																											<div align="center"><c:if
+																												test="${equipeComponente.funcionario != null}">
+																												<bean:write name="equipeComponente" property="funcionario.id" />
+																											</c:if></div>
+																											</td>
+																											<td bordercolor="#90c7fc">
+																											<div align="left"><c:choose>
+																												<c:when test="${equipeComponente.funcionario == null}">
+																													<a href="javascript:atualizarComponente('${count}')"> <bean:write
+																														name="equipeComponente" property="componentes" /> </a>
+																												</c:when>
+																												<c:otherwise>
+																													<a href="javascript:atualizarComponente('${count}')"> <bean:write
+																														name="equipeComponente" property="funcionario.nome" /> </a>
+																												</c:otherwise>
+																											</c:choose></div>
+																											</td>
+																										</logic:iterate>
+																									</logic:present>
+																									</table>
+																								</div>
+																								</td>
+																								<td></td>
+																								<td></td>
+																							</tr>
+																					        <!-- ----------------------------- -->
 																					        
 																					        <logic:present name="documentoCobranca">
 																					        
@@ -582,6 +742,9 @@
 																											<td align="center" width="35%"><font color="#000000"><strong>Período</strong></font></td>
 																											<td align="center" width="20%"><font color="#000000"><strong>Equipe Prog.</strong></font></td>
 																											<td align="center" width="20%"><font color="#000000"><strong>Equipe Outra</strong></font></td>
+																											<logic:equal name="permiteCobrarHora" value="1" scope="request">
+																											<td align="center" width="20%"><font color="#000000"><strong>Valor</strong></font></td>
+																											</logic:equal>
 																								
 																										</tr>
 																										
@@ -642,6 +805,9 @@
 																														</a>
 																													</logic:equal>
 																												</td>
+																												<logic:equal name="permiteCobrarHora" value="1" scope="request">
+																												<td align="center" width="16%"><bean:write name="periodoExecucaoHelper" property="osAtividadePeriodoExecucao.valorAtividadePeriodo"/></td>
+																												</logic:equal>
 																											</tr>
 																										</logic:iterate>
 																									</logic:notEmpty>
@@ -838,8 +1004,11 @@
 																										<table width="100%" bgcolor="#90c7fc">
 																											<tr bgcolor="#90c7fc"> 																			
 																												<td align="center" width="10%"><font color="#000000"><strong>Remover</strong></font></td>
-																												<td align="center" width="65%"><font color="#000000"><strong>Material</strong></font></td>
-																												<td align="center" width="25%"><font color="#000000"><strong>Qtd</strong></font></td>																																																			
+																												<td align="center" colspan="2" width="50%"><font color="#000000"><strong>Material</strong></font></td>
+																												<td align="center" width="25%"><font color="#000000"><strong>Qtd</strong></font></td>	
+																												<logic:equal name="permiteCobrarMaterial" value="1" scope="request">																																																		
+																												<td align="center" width="25%"><font color="#000000"><strong>Valor</strong></font></td>																																																			
+																												</logic:equal>
 																											</tr>
 																			                    		</table>
 																									</td>
@@ -863,13 +1032,19 @@
 																												</a>
 																											</td>
 																											
-																											<td align="center" colspan="3" width="65%"><bean:write name="osMaterial" 
+																											<td align="center" colspan="2" width="40%"><bean:write name="osMaterial" 
 																												property="material.descricao"/></td>
 																											
 																											<td align="center" width="25%">
 																												<bean:write name="osMaterial" 
 																													property="quantidadeMaterial"/> 
-																											</td>																																																				
+																											</td>					
+																											<logic:equal name="permiteCobrarHora" value="1" scope="request">																																															
+																											<td align="center" width="25%">
+																												<bean:write name="osMaterial" 
+																													property="valorMaterial"/> 
+																											</td>															
+																											</logic:equal>																																					
 																											
 																										</tr>
 																										

@@ -352,4 +352,6 @@ public class FiltroCobrancaAcaoAtividadeComando
 
 	public final static String ARQUIVO_IMOVEL = "arquivoImoveis";
 
+	public final static String DOCUMENTO_TIPO_LAYOUT_ID = "documentoTipoLayout.id";
+
 }

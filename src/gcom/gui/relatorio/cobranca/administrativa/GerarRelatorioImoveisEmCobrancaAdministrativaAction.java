@@ -17,6 +17,7 @@ import gcom.cobranca.bean.FiltroImovelCobrancaAdministrativaHelper;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.relatorio.ExibidorProcessamentoTarefaRelatorio;
+import gcom.relatorio.cobranca.cobrancaadministrativa.RelatorioAnaliticoImoveisEmCobrancaAdministrativa;
 import gcom.relatorio.cobranca.cobrancaadministrativa.RelatorioImoveisEmCobrancaAdministrativa;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaRelatorio;
@@ -50,6 +51,8 @@ public class GerarRelatorioImoveisEmCobrancaAdministrativaAction
 	public ActionForward execute(ActionMapping actionMapping, ActionForm actionForm, HttpServletRequest httpServletRequest,
 					HttpServletResponse httpServletResponse){
 
+
+
 		// Seta o retorno
 		ActionForward retorno = null;
 
@@ -72,14 +75,34 @@ public class GerarRelatorioImoveisEmCobrancaAdministrativaAction
 							.getAttribute("filtroImovelCobrancaAdministrativaHelper");
 		}
 
+		
+		
 		colecaoImovelCobrancaSituacao = fachada.pesquisarImovelCobrancaAdministrativa(filtroImovelCobrancaAdministrativaHelper,
 						ConstantesSistema.NUMERO_NAO_INFORMADO);
+		
+		
+		String formatoRelatorio = null;
+
+		formatoRelatorio = (String) httpServletRequest.getParameter("formatoRelatorio");
+
+
+		TarefaRelatorio relatorio = null;
+
+		if(!Util.isVazioOuBranco(formatoRelatorio) && formatoRelatorio.equals(ConstantesSistema.SINTETICO)){
+			relatorio = new RelatorioAnaliticoImoveisEmCobrancaAdministrativa(usuario);
+				
+		}else{
+				
+			relatorio = new RelatorioImoveisEmCobrancaAdministrativa(usuario);
+		}
 
 		// Gera instância do relatório de imóveis em cobrança administrativa
-		RelatorioImoveisEmCobrancaAdministrativa relatorio = new RelatorioImoveisEmCobrancaAdministrativa(usuario);
 
 		// Insere a coleção como parâmetro do relatório
 		relatorio.addParametro("colecaoImovelCobrancaSituacao", colecaoImovelCobrancaSituacao);
+
+		// paramentro do formato de relatorio
+		// relatorio.addParametro("formatoRelatorio", form.get);
 
 		// Insere o tipo de relatório como parâmetro do relatório
 		int tipoRelatorio = TarefaRelatorio.TIPO_PDF;
@@ -136,6 +159,7 @@ public class GerarRelatorioImoveisEmCobrancaAdministrativaAction
 		}
 		relatorio.addParametro("cliente", descricaoCliente);
 
+
 		// Parâmetro do Filtro "Localidade Final"
 		Integer idLocalidadeFinal = filtroImovelCobrancaAdministrativaHelper.getIdLocalidadeFinal();
 		String descricaoLocalidadeFinal = "";
@@ -143,8 +167,8 @@ public class GerarRelatorioImoveisEmCobrancaAdministrativaAction
 			FiltroLocalidade filtroLocalidade = new FiltroLocalidade();
 			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, idLocalidadeFinal.toString()));
 
-			Localidade localidade = (Localidade) Util.retonarObjetoDeColecao(fachada
-							.pesquisar(filtroLocalidade, Localidade.class.getName()));
+			Localidade localidade = (Localidade) Util
+							.retonarObjetoDeColecao(fachada.pesquisar(filtroLocalidade, Localidade.class.getName()));
 
 			descricaoLocalidadeFinal = localidade.getId() + " - " + localidade.getDescricao();
 		}
@@ -157,8 +181,8 @@ public class GerarRelatorioImoveisEmCobrancaAdministrativaAction
 			FiltroLocalidade filtroLocalidade = new FiltroLocalidade();
 			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, idLocalidadeInicial.toString()));
 
-			Localidade localidade = (Localidade) Util.retonarObjetoDeColecao(fachada
-							.pesquisar(filtroLocalidade, Localidade.class.getName()));
+			Localidade localidade = (Localidade) Util
+							.retonarObjetoDeColecao(fachada.pesquisar(filtroLocalidade, Localidade.class.getName()));
 
 			descricaoLocalidadeInicial = localidade.getId() + " - " + localidade.getDescricao();
 		}

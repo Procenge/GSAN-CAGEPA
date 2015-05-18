@@ -76,9 +76,24 @@
 
 package gcom.gui.cobranca;
 
+import gcom.arrecadacao.pagamento.FiltroGuiaPagamentoPrestacao;
+import gcom.arrecadacao.pagamento.GuiaPagamento;
+import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao;
+import gcom.cadastro.cliente.ClienteImovel;
+import gcom.cobranca.bean.GuiaPagamentoValoresHelper;
 import gcom.cobranca.bean.ObterDebitoImovelOuClienteHelper;
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
+import gcom.util.Util;
+import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -109,32 +124,206 @@ public class ExibirTransferenciaDebitoCreditoDadosSelecaoAction
 		HttpSession sessao = httpServletRequest.getSession(false);
 
 		Fachada fachada = Fachada.getInstancia();
-
+		Integer idClienteOrigem = null;
+		Integer idRelacaoClienteOrigem = null;
+		Integer idImovelOrigem = null;
 		Integer idRa = Integer.valueOf(form.getIdRegistroAtendimento());
-		Integer idImovelDestino = Integer.valueOf(form.getIdImovelDestino());
+		Integer idImovelDestino = null;
+		Collection<ClienteImovel> colecaoRelacaoImovel = new ArrayList<ClienteImovel>();
 
-		// Validação dos dados informados referentes aos imóveis de origem e destino
-		Integer idImovelOrigem = fachada.validarTransferenciaDebitoCreditoDadosImoveis(idRa, idImovelDestino);
+		Boolean indicadorFaturamentoTitularDebito = false;
+		try{
+			if(ParametroFaturamento.P_INDICADOR_FATURAMENTO_ATUAL_TITULAR_DEBITO_IMOVEL.executar().equals("1")){
+				indicadorFaturamentoTitularDebito = true;
+			}
+		}catch(ControladorException e){
+			e.printStackTrace();
+		}
+
+		if(form.getIdImovelDestino() != null && !form.getIdImovelDestino().equals("")){
+			idImovelDestino = Integer.valueOf(form.getIdImovelDestino());
+		}
+
+		if(idImovelDestino != null){
+			// Validação dos dados informados referentes aos imóveis de origem e destino
+			idImovelOrigem = fachada.validarTransferenciaDebitoCreditoDadosImoveis(idRa, idImovelDestino);
+		}else{
+			idImovelOrigem = Integer.valueOf(form.getIdImovelOrigem());
+		}
+
+		if(indicadorFaturamentoTitularDebito){
+			// Relacao Guia Clientes
+			if(sessao.getAttribute("colecaoRelacaoImovel") == null
+							|| ((Collection<ClienteImovel>) sessao.getAttribute("colecaoRelacaoImovel")).isEmpty()){
+				colecaoRelacaoImovel = fachada.obterListaClientesRelacaoDevedor(idImovelOrigem, Integer.valueOf("000101"),
+								Integer.valueOf("999912"), 1, 1, 1, 1, 1, 1, 1, null, ConstantesSistema.SIM, ConstantesSistema.SIM,
+								ConstantesSistema.SIM, 2, null, null);
+
+				if(colecaoRelacaoImovel.size() > 0){
+					for(ClienteImovel clienteImovel : colecaoRelacaoImovel){
+
+						if(form.getIdClienteImovelSelecionado() == null){
+							form.setIdClienteImovelSelecionado(clienteImovel.getClienteRelacaoTipo().getId().toString() + '.'
+											+ clienteImovel.getCliente().getId().toString());
+
+							form.setIdClienteOrigemSelecionado(clienteImovel.getCliente().getId());
+							form.setIdClienteRelacaoOrigemSelecionado(clienteImovel.getClienteRelacaoTipo().getId());
+
+							idClienteOrigem = form.getIdClienteOrigemSelecionado();
+							idRelacaoClienteOrigem = form.getIdClienteRelacaoOrigemSelecionado();
+						}
+					}
+				}
+			}else{
+				colecaoRelacaoImovel = (Collection<ClienteImovel>) sessao.getAttribute("colecaoRelacaoImovel");
+
+				if(form.getIdClienteImovelSelecionado() != null && !form.getIdClienteImovelSelecionado().equals("")){
+					String[] dados = form.getIdClienteImovelSelecionado().split("\\.");
+
+					idClienteOrigem = form.getIdClienteOrigemSelecionado();
+					idRelacaoClienteOrigem = form.getIdClienteRelacaoOrigemSelecionado();
+
+					String idsContas = httpServletRequest.getParameter("conta");
+					String idsDebitos = httpServletRequest.getParameter("debito");
+					String idsCreditos = httpServletRequest.getParameter("credito");
+					String idsGuias = httpServletRequest.getParameter("guiaPagamento");
+
+					form.setIdClienteOrigemSelecionado(Integer.valueOf(dados[1]));
+					form.setIdClienteRelacaoOrigemSelecionado(Integer.valueOf(dados[0]));
+
+					if(form.getIdClienteOrigem() != null && form.getIdClienteRelacaoOrigem() != null){
+						boolean bFlagItensLista = false;
+
+						for(int cont = 0; cont < form.getIdClienteOrigem().size(); cont++){
+							if(form.getIdClienteOrigem().get(cont).equals(idClienteOrigem)
+											&& form.getIdClienteRelacaoOrigem().get(cont).equals(idRelacaoClienteOrigem)){
+
+								form.getIdsContas().set(cont, idsContas);
+								form.getIdsDebitos().set(cont, idsDebitos);
+								form.getIdsCreditos().set(cont, idsCreditos);
+								form.getIdsGuias().set(cont, idsGuias);
+								
+								bFlagItensLista = true;
+							}
+						}
+
+						if(!bFlagItensLista){
+
+							form.getIdClienteOrigem().add(idClienteOrigem);
+							form.getIdClienteRelacaoOrigem().add(idRelacaoClienteOrigem);
+
+							form.getIdsContas().add(idsContas);
+							form.getIdsDebitos().add(idsDebitos);
+							form.getIdsCreditos().add(idsCreditos);
+							form.getIdsGuias().add(idsGuias);
+
+						}
+
+						idClienteOrigem = form.getIdClienteOrigemSelecionado();
+						idRelacaoClienteOrigem = form.getIdClienteRelacaoOrigemSelecionado();
+
+						for(int cont = 0; cont < form.getIdClienteOrigem().size(); cont++){
+							if(form.getIdClienteOrigem().get(cont).equals(idClienteOrigem)
+											&& form.getIdClienteRelacaoOrigem().get(cont).equals(idRelacaoClienteOrigem)){
+
+								form.setIdsContasSelecionadas(form.getIdsContas().get(cont));
+								form.setIdsDebitosSelecionadas(form.getIdsDebitos().get(cont));
+								form.setIdsCreditosSelecionadas(form.getIdsCreditos().get(cont));
+								form.setIdsGuiasSelecionadas(form.getIdsGuias().get(cont));
+
+							}
+						}
+
+					}
+				}
+
+			}
+		}
 
 		// [SB0001] - Apresentar Débitos/Créditos do Imóvel de Origem
-		ObterDebitoImovelOuClienteHelper obterDebitoImovelOuClienteHelper = fachada.apresentarDebitoCreditoImovelOrigem(idImovelOrigem);
-
+		ObterDebitoImovelOuClienteHelper obterDebitoImovelOuClienteHelper = fachada.apresentarDebitoCreditoImovelOrigem(idImovelOrigem,
+						idClienteOrigem, idRelacaoClienteOrigem);
 		// CONTA
 		sessao.setAttribute("colecaoConta", obterDebitoImovelOuClienteHelper.getColecaoContasValoresImovel());
 
-		// DEBITO_A_COBRAR
-		// sessao.setAttribute("colecaoDebitoACobrar",
-		// obterDebitoImovelOuClienteHelper.getColecaoDebitoACobrar());
+		if(indicadorFaturamentoTitularDebito){
 
-		// CREDITO_A_REALIZAR
-		// sessao.setAttribute("colecaoCreditoARealizar",
-		// obterDebitoImovelOuClienteHelper.getColecaoCreditoARealizar());
+			Collection<GuiaPagamento> colecaoGuiaPagamento = new ArrayList<GuiaPagamento>();
+			Collection<Integer> idsGuiaPagamento = new ArrayList<Integer>();
 
-		// GUIA_PAGAMENTO
-		// sessao.setAttribute("colecaoGuiaPagamento",
-		// obterDebitoImovelOuClienteHelper.getColecaoGuiasPagamentoValores());
+			if(obterDebitoImovelOuClienteHelper.getColecaoGuiasPagamentoValores() != null){
+				for(GuiaPagamentoValoresHelper guiaPagamentoValoreAtual : obterDebitoImovelOuClienteHelper
+								.getColecaoGuiasPagamentoValores()){
+
+					if(!idsGuiaPagamento.contains(guiaPagamentoValoreAtual.getIdGuiaPagamento())){
+						GuiaPagamento novaGuiaPagamento = new GuiaPagamento();
+						novaGuiaPagamento.setId(guiaPagamentoValoreAtual.getIdGuiaPagamento());
+						novaGuiaPagamento.setGuiasPagamentoPrestacao(new HashSet<GuiaPagamentoPrestacao>());
+						novaGuiaPagamento.setValorDebito(BigDecimal.ZERO);
+
+						colecaoGuiaPagamento.add(novaGuiaPagamento);
+						idsGuiaPagamento.add(guiaPagamentoValoreAtual.getIdGuiaPagamento());
+					}
+
+					for(GuiaPagamento guiaPagamentoAtual : colecaoGuiaPagamento){
+						if(guiaPagamentoAtual.getId().equals(guiaPagamentoValoreAtual.getIdGuiaPagamento())){
+
+							FiltroGuiaPagamentoPrestacao filtroGuiaPagamentoPrestacao = new FiltroGuiaPagamentoPrestacao();
+							filtroGuiaPagamentoPrestacao.adicionarParametro(new ParametroSimples(
+											FiltroGuiaPagamentoPrestacao.GUIA_PAGAMENTO_ID, guiaPagamentoValoreAtual.getIdGuiaPagamento()));
+							filtroGuiaPagamentoPrestacao.adicionarParametro(new ParametroSimples(
+											FiltroGuiaPagamentoPrestacao.NUMERO_PRESTACAO, guiaPagamentoValoreAtual.getNumeroPrestacao()));
+							filtroGuiaPagamentoPrestacao.adicionarCaminhoParaCarregamentoEntidade(FiltroGuiaPagamentoPrestacao.DEBITO_TIPO);
+
+							GuiaPagamentoPrestacao guiaPagamentoPrestacaoPesq = (GuiaPagamentoPrestacao) Util
+											.retonarObjetoDeColecao(fachada.pesquisar(filtroGuiaPagamentoPrestacao,
+															GuiaPagamentoPrestacao.class.getName()));
+
+							guiaPagamentoAtual.setValorDebito(guiaPagamentoAtual.getValorDebito().add(
+											guiaPagamentoValoreAtual.getValorTotalPrestacao()));
+
+							guiaPagamentoAtual.getGuiasPagamentoPrestacao().add(guiaPagamentoPrestacaoPesq);
+
+						}
+					}
+				}
+			}
+
+			// DEBITO_A_COBRAR
+			sessao.setAttribute("colecaoDebitoACobrar", obterDebitoImovelOuClienteHelper.getColecaoDebitoACobrar());
+
+			// CREDITO_A_REALIZAR
+			sessao.setAttribute("colecaoCreditoARealizar", obterDebitoImovelOuClienteHelper.getColecaoCreditoARealizar());
+
+			// GUIA_PAGAMENTO
+			sessao.setAttribute("colecaoGuiaPagamento", colecaoGuiaPagamento);
+
+			httpServletRequest.setAttribute("indicadorFaturamentoTitularDebito", "S");
+
+		}else{
+			// DEBITO_A_COBRAR
+			// sessao.setAttribute("colecaoDebitoACobrar",
+			// obterDebitoImovelOuClienteHelper.getColecaoDebitoACobrar());
+
+			// CREDITO_A_REALIZAR
+			// sessao.setAttribute("colecaoCreditoARealizar",
+			// obterDebitoImovelOuClienteHelper.getColecaoCreditoARealizar());
+
+			// GUIA_PAGAMENTO
+			// sessao.setAttribute("colecaoGuiaPagamento",
+			// obterDebitoImovelOuClienteHelper.getColecaoGuiasPagamentoValores());
+
+			httpServletRequest.removeAttribute("indicadorFaturamentoTitularDebito");
+		}
+
+		sessao.setAttribute("colecaoRelacaoImovel", colecaoRelacaoImovel);
+
+		if(idImovelDestino != null){
+			sessao.setAttribute("transferenciaEntreImovel", "S");
+		}else{
+			sessao.removeAttribute("transferenciaEntreImovel");
+		}
 
 		return retorno;
 	}
-
 }

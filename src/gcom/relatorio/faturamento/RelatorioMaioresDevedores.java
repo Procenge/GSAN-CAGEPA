@@ -88,6 +88,7 @@ import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaException;
 import gcom.tarefa.TarefaRelatorio;
 import gcom.util.ControladorException;
+import gcom.util.Util;
 import gcom.util.agendadortarefas.AgendadorTarefas;
 
 import java.math.BigDecimal;
@@ -131,6 +132,7 @@ public class RelatorioMaioresDevedores
 		Integer localidade = Integer.parseInt((String) getParametro("localidade"));
 		Integer registros = (Integer) getParametro("registros");
 		Integer tipoFormatoRelatorio = (Integer) getParametro("tipoFormatoRelatorio");
+		Integer[] idsTipoCliente = (Integer[]) getParametro("idsTipoCliente");
 
 		byte[] retorno = null;
 
@@ -140,7 +142,8 @@ public class RelatorioMaioresDevedores
 
 		RelatorioMaioresDevedoresBean relatorioBean = null;
 		Collection colecaoRelatorioMaioresDevedoresHelper = fachada.pesquisarDadosRelatorioMaioresDevedores(localidade,
-						registros);
+ registros,
+						idsTipoCliente);
 		if(colecaoRelatorioMaioresDevedoresHelper != null && !colecaoRelatorioMaioresDevedoresHelper.isEmpty()){
 			Iterator colecaoRelatorioMaioresDevedoresHelperIterator = colecaoRelatorioMaioresDevedoresHelper
 							.iterator();
@@ -179,7 +182,7 @@ public class RelatorioMaioresDevedores
 					nome = relatorioMaioresDevedoresHelper.getNome();
 				}
 				if(relatorioMaioresDevedoresHelper.getQuantidade() != null){
-					quantidade = relatorioMaioresDevedoresHelper.getQuantidade().intValue();
+					quantidade = Util.converterStringParaInteger(relatorioMaioresDevedoresHelper.getQuantidade());
 				}
 				if(relatorioMaioresDevedoresHelper.getValorDebito() != null){
 					valorDebito = relatorioMaioresDevedoresHelper.getValorDebito();
@@ -224,8 +227,10 @@ public class RelatorioMaioresDevedores
 
 		Integer localidade = Integer.parseInt((String) getParametro("localidade"));
 		Integer registros = (Integer) getParametro("registros");
+		Integer[] idsTipoCliente = (Integer[]) getParametro("idsTipoCliente");
+
 		Collection colecaoRelatorioMaioresDevedoresHelper = Fachada.getInstancia().pesquisarDadosRelatorioMaioresDevedores(
-						localidade, registros);
+						localidade, registros,idsTipoCliente);
 
 		return colecaoRelatorioMaioresDevedoresHelper.size();
 	}

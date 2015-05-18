@@ -174,9 +174,11 @@ public class ExibirManterImovelDoacaoAction
 				/*** Prepara o filtro de imóvel doacao para a pesquisa ***/
 				filtroImovelDoacao = new FiltroImovelDoacao();
 				filtroImovelDoacao.adicionarParametro(new ParametroSimples(FiltroImovelDoacao.ID_IMOVEL, imovelEncontrado.getId()));
-				filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade("entidadeBeneficente.cliente");
-				filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade("usuarioAdesao");
-				filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade("usuarioCancelamento");
+				filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelDoacao.ENTIDADE_BENEFICENTE_CONTRATO);
+				filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelDoacao.ENTIDADE_BENEFICENTE);
+				filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelDoacao.ENTIDADE_BENEFICENTE_CLIENTE);
+				filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelDoacao.USUARIO_ADESAO);
+				filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelDoacao.USUARIO_CANCELAMENTO);
 
 				colecaoImovelDoacao = (Collection<ImovelDoacao>) fachada.pesquisar(filtroImovelDoacao, ImovelDoacao.class.getName());
 

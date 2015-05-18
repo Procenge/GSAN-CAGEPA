@@ -6,6 +6,7 @@ import gcom.relatorio.ExibidorProcessamentoTarefaRelatorio;
 import gcom.relatorio.micromedicao.RelatorioQuadroHidrometros;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaRelatorio;
+import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 
 import java.util.Date;
@@ -32,6 +33,22 @@ public class GerarRelatorioQuadroHidrometrosAction
 
 		String dataReferencia = gerarRelatorioQuadroHidrometrosActionForm.getDataReferencia();
 
+		Integer idLocalidade = null;
+		if(!Util.isVazioOuBranco(gerarRelatorioQuadroHidrometrosActionForm.getIdLocalidade())){
+			idLocalidade = Util.converterStringParaInteger(gerarRelatorioQuadroHidrometrosActionForm.getIdLocalidade());
+		}
+
+		Integer idGerenciaRegional = null;
+		if(!gerarRelatorioQuadroHidrometrosActionForm.getIdGerenciaRegional().equals(ConstantesSistema.NUMERO_NAO_INFORMADO_STRING)
+						&& !Util.isVazioOuBranco(gerarRelatorioQuadroHidrometrosActionForm.getIdGerenciaRegional())){
+			idGerenciaRegional = Util.converterStringParaInteger(gerarRelatorioQuadroHidrometrosActionForm.getIdGerenciaRegional());
+		}
+
+		Integer idUnidadeNegocio = null;
+		if(!gerarRelatorioQuadroHidrometrosActionForm.getIdUnidadeNegocio().equals(ConstantesSistema.NUMERO_NAO_INFORMADO_STRING)){
+			idUnidadeNegocio = Util.converterStringParaInteger(gerarRelatorioQuadroHidrometrosActionForm.getIdUnidadeNegocio());
+		}
+
 		if(Util.validarDiaMesAno(dataReferencia)){
 			throw new ActionServletException("atencao.campo.invalido", null, "Data de Referência");
 		}
@@ -41,8 +58,9 @@ public class GerarRelatorioQuadroHidrometrosAction
 		}
 
 		Date dateReferencia = Util.converterStringParaData(dataReferencia);
+
 			
-		Integer qtdeRegistros = fachada.pesquisarQuadroHidrometrosCount(dateReferencia);
+		Integer qtdeRegistros = fachada.pesquisarQuadroHidrometrosCount(dateReferencia, idLocalidade, idGerenciaRegional, idUnidadeNegocio);
 
 		if(qtdeRegistros.intValue() == 0){
 			throw new ActionServletException("atencao.nenhum_hidrometro_encontrado", null, dataReferencia);
@@ -55,6 +73,9 @@ public class GerarRelatorioQuadroHidrometrosAction
 						.getSession(false)).getAttribute("usuarioLogado"));
 
 		relatorioQuadroHidrometros.addParametro("dataReferencia", dataReferencia);
+		relatorioQuadroHidrometros.addParametro("idLocalidade", idLocalidade);
+		relatorioQuadroHidrometros.addParametro("idGerenciaRegional", idGerenciaRegional);
+		relatorioQuadroHidrometros.addParametro("idUnidadeNegocio", idUnidadeNegocio);
 		relatorioQuadroHidrometros.addParametro("qtdeRegistros", qtdeRegistros);
 
 		if(tipoRelatorio == null){

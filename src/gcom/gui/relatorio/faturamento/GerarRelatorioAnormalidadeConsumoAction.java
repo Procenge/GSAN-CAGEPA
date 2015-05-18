@@ -182,8 +182,8 @@ public class GerarRelatorioAnormalidadeConsumoAction
 
 			FiltroLocalidade filtroLocalidade = new FiltroLocalidade();
 
-			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, idElo));
-			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID_ELO, idElo));
+			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, Integer.valueOf(idElo)));
+			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID_ELO, Integer.valueOf(idElo)));
 
 			Collection colecaoLocalidades = fachada.pesquisar(filtroLocalidade, Localidade.class.getName());
 
@@ -204,7 +204,7 @@ public class GerarRelatorioAnormalidadeConsumoAction
 
 			FiltroLocalidade filtroLocalidade = new FiltroLocalidade();
 
-			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, idLocalidadeInicial));
+			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, Integer.valueOf(idLocalidadeInicial)));
 
 			Collection colecaoLocalidades = fachada.pesquisar(filtroLocalidade, Localidade.class.getName());
 
@@ -225,7 +225,7 @@ public class GerarRelatorioAnormalidadeConsumoAction
 
 			FiltroLocalidade filtroLocalidade = new FiltroLocalidade();
 
-			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, idLocalidadeFinal));
+			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, Integer.valueOf(idLocalidadeFinal)));
 
 			Collection colecaoLocalidades = fachada.pesquisar(filtroLocalidade, Localidade.class.getName());
 
@@ -310,8 +310,8 @@ public class GerarRelatorioAnormalidadeConsumoAction
 			SistemaParametro sistemaParametro = fachada.pesquisarParametrosDoSistema();
 
 			if(referencia > sistemaParametro.getAnoMesFaturamento()){
-				throw new ActionServletException("atencao.ano_mes_referencia_anterior_que_ano_mes_faturamento_corrente", null, Util
-								.formatarAnoMesParaMesAno(sistemaParametro.getAnoMesFaturamento()));
+				throw new ActionServletException("atencao.ano_mes_referencia_anterior_que_ano_mes_faturamento_corrente", null,
+								Util.formatarAnoMesParaMesAno(sistemaParametro.getAnoMesFaturamento()));
 			}
 
 		}
@@ -357,11 +357,9 @@ public class GerarRelatorioAnormalidadeConsumoAction
 		try{
 			totalRegistros = fachada.pesquisarDadosRelatorioAnormalidadeConsumoCount(idGrupo, cdRota, idGerenciaRegional, idUnidadeNegocio,
 							Util.converterStringParaInteger(idElo), Util.converterStringParaInteger(idLocalidadeInicial),
-							Util.converterStringParaInteger(idLocalidadeFinal), referencia,
- idImovelPerfil, numeroOcorrenciasConsecutivas,
+							Util.converterStringParaInteger(idLocalidadeFinal), referencia, idImovelPerfil, numeroOcorrenciasConsecutivas,
 							indicadorOcorrenciasIguais, mediaConsumoInicial, mediaConsumoFinal, idAnormalidadeConsumo,
 							idAnormalidadeLeitura);
-
 
 		}catch(ErroRepositorioException e){
 			// TODO Auto-generated catch block
@@ -379,8 +377,8 @@ public class GerarRelatorioAnormalidadeConsumoAction
 			tipoRelatorio = TarefaRelatorio.TIPO_PDF + "";
 		}
 
-		RelatorioAnormalidadeConsumo relatorioAnormalidadeConsumo = new RelatorioAnormalidadeConsumo((Usuario) (httpServletRequest
-						.getSession(false)).getAttribute("usuarioLogado"));
+		RelatorioAnormalidadeConsumo relatorioAnormalidadeConsumo = new RelatorioAnormalidadeConsumo(
+						(Usuario) (httpServletRequest.getSession(false)).getAttribute("usuarioLogado"));
 
 		relatorioAnormalidadeConsumo.addParametro("idGrupo", idGrupo);
 
@@ -413,8 +411,8 @@ public class GerarRelatorioAnormalidadeConsumoAction
 
 		relatorioAnormalidadeConsumo.addParametro("numeroOcorrencias", numeroOcorrenciasConsecutivas);
 
-		relatorioAnormalidadeConsumo.addParametro("ocorrenciasIguais", gerarRelatorioAnormalidadeConsumoActionForm
-						.getIndicadorOcorrenciasIguais());
+		relatorioAnormalidadeConsumo.addParametro("ocorrenciasIguais",
+						gerarRelatorioAnormalidadeConsumoActionForm.getIndicadorOcorrenciasIguais());
 
 		relatorioAnormalidadeConsumo.addParametro("idImovelPerfil", idImovelPerfil);
 		relatorioAnormalidadeConsumo.addParametro("referencia", referencia);

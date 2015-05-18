@@ -117,6 +117,8 @@ public class ServicoTipoPrioridade
 	/** persistent field */
 	private Date tmCadastramento;
 
+	private transient Integer qtidadeOs;
+
 	/** persistent field */
 	// private Date dataInicioVigencia;
 	/** persistent field */
@@ -286,5 +288,30 @@ public class ServicoTipoPrioridade
 		FiltroServicoTipoPrioridade filtroServicoTipoPrioridade = new FiltroServicoTipoPrioridade();
 		filtroServicoTipoPrioridade.adicionarParametro(new ParametroSimples(FiltroImovel.ID, this.getId()));
 		return filtroServicoTipoPrioridade;
+	}
+
+	public Integer getQtidadeOs(){
+
+		return qtidadeOs;
+	}
+
+	public void setQtidadeOs(Integer qtidadeOs){
+
+		this.qtidadeOs = qtidadeOs;
+	}
+
+	public String getDescricaoQtidadeOs(){
+
+		StringBuilder st = new StringBuilder();
+		st.append(getDescricao());
+		st.append(" - ");
+
+		if(getQtidadeOs() == null){
+			st.append(0);
+		}else{
+			st.append(getQtidadeOs());
+		}
+
+		return st.toString();
 	}
 }

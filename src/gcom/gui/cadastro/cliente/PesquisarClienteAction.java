@@ -141,22 +141,7 @@ public class PesquisarClienteAction
 		String tipoPesquisa = (String) pesquisarActionForm.get("tipoPesquisa");
 		String inscricaoEstadual = (String) pesquisarActionForm.get("inscricaoEstadual");
 		String indicadorContaBraille = (String) pesquisarActionForm.get("indicadorContaBraille");
-
-		// filtro para a pesquisa de endereco do cliente
-		/*
-		 * FiltroCliente filtroCliente = new FiltroCliente();
-		 * filtroCliente.setCampoOrderBy(FiltroCliente.NOME);
-		 * filtroCliente
-		 * .adicionarCaminhoParaCarregamentoEntidade(FiltroCliente.ORGAO_EXPEDIDOR_RG);
-		 * filtroCliente
-		 * .adicionarCaminhoParaCarregamentoEntidade(FiltroCliente.UNIDADE_FEDERACAO);
-		 * filtroCliente
-		 * .adicionarCaminhoParaCarregamentoEntidade("cliente");
-		 * filtroCliente
-		 * .adicionarCaminhoParaCarregamentoEntidade("cliente.clienteTipo");
-		 * filtroCliente
-		 * .adicionarCaminhoParaCarregamentoEntidade("clienteTipo.indicadorPessoaFisicaJuridica");
-		 */
+		
 		boolean peloMenosUmParametroInformado = false;
 
 		// Insere os parâmetros informados no filtro
@@ -233,7 +218,8 @@ public class PesquisarClienteAction
 		// 1º Passo - Pegar o total de registros através de um count da consulta que aparecerá na
 		// tela
 		Integer totalRegistros = (Integer) fachada.filtrarQuantidadeCliente(null, cpf, rg, cnpj, nomeCliente, null, cep, idMunicipio,
-						codigoBairro, idLogradouro, null, tipoPesquisa, null, idTipoCliente.toString(), inscricaoEstadual, indicadorContaBraille);
+						codigoBairro, idLogradouro, null, tipoPesquisa, null, idTipoCliente.toString(), inscricaoEstadual,
+						indicadorContaBraille, null, null);
 
 		// 2º Passo - Chamar a função de Paginação passando o total de registros
 		retorno = this.controlarPaginacao(httpServletRequest, retorno, totalRegistros);
@@ -241,8 +227,9 @@ public class PesquisarClienteAction
 		// 3º Passo - Obter a coleção da consulta que aparecerá na tela passando o numero de paginas
 		// da pesquisa que está no request
 		Collection clientes = fachada.filtrarCliente(null, cpf, rg, cnpj, nomeCliente, null, cep, idMunicipio, codigoBairro, idLogradouro,
-						null, tipoPesquisa, null, idTipoCliente.toString(), (Integer) httpServletRequest
-										.getAttribute("numeroPaginasPesquisa"), inscricaoEstadual, indicadorContaBraille);
+						null, tipoPesquisa, null, idTipoCliente.toString(),
+						(Integer) httpServletRequest.getAttribute("numeroPaginasPesquisa"), inscricaoEstadual, indicadorContaBraille, null,
+						null);
 
 		/*
 		 * // 1º Passo - Pegar o total de registros através de um count da consulta que aparecerá na

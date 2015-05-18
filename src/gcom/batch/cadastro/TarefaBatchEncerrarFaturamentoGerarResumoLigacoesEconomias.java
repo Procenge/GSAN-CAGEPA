@@ -38,6 +38,7 @@
 
 package gcom.batch.cadastro;
 
+import gcom.fachada.Fachada;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaBatch;
 import gcom.tarefa.TarefaException;
@@ -71,7 +72,51 @@ public class TarefaBatchEncerrarFaturamentoGerarResumoLigacoesEconomias
 		super(null, 0);
 	}
 
+	private Boolean isTodasRotas(){
+
+		Boolean TODAS_ROTAS = (Boolean) getParametro("TODAS_ROTAS");
+		if(TODAS_ROTAS == null){
+			return false;
+
+		}
+
+		return TODAS_ROTAS;
+
+	}
+
 	public Object executar() throws TarefaException{
+
+		if(!isTodasRotas()){
+
+			executarPorParametroRotaReferencia();
+
+		}else{
+			executarPorTodasRotasReferencia();
+
+		}
+
+		return null;
+	}
+
+	private void executarPorTodasRotasReferencia(){
+
+		List<Object[]> listaObjetos = Fachada.getInstancia().pesquisarRotasComAlteracaoNasLigacoesEconomiasComReferencia();
+
+		for(Object objetos : listaObjetos){
+
+			Object[] arrayObjetos = (Object[]) objetos;
+
+			Integer idRota = Integer.valueOf(arrayObjetos[0].toString());
+
+			Integer referenciaFaturamento = Integer.valueOf(arrayObjetos[1].toString());
+
+			enviarMensagemParaControladorBatch(referenciaFaturamento, idRota);
+
+		}
+
+	}
+
+	private void executarPorParametroRotaReferencia(){
 
 		List<Integer> colecaoRotas = (List<Integer>) getParametro(ConstantesSistema.COLECAO_UNIDADES_PROCESSAMENTO_BATCH);
 		Integer referenciaFaturamento = (Integer) getParametro("referenciaFaturamento");
@@ -82,15 +127,18 @@ public class TarefaBatchEncerrarFaturamentoGerarResumoLigacoesEconomias
 
 			Integer idRota = (Integer) iterator.next();
 
-			System.out.println("ROTA ENCERRAR FATURAMENTO GERAR RESUMO LIGACOES ECONOMIAS" + (idRota)
-							+ "*********************************************************");
-
-			enviarMensagemControladorBatch(ConstantesJNDI.BATCH_ENCERRAR_FATURAMENTO_GERAR_RESUMO_LIGACOES_ECONOMIAS_MDB,
-							new Object[] {idRota, referenciaFaturamento, this.getIdFuncionalidadeIniciada()});
+			enviarMensagemParaControladorBatch(referenciaFaturamento, idRota);
 
 		}
+	}
 
-		return null;
+	private void enviarMensagemParaControladorBatch(Integer referenciaFaturamento, Integer idRota){
+
+		System.out.println("ROTA ENCERRAR FATURAMENTO GERAR RESUMO LIGACOES ECONOMIAS" + (idRota)
+						+ "*********************************************************");
+
+		enviarMensagemControladorBatch(ConstantesJNDI.BATCH_ENCERRAR_FATURAMENTO_GERAR_RESUMO_LIGACOES_ECONOMIAS_MDB,
+						new Object[] {idRota, referenciaFaturamento, this.getIdFuncionalidadeIniciada()});
 	}
 
 	@Override

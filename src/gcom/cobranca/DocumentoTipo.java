@@ -181,6 +181,22 @@ public class DocumentoTipo
 
 	public final static Integer NOTA_RECEBIMENTO = 40;
 
+	// ..............................................................
+	// Criação de novos tipos de documento para registro de emissão.
+	// ..............................................................
+
+	public final static Integer CERTIDAO_NEGATIVA = 41;
+
+	public final static Integer CERTIDAO_POSITIVA = 42;
+
+	public final static Integer CERTIDAO_NEGATIVAO_COM_EFEITO_POSITIVA = 43;
+
+	public final static Integer SEGUNDA_VIA_CONTA = 44;
+
+	public final static Integer SPC_BOA_VISTA = Integer.valueOf(45);
+
+	// ..............................................................
+
 	/** full constructor */
 	public DocumentoTipo(String descricaoDocumentoTipo, String descricaoAbreviado, Short indicadorPagavel, Short indicadorUso,
 							Date ultimaAlteracao) {

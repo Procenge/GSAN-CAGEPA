@@ -347,4 +347,5 @@ public interface ControladorImovelRemote
 	 */
 	public Collection<Imovel> pesquisarImoveisPorRotaComPaginacao(Integer idRota, int numeroInicial, int numeroRegistros)
 					throws RemoteException;
+
 }

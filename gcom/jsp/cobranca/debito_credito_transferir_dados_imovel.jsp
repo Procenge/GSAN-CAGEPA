@@ -3,7 +3,7 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean" %>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html" %>
 <%@ taglib uri="/WEB-INF/gcomLib.tld" prefix="gcom" %>
-
+<%@ page import="gcom.util.ConstantesSistema"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html:html>
@@ -21,10 +21,12 @@
 
 <SCRIPT LANGUAGE="JavaScript">
 <!--
-
+	
 	function validarForm(form){
 		if (validateTransferenciaDebitoCreditoDadosImovelActionForm(form)){
-			submeterFormPadrao(form);
+			if (validarDestino()) {
+				submeterFormPadrao(form);
+			}
 		}
 	}
 	
@@ -60,6 +62,12 @@
 		    form.inscricaoImovelDestino.style.color = "#000000";
 	    	reloadImovelDestino();
 	    }
+	    
+	    if (tipoConsulta == 'cliente') {
+			form.idClienteDestino.value = codigoRegistro;
+			form.nomeClienteDestino.value = descricaoRegistro;
+			reloadClienteDestino();
+		}	    
 	}
 	
 	
@@ -74,23 +82,12 @@
 		form.action = "/gsan/exibirTransferenciaDebitoCreditoDadosImovelAction.do?pesquisarImovelDestino=SIM";
 		submeterFormPadrao(form);
 	}
-  	
-  	function limparRA() {
-
-    	var form = document.forms[0];
-
-    	form.idRegistroAtendimento.value = "";
-		form.descricaoEspecificacaoRA.value = "";
-		form.descricaoEspecificacaoRA.style.color = "#000000";
-    	
-    	form.idImovelOrigem.value = "";
-		form.inscricaoImovelOrigem.value = "";
-		form.nomeClienteUsuarioImovelOrigem.value = "";
-		form.descricaoLigacaoAguaSituacaoImovelOrigem.value = "";
-		form.descricaoLigacaoEsgotoSituacaoImovelOrigem.value = "";
-		
-		form.idRegistroAtendimento.focus();
-  	}
+	
+	function reloadClienteDestino() {
+		var form = document.forms[0];
+		form.action = "/gsan/exibirTransferenciaDebitoCreditoDadosImovelAction.do?pesquisarClienteDestino=SIM";
+		submeterFormPadrao(form);
+	}	
   	
   	function limparRADigitacao() {
 
@@ -137,13 +134,183 @@
   		limparImovelDestino();
   		limparRA();
   	}
-
+  	
 //-->
 </SCRIPT>
 
+<logic:present name="indicadorFaturamentoTitularDebito" scope="request">
+	<SCRIPT LANGUAGE="JavaScript">
+	<!--
+	
+		function modificarTipoTransferencia() {
+			var form = document.forms[0];
+		
+			if (form.tipoTransferencia[0].checked) {
+				// Entres Imoveis
+
+				form.idImovelDestino.disabled = false;
+				
+		  		form.idClienteDestino.value = "";
+		  		form.nomeClienteDestino.value = "";
+		  		form.cpfCnpjClienteDestino.value = "";
+		  		form.idClienteDestino.disabled = true;	
+
+		  		
+			} else if (form.tipoTransferencia[1].checked) {
+				// Entres Clientes
+				
+				form.nomeClienteUsuarioImovelDestino.value = "";
+				form.descricaoLigacaoAguaSituacaoImovelDestino.value = "";
+				form.descricaoLigacaoEsgotoSituacaoImovelDestino.value = "";
+				form.inscricaoImovelDestino.value = "";
+											
+				form.idImovelDestino.value = "";
+				form.idImovelDestino.disabled = true;
+				
+		  		form.idClienteDestino.disabled = false;	
+		  		
+			} else {
+				form.nomeClienteUsuarioImovelDestino.value = "";
+				form.descricaoLigacaoAguaSituacaoImovelDestino.value = "";
+				form.descricaoLigacaoEsgotoSituacaoImovelDestino.value = "";
+				form.inscricaoImovelDestino.value = "";				
+				
+		  		form.idClienteDestino.value = "";
+		  		form.nomeClienteDestino.value = "";
+		  		form.cpfCnpjClienteDestino.value = "";
+		  		form.idClienteDestino.disabled = true;	
+		  		
+				form.idImovelDestino.value = "";
+				form.idImovelDestino.disabled = true;
+			}
+		}
+	
+	  	function habilitarPesquisaClienteDestino(form) {
+	  		if (form.tipoTransferencia[1].checked) {	  		
+	  			abrirPopup('exibirPesquisarClienteAction.do?indicadorUsoTodos=1', 520, 800);
+	  		}
+	  	}
+	  	
+	  	function habilitarPesquisaImovelDestino() {
+	  		if (document.forms[0].tipoTransferencia[0].checked) {	  		
+	  			chamarPopup('exibirPesquisarImovelAction.do', 'imovel', null, null, 490, 800, '', document.forms[0].idImovelDestino)
+	  		}
+	  	}	  	
+	
+	  	function limparCliente() {
+	  		var form = document.forms[0];
+	  		
+	  		form.idClienteDestino.value = "";
+	  		form.nomeClienteDestino.value = "";
+	  		form.cpfCnpjClienteDestino.value = "";
+	  	}  	
+	  	
+		function validarDestino() {
+			var form = document.forms[0];
+			var retorno=true;
+			var msg="";
+			
+			if (form.tipoTransferencia[0].checked) {
+				if (form.idImovelDestino.value == "") {
+					retorno=false;
+					msg = msg + "Informar o Imóvel de Destino.\n";
+				}
+			} else if (form.tipoTransferencia[1].checked) {
+				if (form.idClienteDestino.value == "") {
+					retorno=false;
+					msg = msg + "Informar o Cliente de Destino.\n";
+				}				
+			} else {
+				retorno=false;
+				msg = msg + "Informar o Tipo de Transferência.\n";
+			}
+			
+			if (msg != "") {
+				alert(msg);
+			}
+			
+			return retorno;
+		}	
+		
+	  	function limparRA() {
+
+	    	var form = document.forms[0];
+
+	    	form.tipoTransferencia[0].checked = false;
+	    	form.tipoTransferencia[1].checked = false;
+	    	
+	    	form.idRegistroAtendimento.value = "";
+			form.descricaoEspecificacaoRA.value = "";
+			form.descricaoEspecificacaoRA.style.color = "#000000";
+	    	
+	    	form.idImovelOrigem.value = "";
+			form.inscricaoImovelOrigem.value = "";
+			form.nomeClienteUsuarioImovelOrigem.value = "";
+			form.descricaoLigacaoAguaSituacaoImovelOrigem.value = "";
+			form.descricaoLigacaoEsgotoSituacaoImovelOrigem.value = "";
+			
+	  		form.idClienteDestino.value = "";
+	  		form.nomeClienteDestino.value = "";
+	  		form.cpfCnpjClienteDestino.value = "";
+	  		form.idClienteDestino.disabled = true;	
+	  		
+			form.idImovelDestino.value = "";
+			form.idImovelDestino.disabled = true;
+			
+			form.idRegistroAtendimento.focus();
+			
+	  	}	
+	  	
+	//-->
+	</SCRIPT>
+</logic:present>
+
+<logic:notPresent name="indicadorFaturamentoTitularDebito" scope="request">
+	<SCRIPT LANGUAGE="JavaScript">
+	<!--
+		function modificarTipoTransferencia() {
+		}
+	
+		function validarDestino() {
+			var form = document.forms[0];
+			var retorno=true;
+			
+			if (form.idImovelDestino.value == "") {
+				retorno=false;
+				alert("Informar o Imóvel de Destino.");
+			}
+			
+			return retorno;
+		}	
+
+	  	function habilitarPesquisaImovelDestino() {
+	  		chamarPopup('exibirPesquisarImovelAction.do', 'imovel', null, null, 490, 800, '', document.forms[0].idImovelDestino)
+	  	}	
+	  	
+	  	function limparRA() {
+
+	    	var form = document.forms[0];
+
+	    	form.idRegistroAtendimento.value = "";
+			form.descricaoEspecificacaoRA.value = "";
+			form.descricaoEspecificacaoRA.style.color = "#000000";
+	    	
+	    	form.idImovelOrigem.value = "";
+			form.inscricaoImovelOrigem.value = "";
+			form.nomeClienteUsuarioImovelOrigem.value = "";
+			form.descricaoLigacaoAguaSituacaoImovelOrigem.value = "";
+			form.descricaoLigacaoEsgotoSituacaoImovelOrigem.value = "";
+			
+			form.idRegistroAtendimento.focus();
+	  	}	  	
+		
+	//-->
+	</SCRIPT>
+</logic:notPresent>
+
 </head>
 
-<body leftmargin="5" topmargin="5" onload="setarFoco('${requestScope.nomeCampo}');">
+<body leftmargin="5" topmargin="5" onload="setarFoco('${requestScope.nomeCampo}');modificarTipoTransferencia();">
 
 <html:form action="/exibirTransferenciaDebitoCreditoDadosSelecaoAction" method="post">
 
@@ -307,12 +474,39 @@
     </table>
 	
 	
-	<table width="100%" border="0">
-	<tr>
-		<td HEIGHT="30"></td>
-	</tr>
-	</table>
+	<br>
+	
+	<logic:present name="indicadorFaturamentoTitularDebito" scope="request">
+		<table width="100%" align="center" bgcolor="#90c7fc" border="0">
+		<tr>
+			<td><strong>Tipo de Transferência</strong></td>
+		</tr>
 		
+		<tr bgcolor="#cbe5fe">
+	    	<td width="100%" align="center">
+		
+			<table width="100%" border="0">
+			<tr>
+				<td WIDTH="50%" align="center" >
+						<html:radio property="tipoTransferencia" onclick="javascript:modificarTipoTransferencia();"
+								value="<%=ConstantesSistema.TIPO_PESQUISA_INICIAL.toString()%>" />
+						<strong>Entre Imóveis</strong>		
+				</td>
+				<td WIDTH="50%" align="center">
+						<html:radio property="tipoTransferencia" onclick="javascript:modificarTipoTransferencia();"
+							tabindex="5"
+							value="<%=ConstantesSistema.TIPO_PESQUISA_COMPLETA.toString()%>" />
+						<strong>Entre Clientes</strong>
+				</td>
+			</tr>
+			</table>
+			
+			</td>
+	    </tr>
+	    </table>	
+		
+		<br>	
+	</logic:present>
 	
 	<table width="100%" align="center" bgcolor="#90c7fc" border="0">
 	<tr>
@@ -328,8 +522,10 @@
 			<td>
 				<html:text property="idImovelDestino" size="10" maxlength="10" tabindex="2"
 				onkeypress="validaEnterComMensagem(event, 'exibirTransferenciaDebitoCreditoDadosImovelAction.do?pesquisarImovelDestino=SIM', 'idImovelDestino', 'Matrícula');"
-				onkeyup="limparImovelDestinoDigitacao();" /> <a
-				href="javascript:chamarPopup('exibirPesquisarImovelAction.do', 'imovel', null, null, 490, 800, '', document.forms[0].idImovelDestino);">
+				onkeyup="limparImovelDestinoDigitacao();" /> 
+				
+				<a
+				href="javascript:habilitarPesquisaImovelDestino();">
 				<img src="<bean:message key='caminho.imagens'/>pesquisa.gif"
 				width="23" height="21" alt="Pesquisar" border="0"></a> 
 				
@@ -392,7 +588,65 @@
 		</td>
     </tr>
     </table>
+    
+    <br>
+    
+    <logic:present name="indicadorFaturamentoTitularDebito" scope="request">
+		<table width="100%" align="center" bgcolor="#90c7fc" border="0">
+		<tr>
+			<td><strong>Cliente de Destino</strong></td>
+		</tr>
+		
+		<tr bgcolor="#cbe5fe">
+	    	<td width="100%" align="center">   
+	    		<table width="100%" border="0"> 
+				<tr >
+					<td width="22%"><strong>Cliente :<font color="#FF0000">*</font></strong></td>
 	
+					<td>
+						<html:text property="idClienteDestino" size="9" maxlength="9"
+							onkeyup="validaEnterComMensagem(event, 
+							'exibirTransferenciaDebitoCreditoDadosImovelAction.do?pesquisarClienteDestino=SIM', 'idClienteDestino','Cliente Destino');"
+							onkeypress="document.forms[0].nomeClienteDestino.value='';
+							document.forms[0].cpfCnpjClienteDestino.value='';" />
+						
+						<a href="javascript:habilitarPesquisaClienteDestino(document.forms[0]);" >
+							<img width="23" height="21"	src="<bean:message key='caminho.imagens'/>pesquisa.gif" border="0" />
+						</a>
+						
+						<logic:present name="clienteInexistente" scope="request">
+							<html:text property="nomeClienteDestino" size="30" maxlength="30"
+								readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #ff0000" />
+						</logic:present> 
+						<logic:notPresent name="clienteInexistente"
+							scope="request">
+							<html:text property="nomeClienteDestino" size="30" maxlength="30"
+								readonly="true"
+								style="background-color:#EFEFEF; border:0; color: #000000" />
+						</logic:notPresent>
+						
+						<a href="javascript:limparCliente();">
+							<img src="<bean:message key="caminho.imagens"/>limparcampo.gif" border="0" />
+						</a>
+					</td>
+					</tr>    				
+					<tr >
+						<td width="28%"><strong>CPF/CNPJ :</strong></td>
+		
+						<td>
+							<html:text property="cpfCnpjClienteDestino" size="18" maxlength="18" 
+							readonly="true" style="background-color:#EFEFEF; border:0;" />
+						</td>
+					</tr>
+		
+	    		</table>
+			</td>
+		</tr>       
+	    </table>    
+   </logic:present>	
+   
+   <br>
 	
    <table width="100%" border="0">
    <tr>
@@ -422,7 +676,6 @@
 <%@ include file="/jsp/util/rodape.jsp"%>
 
 </html:form>
-
 
 </body>
 </html:html>

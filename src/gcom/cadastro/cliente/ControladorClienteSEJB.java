@@ -79,13 +79,13 @@
 
 package gcom.cadastro.cliente;
 
-import gcom.atendimentopublico.registroatendimento.ControladorRegistroAtendimentoLocal;
-import gcom.atendimentopublico.registroatendimento.ControladorRegistroAtendimentoLocalHome;
 import gcom.agenciavirtual.cadastro.cliente.ClienteJSONHelper;
 import gcom.arrecadacao.banco.Agencia;
 import gcom.arrecadacao.banco.Banco;
 import gcom.arrecadacao.banco.FiltroAgencia;
 import gcom.arrecadacao.banco.FiltroBanco;
+import gcom.atendimentopublico.registroatendimento.ControladorRegistroAtendimentoLocal;
+import gcom.atendimentopublico.registroatendimento.ControladorRegistroAtendimentoLocalHome;
 import gcom.cadastro.*;
 import gcom.cadastro.cliente.bean.ClienteEmitirBoletimCadastroHelper;
 import gcom.cadastro.cliente.bean.ClienteImovelRelacaoHelper;
@@ -409,6 +409,22 @@ public class ControladorClienteSEJB
 			}
 		}
 
+		// Validar Cliente com Número do Benefício Já Existente
+		if(!Util.isVazioOuBranco(cliente.getNumeroBeneficio())){
+
+			filtroCliente.limparListaParametros();
+			filtroCliente.adicionarParametro(new ParametroSimples(FiltroCliente.NUMERO_BENEFICIO, cliente.getNumeroBeneficio()));
+
+			Collection<Cliente> colecaoClienteBeneficioExistente = getControladorUtil().pesquisar(filtroCliente, Cliente.class.getName());
+
+			if(!Util.isVazioOrNulo(colecaoClienteBeneficioExistente)){
+
+				throw new ControladorException("atencao.numero_beneficio_cliente_ja_cadastrado", null, colecaoClienteBeneficioExistente
+								.iterator()
+								.next().getId().toString(), cliente.getNumeroBeneficio());
+			}
+		}
+
 		cliente.setIndicadorGeraArquivoTexto(new Short("2"));
 
 		// Início - Registrando as transações
@@ -418,13 +434,8 @@ public class ControladorClienteSEJB
 		Operacao operacao = new Operacao();
 		operacao.setId(Operacao.OPERACAO_CLIENTE_INSERIR);
 
-		OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
-		operacaoEfetuada.setOperacao(operacao);
 
-		cliente.setOperacaoEfetuada(operacaoEfetuada);
-		cliente.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
 
-		registradorOperacao.registrarOperacao(cliente);
 		// Fim - Registrando as transações
 		Integer chaveClienteGerada = null;
 		try{
@@ -433,6 +444,14 @@ public class ControladorClienteSEJB
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+
+		OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
+		operacaoEfetuada.setOperacao(operacao);
+		operacaoEfetuada.setArgumentoValor(cliente.getId());
+		cliente.setOperacaoEfetuada(operacaoEfetuada);
+		cliente.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+		registradorOperacao.registrarOperacao(cliente);
+
 
 		// Gerar Registro de Atendimento de Conta Braille
 		if(cliente.getIndicadorContaBraille().equals(ConstantesSistema.SIM)){
@@ -492,21 +511,26 @@ public class ControladorClienteSEJB
 
 			OperacaoEfetuada operacaoEfetuadaInserirClienteEndereco = new OperacaoEfetuada();
 			operacaoEfetuadaInserirClienteEndereco.setOperacao(operacaoInserirClienteEndereco);
-
+			operacaoEfetuadaInserirClienteEndereco.setArgumentoValor(cliente.getId());
 			clienteEndereco.setOperacaoEfetuada(operacaoEfetuadaInserirClienteEndereco);
 			clienteEndereco.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
 			registradorOperacaoInserirClienteEndereco.registrarOperacao(clienteEndereco);
+
 			// ------------ REGISTRAR TRANSAÇÃO----------------------------
 
 			Integer idClienteEndereco = (Integer) getControladorUtil().inserir(clienteEndereco);
 			clienteEndereco.setId(idClienteEndereco);
 		}
 
+
+
 		// ********************* Inserir Dados do Cliente Responsavel ******************************
 		if(!Util.isVazioOuBranco(indDadosAdicionais) && new Boolean(indDadosAdicionais).booleanValue()){
 			getControladorCadastro().inserirClienteResponsavel(responsavelCliente, usuario);
 		}
 		// *************************************************************************
+
+
 
 		return chaveClienteGerada;
 	}
@@ -640,7 +664,7 @@ public class ControladorClienteSEJB
 		}
 
 		Usuario usuario = new Usuario();
-		usuario.setId(Usuario.ID_USUARIO_ADM_SISTEMA);
+		usuario.setId(Usuario.getIdUsuarioBatchParametro());
 
 		if(acao.equals(ConstantesSistema.ACAO_ATUALIZAR)){
 			this.atualizarCliente(cliente, collClienteFone, collClienteEndereco, clienteResponsavel, usuario, indDadosAdicionais,
@@ -1504,6 +1528,27 @@ public class ControladorClienteSEJB
 			// Atualiza a data de última alteração
 			cliente.setUltimaAlteracao(new Date());
 
+			// Validar Cliente com Número do Benefício Já Existente
+			if(!Util.isVazioOuBranco(cliente.getNumeroBeneficio())){
+
+				filtroCliente.limparListaParametros();
+				filtroCliente.adicionarParametro(new ParametroSimples(FiltroCliente.NUMERO_BENEFICIO, cliente.getNumeroBeneficio()));
+
+				Collection<Cliente> colecaoClienteBeneficioExistente = getControladorUtil().pesquisar(filtroCliente,
+								Cliente.class.getName());
+
+				if(!Util.isVazioOrNulo(colecaoClienteBeneficioExistente)){
+
+					Cliente clienteNumeroBeneficioExistente = colecaoClienteBeneficioExistente.iterator().next();
+
+					if(!clienteNumeroBeneficioExistente.getId().equals(cliente.getId())){
+
+						throw new ControladorException("atencao.numero_beneficio_cliente_ja_cadastrado", null,
+										clienteNumeroBeneficioExistente.getId().toString(), cliente.getNumeroBeneficio());
+					}
+				}
+			}
+
 			// [UC] - Registrar Transação
 			// Início - Registrando as transações
 			RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_CLIENTE_ATUALIZAR, cliente.getId(), cliente
@@ -1722,13 +1767,14 @@ public class ControladorClienteSEJB
 		Operacao operacao = new Operacao();
 		operacao.setId(Operacao.OPERACAO_CLIENTE_IMOVEL_INSERIR);
 
-		OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
-		operacaoEfetuada.setOperacao(operacao);
-
-		clienteImovel.setOperacaoEfetuada(operacaoEfetuada);
 		clienteImovel.adicionarUsuario(usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
 		registradorOperacao.registrarOperacao(clienteImovel);
 		// ------------ REGISTRAR TRANSAÇÃO ----------------
+
+		OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
+		operacaoEfetuada.setOperacao(operacao);
+		operacaoEfetuada.setArgumentoValor(clienteImovel.getImovel().getId());
+		clienteImovel.setOperacaoEfetuada(operacaoEfetuada);
 
 		clienteImovel.setDataInicioRelacao(new Date());
 
@@ -2535,6 +2581,19 @@ public class ControladorClienteSEJB
 				cliente.setInscricaoEstadual((String) objetoCliente[19]);
 			}
 
+			if(objetoCliente[20] != null){
+
+				AtividadeEconomica atividadeEconomica = new AtividadeEconomica();
+				atividadeEconomica.setCodigo(objetoCliente[20].toString());
+				atividadeEconomica.setDescricao(objetoCliente[21].toString());
+				cliente.setAtividadeEconomica(atividadeEconomica);
+			}
+
+			if(objetoCliente[22] != null){
+
+				cliente.setNumeroBeneficio(objetoCliente[22].toString());
+			}
+
 		}
 
 		return cliente;
@@ -2985,7 +3044,7 @@ public class ControladorClienteSEJB
 	public Collection filtrarCliente(String codigo, String cpf, String rg, String cnpj, String nome, String nomeMae, String cep,
 					String idMunicipio, String idBairro, String idLogradouro, String indicadorUso, String tipoPesquisa,
 					String tipoPesquisaNomeMae, String clienteTipo, Integer numeroPagina, String inscricaoEstadual,
-					String indicadorContaBraille)
+					String indicadorContaBraille, String documentoValidado, String numeroBeneficio)
 					throws ControladorException{
 
 		Collection colecaoDadosCliente = null;
@@ -2995,7 +3054,7 @@ public class ControladorClienteSEJB
 
 			colecaoDadosCliente = this.repositorioCliente.filtrarCliente(codigo, cpf, rg, cnpj, nome, nomeMae, cep, idMunicipio, idBairro,
 							idLogradouro, indicadorUso, tipoPesquisa, tipoPesquisaNomeMae, clienteTipo, numeroPagina, inscricaoEstadual,
-							indicadorContaBraille);
+							indicadorContaBraille, documentoValidado, numeroBeneficio);
 
 		}catch(ErroRepositorioException ex){
 			ex.printStackTrace();
@@ -3075,6 +3134,12 @@ public class ControladorClienteSEJB
 					cliente.setIndicadorUso((Short) array[9]);
 				}
 
+				// Documento Validado
+
+				if(array[10] != null){
+					cliente.setDocumentoValidado((Short) array[10]);
+				}
+
 				colecaoClientes.add(cliente);
 			}
 
@@ -3098,7 +3163,8 @@ public class ControladorClienteSEJB
 	 */
 	public Object filtrarQuantidadeCliente(String codigo, String cpf, String rg, String cnpj, String nome, String nomeMae, String cep,
 					String idMunicipio, String idBairro, String idLogradouro, String indicadorUso, String tipoPesquisa,
-					String tipoPesquisaNomeMae, String clienteTipo, String inscricaoEstadual, String indicadorContaBraille)
+					String tipoPesquisaNomeMae, String clienteTipo, String inscricaoEstadual, String indicadorContaBraille,
+					String documentoValidado, String numeroBeneficio)
 					throws ControladorException{
 
 		Object quantidade = null;
@@ -3107,7 +3173,7 @@ public class ControladorClienteSEJB
 		try{
 			quantidade = repositorioCliente.filtrarQuantidadeCliente(codigo, cpf, rg, cnpj, nome, nomeMae, cep, idMunicipio, idBairro,
 							idLogradouro, indicadorUso, tipoPesquisa, tipoPesquisaNomeMae, clienteTipo, inscricaoEstadual,
-							indicadorContaBraille);
+							indicadorContaBraille, documentoValidado, numeroBeneficio);
 
 		}catch(ErroRepositorioException ex){
 			throw new ControladorException("erro.sistema", ex);
@@ -4185,6 +4251,124 @@ public class ControladorClienteSEJB
 		Cliente cliente = new Cliente();
 		this.popularClienteComNovasInformacoes(cliente, clienteJSONHelper, ConstantesSistema.ACAO_INSERIR);
 
+	}
+
+	/**
+	 * [UC3149] Inserir Atividade Econômica
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/06/2014
+	 */
+	public Object inserirAtividadeEconomica(AtividadeEconomica atividadeEconomica, Usuario usuario) throws ControladorException{
+
+		// ------------ REGISTRAR TRANSAÇÃO ----------------------------
+		RegistradorOperacao registradorOperacaoAtividadeEconomica = new RegistradorOperacao(Operacao.OPERACAO_ATIVIDADE_ECONOMICA_INSERIR,
+						new UsuarioAcaoUsuarioHelper(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+
+		Operacao operacaoAtividadeEconomica = new Operacao();
+		operacaoAtividadeEconomica.setId(Operacao.OPERACAO_ATIVIDADE_ECONOMICA_INSERIR);
+
+		OperacaoEfetuada operacaoEfetuadaAtividadeEconomica = new OperacaoEfetuada();
+		operacaoEfetuadaAtividadeEconomica.setOperacao(operacaoAtividadeEconomica);
+
+		atividadeEconomica.setOperacaoEfetuada(operacaoEfetuadaAtividadeEconomica);
+		atividadeEconomica.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+		registradorOperacaoAtividadeEconomica.registrarOperacao(atividadeEconomica);
+		// ------------ REGISTRAR TRANSAÇÃO ----------------------------
+
+		return this.getControladorUtil().inserir(atividadeEconomica);
+	}
+
+	/**
+	 * [UC3150] Manter Atividade Econômica
+	 * [SB0001] - Atualizar Atividade Econômica
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/06/2014
+	 */
+	public void atualizarAtividadeEconomica(AtividadeEconomica atividadeEconomica, Usuario usuario) throws ControladorException{
+
+		// [FS0002 – Atualização realizada por outro usuário]
+		FiltroAtividadeEconomica filtroAtividadeEconomica = new FiltroAtividadeEconomica();
+		filtroAtividadeEconomica.adicionarParametro(new ParametroSimples(FiltroAtividadeEconomica.ID, atividadeEconomica.getId()));
+
+		Collection colecaoRetorno = getControladorUtil().pesquisar(filtroAtividadeEconomica, AtividadeEconomica.class.getName());
+
+		if(colecaoRetorno == null || colecaoRetorno.isEmpty()){
+
+			sessionContext.setRollbackOnly();
+			throw new ControladorException("atencao.registro_remocao_nao_existente");
+		}
+
+		AtividadeEconomica atividadeEconomicaNaBase = (AtividadeEconomica) Util.retonarObjetoDeColecao(colecaoRetorno);
+
+		// Verificar se já foi atualizado por outro
+		// usuário durante esta atualização
+		if(atividadeEconomicaNaBase.getUltimaAlteracao().after(atividadeEconomica.getUltimaAlteracao())){
+
+			sessionContext.setRollbackOnly();
+			throw new ControladorException("atencao.atualizacao.timestamp");
+		}
+
+		// ------------ REGISTRAR TRANSAÇÃO ---------------------
+		RegistradorOperacao registradorAtividadeEconomica = new RegistradorOperacao(Operacao.OPERACAO_ATIVIDADE_ECONOMICA_ATUALIZAR,
+						new UsuarioAcaoUsuarioHelper(usuario,
+										UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+
+		Operacao operacao = new Operacao();
+		operacao.setId(Operacao.OPERACAO_ATIVIDADE_ECONOMICA_ATUALIZAR);
+
+		OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
+		operacaoEfetuada.setOperacao(operacao);
+		operacaoEfetuada.setArgumentoValor(atividadeEconomica.getId());
+
+		atividadeEconomica.setOperacaoEfetuada(operacaoEfetuada);
+		atividadeEconomica.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+		registradorAtividadeEconomica.registrarOperacao(atividadeEconomica);
+
+		// ------------ REGISTRAR TRANSAÇÃO --------------------
+
+		getControladorUtil().atualizar(atividadeEconomica);
+	}
+
+	/**
+	 * [UC3150] Manter Atividade Econômica
+	 * [SB0002] - Excluir Atividade Econômica
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/06/2014
+	 */
+	public void removerAtividadeEconomica(String[] ids, Usuario usuarioLogado) throws ControladorException{
+
+		for(int i = 0; i < ids.length; i++){
+
+			// ------------ REGISTRAR TRANSAÇÃO ----------------
+			FiltroAtividadeEconomica filtro = new FiltroAtividadeEconomica();
+			filtro.adicionarParametro(new ParametroSimples(FiltroAtividadeEconomica.ID, new Integer(ids[i])));
+
+			Collection colecaoRetorno = getControladorUtil().pesquisar(filtro, AtividadeEconomica.class.getName());
+
+			AtividadeEconomica atividadeEconomicaRemocao = (AtividadeEconomica) Util.retonarObjetoDeColecao(colecaoRetorno);
+
+			RegistradorOperacao registradorAtividadeEconomica = new RegistradorOperacao(Operacao.OPERACAO_ATIVIDADE_ECONOMICA_REMOVER,
+							new UsuarioAcaoUsuarioHelper(
+											usuarioLogado, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+
+			Operacao operacao = new Operacao();
+			operacao.setId(Operacao.OPERACAO_ATIVIDADE_ECONOMICA_REMOVER);
+
+			OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
+			operacaoEfetuada.setOperacao(operacao);
+
+			atividadeEconomicaRemocao.setOperacaoEfetuada(operacaoEfetuada);
+			operacaoEfetuada.setArgumentoValor(atividadeEconomicaRemocao.getId());
+
+			registradorAtividadeEconomica.registrarOperacao(atividadeEconomicaRemocao);
+			// ------------ REGISTRAR TRANSAÇÃO ----------------
+
+			this.getControladorUtil().remover(atividadeEconomicaRemocao);
+
+		}
 	}
 
 

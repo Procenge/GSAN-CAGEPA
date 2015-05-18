@@ -350,6 +350,198 @@ public class ParcelamentoRelatorioHelper {
 
 	private BigDecimal totalNegociado;
 
+	private String colecaoDatasParcelamento;
+
+	private String colecaoDatasParcelamentoSobra;
+
+	private String colecaoServicosDebitoACobrar;
+
+	private String colecaoServicosParcelamento;
+
+	private String colecaoServicosDebitoACobrarSobra;
+
+	private String colecaoServicosParcelamentoSobra;
+
+	private String colecaoProcessosExecucaoFiscal;
+
+	private BigDecimal valorAtualizacaoMonetariaSucumbenciaAnterior;
+
+	private BigDecimal valorJurosMoraSucumbenciaAnterior;
+
+	private BigDecimal valorSucumbenciaAnterior;
+
+	private BigDecimal valorSucumbenciaAtual;
+
+	private Short numeroParcelasSucumbencia;
+
+	private Integer idCobrancaForma;
+
+	private Date dataVencimentoPrimeiraGuiaPagamento;
+
+	private Date dataVencimentoPrimeiraGuiaPagamentoSucumbencia;
+
+	private Date dataVencimentoSegundaGuiaPagamento;
+
+	public Date getDataVencimentoSegundaGuiaPagamento(){
+
+		return dataVencimentoSegundaGuiaPagamento;
+	}
+
+	public void setDataVencimentoSegundaGuiaPagamento(Date dataVencimentoSegundaGuiaPagamento){
+
+		this.dataVencimentoSegundaGuiaPagamento = dataVencimentoSegundaGuiaPagamento;
+	}
+
+	public Date getDataVencimentoPrimeiraGuiaPagamentoSucumbencia(){
+
+		return dataVencimentoPrimeiraGuiaPagamentoSucumbencia;
+	}
+
+	public void setDataVencimentoPrimeiraGuiaPagamentoSucumbencia(Date dataVencimentoPrimeiraGuiaPagamentoSucumbencia){
+
+		this.dataVencimentoPrimeiraGuiaPagamentoSucumbencia = dataVencimentoPrimeiraGuiaPagamentoSucumbencia;
+	}
+
+	public Date getDataVencimentoPrimeiraGuiaPagamento(){
+
+		return dataVencimentoPrimeiraGuiaPagamento;
+	}
+
+	public void setDataVencimentoPrimeiraGuiaPagamento(Date dataVencimentoPrimeiraGuiaPagamento){
+
+		this.dataVencimentoPrimeiraGuiaPagamento = dataVencimentoPrimeiraGuiaPagamento;
+	}
+
+	public Integer getIdCobrancaForma(){
+
+		return idCobrancaForma;
+	}
+
+	public void setIdCobrancaForma(Integer idCobrancaForma){
+
+		this.idCobrancaForma = idCobrancaForma;
+	}
+
+	public Short getNumeroParcelasSucumbencia(){
+
+		return numeroParcelasSucumbencia;
+	}
+
+	public void setNumeroParcelasSucumbencia(Short numeroParcelasSucumbencia){
+
+		this.numeroParcelasSucumbencia = numeroParcelasSucumbencia;
+	}
+
+	public BigDecimal getValorAtualizacaoMonetariaSucumbenciaAnterior(){
+
+		return valorAtualizacaoMonetariaSucumbenciaAnterior;
+	}
+
+	public void setValorAtualizacaoMonetariaSucumbenciaAnterior(BigDecimal valorAtualizacaoMonetariaSucumbenciaAnterior){
+
+		this.valorAtualizacaoMonetariaSucumbenciaAnterior = valorAtualizacaoMonetariaSucumbenciaAnterior;
+	}
+
+	public BigDecimal getValorJurosMoraSucumbenciaAnterior(){
+
+		return valorJurosMoraSucumbenciaAnterior;
+	}
+
+	public void setValorJurosMoraSucumbenciaAnterior(BigDecimal valorJurosMoraSucumbenciaAnterior){
+
+		this.valorJurosMoraSucumbenciaAnterior = valorJurosMoraSucumbenciaAnterior;
+	}
+
+	public BigDecimal getValorSucumbenciaAnterior(){
+
+		return valorSucumbenciaAnterior;
+	}
+
+	public void setValorSucumbenciaAnterior(BigDecimal valorSucumbenciaAnterior){
+
+		this.valorSucumbenciaAnterior = valorSucumbenciaAnterior;
+	}
+
+	public BigDecimal getValorSucumbenciaAtual(){
+
+		return valorSucumbenciaAtual;
+	}
+
+	public void setValorSucumbenciaAtual(BigDecimal valorSucumbenciaAtual){
+
+		this.valorSucumbenciaAtual = valorSucumbenciaAtual;
+	}
+
+	public String getColecaoProcessosExecucaoFiscal(){
+
+		return colecaoProcessosExecucaoFiscal;
+	}
+
+	public void setColecaoProcessosExecucaoFiscal(String colecaoProcessosExecucaoFiscal){
+
+		this.colecaoProcessosExecucaoFiscal = colecaoProcessosExecucaoFiscal;
+	}
+
+	public String getColecaoDatasParcelamento(){
+
+		return colecaoDatasParcelamento;
+	}
+
+	public void setColecaoDatasParcelamento(String colecaoDatasParcelamento){
+
+		this.colecaoDatasParcelamento = colecaoDatasParcelamento;
+	}
+
+	public String getColecaoDatasParcelamentoSobra(){
+
+		return colecaoDatasParcelamentoSobra;
+	}
+
+	public void setColecaoDatasParcelamentoSobra(String colecaoDatasParcelamentoSobra){
+
+		this.colecaoDatasParcelamentoSobra = colecaoDatasParcelamentoSobra;
+	}
+
+	public String getColecaoServicosDebitoACobrar(){
+
+		return colecaoServicosDebitoACobrar;
+	}
+
+	public void setColecaoServicosDebitoACobrar(String colecaoServicosDebitoACobrar){
+
+		this.colecaoServicosDebitoACobrar = colecaoServicosDebitoACobrar;
+	}
+
+	public String getColecaoServicosDebitoACobrarSobra(){
+
+		return colecaoServicosDebitoACobrarSobra;
+	}
+
+	public void setColecaoServicosDebitoACobrarSobra(String colecaoServicosDebitoACobrarSobra){
+
+		this.colecaoServicosDebitoACobrarSobra = colecaoServicosDebitoACobrarSobra;
+	}
+
+	public String getColecaoServicosParcelamentoSobra(){
+
+		return colecaoServicosParcelamentoSobra;
+	}
+
+	public void setColecaoServicosParcelamentoSobra(String colecaoServicosParcelamentoSobra){
+
+		this.colecaoServicosParcelamentoSobra = colecaoServicosParcelamentoSobra;
+	}
+
+	public String getColecaoServicosParcelamento(){
+
+		return colecaoServicosParcelamento;
+	}
+
+	public void setColecaoServicosParcelamento(String colecaoServicosParcelamento){
+
+		this.colecaoServicosParcelamento = colecaoServicosParcelamento;
+	}
+
 	public String getCpfCnpj(){
 
 		return cpfCnpj;

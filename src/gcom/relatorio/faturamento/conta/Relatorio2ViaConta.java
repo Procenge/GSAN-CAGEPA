@@ -80,6 +80,7 @@
 package gcom.relatorio.faturamento.conta;
 
 import gcom.batch.Relatorio;
+import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
 import gcom.faturamento.bean.EmitirContaHelper;
@@ -96,6 +97,8 @@ import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.agendadortarefas.AgendadorTarefas;
 import gcom.util.parametrizacao.ParametroGeral;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
+import gcom.util.parametrizacao.webservice.ParametrosAgenciaVirtual;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -337,6 +340,7 @@ public class Relatorio2ViaConta
 		Collection idsConta = (Collection) getParametro("idsConta");
 		boolean cobrarTaxaEmissaoConta = (Boolean) getParametro("cobrarTaxaEmissaoConta");
 		Short contaSemCodigoBarras = (Short) getParametro("contaSemCodigoBarras");
+		String indicadorEmitido2ViaAgenciaVirtual = (String) getParametro("indicadorEmitido2ViaAgenciaVirtual");
 
 		Integer idContaHistorico = (Integer) getParametro("idContaHistorico");
 		SistemaParametro sistemaParametro = fachada.pesquisarParametrosDoSistema();
@@ -391,6 +395,19 @@ public class Relatorio2ViaConta
 		parametros.put("imagemConta", sistemaParametro.getImagemConta());
 		parametros.put("nomeEmpresa", nomeEmpresa);
 		parametros.put("P_NM_EMPRESA", sistemaParametro.getNomeEmpresa());
+
+		String pLabelMatriculaDocumentosPagaveis = null;
+
+		try{
+
+			pLabelMatriculaDocumentosPagaveis = (String) ParametroFaturamento.P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS.executar();
+		}catch(ControladorException e){
+
+			throw new TarefaException(e.getMessage(), e);
+		}
+
+		parametros.put("P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS", pLabelMatriculaDocumentosPagaveis.toUpperCase());
+
 		try{
 			parametros.put("P_ENDERECO", fachada.pesquisarEnderecoFormatadoEmpresa());
 		}catch(ControladorException e1){
@@ -408,7 +425,41 @@ public class Relatorio2ViaConta
 			throw new TarefaException("Erro ao gerar dados para o relatorio");
 		}
 
+		/**
+		 * [UC0482] Na emissão de 2ª via de conta via web, informar no pdf que a emissão foi via
+		 * web.
+		 * 
+		 * @author Gicevalter Couto
+		 * @created 12/08/2014
+		 */
+		try{
+			if(indicadorEmitido2ViaAgenciaVirtual != null && indicadorEmitido2ViaAgenciaVirtual.equals("S")){
+				String indicadorEmitirMsg2ViaAgenciaVirtual = (String) ParametrosAgenciaVirtual.P_INDICADOR_MSG_2VIA_CONTA_AGENCIA_VIRTUAL
+								.executar();
+				parametros.put("P_INDICADOR_MSG_2VIA_CONTA_AGENCIA_VIRTUAL", indicadorEmitirMsg2ViaAgenciaVirtual);
+			}else{
+				parametros.put("P_INDICADOR_MSG_2VIA_CONTA_AGENCIA_VIRTUAL", "2");
+			}
+		}catch(ControladorException e1){
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			throw new TarefaException("Erro ao gerar dados para o relatorio");
+		}
 
+		/**
+		 * [UC0482] Na emissão de 2ª via de conta, emitir a mensagem de quitação de débito anual.
+		 * 
+		 * @author Gicevalter Couto
+		 * @created 12/08/2014
+		 */
+		try{
+			String msgQuitacaoDebitoAnual = (String) ParametroFaturamento.P_MENSAGEM_QUITACAO_DEBITO_ANUAL.executar();
+			parametros.put("P_MENSAGEM_QUITACAO_DEBITO_ANUAL", msgQuitacaoDebitoAnual);
+		}catch(ControladorException e1){
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			throw new TarefaException("Erro ao gerar dados para o relatorio");
+		}
 
 		Collection dadosRelatorio = colecaoEmitirContaHelper;
 
@@ -432,6 +483,8 @@ public class Relatorio2ViaConta
 			throw new TarefaException("Erro ao gravar relatório no sistema", e);
 		}
 		// ------------------------------------
+		
+		
 
 		// retorna o relatório gerado
 		return retorno;
@@ -476,17 +529,18 @@ public class Relatorio2ViaConta
 					String dataVencimentoFormatada, String enderecoClienteEntrega, int totalPaginasRelatorio, String codigoRota,
 					String debitoCreditoSituacaoAtualConta, String contaPaga){
 
-		Relatorio2ViaContaBean relatorio2ViaContaBean = new Relatorio2ViaContaBean(indicadorRodape, colecaoDetail, emitirContaHelper
-						.getDescricaoLocalidade(), emitirContaHelper.getMatriculaImovelFormatada(), dataVencimentoFormatada,
-						emitirContaHelper.getNomeCliente(), emitirContaHelper.getEnderecoImovel(), anoMesReferenciaFormatada,
-						emitirContaHelper.getInscricaoImovel(), enderecoClienteEntrega,
-						emitirContaHelper.getDescricaoLigacaoAguaSituacao(), emitirContaHelper.getDescricaoLigacaoEsgotoSituacao(),
-						emitirContaHelper.getDadosConsumoMes1(), emitirContaHelper.getDadosConsumoMes4(), emitirContaHelper
-										.getDadosConsumoMes2(), emitirContaHelper.getDadosConsumoMes5(), emitirContaHelper
-										.getLeituraAnterior(), emitirContaHelper.getLeituraAtual(), emitirContaHelper
-										.getConsumoFaturamento(), emitirContaHelper.getDiasConsumo(), emitirContaHelper
-										.getConsumoMedioDiario(), emitirContaHelper.getDadosConsumoMes3(), emitirContaHelper
-										.getDadosConsumoMes6(), emitirContaHelper.getDataLeituraAnterior(), emitirContaHelper
+		Relatorio2ViaContaBean relatorio2ViaContaBean = new Relatorio2ViaContaBean(indicadorRodape, colecaoDetail,
+						emitirContaHelper.getDescricaoLocalidade(), Imovel.getMatriculaComDigitoVerificadorFormatada(emitirContaHelper
+										.getIdImovel().toString()), dataVencimentoFormatada, emitirContaHelper.getNomeCliente(),
+						emitirContaHelper.getEnderecoImovel(), anoMesReferenciaFormatada, emitirContaHelper.getInscricaoImovel(),
+						enderecoClienteEntrega, emitirContaHelper.getDescricaoLigacaoAguaSituacao(),
+						emitirContaHelper.getDescricaoLigacaoEsgotoSituacao(), emitirContaHelper.getDadosConsumoMes1(),
+						emitirContaHelper.getDadosConsumoMes4(), emitirContaHelper.getDadosConsumoMes2(),
+						emitirContaHelper.getDadosConsumoMes5(), emitirContaHelper.getLeituraAnterior(),
+						emitirContaHelper.getLeituraAtual(), emitirContaHelper.getConsumoFaturamento(), emitirContaHelper.getDiasConsumo(),
+						emitirContaHelper.getConsumoMedioDiario(), emitirContaHelper.getDadosConsumoMes3(),
+						emitirContaHelper.getDadosConsumoMes6(), emitirContaHelper.getDataLeituraAnterior(),
+						emitirContaHelper
 										.getDataLeituraAtual(), emitirContaHelper.getDescricaoTipoConsumo(), emitirContaHelper
 										.getDescricaoAnormalidadeConsumo(), emitirContaHelper.getQuantidadeEconomiaConta(),
 						emitirContaHelper.getConsumoEconomia(), emitirContaHelper.getCodigoAuxiliarString(), emitirContaHelper
@@ -507,8 +561,10 @@ public class Relatorio2ViaConta
 						(emitirContaHelper.getContaMotivoRetificacao() != null) ? emitirContaHelper.getContaMotivoRetificacao().toString()
 										+ "-" + emitirContaHelper.getDescricaoContaMotivoRetificacao()
 										: "", (emitirContaHelper.getFuncionario() != null) ? emitirContaHelper.getFuncionario().toString()
-										: "", (emitirContaHelper.getConsumoMedido() != null) ? emitirContaHelper.getConsumoMedido()
-										.toString() : "");
+										: "", (emitirContaHelper.getConsumoMedido() != null) ? emitirContaHelper.getConsumoMedido().toString() : "",
+						(emitirContaHelper.getValorImpostoPisCofins() != null) ? Util.formatarMoedaReal(emitirContaHelper
+										.getValorImpostoPisCofins())
+										: "");
 
 		relatorio2ViaContaBean.setTipoDocCliente(emitirContaHelper.getTipoDocCliente());
 		relatorio2ViaContaBean.setCpfCnpjCliente(emitirContaHelper.getCpfCnpjCliente());
@@ -516,6 +572,15 @@ public class Relatorio2ViaConta
 		SimpleDateFormat df = new SimpleDateFormat(Constantes.FORMATO_DATA_BR);
 		relatorio2ViaContaBean.setDataEmissaoConta(df.format(new Date()));
 		relatorio2ViaContaBean.setNomeRelatorio((String) this.getParametro("nomeRelatorio"));
+
+		if(emitirContaHelper.getAnoQuitacaoDebitoAnual() != null){
+			relatorio2ViaContaBean.setAnoQuitacaoDebitoAnual(emitirContaHelper.getAnoQuitacaoDebitoAnual().toString());
+		}
+
+		if(emitirContaHelper.getMensagemSubstitutaCodigoBarras() != null){
+
+			relatorio2ViaContaBean.setMensagemSubstitutaCodigoBarras(emitirContaHelper.getMensagemSubstitutaCodigoBarras());
+		}
 
 		return relatorio2ViaContaBean;
 	}

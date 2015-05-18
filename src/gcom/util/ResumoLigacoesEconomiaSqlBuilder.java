@@ -292,9 +292,20 @@ public class ResumoLigacoesEconomiaSqlBuilder
 	private String obterParametrosPesquisa(InformarDadosGeracaoRelatorioConsultaHelper parametrosPesquisa){
 
 		StringBuilder builder = new StringBuilder();
+
+		Integer last_id = LigacaoAguaSituacao.SUPRIMIDO_DEFINITIVO;
+
+		if(!Util.isVazioOuBrancoOuZero(last_id)){
+			builder.append(" AND rle.LAST_ID <> " + last_id);
+		}
+
 		builder.append(" AND rle.RELE_AMREFERENCIA = ");
 		builder.append(parametrosPesquisa.getAnoMesReferencia());
 		builder.append(" ");
+
+		// if(parametrosPesquisa.getOpcaoTotalizacao() == 1){
+		// builder.append(" AND rle.LOCA_ID in (Select Loca_ID from Localidade where LOCA_ICUSO = 1) ");
+		// }
 
 		if(!Util.isVazioOrNulo(parametrosPesquisa.getColecaoCategoria())){
 			builder.append(" AND rle.CATG_ID IN ( ");
@@ -383,8 +394,10 @@ public class ResumoLigacoesEconomiaSqlBuilder
 				clausula = " AND rle.LOCA_CDELO = " + parametrosPesquisa.getEloPolo().getId();
 				break;
 			case ConstantesSistema.CODIGO_ESTADO:
+				tabela = "INNER JOIN LOCALIDADE t ON rle.LOCA_ID = t.LOCA_ID";
 				descricao = "'ESTADO'";
 				id = "0";
+				clausula = " AND t.LOCA_ICUSO = 1 ";
 				break;
 			case ConstantesSistema.CODIGO_ESTADO_ELO_POLO:
 				tabela = "INNER JOIN LOCALIDADE t ON rle.LOCA_CDELO = t.LOCA_ID";

@@ -113,6 +113,10 @@ public class SimularCalculoContaActionForm
 
 	private String indicadorAguaFaturavel;
 
+	private String consumoFixoPoco;
+
+	private String habilitarConsumoFixoPoco;
+
 	public String getConsumoFaturadoAgua(){
 
 		return consumoFaturadoAgua;
@@ -275,6 +279,26 @@ public class SimularCalculoContaActionForm
 	public void setIndicadorAguaFaturavel(String indicadorAguaFaturavel){
 
 		this.indicadorAguaFaturavel = indicadorAguaFaturavel;
+	}
+
+	public String getConsumoFixoPoco(){
+
+		return consumoFixoPoco;
+	}
+
+	public void setConsumoFixoPoco(String consumoFixoPoco){
+
+		this.consumoFixoPoco = consumoFixoPoco;
+	}
+
+	public String getHabilitarConsumoFixoPoco(){
+
+		return habilitarConsumoFixoPoco;
+	}
+
+	public void setHabilitarConsumoFixoPoco(String habilitarConsumoFixoPoco){
+
+		this.habilitarConsumoFixoPoco = habilitarConsumoFixoPoco;
 	}
 
 }

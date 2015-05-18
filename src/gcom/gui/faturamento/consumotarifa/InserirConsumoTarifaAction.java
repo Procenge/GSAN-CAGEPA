@@ -77,27 +77,20 @@
 package gcom.gui.faturamento.consumotarifa;
 
 import gcom.fachada.Fachada;
-import gcom.faturamento.consumotarifa.ConsumoTarifa;
-import gcom.faturamento.consumotarifa.ConsumoTarifaCategoria;
-import gcom.faturamento.consumotarifa.ConsumoTarifaFaixa;
-import gcom.faturamento.consumotarifa.ConsumoTarifaVigencia;
-import gcom.faturamento.consumotarifa.FiltroCalculoTipo;
-import gcom.faturamento.consumotarifa.FiltroConsumoTarifa;
+import gcom.faturamento.consumotarifa.*;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.gui.faturamento.consumotarifa.bean.CategoriaFaixaConsumoTarifaHelper;
 import gcom.micromedicao.consumo.CalculoTipo;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -127,6 +120,15 @@ public class InserirConsumoTarifaAction
 		// Mudar isso quando tiver esquema de segurança
 		HttpSession sessao = httpServletRequest.getSession(false);
 		// Variavel para testar se o campo naum obrigatorio esta vazio
+
+		String indicadorTarifaCosumoPorSubCategoria = ConstantesSistema.NAO.toString();
+		try{
+			indicadorTarifaCosumoPorSubCategoria = (String) ParametroFaturamento.P_INDICADOR_TARIFA_CONSUMO_SUBCATEGORIA.executar();
+
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
 
 		String descTarifa = inserirConsumoTarifaActionForm.getDescTarifa();
 		String slcDescTarifa = inserirConsumoTarifaActionForm.getSlcDescTarifa();
@@ -201,6 +203,17 @@ public class InserirConsumoTarifaAction
 					categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().setNumeroConsumoMinimo(new Integer(consumoMinimo));
 				}
 
+				String pQuantidadeDecimaisValorTarifa = null;
+
+				try{
+
+					pQuantidadeDecimaisValorTarifa = (String) ParametroFaturamento.P_QUANTIDADE_DECIMAIS_VALOR_TARIFA.executar();
+				}catch(ControladorException e){
+
+					throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(
+									new String[e.getParametroMensagem().size()]));
+				}
+
 				// valor da tarifa minima
 				if(requestMap.get("ValorTarMin."
 								+ categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getDescricao()) != null){
@@ -213,7 +226,7 @@ public class InserirConsumoTarifaAction
 					}
 
 					categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().setValorTarifaMinima(
-									Util.formatarMoedaRealparaBigDecimal(tarifaMinima, 4));
+									Util.formatarMoedaRealparaBigDecimal(tarifaMinima, Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
 				}
 
 				// Atribuindo a colecao faixa valores da categoria
@@ -232,7 +245,11 @@ public class InserirConsumoTarifaAction
 			}
 
 		}else{
-			throw new ActionServletException("atencao.nenhuma_categoria_tarifa");
+			if(indicadorTarifaCosumoPorSubCategoria.equals(ConstantesSistema.SIM.toString())){
+				throw new ActionServletException("atencao.nenhuma_subcategoria_tarifa");
+			}else{
+				throw new ActionServletException("atencao.nenhuma_categoria_tarifa");
+			}
 		}
 
 		FiltroCalculoTipo filtroCalculoTipo = new FiltroCalculoTipo();
@@ -246,7 +263,10 @@ public class InserirConsumoTarifaAction
 
 		consumoTarifaVigencia.setCalculoTipo(calculoTipoSelected);
 
-		fachada.inserirConsumoTarifa(consumoTarifa, consumoTarifaVigencia, colecaoConsumoTarifaCategoria);
+		consumoTarifaVigencia.setDescricaoAtoAdministrativo(inserirConsumoTarifaActionForm.getDescricaoAtoAdministrativo());
+
+		fachada.inserirConsumoTarifa(consumoTarifa, consumoTarifaVigencia, colecaoConsumoTarifaCategoria,
+						this.getUsuarioLogado(httpServletRequest));
 
 		if(consumoTarifa.getDescricao() == null){
 			String idConsumo = inserirConsumoTarifaActionForm.getSlcDescTarifa();

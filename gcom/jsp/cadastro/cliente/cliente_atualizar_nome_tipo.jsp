@@ -216,6 +216,10 @@ function email () {
 							labelProperty="descricaoComId" property="id" />
 					</html:select></td>
 				</tr>
+				<tr>
+					<td><strong> Número do Benefício:</strong></td>
+					<td ><html:text property="numeroBeneficio" size="10" maxlength="10" onkeypress="return isCampoNumerico(event);"/>
+				</tr>
 				<% if (((String)session.getAttribute("parametroEmpresa")).equals(SistemaParametro.INDICADOR_EMPRESA_DESO.toString())) { %>
 				<tr>
 					<td>

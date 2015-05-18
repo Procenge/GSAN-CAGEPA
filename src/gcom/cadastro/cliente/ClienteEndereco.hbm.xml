@@ -101,6 +101,15 @@
     >
         <column name="lgcp_id" />
     </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Imovel -->
+    <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+        not-null="true"
+    >
+        <column name="imov_id" />
+    </many-to-one>
 
 </class>
 </hibernate-mapping>

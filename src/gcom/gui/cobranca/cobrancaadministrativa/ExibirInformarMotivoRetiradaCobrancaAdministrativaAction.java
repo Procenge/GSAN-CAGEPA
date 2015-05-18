@@ -81,6 +81,7 @@ import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -108,7 +109,21 @@ public class ExibirInformarMotivoRetiradaCobrancaAdministrativaAction
 		RetirarImovelCobrancaAdministrativaActionForm form = (RetirarImovelCobrancaAdministrativaActionForm) actionForm;
 
 		// Ids dos Imóveis Cobrança Situação Selecionados
-		String[] idRegistrosRetirada = form.getIdRegistrosRetirada();
+		String[] idRegistrosRetirada = null;
+
+		if(httpServletRequest.getParameter("todos") == null || httpServletRequest.getParameter("todos").equals("0")){
+			idRegistrosRetirada = form.getIdRegistrosRetirada();
+		}else{
+			List<String> list = (List<String>) this.getSessao(httpServletRequest).getAttribute("idsImoveisArquivo");
+			if(list != null){
+				idRegistrosRetirada = new String[list.size()];
+
+				for(int i = 0; i < list.size(); i++){
+					idRegistrosRetirada[i] = String.valueOf(list.get(i));
+				}
+			}
+		}
+
 		this.getSessao(httpServletRequest).setAttribute("idRegistrosRetirada", idRegistrosRetirada);
 
 		// Motivo da Retirada

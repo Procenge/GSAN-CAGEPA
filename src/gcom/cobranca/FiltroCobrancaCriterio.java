@@ -130,6 +130,8 @@ public class FiltroCobrancaCriterio
 
 	public final static String INDICADOR_CONTA_REVISAO = "indicadorEmissaoContaRevisao";
 
+	public final static String INDICADOR_DIVIDA_ATIVA = "indicadorDividaAtiva";
+
 	public final static String INDICADOR_INQUILINO_DEBITO_CONTA_MES = "indicadorEmissaoInquilinoDebitoContaMes";
 
 	public final static String INDICADOR_DEBITO_CONTA_ANTIGA = "indicadorEmissaoDebitoContaAntiga";
@@ -139,6 +141,10 @@ public class FiltroCobrancaCriterio
 	public final static String INDICADOR_COM_CPF = "indicadorComCpf";
 
 	public final static String INDICADOR_COM_TELEFONE = "indicadorComTelefone";
+
+	public final static String CRITERIO_COBRANCA = "indicadorCriterioCobranca";
+
+	public final static String INDICADOR_CRITERIO_COBRANCA = "indicadorCriterioCobranca";
 
 	public final static String INDICADOR_USO = "indicadorUso";
 

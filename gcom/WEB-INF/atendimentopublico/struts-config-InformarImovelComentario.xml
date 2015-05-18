@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+
+	<form-beans>
+		<form-bean 
+		    name="InformarImovelComentarioActionForm"
+			type="gcom.gui.atendimentopublico.InformarImovelComentarioActionForm" /> 
+	</form-beans>
+
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+				
+			
+		<action name="InformarImovelComentarioActionForm"  
+			type="gcom.gui.atendimentopublico.ExibirInformarImovelComentarioAction" 
+			validate="false"
+			scope="session"
+			path="/exibirInformarImovelComentarioAction">
+			<forward name="informarImovelComentario"
+			path="/jsp/atendimentopublico/imovel_comentario_informar.jsp" />
+		</action>
+
+		<action name="InformarImovelComentarioActionForm"
+			type="gcom.gui.atendimentopublico.InformarImovelComentarioAction"
+			validate="true" scope="session"
+			path="/informarImovelComentarioAction">
+		</action>
+		
+		<action name="InformarImovelComentarioActionForm"  
+			type="gcom.gui.atendimentopublico.ExibirAtualizarImovelComentarioAction" 
+			validate="false"
+			scope="session"
+			path="/exibirAtualizarImovelComentarioAction">
+			<forward name="exibirAtualizarImovelComentario"
+			path="/jsp/atendimentopublico/imovel_comentario_atualizar.jsp" />
+		</action>
+		
+		<action name="InformarImovelComentarioActionForm"
+			type="gcom.gui.atendimentopublico.AtualizarImovelComentarioAction"
+			validate="true" scope="session"
+			path="/atualizarImovelComentarioAction">
+		</action>
+ 
+	</action-mappings>
+
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+		
+</struts-config>

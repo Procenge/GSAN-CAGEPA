@@ -80,18 +80,17 @@ import gcom.cadastro.cliente.ClienteImovel;
 import gcom.cadastro.cliente.ClienteRelacaoTipo;
 import gcom.cadastro.cliente.FiltroClienteImovel;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
-import gcom.cobranca.parcelamento.FiltroParcelamento;
-import gcom.cobranca.parcelamento.FiltroParcelamentoMotivoDesfazer;
-import gcom.cobranca.parcelamento.Parcelamento;
-import gcom.cobranca.parcelamento.ParcelamentoMotivoDesfazer;
-import gcom.cobranca.parcelamento.ParcelamentoSituacao;
+import gcom.cobranca.CobrancaForma;
+import gcom.cobranca.parcelamento.*;
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
 import gcom.gui.cobranca.ParcelamentoDebitoActionForm;
 import gcom.util.ControladorException;
+import gcom.util.Util;
 import gcom.util.filtro.ParametroNulo;
 import gcom.util.filtro.ParametroSimples;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -181,10 +180,12 @@ public class ExibirConsultarParcelamentoDebitoPopupAction
 				parcelamentoDebitoActionForm.setSituacaoEsgoto("");
 				parcelamentoDebitoActionForm.setImovelPerfil("");
 			}
+
+			ClienteImovel dadosImovel = null;
 			// obtem o imovel pesquisado
 			if(imovelPesquisado != null && !imovelPesquisado.isEmpty()){
 
-				ClienteImovel dadosImovel = (ClienteImovel) ((List) imovelPesquisado).get(0);
+				dadosImovel = (ClienteImovel) ((List) imovelPesquisado).get(0);
 
 				// O endereço foi encontrado
 				if(dadosImovel.getImovel().getId() != null){
@@ -236,6 +237,7 @@ public class ExibirConsultarParcelamentoDebitoPopupAction
 				}
 
 				httpServletRequest.setAttribute("enderecoFormatado", enderecoFormatado);
+
 			}
 			FiltroParcelamento filtroParcelamento = new FiltroParcelamento();
 
@@ -263,6 +265,28 @@ public class ExibirConsultarParcelamentoDebitoPopupAction
 
 					Parcelamento parcelamento = (Parcelamento) iteratorParcelamento.next();
 
+					if((parcelamento.getValorSucumbenciaAnterior() != null && parcelamento.getValorSucumbenciaAnterior().compareTo(
+									BigDecimal.ZERO) != 0)
+									|| (parcelamento.getValorSucumbenciaAtual() != null && parcelamento.getValorSucumbenciaAtual()
+													.compareTo(BigDecimal.ZERO) != 0)){
+						httpServletRequest.setAttribute("visualizarSucumbencia", "S");
+
+						parcelamentoDebitoActionForm.setValorSucumbenciaAnterior(Util.formatarMoedaReal(parcelamento
+										.getValorSucumbenciaAnterior()));
+
+						parcelamentoDebitoActionForm.setValorSucumbenciaAtual(Util.formatarMoedaReal(parcelamento
+										.getValorSucumbenciaAtual()));
+						parcelamentoDebitoActionForm.setValorAcrescimosSucumbenciaAnterior(Util.formatarMoedaReal(parcelamento
+										.getValorJurosMoraSucumbenciaAnterior().add(
+														parcelamento.getValorAtualizacaoMonetariaSucumbenciaAnterior())));
+						parcelamentoDebitoActionForm.setValorDiligencias(Util.formatarMoedaReal(parcelamento.getValorDiligencias()));
+						parcelamentoDebitoActionForm.setNumeroParcelasSucumbencia(parcelamento.getNumeroParcelasSucumbencia().toString());
+						parcelamentoDebitoActionForm.setValorDiligencias(Util.formatarMoedaReal(parcelamento.getValorDiligencias()));
+
+					}else{
+						httpServletRequest.removeAttribute("visualizarSucumbencia");
+					}
+
 					// Retorna o único objeto da tabela sistemaParametro
 					sistemaParametro = fachada.pesquisarParametrosDoSistema();
 
@@ -275,6 +299,21 @@ public class ExibirConsultarParcelamentoDebitoPopupAction
 
 						httpServletRequest.setAttribute("collectionParcelamentoMotivoDesfazer", collectionParcelamentoMotivoDesfazer);
 					}
+					
+					
+				
+					if(parcelamento.getCobrancaForma().getId().equals(CobrancaForma.COBRANCA_EM_CONTA)){
+						//Débito a Cobrar
+						Collection colecaoClienteDebitoACobrar = fachada.pesquisarClienteDebitoACobrar(dadosImovel.getCliente());
+						httpServletRequest.setAttribute("colecaoClienteDebitoACobrar", colecaoClienteDebitoACobrar);
+					}else{
+						// Guia de Pagamento
+						Collection colecaoClienteGuiaPagamento = fachada.pesquisarClienteGuiaPagamento(dadosImovel.getCliente());
+						httpServletRequest.setAttribute("colecaoClienteGuiaPagamento", colecaoClienteGuiaPagamento);
+					}
+					
+					
+
 				}
 			}
 		}

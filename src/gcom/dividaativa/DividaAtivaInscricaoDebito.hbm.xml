@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+<!--
+    Created by the Middlegen Hibernate plugin
+
+    http://boss.bekk.no/boss/middlegen/
+    http://hibernate.sourceforge.net/
+-->
+
+<class
+    name="gcom.dividaativa.DividaAtivaInscricaoDebito"
+    table="INSC_DIVIDA_ATIVA_DEBITO"
+>
+	
+
+   
+    
+      <id
+        name="id"
+        type="java.lang.Integer"
+        column="ISCD_ID">
+        
+      <generator class="sequence">
+       		<param name="sequence">SQ_INSC_DIVIDA_ATIVA_DEBITO</param>
+    	</generator>
+
+    </id>
+    
+    
+    
+
+	<property
+        name="numeroPrestacao"
+        type="java.lang.Integer"
+        column="ISCD_NNPRESTACAO"
+        not-null="false"
+        length="4"
+    />
+    
+    
+     <property
+        name="dataVencimento"
+        type="java.sql.Date"
+        column="ISCD_DTVENCIMENTO"
+        length="4"
+    />
+    
+    
+    <property
+        name="referencia"
+        type="java.lang.Integer"
+        column="ISCD_AMREFERENCIA"
+        not-null="false"
+        length="4"
+    />
+    
+    <property
+        name="consumo"
+        type="java.lang.Integer"
+        column="ISCD_CONSUMO"
+        not-null="false"
+        length="4"
+    />
+    
+    
+
+     <property
+        name="valorDocumento"
+        type="java.math.BigDecimal"
+        column="ISCD_VLDOCUMENTO"
+        not-null="false"
+        length="13"
+    />
+
+
+     <property
+        name="valorAcrescimo"
+        type="java.math.BigDecimal"
+        column="ISCD_VLACRESCIMO"
+        not-null="false"
+        length="13"
+    />
+
+
+   <property
+        name="valorMulta"
+        type="java.math.BigDecimal"
+        column="ISCD_VLMULTA"
+        not-null="false"
+        length="13"
+    />
+    
+    
+   <property
+        name="valorJuros"
+        type="java.math.BigDecimal"
+        column="ISCD_VLJUROS"
+        not-null="false"
+        length="13"
+    />
+    
+    
+    <property
+        name="valorJurosSucumbencia"
+        type="java.math.BigDecimal"
+        column="ISCD_VLJUROSSUCUMB"
+        not-null="false"
+        length="13"
+    />
+    
+    
+ <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ISCD_TMULTIMAALTERACAO"
+        length="8"
+    />
+    
+
+    <!-- associations -->
+    
+    <!-- bi-directional many-to-one association to GuiaPagamento -->
+    <many-to-one
+        name="guiaPagamento"
+        class="gcom.arrecadacao.pagamento.GuiaPagamento"
+        not-null="false"
+    >
+        <column name="GPAG_ID" />
+    </many-to-one>
+    
+    
+    
+      <many-to-one
+        name="conta"
+        class="gcom.faturamento.conta.Conta"
+        not-null="false"
+    >
+        <column name="CNTA_ID" />
+    </many-to-one>
+    
+    
+    
+    <!-- bi-directional many-to-one association to DividaAtivaInscricaoResumo -->
+    <many-to-one
+        name="dividaAtivaInscricaoResumo"
+        class="gcom.dividaativa.DividaAtivaInscricaoResumo"
+        not-null="false"
+    >
+        <column name="ISCR_ID" />
+    </many-to-one>
+    
+  
+    
+    
+</class>    
+   
+</hibernate-mapping>

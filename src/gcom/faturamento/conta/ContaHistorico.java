@@ -297,6 +297,19 @@ public class ContaHistorico
 	private Short indicadorRemuneraCobrancaAdministrativa = 2;
 
 	private PrescricaoComando prescricaoComando;
+	
+	
+	private Short indicadorDividaAtiva = 2;
+
+	private Date dataDividaAtiva;
+
+	private Short indicadorExecucaoFiscal = 2;
+
+	private Date dataExecucaoFiscal;
+	
+	private Integer numeroProcessoAdministrativoExecucaoFiscal;
+
+	private Integer consumoPoco;
 
 	/** full constructor */
 	public ContaHistorico(Integer id, int anoMesReferenciaConta, Date contaHistorico, Short lote, Short sublote, Integer setorComercial,
@@ -314,7 +327,9 @@ public class ContaHistorico
 							ImovelPerfil imovelPerfil, Quadra quadra, Localidade localidade,
 							MotivoNaoEntregaDocumento motivoNaoEntregaDocumento, LigacaoAguaSituacao ligacaoAguaSituacao,
 							ContaMotivoRetificacao contaMotivoRetificacao, Funcionario funcionarioEntrega, Funcionario funcionarioLeitura,
-							Set creditoRealizadoHistoricos, Set debitoCobradoHistoricos, Set parcelamentoItems, Integer creditoConsumo) {
+							Set creditoRealizadoHistoricos, Set debitoCobradoHistoricos, Set parcelamentoItems, Integer creditoConsumo,
+							Short indicadorDividaAtiva, Date dataDividaAtiva, Short indicadorExecucaoFiscal, Date dataExecucaoFiscal,
+							Integer numeroProcessoAdministrativoExecucaoFiscal) {
 
 		this.id = id;
 		this.anoMesReferenciaConta = anoMesReferenciaConta;
@@ -370,6 +385,11 @@ public class ContaHistorico
 		this.debitoCobradoHistoricos = debitoCobradoHistoricos;
 		this.parcelamentoItems = parcelamentoItems;
 		this.creditoConsumo = creditoConsumo;
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+		this.dataDividaAtiva = dataDividaAtiva;
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+		this.dataExecucaoFiscal = dataExecucaoFiscal;
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
 	}
 
 	/** default constructor */
@@ -390,7 +410,8 @@ public class ContaHistorico
 							Localidade localidade, MotivoNaoEntregaDocumento motivoNaoEntregaDocumento,
 							LigacaoAguaSituacao ligacaoAguaSituacao, ContaMotivoRetificacao contaMotivoRetificacao,
 							Funcionario funcionarioEntrega, Funcionario funcionarioLeitura, Set creditoRealizadoHistoricos,
-							Set debitoCobradoHistoricos, Set parcelamentoItems, Integer creditoConsumo) {
+							Set debitoCobradoHistoricos, Set parcelamentoItems, Integer creditoConsumo, Short indicadorDividaAtiva,
+							Short indicadorExecucaoFiscal) {
 
 		this.id = id;
 		this.anoMesReferenciaConta = anoMesReferenciaConta;
@@ -432,6 +453,8 @@ public class ContaHistorico
 		this.debitoCobradoHistoricos = debitoCobradoHistoricos;
 		this.parcelamentoItems = parcelamentoItems;
 		this.creditoConsumo = creditoConsumo;
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
 	}
 
 	/**
@@ -1615,5 +1638,78 @@ public class ContaHistorico
 
 		this.prescricaoComando = prescricaoComando;
 	}
+
+	
+	public Short getIndicadorDividaAtiva(){
+	
+		return indicadorDividaAtiva;
+	}
+
+	
+	public void setIndicadorDividaAtiva(Short indicadorDividaAtiva){
+	
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+	}
+
+	
+	public Date getDataDividaAtiva(){
+	
+		return dataDividaAtiva;
+	}
+
+	
+	public void setDataDividaAtiva(Date dataDividaAtiva){
+	
+		this.dataDividaAtiva = dataDividaAtiva;
+	}
+
+	
+	public Short getIndicadorExecucaoFiscal(){
+	
+		return indicadorExecucaoFiscal;
+	}
+
+	
+	public void setIndicadorExecucaoFiscal(Short indicadorExecucaoFiscal){
+	
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+	}
+
+	
+	public Date getDataExecucaoFiscal(){
+	
+		return dataExecucaoFiscal;
+	}
+
+	
+	public void setDataExecucaoFiscal(Date dataExecucaoFiscal){
+	
+		this.dataExecucaoFiscal = dataExecucaoFiscal;
+	}
+
+	public Integer getConsumoPoco(){
+
+		return consumoPoco;
+	}
+
+	public void setConsumoPoco(Integer consumoPoco){
+
+		this.consumoPoco = consumoPoco;
+	}
+	
+		public Integer getNumeroProcessoAdministrativoExecucaoFiscal(){
+
+		return numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public void setNumeroProcessoAdministrativoExecucaoFiscal(Integer numeroProcessoAdministrativoExecucaoFiscal){
+
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
+	}
+	
+	
+	
+	
+	
 
 }

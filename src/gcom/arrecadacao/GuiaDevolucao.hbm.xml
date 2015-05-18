@@ -62,6 +62,13 @@
         column="gdev_amreferenciaguiadevolucao"
         length="6"
     />
+    
+    <property
+        name="numeroPrestacao" 
+        column="GDEV_NNPRESTACAO" 
+        type="java.lang.Short"
+        length="3"
+    />    
 
     <!-- Associations -->
   
@@ -202,7 +209,7 @@
         <column name="func_idanalista" />
        </many-to-one> 
 
-   <many-to-one
+   	<many-to-one
         name="funcionarioAutorizador"
         class="gcom.cadastro.funcionario.Funcionario"
         not-null="false"
@@ -216,7 +223,15 @@
         not-null="false"
     >
         <column name="usur_id" />
-       </many-to-one>               
+       </many-to-one>
+       
+    <many-to-one 
+    	name="pagamentoHistorico" 
+    	class="gcom.arrecadacao.pagamento.PagamentoHistorico">
+        	
+    	<column name="PGHI_ID" />
+    
+    </many-to-one>                      
 
 </class>
 </hibernate-mapping>

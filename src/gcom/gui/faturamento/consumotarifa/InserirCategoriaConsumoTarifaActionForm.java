@@ -76,18 +76,14 @@
 
 package gcom.gui.faturamento.consumotarifa;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.struts.action.ActionMapping;
-import org.apache.struts.validator.ValidatorActionForm;
-
+import org.apache.struts.validator.ValidatorForm;
 /**
  * < <Descrição da Classe>>
  * 
  * @author Administrador
  */
 public class InserirCategoriaConsumoTarifaActionForm
-				extends ValidatorActionForm {
+				extends ValidatorForm {
 
 	private static final long serialVersionUID = 1L;
 
@@ -131,10 +127,6 @@ public class InserirCategoriaConsumoTarifaActionForm
 	public void setValorTarifaMinima(String valorTarifaMinima){
 
 		this.valorTarifaMinima = valorTarifaMinima;
-	}
-
-	public void reset(ActionMapping actionMapping, HttpServletRequest httpServletRequest){
-
 	}
 
 	public String getSlcSubCategoria(){

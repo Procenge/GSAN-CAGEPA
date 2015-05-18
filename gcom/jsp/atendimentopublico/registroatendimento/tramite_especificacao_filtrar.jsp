@@ -43,37 +43,7 @@
 
 			    carregarComboGenerico(obj, 'gcom.atendimentopublico.registroatendimento.SolicitacaoTipoEspecificacao', 'solicitacaoTipo.id', document.forms[0].idSolicitacaoTipoEspecificacao, 'descricaoComId', 'colecaoSolicitacaoTipoEspecificacaoFiltro');
 
-			} else if (tipoObj == 'sistemaAbastecimento') {
-
-			    carregarComboGenerico(obj, 'gcom.operacional.DistritoOperacional', 'sistemaAbastecimento.id', document.forms[0].idDistritoOperacional, 'descricaoComId', 'colecaoDistritoOperacionalFiltro');
-				limparComboGenerico(document.forms[0].idZonaAbastecimento);
-			    limparComboGenerico(document.forms[0].idSetorAbastecimento);
-
-			} else if (tipoObj == 'distritoOperacional') {
-
-				carregarComboGenerico(obj, 'gcom.operacional.ZonaAbastecimento', 'distritoOperacional.id', document.forms[0].idZonaAbastecimento, 'descricaoComCodigo', 'colecaoZonaAbastecimentoFiltro');
-				limparComboGenerico(document.forms[0].idSetorAbastecimento);
-
-			} else if (tipoObj == 'zonaAbastecimento') {
-
-				carregarComboGenerico(obj, 'gcom.operacional.SetorAbastecimento', 'zonaAbastecimento.id', document.forms[0].idSetorAbastecimento, 'descricaoComCodigo', 'colecaoSetorAbastecimentoFiltro');
-
-			} else if (tipoObj == 'sistemaEsgoto') {
-
-			    carregarComboGenerico(obj, 'gcom.operacional.SubsistemaEsgoto', 'sistemaEsgoto.id', document.forms[0].idSubsistemaEsgoto, 'descricaoComCodigo', 'colecaoSubsistemaEsgotoFiltro');
-				limparComboGenerico(document.forms[0].idBacia);
-			    limparComboGenerico(document.forms[0].idSubBacia);
-
-			} else if (tipoObj == 'subsistemaEsgoto') {
-
-				carregarComboGenerico(obj, 'gcom.operacional.Bacia', 'subsistemaEsgoto.id', document.forms[0].idBacia, 'descricaoComCodigoEId', 'colecaoBaciaFiltro');
-				limparComboGenerico(document.forms[0].idSubBacia);
-
-			} else if (tipoObj == 'bacia') {
-
-				carregarComboGenerico(obj, 'gcom.operacional.SubBacia', 'bacia.id', document.forms[0].idSubBacia, 'descricaoComCodigo', 'colecaoSubBaciaFiltro');
-
-			}
+			} 
 			// recarrega o formulário para atualizar os comboBoxes
 			document.forms[0].action = 'exibirFiltrarTramiteEspecificacaoAction.do';
 			submeterFormPadrao(document.forms[0]);
@@ -81,54 +51,6 @@
 			if (tipoObj == 'solicitacaoTipo') {
 
 			    carregarComboGenerico(obj, 'gcom.atendimentopublico.registroatendimento.SolicitacaoTipoEspecificacao', null, document.forms[0].idSolicitacaoTipoEspecificacao, 'descricaoComId', 'colecaoSolicitacaoTipoEspecificacaoFiltro');
-
-			} else if (tipoObj == 'sistemaAbastecimento') {
-
-				carregarComboGenerico(obj, 'gcom.operacional.DistritoOperacional', null, document.forms[0].idDistritoOperacional, 'descricaoComId', 'colecaoDistritoOperacionalFiltro');
-				carregarComboGenerico(obj, 'gcom.operacional.ZonaAbastecimento', null, document.forms[0].idZonaAbastecimento, 'descricaoComCodigo', 'colecaoZonaAbastecimentoFiltro');
-				carregarComboGenerico(obj, 'gcom.operacional.SetorAbastecimento', null, document.forms[0].idSetorAbastecimento, 'descricaoComCodigo', 'colecaoSetorAbastecimentoFiltro');
-
-			} else if (tipoObj == 'distritoOperacional') {
-
-				if (document.forms[0].idSistemaAbastecimento.value == '-1') {
-					carregarComboGenerico(obj, 'gcom.operacional.ZonaAbastecimento', null, document.forms[0].idZonaAbastecimento, 'descricaoComCodigo', 'colecaoZonaAbastecimentoFiltro');
-					carregarComboGenerico(obj, 'gcom.operacional.SetorAbastecimento', null, document.forms[0].idSetorAbastecimento, 'descricaoComCodigo', 'colecaoSetorAbastecimentoFiltro');
-				} else {
-					limparComboGenerico(document.forms[0].idZonaAbastecimento);
-					limparComboGenerico(document.forms[0].idSetorAbastecimento);
-				}
-
-			} else if (tipoObj == 'zonaAbastecimento') {
-
-				if (document.forms[0].idSistemaAbastecimento.value == '-1' && document.forms[0].idDistritoOperacional.value == '-1') {
-					carregarComboGenerico(obj, 'gcom.operacional.SetorAbastecimento', null, document.forms[0].idSetorAbastecimento, 'descricaoComCodigo', 'colecaoSetorAbastecimentoFiltro');
-				} else {
-					limparComboGenerico(document.forms[0].idSetorAbastecimento);
-				}
-
-			} else if (tipoObj == 'sistemaEsgoto') {
-
-				carregarComboGenerico(obj, 'gcom.operacional.SubsistemaEsgoto', null, document.forms[0].idSubsistemaEsgoto, 'descricaoComCodigo', 'colecaoSubsistemaEsgotoFiltro');
-				carregarComboGenerico(obj, 'gcom.operacional.Bacia', null, document.forms[0].idBacia, 'descricaoComCodigoEId', 'colecaoBaciaFiltro');
-				carregarComboGenerico(obj, 'gcom.operacional.SubBacia', null, document.forms[0].idSubBacia, 'descricaoComCodigo', 'colecaoSubBaciaFiltro');
-
-			} else if (tipoObj == 'subsistemaEsgoto') {
-
-				if (document.forms[0].idSistemaEsgoto.value == '-1') {
-					carregarComboGenerico(obj, 'gcom.operacional.Bacia', null, document.forms[0].idBacia, 'descricaoComCodigoEId', 'colecaoBaciaFiltro');
-					carregarComboGenerico(obj, 'gcom.operacional.SubBacia', null, document.forms[0].idSubBacia, 'descricaoComCodigo', 'colecaoSubBaciaFiltro');
-				} else {
-					limparComboGenerico(document.forms[0].idBacia);
-					limparComboGenerico(document.forms[0].idSubBacia);
-				}
-
-			} else if (tipoObj == 'bacia') {
-
-				if (document.forms[0].idSistemaEsgoto.value == '-1' && document.forms[0].idSubsistemaEsgoto.value == '-1') {
-					carregarComboGenerico(obj, 'gcom.operacional.SubBacia', null, document.forms[0].idSubBacia, 'descricaoComCodigo', 'colecaoSubBaciaFiltro');
-				} else {
-					limparComboGenerico(document.forms[0].idSubBacia);
-				}
 
 			}
 			// recarrega o formulário para atualizar os comboBoxes
@@ -429,94 +351,7 @@
 						<img src="<bean:message key="caminho.imagens"/>limparcampo.gif" border="0" title="Apagar"/></a>
 					</td>
 				</tr>
-				<tr>
-					<td width="28%"><strong>Sistema de Abastecimento:</strong></td>
-					<td colspan="2">
-						<html:select property="idSistemaAbastecimento" tabindex="7" style="width: 220px;" onchange="carregarCombo(this, 'sistemaAbastecimento');">
-							<html:option value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-							<logic:present name="colecaoSistemaAbastecimentoFiltro">
-								<html:options collection="colecaoSistemaAbastecimentoFiltro" labelProperty="descricaoComCodigo" property="id"/>
-							</logic:present>
-						</html:select>
-					</td>
-				</tr>
-				<tr>
-					<td width="28%"><strong>Distrito Operacional:</strong></td>
-					<td colspan="2">
-						<html:select property="idDistritoOperacional" tabindex="8" style="width: 220px;" onchange="carregarCombo(this, 'distritoOperacional');">
-							<html:option value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-							<logic:present name="colecaoDistritoOperacionalFiltro">
-								<html:options collection="colecaoDistritoOperacionalFiltro" labelProperty="descricaoComId" property="id"/>
-							</logic:present>
-						</html:select>
-					</td>
-				</tr>
-				<tr>
-					<td width="28%"><strong>Zona de Abastecimento:</strong></td>
-					<td colspan="2">
-						<html:select property="idZonaAbastecimento" tabindex="9" style="width: 220px;" onchange="carregarCombo(this, 'zonaAbastecimento');">
-							<html:option value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-							<logic:present name="colecaoZonaAbastecimentoFiltro">
-								<html:options collection="colecaoZonaAbastecimentoFiltro" labelProperty="descricaoComCodigo" property="id"/>
-							</logic:present>
-						</html:select>
-					</td>
-				</tr>
-				<tr>
-					<td width="28%"><strong>Setor de Abastecimento:</strong></td>
-					<td colspan="2">
-						<html:select property="idSetorAbastecimento" tabindex="10" style="width: 220px;" >
-							<html:option value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-							<logic:present name="colecaoSetorAbastecimentoFiltro">
-								<html:options collection="colecaoSetorAbastecimentoFiltro" labelProperty="descricaoComCodigo" property="id"/>
-							</logic:present>
-						</html:select>
-					</td>
-				</tr>
-				<tr>
-					<td width="28%"><strong>Sistema de Esgoto:</strong></td>
-					<td colspan="2">
-						<html:select property="idSistemaEsgoto" tabindex="11" style="width: 220px;" onchange="carregarCombo(this, 'sistemaEsgoto');">
-							<html:option value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-							<logic:present name="colecaoSistemaEsgotoFiltro">
-								<html:options collection="colecaoSistemaEsgotoFiltro" labelProperty="descricaoComId" property="id"/>
-							</logic:present>
-						</html:select>
-					</td>
-				</tr>
-				<tr>
-					<td width="28%"><strong>Subsistema de Esgoto:</strong></td>
-					<td colspan="2">
-						<html:select property="idSubsistemaEsgoto" tabindex="12" style="width: 220px;" onchange="carregarCombo(this, 'subsistemaEsgoto');">
-							<html:option value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-							<logic:present name="colecaoSubsistemaEsgotoFiltro">
-								<html:options collection="colecaoSubsistemaEsgotoFiltro" labelProperty="descricaoComCodigo" property="id"/>
-							</logic:present>
-						</html:select>
-					</td>
-				</tr>
-				<tr>
-					<td width="28%"><strong>Bacia:</strong></td>
-					<td colspan="2">
-						<html:select property="idBacia" tabindex="13" style="width: 220px;" onchange="carregarCombo(this, 'bacia');">
-							<html:option value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-							<logic:present name="colecaoBaciaFiltro">
-								<html:options collection="colecaoBaciaFiltro" labelProperty="descricaoComCodigoEId" property="id"/>
-							</logic:present>
-						</html:select>
-					</td>
-				</tr>
-				<tr>
-					<td width="28%"><strong>Subbacia:</strong></td>
-					<td colspan="2">
-						<html:select property="idSubBacia" tabindex="14" style="width: 220px;">
-							<html:option value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-							<logic:present name="colecaoSubBaciaFiltro">
-								<html:options collection="colecaoSubBaciaFiltro" labelProperty="descricaoComCodigo" property="id"/>
-							</logic:present>
-						</html:select>
-					</td>
-				</tr>
+			
 				<tr>
 					<td width="28%"><strong>Unidade Origem:</strong></td>
 					<td height="24" colspan="2">
@@ -557,9 +392,23 @@
 						<img src="<bean:message key="caminho.imagens"/>limparcampo.gif" border="0" title="Apagar"/></a>
 					</td>
 				</tr>
+				
+				
+				
+				<tr>
+					<td height="30"><strong>Unidade do Primeiro Trâmite? :<font color="#FF0000">*</font></strong></td>
+					<td>
+						<html:radio property="indicadorPrimeiroTramite" value="<%="" + ConstantesSistema.SIM.toString()%>"/><strong>SIM&nbsp;
+						<html:radio property="indicadorPrimeiroTramite" value="<%="" + ConstantesSistema.NAO.toString()%>"/>NÃO</strong>
+					</td>
+				</tr>
+				
 				<tr>
 					<td colspan="3">&nbsp;</td>
 				</tr>
+				
+				
+				
 			</table>
 			<table width="100%" border="0">
 				<tr>

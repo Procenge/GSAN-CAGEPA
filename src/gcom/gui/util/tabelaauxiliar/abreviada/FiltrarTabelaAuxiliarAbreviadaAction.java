@@ -76,6 +76,7 @@
 
 package gcom.gui.util.tabelaauxiliar.abreviada;
 
+import gcom.util.Util;
 import gcom.util.filtro.ComparacaoTexto;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.tabelaauxiliar.abreviada.FiltroTabelaAuxiliarAbreviada;
@@ -96,6 +97,8 @@ import org.apache.struts.validator.DynaValidatorForm;
  */
 public class FiltrarTabelaAuxiliarAbreviadaAction
 				extends Action {
+
+	private static final String IDICADOR_USO_TODOS = "3";
 
 	/**
 	 * < <Descrição do método>>
@@ -124,6 +127,8 @@ public class FiltrarTabelaAuxiliarAbreviadaAction
 		String descricaoAbreviada = (String) pesquisarActionForm.get("descricaoAbreviada");
 		String atualizar = (String) pesquisarActionForm.get("atualizar");
 
+		String indicadorUso = (String) pesquisarActionForm.get("indicadorUso");
+
 		// cria o filtro para Tabela Auxiliar abreviada
 		FiltroTabelaAuxiliarAbreviada filtroTabelaAuxiliarAbreviada = new FiltroTabelaAuxiliarAbreviada();
 
@@ -139,6 +144,13 @@ public class FiltrarTabelaAuxiliarAbreviadaAction
 			filtroTabelaAuxiliarAbreviada.adicionarParametro(new ComparacaoTexto(FiltroTabelaAuxiliarAbreviada.DESCRICAOABREVIADA,
 							descricaoAbreviada));
 		}
+
+		
+		if(indicadorUso != null && !indicadorUso.trim().equals("") && !indicadorUso.trim().equals(IDICADOR_USO_TODOS)){
+			filtroTabelaAuxiliarAbreviada.adicionarParametro(new ParametroSimples(FiltroTabelaAuxiliarAbreviada.INDICADORUSO, Short
+							.valueOf(indicadorUso)));
+		}
+
 		if(atualizar != null && atualizar.equalsIgnoreCase("1")){
 			httpServletRequest.setAttribute("atualizar", atualizar);
 		}

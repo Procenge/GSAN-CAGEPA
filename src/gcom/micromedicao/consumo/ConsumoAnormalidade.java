@@ -119,6 +119,8 @@ public class ConsumoAnormalidade
 
 	private String codigoConstante;
 
+	private Short indicadorCreditoConsumo;
+
 	// CONTANTES
 	public static Integer CONSUMO_NORMAL;
 
@@ -316,6 +318,16 @@ public class ConsumoAnormalidade
 	public void setCodigoConstante(String codigoConstante){
 
 		this.codigoConstante = codigoConstante;
+	}
+
+	public Short getIndicadorCreditoConsumo(){
+
+		return indicadorCreditoConsumo;
+	}
+
+	public void setIndicadorCreditoConsumo(Short indicadorCreditoConsumo){
+
+		this.indicadorCreditoConsumo = indicadorCreditoConsumo;
 	}
 
 	public String toString(){

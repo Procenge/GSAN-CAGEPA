@@ -34,6 +34,7 @@
 
 package gcom.cobranca;
 
+import gcom.faturamento.GuiaPagamentoGeral;
 import gcom.faturamento.conta.ContaGeral;
 import gcom.faturamento.debito.DebitoCreditoSituacao;
 
@@ -75,6 +76,10 @@ public class QuitacaoDebitoAnualItem
 
 	/** persistent field */
 	private ContaGeral contaGeral;
+
+	private GuiaPagamentoGeral guiaPagamentoGeral;
+
+	private Short numeroPrestacao;
 
 	/** default constructor */
 	public QuitacaoDebitoAnualItem() {
@@ -242,6 +247,26 @@ public class QuitacaoDebitoAnualItem
 	public void setContaGeral(ContaGeral contaGeral){
 
 		this.contaGeral = contaGeral;
+	}
+
+	public GuiaPagamentoGeral getGuiaPagamentoGeral(){
+
+		return guiaPagamentoGeral;
+	}
+
+	public void setGuiaPagamentoGeral(GuiaPagamentoGeral guiaPagamentoGeral){
+
+		this.guiaPagamentoGeral = guiaPagamentoGeral;
+	}
+
+	public Short getNumeroPrestacao(){
+
+		return numeroPrestacao;
+	}
+
+	public void setNumeroPrestacao(Short numeroPrestacao){
+
+		this.numeroPrestacao = numeroPrestacao;
 	}
 
 }

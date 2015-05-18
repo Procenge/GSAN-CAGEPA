@@ -106,6 +106,8 @@ public class DebitoCreditoSituacao
 	/** nullable persistent field */
 	private Date ultimaAlteracao;
 
+	private Short indicadorValido;
+
 	public final static Integer NORMAL = Integer.valueOf(0);
 
 	public final static Integer RETIFICADA = Integer.valueOf(1);
@@ -185,6 +187,16 @@ public class DebitoCreditoSituacao
 	public void setUltimaAlteracao(Date ultimaAlteracao){
 
 		this.ultimaAlteracao = ultimaAlteracao;
+	}
+
+	public Short getIndicadorValido(){
+
+		return indicadorValido;
+	}
+
+	public void setIndicadorValido(Short indicadorValido){
+
+		this.indicadorValido = indicadorValido;
 	}
 
 	public String toString(){

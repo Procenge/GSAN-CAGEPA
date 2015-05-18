@@ -399,9 +399,9 @@ public class ExibirEstabelecerVinculoPopupAction
 		}
 
 		ObterDebitoImovelOuClienteHelper obterDebitoImovelOuClienteHelper = pFachada.obterDebitoImovelOuCliente(1, pMatriculaImovel, null,
-						null, "000101", dataFinalReferenciaDebito.toString(), dataInicioVencimentoDebito.getTime(), dataFimVencimentoDebito
-.getTime(), 1, 1, 1, 1, 1, 1, 2, null, null, null, null, null, ConstantesSistema.SIM,
-						ConstantesSistema.SIM, ConstantesSistema.SIM);
+						null, "000101", dataFinalReferenciaDebito.toString(), dataInicioVencimentoDebito.getTime(),
+						dataFimVencimentoDebito.getTime(), 1, 1, 1, 1, 1, 1, 2, null, null, null, null, null, ConstantesSistema.SIM,
+						ConstantesSistema.SIM, ConstantesSistema.SIM, 2, null);
 
 		boolean existeDebito = false;
 		if(obterDebitoImovelOuClienteHelper != null){

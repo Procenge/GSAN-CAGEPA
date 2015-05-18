@@ -77,6 +77,8 @@
 package gcom.relatorio.atendimentopublico;
 
 import gcom.batch.Relatorio;
+import gcom.cadastro.imovel.Categoria;
+import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.imovel.bean.ImovelMicromedicao;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
@@ -90,12 +92,7 @@ import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.agendadortarefas.AgendadorTarefas;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Ana Maria
@@ -120,7 +117,7 @@ public class RelatorioResumoImovelMicromedicao
 	private Collection<RelatorioResumoImovelMicromedicaoBean> inicializarBeanRelatorio(Collection dadosRelatorio){
 
 		Collection<RelatorioResumoImovelMicromedicaoBean> retorno = new ArrayList();
-
+		Fachada fachada = Fachada.getInstancia();
 		// Histórico Medição e Consumo
 		Iterator iterator = dadosRelatorio.iterator();
 
@@ -176,9 +173,39 @@ public class RelatorioResumoImovelMicromedicao
 				consumoMedido = String.valueOf(imovelMicromedicao.getMedicaoHistorico().getNumeroConsumoMes());
 			}
 
+			String categorias = "";
+			String numeroEconomias = "";
+			if(!Util.isVazioOuBranco(imovelMicromedicao.getCategorias())){
+				Collection colecaoCategoria = imovelMicromedicao.getCategorias();
+				
+				if(!Util.isVazioOrNulo(colecaoCategoria)){
+
+					for(Object object : colecaoCategoria){
+
+						Categoria categoria = (Categoria) object;
+						if(Util.isVazioOuBrancoOuZero(categorias)){
+							categorias = categoria.getDescricaoAbreviada();
+						}else{
+							categorias = categorias + "/" + categoria.getDescricaoAbreviada();
+						}
+						numeroEconomias = categoria.getQuantidadeEconomiasCategoria().toString();
+					}
+
+					
+				}
+				
+			}
+				
+
+			String numeroHidrometro = null;
+			if(imovelMicromedicao.getNumeroHidrometro() != null){
+				numeroHidrometro = imovelMicromedicao.getNumeroHidrometro();
+			}
+
+
 			RelatorioResumoImovelMicromedicaoBean bean = new RelatorioResumoImovelMicromedicaoBean(mesAnoMedicao, dataLeituraInformada,
 							leituraInformada, dataLeituraFaturada, leituraFaturada, consumo, anormalidadeConsumo, anormalidadeLeitura,
-							sitLeituraAtual, consumoMedido);
+							sitLeituraAtual, consumoMedido, categorias, numeroEconomias, numeroHidrometro);
 
 			retorno.add(bean);
 
@@ -212,9 +239,8 @@ public class RelatorioResumoImovelMicromedicao
 
 		SistemaParametro sistemaParametro = fachada.pesquisarParametrosDoSistema();
 
-		String matriculaFormatada = ((String) getParametro("matricula")).substring(0, ((String) getParametro("matricula")).length() - 1)
-						+ "." + ((String) getParametro("matricula")).substring(((String) getParametro("matricula")).length() - 1);
-
+		String matriculaFormatada = Imovel.getMatriculaComDigitoVerificadorFormatada((String) getParametro("matricula"));
+						
 		parametros.put("imagem", sistemaParametro.getImagemRelatorio());
 		parametros.put("matricula", matriculaFormatada);
 		parametros.put("inscricao", (String) getParametro("inscricao"));

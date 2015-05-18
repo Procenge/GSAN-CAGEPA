@@ -27,6 +27,8 @@ public class RelatorioContaModelo2
 
 	private static Logger log = Logger.getLogger(ControladorFaturamento.class);
 
+	private static final String key = "1";
+
 	public RelatorioContaModelo2(Usuario usuario) {
 
 		super(usuario, ConstantesRelatorios.RELATORIO_CONTA_MODELO_2);
@@ -39,6 +41,10 @@ public class RelatorioContaModelo2
 	}
 
 	public Object executar() throws TarefaException{
+
+		String string = new String();
+
+		synchronized(key){
 
 		Integer idFuncionalidadeIniciada = this.getIdFuncionalidadeIniciada();
 
@@ -71,7 +77,10 @@ public class RelatorioContaModelo2
 		}
 
 		log.info("............Fim Relatório Emitir Contas: " + descricaoArquivo);
+
 		return retorno;
+		}
+
 	}
 
 	@Override

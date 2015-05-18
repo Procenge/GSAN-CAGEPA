@@ -73,6 +73,8 @@ public class QuitacaoDebitoAnual
 	/** persistent field */
 	private FaturamentoGrupo faturamentoGrupo;
 
+	private Integer anoReferenciaGeracao;
+
 	/** default constructor */
 	public QuitacaoDebitoAnual() {
 
@@ -222,6 +224,16 @@ public class QuitacaoDebitoAnual
 	public void setFaturamentoGrupo(FaturamentoGrupo faturamentoGrupo){
 
 		this.faturamentoGrupo = faturamentoGrupo;
+	}
+
+	public Integer getAnoReferenciaGeracao(){
+
+		return anoReferenciaGeracao;
+	}
+
+	public void setAnoReferenciaGeracao(Integer anoReferenciaGeracao){
+
+		this.anoReferenciaGeracao = anoReferenciaGeracao;
 	}
 
 }

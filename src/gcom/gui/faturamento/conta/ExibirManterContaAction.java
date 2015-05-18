@@ -130,6 +130,11 @@ public class ExibirManterContaAction
 
 		sessao.setAttribute("EXIBIRCAUCIONAR", exibirCaucionar);
 
+		String limiteMaximoContasSelecionadas = ((String) ParametroFaturamento.P_LIMITE_MAXIMO_CONTAS_SELECIONADAS_OPERACAO_MANTER_CONTA
+						.executar());
+
+		sessao.setAttribute("limiteContasSelecionadas", limiteMaximoContasSelecionadas);
+
 		// Instância do formulário que está sendo utilizado
 		ManterContaActionForm manterContaActionForm = (ManterContaActionForm) actionForm;
 		String limparForm = httpServletRequest.getParameter("limparForm");
@@ -318,7 +323,7 @@ public class ExibirManterContaAction
 					throw new ActionServletException("atencao.pesquisa.nenhuma.conta_imovel", objetoImovel.getId().toString(),
 									"exibirManterContaAction.do?limpaTela=1");
 				}
-
+				
 				// Carregando as informações do imóvel no formulário de exibição.
 				if(idImovel == null || idImovel.equalsIgnoreCase("")){
 					manterContaActionForm.setIdImovel(idImovelRequest);
@@ -353,6 +358,13 @@ public class ExibirManterContaAction
 		}
 
 		sessao.removeAttribute("cancelar");
+
+		if(fachada.existeProcessoExecucaoFiscal().equals(ConstantesSistema.SIM)){
+			sessao.setAttribute("exibirDividaAtivaColuna", "S");
+		}else{
+			sessao.removeAttribute("exibirDividaAtivaColuna");
+		}
+
 		return retorno;
 	}
 
@@ -486,6 +498,8 @@ public class ExibirManterContaAction
 			}
 		}
 	}
+
+
 
 	/**
 	 * [SB0013] Verificar Débito em Cobrança Administrativa

@@ -78,10 +78,7 @@ package gcom.gui.faturamento.conta;
 
 import gcom.atendimentopublico.ligacaoagua.FiltroLigacaoAguaSituacao;
 import gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao;
-import gcom.atendimentopublico.ligacaoesgoto.FiltroLigacaoEsgotoPerfil;
-import gcom.atendimentopublico.ligacaoesgoto.FiltroLigacaoEsgotoSituacao;
-import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoPerfil;
-import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao;
+import gcom.atendimentopublico.ligacaoesgoto.*;
 import gcom.atendimentopublico.registroatendimento.EspecificacaoTipoValidacao;
 import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.cliente.ClienteConta;
@@ -92,6 +89,7 @@ import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.imovel.Subcategoria;
 import gcom.cadastro.imovel.bean.ImovelMicromedicao;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
+import gcom.cobranca.bean.ContaValoresHelper;
 import gcom.fachada.Fachada;
 import gcom.faturamento.consumotarifa.ConsumoTarifa;
 import gcom.faturamento.consumotarifa.FiltroConsumoTarifa;
@@ -102,6 +100,7 @@ import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.micromedicao.leitura.FiltroLeituraAnormalidade;
 import gcom.micromedicao.leitura.LeituraAnormalidade;
+import gcom.micromedicao.medicao.MedicaoTipo;
 import gcom.seguranca.acesso.PermissaoEspecial;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
@@ -113,6 +112,7 @@ import gcom.util.parametrizacao.ExecutorParametro;
 import gcom.util.parametrizacao.Parametrizacao;
 import gcom.util.parametrizacao.faturamento.ExecutorParametrosFaturamento;
 import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
+import gcom.util.parametrizacao.micromedicao.ParametroMicromedicao;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -171,15 +171,17 @@ public class ExibirRetificarContaAction
 			}
 
 			if(idMotivoRetificacao.equals(parametroMotivoRetificaoOcorrenciaConsumo)){
-				Integer qtdRAEncerradaAnoCorrente;
+				Integer qtdContasRetificadasPorMotivoRetificacao;
 				Integer idImovel = null;
 				try{
 					if(httpServletRequest.getParameter("idImovel") != null){
 						idImovel = Util.converterStringParaInteger(httpServletRequest.getParameter("idImovel"));
 					}
-					qtdRAEncerradaAnoCorrente = getFachada().obterQuantidadeRAEncerradaAnoCorrentePorTipoSolicitacaoEspecificacao(
-									Util.obterInteger(((String) ParametroFaturamento.P_TIPO_SOLICITACAO_ESPECIFICACAO_BLOQUEIO_RETIFICACAO
-													.executar(this))), idImovel);
+
+					qtdContasRetificadasPorMotivoRetificacao = Fachada.getInstancia().obterQtdContasRetificadasPorMotivoRetificacao(
+													idImovel,
+													Util.obterInteger(((String) ParametroFaturamento.P_MOTIVO_RETIFICACAO_OCORRENCIA_CONSUMO
+																	.executar(this))));
 				}catch(ControladorException e){
 					throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(
 									new String[e.getParametroMensagem().size()]));
@@ -193,11 +195,11 @@ public class ExibirRetificarContaAction
 					throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(
 									new String[e.getParametroMensagem().size()]));
 				}
-				if(qtdRAEncerradaAnoCorrente.intValue() > qtdRAEncerradaAnoParametro.intValue()){
+				if(qtdContasRetificadasPorMotivoRetificacao.intValue() > qtdRAEncerradaAnoParametro.intValue()){
 					retificarContaActionForm.setMotivoRetificacaoID("-1");
 
-					throw new ActionServletException("atencao.quantidade_ra_ano_maior_parametro", qtdRAEncerradaAnoCorrente.toString(),
-									idMotivoRetificacao.toString());
+					throw new ActionServletException("atencao.quantidade.contas.retificadas.ocorrencia.consumo.maior",
+									String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
 				}
 			}
 		}
@@ -221,6 +223,9 @@ public class ExibirRetificarContaAction
 
 		// Caso a chamada tenha sido feita pelo Caucionar Conta
 		String indicadorOperacao = httpServletRequest.getParameter("indicadorOperacao");
+		boolean temPermissaoAtualizarDebitosExecFiscal = fachada.verificarPermissaoEspecial(
+						PermissaoEspecial.ATUALIZAR_DEBITOS_EXECUCAO_FISCAL, this.getUsuarioLogado(httpServletRequest));
+		StringBuffer parametroExecucaoFiscal = new StringBuffer();
 
 		if(!Util.isVazioOuBranco(indicadorOperacao) && indicadorOperacao.equals("caucionar")){
 
@@ -234,7 +239,69 @@ public class ExibirRetificarContaAction
 				Integer idContaParametro = new Integer(idContaArray[0]);
 
 				idConta = idContaParametro.toString();
+
+				/**
+				 * [UC0146] Manter Conta
+				 * [SB0040] Verificar Existência de Conta em Execução Fiscal
+				 * 
+				 * @author Gicevalter Couto
+				 * @date 07/08/2014
+				 */
+				if(idConta != null && !temPermissaoAtualizarDebitosExecFiscal){
+					FiltroConta filtroConta = new FiltroConta();
+					filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.ID, idConta));
+					filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.DEBITOS_COBRADOS);
+
+					Conta conta = (Conta) Util.retonarObjetoDeColecao(((Collection<Conta>) fachada.pesquisar(filtroConta,
+									Conta.class.getName())));
+					ContaValoresHelper contaValores = new ContaValoresHelper();
+					contaValores.setConta(conta);
+
+					Collection<ContaValoresHelper> colecaoContaValores = new ArrayList<ContaValoresHelper>();
+					colecaoContaValores.add(contaValores);
+
+					if(fachada.verificarExecucaoFiscal(colecaoContaValores, null, null)){
+						parametroExecucaoFiscal.append(conta.getReferenciaFormatada());
+						parametroExecucaoFiscal.append(", ");
+					}
+				}
 			}
+		}else{
+			/**
+			 * [UC0146] Manter Conta
+			 * [SB0040] Verificar Existência de Conta em Execução Fiscal
+			 * 
+			 * @author Gicevalter Couto
+			 * @date 07/08/2014
+			 * @param colecaoContas
+			 */
+			if(idConta != null && !temPermissaoAtualizarDebitosExecFiscal){
+				FiltroConta filtroConta = new FiltroConta();
+				filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.ID, idConta));
+				filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.DEBITOS_COBRADOS);
+
+				Conta conta = (Conta) Util
+								.retonarObjetoDeColecao(((Collection<Conta>) fachada.pesquisar(filtroConta, Conta.class.getName())));
+				ContaValoresHelper contaValores = new ContaValoresHelper();
+				contaValores.setConta(conta);
+
+				Collection<ContaValoresHelper> colecaoContaValores = new ArrayList<ContaValoresHelper>();
+				colecaoContaValores.add(contaValores);
+
+				if(fachada.verificarExecucaoFiscal(colecaoContaValores, null, null)){
+					parametroExecucaoFiscal.append(conta.getReferenciaFormatada());
+					parametroExecucaoFiscal.append(", ");
+				}
+			}
+		}
+
+		String parametroMensagemExecFiscal = parametroExecucaoFiscal.toString();
+
+		if(!Util.isVazioOuBranco(parametroMensagemExecFiscal)){
+			parametroMensagemExecFiscal = parametroMensagemExecFiscal.substring(0, parametroMensagemExecFiscal.length() - 2);
+
+			throw new ActionServletException("atencao.conta.debito.execucao.fiscal", usuario.getNomeUsuario().toString(),
+							parametroMensagemExecFiscal);
 		}
 
 		if(httpServletRequest.getParameter("idImovel") != null){
@@ -515,7 +582,7 @@ public class ExibirRetificarContaAction
 
 				throw new ActionServletException("atencao.sistemaparametro_inexistente", null, "P_MOTIVO_RETENCAO_CONTA_PREFAT");
 			}
-			
+
 			boolean temPermissaoRetificarContaRetida = fachada.verificarPermissaoRetificarContaRetida(usuario);
 
 			// Atribui "2" (Não) ao Indicador de Conta em Revisão por Motivo Permitido com Permissão
@@ -590,6 +657,47 @@ public class ExibirRetificarContaAction
 				Collection colecaoCategoriaInicial = new ArrayList();
 				colecaoCategoriaInicial.addAll(colecaoCategoria);
 				sessao.setAttribute("colecaoCategoriaInicial", colecaoCategoriaInicial);
+			}
+
+			// Consumo Poço
+			if((retificarContaActionForm.getConsumoFixoPoco() == null || StringUtils.isEmpty(retificarContaActionForm.getConsumoFixoPoco()
+							.trim())) && contaSelecao.getConsumoPoco() != null){
+
+				retificarContaActionForm.setConsumoFixoPoco(contaSelecao.getConsumoPoco().toString());
+
+			}
+
+			String pAcumularConsumoEsgotoPoco = null;
+			try{
+
+				pAcumularConsumoEsgotoPoco = ParametroMicromedicao.P_ACUMULA_CONSUMO_ESGOTO_POCO.executar();
+			}catch(ControladorException e){
+
+				throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(
+								new String[e.getParametroMensagem().size()]));
+			}
+
+			// Caso a empresa não acumule o volume do poço com o volume da ligação de água para
+			// cálculo
+			// do valor de esgoto
+			if(pAcumularConsumoEsgotoPoco.equals(ConstantesSistema.NAO.toString())){
+
+				LigacaoEsgoto ligacaoEsgoto = (LigacaoEsgoto) fachada.pesquisar(objetoImovel.getId(), LigacaoEsgoto.class);
+
+				// Caso o imóvel possua volume fixo para poço
+				if(ligacaoEsgoto != null && ligacaoEsgoto.getNumeroConsumoFixoPoco() != null){
+
+					retificarContaActionForm.setHabilitarConsumoFixoPoco(ConstantesSistema.SIM.toString());
+				}else{
+
+					retificarContaActionForm.setHabilitarConsumoFixoPoco(ConstantesSistema.NAO.toString());
+					retificarContaActionForm.setConsumoFixoPoco(null);
+				}
+
+			}else{
+
+				retificarContaActionForm.setHabilitarConsumoFixoPoco(ConstantesSistema.NAO.toString());
+				retificarContaActionForm.setConsumoFixoPoco(null);
 			}
 
 			// Obtendo os débitos cobrados da conta
@@ -832,7 +940,12 @@ public class ExibirRetificarContaAction
 			// Dados de Leitura, caso existam
 			ImovelMicromedicao dadosMedicaoImovel = fachada.carregarDadosMedicaoResumido(objetoImovel.getId(), true,
 							String.valueOf(contaSelecao.getReferencia()));
+			Imovel imovel = fachada.pesquisarImovel(contaSelecao.getImovel().getId());
+
 			if(dadosMedicaoImovel != null && dadosMedicaoImovel.getMedicaoHistorico() != null){
+
+				Object[] dadosLeituraAnterior = fachada.obterDadosLeituraAnterior(contaSelecao.getReferencia(), MedicaoTipo.LIGACAO_AGUA,
+								imovel);
 
 				possuiMedicaoHistoricoAguaOuPoco = true;
 				retificarContaActionForm.setMesAnoMedicaoHistoricoAgua(dadosMedicaoImovel.getMedicaoHistorico().getMesAno());
@@ -844,6 +957,9 @@ public class ExibirRetificarContaAction
 
 						retificarContaActionForm.setNumeroLeituraAnteriorMedicaoHistoricoAgua(dadosMedicaoImovel.getMedicaoHistorico()
 										.getLeituraAnteriorFaturamento().toString());
+					}else if(dadosLeituraAnterior[0] != null){
+
+						retificarContaActionForm.setNumeroLeituraAnteriorMedicaoHistoricoAgua(dadosLeituraAnterior[0].toString());
 					}
 				}
 
@@ -865,6 +981,7 @@ public class ExibirRetificarContaAction
 								|| StringUtils.isEmpty(retificarContaActionForm.getDataLeituraAtualMedicaoHistoricoAgua().trim())){
 
 					if(dadosMedicaoImovel.getMedicaoHistorico().getDataLeituraAtualFaturamento() != null){
+
 						retificarContaActionForm.setDataLeituraAtualMedicaoHistoricoAgua(Util.formatarData(dadosMedicaoImovel
 										.getMedicaoHistorico().getDataLeituraAtualFaturamento()));
 					}else{
@@ -886,6 +1003,9 @@ public class ExibirRetificarContaAction
 						retificarContaActionForm.setDataLeituraAnteriorMedicaoHistoricoAgua(Util.formatarData(dadosMedicaoImovel
 										.getMedicaoHistorico().getDataLeituraAnteriorFaturamento()));
 
+					}else if(dadosLeituraAnterior[1] != null){
+
+						retificarContaActionForm.setDataLeituraAtualMedicaoHistoricoAgua(Util.formatarData((Date) dadosLeituraAnterior[1]));
 					}else{
 						String mesAnoContaStr = retificarContaActionForm.getMesAnoConta();
 						String anoMesContaStr = Util.formatarMesAnoParaAnoMesSemBarra(mesAnoContaStr);
@@ -914,6 +1034,8 @@ public class ExibirRetificarContaAction
 							String.valueOf(contaSelecao.getReferencia()));
 			if(dadosMedicaoImovel != null && dadosMedicaoImovel.getMedicaoHistorico() != null){
 
+				Object[] dadosLeituraAnterior = fachada.obterDadosLeituraAnterior(contaSelecao.getReferencia(), MedicaoTipo.POCO, imovel);
+
 				possuiMedicaoHistoricoAguaOuPoco = true;
 
 				if(retificarContaActionForm.getMesAnoMedicaoHistoricoEsgoto() == null
@@ -930,6 +1052,9 @@ public class ExibirRetificarContaAction
 
 						retificarContaActionForm.setNumeroLeituraAnteriorMedicaoHistoricoEsgoto(dadosMedicaoImovel.getMedicaoHistorico()
 										.getLeituraAnteriorFaturamento().toString());
+					}else if(dadosLeituraAnterior[0] != null){
+
+						retificarContaActionForm.setNumeroLeituraAnteriorMedicaoHistoricoEsgoto(dadosLeituraAnterior[0].toString());
 					}
 				}
 
@@ -1235,7 +1360,7 @@ public class ExibirRetificarContaAction
 		}
 
 		String indicadorDuplicarConsumoAguaParaConsumoEsgoto = null;
-		
+
 		try{
 			indicadorDuplicarConsumoAguaParaConsumoEsgoto = (String) ParametroFaturamento.P_DUPLICAR_VALOR_CONSUMO_AGUA_PARA_CONSUMO_ESGOTO
 							.executar();

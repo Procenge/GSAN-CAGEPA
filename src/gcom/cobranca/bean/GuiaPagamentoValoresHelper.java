@@ -82,6 +82,7 @@ package gcom.cobranca.bean;
 
 import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao;
 import gcom.cobranca.parcelamento.Parcelamento;
+import gcom.faturamento.debito.DebitoTipo;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -134,6 +135,18 @@ public class GuiaPagamentoValoresHelper
 
 	private String descricaoDebitoCreditoSituacaoAtual;
 
+	private BigDecimal valorSucumbencia;
+
+	private BigDecimal valorJurosMoraSucumbencia;
+
+	private BigDecimal valorAtualizacaoMonetariaSucumbencia;
+
+	private Short indicadorDividaAtiva;
+
+	private Short indicadorExecucaoFiscal;
+
+	private Integer idParcelamento;
+
 	public GuiaPagamentoValoresHelper() {
 
 	}
@@ -173,6 +186,89 @@ public class GuiaPagamentoValoresHelper
 			}
 		}
 		return retorno;
+	}
+
+	/**
+	 * Recupera o valor total da prestação, somando os valores dos Tipos Débitos exceto Sucumbência.
+	 * 
+	 * @author Saulo Lima
+	 * @date 16/06/2014
+	 * @return ValorPrestacaoSemSucumbencia
+	 */
+	public BigDecimal getValorTotalPrestacaoSemSucumbencia(){
+
+		BigDecimal retorno = new BigDecimal("0.00");
+		if(this.guiaPagamentoPrestacoes != null && !this.guiaPagamentoPrestacoes.isEmpty()){
+			Iterator<GuiaPagamentoPrestacao> iterator = this.guiaPagamentoPrestacoes.iterator();
+			while(iterator.hasNext()){
+				GuiaPagamentoPrestacao prestacao = iterator.next();
+				if(!prestacao.getDebitoTipo().getId().equals(DebitoTipo.SUCUMBENCIA)){
+					retorno = retorno.add(prestacao.getValorPrestacao().setScale(Parcelamento.CASAS_DECIMAIS,
+									Parcelamento.TIPO_ARREDONDAMENTO));
+				}
+			}
+		}
+		return retorno;
+	}
+
+	/**
+	 * Recupera o valor total da prestação, somando os valores dos Tipos Débitos de Sucumbência.
+	 * 
+	 * @author Saulo Lima
+	 * @date 16/06/2014
+	 * @return ValorPrestacaoSucumbencia
+	 */
+	public BigDecimal getValorTotalPrestacaoSucumbencia(){
+
+		BigDecimal retorno = BigDecimal.ZERO;
+		if(this.guiaPagamentoPrestacoes != null && !this.guiaPagamentoPrestacoes.isEmpty()){
+			Iterator<GuiaPagamentoPrestacao> iterator = this.guiaPagamentoPrestacoes.iterator();
+			while(iterator.hasNext()){
+				GuiaPagamentoPrestacao prestacao = iterator.next();
+				if(prestacao.getDebitoTipo().getId().equals(DebitoTipo.SUCUMBENCIA)){
+					retorno = retorno.add(prestacao.getValorPrestacao().setScale(Parcelamento.CASAS_DECIMAIS,
+									Parcelamento.TIPO_ARREDONDAMENTO));
+				}
+			}
+		}
+		return retorno;
+	}
+
+	public BigDecimal getValorTotalAcrescimoSucumbencia(){
+
+		BigDecimal retorno = BigDecimal.ZERO;
+
+		// Valor de JurosMora
+		if(this.getValorJurosMoraSucumbencia() != null){
+			retorno = retorno.add(this.getValorJurosMoraSucumbencia().setScale(Parcelamento.CASAS_DECIMAIS,
+							Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+		// Valor de AtualizacaoMonetaria
+		if(this.getValorAtualizacaoMonetariaSucumbencia() != null){
+			retorno = retorno.add(this.getValorAtualizacaoMonetariaSucumbencia().setScale(Parcelamento.CASAS_DECIMAIS,
+							Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+
+		retorno = retorno.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+
+		return retorno;
+	}
+
+	/**
+	 * @return Returns the idParcelamento.
+	 */
+	public Integer getIdParcelamento(){
+
+		return idParcelamento;
+	}
+
+	/**
+	 * @param idParcelamento
+	 *            The idParcelamento to set.
+	 */
+	public void setIdParcelamento(Integer idParcelamento){
+
+		this.idParcelamento = idParcelamento;
 	}
 
 	/**
@@ -268,6 +364,39 @@ public class GuiaPagamentoValoresHelper
 			retorno = retorno.add(this.getValorAtualizacaoMonetaria().setScale(Parcelamento.CASAS_DECIMAIS,
 							Parcelamento.TIPO_ARREDONDAMENTO));
 		}
+		// Valor de JurosMora Sucumbência
+		if(this.getValorJurosMoraSucumbencia() != null){
+			retorno = retorno.add(this.getValorJurosMoraSucumbencia().setScale(Parcelamento.CASAS_DECIMAIS,
+							Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+		// Valor de AtualizacaoMonetaria Sucumbência
+		if(this.getValorAtualizacaoMonetariaSucumbencia() != null){
+			retorno = retorno.add(this.getValorAtualizacaoMonetariaSucumbencia().setScale(Parcelamento.CASAS_DECIMAIS,
+							Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+
+		retorno = retorno.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+
+		return retorno;
+	}
+
+	public BigDecimal getValorAcrescimosImpontualidadeSemSucumbencia(){
+
+		BigDecimal retorno = BigDecimal.ZERO;
+
+		// Valor de Multa
+		if(this.getValorMulta() != null){
+			retorno = retorno.add(this.getValorMulta().setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+		// Valor de JurosMora
+		if(this.getValorJurosMora() != null){
+			retorno = retorno.add(this.getValorJurosMora().setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
+		}
+		// Valor de AtualizacaoMonetaria
+		if(this.getValorAtualizacaoMonetaria() != null){
+			retorno = retorno.add(this.getValorAtualizacaoMonetaria().setScale(Parcelamento.CASAS_DECIMAIS,
+							Parcelamento.TIPO_ARREDONDAMENTO));
+		}
 
 		retorno = retorno.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
 
@@ -348,28 +477,31 @@ public class GuiaPagamentoValoresHelper
 		this.anoMesReferenciaFaturamento = anoMesReferenciaFaturamento;
 	}
 
-	public BigDecimal getValorTotalContaValores(){
-
-		BigDecimal retorno = BigDecimal.ZERO;
-
-		// Valor de Multa
-		if(this.getValorMulta() != null){
-			retorno = retorno.add(this.getValorMulta().setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
-		}
-		// Valor de JurosMora
-		if(this.getValorJurosMora() != null){
-			retorno = retorno.add(this.getValorJurosMora().setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO));
-		}
-		// Valor de AtualizacaoMonetaria
-		if(this.getValorAtualizacaoMonetaria() != null){
-			retorno = retorno.add(this.getValorAtualizacaoMonetaria().setScale(Parcelamento.CASAS_DECIMAIS,
-							Parcelamento.TIPO_ARREDONDAMENTO));
-		}
-
-		retorno = retorno.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
-
-		return retorno;
-	}
+	// public BigDecimal getValorTotalContaValores(){
+	//
+	// BigDecimal retorno = BigDecimal.ZERO;
+	//
+	// // Valor de Multa
+	// if(this.getValorMulta() != null){
+	// retorno = retorno.add(this.getValorMulta().setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO));
+	// }
+	// // Valor de JurosMora
+	// if(this.getValorJurosMora() != null){
+	// retorno = retorno.add(this.getValorJurosMora().setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO));
+	// }
+	// // Valor de AtualizacaoMonetaria
+	// if(this.getValorAtualizacaoMonetaria() != null){
+	// retorno =
+	// retorno.add(this.getValorAtualizacaoMonetaria().setScale(Parcelamento.CASAS_DECIMAIS,
+	// Parcelamento.TIPO_ARREDONDAMENTO));
+	// }
+	//
+	// retorno = retorno.setScale(Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+	//
+	// return retorno;
+	// }
 
 	public Short getDesativarSelecao(){
 
@@ -409,6 +541,56 @@ public class GuiaPagamentoValoresHelper
 	public void setDescricaoDebitoCreditoSituacaoAtual(String descricaoDebitoCreditoSituacaoAtual){
 
 		this.descricaoDebitoCreditoSituacaoAtual = descricaoDebitoCreditoSituacaoAtual;
+	}
+
+	public BigDecimal getValorSucumbencia(){
+
+		return valorSucumbencia;
+	}
+
+	public void setValorSucumbencia(BigDecimal valorSucumbencia){
+
+		this.valorSucumbencia = valorSucumbencia;
+	}
+
+	public BigDecimal getValorJurosMoraSucumbencia(){
+
+		return valorJurosMoraSucumbencia;
+	}
+
+	public void setValorJurosMoraSucumbencia(BigDecimal valorJurosMoraSucumbencia){
+
+		this.valorJurosMoraSucumbencia = valorJurosMoraSucumbencia;
+	}
+
+	public BigDecimal getValorAtualizacaoMonetariaSucumbencia(){
+
+		return valorAtualizacaoMonetariaSucumbencia;
+	}
+
+	public void setValorAtualizacaoMonetariaSucumbencia(BigDecimal valorAtualizacaoMonetariaSucumbencia){
+
+		this.valorAtualizacaoMonetariaSucumbencia = valorAtualizacaoMonetariaSucumbencia;
+	}
+
+	public Short getIndicadorDividaAtiva(){
+
+		return indicadorDividaAtiva;
+	}
+
+	public void setIndicadorDividaAtiva(Short indicadorDividaAtiva){
+
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+	}
+
+	public Short getIndicadorExecucaoFiscal(){
+
+		return indicadorExecucaoFiscal;
+	}
+
+	public void setIndicadorExecucaoFiscal(Short indicadorExecucaoFiscal){
+
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
 	}
 
 }

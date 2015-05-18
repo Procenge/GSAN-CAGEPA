@@ -83,22 +83,8 @@ import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.micromedicao.hidrometro.FiltroHidrometro;
-import gcom.micromedicao.hidrometro.FiltroHidrometroCapacidade;
-import gcom.micromedicao.hidrometro.FiltroHidrometroClasseMetrologica;
-import gcom.micromedicao.hidrometro.FiltroHidrometroDiametro;
-import gcom.micromedicao.hidrometro.FiltroHidrometroMarca;
-import gcom.micromedicao.hidrometro.FiltroHidrometroSituacao;
-import gcom.micromedicao.hidrometro.FiltroHidrometroTipo;
-import gcom.micromedicao.hidrometro.FiltroHidrometroTipoTurbina;
-import gcom.micromedicao.hidrometro.Hidrometro;
-import gcom.micromedicao.hidrometro.HidrometroCapacidade;
-import gcom.micromedicao.hidrometro.HidrometroClasseMetrologica;
-import gcom.micromedicao.hidrometro.HidrometroDiametro;
-import gcom.micromedicao.hidrometro.HidrometroMarca;
-import gcom.micromedicao.hidrometro.HidrometroSituacao;
-import gcom.micromedicao.hidrometro.HidrometroTipo;
-import gcom.micromedicao.hidrometro.HidrometroTipoTurbina;
+import gcom.micromedicao.bean.OrdemServicoManutencaoHidrometroHelper;
+import gcom.micromedicao.hidrometro.*;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
@@ -204,6 +190,11 @@ public class ExibirAtualizarHidrometroAction
 				// joga em dataInicial a parte da data
 				String dataAquisicao = dataFormatoAtual.format(hidrometro.getDataAquisicao());
 
+				if(hidrometro.getNumeroNotaFiscal() != null){
+
+					atualizarHidrometroActionForm.setNumeroNotaFiscal(hidrometro.getNumeroNotaFiscal().toString());
+				}
+
 				atualizarHidrometroActionForm.setDataAquisicao(formatarResultado(dataAquisicao));
 				atualizarHidrometroActionForm
 								.setIdHidrometroCapacidade(formatarResultado("" + hidrometro.getHidrometroCapacidade().getId()));
@@ -215,6 +206,11 @@ public class ExibirAtualizarHidrometroAction
 				atualizarHidrometroActionForm.setIndicadorMacromedidor(formatarResultado("" + hidrometro.getIndicadorMacromedidor()));
 				atualizarHidrometroActionForm.setIdNumeroDigitosLeitura(formatarResultado("" + hidrometro.getNumeroDigitosLeitura()));
 
+				if(hidrometro.getLoteEntrega() != null){
+				atualizarHidrometroActionForm.setLoteEntrega(formatarResultado("" + hidrometro.getLoteEntrega()));
+				}else{
+					atualizarHidrometroActionForm.setLoteEntrega(null);
+				}
 				// Formato da Numeração do Hidrômetro
 				String codigoFormatoNumeracaoStr = "";
 
@@ -243,7 +239,20 @@ public class ExibirAtualizarHidrometroAction
 
 				atualizarHidrometroActionForm.setIdImovel(idImovel);
 
+				// Dados das Ordens de Servico
+				Collection<OrdemServicoManutencaoHidrometroHelper> colecaoOrdemServicoManutencaoHidrometroHelper = fachada
+								.pesquisarDadosOrdensServicoManutencaoHidrometro(hidrometro.getId());
+				sessao.setAttribute("colecaoOrdemServicoManutencaoHidrometroHelper", colecaoOrdemServicoManutencaoHidrometroHelper);
+
 				HidrometroSituacao hidrometroSituacao = hidrometro.getHidrometroSituacao();
+
+				if(hidrometroSituacao.getId().equals(HidrometroSituacao.INSTALADO)
+								|| hidrometroSituacao.getId().equals(HidrometroSituacao.DESCARTADO)){
+					sessao.setAttribute("desabilitarSituacao", "true");
+				}else{
+					sessao.removeAttribute("desabilitarSituacao");
+				}
+
 				atualizarHidrometroActionForm.setIdHidrometroSituacao(hidrometroSituacao.getId().toString());
 
 				atualizarHidrometroActionForm.setIdHidrometro(hidrometro.getId().toString());
@@ -260,14 +269,6 @@ public class ExibirAtualizarHidrometroAction
 						atualizarHidrometroActionForm.setFatorConversao(fatorConversao.replace(".", ","));
 					}else{
 						atualizarHidrometroActionForm.setFatorConversao("");
-					}
-
-					if(hidrometro.getDataUltimaRevisao() != null){
-						dataFormatoAtual = new SimpleDateFormat("dd/MM/yyyy");
-						String dataUltimaRevisao = dataFormatoAtual.format(hidrometro.getDataUltimaRevisao());
-						atualizarHidrometroActionForm.setDataUltimaRevisao(dataUltimaRevisao);
-					}else{
-						atualizarHidrometroActionForm.setDataUltimaRevisao("");
 					}
 
 					if(hidrometro.getNumeroLeituraAcumulada() != null){
@@ -315,11 +316,12 @@ public class ExibirAtualizarHidrometroAction
 			Collection colecaoHidrometroTipo = fachada.pesquisar(filtroHidrometroTipo, HidrometroTipo.class.getName());
 
 			FiltroHidrometroSituacao filtroHidroMetroSituacao = new FiltroHidrometroSituacao();
-			filtroHidroMetroSituacao
-.adicionarParametro(new ParametroSimples(FiltroHidrometroSituacao.INDICADOR_USO,
+			filtroHidroMetroSituacao.adicionarParametro(new ParametroSimples(FiltroHidrometroSituacao.INDICADOR_USO,
 							ConstantesSistema.INDICADOR_USO_ATIVO));
+
 			Collection colecaoHidrometroSituacao = this.getFachada()
 							.pesquisar(filtroHidroMetroSituacao, HidrometroSituacao.class.getName());
+
 
 			// Envia as coleções na sessão
 			sessao.setAttribute("colecaoHidrometroClasseMetrologica", colecaoHidrometroClasseMetrologica);

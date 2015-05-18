@@ -8,6 +8,7 @@
 <%@ page import="gcom.gui.GcomAction"%>
 <%@ page import="gcom.util.Util"%>
 <%@ page import="java.math.BigDecimal"%>
+<%@ page import="gcom.gui.faturamento.bean.GuiaPagamentoPrestacaoHelper" isELIgnored="false"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html:html>
@@ -741,28 +742,56 @@
 				</tr>
 
 				<tr>
-					<td colspan="4">
+						<%
+				
+						String pctQtdColunasPrestacao = "4";
+						String pctDebito   = "35%";
+						String pctValorPrestacao    = "25%";
+						String pctValorDebito          = "25%";
+						String pctNumeroProcesso        = "0%";
+
+						
+						if (session.getAttribute("exibirDividaAtivaColuna") != null) {
+							pctValorPrestacao = "15%";
+							pctValorDebito = "15%";
+							pctNumeroProcesso = "20%";
+							
+							pctQtdColunasPrestacao = "5";
+						}
+						
+						
+					 %>				
+				
+					<td colspan="5">
 					<table width="100%" cellpadding="0" cellspacing="0" >						
 						<tr>						
-							<td colspan="3" width="40%">
+							<td colspan="<%=pctQtdColunasPrestacao %>" width="40%">
 								<table width="100%" bgcolor="#90c7fc" border="0">
 									<!--header da tabela interna -->
 									<tr bgcolor="#90c7fc">
 										<td width="15%" align="center">
 											<strong>Remover</strong>
 										</td>
-										<td width="35%" align="left">
+										<td width="<%=pctDebito%>"  align="left">
 											<strong>Débito</strong>
 										</td>
-										<td width="20%" align="right">
+										<td width="<%=pctValorPrestacao%>" align="center">
 											<strong>Valor Prestação</strong>
 										</td>
-										<td width="20%" align="right">
+										<td width="<%=pctValorDebito%>" align="center">
 											<strong>Valor  Débito</strong>
 										</td>
+										
+										<logic:present name="exibirDividaAtivaColuna" scope="session">
+												<td width="<%= pctNumeroProcesso%>" align="center">
+													<div>
+														<strong>Proc. EF</strong>
+													</div>
+												</td>				
+										</logic:present>											
 									</tr>
 									<tr>
-								<td colspan="4">
+								<td colspan="<%=pctQtdColunasPrestacao %>" >
 									<div style="width: 100%; height: 100%; overflow: auto;">
 									<table width="100%" bgcolor="#99CCFF">
 										<logic:notPresent name="colecaoGuiaPrestacaoHelper">
@@ -788,12 +817,33 @@
 															</font>
 														</div>
 													</td>
-													<td width="35%" align="left"><div><bean:write name="prestacoes" property="descricaoTipoDebito"/></div></td>
-													<td width="20%" align="right"><bean:write name="prestacoes" property="valorPrestacaoTipoDebito" formatKey="money.format"/></td>
-													<td width="20%" align="right"><bean:write name="prestacoes" property="valorTipoDebito" formatKey="money.format"/></td>
+													<td width="<%=pctDebito%>" align="left"><div><bean:write name="prestacoes" property="descricaoTipoDebito"/></div></td>
+													<td width="<%=pctValorPrestacao%>" align="right"><bean:write name="prestacoes" property="valorPrestacaoTipoDebito" formatKey="money.format"/></td>
+													<td width="<%=pctValorDebito%>" align="right"><bean:write name="prestacoes" property="valorTipoDebito" formatKey="money.format"/></td>
+
+													<logic:present name="exibirDividaAtivaColuna" scope="session">
+														<td width="<%= pctNumeroProcesso%>" align="center">
+															<div>
+																<bean:write name="prestacoes" property="numeroProcessoAdministrativoExecucaoFiscal"/>
+															</div>
+														</td>				
+													</logic:present>													
+													
 												</tr>				
 												</logic:iterate>
 											</logic:present>
+											
+												<logic:present name="exibirDividaAtivaColuna" scope="session">											
+													<tr>
+														<td colspan="<%= pctQtdColunasPrestacao%>" height="23">
+															<font color="#000000" style="font-size:10px" face="Verdana, Arial, Helvetica, sans-serif"> 
+																<strong>Proc. EF-Nº do Processo Administrativo da Execução Fiscal
+																</strong>
+															</font><br>
+														</td>
+													</tr>
+												</logic:present>											
+											
 												</table>
 											</div>
 										</td>
@@ -860,7 +910,7 @@
 						<strong>
 							 <font color="#ff0000">
 								<input name="Button" class="bottonRightCol" value="Alterar Dados Prestações" type="button"
-										  onclick="javascript:abrirPopupComSubmit('exibirAlterarDadosDasPrestacoesAction.do?numeroTotalPrestacoes=' + document.InserirGuiaPagamentoActionForm.numeroTotalPrestacao.value + '&retornarTela=exibirInserirGuiaPagamentoAction.do', 400, 600);"/>
+										  onclick="javascript:abrirPopup('exibirAlterarDadosDasPrestacoesAction.do?numeroTotalPrestacoes=' + document.InserirGuiaPagamentoActionForm.numeroTotalPrestacao.value + '&retornarTela=exibirInserirGuiaPagamentoAction.do', 400, 600);"/>
 							</font>
 						</strong>
 					</td>

@@ -90,6 +90,8 @@ public class InserirReajusteConsumoTarifaActionForm
 
 	private String dataVigencia;
 
+	private String descricaoAtoAdministrativo;
+
 	public String getDataVigencia(){
 
 		return dataVigencia;
@@ -98,6 +100,16 @@ public class InserirReajusteConsumoTarifaActionForm
 	public void setDataVigencia(String dataVigencia){
 
 		this.dataVigencia = dataVigencia;
+	}
+
+	public String getDescricaoAtoAdministrativo(){
+
+		return descricaoAtoAdministrativo;
+	}
+
+	public void setDescricaoAtoAdministrativo(String descricaoAtoAdministrativo){
+
+		this.descricaoAtoAdministrativo = descricaoAtoAdministrativo;
 	}
 
 }

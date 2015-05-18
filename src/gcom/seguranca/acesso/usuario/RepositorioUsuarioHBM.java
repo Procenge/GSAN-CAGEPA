@@ -806,4 +806,39 @@ public class RepositorioUsuarioHBM
 		return temPermissao;
 	}
 
+	
+	/**
+	 * Método que pesquisa as retrições de horário de acesso ao sistema de um usuário
+	 * 
+	 * @author Saulo Lima
+	 * @date 20/09/2014
+	 */
+	public Collection<UsuarioAcesso> pesquisarUsuarioAcesso(Integer idUsuario)
+					throws ErroRepositorioException{
+
+		Collection<UsuarioAcesso> retorno = null;
+
+		// cria uma sessão com o hibernate
+		Session session = HibernateUtil.getSession();
+
+		try{
+
+			// cria a variável que vai conter o hql
+			String consulta = "SELECT usas FROM UsuarioAcesso usas "
+							+ "WHERE usas.usuario.id = :idUsuario AND usas.indicadorUso = 1 ORDER BY usas.diaSemana";
+
+			retorno = session.createQuery(consulta).setInteger("idUsuario", idUsuario).list();
+
+			// erro no hibernate
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão com o hibernate
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;		
+	}
+	
 }

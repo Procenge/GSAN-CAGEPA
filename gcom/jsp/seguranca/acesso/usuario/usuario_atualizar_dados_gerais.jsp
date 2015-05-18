@@ -430,6 +430,14 @@
 									width="23"></a>
 						</td>
 					</tr>
+					
+					
+					<tr>
+						<td width="26%"><strong>ID do Usuário:</strong></td>
+						<td width="74%"><html:text property="idUsuario" size="9"
+							maxlength="9" readonly="true" /></td>
+					</tr>
+					
 					<tr>
 						<td width="26%"><strong>Nome do Usuário:<font color="#ff0000">*</font></strong></td>
 						<td width="74%"><html:text property="nome" size="50"

@@ -165,6 +165,8 @@ public class RelatorioFaturamentoLigacoesMedicaoIndividualizadaBean
 
 	private String diferencaConsumoMacroMicros;
 
+	private String anormalidadeLeitura;
+
 	public RelatorioFaturamentoLigacoesMedicaoIndividualizadaBean(String idLocalidade, String nomeLocalidade, String matriculaImovel,
 																	String inscricao, String nomeConsumidor, String qtdeEconomias,
 																	String leituraAnterior, String dataLeituraAnterior,
@@ -181,7 +183,7 @@ public class RelatorioFaturamentoLigacoesMedicaoIndividualizadaBean
 																	String diferencaComRateioSemRateio, String valorRateioProxFat,
 																	String indicadorImovelCondominio, String codigoSetorComercial,
 																	String numeroQuadra, String numeroLote, String numeroSubLote,
-																	String diferencaConsumoMacroMicros) {
+																	String diferencaConsumoMacroMicros, String anormalidadeLeitura) {
 
 		this.idLocalidade = idLocalidade;
 		this.nomeLocalidade = nomeLocalidade;
@@ -220,6 +222,7 @@ public class RelatorioFaturamentoLigacoesMedicaoIndividualizadaBean
 		this.numeroLote = numeroLote;
 		this.numeroSubLote = numeroSubLote;
 		this.diferencaConsumoMacroMicros = diferencaConsumoMacroMicros;
+		this.anormalidadeLeitura = anormalidadeLeitura;
 	}
 
 	private String indicadorPrimeiraPagina;
@@ -626,6 +629,16 @@ public class RelatorioFaturamentoLigacoesMedicaoIndividualizadaBean
 	public void setDiferencaConsumoMacroMicros(String diferencaConsumoMacroMicros){
 
 		this.diferencaConsumoMacroMicros = diferencaConsumoMacroMicros;
+	}
+
+	public String getAnormalidadeLeitura(){
+
+		return anormalidadeLeitura;
+	}
+
+	public void setAnormalidadeLeitura(String anormalidadeLeitura){
+
+		this.anormalidadeLeitura = anormalidadeLeitura;
 	}
 
 }

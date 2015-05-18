@@ -76,30 +76,20 @@
 
 package gcom.gui.seguranca.acesso.usuario;
 
-import gcom.cadastro.localidade.FiltroGerenciaRegional;
-import gcom.cadastro.localidade.FiltroLocalidade;
-import gcom.cadastro.localidade.FiltroUnidadeNegocio;
-import gcom.cadastro.localidade.GerenciaRegional;
-import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.localidade.UnidadeNegocio;
+import gcom.cadastro.localidade.*;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.FiltroGrupo;
 import gcom.seguranca.acesso.Grupo;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioAbrangencia;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioGrupo;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioSituacao;
-import gcom.seguranca.acesso.usuario.Usuario;
-import gcom.seguranca.acesso.usuario.UsuarioAbrangencia;
-import gcom.seguranca.acesso.usuario.UsuarioGrupo;
-import gcom.seguranca.acesso.usuario.UsuarioSituacao;
+import gcom.seguranca.acesso.usuario.*;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -410,6 +400,51 @@ public class ExibirAtualizarUsuarioAcessosUsuarioAction
 
 		sessao.setAttribute("processo", "2");
 
+		if(sessao.getAttribute("colecaoUsuarioAcesso") == null || sessao.getAttribute("colecaoUsuarioAcesso").equals("")){
+
+			Collection<UsuarioAcesso> colecaoUsuarioAcesso = Fachada.getInstancia().pesquisarUsuarioAcesso(usuarioParaAtualizar.getId());
+
+			Collection<UsuarioAcesso> colecaoUsuarioAcessoCompleta = null;
+			if(!Util.isVazioOrNulo(colecaoUsuarioAcesso)){
+				colecaoUsuarioAcessoCompleta = this.completarUsuarioAcesso(colecaoUsuarioAcesso);
+			}else{
+				colecaoUsuarioAcessoCompleta = Fachada.getInstancia().criarColecaoUsuarioAcesso(2);
+			}
+
+			sessao.setAttribute("colecaoUsuarioAcesso", colecaoUsuarioAcessoCompleta);
+		}
+
 		return retorno;
+	}
+
+	private Collection<UsuarioAcesso> completarUsuarioAcesso(Collection<UsuarioAcesso> colecaoUsuarioAcesso){
+
+		Collection<UsuarioAcesso> colecaoUsuarioAcessoCompleta = new ArrayList<UsuarioAcesso>();
+		Date data = Util.converteStringParaDate("01/01/1900", true);
+		Date horaInicial = Util.formatarDataInicial(data);
+		Date horaFinal = Util.formatarDataFinal(data);
+
+		Iterator<UsuarioAcesso> iterator = colecaoUsuarioAcesso.iterator();
+		UsuarioAcesso usuarioAcesso = iterator.next();
+
+		for(int i = 1; i <= 7; i++){
+
+			UsuarioAcesso usuarioAcessoDia = null;
+			if(usuarioAcesso.getDiaSemana() != i){
+				usuarioAcessoDia = new UsuarioAcesso(usuarioAcesso.getUsuario(), i, horaInicial, horaFinal, ConstantesSistema.SIM,
+								new Date(), Util.obterDiaSemanaDescricao(i), 2);
+			}else{
+				usuarioAcessoDia = new UsuarioAcesso(usuarioAcesso.getUsuario(), i, usuarioAcesso.getHoraInicio(),
+								usuarioAcesso.getHoraFim(), usuarioAcesso.getIndicadorUso(), usuarioAcesso.getUltimaAlteracao(),
+								Util.obterDiaSemanaDescricao(i), 1);
+				if(iterator.hasNext()){
+					usuarioAcesso = iterator.next();
+				}
+			}
+
+			colecaoUsuarioAcessoCompleta.add(usuarioAcessoDia);
+		}
+
+		return colecaoUsuarioAcessoCompleta;
 	}
 }

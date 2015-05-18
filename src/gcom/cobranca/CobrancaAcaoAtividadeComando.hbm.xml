@@ -215,6 +215,13 @@
     />
 
     <!-- Associations -->
+    <many-to-one
+        name="documentoTipoLayout"
+        class="gcom.cobranca.DocumentoTipoLayout"
+        not-null="true"
+    >
+        <column name="DTLA_ID" />
+    </many-to-one>    
   
     <!-- bi-directional many-to-one association to Rota -->
     <many-to-one

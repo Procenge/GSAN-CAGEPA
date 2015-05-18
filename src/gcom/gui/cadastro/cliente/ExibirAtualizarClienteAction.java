@@ -215,6 +215,7 @@ public class ExibirAtualizarClienteAction
 		filtroCliente.adicionarParametro(new ParametroSimples(FiltroCliente.ID, codigoCliente));
 		filtroCliente.adicionarCaminhoParaCarregamentoEntidade(FiltroCliente.CLIENTE_RESPONSAVEL);
 		filtroCliente.adicionarCaminhoParaCarregamentoEntidade(FiltroCliente.RACA);
+		filtroCliente.adicionarCaminhoParaCarregamentoEntidade(FiltroCliente.ATIVIDADE_ECONOMICA);
 
 		// pesquisa a coleçao de cliente(s)
 		Collection clientes = fachada.pesquisar(filtroCliente, Cliente.class.getName());
@@ -295,6 +296,12 @@ public class ExibirAtualizarClienteAction
 			}
 
 			clienteActionForm.set("tipoPessoa", new Short("" + cliente.getClienteTipo().getId()));
+
+			if(cliente.getNumeroBeneficio() != null){
+
+				clienteActionForm.set("numeroBeneficio", cliente.getNumeroBeneficio());
+			}
+
 			// Criado para comparação
 			clienteActionForm.set("tipoPessoaAntes", new Short("" + cliente.getClienteTipo().getId()));
 			if(cliente.getClienteTipoEspecial() != null){
@@ -305,6 +312,9 @@ public class ExibirAtualizarClienteAction
 				clienteActionForm.set("clienteTipoEspecialAntes", new Integer(-1));
 			}
 			clienteActionForm.set("cpf", formatarResultado("" + cliente.getCpf()));
+
+			clienteActionForm.set("documentoValidado", formatarResultado("" + cliente.getDocumentoValidado()));
+
 			clienteActionForm.set("rg", formatarResultado("" + cliente.getRg()));
 			if(cliente.getDataEmissaoRg() != null){
 				clienteActionForm.set("dataEmissao", formatoData.format(cliente.getDataEmissaoRg()));
@@ -325,6 +335,12 @@ public class ExibirAtualizarClienteAction
 			clienteActionForm.set("idPessoaSexo", formatarResultado(cliente.getPessoaSexo()));
 			clienteActionForm.set("nomeMae", formatarResultado(cliente.getNomeMae()));
 			clienteActionForm.set("idNacionalidade", formatarResultado(cliente.getNacionalidade()));
+
+			if(cliente.getAtividadeEconomica() != null){
+
+				clienteActionForm.set("codigoAtividadeEconomica", cliente.getAtividadeEconomica().getCodigo());
+			}
+
 			if(cliente.getCnpj() != null){
 				clienteActionForm.set("cnpj", cliente.getCnpj().toString());
 			}
@@ -386,7 +402,9 @@ public class ExibirAtualizarClienteAction
 					ClienteEndereco clienteEndereco = (ClienteEndereco) iterator.next();
 					if(clienteEndereco.getLogradouroBairro() != null) System.out.println("bairro = "
 									+ clienteEndereco.getLogradouroBairro().getBairro().getNome());
-					if(clienteEndereco.getIndicadorEnderecoCorrespondencia().equals(ConstantesSistema.INDICADOR_ENDERECO_CORRESPONDENCIA)){
+					if(clienteEndereco.getIndicadorEnderecoCorrespondencia() != null
+									&& clienteEndereco.getIndicadorEnderecoCorrespondencia().equals(
+													ConstantesSistema.INDICADOR_ENDERECO_CORRESPONDENCIA)){
 						clienteActionForm.set("enderecoCorrespondenciaSelecao", new Long(obterTimestampIdObjeto(clienteEndereco)));
 						break;
 					}
@@ -445,7 +463,7 @@ public class ExibirAtualizarClienteAction
 				// "Dia do Vencimento" será exibido.
 				String paramInformarVencimentoCliente = (String) ParametroCadastro.P_INFORMAR_VENCIMENTO_PARA_CLIENTE.executar();
 				sessao.setAttribute("paramInformarVencimentoCliente", paramInformarVencimentoCliente);
-				
+
 				// indicador exibir campo "Conta Impressa em Braille?"
 				String solicitacaoTipoEspecificacaoContaBraille = (String) ParametroCadastro.P_TIPO_SOLICITACAO_ESPECIFICACAO_CONTA_BRAILLE
 								.executar();

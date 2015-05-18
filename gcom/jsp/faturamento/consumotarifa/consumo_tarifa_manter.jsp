@@ -4,6 +4,8 @@
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/pager-taglib.tld" prefix="pg"%>
 <%@ taglib uri="/WEB-INF/gcomLib.tld" prefix="gcom" %>
+<%@page import="gcom.faturamento.consumotarifa.ConsumoTarifaVigencia"%>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html:html>
 <head>
@@ -175,13 +177,14 @@ function facilitador(objeto){
 					</table>
 					<table border="0" width="100%" bgcolor="#99ccff">
 						<tr>
-							<td colspan="3" bgcolor="#000000" height="2"></td>
+							<td colspan="4" bgcolor="#000000" height="2"></td>
 						</tr>
 						<tr>
 							<td bgcolor="#99ccff" width="10%" align="center"><strong><a
 								href="javascript:facilitador(this);">Todos</a></strong></td>
-							<td bgcolor="#99ccff" align="center"><strong>Descrição da Tarifa de Consumo</strong></td>
+							<td bgcolor="#99ccff" align="center"><strong>Tarifa de Consumo</strong></td>
 							<td bgcolor="#99ccff" align="center"><strong>Data de Vigência</strong></td>
+							<td bgcolor="#99ccff" align="center"><strong>Ato Administrativo</strong></td>
 						</tr>
 						<%String cor = "#cbe5fe";%>
 						<pg:pager isOffset="true" index="half-full" maxIndexPages="10"
@@ -192,7 +195,7 @@ function facilitador(objeto){
 							<logic:present name="colecaoFiltroConsumoTarifaVigencia"
 								scope="session">
 								<logic:iterate name="colecaoFiltroConsumoTarifaVigencia"
-									id="vigenciaF">
+									id="vigenciaF" type="ConsumoTarifaVigencia">
 									<pg:item>
 										<%if (cor.equalsIgnoreCase("#cbe5fe")) {
 				cor = "#FFFFFF";%>
@@ -211,6 +214,8 @@ function facilitador(objeto){
 												name="vigenciaF" property="consumoTarifa.descricao" /></a></td>
 											<td align="center"><bean:write name="vigenciaF" format="dd/MM/yyyy"
 												property="dataVigencia" /></td>
+											<td align="center" title="<%="" + vigenciaF.getDescricaoAtoAdministrativo()%>"><bean:write name="vigenciaF"
+												property="descricaoAtoAdministrativoFormatado" /></td>
 										</tr>
 									</pg:item>
 								</logic:iterate>

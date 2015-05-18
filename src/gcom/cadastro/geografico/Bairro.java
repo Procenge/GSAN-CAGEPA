@@ -129,6 +129,8 @@ public class Bairro
 	/** persistent field */
 	private gcom.cadastro.geografico.Municipio municipio;
 
+	private transient Integer qtidadeOs;
+
 	/** full constructor */
 	public Bairro(int codigo, String nome, Integer codigoBairroPrefeitura, Short indicadorUso, Date ultimaAlteracao,
 					gcom.cadastro.geografico.Municipio municipio) {
@@ -262,5 +264,30 @@ public class Bairro
 		}
 
 		return descricaoComCodigo;
+	}
+
+	public Integer getQtidadeOs(){
+
+		return qtidadeOs;
+	}
+
+	public void setQtidadeOs(Integer qtidadeOs){
+
+		this.qtidadeOs = qtidadeOs;
+	}
+
+	public String getDescricaoQtidadeOs(){
+
+		StringBuilder st = new StringBuilder();
+		st.append(getNome());
+		st.append(" - ");
+
+		if(getQtidadeOs() == null){
+			st.append(0);
+		}else{
+			st.append(getQtidadeOs());
+		}
+
+		return st.toString();
 	}
 }

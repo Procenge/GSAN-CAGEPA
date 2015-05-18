@@ -155,6 +155,8 @@ public class FiltroPagamentoHistorico
 
 	public final static String AVISO_BANCARIO_ARRECADADOR = "avisoBancario.arrecadador";
 
+	public final static String AVISO_BANCARIO_ARRECADADOR_CLIENTE = "avisoBancario.arrecadador.cliente";
+
 	public final static String DEBITO_TIPO = "debitoTipo";
 
 	public final static String DEBITO_TIPO_ID = "debitoTipo.id";

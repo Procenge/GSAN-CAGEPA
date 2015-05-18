@@ -118,6 +118,7 @@ public class PesquisarFuncionarioAction
 		String id = form.getId();
 		String nome = form.getNome();
 		String idUnidadeEmpresa = form.getIdUnidadeEmpresa();
+		String idEquipeTipo = form.getIdEquipeTipo();
 
 		// Matrícula mair q zero
 		if(id.equals("0")){
@@ -142,6 +143,12 @@ public class PesquisarFuncionarioAction
 		filtroFuncionario.adicionarCaminhoParaCarregamentoEntidade("unidadeOrganizacional");
 		if(idUnidadeEmpresa != null && !idUnidadeEmpresa.equals("")){
 			filtroFuncionario.adicionarParametro(new ParametroSimples(FiltroFuncionario.UNIDADE_ORGANIZACIONAL_ID, idUnidadeEmpresa));
+			peloMenosUmParametroInformado = true;
+		}
+
+		filtroFuncionario.adicionarCaminhoParaCarregamentoEntidade("equipeTipo");
+		if(idEquipeTipo != null && !idEquipeTipo.equals("")){
+			filtroFuncionario.adicionarParametro(new ParametroSimples(FiltroFuncionario.EQUIPE_TIPO_ID, idEquipeTipo));
 			peloMenosUmParametroInformado = true;
 		}
 

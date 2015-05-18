@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="InserirAtendimentoActionForm"
+			type="gcom.gui.cadastro.atendimento.InserirAtendimentoActionForm" />
+
+
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="InserirAtendimentoActionForm"
+			type="gcom.gui.cadastro.atendimento.ExibirInserirAtendimentoAction"
+			validate="false" scope="session"
+			path="/exibirInserirAtendimentoAction">
+			<forward name="atendimentoInserir"
+				path="/jsp/cadastro/atendimento/atendimento_inserir.jsp" />
+			<forward name="removerAdicionarAtendProcDocumentosPessoaTipoAction.do"
+				path="/removerAdicionarAtendProcDocumentosPessoaTipoAction" />				
+			<forward name="removerAdicionarAtendProcNormaProcedimentalAction.do"
+				path="/removerAdicionarAtendProcNormaProcedimentalAction" />				
+		</action>
+
+		<action name="InserirAtendimentoActionForm"
+			type="gcom.gui.cadastro.atendimento.InserirAtendimentoAction"
+			validate="false" scope="session"
+			path="/inserirAtendimentoAction">
+		</action>
+
+	</action-mappings>
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

@@ -119,6 +119,7 @@ public class FiltrarCriterioCobrancaAction
 		String opcaoAcaoImovelSitEspecial = criterioCobrancaFiltrarActionForm.getOpcaoAcaoImovelSitEspecial();
 		String opcaoAcaoImovelSit = criterioCobrancaFiltrarActionForm.getOpcaoAcaoImovelSit();
 		String opcaoContasRevisao = criterioCobrancaFiltrarActionForm.getOpcaoContasRevisao();
+		String opcaoDividaAtiva = criterioCobrancaFiltrarActionForm.getOpcaoDividaAtiva();
 		String opcaoAcaoImovelDebitoMesConta = criterioCobrancaFiltrarActionForm.getOpcaoAcaoImovelDebitoMesConta();
 		String opcaoAcaoInquilinoDebitoMesConta = criterioCobrancaFiltrarActionForm.getOpcaoAcaoInquilinoDebitoMesConta();
 		String opcaoAcaoImovelDebitoContasAntigas = criterioCobrancaFiltrarActionForm.getOpcaoAcaoImovelDebitoContasAntigas();
@@ -126,6 +127,7 @@ public class FiltrarCriterioCobrancaAction
 
 		String opcaoComCpf = criterioCobrancaFiltrarActionForm.getComCpf();
 		String opcaoComTelefone = criterioCobrancaFiltrarActionForm.getComTelefone();
+		String opcaoCriterioCobranca = criterioCobrancaFiltrarActionForm.getCriterioCobranca();
 
 		String indicadorAtualizar = httpServletRequest.getParameter("indicadorAtualizar");
 
@@ -178,6 +180,13 @@ public class FiltrarCriterioCobrancaAction
 								opcaoContasRevisao));
 			}
 		}
+		if(opcaoDividaAtiva != null && !opcaoDividaAtiva.trim().equalsIgnoreCase("")){
+			peloMenosUmParametroInformado = true;
+			if(!opcaoDividaAtiva.equalsIgnoreCase("3")){
+				filtroCobrancaCriterio.adicionarParametro(new ParametroSimples(FiltroCobrancaCriterio.INDICADOR_DIVIDA_ATIVA,
+								opcaoDividaAtiva));
+			}
+		}
 		if(opcaoAcaoImovelDebitoMesConta != null && !opcaoAcaoImovelDebitoMesConta.trim().equalsIgnoreCase("")){
 			peloMenosUmParametroInformado = true;
 			if(!opcaoAcaoImovelDebitoMesConta.equalsIgnoreCase("3")){
@@ -208,6 +217,12 @@ public class FiltrarCriterioCobrancaAction
 		if(opcaoComTelefone != null && !opcaoComTelefone.trim().equals("")){
 			filtroCobrancaCriterio
 							.adicionarParametro(new ParametroSimples(FiltroCobrancaCriterio.INDICADOR_COM_TELEFONE, opcaoComTelefone));
+			peloMenosUmParametroInformado = true;
+		}
+
+		if(opcaoCriterioCobranca != null && !opcaoCriterioCobranca.trim().equals("")){
+			filtroCobrancaCriterio
+							.adicionarParametro(new ParametroSimples(filtroCobrancaCriterio.CRITERIO_COBRANCA, opcaoCriterioCobranca));
 			peloMenosUmParametroInformado = true;
 		}
 

@@ -143,7 +143,10 @@ public class ExibirConsultarResumoNegativacaoAction
 		// Pega as informações de Sistema Parâmetros
 		SistemaParametro sistemaParametro = fachada.pesquisarParametrosDoSistema();
 
-		Date ultimaAtualizacao = fachada.getDataUltimaAtualizacaoResumoNegativacao(sistemaParametro.getNumeroExecucaoResumoNegativacao());
+		// Date ultimaAtualizacao =
+		// fachada.getDataUltimaAtualizacaoResumoNegativacao(sistemaParametro.getNumeroExecucaoResumoNegativacao());
+		Date ultimaAtualizacao = new Date();
+
 		form.setUltimaAtualizacao(Util.formatarDataComHora(ultimaAtualizacao));
 		// -------------------------------------------------------------------------------------------
 

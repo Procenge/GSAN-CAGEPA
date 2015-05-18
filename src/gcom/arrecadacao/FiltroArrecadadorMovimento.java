@@ -126,6 +126,8 @@ public class FiltroArrecadadorMovimento
 	 */
 	public final static String REMESSA = "codigoRemessa";
 
+	public final static String CONVENIO = "codigoConvenio";
+
 	/**
 	 * Description of the Field
 	 */

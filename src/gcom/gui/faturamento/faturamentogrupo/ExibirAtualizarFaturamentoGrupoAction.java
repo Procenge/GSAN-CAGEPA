@@ -118,7 +118,21 @@ public class ExibirAtualizarFaturamentoGrupoAction
 		form.set("indicadorUso", faturamentoGrupo.getIndicadorUso().toString());
 		form.set("diaVencimento", faturamentoGrupo.getDiaVencimento().toString());
 		form.set("indicadorVencimentoMesFatura", faturamentoGrupo.getIndicadorVencimentoMesFatura().toString());
-		
+
+		if(faturamentoGrupo.getDiaVencimentoDebitoAutomatico() != null
+						&& faturamentoGrupo.getDiaVencimentoDebitoAutomatico().intValue() > 0){
+			form.set("diaVencimentoDebitoAutomatico", faturamentoGrupo.getDiaVencimentoDebitoAutomatico().toString());
+		}else{
+			form.set("diaVencimentoDebitoAutomatico", null);
+		}
+		if(faturamentoGrupo.getDiaVencimentoEntregaAlternativa() != null
+						&& faturamentoGrupo.getDiaVencimentoEntregaAlternativa().intValue() > 0){
+			form.set("diaVencimentoEntregaAlternativa", faturamentoGrupo.getDiaVencimentoEntregaAlternativa().toString());
+		}else{
+			form.set("diaVencimentoEntregaAlternativa", null);
+		}
+
+
 
 		sessao.setAttribute("faturamentoGrupoAtualizar", faturamentoGrupo);
 		httpServletRequest.setAttribute("indicadorUsoAux", faturamentoGrupo.getIndicadorUso() + "");

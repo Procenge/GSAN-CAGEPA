@@ -196,6 +196,9 @@ public class CreditoARealizar
 
 	private Boolean selecaoPermitida;
 
+	/** persistent Set */
+	private Set clientesCreditoARealizar;
+
 	/** full constructor */
 	public CreditoARealizar(Date geracaoCredito, Integer anoMesReferenciaCredito, Integer anoMesReferenciaContabil,
 							Integer anoMesCobrancaCredito, BigDecimal valorResidualMesAnterior, BigDecimal valorCredito,
@@ -540,6 +543,9 @@ public class CreditoARealizar
 	public String getFormatarAnoMesCobrancaCredito(){
 
 		String anoMesRecebido = "" + this.getAnoMesCobrancaCredito();
+		if(anoMesRecebido.length() < 6){
+			anoMesRecebido = Util.completarStringZeroEsquerda(anoMesRecebido, 6);
+		}
 		String mes = anoMesRecebido.substring(4, 6);
 		String ano = anoMesRecebido.substring(0, 4);
 		String anoMesFormatado = mes + "/" + ano;
@@ -550,6 +556,9 @@ public class CreditoARealizar
 	public String getFormatarAnoMesReferenciaCredito(){
 
 		String anoMesRecebido = "" + this.getAnoMesReferenciaCredito();
+		if(anoMesRecebido.length() < 6){
+			anoMesRecebido = Util.completarStringZeroEsquerda(anoMesRecebido, 6);
+		}
 		String mes = anoMesRecebido.substring(4, 6);
 		String ano = anoMesRecebido.substring(0, 4);
 		String anoMesFormatado = mes + "/" + ano;
@@ -738,4 +747,13 @@ public class CreditoARealizar
 		this.pagamentoHistorico = pagamentoHistorico;
 	}
 
+	public Set getClientesCreditoARealizar(){
+
+		return clientesCreditoARealizar;
+	}
+
+	public void setClientesCreditoARealizar(Set clientesCreditoARealizar){
+
+		this.clientesCreditoARealizar = clientesCreditoARealizar;
+	}
 }

@@ -105,7 +105,7 @@ public class RelatorioManterClienteBean
 	private String nome;
 
 	private String tipoCliente;
-
+	
 	private String email;
 
 	private String cpf;
@@ -145,6 +145,8 @@ public class RelatorioManterClienteBean
 	private String nomeClienteResponsavel;
 
 	private String pessoa;
+
+	private String descricaoDocumentoValidado;
 
 	/**
 	 * Constructor for the RelatorioManterClienteBean object
@@ -264,6 +266,16 @@ public class RelatorioManterClienteBean
 		this.municipio = municipio;
 		this.indicadorUso = indicadorUso;
 		this.pessoa = pessoa;
+	}
+
+	public String getDescricaoDocumentoValidado(){
+
+		return descricaoDocumentoValidado;
+	}
+
+	public void setDescricaoDocumentoValidado(String descricaoDocumentoValidado){
+
+		this.descricaoDocumentoValidado = descricaoDocumentoValidado;
 	}
 
 	/**

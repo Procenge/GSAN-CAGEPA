@@ -248,6 +248,14 @@ function removerEndereco(url){
 								</p>
 							</td>
 						</tr>
+						
+		                <tr>
+		                     <td width="10%"><strong>Envio Correio </strong></td>
+		                     <td width="56%">
+		                       <html:radio property="indicadorEnvioCorreio" value="1">Sim</html:radio>
+		                       <html:radio property="indicadorEnvioCorreio" value="2">Não</html:radio>
+		                      </td>
+		                </tr>						
 
 					</table>
 					<!-- ************************************************************************ -->

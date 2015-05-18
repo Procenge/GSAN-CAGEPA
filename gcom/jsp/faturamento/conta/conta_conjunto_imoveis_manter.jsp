@@ -94,8 +94,9 @@ function cancelarConta(form){
     	var urlCancelamentoConta = "/gsan/exibirCancelarConjuntoContaAction.do?mesAno="+ form.mesAnoConta.value;
     	urlCancelamentoConta = urlCancelamentoConta + "&mesAnoFim="+ form.mesAnoContaFinal.value;  
     	
-//     	urlCancelamentoConta = urlCancelamentoConta + "&idsContasSelecionadas=" + obterValorCheckboxMarcado();  
-    	
+     	urlCancelamentoConta = urlCancelamentoConta + "&idsContasSelecionadas=" + obterValorCheckboxMarcado();  
+		form.contaSelected.value = obterValorCheckboxMarcado();
+   	
     	if (form.idGrupoFaturamento != null && form.idGrupoFaturamento.value.length > 0){
     		urlCancelamentoConta = urlCancelamentoConta + "&idGrupoFaturamento=" + form.idGrupoFaturamento.value;
     	}
@@ -127,7 +128,8 @@ function retirarDebitoCobradoConta(form){
     	var urlCancelamentoConta = "/gsan/exibirRetirarDebitoCobradoConjuntoContaAction.do?mesAno="+ form.mesAnoConta.value;  
     	urlCancelamentoConta = urlCancelamentoConta + "&mesAnoFim="+ form.mesAnoContaFinal.value;
     	
-//     	urlCancelamentoConta = urlCancelamentoConta + "&idsContasSelecionadas=" + obterValorCheckboxMarcado();  
+     	urlCancelamentoConta = urlCancelamentoConta + "&idsContasSelecionadas=" + obterValorCheckboxMarcado();
+		form.contaSelected.value = obterValorCheckboxMarcado();
     	
     	if (form.idGrupoFaturamento != null && form.idGrupoFaturamento.value.length > 0){
     		urlCancelamentoConta = urlCancelamentoConta + "&idGrupoFaturamento=" + form.idGrupoFaturamento.value;
@@ -163,7 +165,8 @@ function retirarValorAguaEsgotoConta(form){
 	    	var urlCancelamentoConta = "/gsan/exibirRetirarValorAguaEsgotoConjuntoContaAction.do?mesAno="+ form.mesAnoConta.value;  
 	    	urlCancelamentoConta = urlCancelamentoConta + "&mesAnoFim="+ form.mesAnoContaFinal.value;
 	    	
-//	     	urlCancelamentoConta = urlCancelamentoConta + "&idsContasSelecionadas=" + obterValorCheckboxMarcado();  
+	     	urlCancelamentoConta = urlCancelamentoConta + "&idsContasSelecionadas=" + obterValorCheckboxMarcado(); 
+			form.contaSelected.value = obterValorCheckboxMarcado();
 	    	
 	    	if (form.idGrupoFaturamento != null && form.idGrupoFaturamento.value.length > 0){
 	    		urlCancelamentoConta = urlCancelamentoConta + "&idGrupoFaturamento=" + form.idGrupoFaturamento.value;
@@ -197,7 +200,8 @@ function alterarVencimento(form){
     	var urlCancelamentoConta = "/gsan/exibirAlterarVencimentoConjuntoContaAction.do?mesAno="+ form.mesAnoConta.value;
     	urlCancelamentoConta = urlCancelamentoConta + "&mesAnoFim="+ form.mesAnoContaFinal.value; 
     	
-//     	urlCancelamentoConta = urlCancelamentoConta + "&idsContasSelecionadas=" + obterValorCheckboxMarcado();  
+     	urlCancelamentoConta = urlCancelamentoConta + "&idsContasSelecionadas=" + obterValorCheckboxMarcado();  
+		form.contaSelected.value = obterValorCheckboxMarcado();
     	
     	if (form.idGrupoFaturamento != null && form.idGrupoFaturamento.value.length > 0){
     		urlCancelamentoConta = urlCancelamentoConta + "&idGrupoFaturamento=" + form.idGrupoFaturamento.value;
@@ -242,7 +246,7 @@ function emitir2ViaConta(form){
     	var urlCancelamentoConta = "gerarRelatorio2ViaContaAction.do?mesAno="+ form.mesAnoConta.value+"&qtdeContas="+form.quatidadeConta.value;  
     	urlCancelamentoConta = urlCancelamentoConta + "&mesAnoFim="+ form.mesAnoContaFinal.value;  
     	
-//     	urlCancelamentoConta = urlCancelamentoConta + "&idsContasSelecionadas=" + obterValorCheckboxMarcado();  
+     	urlCancelamentoConta = urlCancelamentoConta + "&idsContasSelecionadas=" + obterValorCheckboxMarcado();  
     	form.contaSelected.value = obterValorCheckboxMarcado();
     	
     	if (form.idGrupoFaturamento != null && form.idGrupoFaturamento.value.length > 0){
@@ -282,14 +286,14 @@ function habilitarBotoes(){
 	
 	if (idGrupoFaturamento != null && idGrupoFaturamento.value.length > 0){
 		
-		form.botaoCancelar.disabled = true;
-		form.botaoRetirarDebitoCobrado.disabled = true;
+		//form.botaoCancelar.disabled = true;
+		//form.botaoRetirarDebitoCobrado.disabled = true;
 	}
 	else{
 		
-		form.botaoCancelar.disabled = false;
-		form.botaoRetirarDebitoCobrado.disabled = false;
-		form.botaoEmitirSegundaVia.disabled = false;
+		//form.botaoCancelar.disabled = false;
+		//form.botaoRetirarDebitoCobrado.disabled = false;
+		//form.botaoEmitirSegundaVia.disabled = false;
 	}
 	
 }
@@ -335,6 +339,7 @@ function emitir2ViaConta(form){
 	    	var urlCancelamentoConta = "gerarRelatorio2ViaContaAction.do?mesAno="+ form.mesAnoConta.value+"&qtdeContas="+form.quatidadeConta.value;  
 	    	urlCancelamentoConta = urlCancelamentoConta + "&mesAnoFim="+ form.mesAnoContaFinal.value;  
 	    	  
+	     	urlCancelamentoConta = urlCancelamentoConta + "&idsContasSelecionadas=" + obterValorCheckboxMarcado();  	    	
 	    	form.contaSelected.value = obterValorCheckboxMarcado();
 	    	
 	    	if (form.idGrupoFaturamento != null && form.idGrupoFaturamento.value.length > 0){
@@ -368,8 +373,11 @@ function retirarContaDeRevisao(form){
 	
 	if (CheckboxNaoVazioMensagemGenerico(mensagem, "")){
 		
-		form.contaSelected.value = obterValorCheckboxMarcado();
-		var urlRetirarRevisaoConta = "/gsan/retirarRevisaoConjuntoContaAction.do";  
+		var urlRetirarRevisaoConta = "/gsan/retirarRevisaoConjuntoContaAction.do"; 
+		
+		form.contaSelected.value = obterValorCheckboxMarcado();		
+		urlRetirarRevisaoConta = urlRetirarRevisaoConta + "?idsContasSelecionadas=" + obterValorCheckboxMarcado();  
+     	
 		form.action = urlRetirarRevisaoConta;
 		
 		if (confirm("Confirma retirada de revisão?")){
@@ -386,6 +394,10 @@ function alterarClienteResponsavelContas(form){
   	if(CheckboxNaoVazioMensagemGenerico(mensagem, "")){
     	
     	var urlPopup = "/gsan/exibirAlterarClienteResponsavelConjuntoContaAction.do";  
+    	
+		form.contaSelected.value = obterValorCheckboxMarcado();		
+		urlPopup = urlPopup + "?idsContasSelecionadas=" + obterValorCheckboxMarcado();  
+		
     	abrirPopup(urlPopup, 295, 450);  
   	}
 }
@@ -596,7 +608,7 @@ function alterarClienteResponsavelContas(form){
 								url="consultarDebitoAction.do" /> 
 							</logic:empty>
 							<logic:notEmpty scope="session" name="retornoArquivo">
-							<input type="button"class="bottonRightCol" disabled="disabled"
+							<gcom:controleAcessoBotao 
 								name="Button" value="Selecionar"
 								onclick="javascript:pesquisarContas(document.forms[0]);"
 								url="consultarDebitoAction.do" /> 
@@ -627,75 +639,112 @@ function alterarClienteResponsavelContas(form){
 									<table width="100%" cellpadding="0" cellspacing="0">
 										<tr>
 											<td>
+
+											<%
+													String pctQtdColunasContas="11";
+													String pctImovel   = "60";
+													String pctMesAnoTitle   = "70";
+													String pctVencimento    = "80";
+													String pctAgua          = "70";
+													String pctEsgoto        = "50";
+													String pctDebito        = "50";
+													String pctCreditos 		= "50";
+													String pctImpostos 		= "50";
+													String pctConta      	= "50";
+													String pctMotivoRevisao = "50";
+													String pctSituacao      = "30";
+													String pctDividaAtiva   = "0";
+													
+													if (session.getAttribute("exibirDividaAtivaColuna") != null) {
+														pctMesAnoTitle   = "30";
+														pctSituacao      = "30";
+														pctDividaAtiva   = "10";
+														
+														pctQtdColunasContas="20";
+													}
+													
+								
+											%>											
+																
 											<table width="800" border="0" bgcolor="#90c7fc">
 												<tr>
-													<td bgcolor="#79bbfd" colspan="12" height="20">
+													<td bgcolor="#79bbfd" colspan="<%= pctQtdColunasContas%>" height="20">
 														<strong>Contas do Imóvel</strong>
 													</td>
 												</tr>
 												<logic:present name="colecaoContaImovel">
 												<tr bgcolor="#90c7fc">
 													
-													<td width="30">
+													<td width="47">
 														<div align="center">	
 														<strong><a href="javascript:facilitador(this);" id="0">Todos</a></strong>
 														</div>
 													</td>
-													<td width="70">
+													<td width="<%= pctImovel%>" >
 														<div align="center">	
 														<strong>Imóvel</strong>
 														</div>
 													</td>
-													<td width="70">
+													<td width="<%= pctMesAnoTitle%>">
 														<div align="center">
 														<strong>Referência</strong>
 														</div>
 													</td>
-													<td width="50">
+													<td width="<%= pctVencimento%>">
 														<div align="center">
 														<strong>Vencimento</strong>
 														</div>
 													</td>
-													<td width="50">
+													<td width="<%= pctAgua%>">
 														<div align="center">
 														<strong>Valor Água</strong>
 														</div>
 													</td>
-													<td width="50">
+													<td width="<%= pctEsgoto%>">
 														<div align="center">
 														<strong>Valor Esgoto</strong>
 														</div>
 													</td>
-													<td width="50">
+													<td width="<%= pctDebito%>">
 														<div align="center">
 														<strong>Valor Débito</strong>
 														</div>
 													</td>
-													<td width="50">
+													<td width="<%= pctCreditos%>">
 														<div align="center">
 														<strong>Valor Crédito</strong>
 														</div>
 													</td>
-													<td width="50">
+													<td width="<%= pctImpostos%>">
 														<div align="center">
 														<strong>Valor Imposto</strong>
 														</div>
 													</td>
-													<td width="50">
+													<td width="<%= pctConta%>">
 														<div align="center">
 														<strong>Valor Conta</strong>
 														</div>
 													</td>
-													<td width="50">
+													<td width="<%= pctMotivoRevisao%>">
 														<div align="center">
 														<strong>Motivo Revisão</strong>
 														</div>
 													</td>
-													<td width="70">
+													<td width="<%= pctSituacao%>">
 														<div align="center">
 														<strong>Situação</strong>
 														</div>
 													</td>
+													
+													<logic:present name="exibirDividaAtivaColuna" scope="session">
+														<td width="<%= pctDividaAtiva%>" bgcolor="#90c7fc" align="center">
+															<div align="center">
+																<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
+																	<strong>Dívida Ativa</strong>
+																</font>
+															</div>
+														</td>				
+													</logic:present>													
 		
 												</tr>
 												</logic:present>
@@ -745,13 +794,14 @@ function alterarClienteResponsavelContas(form){
 															}
 														%>
 
-															<td align="center" width="40">
+															<td align="center" width="47">
 																<div>		
 																<INPUT type="checkbox" name="idsContasSelecionadas"	value="<bean:write name="conta" property="id" />">
 																</div>	
 															</td>
+													
 															
-															<td align="center" width="80">
+															<td align="center" width="<%= pctImovel%>">
 																<div>
 																	<logic:present name="conta"	property="imovel">
 																		<font color="<%=corSituacaoConta %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
@@ -762,7 +812,7 @@ function alterarClienteResponsavelContas(form){
 																</div>
 															</td>
 															
-															<td align="center" width="80">
+															<td align="center" width="<%= pctMesAnoTitle%>">
 																<div>
 																	<strong>
 																		<a href="javascript:abrirPopup('exibirConsultarContaAction.do?contaID=<bean:write name="conta" property="id" />&tipoConsulta=conta', 600, 800);">
@@ -773,7 +823,8 @@ function alterarClienteResponsavelContas(form){
 																	</strong>
 																</div>
 															</td>
-															<td align="center" width="80">
+															
+															<td align="center" width="<%= pctVencimento%>">
 																<div>
 																	<logic:present name="conta"	property="dataVencimentoConta">
 																		<font color="<%=corSituacaoConta %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
@@ -783,21 +834,21 @@ function alterarClienteResponsavelContas(form){
 																	<logic:notPresent name="conta" property="dataVencimentoConta">&nbsp;</logic:notPresent>
 																</div>
 															</td>
-															<td align="center" width="50">
+															<td align="center" width="<%= pctAgua%>">
 																<div>
 																	<font color="<%=corSituacaoConta %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 																		<%="" + Util.formatarMoedaReal(conta.getValorAgua()).trim()%>
 																	</font>
 																</div>
 															</td>
-															<td align="center" width="50">
+															<td align="center" width="<%= pctEsgoto%>">
 																<div>
 																	<font color="<%=corSituacaoConta %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 																		<%="" + Util.formatarMoedaReal(conta.getValorEsgoto()).trim()%>
 																	</font>
 																</div>
 															</td>
-															<td align="center" width="50">
+															<td align="center" width="<%= pctDebito%>">
 																<div>
 																	<logic:notEqual name="conta" property="debitos" value="0">
 																		<a href="javascript:abrirPopup('exibirConsultarDebitoCobradoAction.do?contaID=<bean:write name="conta" property="id" />&tipoConsulta=conta', 600, 800);">
@@ -813,7 +864,7 @@ function alterarClienteResponsavelContas(form){
 																	</logic:equal>
 																</div>
 															</td>
-															<td align="center" width="50">
+															<td align="center" width="<%= pctCreditos%>">
 																<div>
 																	<logic:notEqual name="conta" property="valorCreditos" value="0">
 																		<a href="javascript:abrirPopup('exibirConsultarCreditoRealizadoAction.do?contaID=<bean:write name="conta" property="id" />&tipoConsulta=conta', 600, 800);">
@@ -830,21 +881,21 @@ function alterarClienteResponsavelContas(form){
 																	</logic:equal>
 																</div>
 															</td>
-															<td align="center" width="50">
+															<td align="center" width="<%= pctImpostos%>">
 																<div>
 																	<font color="<%=corSituacaoConta %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 																		<%="" + Util.formatarMoedaReal(conta.getValorImposto()).trim()%>
 																	</font>
 																</div>
 															</td>
-															<td align="center" width="50">
+															<td align="center" width="<%= pctConta%>">
 																<div>
 																	<font color="<%=corSituacaoConta %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 																		<%="" + Util.formatarMoedaReal(new BigDecimal(conta.getValorTotalConta())).trim()%>
 																	</font>
 																</div>
 															</td>
-															<td align="center" width="70">
+															<td align="center" width="<%= pctMotivoRevisao%>">
 																<div>
 																	<logic:present name="conta" property="contaMotivoRevisao">
 																		<font color="<%=corSituacaoConta %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
@@ -854,7 +905,7 @@ function alterarClienteResponsavelContas(form){
 																	<logic:notPresent name="conta" property="contaMotivoRevisao">&nbsp;</logic:notPresent>
 																</div>
 															</td>
-															<td align="center" width="70">
+															<td align="center" width="<%= pctSituacao%>">
 																<div>												
 																	<logic:present name="conta" property="debitoCreditoSituacaoAtual">
 																		<font color="<%=corSituacaoConta %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
@@ -864,6 +915,31 @@ function alterarClienteResponsavelContas(form){
 																	<logic:notPresent name="conta" property="debitoCreditoSituacaoAtual">&nbsp;</logic:notPresent>
 																</div>
 															</td>
+															
+															<logic:present name="exibirDividaAtivaColuna" scope="session">
+																<td width="<%= pctDividaAtiva%>" align="center">
+																	<div align="center">
+																		<font color="<%=corSituacaoConta %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
+																			<logic:equal name="conta" property="indicadorDividaAtiva" value="2">
+																				<logic:equal name="conta" property="indicadorExecucaoFiscal" value="2">
+																					N
+																				</logic:equal>
+																			</logic:equal>
+												
+																			<logic:equal name="conta" property="indicadorDividaAtiva" value="1">
+																				<logic:equal name="conta" property="indicadorExecucaoFiscal" value="2">
+																					A
+																				</logic:equal>
+																			</logic:equal>
+																		
+																			<logic:equal name="conta" property="indicadorExecucaoFiscal" value="1">
+																				E
+																			</logic:equal>
+																		</font>
+																	</div>
+																</td>				
+															</logic:present>															
+															
 														</tr>
 												</logic:iterate>
 												<!-- Inicio Ultima linha de TOTAL -->

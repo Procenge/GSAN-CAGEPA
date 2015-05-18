@@ -65,8 +65,8 @@
     }
 
 	function validarIndicadorContasRevisao(form) {
-		if(!form.indicadorContasRevisao[0].checked && !form.indicadorContasRevisao[1].checked){
-			alert('\'Selecionar apenas as contas em revisão?\' deve ser selecionado.');
+		if(!form.indicadorContasRevisao[0].checked && !form.indicadorContasRevisao[1].checked && !form.indicadorContasRevisao[2].checked){
+			alert('\'Selecionar contas?\' deve ser selecionado.');
 			return false;
 		} else {
 			return true;
@@ -274,13 +274,14 @@
               	</td>
             </tr>
             
-            <!-- Selecionar apenas as contas em revisão? -->
+            <!-- Selecionar contas? -->
             <tr> 
-				<td><strong>Selecionar apenas as contas em revis&atilde;o?<font color="#FF0000">*</font></strong></td>
+				<td><strong>Selecionar contas?<font color="#FF0000">*</font></strong></td>
 				<td>
 					<strong>
-						<html:radio property="indicadorContasRevisao" value="1"/>Sim
-						<html:radio property="indicadorContasRevisao" value="2"/>N&atilde;o
+						<html:radio property="indicadorContasRevisao" value="<%=""+ConstantesSistema.CONTAS_NORMAIS%>"/>Normal
+						<html:radio property="indicadorContasRevisao" value="<%=""+ConstantesSistema.CONTAS_EM_REVISAO%>"/>Em Revisão
+						<html:radio property="indicadorContasRevisao" value="<%=""+ConstantesSistema.TODOS%>"/>Ambas
 				 	</strong>
 				 </td>
 			</tr>

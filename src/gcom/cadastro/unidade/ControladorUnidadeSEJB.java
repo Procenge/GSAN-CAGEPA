@@ -543,7 +543,7 @@ public class ControladorUnidadeSEJB
 
 			UnidadeOrganizacional unidadeSuperior = unidadeOrganizacional.getUnidadeSuperior();
 
-			if(unidadeSuperior != null){
+			if(unidadeSuperior != null && !unidadeSuperior.getId().equals(id)){
 				id = unidadeSuperior.getId();
 				retorno.add(id);
 			}else{
@@ -739,7 +739,8 @@ public class ControladorUnidadeSEJB
 
 		try{
 			// Atualiza a unidadeOrganizacional
-			repositorioUnidade.atualizarUnidadeOrganizacional(unidadeOrganizacional);
+			// repositorioUnidade.atualizarUnidadeOrganizacional(unidadeOrganizacional);
+			this.getControladorUtil().atualizar(unidadeOrganizacional);
 
 			// #### Lógica de alteração da Unidade Organizacional Hierarquia ####
 
@@ -926,7 +927,7 @@ public class ControladorUnidadeSEJB
 		UnidadeOrganizacional unidadeOrganizacionalRetorno = null;
 
 		Collection<UnidadeOrganizacional> colecaoUnidadeOrganizacional = this.getControladorRegistroAtendimento()
-						.obterUnidadeDestinoPorEspecificacao(especificacaoTramiteAuxiliar);
+						.obterUnidadeDestinoPorEspecificacao(especificacaoTramiteAuxiliar, true);
 
 		if(!Util.isVazioOrNulo(colecaoUnidadeOrganizacional)){
 			unidadeOrganizacionalRetorno = (UnidadeOrganizacional) Util.retonarObjetoDeColecao(colecaoUnidadeOrganizacional);

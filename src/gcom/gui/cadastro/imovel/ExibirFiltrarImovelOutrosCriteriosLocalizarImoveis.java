@@ -144,6 +144,9 @@ public class ExibirFiltrarImovelOutrosCriteriosLocalizarImoveis
 		}else if(!Util.isVazioOuBranco(gerarRelatorio) && gerarRelatorio.equals("GerarRelacaoDebito")){
 			imovelOutrosCriteriosActionForm.setExibirOrdenacao("trueRelacaoDebitos");
 			imovelOutrosCriteriosActionForm.setIndicadorOrdenacao("1");
+			if(Util.isVazioOuBranco(imovelOutrosCriteriosActionForm.getIndicadorOpcaoAgrupamento())){
+				imovelOutrosCriteriosActionForm.setIndicadorOpcaoAgrupamento("GERENCIA_REGIONAL_LOCALIDADE");
+			}
 		}else{
 
 			imovelOutrosCriteriosActionForm.setExibirOrdenacao("false");

@@ -7,6 +7,7 @@
 <%@page import="gcom.micromedicao.hidrometro.Hidrometro"
 	isELIgnored="false"%>
 <%@page import="gcom.util.ConstantesSistema"%>
+<%@ page import="gcom.micromedicao.hidrometro.HidrometroSituacao"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -153,13 +154,52 @@
 		form.fixo.value = "";
 		form.faixaInicial.value = "";
 		form.faixaFinal.value = "";
+		form.dataInstalacao.value = "";
+		form.dataInstalacao.disabled = false;
+	}
+	
+	function desabilitarDataInstalacao(idSituacaoInstalado){
+
+		var form = document.forms[0];
+  		var informouSituacaoPermiteInformarData = false;
+  		
+  		if (form.idHidrometroSituacao.selectedIndex == 0 || form.idHidrometroSituacao.value == idSituacaoInstalado){
+  			
+  			informouSituacaoPermiteInformarData = true;
+  		}
+  		
+  		if (informouSituacaoPermiteInformarData){
+  			
+  			form.dataInstalacao.disabled = false;
+  		}else{
+  			
+  			form.dataInstalacao.disabled = true;
+  			form.dataInstalacao.value = "";
+  		}
+	}
+	
+	function verificarPermissaoInformarDataInstalacao(idSituacaoInstalado){
+
+		var form = document.forms[0];
+  		var informouSituacaoPermiteInformarData = false;
+  		
+  		
+  		if (form.idHidrometroSituacao.selectedIndex == 0 || form.idHidrometroSituacao.value == idSituacaoInstalado){
+  			
+  			informouSituacaoPermiteInformarData = true;
+  		}
+  		
+  		if (informouSituacaoPermiteInformarData){
+  			
+  			abrirCalendario('PesquisarHidrometroActionForm', 'dataInstalacao');
+  		}
 	}
 	
 </script>
 
 </head>
 
-<body leftmargin="5" topmargin="5" onload="javascript:resizePageSemLink(660,630);javascript:setarFoco('${requestScope.nomeCampo}');">
+<body leftmargin="5" topmargin="5" onload="javascript:resizePageSemLink(660,630);javascript:setarFoco('${requestScope.nomeCampo}');desabilitarDataInstalacao('${requestScope.idSituacaoHidrometroInstalado}');">
 <html:form action="/pesquisarHidrometroAction.do"
 	name="PesquisarHidrometroActionForm"
 	type="gcom.gui.micromedicao.hidrometro.PesquisarHidrometroActionForm"
@@ -308,13 +348,25 @@
 							</tr>
 							<tr>
 								<td><strong>Situa&ccedil;&atilde;o:</strong></td>
-								<td><html:select property="idHidrometroSituacao">
+								<td><html:select property="idHidrometroSituacao" onchange="javascript:desabilitarDataInstalacao('${requestScope.idSituacaoHidrometroInstalado}');">>
 									<html:option
-										value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+										value="">&nbsp;</html:option>
 									<html:options collection="hidrometrosSituacao"
 										labelProperty="descricao" property="id" />
 								</html:select></td>
 							</tr>
+							
+							<tr>
+								<td><strong>Data de Instalação:</strong></td>
+								<td><html:text property="dataInstalacao" size="10" maxlength="10"
+									onkeyup="mascaraData(this,event)"/> <a
+									href="javascript:verificarPermissaoInformarDataInstalacao('${requestScope.idSituacaoHidrometroInstalado}')">
+								<img border="0"
+									src="<bean:message key="caminho.imagens"/>calendario.gif"
+									width="20" border="0" align="absmiddle" alt="Exibir Calendário" /></a>
+								dd/mm/aaaa</td>
+							</tr>
+				
 							<tr>
 								<td height="23" colspan="2">
 								<hr>

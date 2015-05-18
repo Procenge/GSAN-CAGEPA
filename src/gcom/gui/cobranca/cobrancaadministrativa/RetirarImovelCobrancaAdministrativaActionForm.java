@@ -13,6 +13,8 @@ import org.apache.struts.action.ActionForm;
 public class RetirarImovelCobrancaAdministrativaActionForm
 				extends ActionForm {
 
+	private String formatoRelatorio;
+
 	private String idMotivoRetirada;
 
 	private String[] idRegistrosRetirada;
@@ -35,6 +37,16 @@ public class RetirarImovelCobrancaAdministrativaActionForm
 	public void setIdRegistrosRetirada(String[] idRegistrosRetirada){
 
 		this.idRegistrosRetirada = idRegistrosRetirada;
+	}
+
+	public String getFormatoRelatorio(){
+
+		return formatoRelatorio;
+	}
+
+	public void setFormatoRelatorio(String formatoRelatorio){
+
+		this.formatoRelatorio = formatoRelatorio;
 	}
 
 }

@@ -147,6 +147,7 @@ public class EmitirArquivoPdfAvisoCorteHelper
 		this.numeroSequenciaDocumento = numeroSequenciaDocumento;
 
 	}
+
 	/**
 	 * @return the idCobrancaDocumento
 	 */

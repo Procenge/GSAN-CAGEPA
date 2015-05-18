@@ -108,6 +108,24 @@ public class InserirFaturamentoGrupoAction
 		objetoRetorno.setIndicadorVencimentoMesFatura(Short.parseShort((String) form.get("indicadorVencimentoMesFatura")));
 		objetoRetorno.setIndicadorUso(ConstantesSistema.INDICADOR_USO_ATIVO);
 		objetoRetorno.setUltimaAlteracao(new Date());
+		if(!Util.isVazioOuBranco(form.get("diaVencimentoDebitoAutomatico"))){
+
+			objetoRetorno.setDiaVencimentoDebitoAutomatico(Short.parseShort((String) form.get("diaVencimentoDebitoAutomatico")));
+		}else{
+
+			objetoRetorno.setDiaVencimentoDebitoAutomatico(null);
+
+		}
+
+		if(!Util.isVazioOuBranco(form.get("diaVencimentoEntregaAlternativa"))){
+
+			objetoRetorno.setDiaVencimentoEntregaAlternativa(Short.parseShort((String) form.get("diaVencimentoEntregaAlternativa")));
+
+		}else{
+
+			objetoRetorno.setDiaVencimentoEntregaAlternativa(null);
+
+		}
 
 		return objetoRetorno;
 	}

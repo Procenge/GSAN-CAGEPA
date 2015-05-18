@@ -443,7 +443,8 @@ public interface ControladorAtendimentoPublicoLocal
 	 * @throws ControladorException
 	 */
 
-	public Integer inserirMaterial(String descricao, String descricaoAbreviada, String unidadeMaterial, Usuario usuarioLogado)
+	public Integer inserirMaterial(String descricao, String descricaoAbreviada, String unidadeMaterial, BigDecimal materialValor,
+					Usuario usuarioLogado)
 					throws ControladorException;
 
 	/**
@@ -1349,5 +1350,15 @@ public interface ControladorAtendimentoPublicoLocal
 	 * @date 23/04/2014
 	 **/
 	public BigDecimal verificarServicoTipoValorLocalidade(Integer idImovel, Integer idDebitoTipo) throws ControladorException;
+
+	/**
+	 * @author
+	 * @param inputStream
+	 * @param usuario
+	 * @throws ControladorException
+	 *             efetua a instalaçao de varios hidrometros
+	 */
+	public Collection[] efetuarInstalacaoHidrometrosComLigacaoAguaEmLote(InputStream inputStream, Usuario usuario)
+					throws ControladorException;
 
 }

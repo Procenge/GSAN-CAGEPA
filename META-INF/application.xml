@@ -95,10 +95,7 @@
 	</module>
 	<module>
 		<ejb>ejb/BatchRegistrarFaturamentoImediatoMDB.jar</ejb>
-	</module>	
-	<module>
-		<ejb>ejb/BatchRegistrarFaturamentoImediatoMDB.jar</ejb>
-	</module>	
+	</module>		
 	<module>
 		<ejb>ejb/BatchGerarArquivoTextoFaturamentoImediatoMDB.jar</ejb>
 	</module>
@@ -316,6 +313,9 @@
 		<ejb>ejb/BatchGerarAvisoCorteMDB.jar</ejb>
 	</module>
 	<module>
+		<ejb>ejb/BatchGerarNotificacaoAmigavelMDB.jar</ejb>
+	</module>		
+	<module>
 		<ejb>ejb/BatchIdentificarCobrancaBancariaComNegociacaoMDB.jar</ejb>
 	</module>
 	<module>
@@ -332,6 +332,9 @@
 	</module>
 	<module>
 		<ejb>ejb/BatchRegistrarMovimentoArrecadadoresMDB.jar</ejb>
+	</module>
+	<module>
+		<ejb>ejb/BatchRegistrarLeiturasAnormalidadesMDB.jar</ejb>
 	</module>
 	<module>
 		<ejb>ejb/BatchGerarEnviarRelatorioResumoMovimentoArrecadacaoMDB.jar</ejb>
@@ -444,6 +447,18 @@
 	<module>
 		<ejb>ejb/BatchComandarPrescricaoAutomaticaDebitosMDB.jar</ejb>
 	</module>
+	<module>
+		<ejb>ejb/BatchAjustarLancamentosContabiesSinteticosMDB.jar</ejb>
+	</module>
+	<module>
+		<ejb>ejb/BatchSupressaoDefinitivaImoveisMDB.jar</ejb>
+	</module>	
+	<module>
+		<ejb>ejb/BatchAjustarRelacaoUsuarioClienteImovelMDB.jar</ejb>
+	</module>	
+	<module>
+		<ejb>ejb/BatchImportarDadosDividaAtivaMDB.jar</ejb>
+	</module>	
 	<module>
 		<java>reports.jar</java>
 	</module>

@@ -9,7 +9,7 @@ package gcom.util.parametrizacao.cobranca;
  */
 public enum ModeloRelatorioCertidaoNegativaDebitos {
 
-	UM("1"), DOIS("2"), TRES("3");
+	UM("1"), DOIS("2"), TRES("3"), QUATRO("4");
 
 	private String valor;
 

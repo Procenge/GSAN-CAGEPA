@@ -76,12 +76,7 @@
 
 package gcom.gui.atendimentopublico.ordemservico;
 
-import gcom.atendimentopublico.ordemservico.Equipe;
-import gcom.atendimentopublico.ordemservico.EquipeComponentes;
-import gcom.atendimentopublico.ordemservico.FiltroEquipe;
-import gcom.atendimentopublico.ordemservico.FiltroEquipeComponentes;
-import gcom.atendimentopublico.ordemservico.FiltroServicoPerfilTipo;
-import gcom.atendimentopublico.ordemservico.ServicoPerfilTipo;
+import gcom.atendimentopublico.ordemservico.*;
 import gcom.cadastro.funcionario.FiltroFuncionario;
 import gcom.cadastro.funcionario.Funcionario;
 import gcom.cadastro.unidade.FiltroUnidadeOrganizacional;
@@ -89,6 +84,7 @@ import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
@@ -125,6 +121,35 @@ public class ExibirAtualizarEquipeAction
 		Fachada fachada = Fachada.getInstancia();
 
 		HttpSession sessao = httpServletRequest.getSession(false);
+
+
+		Integer idEquipeTipo = atualizarEquipeActionForm.getIdEquipeTipo();
+
+		if(idEquipeTipo != null && idEquipeTipo != ConstantesSistema.NUMERO_NAO_INFORMADO){
+
+			FiltroEquipeTipo filtroEquipeTipo = new FiltroEquipeTipo();
+			filtroEquipeTipo.adicionarParametro(new ParametroSimples(FiltroEquipeTipo.ID, idEquipeTipo));
+
+			Collection colecaoEquipeTipo = fachada.pesquisar(filtroEquipeTipo, EquipeTipo.class.getName());
+
+			if(colecaoEquipeTipo != null && !colecaoEquipeTipo.isEmpty()){
+
+				EquipeTipo equipeTipo = (EquipeTipo) Util.retonarObjetoDeColecao(colecaoEquipeTipo);
+				atualizarEquipeActionForm.setIdEquipeTipo(equipeTipo.getId());
+
+			}else{
+
+				atualizarEquipeActionForm.setIdEquipeTipo(ConstantesSistema.NUMERO_NAO_INFORMADO);
+			}
+
+		}else{
+			atualizarEquipeActionForm.setIdEquipeTipo(ConstantesSistema.NUMERO_NAO_INFORMADO);
+		}
+		FiltroEquipeTipo filtroEquipeTipo = new FiltroEquipeTipo();
+		filtroEquipeTipo.setCampoOrderBy(FiltroEquipeTipo.DESCRICAO);
+
+		httpServletRequest
+						.setAttribute("colecaoEquipeTipo", Fachada.getInstancia().pesquisar(filtroEquipeTipo, EquipeTipo.class.getName()));
 
 		// Recupera os valores da unidade do form
 		String idUnidade = atualizarEquipeActionForm.getIdUnidade();
@@ -283,6 +308,13 @@ public class ExibirAtualizarEquipeAction
 
 				atualizarEquipeActionForm.setIdServicoPerfilTipo(equipe.getServicoPerfilTipo().getId().toString());
 				atualizarEquipeActionForm.setDescricaoServicoPerfilTipo(equipe.getServicoPerfilTipo().getDescricao());
+
+			}
+
+			if(equipe.getEquipeTipo() != null){
+				if(equipe.getEquipeTipo().getId() != null){
+					atualizarEquipeActionForm.setIdEquipeTipo(equipe.getEquipeTipo().getId());
+				}
 
 			}
 

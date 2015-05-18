@@ -81,6 +81,7 @@ import gcom.interceptor.ObjetoTransacao;
 import gcom.util.filtro.Filtro;
 import gcom.util.filtro.ParametroSimples;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -134,16 +135,57 @@ public class SetorAbastecimento
 	@ControleAlteracao(value = FiltroSetorAbastecimento.ZONA_ABASTECIMENTO, funcionalidade = {OPERACAO_SETOR_ABASTECIMENTO_INSERIR, OPERACAO_SETOR_ABASTECIMENTO_ATUALIZAR, OPERACAO_SETOR_ABASTECIMENTO_REMOVER})
 	/** persistent field */
 	private gcom.operacional.ZonaAbastecimento zonaAbastecimento;
+	
+	
+	// OC1162746
+
+	@ControleAlteracao(value = FiltroSetorAbastecimento.EXTENSAO_REDE, funcionalidade = {OPERACAO_SETOR_ABASTECIMENTO_INSERIR, OPERACAO_SETOR_ABASTECIMENTO_ATUALIZAR, OPERACAO_SETOR_ABASTECIMENTO_REMOVER})
+	/** persistent field */
+	private Integer extensaoRede;
+	
+	@ControleAlteracao(value = FiltroSetorAbastecimento.PRESSAO_MAXIMA, funcionalidade = {OPERACAO_SETOR_ABASTECIMENTO_INSERIR, OPERACAO_SETOR_ABASTECIMENTO_ATUALIZAR, OPERACAO_SETOR_ABASTECIMENTO_REMOVER})
+	/** persistent field */
+	private BigDecimal pressaoMaxima;
+	
+	@ControleAlteracao(value = FiltroSetorAbastecimento.PRESSAO_MEDIA, funcionalidade = {OPERACAO_SETOR_ABASTECIMENTO_INSERIR, OPERACAO_SETOR_ABASTECIMENTO_ATUALIZAR, OPERACAO_SETOR_ABASTECIMENTO_REMOVER})
+	/** persistent field */
+	private BigDecimal pressaoMedia;
+
+	@ControleAlteracao(value = FiltroSetorAbastecimento.PRESSAO_MINIMA, funcionalidade = {OPERACAO_SETOR_ABASTECIMENTO_INSERIR, OPERACAO_SETOR_ABASTECIMENTO_ATUALIZAR, OPERACAO_SETOR_ABASTECIMENTO_REMOVER})
+	/** persistent field */
+	private BigDecimal pressaoMinima;
+
+	@ControleAlteracao(value = FiltroSetorAbastecimento.MONITORAMENTO_INICIAL, funcionalidade = {OPERACAO_SETOR_ABASTECIMENTO_INSERIR, OPERACAO_SETOR_ABASTECIMENTO_ATUALIZAR, OPERACAO_SETOR_ABASTECIMENTO_REMOVER})
+	/** persistent field */
+	private Date monitoramentoInicial;
+
+	@ControleAlteracao(value = FiltroSetorAbastecimento.MONITORAMENTO_INICIAL, funcionalidade = {OPERACAO_SETOR_ABASTECIMENTO_INSERIR, OPERACAO_SETOR_ABASTECIMENTO_ATUALIZAR, OPERACAO_SETOR_ABASTECIMENTO_REMOVER})
+	/** persistent field */
+	private Date monitoramentoFinal;
+	
+	@ControleAlteracao(value = FiltroSetorAbastecimento.ID_DIAMENTRO, funcionalidade = {OPERACAO_SETOR_ABASTECIMENTO_INSERIR, OPERACAO_SETOR_ABASTECIMENTO_ATUALIZAR, OPERACAO_SETOR_ABASTECIMENTO_REMOVER})
+	/** persistent field */
+	private Integer idDiametro;
+
+	// FIM DA OC
 
 	/** full constructor */
 	public SetorAbastecimento(String descricao, String descricaoAbreviada, short indicadorUso, Date ultimaAlteracao,
-								gcom.operacional.SistemaAbastecimento sistemaAbastecimento) {
+								gcom.operacional.SistemaAbastecimento sistemaAbastecimento, Integer extensaoRede, BigDecimal pressaoMaxima,
+								BigDecimal pressaoMedia, BigDecimal pressaoMinima, Date monitoramentoInicial, Date monitoramentoFInal,
+								Integer idDiamentro) {
 
 		this.descricao = descricao;
 		this.descricaoAbreviada = descricaoAbreviada;
 		this.indicadorUso = indicadorUso;
 		this.ultimaAlteracao = ultimaAlteracao;
 		this.sistemaAbastecimento = sistemaAbastecimento;
+		this.extensaoRede = extensaoRede;
+		this.pressaoMaxima = pressaoMaxima;
+		this.pressaoMedia = pressaoMedia;
+		this.pressaoMinima = pressaoMinima;
+		this.monitoramentoInicial = monitoramentoInicial;
+		this.monitoramentoFinal = monitoramentoFInal;
 	}
 
 	/** default constructor */
@@ -302,6 +344,76 @@ public class SetorAbastecimento
 		}
 
 		return retorno;
+	}
+
+	public Integer getExtensaoRede(){
+
+		return extensaoRede;
+	}
+
+	public void setExtensaoRede(Integer extensaoRede){
+
+		this.extensaoRede = extensaoRede;
+	}
+
+	public BigDecimal getPressaoMaxima(){
+
+		return pressaoMaxima;
+	}
+
+	public void setPressaoMaxima(BigDecimal pressaoMaxima){
+
+		this.pressaoMaxima = pressaoMaxima;
+	}
+
+	public BigDecimal getPressaoMedia(){
+
+		return pressaoMedia;
+	}
+
+	public void setPressaoMedia(BigDecimal pressaoMedia){
+
+		this.pressaoMedia = pressaoMedia;
+	}
+
+	public BigDecimal getPressaoMinima(){
+
+		return pressaoMinima;
+	}
+
+	public void setPressaoMinima(BigDecimal pressaoMinima){
+
+		this.pressaoMinima = pressaoMinima;
+	}
+
+	public Date getMonitoramentoInicial(){
+
+		return monitoramentoInicial;
+	}
+
+	public void setMonitoramentoInicial(Date monitoramentoInicial){
+
+		this.monitoramentoInicial = monitoramentoInicial;
+	}
+
+	public Date getMonitoramentoFinal(){
+
+		return monitoramentoFinal;
+	}
+
+	public void setMonitoramentoFinal(Date monitoramentoFinal){
+
+		this.monitoramentoFinal = monitoramentoFinal;
+	}
+
+	public Integer getIdDiametro(){
+
+		return idDiametro;
+	}
+
+	public void setIdDiametro(Integer idDiametro){
+
+		this.idDiametro = idDiametro;
 	}
 
 	public String getDescricaoComCodigo(){

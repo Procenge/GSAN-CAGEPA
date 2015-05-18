@@ -14,6 +14,7 @@
 <%@ page import="gcom.faturamento.conta.Conta"%>
 <%@ page import="gcom.faturamento.debito.DebitoACobrar"%>
 <%@ page import="gcom.cadastro.cliente.ClienteImovel"%>
+<%@ page import="gcom.cadastro.imovel.ImovelCobrancaSituacao"%>
 
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -29,14 +30,48 @@
 <script language="JavaScript" src="<bean:message key="caminho.js"/>util.js"></script>
 <script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/ManutencaoRegistro.js"></script>
 
+
 <script language="JavaScript">
 
 <!--
+
+function extendeTabela(tabela,display){
+	var form = document.forms[0];
+
+	if(display){
+		eval('layerHide'+tabela).style.display = 'none';
+		eval('layerShow'+tabela).style.display = 'block';
+	}else{
+		eval('layerHide'+tabela).style.display = 'block';
+		eval('layerShow'+tabela).style.display = 'none';
+	}
+}
+
+function exibirMsgs(){
+	var form = document.forms[0];
+	
+	var objIndicadorPrimeiroAcessoImovelDebito = returnObject(form,"indicadorPrimeiroAcessoImovelDebito");
+	var objIndicadorImovelEmExecucaoFiscal = returnObject(form,"indicadorImovelEmExecucaoFiscal");
+	
+	if(objIndicadorImovelEmExecucaoFiscal != 'undefined' 
+			&& objIndicadorImovelEmExecucaoFiscal.value == '1'
+			&& objIndicadorPrimeiroAcessoImovelDebito.value == "1"){
+		alert('Atenção: Imóvel em Execução Fiscal.');
+		form.indicadorPrimeiroAcessoImovelDebito.value = "2";
+	}
+	
+	if(form.idImovelDebitos.value == '' ){
+		form.indicadorPrimeiroAcessoImovelDebito.value = "1";
+	}
+
+}
+
 function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
 
     var form = document.forms[0];
 
     if (tipoConsulta == 'imovel') {
+      form.idClienteRelacaoImovelSelecionado.value = "";
       form.idImovelDebitos.value = codigoRegistro;
 	  form.action = 'consultarImovelWizardAction.do?action=exibirConsultarImovelDebitosAction&indicadorNovo=OK&limparForm=S'
 	  form.submit();
@@ -67,13 +102,28 @@ function verificarExibicaoRelatorio() {
 	}
 }
 
+function limparImovelClienteSelecionado() {
+	var form = document.forms[0];
+
+	if (form.idClienteRelacaoImovelSelecionado != undefined) {
+		form.idClienteRelacaoImovelSelecionado.value = ''
+	}
+
+}
+
 function limparImovelTecla() {
 
 	var form = document.forms[0];
 	
 	form.matriculaImovelDebitos.value = "";
+	
+	if (form.digitoVerificadorImovelDebitos != undefined) {
+		form.digitoVerificadorImovelDebitos.value = "";
+	}
+	
 	form.situacaoAguaDebitos.value = "";
 	form.situacaoEsgotoDebitos.value = "";
+	form.tipoLigacao.value = "";
 
 }
 
@@ -174,9 +224,31 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 
 //-->
 </script>
+
+<logic:present name="indicadorFauramentoTitularDebito" scope="request">
+	<SCRIPT LANGUAGE="JavaScript">
+	<!--
+	
+	  	function marcarClienteOrigemId(objeto) {
+	  		var form = document.forms[0];
+	  		
+			var i = 0;
+			for (i = 0; i < document.forms[0].idClienteImovel.length; i++) { 
+			    if (document.forms[0].idClienteImovel[i].checked == true) {
+			    	form.idClienteRelacaoImovelSelecionado.value = document.forms[0].valorClienteImovel[i].value;
+			    	form.action = 'consultarImovelWizardAction.do?action=exibirConsultarImovelDebitosAction&indicadorNovo=OK&limparForm=S';
+			    	form.submit();
+			    }
+			}	  		
+	  	}
+
+	//-->
+	</SCRIPT>
+</logic:present>
+	
 </head>
 
-<body leftmargin="5" topmargin="5" onload="javascript:setarFoco('idImovelDebitos')">
+<body leftmargin="5" topmargin="5" onload="javascript:setarFoco('idImovelDebitos');exibirMsgs();">
 <html:form action="/exibirConsultarImovelAction.do"
 	name="ConsultarImovelActionForm"
 	type="gcom.gui.cadastro.imovel.ConsultarImovelActionForm" method="post"
@@ -185,6 +257,8 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 
 	<jsp:include page="/jsp/util/wizard/navegacao_abas_wizard_consulta.jsp?numeroPagina=5" />
 	
+	<html:hidden property="indicadorPrimeiroAcessoImovelDebito"/>
+	<html:hidden property="indicadorImovelEmExecucaoFiscal"/>	
 	
 	<logic:present name="montarPopUp">
 	 <table width="800" border="0" cellspacing="5" cellpadding="0">
@@ -269,7 +343,7 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 					<td colspan="4">
 					<table width="100%" align="center" bgcolor="#99CCFF" border="0">
 						<tr>
-							<td align="center"><strong>Dados do Imóvel</strong></td>
+							<td align="center"><strong>Dados do Imóvel </strong></td>
 						</tr>
 						<tr bgcolor="#cbe5fe">
 							<td width="100%" align="center">
@@ -279,7 +353,7 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 										color="#FF0000">*</font></strong></td>
 									<td width="75%" colspan="3"><html:text
 										property="idImovelDebitos" maxlength="9" size="9"
-										onkeypress="validaEnterComMensagem(event, 'consultarImovelWizardAction.do?action=exibirConsultarImovelDebitosAction&indicadorNovo=OK&limparForm=S','idImovelDebitos','Im&oacute;vel');" 
+										onkeypress="limparImovelClienteSelecionado();validaEnterComMensagem(event, 'consultarImovelWizardAction.do?action=exibirConsultarImovelDebitosAction&indicadorNovo=OK&limparForm=S','idImovelDebitos','Im&oacute;vel');" 
 										onkeyup="limparImovelTecla();" />
 									<a
 										href="javascript:abrirPopup('exibirPesquisarImovelAction.do', 400, 800);">
@@ -287,23 +361,60 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 										src="<bean:message key="caminho.imagens"/>pesquisa.gif"
 										border="0" /></a> <logic:present
 										name="idImovelDebitosNaoEncontrado" scope="request">
-										<html:text property="matriculaImovelDebitos" size="40"
-											readonly="true"
-											style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+											<html:text property="matriculaImovelDebitos" size="40"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />										
+										</logic:equal>
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+											<html:text property="digitoVerificadorImovelDebitos" size="2"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />											
+											<html:text property="matriculaImovelDebitos" size="31"
+												readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />										
+										</logic:equal>										
 
 									</logic:present> <logic:notPresent
 										name="idImovelDebitosNaoEncontrado" scope="request">
 										<logic:present name="valorMatriculaImovelDebitos"
 											scope="request">
-											<html:text property="matriculaImovelDebitos" size="40"
-												readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+												<html:text property="matriculaImovelDebitos" size="40"
+													readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>
+
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelDebitos" size="2"
+													readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />											
+												<html:text property="matriculaImovelDebitos" size="31"
+													readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>											
+											
 										</logic:present>
 										<logic:notPresent name="valorMatriculaImovelDebitos"
 											scope="request">
-											<html:text property="matriculaImovelDebitos" size="40"
-												readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+												<html:text property="matriculaImovelDebitos" size="40"
+													readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelDebitos" size="2"
+													readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+																								
+												<html:text property="matriculaImovelDebitos" size="31"
+													readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>											
+											
 										</logic:notPresent>
 									</logic:notPresent> <a href="javascript:limparForm();"> <img
 										src="<bean:message key="caminho.imagens"/>limparcampo.gif"
@@ -323,7 +434,23 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 										style="background-color:#EFEFEF; border:0; color: #000000"
 										size="15" maxlength="15" /></td>
 								</tr>
-																
+								<tr>
+								
+								<td height="10">
+									<div class="style9"><strong>Tipo de Ligação:</strong></div>
+									</td>
+									<td><html:text property="tipoLigacao"
+										readonly="true"
+										style="background-color:#EFEFEF; border:0; color: #000000"
+										size="15" maxlength="15" /></td>
+							
+									<td width="90"></td>
+									<td width="120"></td>
+								</tr>
+								
+								
+								
+								
 								<c:if test="${not empty msgImovelProcessoCorte}">
 												
 									<tr height="40px">
@@ -358,6 +485,64 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 									</tr>						
 								
 								</c:if>
+								
+							    <logic:present name="indicadorFauramentoTitularDebito" scope="request">
+							    <tr>
+								<td colspan="4">			    
+									<table width="100%" align="center" bgcolor="#90c7fc" border="0">
+									<tr>
+										<td align="center" ><strong>Clientes com Débitos</strong></td>
+									</tr>
+								    </table>
+							    	<html:hidden property="idClienteRelacaoImovelSelecionado"/>
+									<%int cont = 0;%>
+									<table width="100%" bgcolor="#99CCFF">
+										<tr bgcolor="#90c7fc">
+											<td align="center" width="7%"><strong></strong></td>
+											<td align="center" width="18%"><strong>Tipo de Relação</strong></td>
+											<td align="left" width="75%"><strong>Nome</strong></td>
+										</tr>
+										
+										<logic:notEmpty name="colecaoRelacaoImovel" scope="session">
+										<tr>
+											<td height="100" colspan="3" >
+											<div style="width: 100%; height: 100%; overflow: auto;">
+											<table width="100%">
+												<logic:iterate name="colecaoRelacaoImovel" type="ClienteImovel" id="clienteImovel">
+													<%cont = cont + 1;
+													if (cont % 2 == 0) {%>
+													<tr bgcolor="#cbe5fe" width="100%">
+													<%} else {%>
+													<tr bgcolor="#FFFFFF" width="100%">
+													<%}%>
+									
+													<td align="center" height="20" width="7%">
+														<input type="hidden" name="valorClienteImovel"
+															value="<bean:write name="clienteImovel" property="clienteRelacaoTipo.id"/>.<bean:write name="clienteImovel" property="cliente.id"/>" 
+															 >
+														
+														<input type="radio" id="idClienteImovel" 
+															name="idClienteImovel" 
+															 onclick="javascript:marcarClienteOrigemId(this);">
+						
+													</td>
+													<td align="center" height="20" width="18%">
+														<bean:write name="clienteImovel" property="clienteRelacaoTipo.descricao"/>
+													</td>
+													<td align="center" height="20" width="75%">
+														<bean:write name="clienteImovel" property="cliente.descricao"/>
+													</td>																				
+													</tr>
+												</logic:iterate>							
+											</table>
+											</div>
+											</td>
+										</tr>
+										</logic:notEmpty>							
+									</table>			
+								</td>
+								</tr>				       
+							   </logic:present>									
 																
 							</table>
 							</td>
@@ -365,8 +550,7 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 					</table>
 					</td>
 				</tr>
-				
-				
+
 				<tr>
 					<td colspan="4">
 					<table width="100%" border="0">
@@ -488,17 +672,25 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 				</table>
 				
 
+						<%
+								String pctQtdColunasContas="10";
+						
+								if (session.getAttribute("exibirDividaAtivaColuna") != null) {
+									pctQtdColunasContas      = "11";
+								}						
+						%>
 				<tr>
 					<td colspan="4">
 					<table width="100%" align="center" bgcolor="#90c7fc" border="0">
 						<%String cor = "#cbe5fe";%>
 						<%cor = "#cbe5fe";%>
 						<tr bordercolor="#79bbfd">
-							<td colspan="10" align="center" bgcolor="#79bbfd">
+							<td colspan="<%= pctQtdColunasContas%>" align="center" bgcolor="#79bbfd" width="100%">
 							<strong>Contas</strong>
 							</td>
 						</tr>
-						
+					</table>
+					<table width="100%" align="center" bgcolor="#90c7fc" border="0">	
 			<!-- Inicio do bloco das coleções de Conta. -->
 			<logic:notEmpty name="colecaoContaValores" scope="session">
 						
@@ -507,40 +699,49 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 						
 						String pctMesAnoTitle   = "9%";
 						String pctVencimento    = "12%";
-						String pctAgua          = "8%";
-						String pctEsgoto        = "8%";
-						String pctDebito        = "8%";
-						String pctCreditos 		= "10%";
-						String pctImpostos 		= "10%";
-						String pctConta      	= "8%";
-						String pctAcrecimoImpon = "7%";
-						String pctSituacao      = "8%";
+						String pctAgua          = "9%";
+						String pctEsgoto        = "9%";
+						String pctDebito        = "10%";
+						String pctCreditos 		= "9%";
+						String pctImpostos 		= "9%";
+						String pctConta      	= "10%";
+						String pctAcrecimoImpon = "9%";
+						String pctSituacao      = "14%";
+						String pctDividaAtiva   = "0%";
 						
-						String alinhamentoMesAno = "left";
-						String alinhamentoVencimento = "left";
+						if (session.getAttribute("exibirDividaAtivaColuna") != null) {
+							pctSituacao      = "9%";
+							pctDividaAtiva   = "5%";
+						}
+						
+						String alinhamentoMesAno = "center";
+						String alinhamentoVencimento = "center";
 						
 						
-						if (((Collection) session.getAttribute("colecaoContaValores")) .size() <= ConstantesSistema.NUMERO_MAXIMO_REGISTROS_CONTAS_DEBITO) {
+						if (((Collection) session.getAttribute("colecaoContaValores")).size() <= ConstantesSistema.NUMERO_MAXIMO_REGISTROS_CONTAS_DEBITO) {
 							isColecaoComQtdeMAIORQueMaximoRegistroContaDebito = false;
-							pctMesAnoTitle   = "20%"; 
-							pctVencimento    = "7%"; 
-							pctAgua          = "10%";
+							pctMesAnoTitle   = "9%"; 
+							pctVencimento    = "12%"; 
+							pctAgua          = "9%";
 							pctEsgoto        = "9%";
-							pctDebito        = "8%";
-							pctCreditos 	 = "8%";
-							pctImpostos 	 = "10%";
+							pctDebito        = "10%";
+							pctCreditos 	 = "9%";
+							pctImpostos 	 = "9%";
 							pctConta      	 = "10%";
-							pctAcrecimoImpon = "10%";
-							pctSituacao      = "10%";
+							pctAcrecimoImpon = "9%";
+							pctSituacao      = "14%";
+							pctDividaAtiva   = "0%";
 							
-							alinhamentoMesAno = "center";
-							alinhamentoVencimento = "center";
+							if (session.getAttribute("exibirDividaAtivaColuna") != null) {
+								pctSituacao      = "9%";
+								pctDividaAtiva   = "5%";
+							}							
 							
 						 } %>
 						
 			<!-- INICIO CABEÇALHO CONTAS -->						
 			<tr bordercolor="#000000">
-				<td width="<%=pctMesAnoTitle%>" bgcolor="#90c7fc">
+				<td width="<%=pctMesAnoTitle%>" bgcolor="#90c7fc" align="center">
 					<div align="center" class="style9">
 						<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 							<strong>M&ecirc;s/Ano</strong>
@@ -548,7 +749,7 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 					</div>
 				</td>
 				
-				<td width="<%=pctVencimento%>" bgcolor="#90c7fc">
+				<td width="<%=pctVencimento%>" bgcolor="#90c7fc" align="center">
 					<div align="center" class="style9">
 						<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
 							<strong>Vencimento</strong>
@@ -556,7 +757,7 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 					</div>
 				</td>
 				
-				<td width="<%= pctAgua%>" bgcolor="#90c7fc">
+				<td width="<%= pctAgua%>" bgcolor="#90c7fc" align="center">
 					<div align="center" class="style9">
 						<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
 							<strong>Valor de &Aacute;gua </strong> 
@@ -564,7 +765,7 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 					</div>
 				</td>
 				
-				<td width="<%= pctEsgoto%>" bgcolor="#90c7fc">
+				<td width="<%= pctEsgoto%>" bgcolor="#90c7fc" align="center">
 					<div align="center" class="style9">
 						<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
 							<strong>Valor de Esgoto</strong> 
@@ -572,7 +773,7 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 					</div>
 				</td>
 				
-				<td width="<%=pctDebito%>" bgcolor="#90c7fc">
+				<td width="<%=pctDebito%>" bgcolor="#90c7fc" align="center">
 					<div align="center" class="style9">
 						<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 							<strong>Valor dos <br> D&eacute;bitos</strong> 
@@ -580,7 +781,7 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 					</div>
 				</td>
 				
-				<td width="<%=pctCreditos%>" bgcolor="#90c7fc">
+				<td width="<%=pctCreditos%>" bgcolor="#90c7fc" align="center">
 					<div align="center" class="style9">
 						<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 							<strong>Valor dos Creditos</strong>
@@ -588,7 +789,7 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 					</div>
 				</td>
 				
-				<td width="<%= pctImpostos%>" bgcolor="#90c7fc">
+				<td width="<%= pctImpostos%>" bgcolor="#90c7fc" align="center">
 				  <div align="center" class="style9">
 					<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
 					  <strong>Valor dos	Impostos</strong> 
@@ -596,7 +797,7 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 				  </div>
 				</td>
 
-				<td width="<%=pctConta %>" bgcolor="#90c7fc">
+				<td width="<%=pctConta %>" bgcolor="#90c7fc" align="center">
 					<div align="center" class="style9">
 						<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 						<strong>Valor da Conta</strong> 
@@ -604,7 +805,7 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 					</div>
 				</td>
 				
-				<td width="<%= pctAcrecimoImpon%>" bgcolor="#90c7fc">
+				<td width="<%= pctAcrecimoImpon%>" bgcolor="#90c7fc" align="center">
 					<div align="center" class="style9">
 						<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
 							<strong>Acr&eacute;sc. Impont.</strong>
@@ -612,13 +813,24 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 					</div>
 				</td>
 				
-				<td width="<%= pctSituacao%>" bgcolor="#90c7fc">
+				<td width="<%= pctSituacao%>" bgcolor="#90c7fc" align="center">
 					<div align="center" class="style9">
 						<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
 							<strong>Sit.</strong>
 						</font>
 					</div>
 				</td>
+				
+				<logic:present name="exibirDividaAtivaColuna" scope="session">
+					<td width="<%= pctDividaAtiva%>" bgcolor="#90c7fc" align="center">
+						<div align="center" class="style9">
+							<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
+								<strong>Dívida Ativa</strong>
+							</font>
+						</div>
+					</td>				
+				</logic:present>
+				
 			</tr>
 			<!-- FIM CABEÇALHO CONTAS -->
 						
@@ -627,7 +839,7 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 
 			<!--Inicio  Condição quando tem mais de 6 registros para aparecer a barra de rolagem  -->
 			<% if(isColecaoComQtdeMAIORQueMaximoRegistroContaDebito){ %>
-				<td height="100" colspan="10">
+				<td height="100" colspan="<%= pctQtdColunasContas%>">
 					<div style="width: 100%; height: 100%; overflow: auto;">
 						<table width="100%">
 			<% } %>
@@ -789,8 +1001,8 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 					</div>
 				</td>
 				
-				<td width="<%= pctSituacao%>" align="left">
-					<div align="left" class="style9">
+				<td width="<%= pctSituacao%>" align="center">
+					<div align="center" class="style9">
 						<font color="<%=corSituacaoContaPrescrita %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
 							<bean:define name="contavaloreshelper" property="conta" id="conta" />
 							<bean:define name="conta" property="debitoCreditoSituacaoAtual" id="debitoCreditoSituacaoAtual" />
@@ -798,6 +1010,30 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 						</font>
 					</div>
 				</td>
+				
+				<logic:present name="exibirDividaAtivaColuna" scope="session">
+					<td width="<%= pctDividaAtiva%>" align="center">
+						<div align="center" class="style9">
+							<font color="<%=corSituacaoConta %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
+								<logic:equal name="contavaloreshelper" property="conta.indicadorDividaAtiva" value="2">
+									<logic:equal name="contavaloreshelper" property="conta.indicadorExecucaoFiscal" value="2">
+										N
+									</logic:equal>
+								</logic:equal>
+	
+								<logic:equal name="contavaloreshelper" property="conta.indicadorDividaAtiva" value="1">
+									<logic:equal name="contavaloreshelper" property="conta.indicadorExecucaoFiscal" value="2">
+										A
+									</logic:equal>
+								</logic:equal>
+							
+								<logic:equal name="contavaloreshelper" property="conta.indicadorExecucaoFiscal" value="1">
+									E
+								</logic:equal>
+							</font>
+						</div>
+					</td>				
+				</logic:present>
 
 				<!-- FIM DO TR que está no bloco de if else -->	
 				</tr>
@@ -835,7 +1071,7 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 					</div>
 				</td>
 				
-				<td align="rigth">
+				<td align="right">
 					<div align="right">
 						<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
 							<%=session.getAttribute("valorEsgoto")%>
@@ -919,7 +1155,7 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 						<tr>
 						
 						
-							<td colspan="10">
+							<td colspan="<%= pctQtdColunasContas%>">
 								<div style="width: 100%; height: 100%;">
 									<table width="100%">
 										<tr>
@@ -971,6 +1207,115 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 					</table>
 					</td>
 				</tr>
+				
+				
+			<logic:present name="colecaoImovelCobrancaSituacaoAberto" scope="session" >
+					<logic:notEmpty name="colecaoImovelCobrancaSituacaoAberto" scope="session" >
+						<tr>
+							<td colspan="6" width="100%">
+								<br>
+								<div id="layerHideImovelCobrancaSituacaoAberto" style="display:block">
+									<table width="100%" border="0" bgcolor="#99CCFF">
+										<tr bgcolor="#99CCFF">
+											<td height="18" colspan="4" align="center">
+												<span class="style2"> 
+													<a href="javascript:extendeTabela('ImovelCobrancaSituacaoAberto',true);"> 
+														<b>Situações de Cobrança em Aberto</b>
+													</a>
+												</span>
+											</td>
+										</tr>
+									</table>
+								</div>
+								<div id="layerShowImovelCobrancaSituacaoAberto" style="display:none">
+									<table width="100%" border="0" bgcolor="#99CCFF">
+										<tr bgcolor="#90c7fc">
+											<td height="18" colspan="5" align="center">
+												<span class="style2"> 
+													<a href="javascript:extendeTabela('ImovelCobrancaSituacaoAberto',false);"> 
+														<b>Situações de Cobrança em Aberto</b>
+													</a>
+												</span>
+											</td>
+										</tr>
+									</table>	
+									<table width="100%" border="0" bgcolor="#99CCFF">	
+			                			<tr bgcolor="#90c7fc"> 
+			                  				<td width="51%"><div align="center"><strong>Descrição da Situação</strong></div></td>
+			                  				<td width="13%"><div align="center"><strong>Período de Referência</strong></div></td>
+			                  				<td width="13%"><div align="center"><strong>Data Implantação</strong></div></td>
+			                  				<td width="13%"><div align="center"><strong>Cliente Alvo</strong></div></td>
+			                  				<td width="20%"><div align="center"><strong>Processo<br>Administrativo</strong></div></td> 
+			                			</tr>
+			                			<%cor = "#cbe5fe";%>
+										<logic:iterate name="colecaoImovelCobrancaSituacaoAberto"
+											id="imovelCobrancaSituacaoAberto" >
+											<%if (cor.equalsIgnoreCase("#cbe5fe")) {
+							cor = "#FFFFFF";%>
+											<tr bgcolor="#FFFFFF">
+												<%} else {
+							cor = "#cbe5fe";%>
+							
+											<tr bgcolor="#cbe5fe">
+												<%}%>
+												<td>
+												<div align="left" class="style9"><font color="#000000"
+													style="font-size:9px"
+													face="Verdana, Arial, Helvetica, sans-serif"> <logic:notEmpty
+													name="imovelCobrancaSituacaoAberto" property="cobrancaSituacao.descricao">
+													<bean:write name="imovelCobrancaSituacaoAberto" property="cobrancaSituacao.descricao"
+														/>
+												</logic:notEmpty> </font></div>
+												</td>
+												<td>
+												<div align="center" class="style9"><font color="#000000"
+													style="font-size:9px"
+													face="Verdana, Arial, Helvetica, sans-serif"> <logic:notEmpty
+													name="imovelCobrancaSituacaoAberto" property="anoMesReferenciaInicio">
+													<%= Util.formatarAnoMesParaMesAno(((ImovelCobrancaSituacao)imovelCobrancaSituacaoAberto).getAnoMesReferenciaInicio().toString()) %>													
+												</logic:notEmpty> </font></div>
+												</td>
+												<td>
+												<div align="center" class="style9"><font color="#000000"
+													style="font-size:9px"
+													face="Verdana, Arial, Helvetica, sans-serif"> <logic:notEmpty
+													name="imovelCobrancaSituacaoAberto" property="dataImplantacaoCobranca">
+													<bean:write name="imovelCobrancaSituacaoAberto" property="dataImplantacaoCobranca"
+														formatKey="date.format" />
+												</logic:notEmpty> </font></div>
+												</td>
+												
+												<td>
+												<div align="center" class="style9"><font color="#000000"
+													style="font-size:9px"
+													face="Verdana, Arial, Helvetica, sans-serif"> <logic:notEmpty
+													name="imovelCobrancaSituacaoAberto" property="cliente.id">
+													<a
+															href="javascript:abrirPopup('exibirConsultarClienteAction.do?desabilitarPesquisaCliente=SIM&codigoCliente='+<bean:write name="imovelCobrancaSituacaoAberto" property="cliente.id" />, 500, 800);">
+														<bean:write name="imovelCobrancaSituacaoAberto" property="cliente.id" />
+													</a>
+												</logic:notEmpty> </font></div>
+												</td>												
+													
+												<td>
+												<div align="center" class="style9"><font color="#000000"
+													style="font-size:9px"
+													face="Verdana, Arial, Helvetica, sans-serif"> <logic:notEmpty
+													name="imovelCobrancaSituacaoAberto" property="numeroProcessoAdministrativoExecucaoFiscal">
+													<bean:write name="imovelCobrancaSituacaoAberto" property="numeroProcessoAdministrativoExecucaoFiscal"
+														 />
+												</logic:notEmpty> </font></div>
+												</td>																									
+											</tr>
+										</logic:iterate>							
+									</table>
+								</div>				
+							</td>
+						</tr>
+					</logic:notEmpty>
+				</logic:present>					
+				
+				
 				<tr>
 					<td colspan="4">&nbsp;</td>
 				</tr>				
@@ -1311,18 +1656,52 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 				</tr>				
 				
 				<tr>
+						<%
+								String pctQtdColunasGuias="6";
+						
+								String pctNumeroGuia    = "15%";
+								String pctNumeroParcela = "15%";
+								String pctDataEmissao   = "18%";
+								String pctDataVencimento = "18%";
+								String pctValorParcela   = "20%";
+								String pctSituacaoGuia 	 = "14%";
+								String pctDividaAtivaGuia  = "0%";
+						
+								if (session.getAttribute("exibirDividaAtivaColuna") != null) {
+									pctNumeroGuia    = "14%";
+									pctNumeroParcela = "15%";
+									pctDataEmissao   = "17%";
+									pctDataVencimento = "17%";
+									pctValorParcela   = "16%";
+									pctSituacaoGuia 	 = "13%";
+									pctDividaAtivaGuia  = "8%";
+									
+									pctQtdColunasGuias      = "7";
+								}						
+						%>
+										
 					<td colspan="5">
 					<table width="100%" align="center" bgcolor="#90c7fc" border="0">
 						<tr bordercolor="#79bbfd">
-							<td colspan="6" bgcolor="#79bbfd" align="center"><strong>Guias de Pagamento</strong></td>
+							<td colspan="<%= pctQtdColunasGuias%>" bgcolor="#79bbfd" align="center"><strong>Guias de Pagamento</strong></td>
 						</tr>
 						<tr bordercolor="#000000">
-							<td width="15%" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Número da Guia</strong> </font></div></td>							
-							<td width="15%" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Número Parcela</strong> </font></div></td>
-							<td width="22%" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Data de Emiss&atilde;o</strong> </font></div></td>
-							<td width="18%" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Data de Vencimento</strong> </font></div></td>
-							<td width="20%" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Valor da Parcela</strong> </font></div></td>
-							<td width="12%" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Situação Guia</strong> </font></div></td>
+							<td width="<%= pctNumeroGuia%>" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Número da Guia</strong> </font></div></td>							
+							<td width="<%= pctNumeroParcela%>" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Número Parcela</strong> </font></div></td>
+							<td width="<%= pctDataEmissao%>" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Data de Emiss&atilde;o</strong> </font></div></td>
+							<td width="<%= pctDataVencimento%>" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Data de Vencimento</strong> </font></div></td>
+							<td width="<%= pctValorParcela%>" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Valor da Parcela</strong> </font></div></td>
+							<td width="<%= pctSituacaoGuia%>" bgcolor="#90c7fc"><div align="center" class="style9"><font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> <strong>Situação Guia</strong> </font></div></td>
+							
+							<logic:present name="exibirDividaAtivaColuna" scope="session">
+								<td width="<%= pctDividaAtivaGuia%>" bgcolor="#90c7fc" align="center">
+									<div align="center" class="style9">
+										<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif"> 
+											<strong>Dívida Ativa</strong>
+										</font>
+									</div>
+								</td>				
+							</logic:present>							
 						</tr>
 						<%cor = "#cbe5fe";%>
 						
@@ -1418,6 +1797,30 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 											</font>
 										</div>
 									</td>
+									
+									<logic:present name="exibirDividaAtivaColuna" scope="session">
+										<td align="center">
+											<div align="center" class="style9">
+												<font color="<%=corSituacaoGuia %>" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
+													<logic:equal name="guiapagamentohelper" property="indicadorDividaAtiva" value="2">
+														<logic:equal name="guiapagamentohelper" property="indicadorExecucaoFiscal" value="2">
+															N
+														</logic:equal>
+													</logic:equal>
+						
+													<logic:equal name="guiapagamentohelper" property="indicadorDividaAtiva" value="1">
+														<logic:equal name="guiapagamentohelper" property="indicadorExecucaoFiscal" value="2">
+															A
+														</logic:equal>
+													</logic:equal>
+												
+													<logic:equal name="guiapagamentohelper" property="indicadorExecucaoFiscal" value="1">
+														E
+													</logic:equal>
+												</font>
+											</div>
+										</td>				
+									</logic:present>										
 								</tr>
 							</logic:iterate>
 							
@@ -1548,7 +1951,7 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 							<tr>  
 								<logic:empty name="colecaoContaValores">
 									<td align="right">
-										<input type="button" name="" value="Extrato de Débito Completo" class="bottonRightCol" disabled="true"/>
+										<input type="button" name="" value="Extrato de Débito Completo" class="bottonRightCol"  disabled="true"/>
 									</td>
 								</logic:empty>
 								<logic:notEmpty name="colecaoContaValores">
@@ -1674,6 +2077,31 @@ function gerarRelatorioAvisoEOrdemCorteIndividual() {
 		</logic:notPresent>
 	<p>&nbsp;</p>
 	<!-- Fim do Corpo - Fernanda Paiva -->
+	
+	<logic:present name="indicadorFauramentoTitularDebito" scope="request">
+		<SCRIPT LANGUAGE="JavaScript">
+		<!--
+		
+			if (document.forms[0].idClienteImovel != undefined) {
+				if (document.forms[0].idClienteImovel.length != undefined) {
+					var i = 0;
+					for (i = 0; i < document.forms[0].valorClienteImovel.length; i++) { 
+					    if (document.forms[0].valorClienteImovel[i].value == document.forms[0].idClienteRelacaoImovelSelecionado.value) {
+					    	document.forms[0].idClienteImovel[i].checked = true;
+					    } else {
+					    	document.forms[0].idClienteImovel[i].checked = false;
+					    }
+					}				
+				} else {
+				    if (document.forms[0].valorClienteImovel.value == document.forms[0].idClienteRelacaoImovelSelecionado.value) {
+				    	document.forms[0].idClienteImovel.checked = true;			    	
+				    }				
+				}
+			}
+	
+		//-->
+		</SCRIPT>
+	</logic:present>	
 </html:form>
 </body>
 <!-- imovel_consultar_debitos.jsp -->

@@ -92,6 +92,7 @@ import gcom.gui.GcomAction;
 import gcom.operacional.DivisaoEsgoto;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
+import gcom.util.FachadaException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
@@ -139,8 +140,14 @@ public class ConcluirAtualizarRegistroAtendimentoAction
 		 * ==========================================================================================
 		 * ============
 		 */
-		fachada.validarInserirRegistroAtendimentoDadosGerais(form.getDataAtendimento(), form.getHora(), form.getTempoEsperaInicial(), form
-						.getTempoEsperaFinal(), form.getUnidade(), null, form.getEspecificacao(), null);
+		try{
+			fachada.validarInserirRegistroAtendimentoDadosGerais(form.getDataAtendimento(), form.getHora(), form.getTempoEsperaInicial(),
+							form.getTempoEsperaFinal(), form.getUnidade(), null, form.getEspecificacao(), null);
+		}catch(FachadaException e){
+			throw new ActionServletException(e.getMessage(),
+							"atualizarRegistroAtendimentoWizardAction.do?action=exibirAtualizarRegistroAtendimentoDadosGeraisAction&pagina=1",
+							e, e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
 
 		/*
 		 * ==========================================================================================
@@ -204,13 +211,22 @@ public class ConcluirAtualizarRegistroAtendimentoAction
 
 		Collection colecaoEnderecos = (Collection) sessao.getAttribute("colecaoEnderecos");
 
-		fachada.validarCamposObrigatoriosRA_2ABA(idImovel, pontoReferencia, idMunicipio, descricaoMunicipio, cdBairro, descricaoBairro,
-						idAreaBairro, idlocalidade, descricaoLocalidade, cdSetorComercial, descricaoSetorComercial, numeroQuadra,
-						idDivisaoEsgoto, idUnidade, descricaoUnidade, idLocalOcorrencia, idPavimentoRua, idPavimentoCalcada,
-						descricaoLocalOcorrencia, imovelObrigatorio, pavimentoRuaObrigatorio, pavimentoCalcadaObrigatorio,
-						solicitacaoTipoRelativoFaltaAgua, solicitacaoTipoRelativoAreaEsgoto, desabilitarMunicipioBairro,
-						indRuaLocalOcorrencia, indCalcadaLocalOcorrencia, Integer.valueOf(idEspecificacao), Integer.valueOf(numeroRA),
-						colecaoEnderecos, null, idUnidadeDestino);
+		try{
+
+			fachada.validarCamposObrigatoriosRA_2ABA(idImovel, pontoReferencia, idMunicipio, descricaoMunicipio, cdBairro, descricaoBairro,
+							idAreaBairro, idlocalidade, descricaoLocalidade, cdSetorComercial, descricaoSetorComercial, numeroQuadra,
+							idDivisaoEsgoto, idUnidade, descricaoUnidade, idLocalOcorrencia, idPavimentoRua, idPavimentoCalcada,
+							descricaoLocalOcorrencia, imovelObrigatorio, pavimentoRuaObrigatorio, pavimentoCalcadaObrigatorio,
+							solicitacaoTipoRelativoFaltaAgua, solicitacaoTipoRelativoAreaEsgoto, desabilitarMunicipioBairro,
+							indRuaLocalOcorrencia, indCalcadaLocalOcorrencia, Integer.valueOf(idEspecificacao), Integer.valueOf(numeroRA),
+							colecaoEnderecos, null, idUnidadeDestino);
+
+		}catch(FachadaException e){
+			throw new ActionServletException(
+							e.getMessage(),
+							"atualizarRegistroAtendimentoWizardAction.do?action=exibirAtualizarRegistroAtendimentoDadosLocalOcorrenciaAction&pagina=2",
+							e, e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
 
 		// -----------------------------------------------------------------------
 
@@ -330,8 +346,16 @@ public class ConcluirAtualizarRegistroAtendimentoAction
 
 		// Verifica os dados do solicitante com relação a rg, cpf e cnpj
 		if(!fachada.isMeioSolicitacaoLiberaDocumentoIdentificacaoRA(Integer.valueOf(form.getMeioSolicitacao()))){
-			fachada.verificarDadosSolicitanteRgCpfCnpj(clienteTipo, idEspecificacao, numeroCpf, numeroRG, orgaoExpedidorRg,
-							unidadeFederacaoRG, numeroCnpj, idCliente);
+			try{
+				fachada.verificarDadosSolicitanteRgCpfCnpj(clienteTipo, idEspecificacao, numeroCpf, numeroRG, orgaoExpedidorRg,
+								unidadeFederacaoRG, numeroCnpj, idCliente);
+
+			}catch(FachadaException e){
+				throw new ActionServletException(
+								e.getMessage(),
+								"atualizarRegistroAtendimentoWizardAction.do?destino=3&action=atualizarRegistroAtendimentoDadosLocalOcorrenciaAction",
+								e, e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+			}
 		}
 
 		if(!Util.isVazioOrNulo(colecaoRASolicitante)){

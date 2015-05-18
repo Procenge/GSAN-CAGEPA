@@ -125,6 +125,10 @@ public class OpcoesParcelamentoHelper
 
 	private BigDecimal valorDebitoComDescontoNaPrestacao;
 
+	private BigDecimal valorAParcelar;
+
+	private BigDecimal valorSucumbenciaAtualCobradoEntradaParc;
+
 	/**
 	 * Construtor de OpcoesParcelamentoHelper
 	 */
@@ -342,6 +346,26 @@ public class OpcoesParcelamentoHelper
 	public void setValorDebitoAtualizado(BigDecimal valorDebitoAtualizado){
 
 		this.valorDebitoAtualizado = valorDebitoAtualizado;
+	}
+
+	public BigDecimal getValorAParcelar(){
+
+		return valorAParcelar;
+	}
+
+	public void setValorAParcelar(BigDecimal valorAParcelar){
+
+		this.valorAParcelar = valorAParcelar;
+	}
+
+	public BigDecimal getValorSucumbenciaAtualCobradoEntradaParc(){
+
+		return valorSucumbenciaAtualCobradoEntradaParc;
+	}
+
+	public void setValorSucumbenciaAtualCobradoEntradaParc(BigDecimal valorSucumbenciaAtualCobradoEntradaParc){
+
+		this.valorSucumbenciaAtualCobradoEntradaParc = valorSucumbenciaAtualCobradoEntradaParc;
 	}
 
 }

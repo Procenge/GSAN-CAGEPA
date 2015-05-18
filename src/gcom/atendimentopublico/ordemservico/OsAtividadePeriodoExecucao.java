@@ -79,6 +79,7 @@ package gcom.atendimentopublico.ordemservico;
 import gcom.util.Util;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
@@ -100,6 +101,8 @@ public class OsAtividadePeriodoExecucao
 
 	/** persistent field */
 	private Date ultimaAlteracao;
+
+	private BigDecimal valorAtividadePeriodo;
 
 	/** persistent field */
 	private gcom.atendimentopublico.ordemservico.OrdemServicoAtividade ordemServicoAtividade;
@@ -247,4 +250,15 @@ public class OsAtividadePeriodoExecucao
 
 		return dataFormatada;
 	}
+
+	public BigDecimal getValorAtividadePeriodo(){
+
+		return valorAtividadePeriodo;
+	}
+
+	public void setValorAtividadePeriodo(BigDecimal valorAtividadePeriodo){
+
+		this.valorAtividadePeriodo = valorAtividadePeriodo;
+	}
+
 }

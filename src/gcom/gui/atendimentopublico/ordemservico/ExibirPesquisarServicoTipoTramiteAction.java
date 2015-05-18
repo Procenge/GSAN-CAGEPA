@@ -2,6 +2,10 @@
 package gcom.gui.atendimentopublico.ordemservico;
 
 import gcom.atendimentopublico.ordemservico.ServicoTipoTramite;
+import gcom.cadastro.geografico.Bairro;
+import gcom.cadastro.geografico.FiltroBairro;
+import gcom.cadastro.geografico.FiltroMunicipio;
+import gcom.cadastro.geografico.Municipio;
 import gcom.cadastro.localidade.FiltroLocalidade;
 import gcom.cadastro.localidade.FiltroSetorComercial;
 import gcom.cadastro.localidade.Localidade;
@@ -139,12 +143,25 @@ public class ExibirPesquisarServicoTipoTramiteAction
 				}
 
 				retorno = actionMapping.findForward("exibirServicoTipoTramitePopup");
+			}else if(tipoConsulta.equals("municipio")){
+				form.setIdMunicipio(idCampoEnviarDados);
+				form.setDescricaoMunicipio(descricaoCampoEnviarDados);
+				retorno = actionMapping.findForward("exibirServicoTipoTramitePopup");
+			}else if(tipoConsulta.equals("bairro")){
+				form.setCodigoBairro(idCampoEnviarDados);
+				form.setDescricaoBairro(descricaoCampoEnviarDados);
+
+				retorno = actionMapping.findForward("exibirServicoTipoTramitePopup");
 			}
 		}else if(!Util.isVazioOuBranco(objetoConsulta)){
+
 			String idLocalidade = form.getIdLocalidade();
 			String codigoSetorComercial = form.getCodigoSetorComercial();
 			String idUnidadeOrganizacionalOrigem = form.getIdUnidadeOrganizacionalOrigem();
 			String idUnidadeOrganizacionalDestino = form.getIdUnidadeOrganizacionalDestino();
+			String idMunicipio = form.getIdMunicipio();
+			String codigoBairro = form.getCodigoBairro();
+			String indicadorPrimeiroTramite = form.getIndicadorPrimeiroTramite();
 
 			// Limpando campos de descrição quando o id/código é vazio
 			if(Util.isVazioOuBranco(idLocalidade)){
@@ -161,6 +178,18 @@ public class ExibirPesquisarServicoTipoTramiteAction
 
 			if(Util.isVazioOuBranco(idUnidadeOrganizacionalDestino)){
 				form.setDescricaoUnidadeOrganizacionalDestino("");
+			}
+
+			if(Util.isVazioOuBranco(idMunicipio)){
+				form.setDescricaoMunicipio("");
+			}
+
+			if(Util.isVazioOuBranco(codigoBairro)){
+				form.setDescricaoBairro("");
+			}
+
+			if(Util.isVazioOuBranco(indicadorPrimeiroTramite)){
+				form.setIndicadorPrimeiroTramite(ConstantesSistema.NAO.toString());
 			}
 
 			if(objetoConsulta.equals("1")){
@@ -232,6 +261,9 @@ public class ExibirPesquisarServicoTipoTramiteAction
 						form.setIdUnidadeOrganizacionalOrigem("");
 						form.setDescricaoUnidadeOrganizacionalOrigem("UNIDADE DE ATENDIMENTO INEXISTENTE");
 					}
+				}else{
+					form.setIdUnidadeOrganizacionalOrigem("");
+					form.setDescricaoUnidadeOrganizacionalOrigem("");
 				}
 			}else if(objetoConsulta.equals("4")){
 				// Unidade Organizacional Destino
@@ -254,6 +286,64 @@ public class ExibirPesquisarServicoTipoTramiteAction
 						form.setIdUnidadeOrganizacionalDestino("");
 						form.setDescricaoUnidadeOrganizacionalDestino("UNIDADE DE ATENDIMENTO INEXISTENTE");
 					}
+				}else{
+					form.setIdUnidadeOrganizacionalDestino("");
+					form.setDescricaoUnidadeOrganizacionalDestino("");
+				}
+			}else if(objetoConsulta.equals("5")){
+				// Unidade Organizacional Destino
+				if(!Util.isVazioOuBranco(idMunicipio)){
+					FiltroMunicipio filtro = new FiltroMunicipio();
+					filtro.adicionarParametro(new ParametroSimples(FiltroUnidadeOrganizacional.INDICADOR_USO,
+									ConstantesSistema.INDICADOR_USO_ATIVO));
+					filtro.adicionarParametro(new ParametroSimples(FiltroMunicipio.ID, idMunicipio));
+
+					Collection<Municipio> colecaoMunicipio = fachada.pesquisar(filtro, Municipio.class.getName());
+
+					if(!Util.isVazioOrNulo(colecaoMunicipio)){
+						Municipio municipio = (Municipio) Util.retonarObjetoDeColecao(colecaoMunicipio);
+
+						String descricao = municipio.getNome();
+						form.setDescricaoMunicipio(descricao);
+
+					}else{
+						form.setIdMunicipio("");
+						form.setDescricaoMunicipio("MUNICÍPIO INEXISTENTE");
+					}
+				}else{
+					form.setIdMunicipio("");
+					form.setDescricaoMunicipio("");
+				}
+			}else if(objetoConsulta.equals("6")){
+				// Unidade Organizacional Destino
+				if(!Util.isVazioOuBranco(codigoBairro)){
+					FiltroBairro filtro = new FiltroBairro();
+					filtro.adicionarParametro(new ParametroSimples(FiltroBairro.INDICADOR_USO,
+									ConstantesSistema.INDICADOR_USO_ATIVO));
+					filtro.adicionarParametro(new ParametroSimples(FiltroBairro.ID, codigoBairro));
+
+					if(!Util.isVazioOuBranco(idMunicipio)){
+						filtro.adicionarParametro(new ParametroSimples(FiltroBairro.MUNICIPIO_ID, idMunicipio));
+					}else{
+						throw new ActionServletException("atencao.informe_campo", null, "Município");
+					}
+
+					Collection<Bairro> colecaoBairro = fachada.pesquisar(filtro, Bairro.class.getName());
+
+					if(!Util.isVazioOrNulo(colecaoBairro)){
+						Bairro bairro = (Bairro) Util.retonarObjetoDeColecao(colecaoBairro);
+
+						String descricao = bairro.getNome();
+						form.setDescricaoBairro(descricao);
+						form.setIdBairro(bairro.getId().toString());
+
+					}else{
+						form.setCodigoBairro("");
+						form.setDescricaoBairro("BAIRRO INEXISTENTE");
+					}
+				}else{
+					form.setCodigoBairro("");
+					form.setDescricaoBairro("");
 				}
 			}
 		}

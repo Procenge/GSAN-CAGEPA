@@ -76,11 +76,7 @@
 
 package gcom.gui.atendimentopublico.registroatendimento;
 
-import gcom.atendimentopublico.ordemservico.EspecificacaoServicoTipo;
-import gcom.atendimentopublico.ordemservico.FiltroEspecificacaoServicoTipo;
-import gcom.atendimentopublico.ordemservico.FiltroServicoTipo;
-import gcom.atendimentopublico.ordemservico.ServicoTipo;
-import gcom.atendimentopublico.ordemservico.ServicoTipoReferencia;
+import gcom.atendimentopublico.ordemservico.*;
 import gcom.atendimentopublico.registroatendimento.FiltroSolicitacaoTipo;
 import gcom.atendimentopublico.registroatendimento.SolicitacaoTipo;
 import gcom.atendimentopublico.registroatendimento.SolicitacaoTipoEspecificacao;
@@ -205,7 +201,7 @@ public class PesquisarTipoSolicitacaoEspecificacoesAction
 				}
 
 				FiltroEspecificacaoServicoTipo filtroEspecificacaoServicoTipo = new FiltroEspecificacaoServicoTipo();
-				filtroEspecificacaoServicoTipo.adicionarParametro(new ParametroSimples(FiltroEspecificacaoServicoTipo.SERVICO_TIPO,
+				filtroEspecificacaoServicoTipo.adicionarParametro(new ParametroSimples(FiltroEspecificacaoServicoTipo.SERVICO_TIPO_ID,
 								idServicoTipoStr));
 				filtroEspecificacaoServicoTipo
 								.adicionarCaminhoParaCarregamentoEntidade(FiltroEspecificacaoServicoTipo.SOLICITACAO_TIPO_ESPECIFICACAO_SOLICITACAO_TIPO);

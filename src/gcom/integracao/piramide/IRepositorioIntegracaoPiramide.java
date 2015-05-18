@@ -239,7 +239,7 @@ public interface IRepositorioIntegracaoPiramide {
 	 * @param tipoLancamentos
 	 * @since 15/03/2013
 	 */
-	public Collection<Object[]> consultarLancamentosContabeis(Date dtContabil, Integer idMunicipio, boolean isFinanceiro,
+	public Collection<Object[]> consultarLancamentosContabeis(Date dtContabil, Integer idMunicipio, boolean isFinanceiro, int tipoAcumulo,
 					Integer... idsEventos) throws ErroRepositorioException;
 
 	/**
@@ -316,4 +316,7 @@ public interface IRepositorioIntegracaoPiramide {
 
 	public Object[] consultarDataValorCategoriaOrigemCancelamento(Date dtGeracao, Integer idLocalidade, Integer idObjetoContabil,
 					Integer idItemContabil, Integer idCategoria, Integer... idEventosContabeis) throws ErroRepositorioException;
+	
+	public Collection<Object[]> consultarLancamentosContabeisPorEventoComercial(Date dataContabil, Integer idMunicipio)
+					throws ErroRepositorioException;
 }

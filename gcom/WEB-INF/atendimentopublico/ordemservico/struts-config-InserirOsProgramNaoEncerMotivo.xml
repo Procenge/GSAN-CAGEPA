@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="InserirOsProgramNaoEncerMotivoActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.InserirOsProgramNaoEncerMotivoActionForm" />		
+	</form-beans>
+
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="InserirOsProgramNaoEncerMotivoActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.ExibirInserirOsProgramNaoEncerMotivoAction"
+			validate="false"
+			scope="session" 
+			path="/exibirInserirOsProgramNaoEncerMotivoAction">
+			<forward name="osProgramNaoEncerMotivoInserir"
+				path="/jsp/atendimentopublico/ordemservico/osProgramNaoEncerMotivo_inserir.jsp" />
+		</action>
+		
+		<action name="InserirOsProgramNaoEncerMotivoActionForm"
+			type="gcom.gui.atendimentopublico.ordemservico.InserirOsProgramNaoEncerMotivoAction"
+			validate="false"
+			scope="session" 
+			path="/inserirOsProgramNaoEncerMotivoAction" />
+
+	</action-mappings>
+	
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

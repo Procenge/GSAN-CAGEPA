@@ -79,20 +79,29 @@ package gcom.gui.cadastro.imovel;
 
 import gcom.arrecadacao.ContratoDemandaConsumo;
 import gcom.atendimentopublico.ligacaoagua.LigacaoAgua;
+import gcom.atendimentopublico.registroatendimento.bean.ObterIndicadorExistenciaHidrometroHelper;
+import gcom.cadastro.imovel.FiltroImovelDoacao;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.imovel.ImovelCadastroOcorrencia;
+import gcom.cadastro.imovel.ImovelCobrancaSituacao;
+import gcom.fachada.Fachada;
 import gcom.faturamento.FiltroContratoDemandaConsumo;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
-import java.util.Collection;
-import java.util.Date;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.beanutils.BeanComparator;
+import org.apache.commons.collections.comparators.ComparatorChain;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -142,6 +151,7 @@ public class ExibirConsultarImovelDadosComplementaresAction
 			sessao.removeAttribute("colecaoCobrancasSituacaoHistorico");
 			sessao.removeAttribute("idImovelPrincipalAba");
 			sessao.removeAttribute("colecaoContratoDemandaConsumo");
+			sessao.removeAttribute("colecaoImovelDoacao");
 
 			// Colocado por Raphael Rossiter em 13/01/2007
 			sessao.removeAttribute("colecaoImovelCadastroOcorrencia");
@@ -159,7 +169,11 @@ public class ExibirConsultarImovelDadosComplementaresAction
 			consultarImovelActionForm.setIdImovelRegistroAtendimento(null);
 
 			consultarImovelActionForm.setMatriculaImovelDadosComplementares(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelDadosComplementares(null);
 			consultarImovelActionForm.setSituacaoAguaDadosComplementares(null);
+
+			consultarImovelActionForm.setTipoLigacao(null);
+
 			consultarImovelActionForm.setSituacaoEsgotoDadosComplementares(null);
 			consultarImovelActionForm.setTarifaConsumoDadosComplementares(null);
 			consultarImovelActionForm.setQuantidadeRetificacoesDadosComplementares(null);
@@ -244,16 +258,48 @@ public class ExibirConsultarImovelDadosComplementaresAction
 					consultarImovelActionForm.setMatriculaImovelDadosComplementares(this.getFachada().pesquisarInscricaoImovel(
 									Util.obterInteger(idImovelDadosComplementares.trim()), true));
 
+					try{
+						if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString()
+										.equals(ConstantesSistema.NAO.toString())){
+							if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+								consultarImovelActionForm.setDigitoVerificadorImovelDadosComplementares(Imovel
+												.getDigitoVerificadorMatricula(idImovelDadosComplementares.trim()));
+							}
+						}
+					}catch(ControladorException e1){
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						throw new ActionServletException(e1.getMessage(), e1);
+					}
+
 					httpServletRequest.setAttribute("idImovelDadosComplementaresNaoEncontrado", null);
 
 					// seta a situação de agua
 					consultarImovelActionForm.setSituacaoAguaDadosComplementares(imovel.getLigacaoAguaSituacao().getDescricao());
+
+					if(idImovelDadosComplementares != null || idImovelDadosComplementares != ""){
+						Fachada fachada = Fachada.getInstancia();
+						boolean tipoLigacaoBoolean = false;
+						ObterIndicadorExistenciaHidrometroHelper obterIndicadorExistenciaHidrometroHelper = fachada
+										.obterIndicadorExistenciaHidrometroLigacaoAguaPoco(Util.obterInteger(idImovelDadosComplementares),
+														tipoLigacaoBoolean);
+						if(obterIndicadorExistenciaHidrometroHelper.getIndicadorLigacaoAgua().intValue() == 1
+										|| obterIndicadorExistenciaHidrometroHelper.getIndicadorPoco().intValue() == 1){
+							consultarImovelActionForm.setTipoLigacao("Hidrometrado");
+						}else{
+							consultarImovelActionForm.setTipoLigacao("Consumo Fixo");
+						}
+
+					}
 
 					// seta a situação de esgoto
 					consultarImovelActionForm.setSituacaoEsgotoDadosComplementares(imovel.getLigacaoEsgotoSituacao().getDescricao());
 
 					// Obter Contratos Demanda Consumo
 					pesquisarContratoDemandaConsumo(imovel.getId(), httpServletRequest);
+
+					// Obter Imovel Doacoes
+					pesquisarImovelDoacao(imovel.getId(), httpServletRequest);
 
 					// consumo tarifa
 					String descricaoConsumoTarifa = "";
@@ -370,7 +416,17 @@ public class ExibirConsultarImovelDadosComplementaresAction
 					Collection colecaoSituacoesCobranca = this.getFachada().pesquisarSituacoesCobrancaImovel(
 									Util.obterInteger(idImovelDadosComplementares.trim()));
 
-					sessao.setAttribute("colecaoSituacoesCobranca", colecaoSituacoesCobranca);
+					List<ImovelCobrancaSituacao> listaCobrancaSituacaoOrdenada = null;
+
+					if(colecaoSituacoesCobranca != null){
+						listaCobrancaSituacaoOrdenada = new ArrayList<ImovelCobrancaSituacao>();
+						listaCobrancaSituacaoOrdenada.addAll(colecaoSituacoesCobranca);
+						List sortFields = new ArrayList();
+						sortFields.add(new BeanComparator("dataImplantacaoCobranca"));
+						ComparatorChain multiSort = new ComparatorChain(sortFields);
+						Collections.sort(listaCobrancaSituacaoOrdenada, multiSort);
+					}
+					sessao.setAttribute("colecaoSituacoesCobranca", listaCobrancaSituacaoOrdenada);
 
 					// vencimentos alternativos
 					Collection colecaoVencimentosAlternativos = this.getFachada().pesquisarVencimentoAlternativoImovel(
@@ -423,8 +479,10 @@ public class ExibirConsultarImovelDadosComplementaresAction
 				sessao.removeAttribute("colecaoImovelCadastroOcorrencia");
 				sessao.removeAttribute("colecaoImovelEloAnormalidade");
 
+				consultarImovelActionForm.setDigitoVerificadorImovelDadosComplementares(null);
 				consultarImovelActionForm.setIdImovelDadosComplementares(null);
 				consultarImovelActionForm.setSituacaoAguaDadosComplementares(null);
+				consultarImovelActionForm.setTipoLigacao(null);
 				consultarImovelActionForm.setSituacaoEsgotoDadosComplementares(null);
 				consultarImovelActionForm.setTarifaConsumoDadosComplementares(null);
 				consultarImovelActionForm.setQuantidadeRetificacoesDadosComplementares(null);
@@ -455,13 +513,16 @@ public class ExibirConsultarImovelDadosComplementaresAction
 			sessao.removeAttribute("colecaoCobrancasSituacaoHistorico");
 			sessao.removeAttribute("idImovelPrincipalAba");
 			sessao.removeAttribute("colecaoContratoDemandaConsumo");
+			sessao.removeAttribute("colecaoImovelDoacao");			
 
 			// Colocado por Raphael Rossiter em 13/01/2007
 			sessao.removeAttribute("colecaoImovelCadastroOcorrencia");
 			sessao.removeAttribute("colecaoImovelEloAnormalidade");
 
 			consultarImovelActionForm.setMatriculaImovelDadosComplementares(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelDadosComplementares(null);
 			consultarImovelActionForm.setSituacaoAguaDadosComplementares(null);
+			consultarImovelActionForm.setTipoLigacao(null);
 			consultarImovelActionForm.setSituacaoEsgotoDadosComplementares(null);
 			consultarImovelActionForm.setTarifaConsumoDadosComplementares(null);
 			consultarImovelActionForm.setQuantidadeRetificacoesDadosComplementares(null);
@@ -476,6 +537,23 @@ public class ExibirConsultarImovelDadosComplementaresAction
 			consultarImovelActionForm.setNomeFuncionario(null);
 			consultarImovelActionForm.setDescricaoOcorrenciaDadosComplementares(null);
 			consultarImovelActionForm.setDescricaoAnormalidadeDadosComplementares(null);
+		}
+
+		try{
+			if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+				if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+					httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '1');
+				}else{
+					throw new ControladorException("erro.parametro.nao.informado", null, "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+				}
+
+			}else{
+				httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '0');
+			}
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new ActionServletException(e.getMessage(), e);
 		}
 
 		return retorno;
@@ -498,4 +576,26 @@ public class ExibirConsultarImovelDadosComplementaresAction
 
 		}
 	}
+
+	public void pesquisarImovelDoacao(Integer idImovel, HttpServletRequest httpServletRequest){
+
+		// Obtendo uma instancia da sessao
+		HttpSession sessao = httpServletRequest.getSession(false);
+
+		FiltroImovelDoacao filtroImovelDoacao = new FiltroImovelDoacao();
+		filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelDoacao.ENTIDADE_BENEFICENTE_CONTRATO);
+		filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelDoacao.ENTIDADE_BENEFICENTE);
+		filtroImovelDoacao.adicionarCaminhoParaCarregamentoEntidade(FiltroImovelDoacao.ENTIDADE_BENEFICENTE_CLIENTE);
+
+		filtroImovelDoacao.adicionarParametro(new ParametroSimples(FiltroImovelDoacao.ID_IMOVEL, idImovel));
+
+		Collection colecaoImovelDoacao = this.getFachada().pesquisarImovelDoacao(filtroImovelDoacao);
+
+		if(colecaoImovelDoacao != null && !colecaoImovelDoacao.isEmpty()){
+
+			sessao.setAttribute("colecaoImovelDoacao", colecaoImovelDoacao);
+
+		}
+	}
+
 }

@@ -899,24 +899,24 @@
 					
 					<logic:equal name="readOnly" value="true">
 						<td>
-							<html:text property="quantidadeMaximaPrestacao" size="2" maxlength="2" tabindex="1" readonly="true" onkeypress="return isCampoNumerico(event);" />
+							<html:text property="quantidadeMaximaPrestacao" size="3" maxlength="3" tabindex="1" readonly="true" onkeypress="return isCampoNumerico(event);" />
 						</td>
 					</logic:equal>
 					<logic:notEqual name="readOnly" value="true">
 						<td>
-							<html:text property="quantidadeMaximaPrestacao" size="2" maxlength="2" tabindex="1" onkeypress="return isCampoNumerico(event);" />
+							<html:text property="quantidadeMaximaPrestacao" size="3" maxlength="3" tabindex="1" onkeypress="return isCampoNumerico(event);" />
 						</td>
 					</logic:notEqual>
 					
 					<td><strong> Quantidade Máxima de Prestações p/ Parcelamento com Permissão Especial:</strong></td>
 					<logic:equal name="readOnly" value="true">
 						<td>
-							<html:text property="quantidadeMaxPrestacaoEspecial" size="2" maxlength="2" tabindex="2" readonly="true" onkeypress="return isCampoNumerico(event);" />
+							<html:text property="quantidadeMaxPrestacaoEspecial" size="3" maxlength="3" tabindex="2" readonly="true" onkeypress="return isCampoNumerico(event);" />
 						</td>
 					</logic:equal>
 					<logic:notEqual name="readOnly" value="true">
 						<td>
-							<html:text property="quantidadeMaxPrestacaoEspecial" size="2" maxlength="2" tabindex="2" onkeypress="return isCampoNumerico(event);" />
+							<html:text property="quantidadeMaxPrestacaoEspecial" size="3" maxlength="3" tabindex="2" onkeypress="return isCampoNumerico(event);" />
 						</td>
 					</logic:notEqual>
 					

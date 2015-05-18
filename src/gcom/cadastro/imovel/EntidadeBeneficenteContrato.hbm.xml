@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cadastro.imovel.EntidadeBeneficenteContrato" 
+    table="entidade_beneficente_contrato"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ebct_id"
+    >
+      <generator class="sequence">
+          <param name="sequence">sq_ent_beneficente_contrato</param>
+      </generator>
+    </id>
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ebct_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="dataInicioContrato"
+        type="java.sql.Timestamp"
+        column="ebct_dtcontratoinicio"
+        not-null="true"
+        length="8"
+    />
+    
+    <property
+        name="dataFimContrato"
+        type="java.sql.Timestamp"
+        column="ebct_dtcontratofim"
+        length="8"
+    />
+    
+    <property
+        name="dataEncerramento"
+        type="java.sql.Timestamp"
+        column="ebct_dtcontratoencerramento"
+        length="8"
+    />     
+    
+    <property
+        name="percentualRemuneracao"
+        type="java.math.BigDecimal"
+        column="ebct_pcremuneracao"
+        not-null="true"
+        length="13"
+    />
+    
+    <property
+        name="valorRemuneracao"
+        type="java.math.BigDecimal"
+        column="ebct_vlremuneracao"
+        length="13"
+    />
+    
+    <property
+        name="valorMinimoDoacao"
+        type="java.math.BigDecimal"
+        column="ebct_vlminimodoacao"
+        length="13"
+    />
+    
+    <property
+        name="valorMaximoDoacao"
+        type="java.math.BigDecimal"
+        column="ebct_vlmaximodoacao"
+        length="13"
+    />   
+    
+    <property
+        name="numeroContrato"
+        type="java.lang.String"
+        column="ebct_nncontrato"
+        not-null="true"
+        length="10"
+    />                        
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to EntidadeBeneficente -->
+    <many-to-one
+        name="entidadeBeneficente"
+        class="gcom.cadastro.imovel.EntidadeBeneficente"
+        not-null="true"
+    >
+        <column name="eben_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

@@ -79,6 +79,7 @@ package gcom.gui.cobranca;
 import gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao;
 import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao;
 import gcom.cadastro.cliente.Cliente;
+import gcom.cadastro.cliente.ClienteImovel;
 import gcom.cobranca.CobrancaDocumento;
 import gcom.cobranca.bean.ContaValoresHelper;
 import gcom.cobranca.bean.DebitoCreditoParcelamentoHelper;
@@ -93,12 +94,14 @@ import gcom.faturamento.debito.DebitoACobrar;
 import gcom.faturamento.debito.DebitoTipo;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.seguranca.acesso.PermissaoEspecial;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.cobranca.ParametroCobranca;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -131,6 +134,15 @@ public class ExibirDebitoCreditoDadosSelecaoExtratoAction
 		ActionForward retorno = actionMapping.findForward("debitoCreditoDadosSelecaoExtrato");
 
 		DebitoCreditoDadosSelecaoExtratoActionForm form = (DebitoCreditoDadosSelecaoExtratoActionForm) actionForm;
+
+		Boolean indicadorFauramentoTitularDebito = false;
+		try{
+			if(ParametroFaturamento.P_INDICADOR_FATURAMENTO_ATUAL_TITULAR_DEBITO_IMOVEL.executar().equals("1")){
+				indicadorFauramentoTitularDebito = true;
+			}
+		}catch(ControladorException e){
+			e.printStackTrace();
+		}
 
 		if("sim".equalsIgnoreCase(httpServletRequest.getParameter("popup"))){
 			httpServletRequest.setAttribute("popup", "sim");
@@ -212,6 +224,9 @@ public class ExibirDebitoCreditoDadosSelecaoExtratoAction
 					form.setDescricaoLigacaoAguaSituacaoImovel("");
 					form.setDescricaoLigacaoEsgotoSituacaoImovel("");
 					form.setNomeClienteUsuarioImovel("");
+
+					Collection<ClienteImovel> colecaoRelacaoImovel = new ArrayList<ClienteImovel>();
+					sessao.setAttribute("colecaoRelacaoImovel", colecaoRelacaoImovel);
 				}else{
 
 					// INSCRICAO IMOVEL
@@ -243,6 +258,32 @@ public class ExibirDebitoCreditoDadosSelecaoExtratoAction
 
 			this.preencheListas(httpServletRequest, form, sessao);
 
+		}
+
+		/**
+		 * [UC0630] Solicitar Emissão do Extrato de Débitos
+		 * [SB0007] Verificar Existência de Conta em Execução Fiscal
+		 * 
+		 * @author Gicevalter Couto
+		 * @date 06/08/2014
+		 */
+		boolean temPermissaoAtualizarDebitosExecFiscal = fachada.verificarPermissaoEspecial(
+						PermissaoEspecial.ATUALIZAR_DEBITOS_EXECUCAO_FISCAL, this.getUsuarioLogado(httpServletRequest));
+
+		Short indicadorExecFiscal;
+		indicadorExecFiscal = fachada.verificarImovelDebitoExecucaoFiscal(
+						(Collection<DebitoACobrar>) sessao.getAttribute("colecaoDebitoACobrar"),
+						(Collection<GuiaPagamentoValoresHelper>) sessao.getAttribute("colecaoGuiaPagamentoValores"),
+						(Collection<ContaValoresHelper>) sessao.getAttribute("colecaoContaValores"));
+
+		if(!temPermissaoAtualizarDebitosExecFiscal && indicadorExecFiscal.equals(Short.valueOf("1"))){
+			throw new ActionServletException("atencao.imprimir.imovel.possui.debito.execucao.fiscal");
+		}
+
+		if(indicadorFauramentoTitularDebito){
+			httpServletRequest.setAttribute("indicadorFauramentoTitularDebito", "S");
+		}else{
+			httpServletRequest.removeAttribute("indicadorFauramentoTitularDebito");
 		}
 
 		return retorno;
@@ -332,9 +373,25 @@ public class ExibirDebitoCreditoDadosSelecaoExtratoAction
 			}
 		}
 
+		Integer idClienteDebito = null;
+		Integer idRelacaoClienteDebito = null;
+
+		if(form.getIdClienteRelacaoImovelSelecionado() != null && !form.getIdClienteRelacaoImovelSelecionado().equals("")){
+			String[] dados = form.getIdClienteRelacaoImovelSelecionado().split("\\.");
+
+			idClienteDebito = Integer.valueOf(dados[1]);
+			idRelacaoClienteDebito = Integer.valueOf(dados[0]);
+		}
+
+		Collection<ClienteImovel> colecaoRelacaoImovel = fachada.obterListaClientesRelacaoDevedor(Integer.valueOf(idImovel),
+						Integer.valueOf("000101"), Integer.valueOf("999912"), 1, 1, 1, 1, 1, 1, 1, null, indicadorMulta,
+						indicadorJurosMora, indicadorAtualizaoMonetaria, 2, null, null);
+		sessao.setAttribute("colecaoRelacaoImovel", colecaoRelacaoImovel);
+
 		// [SB0001] - Apresentar Débitos/Créditos do Imóvel de Origem
 		ObterDebitoImovelOuClienteHelper obterDebitoImovelOuClienteHelper = fachada.apresentarDebitoCreditoImovelExtratoDebito(
-						Integer.valueOf(idImovel), false, indicadorMulta, indicadorJurosMora, indicadorAtualizaoMonetaria);
+						Integer.valueOf(idImovel), idClienteDebito, idRelacaoClienteDebito, false, indicadorMulta, indicadorJurosMora,
+						indicadorAtualizaoMonetaria);
 
 		// [SB0001] – Validar autorização de acesso ao imóvel pelos usuários das empresas de
 		// cobrança administrativa
@@ -400,7 +457,7 @@ public class ExibirDebitoCreditoDadosSelecaoExtratoAction
 							.getColecaoDebitoCreditoParcelamentoHelper()){
 				if(helper.getColecaoDebitoACobrarParcelamento() != null
 								&& !helper.getColecaoDebitoACobrarParcelamento().isEmpty()){
-
+					procurar = true;
 					Iterator<DebitoACobrar> iterator = helper.getColecaoDebitoACobrarParcelamento().iterator();
 					while(iterator.hasNext() && procurar){
 

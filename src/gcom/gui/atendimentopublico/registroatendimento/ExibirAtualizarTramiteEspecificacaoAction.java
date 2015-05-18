@@ -16,22 +16,6 @@ import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.operacional.Bacia;
-import gcom.operacional.DistritoOperacional;
-import gcom.operacional.FiltroBacia;
-import gcom.operacional.FiltroDistritoOperacional;
-import gcom.operacional.FiltroSetorAbastecimento;
-import gcom.operacional.FiltroSistemaAbastecimento;
-import gcom.operacional.FiltroSistemaEsgoto;
-import gcom.operacional.FiltroSubBacia;
-import gcom.operacional.FiltroSubsistemaEsgoto;
-import gcom.operacional.FiltroZonaAbastecimento;
-import gcom.operacional.SetorAbastecimento;
-import gcom.operacional.SistemaAbastecimento;
-import gcom.operacional.SistemaEsgoto;
-import gcom.operacional.SubBacia;
-import gcom.operacional.SubsistemaEsgoto;
-import gcom.operacional.ZonaAbastecimento;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
@@ -78,6 +62,7 @@ public class ExibirAtualizarTramiteEspecificacaoAction
 			String codigoBairro = form.getCodigoBairro();
 			String idUnidadeOrganizacionalOrigem = form.getIdUnidadeOrganizacionalOrigem();
 			String idUnidadeOrganizacionalDestino = form.getIdUnidadeOrganizacionalDestino();
+			String indicadorPrimeiroTramite = form.getIndicadorPrimeiroTramite();
 
 			// Limpando campos de descrição quando o id/código é vazio
 			if(idLocalidade != null && idLocalidade.trim().equals("")){
@@ -102,6 +87,10 @@ public class ExibirAtualizarTramiteEspecificacaoAction
 
 			if(idUnidadeOrganizacionalDestino != null && idUnidadeOrganizacionalDestino.trim().equals("")){
 				form.setDescricaoUnidadeOrganizacionalDestino("");
+			}
+
+			if(indicadorPrimeiroTramite != null && indicadorPrimeiroTramite.trim().equals("")){
+				form.setIndicadorPrimeiroTramite(ConstantesSistema.NAO.toString());
 			}
 
 			if(objetoConsulta.equals("1")){
@@ -313,14 +302,7 @@ public class ExibirAtualizarTramiteEspecificacaoAction
 			filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.SETOR_COMERCIAL);
 			filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.BAIRRO);
 			filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.MUNICIPIO);
-			filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.SISTEMA_ABASTECIMENTO);
-			filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.DISTRITO_OPERACIONAL);
-			filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.ZONA_ABASTECIMENTO);
-			filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.SETOR_ABASTECIMENTO);
-			filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.SISTEMA_ESGOTO);
-			filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.SUBSISTEMA_ESGOTO);
-			filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.BACIA);
-			filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.SUBBACIA);
+
 			filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.UNID_ORGANIZACIONAL_ORIGEM);
 			filtroTramiteEspecificacao.adicionarCaminhoParaCarregamentoEntidade(FiltroTramiteEspecificacao.UNID_ORGANIZACIONAL_DESTINO);
 
@@ -341,253 +323,16 @@ public class ExibirAtualizarTramiteEspecificacaoAction
 
 			form.setFormValues(especificacaoTramite);
 
-			String idSistemaAbastecimento = form.getIdSistemaAbastecimento();
-			String idDistritoOperacional = form.getIdDistritoOperacional();
-			String idZonaAbastecimento = form.getIdZonaAbastecimento();
-			String idSistemaEsgoto = form.getIdSistemaEsgoto();
-			String idSubsistemaEsgoto = form.getIdSubsistemaEsgoto();
-			String idBacia = form.getIdBacia();
 
-			String numeroNaoInformadoStr = Integer.toString(ConstantesSistema.NUMERO_NAO_INFORMADO);
 
-			// Sistema de Abastecimento
-			Collection<SistemaAbastecimento> colecaoSistemaAbastecimento = getColecaoSistemaAbastecimento();
-			sessao.setAttribute("colecaoSistemaAbastecimento", colecaoSistemaAbastecimento);
 
-			// Unidade Operacional
-			Collection<DistritoOperacional> colecaoDistritoOperacional = getColecaoDistritoOperacional(idSistemaAbastecimento);
-			sessao.setAttribute("colecaoDistritoOperacional", colecaoDistritoOperacional);
 
-			// Zona de Abastecimento
-			Collection<ZonaAbastecimento> colecaoZonaAbastecimento;
-
-			if(idSistemaAbastecimento != null && !idSistemaAbastecimento.equals(numeroNaoInformadoStr)
-							&& (idDistritoOperacional == null || idDistritoOperacional.equals(numeroNaoInformadoStr))){
-				colecaoZonaAbastecimento = null;
-			}else{
-				colecaoZonaAbastecimento = getColecaoZonaAbastecimento(idDistritoOperacional);
-			}
-
-			sessao.setAttribute("colecaoZonaAbastecimento", colecaoZonaAbastecimento);
-
-			// Setor de Abastecimento
-			Collection<SetorAbastecimento> colecaoSetorAbastecimento;
-
-			if(idSistemaAbastecimento != null && !idSistemaAbastecimento.equals(numeroNaoInformadoStr)
-							&& (idDistritoOperacional == null || idDistritoOperacional.equals(numeroNaoInformadoStr))
-							&& (idZonaAbastecimento == null || idZonaAbastecimento.equals(numeroNaoInformadoStr))){
-				colecaoSetorAbastecimento = null;
-			}else if(idDistritoOperacional != null && !idDistritoOperacional.equals(numeroNaoInformadoStr)
-							&& (idZonaAbastecimento == null || idZonaAbastecimento.equals(numeroNaoInformadoStr))){
-				colecaoSetorAbastecimento = null;
-			}else{
-				colecaoSetorAbastecimento = getColecaoSetorAbastecimento(idZonaAbastecimento);
-			}
-
-			sessao.setAttribute("colecaoSetorAbastecimento", colecaoSetorAbastecimento);
-
-			// Sistema de Esgoto
-			Collection<SistemaEsgoto> colecaoSistemaEsgoto = getColecaoSistemaEsgoto();
-			sessao.setAttribute("colecaoSistemaEsgoto", colecaoSistemaEsgoto);
-
-			// Subsitema de Esgoto
-			Collection<SubsistemaEsgoto> colecaoSubsistemaEsgoto = getColecaoSubsistemaEsgoto(idSistemaEsgoto);
-			sessao.setAttribute("colecaoSubsistemaEsgoto", colecaoSubsistemaEsgoto);
-
-			// Bacia
-			Collection<Bacia> colecaoBacia;
-
-			if(idSistemaEsgoto != null && !idSistemaEsgoto.equals(numeroNaoInformadoStr)
-							&& (idSubsistemaEsgoto == null || idSubsistemaEsgoto.equals(numeroNaoInformadoStr))){
-				colecaoBacia = null;
-			}else{
-				colecaoBacia = getColecaoBacia(idSubsistemaEsgoto);
-			}
-
-			sessao.setAttribute("colecaoBacia", colecaoBacia);
-
-			// SubBacia
-			Collection<SubBacia> colecaoSubBacia;
-
-			if(idSistemaEsgoto != null && !idSistemaEsgoto.equals(numeroNaoInformadoStr)
-							&& (idSubsistemaEsgoto == null || idSubsistemaEsgoto.equals(numeroNaoInformadoStr))
-							&& (idBacia == null || idBacia.equals(numeroNaoInformadoStr))){
-				colecaoSubBacia = null;
-			}else if(idSubsistemaEsgoto != null && !idSubsistemaEsgoto.equals(numeroNaoInformadoStr)
-							&& (idBacia == null || idBacia.equals(numeroNaoInformadoStr))){
-				colecaoSubBacia = null;
-			}else{
-				colecaoSubBacia = getColecaoSubBacia(idBacia);
-			}
-
-			sessao.setAttribute("colecaoSubBacia", colecaoSubBacia);
 		}
 
 		return retorno;
 	}
 
-	/**
-	 * Retorna Coleção de Sistema de Abastecimento
-	 */
-	private Collection<SistemaAbastecimento> getColecaoSistemaAbastecimento(){
 
-		FiltroSistemaAbastecimento filtro = new FiltroSistemaAbastecimento();
-		filtro.setCampoOrderBy(FiltroSistemaAbastecimento.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroSistemaAbastecimento.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
 
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<SistemaAbastecimento> colecao = fachada.pesquisar(filtro, SistemaAbastecimento.class.getName());
-
-		return colecao;
-	}
-
-	/**
-	 * Retorna Coleção de Distrito Operacional
-	 */
-	private Collection<DistritoOperacional> getColecaoDistritoOperacional(String idSistemaAbastecimento){
-
-		String numeroNaoInformadoStr = Integer.toString(ConstantesSistema.NUMERO_NAO_INFORMADO);
-
-		FiltroDistritoOperacional filtro = new FiltroDistritoOperacional();
-		filtro.setCampoOrderBy(FiltroDistritoOperacional.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroDistritoOperacional.INDICADORUSO, ConstantesSistema.INDICADOR_USO_ATIVO));
-
-		if(idSistemaAbastecimento != null && !idSistemaAbastecimento.equals(numeroNaoInformadoStr)){
-			filtro.adicionarParametro(new ParametroSimples(FiltroDistritoOperacional.SISTEMA_ABASTECIMENTO_ID, idSistemaAbastecimento));
-		}
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<DistritoOperacional> colecao = fachada.pesquisar(filtro, DistritoOperacional.class.getName());
-
-		return colecao;
-	}
-
-	/**
-	 * Retorna Coleção de Zona de Abastecimento
-	 */
-	private Collection<ZonaAbastecimento> getColecaoZonaAbastecimento(String idDistritoOperacional){
-
-		String numeroNaoInformadoStr = Integer.toString(ConstantesSistema.NUMERO_NAO_INFORMADO);
-
-		FiltroZonaAbastecimento filtro = new FiltroZonaAbastecimento();
-		filtro.setCampoOrderBy(FiltroZonaAbastecimento.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroZonaAbastecimento.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
-
-		if(idDistritoOperacional != null && !idDistritoOperacional.equals(numeroNaoInformadoStr)){
-			filtro.adicionarParametro(new ParametroSimples(FiltroZonaAbastecimento.DISTRITO_OPERACIONAL_ID, idDistritoOperacional));
-		}
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<ZonaAbastecimento> colecao = fachada.pesquisar(filtro, ZonaAbastecimento.class.getName());
-
-		return colecao;
-	}
-
-	/**
-	 * Retorna Coleção de Setor de Abastecimento
-	 */
-	private Collection<SetorAbastecimento> getColecaoSetorAbastecimento(String idZonaAbastecimento){
-
-		String numeroNaoInformadoStr = Integer.toString(ConstantesSistema.NUMERO_NAO_INFORMADO);
-
-		FiltroSetorAbastecimento filtro = new FiltroSetorAbastecimento();
-		filtro.setCampoOrderBy(FiltroSetorAbastecimento.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroSetorAbastecimento.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
-
-		if(idZonaAbastecimento != null && !idZonaAbastecimento.equals(numeroNaoInformadoStr)){
-			filtro.adicionarParametro(new ParametroSimples(FiltroSetorAbastecimento.ZONA_ABASTECIMENTO_ID, idZonaAbastecimento));
-		}
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<SetorAbastecimento> colecao = fachada.pesquisar(filtro, SetorAbastecimento.class.getName());
-
-		return colecao;
-	}
-
-	/**
-	 * Retorna Coleção de Sistema de Esgoto
-	 */
-	private Collection<SistemaEsgoto> getColecaoSistemaEsgoto(){
-
-		FiltroSistemaEsgoto filtro = new FiltroSistemaEsgoto();
-		filtro.setCampoOrderBy(FiltroSistemaEsgoto.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroSistemaEsgoto.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<SistemaEsgoto> colecao = fachada.pesquisar(filtro, SistemaEsgoto.class.getName());
-
-		return colecao;
-	}
-
-	/**
-	 * Retorna Coleção de Subsistema de Esgoto
-	 */
-	private Collection<SubsistemaEsgoto> getColecaoSubsistemaEsgoto(String idSistemaEsgoto){
-
-		String numeroNaoInformadoStr = Integer.toString(ConstantesSistema.NUMERO_NAO_INFORMADO);
-
-		FiltroSubsistemaEsgoto filtro = new FiltroSubsistemaEsgoto();
-		filtro.setCampoOrderBy(FiltroSubsistemaEsgoto.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroSubsistemaEsgoto.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
-
-		if(idSistemaEsgoto != null && !idSistemaEsgoto.equals(numeroNaoInformadoStr)){
-			filtro.adicionarParametro(new ParametroSimples(FiltroSubsistemaEsgoto.SISTEMAESGOTO_ID, idSistemaEsgoto));
-		}
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<SubsistemaEsgoto> colecao = fachada.pesquisar(filtro, SubsistemaEsgoto.class.getName());
-
-		return colecao;
-	}
-
-	/**
-	 * Retorna Coleção de Bacia
-	 */
-	private Collection<Bacia> getColecaoBacia(String idSubsistemaEsgoto){
-
-		String numeroNaoInformadoStr = Integer.toString(ConstantesSistema.NUMERO_NAO_INFORMADO);
-
-		FiltroBacia filtro = new FiltroBacia();
-		filtro.setCampoOrderBy(FiltroBacia.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroBacia.INDICADORUSO, ConstantesSistema.INDICADOR_USO_ATIVO));
-
-		if(idSubsistemaEsgoto != null && !idSubsistemaEsgoto.equals(numeroNaoInformadoStr)){
-			filtro.adicionarParametro(new ParametroSimples(FiltroBacia.SUBSISTEMA_ESGOTO_ID, idSubsistemaEsgoto));
-		}
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<Bacia> colecao = fachada.pesquisar(filtro, Bacia.class.getName());
-
-		return colecao;
-	}
-
-	/**
-	 * Retorna Coleção de SubBacia
-	 */
-	private Collection<SubBacia> getColecaoSubBacia(String idBacia){
-
-		String numeroNaoInformadoStr = Integer.toString(ConstantesSistema.NUMERO_NAO_INFORMADO);
-
-		FiltroSubBacia filtro = new FiltroSubBacia();
-		filtro.setCampoOrderBy(FiltroSubBacia.DESCRICAO);
-		filtro.adicionarParametro(new ParametroSimples(FiltroSubBacia.INDICADOR_USO, ConstantesSistema.INDICADOR_USO_ATIVO));
-
-		if(idBacia != null && !idBacia.equals(numeroNaoInformadoStr)){
-			filtro.adicionarParametro(new ParametroSimples(FiltroSubBacia.BACIA_ID, idBacia));
-		}
-
-		Fachada fachada = Fachada.getInstancia();
-
-		Collection<SubBacia> colecao = fachada.pesquisar(filtro, SubBacia.class.getName());
-
-		return colecao;
-	}
 
 }

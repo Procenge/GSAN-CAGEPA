@@ -80,6 +80,7 @@
 package gcom.relatorio.arrecadacao.pagamento;
 
 import gcom.batch.Relatorio;
+import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
 import gcom.gui.faturamento.bean.GuiaPagamentoPrestacaoHelper;
@@ -95,6 +96,7 @@ import gcom.util.Util;
 import gcom.util.agendadortarefas.AgendadorTarefas;
 import gcom.util.parametrizacao.ParametroGeral;
 import gcom.util.parametrizacao.arrecadacao.ParametroArrecadacao;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -203,8 +205,8 @@ public class RelatorioEmitirGuiaPagamento
 			}
 
 			RelatorioEmitirGuiaPagamentoBean bean = new RelatorioEmitirGuiaPagamentoBean(colecaoDetail,
-							guiaPagamentoRelatorioHelper.getMatriculaFormatada(), nomeCliente, dataVencimento,
-							guiaPagamentoRelatorioHelper.getInscricao(), guiaPagamentoRelatorioHelper.getEnderecoImovel(),
+							Imovel.getMatriculaComDigitoVerificadorFormatada(guiaPagamentoRelatorioHelper.getMatricula()), nomeCliente,
+							dataVencimento, guiaPagamentoRelatorioHelper.getInscricao(), guiaPagamentoRelatorioHelper.getEnderecoImovel(),
 							guiaPagamentoRelatorioHelper.getEnderecoClienteResponsavel(),
 							guiaPagamentoRelatorioHelper.getRepresentacaoNumericaCodBarraFormatada(),
 							guiaPagamentoRelatorioHelper.getRepresentacaoNumericaCodBarraSemDigito(),
@@ -235,9 +237,7 @@ public class RelatorioEmitirGuiaPagamento
 	 */
 	public Object executar() throws TarefaException{
 
-		// ------------------------------------
 		Integer idFuncionalidadeIniciada = this.getIdFuncionalidadeIniciada();
-		// ------------------------------------
 
 		String[] ids = (String[]) getParametro("ids");
 		String indicadorExibirMensagemGuiaPagamento = null;
@@ -278,6 +278,19 @@ public class RelatorioEmitirGuiaPagamento
 		parametros.put("nomeEmpresa", sistemaParametro.getNomeAbreviadoEmpresa());
 
 		parametros.put("P_NM_EMPRESA", sistemaParametro.getNomeEmpresa());
+
+		String pLabelMatriculaDocumentosPagaveis = null;
+
+		try{
+
+			pLabelMatriculaDocumentosPagaveis = (String) ParametroFaturamento.P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS.executar();
+		}catch(ControladorException e){
+
+			throw new TarefaException(e.getMessage(), e);
+		}
+
+		parametros.put("P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS", pLabelMatriculaDocumentosPagaveis.toUpperCase());
+
 		try{
 			parametros.put("P_ENDERECO", fachada.pesquisarEnderecoFormatadoEmpresa());
 		}catch(ControladorException e1){

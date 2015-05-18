@@ -150,6 +150,8 @@ public class ElaborarOrdemServicoRoteiroCriteriosActionForm
 
 	private String indicadorProcessoAdmJud;
 
+	private Integer quantidadeDiasUnidade;
+
 	public int getProgramadas(){
 
 		return programadas;
@@ -459,6 +461,16 @@ public class ElaborarOrdemServicoRoteiroCriteriosActionForm
 	public void setIndicadorProcessoAdmJud(String indicadorProcessoAdmJud){
 
 		this.indicadorProcessoAdmJud = indicadorProcessoAdmJud;
+	}
+
+	public Integer getQuantidadeDiasUnidade(){
+
+		return quantidadeDiasUnidade;
+	}
+
+	public void setQuantidadeDiasUnidade(Integer quantidadeDiasUnidade){
+
+		this.quantidadeDiasUnidade = quantidadeDiasUnidade;
 	}
 
 }

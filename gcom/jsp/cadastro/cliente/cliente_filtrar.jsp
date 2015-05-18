@@ -39,6 +39,7 @@ var bCancel = false;
      this.ai = new Array("bairroClienteFiltro", "Bairro possui caracteres especiais.", new Function ("varName", " return this[varName];"));
      this.aj = new Array("logradouroClienteFiltro", "Logradouro possui caracteres especiais.", new Function ("varName", " return this[varName];"));
      this.ak = new Array("inscricaoEstadualClienteFiltro", "Inscrição Estadual possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+     this.al = new Array("numeroBeneficioFiltro", "Número do Benefício possui caracteres especiais.", new Function ("varName", " return this[varName];"));
     } 
 
     function cpf () { 
@@ -55,6 +56,7 @@ var bCancel = false;
      this.ag = new Array("bairroClienteFiltro", "Bairro deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
      this.ah = new Array("logradouroClienteFiltro", "Logradouro deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
      this.ai = new Array("inscricaoEstadualClienteFiltro", "Inscrição Estadual deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+     this.aj = new Array("numeroBeneficioFiltro", "Número do Benefício deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
     } 
 
     function cnpj () { 
@@ -212,6 +214,7 @@ function limparForm(){
     form.tipoPesquisa[0].checked = true;
     form.cpfClienteFiltro.focus();
     form.inscricaoEstadualClienteFiltro.value = "";
+    form.numeroBeneficioFiltro.value = "";
 }
 
 function validarBairroMunicipio(){
@@ -381,6 +384,15 @@ function valorCheckAtualizar(){
 						<html:radio property="tipoPesquisaNomeMae"
 							value="<%=ConstantesSistema.TIPO_PESQUISA_COMPLETA.toString()%>" />
 						Contendo o texto
+					</td>
+				</tr>
+				
+				<tr>
+					<td height="30">
+						<strong>Numéro do Benefício:</strong>
+					</td>
+					<td>
+						<html:text name="FiltrarClienteActionForm" property="numeroBeneficioFiltro" size="10" maxlength="10" onkeypress="return isCampoNumerico(event);" />
 					</td>
 				</tr>
 

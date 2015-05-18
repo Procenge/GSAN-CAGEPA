@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="ManutencaoRegistroActionForm" type="gcom.gui.ManutencaoRegistroActionForm" />
+		<form-bean name="ConsultarDocumentoEletronicoActionForm" type="gcom.gui.cadastro.documentoeletronico.ConsultarDocumentoEletronicoActionForm" />
+	</form-beans>
+	<global-forwards />
+	<action-mappings>
+
+	<action name="ManutencaoRegistroActionForm" 
+		type="gcom.gui.cadastro.documentoeletronico.ExibirManterDocumentoEletronicoAction" 
+		scope="session" validate="false"
+		path="/exibirManterDocumentoEletronicoAction">
+		<forward name="exibirManterDocumentoEletronico" path="/jsp/cadastro/documentoeletronico/documento_eletronico_manter.jsp" />
+		<forward name="consultarDocumentoEletronico" path="/exibirConsultarDocumentoEletronicoAction.do?filtrar=sim" />
+	</action>	
+
+	
+	<action name="ManutencaoRegistroActionForm"
+		type="gcom.gui.cadastro.documentoeletronico.RemoverDocumentoEletronicoAction"
+		validate="false" input="/exibirManterDocumentoEletronicoAction.do"
+		scope="request" path="/removerDocumentoEletronicoAction">
+	</action>
+	
+	
+	<action name="ConsultarDocumentoEletronicoActionForm"
+      	type="gcom.gui.cadastro.documentoeletronico.ExibirConsultarDocumentoEletronicoAction"
+      	validate="false" scope="session"
+      	path="/exibirConsultarDocumentoEletronicoAction">
+		<forward name="consultarDocumentoEletronico" path="/jsp/cadastro/documentoeletronico/documento_eletronico_consultar.jsp" />
+	</action>
+	
+	<action name="ConsultarDocumentoEletronicoActionForm" 
+			type="gcom.gui.cadastro.documentoeletronico.ConsultarDocumentoEletronicoAction" 
+			scope="request" path="/ConsultarDocumentoEletronicoAction"/>
+
+	</action-mappings>
+	<message-resources null="false" parameter="gcom.properties.application" />
+</struts-config>

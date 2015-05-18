@@ -60,6 +60,8 @@ public class RelatorioDadosImoveisComContaEmAtraso
 			Fachada fachada = Fachada.getInstancia();
 			SistemaParametro sistemaParametro = fachada.pesquisarParametrosDoSistema();
 
+			int anoMesReferenciaAtualMenos10Anos = Util.subtrairAnoAnoMesReferencia(sistemaParametro.getAnoMesArrecadacao(), 10);
+
 			for(int j = 1; j < 3; j++){
 
 				List<Object[]> colecaoDadosImoveisComContaEmAtraso = null;
@@ -77,43 +79,48 @@ public class RelatorioDadosImoveisComContaEmAtraso
 
 				// Totalizadores por Localidade
 				BigDecimal valorTotalLocalidadeAtrasoAte30Dias = BigDecimal.ZERO;
-				BigDecimal valorTotalLocalidadeAtraso31A60Dias = BigDecimal.ZERO;
-				BigDecimal valorTotalLocalidadeAtraso61A90Dias = BigDecimal.ZERO;
-				BigDecimal valorTotalLocalidadeAtraso91A120Dias = BigDecimal.ZERO;
-				BigDecimal valorTotalLocalidadeAtraso121A150Dias = BigDecimal.ZERO;
-				BigDecimal valorTotalLocalidadeAtraso151A180Dias = BigDecimal.ZERO;
-				BigDecimal valorTotalLocalidadeAtraso181DiasA5Anos = BigDecimal.ZERO;
+				BigDecimal valorTotalLocalidadeAtraso31A90Dias = BigDecimal.ZERO;
+				// BigDecimal valorTotalLocalidadeAtraso61A90Dias = BigDecimal.ZERO;
+				BigDecimal valorTotalLocalidadeAtraso91A180Dias = BigDecimal.ZERO;
+				BigDecimal valorTotalLocalidadeAtraso181A365Dias = BigDecimal.ZERO;
+				// BigDecimal valorTotalLocalidadeAtraso151A180Dias = BigDecimal.ZERO;
+				BigDecimal valorTotalLocalidadeAtraso366DiasA5Anos = BigDecimal.ZERO;
 				BigDecimal valorTotalLocalidadeAtrasoDe5A10Anos = BigDecimal.ZERO;
 				BigDecimal valorTotalLocalidadeImovel = BigDecimal.ZERO;
 				BigDecimal valorTotalLocalidadeAtrasoCorrigidoImovel = BigDecimal.ZERO;
+
+				BigDecimal valorTotalHistoricoAte10Anos = BigDecimal.ZERO;
+
 				Integer quantidadeTotalLocalidadeAtrasoAte30Dias = 0;
-				Integer quantidadeTotalLocalidadeAtraso31A60Dias = 0;
-				Integer quantidadeTotalLocalidadeAtraso61A90Dias = 0;
-				Integer quantidadeTotalLocalidadeAtraso91A120Dias = 0;
-				Integer quantidadeTotalLocalidadeAtraso121A150Dias = 0;
-				Integer quantidadeTotalLocalidadeAtraso151A180Dias = 0;
-				Integer quantidadeTotalLocalidadeAtraso181DiasA5Anos = 0;
+				Integer quantidadeTotalLocalidadeAtraso31A90Dias = 0;
+				// Integer quantidadeTotalLocalidadeAtraso61A90Dias = 0;
+				Integer quantidadeTotalLocalidadeAtraso91A180Dias = 0;
+				Integer quantidadeTotalLocalidadeAtraso181A365Dias = 0;
+				// Integer quantidadeTotalLocalidadeAtraso366A180Dias = 0;
+				Integer quantidadeTotalLocalidadeAtraso366DiasA5Anos = 0;
 				Integer quantidadeTotalLocalidadeAtrasoDe5A10Anos = 0;
 				Integer quantidadeTotalLocalidadeImovel = 0;
 
 				// Totalizadores Gerais
 				BigDecimal valorTotalGeralAtrasoAte30Dias = BigDecimal.ZERO;
-				BigDecimal valorTotalGeralAtraso31A60Dias = BigDecimal.ZERO;
-				BigDecimal valorTotalGeralAtraso61A90Dias = BigDecimal.ZERO;
-				BigDecimal valorTotalGeralAtraso91A120Dias = BigDecimal.ZERO;
-				BigDecimal valorTotalGeralAtraso121A150Dias = BigDecimal.ZERO;
-				BigDecimal valorTotalGeralAtraso151A180Dias = BigDecimal.ZERO;
-				BigDecimal valorTotalGeralAtraso181DiasA5Anos = BigDecimal.ZERO;
+				BigDecimal valorTotalGeralAtraso31A90Dias = BigDecimal.ZERO;
+				// BigDecimal valorTotalGeralAtraso61A90Dias = BigDecimal.ZERO;
+				BigDecimal valorTotalGeralAtraso91A180Dias = BigDecimal.ZERO;
+				BigDecimal valorTotalGeralAtraso181A365Dias = BigDecimal.ZERO;
+				// BigDecimal valorTotalGeralAtraso366A180Dias = BigDecimal.ZERO;
+				BigDecimal valorTotalGeralAtraso366DiasA5Anos = BigDecimal.ZERO;
 				BigDecimal valorTotalGeralAtrasoDe5A10Anos = BigDecimal.ZERO;
+
 				BigDecimal valorTotalGeralImovel = BigDecimal.ZERO;
 				BigDecimal valorTotalGeralAtrasoCorrigidoImovel = BigDecimal.ZERO;
+
 				Integer quantidadeTotalGeralAtrasoAte30Dias = 0;
-				Integer quantidadeTotalGeralAtraso31A60Dias = 0;
-				Integer quantidadeTotalGeralAtraso61A90Dias = 0;
-				Integer quantidadeTotalGeralAtraso91A120Dias = 0;
-				Integer quantidadeTotalGeralAtraso121A150Dias = 0;
-				Integer quantidadeTotalGeralAtraso151A180Dias = 0;
-				Integer quantidadeTotalGeralAtraso181DiasA5Anos = 0;
+				Integer quantidadeTotalGeralAtraso31A90Dias = 0;
+				// Integer quantidadeTotalGeralAtraso61A90Dias = 0;
+				Integer quantidadeTotalGeralAtraso91A180Dias = 0;
+				Integer quantidadeTotalGeralAtraso181A365Dias = 0;
+				// Integer quantidadeTotalGeralAtraso151A180Dias = 0;
+				Integer quantidadeTotalGeralAtraso366DiasA5Anos = 0;
 				Integer quantidadeTotalGeralAtrasoDe5A10Anos = 0;
 				Integer quantidadeTotalGeralImovel = 0;
 				Collection<Conta> colecaoContasAtrasoPorImovel = null;
@@ -167,25 +174,33 @@ public class RelatorioDadosImoveisComContaEmAtraso
 						arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso até 30 Dias", " ", 25));
 
 						// Vl. Atraso 31 a 60 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 31 a 60 Dias", " ", 26));
+						arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 31 a 90 Dias", " ", 26));
 
-						// Vl. Atraso 61 a 90 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 61 a 90 Dias", " ", 26));
+						// // Vl. Atraso 61 a 90 Dias
+						// arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 61 a 90 Dias",
+						// " ", 26));
 
 						// Vl. Atraso 91 a 120 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 91 a 120 Dias", " ", 27));
+						arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 91 a 180 Dias", " ", 27));
 
 						// Vl. Atraso 121 a 150 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 121 a 150 Dias", " ", 28));
+						arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 181 a 365 Dias", " ", 28));
 
 						// Vl. Atraso 151 a 180 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 151 a 180 Dias", " ", 28));
+						// arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 151 a 180 Dias",
+						// " ", 28));
 
 						// Vl. Atraso 181 Dias a 5 Anos
-						arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 181 Dias a 5 Anos", " ", 31));
+						arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 366 Dias a 5 Anos", " ", 31));
 
 						// Vl. Atraso 5 a 10 Anos
 						arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 5 a 10 Anos", " ", 25));
+
+						// Vl. Histórico Total Até 10 Anos
+						arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Histórico Total Até 10 Anos", " ", 36));
+
+						// Vl. Histórico Total Até 10 Anos Corrigido
+						arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Histórico Total Até 10 Anos Corrigido", " ", 46));
 
 						// Vl. Total Histórico Atraso Imóvel
 						arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Total Histórico Atraso Imóvel", " ", 36));
@@ -197,22 +212,24 @@ public class RelatorioDadosImoveisComContaEmAtraso
 						arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso até 30 Dias", " ", 25));
 
 						// Qtd. Atraso 31 a 60 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 31 a 60 Dias", " ", 26));
+						arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 31 a 90 Dias", " ", 26));
 
 						// Qtd. Atraso 61 a 90 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 61 a 90 Dias", " ", 26));
+						// arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 61 a 90 Dias",
+						// " ", 26));
 
 						// Qtd. Atraso 91 a 120 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 91 a 120 Dias", " ", 27));
+						arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 91 a 180 Dias", " ", 27));
 
 						// Qtd. Atraso 121 a 150 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 121 a 150 Dias", " ", 28));
+						arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 181 a 365 Dias", " ", 28));
 
 						// Qtd. Atraso 151 a 180 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 151 a 180 Dias", " ", 28));
+						// arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 151 a 180 Dias",
+						// " ", 28));
 
 						// Qtd. Atraso 181 Dias a 5 Anos
-						arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 181 Dias a 5 Anos", " ", 31));
+						arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 366 Dias a 5 Anos", " ", 31));
 
 						// Qtd. Atraso 5 a 10 Anos
 						arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 5 a 10 Anos", " ", 25));
@@ -245,43 +262,48 @@ public class RelatorioDadosImoveisComContaEmAtraso
 					arquivoImoveis.append(Util.completarStringComValorEsquerda(
 									Util.formatarMoedaReal(new BigDecimal(linhaRetonada[6].toString())), " ", 25));
 
-					// Val. Atraso 31 a 60 Dias
+					// Val. Atraso 31 a 90 Dias
 					arquivoImoveis.append(Util.completarStringComValorEsquerda(
 									Util.formatarMoedaReal(new BigDecimal(linhaRetonada[7].toString())), " ", 26));
 
-					// Val. Atraso 61 a 90 Dias
-					arquivoImoveis.append(Util.completarStringComValorEsquerda(
-									Util.formatarMoedaReal(new BigDecimal(linhaRetonada[8].toString())), " ", 26));
+					// // Val. Atraso 61 a 90 Dias
+					// arquivoImoveis.append(Util.completarStringComValorEsquerda(
+					// Util.formatarMoedaReal(new BigDecimal(linhaRetonada[8].toString())), " ",
+					// 26));
 
-					// Val. Atraso 91 a 120 Dias
+					// Val. Atraso 91 a 180 Dias
 					arquivoImoveis.append(Util.completarStringComValorEsquerda(
-									Util.formatarMoedaReal(new BigDecimal(linhaRetonada[9].toString())), " ", 27));
+									Util.formatarMoedaReal(new BigDecimal(linhaRetonada[8].toString())), " ", 27));
 
-					// Val. Atraso 121 a 150 Dias
-					arquivoImoveis.append(Util.completarStringComValorEsquerda(
-									Util.formatarMoedaReal(new BigDecimal(linhaRetonada[10].toString())), " ", 28));
+					// // Val. Atraso 121 a 150 Dias
+					// arquivoImoveis.append(Util.completarStringComValorEsquerda(
+					// Util.formatarMoedaReal(new BigDecimal(linhaRetonada[10].toString())), " ",
+					// 28));
 
-					// Val. Atraso 151 a 180 Dias
+					// Val. Atraso 181 a 365 Dias
 					arquivoImoveis.append(Util.completarStringComValorEsquerda(
-									Util.formatarMoedaReal(new BigDecimal(linhaRetonada[11].toString())), " ", 28));
+									Util.formatarMoedaReal(new BigDecimal(linhaRetonada[9].toString())), " ", 28));
 
-					// Val. Atraso 181 Dias a 5 Anos
+					// Val. Atraso 366 Dias a 5 Anos
 					arquivoImoveis.append(Util.completarStringComValorEsquerda(
-									Util.formatarMoedaReal(new BigDecimal(linhaRetonada[12].toString())), " ", 31));
+									Util.formatarMoedaReal(new BigDecimal(linhaRetonada[10].toString())), " ", 31));
 
 					// Val. Atraso 5 a 10 Anos
 					arquivoImoveis.append(Util.completarStringComValorEsquerda(
-									Util.formatarMoedaReal(new BigDecimal(linhaRetonada[13].toString())), " ", 25));
+									Util.formatarMoedaReal(new BigDecimal(linhaRetonada[11].toString())), " ", 25));
 
 					// Val. Total Histórico Atraso Imóvel
 					arquivoImoveis.append(Util.completarStringComValorEsquerda(
-									Util.formatarMoedaReal(new BigDecimal(linhaRetonada[14].toString())), " ", 36));
+									Util.formatarMoedaReal(new BigDecimal(linhaRetonada[12].toString())), " ", 36));
 
 					colecaoContasAtrasoPorImovel = fachada.pesquisarContasEmAtrasoPorImovel(Util
 									.obterInteger(linhaRetonada[3].toString()));
 
 					// [UC0216] Calcular Acrescimo por Impontualidade
-					BigDecimal valorTotalCorrigidoImovel = new BigDecimal(linhaRetonada[14].toString());
+					BigDecimal valorTotalCorrigidoImovel = new BigDecimal(linhaRetonada[12].toString());
+
+					// Valor Histórico Até 10 Anos Corrigido
+					BigDecimal valorTotalHistoricoAte10AnosCorrigido = BigDecimal.ZERO;
 
 					for(Conta conta : colecaoContasAtrasoPorImovel){
 
@@ -308,6 +330,15 @@ public class RelatorioDadosImoveisComContaEmAtraso
 							// adiciona valor de atualizacao monetaria
 							valorTotalCorrigidoImovel = valorTotalCorrigidoImovel.add(calcularAcrescimoPorImpontualidade
 											.getValorAtualizacaoMonetaria());
+
+							// Verifica se a referencia da conta está com no máximo 10 anos de
+							// diferença
+							if(conta.getAnoMesReferenciaConta() >= anoMesReferenciaAtualMenos10Anos){
+								valorTotalHistoricoAte10AnosCorrigido = valorTotalHistoricoAte10AnosCorrigido
+												.add(calcularAcrescimoPorImpontualidade.getValorMulta())
+												.add(calcularAcrescimoPorImpontualidade.getValorJurosMora())
+												.add(calcularAcrescimoPorImpontualidade.getValorAtualizacaoMonetaria());
+							}
 						}
 					}
 
@@ -315,73 +346,85 @@ public class RelatorioDadosImoveisComContaEmAtraso
 					arquivoImoveis.append(Util.completarStringComValorEsquerda(Util.formatarMoedaReal(valorTotalCorrigidoImovel), " ", 36));
 
 					// Qtd. Atraso até 30 Dias
-					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[15].toString(), " ", 25));
+					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[13].toString(), " ", 25));
 
-					// Qtd. Atraso 31 a 60 Dias
-					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[16].toString(), " ", 26));
+					// Qtd. Atraso 31 a 90 Dias
+					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[14].toString(), " ", 26));
 
-					// Qtd. Atraso 61 a 90 Dias
-					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[17].toString(), " ", 26));
+					// // Qtd. Atraso 61 a 90 Dias
+					// arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[17].toString(),
+					// " ", 26));
 
-					// Qtd. Atraso 91 a 120 Dias
-					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[18].toString(), " ", 27));
+					// Qtd. Atraso 91 a 180 Dias
+					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[15].toString(), " ", 27));
 
-					// Qtd. Atraso 121 a 150 Dias
-					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[19].toString(), " ", 28));
+					// Qtd. Atraso 181 a 365 Dias
+					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[16].toString(), " ", 28));
 
-					// Qtd. Atraso 151 a 180 Dias
-					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[20].toString(), " ", 28));
+					// // Qtd. Atraso 151 a 180 Dias
+					// arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[20].toString(),
+					// " ", 28));
 
-					// Qtd. Atraso 181 Dias a 5 Anos
-					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[21].toString(), " ", 31));
+					// Qtd. Atraso 366 Dias a 5 Anos
+					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[17].toString(), " ", 31));
 
 					// Qtd. Atraso 5 a 10 Anos
-					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[22].toString(), " ", 25));
+					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[18].toString(), " ", 25));
 
 					// Qtd. Total Atraso Imóvel
-					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[23].toString(), " ", 26));
+					arquivoImoveis.append(Util.completarStringComValorEsquerda(linhaRetonada[19].toString(), " ", 26));
 
 					arquivoImoveis.append(System.getProperty("line.separator"));
 
 					// Acumula Totalização Por Localidade
 					valorTotalLocalidadeAtrasoAte30Dias = valorTotalLocalidadeAtrasoAte30Dias.add(new BigDecimal(linhaRetonada[6]
 									.toString()));
-					valorTotalLocalidadeAtraso31A60Dias = valorTotalLocalidadeAtraso31A60Dias.add(new BigDecimal(linhaRetonada[7]
+					valorTotalLocalidadeAtraso31A90Dias = valorTotalLocalidadeAtraso31A90Dias.add(new BigDecimal(linhaRetonada[7]
 									.toString()));
-					valorTotalLocalidadeAtraso61A90Dias = valorTotalLocalidadeAtraso61A90Dias.add(new BigDecimal(linhaRetonada[8]
+					// valorTotalLocalidadeAtraso61A90Dias =
+					// valorTotalLocalidadeAtraso61A90Dias.add(new BigDecimal(linhaRetonada[8]
+					// .toString()));
+					valorTotalLocalidadeAtraso91A180Dias = valorTotalLocalidadeAtraso91A180Dias.add(new BigDecimal(linhaRetonada[8]
 									.toString()));
-					valorTotalLocalidadeAtraso91A120Dias = valorTotalLocalidadeAtraso91A120Dias.add(new BigDecimal(linhaRetonada[9]
+					valorTotalLocalidadeAtraso181A365Dias = valorTotalLocalidadeAtraso181A365Dias.add(new BigDecimal(linhaRetonada[9]
 									.toString()));
-					valorTotalLocalidadeAtraso121A150Dias = valorTotalLocalidadeAtraso121A150Dias.add(new BigDecimal(linhaRetonada[10]
+					// valorTotalLocalidadeAtraso151A180Dias =
+					// valorTotalLocalidadeAtraso151A180Dias.add(new BigDecimal(linhaRetonada[11]
+					// .toString()));
+					valorTotalLocalidadeAtraso366DiasA5Anos = valorTotalLocalidadeAtraso366DiasA5Anos.add(new BigDecimal(linhaRetonada[10]
 									.toString()));
-					valorTotalLocalidadeAtraso151A180Dias = valorTotalLocalidadeAtraso151A180Dias.add(new BigDecimal(linhaRetonada[11]
+					valorTotalLocalidadeAtrasoDe5A10Anos = valorTotalLocalidadeAtrasoDe5A10Anos.add(new BigDecimal(linhaRetonada[11]
 									.toString()));
-					valorTotalLocalidadeAtraso181DiasA5Anos = valorTotalLocalidadeAtraso181DiasA5Anos.add(new BigDecimal(linhaRetonada[12]
-									.toString()));
-					valorTotalLocalidadeAtrasoDe5A10Anos = valorTotalLocalidadeAtrasoDe5A10Anos.add(new BigDecimal(linhaRetonada[13]
-									.toString()));
-					valorTotalLocalidadeImovel = valorTotalLocalidadeImovel.add(new BigDecimal(linhaRetonada[14].toString()));
+
+					// Valor Total Histórico Até 10 Anos
+					valorTotalHistoricoAte10Anos = valorTotalLocalidadeAtrasoAte30Dias.add(valorTotalLocalidadeAtraso31A90Dias)
+									.add(valorTotalLocalidadeAtraso91A180Dias).add(valorTotalLocalidadeAtraso181A365Dias)
+									.add(valorTotalLocalidadeAtraso366DiasA5Anos).add(valorTotalLocalidadeAtrasoDe5A10Anos);
+
+					valorTotalLocalidadeImovel = valorTotalLocalidadeImovel.add(new BigDecimal(linhaRetonada[12].toString()));
 
 					valorTotalLocalidadeAtrasoCorrigidoImovel = valorTotalLocalidadeAtrasoCorrigidoImovel.add(valorTotalCorrigidoImovel);
 
 					quantidadeTotalLocalidadeAtrasoAte30Dias = quantidadeTotalLocalidadeAtrasoAte30Dias.intValue()
+									+ Util.obterInteger(linhaRetonada[13].toString()).intValue();
+					quantidadeTotalLocalidadeAtraso31A90Dias = quantidadeTotalLocalidadeAtraso31A90Dias.intValue()
+									+ Util.obterInteger(linhaRetonada[14].toString()).intValue();
+					// quantidadeTotalLocalidadeAtraso61A90Dias =
+					// quantidadeTotalLocalidadeAtraso61A90Dias.intValue()
+					// + Util.obterInteger(linhaRetonada[17].toString()).intValue();
+					quantidadeTotalLocalidadeAtraso91A180Dias = quantidadeTotalLocalidadeAtraso91A180Dias.intValue()
 									+ Util.obterInteger(linhaRetonada[15].toString()).intValue();
-					quantidadeTotalLocalidadeAtraso31A60Dias = quantidadeTotalLocalidadeAtraso31A60Dias.intValue()
+					quantidadeTotalLocalidadeAtraso181A365Dias = quantidadeTotalLocalidadeAtraso181A365Dias.intValue()
 									+ Util.obterInteger(linhaRetonada[16].toString()).intValue();
-					quantidadeTotalLocalidadeAtraso61A90Dias = quantidadeTotalLocalidadeAtraso61A90Dias.intValue()
+					// quantidadeTotalLocalidadeAtraso151A180Dias =
+					// quantidadeTotalLocalidadeAtraso151A180Dias.intValue()
+					// + Util.obterInteger(linhaRetonada[20].toString()).intValue();
+					quantidadeTotalLocalidadeAtraso366DiasA5Anos = quantidadeTotalLocalidadeAtraso366DiasA5Anos.intValue()
 									+ Util.obterInteger(linhaRetonada[17].toString()).intValue();
-					quantidadeTotalLocalidadeAtraso91A120Dias = quantidadeTotalLocalidadeAtraso91A120Dias.intValue()
-									+ Util.obterInteger(linhaRetonada[18].toString()).intValue();
-					quantidadeTotalLocalidadeAtraso121A150Dias = quantidadeTotalLocalidadeAtraso121A150Dias.intValue()
-									+ Util.obterInteger(linhaRetonada[19].toString()).intValue();
-					quantidadeTotalLocalidadeAtraso151A180Dias = quantidadeTotalLocalidadeAtraso151A180Dias.intValue()
-									+ Util.obterInteger(linhaRetonada[20].toString()).intValue();
-					quantidadeTotalLocalidadeAtraso181DiasA5Anos = quantidadeTotalLocalidadeAtraso181DiasA5Anos.intValue()
-									+ Util.obterInteger(linhaRetonada[21].toString()).intValue();
 					quantidadeTotalLocalidadeAtrasoDe5A10Anos = quantidadeTotalLocalidadeAtrasoDe5A10Anos.intValue()
-									+ Util.obterInteger(linhaRetonada[22].toString()).intValue();
+									+ Util.obterInteger(linhaRetonada[18].toString()).intValue();
 					quantidadeTotalLocalidadeImovel = quantidadeTotalLocalidadeImovel.intValue()
-									+ Util.obterInteger(linhaRetonada[23].toString()).intValue();
+									+ Util.obterInteger(linhaRetonada[19].toString()).intValue();
 
 					if((i == (colecaoDadosImoveisComContaEmAtraso.size() - 1))
 									|| !linhaRetonada[1].toString().equals(linhaRetonadaProxima[1].toString())){
@@ -399,32 +442,39 @@ public class RelatorioDadosImoveisComContaEmAtraso
 
 						// Val. Atraso 31 a 60 Dias
 						arquivoImoveis.append(Util.completarStringComValorEsquerda(
-										Util.formatarMoedaReal(valorTotalLocalidadeAtraso31A60Dias), " ", 26));
+										Util.formatarMoedaReal(valorTotalLocalidadeAtraso31A90Dias), " ", 26));
 
-						// Val. Atraso 61 a 90 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda(
-										Util.formatarMoedaReal(valorTotalLocalidadeAtraso61A90Dias), " ", 26));
+						// // Val. Atraso 61 a 90 Dias
+						// arquivoImoveis.append(Util.completarStringComValorEsquerda(Util.formatarMoedaReal(valorTotalLocalidadeAtraso61A90Dias),
+						// " ", 26));
 
 						// Val. Atraso 91 a 120 Dias
 						arquivoImoveis.append(Util.completarStringComValorEsquerda(
-										Util.formatarMoedaReal(valorTotalLocalidadeAtraso91A120Dias), " ", 27));
+										Util.formatarMoedaReal(valorTotalLocalidadeAtraso91A180Dias), " ", 27));
 
 						// Val. Atraso 121 a 150 Dias
 						arquivoImoveis.append(Util.completarStringComValorEsquerda(
-										Util.formatarMoedaReal(valorTotalLocalidadeAtraso121A150Dias), " ", 28));
+										Util.formatarMoedaReal(valorTotalLocalidadeAtraso181A365Dias), " ", 28));
 
-						// Val. Atraso 151 a 180 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda(
-										Util.formatarMoedaReal(valorTotalLocalidadeAtraso151A180Dias), " ", 28));
+						// // Val. Atraso 151 a 180 Dias
+						// arquivoImoveis.append(Util.completarStringComValorEsquerda(Util.formatarMoedaReal(valorTotalLocalidadeAtraso151A180Dias),
+						// " ", 28));
 
 						// Val. Atraso 181 Dias a 5 Anos
 						arquivoImoveis.append(Util.completarStringComValorEsquerda(
-										Util.formatarMoedaReal(valorTotalLocalidadeAtraso181DiasA5Anos), " ",
-										31));
+										Util.formatarMoedaReal(valorTotalLocalidadeAtraso366DiasA5Anos), " ", 31));
 
 						// Val. Atraso 5 a 10 Anos
 						arquivoImoveis.append(Util.completarStringComValorEsquerda(
 										Util.formatarMoedaReal(valorTotalLocalidadeAtrasoDe5A10Anos), " ", 25));
+
+						// Val. Histórico Total Até 10 Anos
+						arquivoImoveis.append(Util.completarStringComValorEsquerda(Util.formatarMoedaReal(valorTotalHistoricoAte10Anos),
+										" ", 36));
+
+						// Val. Histórico Total Até 10 Anos Corrigido
+						arquivoImoveis.append(Util.completarStringComValorEsquerda(
+										Util.formatarMoedaReal(valorTotalHistoricoAte10AnosCorrigido), " ", 46));
 
 						// Val. Total Histórico Atraso Imóvel
 						arquivoImoveis.append(Util.completarStringComValorEsquerda(Util.formatarMoedaReal(valorTotalLocalidadeImovel), " ",
@@ -439,27 +489,27 @@ public class RelatorioDadosImoveisComContaEmAtraso
 										" ", 25));
 
 						// Qtd. Atraso 31 a 60 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalLocalidadeAtraso31A60Dias.toString(),
+						arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalLocalidadeAtraso31A90Dias.toString(),
 										" ", 26));
 
-						// Qtd. Atraso 61 a 90 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalLocalidadeAtraso61A90Dias.toString(),
-										" ", 26));
+						// // Qtd. Atraso 61 a 90 Dias
+						// arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalLocalidadeAtraso61A90Dias.toString(),
+						// " ", 26));
 
 						// Qtd. Atraso 91 a 120 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalLocalidadeAtraso91A120Dias.toString(),
+						arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalLocalidadeAtraso91A180Dias.toString(),
 										" ", 27));
 
 						// Qtd. Atraso 121 a 150 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalLocalidadeAtraso121A150Dias.toString(),
+						arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalLocalidadeAtraso181A365Dias.toString(),
 										" ", 28));
 
-						// Qtd. Atraso 151 a 180 Dias
-						arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalLocalidadeAtraso151A180Dias.toString(),
-										" ", 28));
+						// // Qtd. Atraso 151 a 180 Dias
+						// arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalLocalidadeAtraso151A180Dias.toString(),
+						// " ", 28));
 
 						// Qtd. Atraso 181 Dias a 5 Anos
-						arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalLocalidadeAtraso181DiasA5Anos.toString(),
+						arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalLocalidadeAtraso366DiasA5Anos.toString(),
 										" ", 31));
 
 						// Qtd. Atraso 5 a 10 Anos
@@ -471,13 +521,15 @@ public class RelatorioDadosImoveisComContaEmAtraso
 
 						// Acumula Totalização Geral
 						valorTotalGeralAtrasoAte30Dias = valorTotalGeralAtrasoAte30Dias.add(valorTotalLocalidadeAtrasoAte30Dias);
-						valorTotalGeralAtraso31A60Dias = valorTotalGeralAtraso31A60Dias.add(valorTotalLocalidadeAtraso31A60Dias);
-						valorTotalGeralAtraso61A90Dias = valorTotalGeralAtraso61A90Dias.add(valorTotalLocalidadeAtraso61A90Dias);
-						valorTotalGeralAtraso91A120Dias = valorTotalGeralAtraso91A120Dias.add(valorTotalLocalidadeAtraso91A120Dias);
-						valorTotalGeralAtraso121A150Dias = valorTotalGeralAtraso121A150Dias.add(valorTotalLocalidadeAtraso121A150Dias);
-						valorTotalGeralAtraso151A180Dias = valorTotalGeralAtraso151A180Dias.add(valorTotalLocalidadeAtraso151A180Dias);
-						valorTotalGeralAtraso181DiasA5Anos = valorTotalGeralAtraso181DiasA5Anos
-										.add(valorTotalLocalidadeAtraso181DiasA5Anos);
+						valorTotalGeralAtraso31A90Dias = valorTotalGeralAtraso31A90Dias.add(valorTotalLocalidadeAtraso31A90Dias);
+						// valorTotalGeralAtraso61A90Dias =
+						// valorTotalGeralAtraso61A90Dias.add(valorTotalLocalidadeAtraso61A90Dias);
+						valorTotalGeralAtraso91A180Dias = valorTotalGeralAtraso91A180Dias.add(valorTotalLocalidadeAtraso91A180Dias);
+						valorTotalGeralAtraso181A365Dias = valorTotalGeralAtraso181A365Dias.add(valorTotalLocalidadeAtraso181A365Dias);
+						// valorTotalGeralAtraso151A180Dias =
+						// valorTotalGeralAtraso151A180Dias.add(valorTotalLocalidadeAtraso151A180Dias);
+						valorTotalGeralAtraso366DiasA5Anos = valorTotalGeralAtraso366DiasA5Anos
+										.add(valorTotalLocalidadeAtraso366DiasA5Anos);
 						valorTotalGeralAtrasoDe5A10Anos = valorTotalGeralAtrasoDe5A10Anos.add(valorTotalLocalidadeAtrasoDe5A10Anos);
 						valorTotalGeralImovel = valorTotalGeralImovel.add(valorTotalLocalidadeImovel);
 						valorTotalGeralAtrasoCorrigidoImovel = valorTotalGeralAtrasoCorrigidoImovel
@@ -485,42 +537,46 @@ public class RelatorioDadosImoveisComContaEmAtraso
 
 						quantidadeTotalGeralAtrasoAte30Dias = quantidadeTotalGeralAtrasoAte30Dias.intValue()
 										+ quantidadeTotalLocalidadeAtrasoAte30Dias.intValue();
-						quantidadeTotalGeralAtraso31A60Dias = quantidadeTotalGeralAtraso31A60Dias.intValue()
-										+ quantidadeTotalLocalidadeAtraso31A60Dias.intValue();
-						quantidadeTotalGeralAtraso61A90Dias = quantidadeTotalGeralAtraso61A90Dias.intValue()
-										+ quantidadeTotalLocalidadeAtraso61A90Dias.intValue();
-						quantidadeTotalGeralAtraso91A120Dias = quantidadeTotalGeralAtraso91A120Dias.intValue()
-										+ quantidadeTotalLocalidadeAtraso91A120Dias.intValue();
-						quantidadeTotalGeralAtraso121A150Dias = quantidadeTotalGeralAtraso121A150Dias.intValue()
-										+ quantidadeTotalLocalidadeAtraso121A150Dias.intValue();
-						quantidadeTotalGeralAtraso151A180Dias = quantidadeTotalGeralAtraso151A180Dias.intValue()
-										+ quantidadeTotalLocalidadeAtraso151A180Dias.intValue();
-						quantidadeTotalGeralAtraso181DiasA5Anos = quantidadeTotalGeralAtraso181DiasA5Anos.intValue()
-										+ quantidadeTotalLocalidadeAtraso181DiasA5Anos.intValue();
+						quantidadeTotalGeralAtraso31A90Dias = quantidadeTotalGeralAtraso31A90Dias.intValue()
+										+ quantidadeTotalLocalidadeAtraso31A90Dias.intValue();
+						// quantidadeTotalGeralAtraso61A90Dias =
+						// quantidadeTotalGeralAtraso61A90Dias.intValue() +
+						// quantidadeTotalLocalidadeAtraso61A90Dias.intValue();
+						quantidadeTotalGeralAtraso91A180Dias = quantidadeTotalGeralAtraso91A180Dias.intValue()
+										+ quantidadeTotalLocalidadeAtraso91A180Dias.intValue();
+						quantidadeTotalGeralAtraso181A365Dias = quantidadeTotalGeralAtraso181A365Dias.intValue()
+										+ quantidadeTotalLocalidadeAtraso181A365Dias.intValue();
+						// quantidadeTotalGeralAtraso151A180Dias =
+						// quantidadeTotalGeralAtraso151A180Dias.intValue() +
+						// quantidadeTotalLocalidadeAtraso151A180Dias.intValue();
+						quantidadeTotalGeralAtraso366DiasA5Anos = quantidadeTotalGeralAtraso366DiasA5Anos.intValue()
+										+ quantidadeTotalLocalidadeAtraso366DiasA5Anos.intValue();
 						quantidadeTotalGeralAtrasoDe5A10Anos = quantidadeTotalGeralAtrasoDe5A10Anos.intValue()
 										+ quantidadeTotalLocalidadeAtrasoDe5A10Anos.intValue();
 						quantidadeTotalGeralImovel = quantidadeTotalGeralImovel.intValue() + quantidadeTotalLocalidadeImovel.intValue();
 
 						// Zera os totalizadores da localidade
 						valorTotalLocalidadeAtrasoAte30Dias = BigDecimal.ZERO;
-						valorTotalLocalidadeAtraso31A60Dias = BigDecimal.ZERO;
-						valorTotalLocalidadeAtraso61A90Dias = BigDecimal.ZERO;
-						valorTotalLocalidadeAtraso91A120Dias = BigDecimal.ZERO;
-						valorTotalLocalidadeAtraso121A150Dias = BigDecimal.ZERO;
-						valorTotalLocalidadeAtraso151A180Dias = BigDecimal.ZERO;
-						valorTotalLocalidadeAtraso181DiasA5Anos = BigDecimal.ZERO;
+						valorTotalLocalidadeAtraso31A90Dias = BigDecimal.ZERO;
+						// valorTotalLocalidadeAtraso61A90Dias = BigDecimal.ZERO;
+						valorTotalLocalidadeAtraso91A180Dias = BigDecimal.ZERO;
+						valorTotalLocalidadeAtraso181A365Dias = BigDecimal.ZERO;
+						// valorTotalLocalidadeAtraso151A180Dias = BigDecimal.ZERO;
+						valorTotalLocalidadeAtraso366DiasA5Anos = BigDecimal.ZERO;
 						valorTotalLocalidadeAtrasoDe5A10Anos = BigDecimal.ZERO;
 						valorTotalLocalidadeImovel = BigDecimal.ZERO;
 						valorTotalLocalidadeAtrasoCorrigidoImovel = BigDecimal.ZERO;
 						quantidadeTotalLocalidadeAtrasoAte30Dias = 0;
-						quantidadeTotalLocalidadeAtraso31A60Dias = 0;
-						quantidadeTotalLocalidadeAtraso61A90Dias = 0;
-						quantidadeTotalLocalidadeAtraso91A120Dias = 0;
-						quantidadeTotalLocalidadeAtraso121A150Dias = 0;
-						quantidadeTotalLocalidadeAtraso151A180Dias = 0;
-						quantidadeTotalLocalidadeAtraso181DiasA5Anos = 0;
+						quantidadeTotalLocalidadeAtraso31A90Dias = 0;
+						// quantidadeTotalLocalidadeAtraso61A90Dias = 0;
+						quantidadeTotalLocalidadeAtraso91A180Dias = 0;
+						quantidadeTotalLocalidadeAtraso181A365Dias = 0;
+						// quantidadeTotalLocalidadeAtraso151A180Dias = 0;
+						quantidadeTotalLocalidadeAtraso366DiasA5Anos = 0;
 						quantidadeTotalLocalidadeAtrasoDe5A10Anos = 0;
 						quantidadeTotalLocalidadeImovel = 0;
+
+						valorTotalHistoricoAte10Anos = BigDecimal.ZERO;
 
 						arquivoImoveis.append(System.getProperty("line.separator"));
 
@@ -528,7 +584,6 @@ public class RelatorioDadosImoveisComContaEmAtraso
 
 							// Totais Gerais
 							if(j == 1){
-
 								arquivoImoveis.append(Util.completarStringComValorEsquerda("Totais Gerais dos Imóveis Públicos:", " ", 80));
 							}else{
 
@@ -541,43 +596,43 @@ public class RelatorioDadosImoveisComContaEmAtraso
 
 							// Val. Atraso até 30 Dias
 							arquivoImoveis.append(Util.completarStringComValorEsquerda(
-											Util.formatarMoedaReal(valorTotalGeralAtrasoAte30Dias), " ",
-											25));
+											Util.formatarMoedaReal(valorTotalGeralAtrasoAte30Dias), " ", 25));
 
 							// Val. Atraso 31 a 60 Dias
 							arquivoImoveis.append(Util.completarStringComValorEsquerda(
-											Util.formatarMoedaReal(valorTotalGeralAtraso31A60Dias), " ",
-											26));
+											Util.formatarMoedaReal(valorTotalGeralAtraso31A90Dias), " ", 26));
 
 							// Val. Atraso 61 a 90 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda(
-											Util.formatarMoedaReal(valorTotalGeralAtraso61A90Dias), " ",
-											26));
+							// arquivoImoveis.append(Util.completarStringComValorEsquerda(Util.formatarMoedaReal(valorTotalGeralAtraso61A90Dias),
+							// " ", 26));
 
 							// Val. Atraso 91 a 120 Dias
 							arquivoImoveis.append(Util.completarStringComValorEsquerda(
-											Util.formatarMoedaReal(valorTotalGeralAtraso91A120Dias), " ",
-											27));
+											Util.formatarMoedaReal(valorTotalGeralAtraso91A180Dias), " ", 27));
 
 							// Val. Atraso 121 a 150 Dias
 							arquivoImoveis.append(Util.completarStringComValorEsquerda(
-											Util.formatarMoedaReal(valorTotalGeralAtraso121A150Dias), " ",
-											28));
-
-							// Val. Atraso 151 a 180 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda(
-											Util.formatarMoedaReal(valorTotalGeralAtraso151A180Dias), " ",
-											28));
+											Util.formatarMoedaReal(valorTotalGeralAtraso181A365Dias), " ", 28));
+							//
+							// // Val. Atraso 151 a 180 Dias
+							// arquivoImoveis.append(Util.completarStringComValorEsquerda(Util.formatarMoedaReal(valorTotalGeralAtraso151A180Dias),
+							// " ", 28));
 
 							// Val. Atraso 181 Dias a 5 Anos
 							arquivoImoveis.append(Util.completarStringComValorEsquerda(
-											Util.formatarMoedaReal(valorTotalGeralAtraso181DiasA5Anos),
-											" ", 31));
+											Util.formatarMoedaReal(valorTotalGeralAtraso366DiasA5Anos), " ", 31));
 
 							// Val. Atraso 5 a 10 Anos
 							arquivoImoveis.append(Util.completarStringComValorEsquerda(
-											Util.formatarMoedaReal(valorTotalGeralAtrasoDe5A10Anos), " ",
-											25));
+											Util.formatarMoedaReal(valorTotalGeralAtrasoDe5A10Anos), " ", 25));
+
+							// Val. Total Histórico Até 10 Anos
+							arquivoImoveis.append(Util.completarStringComValorEsquerda(
+											Util.formatarMoedaReal(valorTotalHistoricoAte10Anos), " ", 36));
+
+							// Val. Total Histórico Até 10 Anos Corrigido
+							arquivoImoveis.append(Util.completarStringComValorEsquerda(
+											Util.formatarMoedaReal(valorTotalHistoricoAte10AnosCorrigido), " ", 46));
 
 							// Val. Total Histórico Atraso Imóvel
 							arquivoImoveis.append(Util.completarStringComValorEsquerda(Util.formatarMoedaReal(valorTotalGeralImovel), " ",
@@ -592,27 +647,27 @@ public class RelatorioDadosImoveisComContaEmAtraso
 											25));
 
 							// Qtd. Atraso 31 a 60 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalGeralAtraso31A60Dias.toString(), " ",
+							arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalGeralAtraso31A90Dias.toString(), " ",
 											26));
 
-							// Qtd. Atraso 61 a 90 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalGeralAtraso61A90Dias.toString(), " ",
-											26));
+							// // Qtd. Atraso 61 a 90 Dias
+							// arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalGeralAtraso61A90Dias.toString(),
+							// " ", 26));
 
 							// Qtd. Atraso 91 a 120 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalGeralAtraso91A120Dias.toString(),
+							arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalGeralAtraso91A180Dias.toString(),
 											" ", 27));
 
 							// Qtd. Atraso 121 a 150 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalGeralAtraso121A150Dias.toString(),
+							arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalGeralAtraso181A365Dias.toString(),
 											" ", 28));
-
-							// Qtd. Atraso 151 a 180 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalGeralAtraso151A180Dias.toString(),
-											" ", 28));
+							//
+							// // Qtd. Atraso 151 a 180 Dias
+							// arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalGeralAtraso151A180Dias.toString(),
+							// " ", 28));
 
 							// Qtd. Atraso 181 Dias a 5 Anos
-							arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalGeralAtraso181DiasA5Anos.toString(),
+							arquivoImoveis.append(Util.completarStringComValorEsquerda(quantidadeTotalGeralAtraso366DiasA5Anos.toString(),
 											" ", 31));
 
 							// Qtd. Atraso 5 a 10 Anos
@@ -628,8 +683,7 @@ public class RelatorioDadosImoveisComContaEmAtraso
 							// Localidade
 							arquivoImoveis.append(Util.completarStringComValorEsquerda(
 											"Imóveis da Localidade: " + linhaRetonadaProxima[1].toString() + "-"
-															+ linhaRetonadaProxima[2].toString(),
-											" ", 100));
+															+ linhaRetonadaProxima[2].toString(), " ", 100));
 
 							arquivoImoveis.append(System.getProperty("line.separator"));
 
@@ -649,25 +703,34 @@ public class RelatorioDadosImoveisComContaEmAtraso
 							arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso até 30 Dias", " ", 25));
 
 							// Vl. Atraso 31 a 60 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 31 a 60 Dias", " ", 26));
+							arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 31 a 90 Dias", " ", 26));
 
-							// Vl. Atraso 61 a 90 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 61 a 90 Dias", " ", 26));
+							// // Vl. Atraso 61 a 90 Dias
+							// arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 61 a 90 Dias",
+							// " ", 26));
 
 							// Vl. Atraso 91 a 120 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 91 a 120 Dias", " ", 27));
-
-							// Vl. Atraso 121 a 150 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 121 a 150 Dias", " ", 28));
+							arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 91 a 180 Dias", " ", 27));
+							//
+							// // Vl. Atraso 121 a 150 Dias
+							// arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 121 a 150 Dias",
+							// " ", 28));
 
 							// Vl. Atraso 151 a 180 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 151 a 180 Dias", " ", 28));
+							arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 181 a 365 Dias", " ", 28));
 
 							// Vl. Atraso 181 Dias a 5 Anos
-							arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 181 Dias a 5 Anos", " ", 31));
+							arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 366 Dias a 5 Anos", " ", 31));
 
 							// Vl. Atraso 5 a 10 Anos
 							arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Atraso 5 a 10 Anos", " ", 25));
+
+							// Vl. Histórico Total Até 10 Anos
+							arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Histórico Total Até 10 Anos", " ", 36));
+
+							// Vl. Histórico Total Até 10 Anos Corrigido
+							arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Histórico Total Até 10 Anos Corrigido", " ",
+											46));
 
 							// Vl. Total Histórico Atraso Imóvel
 							arquivoImoveis.append(Util.completarStringComValorEsquerda("Val. Total Histórico Atraso Imóvel", " ", 36));
@@ -679,22 +742,24 @@ public class RelatorioDadosImoveisComContaEmAtraso
 							arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso até 30 Dias", " ", 25));
 
 							// Qtd. Atraso 31 a 60 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 31 a 60 Dias", " ", 26));
+							arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 31 a 90 Dias", " ", 26));
 
-							// Qtd. Atraso 61 a 90 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 61 a 90 Dias", " ", 26));
+							// // Qtd. Atraso 61 a 90 Dias
+							// arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 61 a 90 Dias",
+							// " ", 26));
 
 							// Qtd. Atraso 91 a 120 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 91 a 120 Dias", " ", 27));
+							arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 91 a 180 Dias", " ", 27));
 
 							// Qtd. Atraso 121 a 150 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 121 a 150 Dias", " ", 28));
+							arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 181 a 365 Dias", " ", 28));
 
-							// Qtd. Atraso 151 a 180 Dias
-							arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 151 a 180 Dias", " ", 28));
+							// // Qtd. Atraso 151 a 180 Dias
+							// arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 151 a 180 Dias",
+							// " ", 28));
 
 							// Qtd. Atraso 181 Dias a 5 Anos
-							arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 181 Dias a 5 Anos", " ", 31));
+							arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 366 Dias a 5 Anos", " ", 31));
 
 							// Qtd. Atraso 5 a 10 Anos
 							arquivoImoveis.append(Util.completarStringComValorEsquerda("Qtd. Atraso 5 a 10 Anos", " ", 25));

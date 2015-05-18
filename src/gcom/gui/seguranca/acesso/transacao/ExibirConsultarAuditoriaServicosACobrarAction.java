@@ -4,6 +4,8 @@ import gcom.cadastro.funcionario.FiltroFuncionario;
 import gcom.cadastro.funcionario.Funcionario;
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
+import gcom.seguranca.acesso.usuario.FiltroUsuario;
+import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
@@ -39,7 +41,30 @@ public class ExibirConsultarAuditoriaServicosACobrarAction
 		// Recupera os valores do funcionário do form
 		String idFuncionario = form.getIdFuncionario();
 		String nomeFuncionario = form.getNomeFuncionario();
+		String idUsuario = form.getIdUsuario();
 
+		
+		
+		//Filtro Usuario
+		if(!Util.isVazioOuBranco(idUsuario)){
+			
+			FiltroUsuario filtroUsuario = new FiltroUsuario();
+			filtroUsuario.adicionarParametro(new ParametroSimples(FiltroUsuario.ID, idUsuario));
+			Usuario usuario = (Usuario) Util.retonarObjetoDeColecao(fachada.pesquisar(filtroUsuario, Usuario.class.getName()));
+			if(!Util.isVazioOuBranco(usuario)){
+				form.setIdUsuario(usuario.getId().toString());
+				form.setNomeUsuario(usuario.getNomeUsuario());
+			}else{
+				form.setIdUsuario("");
+				form.setNomeUsuario("Usuário inexistente");
+				httpServletRequest.setAttribute("usuarioNaoEncontrado", true);
+				httpServletRequest.setAttribute("nomeCampo", "idUsuario");
+			}
+
+		}
+		
+		
+		
 		// Reset no form
 		String reset = httpServletRequest.getParameter("reset");
 		if(reset != null && reset.equalsIgnoreCase("1")){

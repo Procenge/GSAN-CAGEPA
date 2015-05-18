@@ -78,10 +78,13 @@ package gcom.gui.cadastro.sistemaparametro;
 
 import gcom.cadastro.geografico.Municipio;
 import gcom.fachada.Fachada;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.tabelaauxiliar.abreviada.FiltroTabelaAuxiliarAbreviada;
 
+import java.io.*;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
@@ -90,6 +93,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.upload.FormFile;
 
 /**
  * [UC0534] INSERIR FERIADO
@@ -109,6 +113,63 @@ public class ExibirInserirFeriadoAction
 		Fachada fachada = Fachada.getInstancia();
 
 		InserirFeriadoActionForm form = (InserirFeriadoActionForm) actionForm;
+
+		if(!Util.isVazioOuBranco(httpServletRequest.getParameter("importarArquivoComFeriados"))){
+
+			this.validarArquivoUpload(form.getArquivoFeriadosImportar());
+			File arquivoFeriados = this.formFileToFile(form.getArquivoFeriadosImportar(), httpServletRequest);
+
+			if(arquivoFeriados != null){
+
+				File arquivoLogProcessamento = fachada.importarFeriado(arquivoFeriados, this.getUsuarioLogado(httpServletRequest));
+				this.getSessao(httpServletRequest).setAttribute("arquivoLogProcessamento", arquivoLogProcessamento);
+
+				retorno = actionMapping.findForward("telaSucesso");
+
+				// Montar Págiuna de Sucesso
+				montarPaginaSucesso(httpServletRequest, "Arquivo de Feriados processado com sucesso.", "Inserir Outro(s) Feriado(s)",
+								"exibirInserirFeriadoAction.do?menu=sim", "exibirInserirFeriadoAction.do?download=true",
+								"Clique Aqui para baixar o Log do Processamento do Arquivo");
+			}
+		}
+
+		if(form.getArquivoFeriadosImportar() != null && !form.getArquivoFeriadosImportar().getFileName().equals("")){
+
+			try{
+				File arquivoLogProcessamento = (File) this.getSessao(httpServletRequest).getAttribute("arquivoLogProcessamento");
+
+				if(httpServletRequest.getParameter("download") != null && httpServletRequest.getParameter("download").equals("true")
+								&& arquivoLogProcessamento != null){
+
+					ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+					FileInputStream in = new FileInputStream(arquivoLogProcessamento);
+
+					int b;
+
+					while((b = in.read()) > -1){
+
+						byteArrayOutputStream.write(b);
+					}
+
+					httpServletResponse.addHeader("Content-Disposition", "attachment; filename=" + arquivoLogProcessamento.getName());
+					String mimeType = "application/txt";
+					httpServletResponse.setContentType(mimeType);
+					OutputStream out = httpServletResponse.getOutputStream();
+					out.write(byteArrayOutputStream.toByteArray());
+					out.flush();
+					out.close();
+					retorno = null;
+					this.getSessao(httpServletRequest).removeAttribute("arquivoLogProcessamento");
+				}
+
+			}catch(FileNotFoundException e){
+
+				levantarExcecaoUrlSetada(new ActionServletException("", httpServletRequest.getRequestURI(), ""));
+			}catch(IOException e){
+
+				levantarExcecaoUrlSetada(new ActionServletException("", httpServletRequest.getRequestURI(), ""));
+			}
+		}
 
 		if(httpServletRequest.getParameter("menu") != null){
 			form.setIndicadorTipoFeriado("2");
@@ -137,5 +198,61 @@ public class ExibirInserirFeriadoAction
 		}
 
 		return retorno;
+	}
+
+	private void validarArquivoUpload(FormFile arquivo){
+
+		if(arquivo.getFileSize() == 0){
+
+			levantarExcecaoUrlSetada(new ActionServletException("atencao.arquivo_sem_dados", arquivo.getFileName()));
+		}
+	}
+
+	private void levantarExcecaoUrlSetada(ActionServletException actionServletException){
+
+		actionServletException.setUrlBotaoVoltar("/gsan/exibirInserirFeriadoAction.do");
+		throw actionServletException;
+	}
+
+	private File formFileToFile(FormFile formFile, HttpServletRequest httpServletRequest){
+
+		File file = null;
+		try{
+
+			file = new File(formFile.getFileName());
+		}catch(Exception e){
+
+			e.printStackTrace();
+		}
+
+		try{
+
+			InputStreamReader reader = new InputStreamReader(formFile.getInputStream());
+			BufferedReader buffer = new BufferedReader(reader);
+			String linha = null;
+			FileOutputStream fout = new FileOutputStream(file);
+			PrintWriter pw = new PrintWriter(fout);
+
+			while((linha = buffer.readLine()) != null){
+
+				pw.println(linha);
+			}
+
+			buffer.close();
+			reader.close();
+			pw.flush();
+			pw.close();
+
+		}catch(FileNotFoundException e){
+
+			levantarExcecaoUrlSetada(new ActionServletException("erro.leitura_arquivo"));
+
+		}catch(IOException e){
+
+			levantarExcecaoUrlSetada(new ActionServletException("erro.leitura_arquivo"));
+
+		}
+		return file;
+
 	}
 }

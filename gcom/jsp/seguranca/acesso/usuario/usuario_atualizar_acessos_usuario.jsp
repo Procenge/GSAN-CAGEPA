@@ -1,8 +1,13 @@
+<%@page import="java.util.Iterator"%>
+<%@page import="java.util.Collection"%>
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
 <%@ taglib uri="/WEB-INF/struts-template.tld" prefix="template"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
+
 <%@ page import="gcom.seguranca.acesso.usuario.UsuarioAbrangencia"%>
+<%@ page import="gcom.seguranca.acesso.usuario.UsuarioAcesso"%>
+<%@ page import="gcom.util.Util"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <html:html>
@@ -22,8 +27,10 @@
 	src="<bean:message key="caminho.js"/>Calendario.js"></script>
 
 <script language="JavaScript">
-window.onmousemove = verificarAcesso;
-	function limparElo () {
+
+<!--// window.onmousemove = verificarAcesso; -->
+
+function limparElo () {
 		 	document.forms[0].idElo.value = '';
 		 	document.forms[0].nomeElo.value = '';
 	}
@@ -208,9 +215,79 @@ for (i = 0;i< idsGrupos.length;i++){
 }
 
 </script>
+
+<script language="JavaScript">
+function extendeTabela(tabela,display){
+
+	var form = document.forms[0];
+	if(display){
+		eval('layer'+tabela).style.display = 'block';
+	}else{
+		eval('layer'+tabela).style.display = 'none';
+	}
+}
+
+function verificarExtendeTabela(){
+
+	var form = document.forms[0];
+
+	if(form.indicadorHorarioAcessoRestrito.value == 1){
+		extendeTabela('HorarioAcessoRestrito',true);
+	} else if(form.indicadorHorarioAcessoRestrito.value == 2) {
+		extendeTabela('HorarioAcessoRestrito',false);
+	} else {
+		
+		<% Object obj = session.getAttribute("colecaoUsuarioAcesso");
+		boolean achou = false;
+		
+	    if (obj != null) {
+	    	Collection<UsuarioAcesso> colecao = (Collection<UsuarioAcesso>) obj;
+	    	if (!colecao.isEmpty()) {
+	    		
+	    		Iterator<UsuarioAcesso> iterator = colecao.iterator();
+	    		
+	    		while(iterator.hasNext()){
+	    			UsuarioAcesso usuarioAcesso = iterator.next();
+	    			
+	    			if (usuarioAcesso.getIndicadorSelecionado() == 1) {
+	    				achou = true;
+	    			}
+	    		}
+	    	}
+	    }
+
+	    if (achou) { %>
+	    	extendeTabela('HorarioAcessoRestrito',true);
+	    	
+	    	// Internet Explorer
+			if(form.indicadorHorarioAcessoRestrito.value == undefined){
+				var elementos = form.elements['indicadorHorarioAcessoRestrito'];			
+				elementos[0].checked = true;
+			} else {
+				// Chrome e FireFox
+				form.indicadorHorarioAcessoRestrito.value = 1;
+			}
+	    	
+	    <% } else { %>
+	    	extendeTabela('HorarioAcessoRestrito',false);
+	    	
+	    	// Internet Explorer
+			if(form.indicadorHorarioAcessoRestrito.value == undefined){
+				var elementos = form.elements['indicadorHorarioAcessoRestrito'];			
+				elementos[1].checked = true;
+			} else {
+				// Chrome e FireFox
+				form.indicadorHorarioAcessoRestrito.value = 2;
+			}
+	    <% } %>
+	}
+}
+
+</script>
+
 </head>
 
-<body leftmargin="5" topmargin="5" onload="verificarAcesso()">
+<body leftmargin="5" topmargin="5" onload="verificarAcesso();verificarExtendeTabela();">
 
 <html:form action="/atualizarUsuarioWizardAction" method="post"
 	onsubmit="return validateAtualizarUsuarioDadosGeraisActionForm(this);">
@@ -393,6 +470,75 @@ for (i = 0;i< idsGrupos.length;i++){
 					</html:select></td>
 				</tr>
 
+				<tr> 
+					<td><strong>Horário de Acesso Restrito?<font color="#FF0000">*</font></strong></td>
+					<td>
+						<strong>
+							<html:radio property="indicadorHorarioAcessoRestrito" value="1" onclick="javascript:extendeTabela('HorarioAcessoRestrito',true);" />Sim
+							<html:radio property="indicadorHorarioAcessoRestrito" value="2" onclick="javascript:extendeTabela('HorarioAcessoRestrito',false);" />N&atilde;o
+						 </strong>
+					</td>
+				</tr>
+
+				<tr>
+					<td>&nbsp;</td>
+					<td>
+						<div id="layerHorarioAcessoRestrito" style="display:none">
+							<table width="100%" border="0" bgcolor="#99CCFF">
+								<%int cont = 0;%>
+								<tr>
+									<td>
+										<strong>Dia</strong>
+									</td>
+									<td>
+										<strong>Hora Inicial</strong>
+									</td>
+									<td>
+										<strong>Hora Final</strong>
+									</td>
+								</tr>
+								<logic:iterate name="colecaoUsuarioAcesso" type="UsuarioAcesso" id="usuarioAcesso">
+								<%cont = cont + 1;
+								if (cont % 2 == 0) {%>
+								<tr bgcolor="#cbe5fe">
+								<%} else {%>
+								<tr bgcolor="#FFFFFF">
+								<%}%>
+									<td>
+									
+									<% if (usuarioAcesso.getIndicadorSelecionado() == 1) {%>
+										<input type="checkbox"
+											name="diaSemana<bean:write name="usuarioAcesso" property="diaSemana"/>"
+											value="<bean:write name="usuarioAcesso" property="diaSemana"/>" 
+											checked="checked" onchange="javascript:bloqueioHoras(this);"/>
+									<%} else {%>
+										<input type="checkbox"
+											name="diaSemana<bean:write name="usuarioAcesso" property="diaSemana"/>"
+											value="<bean:write name="usuarioAcesso" property="diaSemana"/>" 
+											onchange="javascript:bloqueioHoras(this);"/>
+									<%}%>			
+											
+										<bean:write name="usuarioAcesso" property="descricaoDiaSemana"/>
+									</td>
+									<td>
+										<input type="text" maxlength="5" size="4"
+											name="horaInicio<bean:write name="usuarioAcesso" property="diaSemana"/>"
+											value="<%="" + Util.formatarHoraMinutos(usuarioAcesso.getHoraInicio())%>"
+											onkeyup="mascaraHoraSemMensagem(this, event)" />
+									</td>
+									<td>
+										<input type="text" maxlength="5" size="4"
+											name="horaFim<bean:write name="usuarioAcesso" property="diaSemana"/>"
+											value="<%="" + Util.formatarHoraMinutos(usuarioAcesso.getHoraFim())%>"
+											onkeyup="mascaraHoraSemMensagem(this, event)" />
+									</td>
+								</tr>
+								</logic:iterate>
+							</table>
+						</div>
+					</td>
+				</tr>
+
 				<tr>
 					<td colspan="2">
 					<table border="0" width="100%">
@@ -412,6 +558,7 @@ for (i = 0;i< idsGrupos.length;i++){
 	</table>
     <%@ include file="/jsp/util/tooltip.jsp"%>
 	<%@ include file="/jsp/util/rodape.jsp"%>
-</body>
+
 </html:form>
+</body>
 </html:html>

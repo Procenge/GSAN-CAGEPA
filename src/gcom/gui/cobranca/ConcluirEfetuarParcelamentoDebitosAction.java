@@ -92,6 +92,8 @@ import gcom.cobranca.bean.GuiaPagamentoValoresHelper;
 import gcom.cobranca.bean.NegociacaoOpcoesParcelamentoHelper;
 import gcom.cobranca.bean.OpcoesParcelamentoHelper;
 import gcom.cobranca.parcelamento.ParcelamentoConfiguracaoPrestacao;
+import gcom.cobranca.parcelamento.ParcelamentoDadosTermo;
+import gcom.cobranca.parcelamento.ParcelamentoTermoTestemunhas;
 import gcom.fachada.Fachada;
 import gcom.faturamento.credito.CreditoARealizar;
 import gcom.faturamento.debito.DebitoACobrar;
@@ -104,12 +106,10 @@ import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.cobranca.ExecutorParametrosCobranca;
 import gcom.util.parametrizacao.cobranca.ParametroCobranca;
+import gcom.util.parametrizacao.cobranca.parcelamento.ParametroParcelamento;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -138,9 +138,49 @@ public class ConcluirEfetuarParcelamentoDebitosAction
 
 		DynaActionForm efetuarParcelamentoDebitosActionForm = (DynaActionForm) actionForm;
 
+		if(efetuarParcelamentoDebitosActionForm.get("atendimentoSemPreencherDocumentosObrigatorios") != null
+						&& efetuarParcelamentoDebitosActionForm.get("atendimentoSemPreencherDocumentosObrigatorios").toString().equals("S")){
+			throw new ActionServletException("atencao.parcelamento.nao.pode.concluir_atendimento_incompleto", null, "");
+		}
+
 		Fachada fachada = Fachada.getInstancia();
 
 		Usuario usuarioLogado = (Usuario) sessao.getAttribute("usuarioLogado");
+
+		if(httpServletRequest.getParameter("retornoTelaSucesso") != null
+						&& httpServletRequest.getParameter("retornoTelaSucesso").equals("S")){
+			String mensagemPaginaSucesso = String.valueOf(sessao.getAttribute("StringTelaSucessoParcelamento-Mensagem"));
+			String labelPaginaSucesso = String.valueOf(sessao.getAttribute("StringTelaSucessoParcelamento-Label"));
+			String caminhoFuncionalidade = String.valueOf(sessao.getAttribute("StringTelaSucessoParcelamento-CaminhoFuncionalidade"));
+			String caminhoAtualizarRegistro = String.valueOf(sessao.getAttribute("StringTelaSucessoParcelamento-CaminhoAtualizar"));
+			String labelPaginaAtualizacao = String.valueOf(sessao.getAttribute("StringTelaSucessoParcelamento-PaginaAtualizacao"));
+
+			// Esta duas variaveis podem ser nulas
+			String labelGerarOrdemServico = String.valueOf(sessao.getAttribute("StringTelaSucessoParcelamento-LabelGeral"));
+			String caminhoGerarOrdemServico = String.valueOf(sessao.getAttribute("StringTelaSucessoParcelamento-Ordem"));
+
+			if(labelGerarOrdemServico == null || !labelGerarOrdemServico.equals("") || caminhoGerarOrdemServico == null
+							|| !caminhoGerarOrdemServico.equals("")){
+				montarPaginaSucesso(httpServletRequest, mensagemPaginaSucesso, labelPaginaSucesso, caminhoFuncionalidade,
+								caminhoAtualizarRegistro, labelPaginaAtualizacao);
+
+			}else{
+				montarPaginaSucesso(httpServletRequest, mensagemPaginaSucesso, labelPaginaSucesso, caminhoFuncionalidade,
+								caminhoAtualizarRegistro, labelPaginaAtualizacao, labelGerarOrdemServico, caminhoGerarOrdemServico);
+			}
+
+			return retorno;
+		}
+
+		try{
+			if(ParametroParcelamento.P_INDICADOR_EMISSAO_TERMO_PARCELAMENTO_ANTES_CONCLUSAO.executar().equals("1")
+							&& sessao.getAttribute("conteudoTermoParcelamentoFinal") == null){
+				throw new ActionServletException("atencao.parcelamento.nao.pode.concluir_antes_imprimir", null, "");
+			}
+		}catch(ControladorException e1){
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		// ABA 1 - 6.1 Caso o usuario confirme o parecelamento
 		Integer situacaoAguaId = null;
@@ -166,6 +206,13 @@ public class ConcluirEfetuarParcelamentoDebitosAction
 						.get("indicadorParcelamentoCobrancaBancaria");
 		String cpfClienteParcelamentoDigitado = (String) efetuarParcelamentoDebitosActionForm.get("cpfClienteParcelamentoDigitado");
 		String indicadorPessoaFisicaJuridica = (String) efetuarParcelamentoDebitosActionForm.get("indicadorPessoaFisicaJuridica");
+
+		String indicadorParcelamentoExecucaoFiscal = "N";
+		if(sessao.getAttribute("indicadorParcelamentoExecucaoFiscal") != null
+						&& !sessao.getAttribute("indicadorParcelamentoExecucaoFiscal").toString().equals('S')){
+			indicadorParcelamentoExecucaoFiscal = (String) efetuarParcelamentoDebitosActionForm.get("indicadorPessoaFisicaJuridica");
+		}
+
 		// Caso o fim do parcelamento não seja informado
 		if(fimIntervaloParcelamento == null || fimIntervaloParcelamento.equals("")){
 			fimIntervaloParcelamento = "12/9999";
@@ -504,10 +551,56 @@ public class ConcluirEfetuarParcelamentoDebitosAction
 							.get("valorDebitoACobrarParcelamentoCurtoPrazo")));
 		}
 
+		BigDecimal valorSucumbenciaAnterior = BigDecimal.ZERO;
+		if(efetuarParcelamentoDebitosActionForm.get("valorTotalSucumbenciaImovel") != null
+						&& !efetuarParcelamentoDebitosActionForm.get("valorTotalSucumbenciaImovel").equals("")){
+			valorSucumbenciaAnterior = Util.formatarMoedaRealparaBigDecimal((String) (efetuarParcelamentoDebitosActionForm
+							.get("valorTotalSucumbenciaImovel")));
+		}
+
+		Map<Integer, BigDecimal> mapProcessosValorSucumbenciaDistribuido = (Map<Integer, BigDecimal>) sessao
+						.getAttribute("mapProcessosValorSucumbenciaDistribuido");
+
+		Map<Integer, BigDecimal> mapProcessosValorDiligenciasDistribuido = (Map<Integer, BigDecimal>) sessao
+						.getAttribute("mapProcessosValorDiligenciasDistribuido");
+
+		Short quantidadeParcelasSucumbencia = Short.valueOf("0");
+		if(efetuarParcelamentoDebitosActionForm.get("quantidadeParcelasSucumbencia") != null
+						&& !efetuarParcelamentoDebitosActionForm.get("quantidadeParcelasSucumbencia").equals("")){
+			quantidadeParcelasSucumbencia = Short.valueOf((String) (efetuarParcelamentoDebitosActionForm
+							.get("quantidadeParcelasSucumbencia")));
+		}
+
+		BigDecimal valorAtualizacaoMonetariaSucumbencia = BigDecimal.ZERO;
+		if(efetuarParcelamentoDebitosActionForm.get("valorAtualizacaoMonetariaSucumbenciaImovel") != null
+						&& !efetuarParcelamentoDebitosActionForm.get("valorAtualizacaoMonetariaSucumbenciaImovel").equals("")){
+			valorAtualizacaoMonetariaSucumbencia = Util.formatarMoedaRealparaBigDecimal((String) (efetuarParcelamentoDebitosActionForm
+							.get("valorAtualizacaoMonetariaSucumbenciaImovel")));
+		}
+
+		BigDecimal valorJurosMoraSucumbencia = BigDecimal.ZERO;
+		if(efetuarParcelamentoDebitosActionForm.get("valorJurosMoraSucumbenciaImovel") != null
+						&& !efetuarParcelamentoDebitosActionForm.get("valorJurosMoraSucumbenciaImovel").equals("")){
+			valorJurosMoraSucumbencia = Util.formatarMoedaRealparaBigDecimal((String) (efetuarParcelamentoDebitosActionForm
+							.get("valorJurosMoraSucumbenciaImovel")));
+		}
+
 		// Valor a ser Negociado
 		BigDecimal valorASerParcelado = BigDecimal.ZERO;
-		BigDecimal valorFinalFinanciamento = BigDecimal.ZERO;
+		if(efetuarParcelamentoDebitosActionForm.get("valorASerParcelado") != null
+						&& !efetuarParcelamentoDebitosActionForm.get("valorASerParcelado").equals("")){
+			valorASerParcelado = Util.formatarMoedaRealparaBigDecimal((String) (efetuarParcelamentoDebitosActionForm
+							.get("valorASerParcelado")));
+		}
+
 		BigDecimal valorASerNegociado = BigDecimal.ZERO;
+		if(efetuarParcelamentoDebitosActionForm.get("valorNegociado") != null
+						&& !efetuarParcelamentoDebitosActionForm.get("valorNegociado").equals("")){
+			valorASerNegociado = Util
+							.formatarMoedaRealparaBigDecimal((String) (efetuarParcelamentoDebitosActionForm.get("valorNegociado")));
+		}
+
+		BigDecimal valorFinalFinanciamento = BigDecimal.ZERO;
 		boolean existeValor = false;
 		if(efetuarParcelamentoDebitosActionForm.get("valorFinalFinanciamento") != null
 						&& !efetuarParcelamentoDebitosActionForm.get("valorFinalFinanciamento").equals("")){
@@ -517,8 +610,6 @@ public class ConcluirEfetuarParcelamentoDebitosAction
 		}
 		if(efetuarParcelamentoDebitosActionForm.get("valorFinalFinanciamento") != null
 						&& !efetuarParcelamentoDebitosActionForm.get("valorFinalFinanciamento").equals("")){
-			valorASerNegociado = Util
-							.formatarMoedaRealparaBigDecimal((String) (efetuarParcelamentoDebitosActionForm.get("valorNegociado")));
 			existeValor = true;
 		}
 		if(!existeValor){
@@ -549,10 +640,6 @@ public class ConcluirEfetuarParcelamentoDebitosAction
 			valorDesconto = valorDesconto.add(descontoInatividadeLigacaoAgua);
 
 			efetuarParcelamentoDebitosActionForm.set("valorDesconto", Util.formatarMoedaReal(valorDesconto));
-
-			valorASerNegociado = valorDebitoTotalAtualizado.subtract(valorDesconto);
-
-			valorASerParcelado = valorDebitoTotalAtualizado.subtract(valorEntradaMinima.add(valorDesconto));
 
 		}
 
@@ -635,6 +722,26 @@ public class ConcluirEfetuarParcelamentoDebitosAction
 			anoMesReferenciaDebitoFinal = Integer.valueOf(anoMesReferenciaDebitoFinalStr);
 		}
 
+		byte[] conteudoTermoPacelamentoInicial = null;
+		if(sessao.getAttribute("conteudoTermoParcelamentoInicial") != null){
+			conteudoTermoPacelamentoInicial = (byte[]) (sessao.getAttribute("conteudoTermoParcelamentoInicial"));
+		}
+
+		byte[] conteudoTermoPacelamentoFinal = null;
+		if(sessao.getAttribute("conteudoTermoParcelamentoFinal") != null){
+			conteudoTermoPacelamentoFinal = (byte[]) (sessao.getAttribute("conteudoTermoParcelamentoFinal"));
+		}
+		
+		ParcelamentoTermoTestemunhas parcelamentoTermoTestemunhas = null;
+		if (sessao.getAttribute("parcelamentoTermoTestemunhas") != null) { 
+			parcelamentoTermoTestemunhas = (ParcelamentoTermoTestemunhas) sessao.getAttribute("parcelamentoTermoTestemunhas");
+		}
+
+		ParcelamentoDadosTermo parcelamentoDadosTermo = null;
+		if(sessao.getAttribute("parcelamentoDadosTermo") != null){
+			parcelamentoDadosTermo = (ParcelamentoDadosTermo) sessao.getAttribute("parcelamentoDadosTermo");
+		}
+
 		Integer idParcelamento = fachada.concluirParcelamentoDebitos(colecaoContaValores, colecaoGuiaPagamentoValores,
 						colecaoDebitoACobrar, colecaoCreditoARealizar, indicadorRestabelecimento, indicadorContasRevisao,
 						indicadorGuiasPagamento, indicadorAcrescimosImpotualidade, indicadorDebitosACobrar, indicadorCreditoARealizar,
@@ -653,10 +760,16 @@ public class ConcluirEfetuarParcelamentoDebitosAction
 										.getNumeroDiasVencimentoEntrada(), indicadorPessoaFisicaJuridica, anoMesReferenciaDebitoInicial,
 						anoMesReferenciaDebitoFinal, percentualDescontoJurosMora, percentualDescontoMulta,
 						percentualDescontoCorrecaoMonetaria, valorDescontoAcrescimosImpontualidadeNaPrestacao, valorFinalFinanciamento,
-						colecaoParcelamentoConfiguracaoPrestacao);
+						colecaoParcelamentoConfiguracaoPrestacao, conteudoTermoPacelamentoInicial, conteudoTermoPacelamentoFinal,
+						parcelamentoTermoTestemunhas, parcelamentoDadosTermo, valorSucumbenciaAnterior,
+						mapProcessosValorSucumbenciaDistribuido, quantidadeParcelasSucumbencia, mapProcessosValorDiligenciasDistribuido,
+						valorAtualizacaoMonetariaSucumbencia, valorJurosMoraSucumbencia);
 
 		sessao.setAttribute("idParcelamento", idParcelamento.toString());
 		sessao.removeAttribute("idBoletoBancario");
+		sessao.removeAttribute("TermoParcelamentoPreview");
+		sessao.removeAttribute("parcelamentoTermoTestemunhas");
+		sessao.removeAttribute("parcelamentoDadosTermo");
 
 		// [FS0013] - Verificar sucesso da transação
 		// Monta a página de sucesso
@@ -671,11 +784,22 @@ public class ConcluirEfetuarParcelamentoDebitosAction
 			 * "gerarRelatorioParcelamentoAction.do", "Imprimir Termo", "Imprimir Contas EP",
 			 * "gerarRelatorio2ViaContaAction.do");
 			 */
-
+			
+			sessao.setAttribute("StringTelaSucessoParcelamento-Mensagem","Parcelamento de Débitos do Imóvel " + codigoImovel + " efetuado com sucesso.");
+			sessao.setAttribute("StringTelaSucessoParcelamento-Label","Efetuar outro Parcelamento de Débitos");
+			sessao.setAttribute("StringTelaSucessoParcelamento-CaminhoFuncionalidade","exibirEfetuarParcelamentoDebitosAction.do?menu=sim");
+			sessao.setAttribute("StringTelaSucessoParcelamento-CaminhoAtualizar","gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction.do?indicadorParcelamentoCobrancaBancaria="
+											+ indicadorParcelamentoCobrancaBancaria + ",indicadorParcelamentoExecucaoFiscal="
+											+ indicadorParcelamentoExecucaoFiscal);
+			sessao.setAttribute("StringTelaSucessoParcelamento-PaginaAtualizacao","Imprimir Termo");
+			sessao.setAttribute("StringTelaSucessoParcelamento-LabelGeral","Imprimir Contas EP");
+			sessao.setAttribute("StringTelaSucessoParcelamento-Ordem",	"gerarRelatorio2ViaContaAction.do?idNomeRelatorio=2");
+			
 			montarPaginaSucesso(httpServletRequest, "Parcelamento de Débitos do Imóvel " + codigoImovel + " efetuado com sucesso.",
 							"Efetuar outro Parcelamento de Débitos", "exibirEfetuarParcelamentoDebitosAction.do?menu=sim",
 							"gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction.do?indicadorParcelamentoCobrancaBancaria="
-											+ indicadorParcelamentoCobrancaBancaria, "Imprimir Termo", "Imprimir Contas EP",
+											+ indicadorParcelamentoCobrancaBancaria + ",indicadorParcelamentoExecucaoFiscal="
+											+ indicadorParcelamentoExecucaoFiscal, "Imprimir Termo", "Imprimir Contas EP",
 							"gerarRelatorio2ViaContaAction.do?idNomeRelatorio=2");
 
 		}else{
@@ -713,10 +837,25 @@ public class ConcluirEfetuarParcelamentoDebitosAction
 					// "gerarRelatorioEmitirGuiaPagamentoActionInserir.do?idGuiaPagamento="
 					// + idGuiaPagamento);
 
+					sessao.setAttribute("StringTelaSucessoParcelamento-Mensagem", "Parcelamento de Débitos do Imóvel " + codigoImovel
+									+ " efetuado com sucesso.");
+					sessao.setAttribute("StringTelaSucessoParcelamento-Label", "Efetuar outro Parcelamento de Débitos");
+					sessao.setAttribute("StringTelaSucessoParcelamento-CaminhoFuncionalidade",
+									"exibirEfetuarParcelamentoDebitosAction.do?menu=sim");
+					sessao.setAttribute("StringTelaSucessoParcelamento-CaminhoAtualizar",
+									"gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction.do?indicadorParcelamentoCobrancaBancaria="
+													+ indicadorParcelamentoCobrancaBancaria + ",indicadorParcelamentoExecucaoFiscal="
+													+ indicadorParcelamentoExecucaoFiscal);
+					sessao.setAttribute("StringTelaSucessoParcelamento-PaginaAtualizacao", "Imprimir Termo");
+					sessao.setAttribute("StringTelaSucessoParcelamento-LabelGeral", "Imprimir Guia Pagto Entrada");
+					sessao.setAttribute("StringTelaSucessoParcelamento-Ordem",
+									"gerarRelatorioEmitirGuiaPagamentoActionParcelamento.do?idGuiaPagamento=" + idGuiaPagamento);
+
 					montarPaginaSucesso(httpServletRequest, "Parcelamento de Débitos do Imóvel " + codigoImovel + " efetuado com sucesso.",
 									"Efetuar outro Parcelamento de Débitos", "exibirEfetuarParcelamentoDebitosAction.do?menu=sim",
 									"gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction.do?indicadorParcelamentoCobrancaBancaria="
-													+ indicadorParcelamentoCobrancaBancaria, "Imprimir Termo",
+													+ indicadorParcelamentoCobrancaBancaria + ",indicadorParcelamentoExecucaoFiscal="
+													+ indicadorParcelamentoExecucaoFiscal, "Imprimir Termo",
 									"Imprimir Guia Pagto Entrada",
 									"gerarRelatorioEmitirGuiaPagamentoActionParcelamento.do?idGuiaPagamento=" + idGuiaPagamento);
 
@@ -731,11 +870,22 @@ public class ConcluirEfetuarParcelamentoDebitosAction
 				 * "exibirEfetuarParcelamentoDebitosAction.do?menu=sim",
 				 * "gerarRelatorioParcelamentoAction.do", "Imprimir Termo");
 				 */
+				sessao.setAttribute("StringTelaSucessoParcelamento-Mensagem", "Parcelamento de Débitos do Imóvel " + codigoImovel
+								+ " efetuado com sucesso.");
+				sessao.setAttribute("StringTelaSucessoParcelamento-Label", "Efetuar outro Parcelamento de Débitos");
+				sessao.setAttribute("StringTelaSucessoParcelamento-CaminhoFuncionalidade",
+								"exibirEfetuarParcelamentoDebitosAction.do?menu=sim");
+				sessao.setAttribute("StringTelaSucessoParcelamento-CaminhoAtualizar",
+								"gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction.do?indicadorParcelamentoCobrancaBancaria="
+												+ indicadorParcelamentoCobrancaBancaria + ",indicadorParcelamentoExecucaoFiscal="
+												+ indicadorParcelamentoExecucaoFiscal);
+				sessao.setAttribute("StringTelaSucessoParcelamento-PaginaAtualizacao", "Imprimir Termo");
 
 				montarPaginaSucesso(httpServletRequest, "Parcelamento de Débitos do Imóvel " + codigoImovel + " efetuado com sucesso.",
 								"Efetuar outro Parcelamento de Débitos", "exibirEfetuarParcelamentoDebitosAction.do?menu=sim",
 								"gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction.do?indicadorParcelamentoCobrancaBancaria="
-												+ indicadorParcelamentoCobrancaBancaria, "Imprimir Termo");
+												+ indicadorParcelamentoCobrancaBancaria + ",indicadorParcelamentoExecucaoFiscal="
+												+ indicadorParcelamentoExecucaoFiscal, "Imprimir Termo");
 			}
 		}
 

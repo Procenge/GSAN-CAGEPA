@@ -75,22 +75,22 @@
 				&& validateCaracterEspecial(form)
 				&& validateDate(form)
 				&& validateLong(form)
-				&& validateDecimal(form)
-				&& validaDataRevisao();
+				&& validateDecimal(form);
     }
 
     function DateValidations () {
-     this.aa = new Array("dataAquisicao", "Data de Aquisição inválida.", new Function ("varName", "this.datePattern='dd/MM/yyyy';  return this[varName];"));
- 	 this.bb = new Array("dataUltimaRevisao", "Data da revisão inválida.", new Function ("varName", "this.datePattern='dd/MM/yyyy';  return this[varName];"));		
+     this.aa = new Array("dataAquisicao", "Data de Aquisição inválida.", new Function ("varName", "this.datePattern='dd/MM/yyyy';  return this[varName];"));		
        }
 
     function caracteresespeciais () {
     	this.ab = new Array("dataAquisicao", "Data de Aquisição possui caracteres especiais.", new Function ("varName", " return this[varName];"));
     	this.ac = new Array("anoFabricacao", "Ano de Fabricação possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+    	this.ad = new Array("numeroNotaFiscal", "Número da Nota Fiscal possui caracteres especiais.", new Function ("varName", " return this[varName];"));
     }
 
     function IntegerValidations () {
      this.aa = new Array("anoFabricacao", "Ano de Fabricação deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+     this.ab = new Array("numeroNotaFiscal", "Número da Nota Fiscal deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
 
     }
 
@@ -99,23 +99,6 @@ function validarForm(form){
 	    if (validateHidrometroActionForm(form)){
              submeterFormPadrao(form);
 	  }
-}
-
-function validaDataRevisao(){
-
-	var resposta=true;
-
-	if(document.forms[0].dataUltimaRevisao!=null && document.forms[0].dataUltimaRevisao.value!=""){
-	
-	resposta= comparaDatas(document.forms[0].dataUltimaRevisao.value,'>',document.forms[0].dataAquisicao.value);
-	
-		if(resposta==false){
-					
-			alert("A Data da Última Revisão não pode ser anterior a Data de Aquisição do Hidrômetro.");
-						
-		}
-	}
-	return resposta;
 }
 
 	
@@ -307,6 +290,11 @@ function validaDataRevisao(){
 						width="20" border="0" align="absmiddle" alt="Exibir Calendário" /></a>
 					dd/mm/aaaa</td>
 				</tr>
+				
+				<tr>
+					<td><strong>Número da Nota Fiscal:</strong></td>
+					<td><html:text property="numeroNotaFiscal" size="9" maxlength="9"/></td>
+				</tr>
 
 				<tr>
 					<td><strong>Finalidade:</strong></td>
@@ -379,16 +367,7 @@ function validaDataRevisao(){
 					    <td><html:text property="fatorConversao" size="7" maxlength="7" onkeyup="javascript:formataValorDecimalTresCasas(this,7)" tabindex="12"/></td>
 					</tr>
 				</logic:equal>
-				<tr>
-						<td><strong>Data da Última Revisão:</strong></td>
-						<td><html:text property="dataUltimaRevisao" size="10"
-							maxlength="10" onkeyup="mascaraData(this,event)" tabindex="13" />
-						<a
-							href="javascript:abrirCalendario('AtualizarHidrometroActionForm', 'dataUltimaRevisao')">
-						<img border="0"
-							src="<bean:message key="caminho.imagens"/>calendario.gif"
-							width="20" border="0" align="absmiddle" alt="Exibir Calendário" /></a>dd/mm/aaaa</td>
-					</tr>
+				
 				<tr>
 					<td>&nbsp;</td>
 					<td align="left"><font color="#FF0000">*</font> Campo Obrigatório</td>

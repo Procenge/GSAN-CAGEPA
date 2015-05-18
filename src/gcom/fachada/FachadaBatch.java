@@ -101,15 +101,7 @@ import gcom.micromedicao.ControladorMicromedicaoLocal;
 import gcom.micromedicao.ControladorMicromedicaoLocalHome;
 import gcom.micromedicao.Rota;
 import gcom.seguranca.acesso.usuario.Usuario;
-import gcom.util.ConstantesJNDI;
-import gcom.util.ControladorException;
-import gcom.util.ControladorUtilLocal;
-import gcom.util.ControladorUtilLocalHome;
-import gcom.util.ErroRepositorioException;
-import gcom.util.FachadaException;
-import gcom.util.ServiceLocator;
-import gcom.util.ServiceLocatorException;
-import gcom.util.SistemaException;
+import gcom.util.*;
 import gcom.util.email.ErroEmailException;
 import gcom.util.email.ServicosEmail;
 import gcom.util.filtro.ParametroSimples;
@@ -723,53 +715,6 @@ public class FachadaBatch {
 
 		}
 	}
-
-	/**
-	 * Metódo responsável por emitir os txts das contas.
-	 * [UC0348] Emitir Contas
-	 * 
-	 * @author Sávio Luiz
-	 * @date 15/05/2006
-	 * @param colecaoConta
-	 * @throws ControladorException
-	 */
-	/*
-	 * public void emitirContas(Collection colecaoContas) throws
-	 * ErroEmailException { try {
-	 * this.getControladorFaturamento().emitirContas();
-	 * ServicosEmail.enviarMensagem("gcom@compesa.com.br",
-	 * "aryed@compesa.com.br", "Projeto GCOM", "Aviso de Conclusão do Batch",
-	 * "[UC0348] - emitirContas finalizou"); } catch (Exception ex) {
-	 * ex.printStackTrace(); ServicosEmail.enviarMensagem("gcom@compesa.com.br",
-	 * "aryed@compesa.com.br", "Projeto GCOM", "Aviso de Conclusão do Batch",
-	 * "[UC0348] - emitirContas finalizou com FALHA"); } }
-	 */
-	/**
-	 * Este caso de uso permite a emissão de um ou mais documentos de cobrança
-	 * [UC0349] Emitir Documento de Cobrança
-	 * 
-	 * @author Raphael Rossiter
-	 * @data 26/05/2006
-	 * @param
-	 * @return void
-	 */
-	/*
-	 * public void emitirDocumentoCobranca() throws ErroEmailException { try { //
-	 * this.getControladorCobranca().emitirDocumentoCobranca();
-	 * ServicosEmail.enviarMensagem("gcom@compesa.com.br",
-	 * "aryed@compesa.com.br", "Projeto GCOM", "Aviso de Conclusão do Batch",
-	 * "[UC0349] - emitirDocumentoCobranca finalizou"); } catch (Exception ex) {
-	 * ex.printStackTrace(); try{ EnvioEmail envioEmail =
-	 * 
-	 * getControladorCadastro().pesquisarEnvioEmail(EnvioEmail.GERAR_RESUMO_ANORMALIDADE_LEITURA_FALHA
-	 * );
-	 * String remetente = envioEmail.getEmailRemetente(); String receptor =
-	 * envioEmail.getEmailReceptor(); String titulo =
-	 * envioEmail.getTituloMensagem(); String corpoMensagem =
-	 * envioEmail.getCorpoMensagem(); ServicosEmail .enviarMensagem(remetente,
-	 * receptor, titulo, corpoMensagem); } catch (Exception e) {
-	 * ex.printStackTrace(); } } }
-	 */
 
 	/**
 	 * Pesquisa todas as contas para testar o batch

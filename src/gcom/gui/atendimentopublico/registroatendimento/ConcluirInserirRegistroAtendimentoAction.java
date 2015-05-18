@@ -76,6 +76,8 @@
 
 package gcom.gui.atendimentopublico.registroatendimento;
 
+import gcom.atendimentopublico.ordemservico.FiltroServicoTipo;
+import gcom.atendimentopublico.ordemservico.ServicoTipo;
 import gcom.atendimentopublico.registroatendimento.*;
 import gcom.atendimentopublico.registroatendimento.bean.ObterDadosIdentificacaoLocalOcorrenciaHelper;
 import gcom.atendimentopublico.registroatendimento.bean.RegistroAtendimentoFaltaAguaGeneralizadaHelper;
@@ -94,6 +96,7 @@ import gcom.operacional.DivisaoEsgoto;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
+import gcom.util.FachadaException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
@@ -153,9 +156,16 @@ public class ConcluirInserirRegistroAtendimentoAction
 			/*
 			 * Validação Aba 01
 			 */
-			fachada.validarInserirRegistroAtendimentoDadosGerais(form.getDataAtendimento(), form.getHora(), form.getTempoEsperaInicial(),
-							form.getTempoEsperaFinal(), form.getUnidade(), form.getNumeroAtendimentoManual(), form.getEspecificacao(), form
-											.getIdRaReiteracao());
+			try{
+				fachada.validarInserirRegistroAtendimentoDadosGerais(form.getDataAtendimento(), form.getHora(),
+								form.getTempoEsperaInicial(), form.getTempoEsperaFinal(), form.getUnidade(),
+								form.getNumeroAtendimentoManual(), form.getEspecificacao(), form.getIdRaReiteracao());
+			}catch(FachadaException e){
+				throw new ActionServletException(
+								e.getMessage(),
+								"inserirRegistroAtendimentoWizardAction.do?action=exibirInserirRegistroAtendimentoDadosGeraisAction&pagina=1",
+								e, e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+			}
 
 			if(form.getIdRaReiteracao() != null && !form.getIdRaReiteracao().equalsIgnoreCase("")){
 				RegistroAtendimento ra = fachada.pesquisarRegistroAtendimento(Integer.valueOf(form.getIdRaReiteracao()));
@@ -249,13 +259,22 @@ public class ConcluirInserirRegistroAtendimentoAction
 
 			Collection colecaoEnderecos = (Collection) sessao.getAttribute("colecaoEnderecos");
 
-			fachada.validarCamposObrigatoriosRA_2ABA(idImovel, pontoReferencia, idMunicipio, descricaoMunicipio, cdBairro, descricaoBairro,
-							idAreaBairro, idlocalidade, descricaoLocalidade, cdSetorComercial, descricaoSetorComercial, numeroQuadra,
-							idDivisaoEsgoto, idUnidade, descricaoUnidade, idLocalOcorrencia, idPavimentoRua, idPavimentoCalcada,
-							descricaoLocalOcorrencia, imovelObrigatorio, pavimentoRuaObrigatorio, pavimentoCalcadaObrigatorio,
-							solicitacaoTipoRelativoFaltaAgua, solicitacaoTipoRelativoAreaEsgoto, desabilitarMunicipioBairro,
-							indRuaLocalOcorrencia, indCalcadaLocalOcorrencia, Integer.valueOf(idEspecificacao), null, colecaoEnderecos,
-							idCliente, idUnidadeDestino);
+			try{
+
+				fachada.validarCamposObrigatoriosRA_2ABA(idImovel, pontoReferencia, idMunicipio, descricaoMunicipio, cdBairro,
+								descricaoBairro, idAreaBairro, idlocalidade, descricaoLocalidade, cdSetorComercial,
+								descricaoSetorComercial, numeroQuadra, idDivisaoEsgoto, idUnidade, descricaoUnidade, idLocalOcorrencia,
+								idPavimentoRua, idPavimentoCalcada, descricaoLocalOcorrencia, imovelObrigatorio, pavimentoRuaObrigatorio,
+								pavimentoCalcadaObrigatorio, solicitacaoTipoRelativoFaltaAgua, solicitacaoTipoRelativoAreaEsgoto,
+								desabilitarMunicipioBairro, indRuaLocalOcorrencia, indCalcadaLocalOcorrencia,
+								Integer.valueOf(idEspecificacao), null, colecaoEnderecos, idCliente, idUnidadeDestino);
+
+			}catch(FachadaException e){
+				throw new ActionServletException(
+								e.getMessage(),
+								"inserirRegistroAtendimentoWizardAction.do?action=exibirInserirRegistroAtendimentoDadosLocalOcorrenciaAction&pagina=2",
+								e, e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+			}
 
 			// -----------------------------------------------------------------------
 
@@ -295,12 +314,22 @@ public class ConcluirInserirRegistroAtendimentoAction
 				indicadorClienteEspecificacao = Short.valueOf(form.getIndicadorClienteEspecificacao());
 			}
 
-			// [FS0030] Verificar preenchimento dos dados de identificação do solicitante
-			fachada.verificaDadosSolicitante(Util.converterStringParaInteger(form.getIdCliente()), Util.converterStringParaInteger(form
-							.getIdUnidadeSolicitante()), Util.converterStringParaInteger(form.getIdFuncionarioResponsavel()),
-							nomeSolicitante, colecaoEnderecoSolicitante, colecaoFone, indicadorClienteEspecificacao, Util
-											.converterStringParaInteger(form.getIdImovel()), null, Util.converterStringParaInteger(form
-											.getEspecificacao()));
+			try{
+
+				// [FS0030] Verificar preenchimento dos dados de identificação do solicitante
+				fachada.verificaDadosSolicitante(Util.converterStringParaInteger(form.getIdCliente()),
+								Util.converterStringParaInteger(form.getIdUnidadeSolicitante()),
+								Util.converterStringParaInteger(form.getIdFuncionarioResponsavel()), nomeSolicitante,
+								colecaoEnderecoSolicitante, colecaoFone, indicadorClienteEspecificacao,
+								Util.converterStringParaInteger(form.getIdImovel()), null,
+								Util.converterStringParaInteger(form.getEspecificacao()));
+
+			}catch(FachadaException e){
+				throw new ActionServletException(
+								e.getMessage(),
+								"inserirRegistroAtendimentoWizardAction.do?destino=3&action=inserirRegistroAtendimentoDadosLocalOcorrenciaAction",
+								e, e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+			}
 
 			Integer idRaReiteracao = null;
 
@@ -349,6 +378,22 @@ public class ConcluirInserirRegistroAtendimentoAction
 
 			// [SB0025] Verifica Registro de Atendimento de Falta de água Generalizada
 			String efetivarInclusao = httpServletRequest.getParameter("efetivarInclusao");
+			
+			// Verifica se irá Gerar Guia de Pagamento ou Ordem de Servico
+			Boolean flagGerarGuiaPagamento = false;
+			// Verificar se o Tipo de Servico é de Pagamento Antecipado
+			// sendo o mesmo irá criar uma Guia de Pagamento paa que após o pagamento desta Guia
+			// seja criada a ordem de servico
+			FiltroServicoTipo filtroServicoTipo = new FiltroServicoTipo();
+			filtroServicoTipo.adicionarParametro(new ParametroSimples(FiltroServicoTipo.ID, Util
+							.retonarObjetoDeColecao(colecaoIdServicoTipo)));
+
+			ServicoTipo servicoTipoAtual = (ServicoTipo) Util.retonarObjetoDeColecao(getFachada().pesquisar(filtroServicoTipo,
+							ServicoTipo.class.getName()));
+
+			if(servicoTipoAtual != null && servicoTipoAtual.getIndicadorPagamentoAntecipado() == 1){
+				flagGerarGuiaPagamento = true;
+			}
 
 			if(efetivarInclusao == null || efetivarInclusao.equalsIgnoreCase("")){
 
@@ -408,8 +453,18 @@ public class ConcluirInserirRegistroAtendimentoAction
 					}
 					// Verifica os dados do solicitante com relação a rg, cpf e cnpj
 					if(!fachada.isMeioSolicitacaoLiberaDocumentoIdentificacaoRA(Integer.valueOf(form.getMeioSolicitacao()))){
-						fachada.verificarDadosSolicitanteRgCpfCnpj(clienteTipo, especificacao, numeroCpf, numeroRG, orgaoExpedidorRg,
-										unidadeFederacaoRG, numeroCnpj);
+
+						try{
+
+							fachada.verificarDadosSolicitanteRgCpfCnpj(clienteTipo, especificacao, numeroCpf, numeroRG, orgaoExpedidorRg,
+											unidadeFederacaoRG, numeroCnpj);
+							
+						}catch(FachadaException e){
+							throw new ActionServletException(
+											e.getMessage(),
+											"inserirRegistroAtendimentoWizardAction.do?destino=3&action=inserirRegistroAtendimentoDadosLocalOcorrenciaAction",
+											e, e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));			
+						}						
 					}
 
 					Collection<Conta> colecaoContas = null;
@@ -422,6 +477,11 @@ public class ConcluirInserirRegistroAtendimentoAction
 					colecaoContas = (Collection<Conta>) objetosContasParaRevisao.get("colecaoContas");
 					identificadores = (String) objetosContasParaRevisao.get("identificadores");
 					contaMotivoRevisao = (ContaMotivoRevisao) objetosContasParaRevisao.get("contaMotivoRevisao");
+
+					Short quantidadePrestacoesGuiaPagamento = null;
+					if(form.getQuantidadePrestacoesGuiaPagamento() != null && !form.getQuantidadePrestacoesGuiaPagamento().equals("")){
+						quantidadePrestacoesGuiaPagamento = new Short(form.getQuantidadePrestacoesGuiaPagamento());
+					}
 
 					// [SB0028] Inclui Registro de Atendimento
 					Integer[] idsGerados = fachada.inserirRegistroAtendimento(Short.parseShort(form.getTipo()), form.getDataAtendimento(),
@@ -448,7 +508,7 @@ public class ConcluirInserirRegistroAtendimentoAction
 									form.getParecerUnidadeDestino(), colecaoIdServicoTipo, form.getNumeroAtendimentoManual(), idRAJAGerado,
 									coordenadaNorte, coordenadaLeste, Integer.valueOf(form.getSequenceRA()), idRaReiteracao, clienteTipo,
 									numeroCpf, numeroRG, orgaoExpedidorRg, unidadeFederacaoRG, numeroCnpj, colecaoContas, identificadores,
-									contaMotivoRevisao, indicadorProcessoAdmJud, numeroProcessoAgencia);
+									contaMotivoRevisao, indicadorProcessoAdmJud, numeroProcessoAgencia, quantidadePrestacoesGuiaPagamento);
 
 					// sessao.setAttribute("idRegistroAtendimento", idsGerados[0].toString());
 
@@ -487,30 +547,64 @@ public class ConcluirInserirRegistroAtendimentoAction
 					}else{
 
 						if(fachada.gerarOrdemServicoAutomatica(Util.converterStringParaInteger(form.getEspecificacao()))){
+							String msgInseridaComSucesso = "";
+							String msgImprimirComSucesso = "";
+							String msgTipoInserido = "";
 
 							if(form.getTipoSolicitacao().equals(parametroGerarContratoPrestacaoServicoRA)){
+								if(flagGerarGuiaPagamento){
+									msgTipoInserido = "Guia de Pagamento";
+									msgInseridaComSucesso = " e Guia de Pagamento de código " + idsGerados[1]
+													+ ". Após o pagamento da guia no vencimento, será gerado o Ordem de serviço";
+								}else{
+									msgTipoInserido = "OS";
+									msgInseridaComSucesso = " e Ordem de Serviço de código " + idsGerados[1];
+								}
 
-							montarPaginaSucessoDoisRelatorios(httpServletRequest, "RA - Registro de Atendimento de código " + idsGerados[0]
-											+ " e Ordem de Serviço de código " + idsGerados[1] + " inseridos com sucesso.",
+								if(flagGerarGuiaPagamento){
+									msgImprimirComSucesso = "exibirAtualizarGuiaPagamentoAction.do?manter=sim&idRegistroAtualizacao="
+													+ idsGerados[1];
+								}else{
+									msgImprimirComSucesso = "gerarRelatorioOrdemServicoAction.do?idsOS=" + idsGerados[1];
+
+								}
+
+								montarPaginaSucessoDoisRelatorios(httpServletRequest, "RA - Registro de Atendimento de código "
+												+ idsGerados[0] + msgInseridaComSucesso + " inseridos com sucesso.",
 											"Inserir outro RA - Registro de Atendimento",
 											"exibirInserirRegistroAtendimentoAction.do?menu=sim",
 											"exibirConsultarRegistroAtendimentoAction.do?numeroRA=" + idsGerados[0],
 											"Atualizar RA - Registro de Atendimento inserido", "Imprimir RA",
 											"gerarRelatorioRegistroAtendimentoViaClienteConsultarAction.do?idRegistroAtendimento="
-																+ idsGerados[0], "Imprimir OS",
-												"gerarRelatorioOrdemServicoAction.do?idsOS=" + idsGerados[1],
+																+ idsGerados[0], "Imprimir " + msgTipoInserido, msgImprimirComSucesso,
 												"gerarRelatorioContratoPrestacaoServicoAction.do",
 												"Emitir Contrato de Prestação de Serviço");
 							}else{
+								if(flagGerarGuiaPagamento){
+									msgTipoInserido = "Guia de Pagamento";
+									msgInseridaComSucesso = " e Guia de Pagamento de código " + idsGerados[1]
+													+ ". Após o pagamento da guia no vencimento, será gerado o Ordem de serviço";
+								}else{
+									msgTipoInserido = "OS";
+									msgInseridaComSucesso = " e Ordem de Serviço de código " + idsGerados[1];
+								}
+
+								if(flagGerarGuiaPagamento){
+									msgImprimirComSucesso = "exibirAtualizarGuiaPagamentoAction.do?manter=sim&idRegistroAtualizacao="
+													+ idsGerados[1];
+								}else{
+									msgImprimirComSucesso = "gerarRelatorioOrdemServicoAction.do?idsOS=" + idsGerados[1];
+
+								}
+
 								montarPaginaSucessoDoisRelatorios(httpServletRequest, "RA - Registro de Atendimento de código "
-												+ idsGerados[0] + " e Ordem de Serviço de código " + idsGerados[1]
+												+ idsGerados[0] + msgInseridaComSucesso
 												+ " inseridos com sucesso.", "Inserir outro RA - Registro de Atendimento",
 												"exibirInserirRegistroAtendimentoAction.do?menu=sim",
 												"exibirConsultarRegistroAtendimentoAction.do?numeroRA=" + idsGerados[0],
 												"Atualizar RA - Registro de Atendimento inserido", "Imprimir RA",
 												"gerarRelatorioRegistroAtendimentoViaClienteConsultarAction.do?idRegistroAtendimento="
-																+ idsGerados[0], "Imprimir OS",
-												"gerarRelatorioOrdemServicoAction.do?idsOS=" + idsGerados[1]);
+																+ idsGerados[0], "Imprimir " + msgTipoInserido, msgImprimirComSucesso);
 							}
 
 						}else{
@@ -564,8 +658,17 @@ public class ConcluirInserirRegistroAtendimentoAction
 					coordenadaLeste = new BigDecimal(form.getCoordenadaLeste());
 				}
 				// Verifica os dados do solicitante com relação a rg, cpf e cnpj
-				fachada.verificarDadosSolicitanteRgCpfCnpj(clienteTipo, especificacao, numeroCpf, numeroRG, orgaoExpedidorRg,
-								unidadeFederacaoRG, numeroCnpj);
+				try{
+
+					fachada.verificarDadosSolicitanteRgCpfCnpj(clienteTipo, especificacao, numeroCpf, numeroRG, orgaoExpedidorRg,
+									unidadeFederacaoRG, numeroCnpj);
+
+				}catch(FachadaException e){
+					throw new ActionServletException(
+									e.getMessage(),
+									"inserirRegistroAtendimentoWizardAction.do?destino=3&action=inserirRegistroAtendimentoDadosLocalOcorrenciaAction",
+									e, e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+				}
 
 				Collection<Conta> colecaoContas = null;
 				String identificadores = null;
@@ -577,6 +680,11 @@ public class ConcluirInserirRegistroAtendimentoAction
 				colecaoContas = (Collection<Conta>) objetosContasParaRevisao.get("colecaoContas");
 				identificadores = (String) objetosContasParaRevisao.get("identificadores");
 				contaMotivoRevisao = (ContaMotivoRevisao) objetosContasParaRevisao.get("contaMotivoRevisao");
+
+				Short quantidadePrestacoesGuiaPagamento = null;
+				if(form.getQuantidadePrestacoesGuiaPagamento() != null && !form.getQuantidadePrestacoesGuiaPagamento().equals("")){
+					quantidadePrestacoesGuiaPagamento = new Short(form.getQuantidadePrestacoesGuiaPagamento());
+				}
 
 				// [SB0028] Inclui Registro de Atendimento
 				Integer[] idsGerados = fachada.inserirRegistroAtendimento(Short.parseShort(form.getTipo()), form.getDataAtendimento(),
@@ -604,7 +712,7 @@ public class ConcluirInserirRegistroAtendimentoAction
 								coordenadaNorte, coordenadaLeste, Integer.valueOf(form.getSequenceRA()), idRaReiteracao,
 								form.getClienteTipo(), form.getNumeroCpf(), form.getNumeroRG(), form.getOrgaoExpedidorRg(),
 								form.getUnidadeFederacaoRG(), form.getNumeroCnpj(), colecaoContas, identificadores, contaMotivoRevisao,
-								indicadorProcessoAdmJud, numeroProcessoAgencia);
+								indicadorProcessoAdmJud, numeroProcessoAgencia, quantidadePrestacoesGuiaPagamento);
 
 				// sessao.setAttribute("idRegistroAtendimento", idsGerados[0].toString());
 
@@ -640,30 +748,65 @@ public class ConcluirInserirRegistroAtendimentoAction
 				}else{
 
 					if(fachada.gerarOrdemServicoAutomatica(Util.converterStringParaInteger(form.getEspecificacao()))){
+						String msgInseridaComSucesso = "";
+						String msgImprimirComSucesso = "";
+						String msgTipoInserido = "";
 
 						if(form.getTipoSolicitacao().equals(parametroGerarContratoPrestacaoServicoRA)){
+							if(flagGerarGuiaPagamento){
+								msgTipoInserido = "Guia de Pagamento";
+								msgInseridaComSucesso = " e Guia de Pagamento de código " + idsGerados[1]
+												+ ". Após o pagamento da guia no vencimento, será gerado o Ordem de serviço";
+							}else{
+								msgTipoInserido = "OS";
+								msgInseridaComSucesso = " e Ordem de Serviço de código " + idsGerados[1];
+							}
+
+							if(flagGerarGuiaPagamento){
+								msgImprimirComSucesso = "exibirAtualizarGuiaPagamentoAction.do?manter=sim&idRegistroAtualizacao="
+												+ idsGerados[1];
+							}else{
+								msgImprimirComSucesso = "gerarRelatorioOrdemServicoAction.do?idsOS=" + idsGerados[1];
+
+							}
 
 						montarPaginaSucessoDoisRelatorios(httpServletRequest, "RA - Registro de Atendimento de código " + idsGerados[0]
-										+ " e Ordem de Serviço de código " + idsGerados[1] + " inseridos com sucesso.",
+											+ msgInseridaComSucesso + " inseridos com sucesso.",
 										"Inserir outro RA - Registro de Atendimento", "exibirInserirRegistroAtendimentoAction.do?menu=sim",
 										"exibirConsultarRegistroAtendimentoAction.do?numeroRA=" + idsGerados[0],
 										"Atualizar RA - Registro de Atendimento inserido", "Imprimir RA",
 										"gerarRelatorioRegistroAtendimentoViaClienteConsultarAction.do?idRegistroAtendimento="
-														+ idsGerados[0], "Imprimir OS", "gerarRelatorioOrdemServicoAction.do?idsOS="
-															+ idsGerados[1], "Emitir Contrato de Prestação de Serviço",
+															+ idsGerados[0], "Imprimir " + msgTipoInserido, msgImprimirComSucesso,
+											"Emitir Contrato de Prestação de Serviço",
 											"gerarRelatorioContratoPrestacaoServicoAction.do");
 
 							sessao.setAttribute("numeroImovel", form.getIdImovel());
 
 						}else{
+							if(flagGerarGuiaPagamento){
+								msgTipoInserido = "Guia de Pagamento";
+								msgInseridaComSucesso = " e Guia de Pagamento de código " + idsGerados[1]
+												+ ". Após o pagamento da guia no vencimento, será gerado o Ordem de serviço";
+							}else{
+								msgTipoInserido = "OS";
+								msgInseridaComSucesso = " e Ordem de Serviço de código " + idsGerados[1];
+							}
+
+							if(flagGerarGuiaPagamento){
+								msgImprimirComSucesso = "exibirAtualizarGuiaPagamentoAction.do?manter=sim&idRegistroAtualizacao="
+												+ idsGerados[1];
+							}else{
+								msgImprimirComSucesso = "gerarRelatorioOrdemServicoAction.do?idsOS=" + idsGerados[1];
+
+							}
+
 						montarPaginaSucessoDoisRelatorios(httpServletRequest, "Registro de Atendimento de código " + idsGerados[0]
-										+ " e Ordem de Serviço de código " + idsGerados[1] + " inseridos com sucesso.",
+											+ msgInseridaComSucesso + " inseridos com sucesso.",
 										"Inserir outro Registro de Atendimento", "exibirInserirRegistroAtendimentoAction.do?menu=sim",
 										"exibirConsultarRegistroAtendimentoAction.do?numeroRA=" + idsGerados[0],
 										"Atualizar Registro de Atendimento inserido", "Imprimir RA",
 										"gerarRelatorioRegistroAtendimentoViaClienteConsultarAction.do?idRegistroAtendimento="
-														+ idsGerados[0], "Imprimir OS", "gerarRelatorioOrdemServicoAction.do?idsOS="
-														+ idsGerados[1]);
+															+ idsGerados[0], "Imprimir " + msgTipoInserido, msgImprimirComSucesso);
 						}
 					}else{
 
@@ -697,7 +840,7 @@ public class ConcluirInserirRegistroAtendimentoAction
 
 		return retorno;
 	}
-
+	
 	/**
 	 * @author isilva
 	 * @param inserirRegistroAtendimentoActionForm

@@ -102,6 +102,8 @@ import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -666,10 +668,24 @@ public class ExibirAcompanharRoteiroProgramacaoOrdemServicoAction
 			if(novaSituacaoOs.shortValue() == OrdemServico.SITUACAO_PENDENTE.shortValue()){
 				ordemServico.setIndicadorProgramada(OrdemServico.NAO_PROGRAMADA);
 			}
+			
+			Date dataHoraVisita = null;
+			if (acompanharActionForm.getDataVisita() != null && !acompanharActionForm.getDataVisita().equals("") 
+					&& acompanharActionForm.getHoraVisita() != null && !acompanharActionForm.getHoraVisita().equals("")) {
+				
+				SimpleDateFormat dataFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+				try{
+					dataHoraVisita = dataFormat.parse(acompanharActionForm.getDataVisita() + " " + acompanharActionForm.getHoraVisita()
+									+ ":00");
+				}catch(ParseException e){
+					throw new ActionServletException("erro.sistema");
+				}
+			}
 
 			fachada.atualizarOrdemServico(ordemServico, usuario);
 
-			fachada.atualizarOrdemServicoProgramacaoSituacaoOs(idOrdemServico, dataRoteiro, novaSituacaoOs, motivoNaoEncerramentoOs);
+			fachada.atualizarOrdemServicoProgramacaoSituacaoOs(idOrdemServico, dataRoteiro, novaSituacaoOs, motivoNaoEncerramentoOs,
+							dataHoraVisita, usuario);
 
 		}
 

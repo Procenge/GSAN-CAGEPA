@@ -113,6 +113,66 @@ public class ParcelamentoDebitoActionForm
 
 	private String dataParcelamentoDesfeito;
 
+	private String valorSucumbenciaAnterior;
+
+	private String valorSucumbenciaAtual;
+
+	private String valorAcrescimosSucumbenciaAnterior;
+
+	private String numeroParcelasSucumbencia;
+
+	private String valorDiligencias;
+
+	public String getValorSucumbenciaAnterior(){
+
+		return valorSucumbenciaAnterior;
+	}
+
+	public void setValorSucumbenciaAnterior(String valorSucumbenciaAnterior){
+
+		this.valorSucumbenciaAnterior = valorSucumbenciaAnterior;
+	}
+
+	public String getValorSucumbenciaAtual(){
+
+		return valorSucumbenciaAtual;
+	}
+
+	public void setValorSucumbenciaAtual(String valorSucumbenciaAtual){
+
+		this.valorSucumbenciaAtual = valorSucumbenciaAtual;
+	}
+
+	public String getValorAcrescimosSucumbenciaAnterior(){
+
+		return valorAcrescimosSucumbenciaAnterior;
+	}
+
+	public void setValorAcrescimosSucumbenciaAnterior(String valorAcrescimosSucumbenciaAnterior){
+
+		this.valorAcrescimosSucumbenciaAnterior = valorAcrescimosSucumbenciaAnterior;
+	}
+
+	public String getNumeroParcelasSucumbencia(){
+
+		return numeroParcelasSucumbencia;
+	}
+
+	public void setNumeroParcelasSucumbencia(String numeroParcelasSucumbencia){
+
+		this.numeroParcelasSucumbencia = numeroParcelasSucumbencia;
+	}
+
+	public String getValorDiligencias(){
+
+		return valorDiligencias;
+	}
+
+	public void setValorDiligencias(String valorDiligencias){
+
+		this.valorDiligencias = valorDiligencias;
+	}
+
 	public String getCnpj(){
 
 		return cnpj;

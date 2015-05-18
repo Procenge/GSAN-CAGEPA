@@ -34,7 +34,19 @@ public class EmitirCartaOpcaoParcelamentoHelper
 
 	private String cep;
 
+	private String idCliente;
+
 	private List<EmitirCartaOpcaoParcelamentoDetailHelper> opcoesDeParcelamento;
+
+	public String getIdCliente(){
+
+		return idCliente;
+	}
+
+	public void setIdCliente(String idCliente){
+
+		this.idCliente = idCliente;
+	}
 
 	public String getMatricula(){
 

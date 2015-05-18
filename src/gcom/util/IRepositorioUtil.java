@@ -79,6 +79,7 @@ package gcom.util;
 import gcom.cadastro.DbVersaoImplementada;
 import gcom.cadastro.geografico.Municipio;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
+import gcom.cobranca.MunicipioFeriado;
 import gcom.cobranca.NacionalFeriado;
 import gcom.seguranca.acesso.OperacaoEfetuada;
 import gcom.seguranca.acesso.usuario.UsuarioAcaoUsuarioHelper;
@@ -339,5 +340,15 @@ public interface IRepositorioUtil {
 	 */
 	public Collection pesquisar(Filtro filtro, int pageOffset, String pacoteNomeObjeto, int qtdRegistrosPorPagina)
 					throws ErroRepositorioException;
+
+	/**
+	 * Recupera a coleção de feriados municipais
+	 * 
+	 * @author Anderson Italo
+	 * @date 13/06/2014
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection<MunicipioFeriado> pesquisarFeriadosMunicipais() throws ErroRepositorioException;
 
 }

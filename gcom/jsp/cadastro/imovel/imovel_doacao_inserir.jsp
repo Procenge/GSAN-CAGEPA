@@ -16,12 +16,25 @@
 <link rel="stylesheet" href="<bean:message key="caminho.css"/>EstilosCompesa.css" type="text/css">
 <script language="JavaScript" src="<bean:message key="caminho.js"/>util.js"></script>
 <script language="JavaScript" src="<bean:message key="caminho.js"/>Calendario.js"></script>
-<script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/regras_validator.js"></script><html:javascript staticJavascript="false"  formName="ImovelDoacaoActionForm"/>
+<script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/regras_validator.js"></script>
+<html:javascript staticJavascript="false"  formName="ImovelDoacaoActionForm"/>
 
 <script language="JavaScript">
   function validarForm(form) {
 	if(validateImovelDoacaoActionForm(form)){
-		submeterFormPadrao(form);
+		
+	    if (verificaAnoMes(form.referenciaInicial)){
+		   if (verificaAnoMes(form.referenciaFinal)){
+		      if (comparaData("01/" + form.referenciaInicial.value, ">","01/" + form.referenciaFinal.value )){
+		    	alert('Data final do período de referência de cobrança é anterior à data inicial do período de referência de cobrança');
+			  } else {
+			    submeterFormPadrao(form);
+			  }
+			}else{
+			  form.referenciaFinal.value = "";
+			  form.referenciaFinal.focus();
+			}
+		 }			
 	}
   }
   
@@ -44,6 +57,11 @@
       form.submit();
     } 
   }
+  
+  function replicarReferencia(){
+	    var form = document.forms[0];
+		form.referenciaFinal.value = form.referenciaInicial.value;
+	  }		  
   
 </script>
 
@@ -143,12 +161,12 @@
 					</td>
 				</tr>
 				<tr>
-					<td height="29"><strong>Entidade Beneficente:<font color="#FF0000">*</font></strong></td>
+					<td height="29"><strong>Contrato de Entidade Beneficente:<font color="#FF0000">*</font></strong></td>
 					<td>
-					  <html:select property="idEntidadeBeneficente" tabindex="2">
+					  <html:select property="idEntidadeBeneficenteContrato" tabindex="2">
 					 	<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-						<html:options collection="colecaoEntidadeBeneficente" 
-						              labelProperty="cliente.nome" 
+						<html:options collection="colecaoEntidadeBeneficenteContrato" 
+						              labelProperty="entidadeBeneficente.cliente.nome" 
 						              property="id" />
 					  </html:select>
 					</td>
@@ -165,6 +183,17 @@
 					             tabindex="3"/>
 					</td>
 				</tr>
+				
+				<tr> 
+		          <td width="40%"><strong>Período de Referência de Cobrança:<font color="#FF0000">*</font></strong></td>
+		          <td>
+		            <html:text property="referenciaInicial"  size="7" maxlength="7" onkeyup="javascript:replicarReferencia();" onkeypress="javascript:mascaraAnoMes(this,event),replicarReferencia();"/>
+		            <strong>a</strong> 
+		            <html:text property="referenciaFinal"  size="7" maxlength="7" onkeypress="javascript:mascaraAnoMes(this,event);"/>(mm/aaaa) 
+		          </td>
+		        </tr>				
+				
+				
 				<tr>
 					<td>&nbsp;</td>
 					<td align="right">

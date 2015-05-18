@@ -76,24 +76,32 @@
 
 package gcom.faturamento.consumotarifa;
 
+import gcom.interceptor.ControleAlteracao;
+import gcom.interceptor.ObjetoTransacao;
 import gcom.micromedicao.consumo.CalculoTipo;
+import gcom.util.Util;
+import gcom.util.filtro.Filtro;
+import gcom.util.filtro.ParametroSimples;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-/** @author Hibernate CodeGenerator */
+@ControleAlteracao()
 public class ConsumoTarifaVigencia
-				implements Serializable {
+				extends ObjetoTransacao {
 
 	private static final long serialVersionUID = 1L;
+
+	public static final int ATRIBUTOS_INSERIR_CONSUMO_TARIFA = 367;
+
+	public static final int ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA = 382;
 
 	/** identifier field */
 	private Integer id;
 
-	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
 	private Date dataVigencia;
 
 	/** nullable persistent field */
@@ -101,9 +109,13 @@ public class ConsumoTarifaVigencia
 
 	private Set consumoTarifaCategorias;
 
-	/** persistent field */
-	private gcom.faturamento.consumotarifa.ConsumoTarifa consumoTarifa;
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
+	private String descricaoAtoAdministrativo;
 
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
+	private ConsumoTarifa consumoTarifa;
+
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
 	private CalculoTipo calculoTipo;
 
 	/** full constructor */
@@ -188,6 +200,71 @@ public class ConsumoTarifaVigencia
 	public void setCalculoTipo(CalculoTipo calculoTipo){
 
 		this.calculoTipo = calculoTipo;
+	}
+
+	public String getDescricaoAtoAdministrativo(){
+
+		return descricaoAtoAdministrativo;
+	}
+
+	public void setDescricaoAtoAdministrativo(String descricaoAtoAdministrativo){
+
+		this.descricaoAtoAdministrativo = descricaoAtoAdministrativo;
+	}
+
+	public String getDataVigenciaFormatada(){
+
+		return Util.formatarData(this.dataVigencia);
+	}
+
+	@Override
+	public Filtro retornaFiltro(){
+
+		FiltroConsumoTarifaVigencia filtro = new FiltroConsumoTarifaVigencia();
+
+		filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroConsumoTarifaVigencia.CONSUMO_TARIFA);
+		filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroConsumoTarifaVigencia.CALCULO_TIPO);
+
+		filtro.adicionarParametro(new ParametroSimples(FiltroConsumoTarifaVigencia.ID, this.getId()));
+		return filtro;
+	}
+
+	@Override
+	public String[] retornaCamposChavePrimaria(){
+
+		String[] retorno = new String[1];
+		retorno[0] = "id";
+		return retorno;
+	}
+
+	@Override
+	public String getDescricaoParaRegistroTransacao(){
+
+		return getId() + "";
+	}
+
+	public String[] retornarAtributosInformacoesOperacaoEfetuada(){
+
+		String[] atributos = {"consumoTarifa.descricao", "dataVigenciaFormatada"};
+		return atributos;
+	}
+
+	public String[] retornarLabelsInformacoesOperacaoEfetuada(){
+
+		String[] labels = {"Tarifa", "Data de Vigencia"};
+		return labels;
+	}
+
+	public String getDescricaoAtoAdministrativoFormatado(){
+
+		String retorno = Util.completaString("", 30);
+
+		if(this.descricaoAtoAdministrativo != null){
+
+			retorno = Util.completaString(descricaoAtoAdministrativo, 30);
+		}
+
+		return retorno;
 	}
 
 }

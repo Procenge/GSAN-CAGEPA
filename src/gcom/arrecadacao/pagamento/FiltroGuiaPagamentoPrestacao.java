@@ -70,10 +70,17 @@ public class FiltroGuiaPagamentoPrestacao
 	 */
 	public final static String GUIA_PAGAMENTO_ID = "guiaPagamento.id";
 
+	public final static String REGISTRO_ATENDIMENTO_ID = "guiaPagamento.registroAtendimento.id";
+
 	/**
 	 * Description of the Field
 	 */
 	public final static String NUMERO_PRESTACAO = "comp_id.numeroPrestacao";
+
+	/**
+	 * Description of the Field
+	 */
+	public final static String NUMERO_PROCESSO_ADM_EXEC_FISCAL = "comp_id.numeroProcessoAdministrativoExecucaoFiscal";
 
 	/**
 	 * Description of the Field
@@ -106,6 +113,8 @@ public class FiltroGuiaPagamentoPrestacao
 	 * Description of the Field
 	 */
 	public final static String DEBITO_CREDITO_SITUACAO_ATUAL_ID = "guiaPagamento.debitoCreditoSituacaoAtual.id";
+
+	public final static String DEBITO_CREDITO_SITUACAO_ATUAL_PREST_ID = "debitoCreditoSituacaoAtual.id";
 
 	/**
 	 * Description of the Field

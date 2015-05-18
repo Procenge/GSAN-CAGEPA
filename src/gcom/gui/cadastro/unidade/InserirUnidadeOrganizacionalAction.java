@@ -80,6 +80,8 @@ import gcom.atendimentopublico.registroatendimento.FiltroMeioSolicitacao;
 import gcom.atendimentopublico.registroatendimento.MeioSolicitacao;
 import gcom.cadastro.empresa.Empresa;
 import gcom.cadastro.empresa.FiltroEmpresa;
+import gcom.cadastro.geografico.FiltroMunicipio;
+import gcom.cadastro.geografico.Municipio;
 import gcom.cadastro.localidade.FiltroGerenciaRegional;
 import gcom.cadastro.localidade.FiltroLocalidade;
 import gcom.cadastro.localidade.GerenciaRegional;
@@ -89,6 +91,7 @@ import gcom.cadastro.unidade.FiltroUnidadeTipo;
 import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.cadastro.unidade.UnidadeTipo;
 import gcom.fachada.Fachada;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
@@ -161,6 +164,7 @@ public class InserirUnidadeOrganizacionalAction
 		UnidadeTipo unidadeTipo = this.pesquisarUnidadeTipo(idUnidadeTipo);
 
 		String idEmpresa = inserirUnidadeOrganizacionalActionForm.getIdEmpresa();
+
 		Empresa empresa = this.pesquisarEmpresa(idEmpresa);
 
 		String idUnidadeSuperior = inserirUnidadeOrganizacionalActionForm.getIdUnidadeSuperior();
@@ -189,9 +193,40 @@ public class InserirUnidadeOrganizacionalAction
 			gerenciaRegional = this.pesquisarGerenciaRegional(idGerenciaRegional);
 		}
 
+
 		UnidadeOrganizacional unidadeOrganizacional = new UnidadeOrganizacional(indicadorEsgoto, indicadorTramite, descricao, sigla,
 						ultimaAlteracao, indicadorAberturaRa, indicadorUso, unidadeTipo, meioSolicitacao, empresa, localidade,
 						gerenciaRegional, null, unidadeSuperior, indicadorCentralAtendimento, indicadorTarifaSocial);
+		
+		if(!Util.isVazioOuBranco(inserirUnidadeOrganizacionalActionForm.getTelefone())){
+			unidadeOrganizacional.setTelefone(inserirUnidadeOrganizacionalActionForm.getTelefone());
+		}
+		if(!Util.isVazioOuBranco(inserirUnidadeOrganizacionalActionForm.getRamal())){
+			unidadeOrganizacional.setRamal(inserirUnidadeOrganizacionalActionForm.getRamal());
+		}
+		if(!Util.isVazioOuBranco(inserirUnidadeOrganizacionalActionForm.getFax())){
+			unidadeOrganizacional.setFax(inserirUnidadeOrganizacionalActionForm.getFax());
+		}
+		if(!Util.isVazioOuBranco(inserirUnidadeOrganizacionalActionForm.getDdd())){
+
+			FiltroMunicipio filtroMunicipio = new FiltroMunicipio();
+
+			filtroMunicipio.adicionarParametro(new ParametroSimples(FiltroMunicipio.DDD, inserirUnidadeOrganizacionalActionForm.getDdd()));
+
+			Collection municipiosComDDDValido = fachada.pesquisar(filtroMunicipio, Municipio.class.getName());
+
+			if(municipiosComDDDValido.isEmpty()){
+				// O DDD não existe no sistema
+				throw new ActionServletException("atencao.telefone.ddd.nao_existente");
+			}
+
+			unidadeOrganizacional.setDdd(inserirUnidadeOrganizacionalActionForm.getDdd());
+		}
+		
+		if(!Util.isVazioOuBranco(inserirUnidadeOrganizacionalActionForm.getObservacao())){
+			unidadeOrganizacional.setObservacao(inserirUnidadeOrganizacionalActionForm.getObservacao());
+		}
+		
 
 		Integer codigoUnidadeOrganizacionalInserido = (Integer) fachada.inserirUnidadeOrganizacional(unidadeOrganizacional, this
 						.getUsuarioLogado(httpServletRequest));

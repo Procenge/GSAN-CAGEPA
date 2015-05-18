@@ -106,6 +106,7 @@ import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -176,6 +177,12 @@ public class AtualizarImovelAction
 		String nnSegmento = (String) inserirImovelActionForm.get("nnSegmento");
 		String idDistritoOperacional = (String) inserirImovelActionForm.get("idDistritoOperacional");
 		Boolean indicadorContratoConsumo = (Boolean) inserirImovelActionForm.get("indicadorContratoConsumo");
+
+		Short indicadorEnvioCorreio = null;
+		if(Util.isNaoNuloBrancoZero(inserirImovelActionForm.get("indicadorEnvioCorreio"))){
+			indicadorEnvioCorreio = Short.valueOf(inserirImovelActionForm.get("indicadorEnvioCorreio").toString());
+		}
+
 		String url = verificarUrlRetorno(inserirImovelActionForm);
 		Map<String, String[]> mensagensConfirmacao = new HashMap<String, String[]>();
 		boolean prepararAlteracaoInscricao = false;
@@ -268,6 +275,21 @@ public class AtualizarImovelAction
 
 		Boolean temUsuario = false;
 		Boolean temProprietario = false;
+		Boolean existeIndicadorNomeConta = false;
+		Boolean temResponsavel = false;
+
+		Integer tipoRelacaoTitularDebito = null;
+
+		try{
+			tipoRelacaoTitularDebito = Integer.valueOf(ParametroFaturamento.P_TIPO_RELACAO_ATUAL_TITULAR_DEBITO_IMOVEL.executar()
+							.toString());
+		}catch(NumberFormatException e1){
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}catch(ControladorException e1){
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		if(clientes != null && !clientes.isEmpty()){
 
@@ -281,11 +303,17 @@ public class AtualizarImovelAction
 						temUsuario = true;
 					}else if(clienteImovel.getClienteRelacaoTipo().getId().intValue() == ClienteRelacaoTipo.PROPRIETARIO.intValue()){
 						temProprietario = true;
+					}else if(clienteImovel.getClienteRelacaoTipo().getId().intValue() == ClienteRelacaoTipo.RESPONSAVEL.intValue()){
+						temResponsavel = true;
 					}
 				}
 			}
 			if(temUsuario == false){
 				actionServletException = new ActionServletException("atencao.informe.cliente_imovel_usuario");
+				setarUrlLevantarExcecao(url, actionServletException);
+			}
+			if(temResponsavel == false && tipoRelacaoTitularDebito.equals(ClienteRelacaoTipo.RESPONSAVEL)){
+				actionServletException = new ActionServletException("atencao.informe.cliente_imovel_responsavel");
 				setarUrlLevantarExcecao(url, actionServletException);
 			}
 			if(getParametroCompanhia(httpServletRequest).equals(SistemaParametro.INDICADOR_EMPRESA_DESO)){
@@ -295,9 +323,28 @@ public class AtualizarImovelAction
 				}
 			}
 
+			if(!existeIndicadorNomeConta){
+
+				clientesIteator = clientes.iterator();
+
+				while(clientesIteator.hasNext()){
+					ClienteImovel clienteImovel = (ClienteImovel) clientesIteator.next();
+					if(clienteImovel.getClienteRelacaoTipo().getId().toString().equals(ClienteRelacaoTipo.USUARIO.toString())){
+
+						clienteImovel.setIndicadorNomeConta(ConstantesSistema.SIM);
+					}
+
+				}
+
+			}
+
 		}
 		if(temUsuario == false){
 			throw new ActionServletException("atencao.informe.cliente_imovel_usuario");
+		}
+
+		if(temResponsavel == false && tipoRelacaoTitularDebito.equals(ClienteRelacaoTipo.RESPONSAVEL)){
+			throw new ActionServletException("atencao.informe.cliente_imovel_responsavel");
 		}
 
 		// Obtem os valores que vem na coleção de subCategorias(economia)para
@@ -398,6 +445,11 @@ public class AtualizarImovelAction
 					imovelAtualizar.setIndicadorContratoConsumo(ConstantesSistema.NAO);
 				}
 			}
+		}
+		if(indicadorEnvioCorreio != null){
+			imovelAtualizar.setIndicadorEnvioCorreio(indicadorEnvioCorreio);
+		}else{
+			imovelAtualizar.setIndicadorEnvioCorreio((short) 2);
 		}
 
 		// Paramentro para diferenciar a companhia que o sistema está rodando

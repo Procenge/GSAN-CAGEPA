@@ -427,6 +427,62 @@
 					</table>
 					</td>
 				</tr>
+				
+				
+				<logic:present name="visualizarSucumbencia" scope="request">
+					<tr><td colspan="2"><br></td></tr>
+					<tr>
+						<td colspan="2">
+							<table width="100%" bgcolor="#99CCFF">
+								<tr bgcolor="#90c7fc">  
+									<td align="center" colspan="4">
+										<strong>Sucumbência</strong>
+									</td>
+								</tr>
+								<tr bgcolor="#90c7fc">  
+									<td width="25%" align="center" >
+										<strong>Anterior</strong>
+									</td>
+									<td width="25%" align="center">
+										<strong>Acréscimos Anterior</strong>
+									</td>
+									<td width="25%" align="center">
+										<strong>Atual</strong>
+									</td>
+									<td width="25%" align="center">
+										<strong>Qtd. Parcelas</strong>
+									</td>	
+								</tr>
+								<tr bgcolor="#cbe5fe"> 
+									<td align="right" bgcolor="#FFFFFF">
+										<bean:write	name="ParcelamentoDebitoActionForm" property="valorSucumbenciaAnterior" scope="request" />
+									</td>
+									<td align="right" bgcolor="#FFFFFF">
+										<bean:write	name="ParcelamentoDebitoActionForm" property="valorAcrescimosSucumbenciaAnterior" scope="request" />
+									</td>
+									<td align="right" bgcolor="#FFFFFF">
+										<bean:write	name="ParcelamentoDebitoActionForm" property="valorSucumbenciaAtual" scope="request" />
+									</td>
+									<td align="center" bgcolor="#FFFFFF">
+										<bean:write	name="ParcelamentoDebitoActionForm" property="numeroParcelasSucumbencia" scope="request" />
+									</td>
+								</tr>
+							</table>
+							<table width="100%" bgcolor="#99CCFF">
+								<tr>  
+									<td bgcolor="#90c7fc" align="left" colspan="4" width="25%">
+										<strong>Valor Diligências</strong>
+									</td>
+									<td align="right" bgcolor="#FFFFFF">
+										<bean:write	name="ParcelamentoDebitoActionForm" property="valorDiligencias" scope="request" />
+									</td>								
+								</tr>
+							</table>						
+						</td>
+					</tr>	
+				</logic:present>
+
+				<tr><td colspan="2"><hr></td></tr>				
 				<tr>
 					<td colspan="3" height="10"></td>
 				</tr>
@@ -448,7 +504,7 @@
 								cor = "#FFFFFF";%>
 							<tr bgcolor="#FFFFFF">
 								<%}%>
-							<td align="right"><bean:write name="parcelamento" property="valorNegociado" formatKey="money.format"/></td>
+							<td align="right"><bean:write name="parcelamento" property="valorNegociadoCalculado" formatKey="money.format"/></td>
 							<td align="left"><bean:write name="parcelamento" property="cobrancaForma.descricao" /></td>
 							<td align="left">
 								<logic:present name="parcelamento" property="usuario">
@@ -501,7 +557,7 @@
 							<tr bgcolor="#FFFFFF">
 								<%}%>
 							<td align="right"><bean:write name="parcelamento" property="valorEntrada" formatKey="money.format"/></td>
-							<td align="right"><bean:write name="parcelamento" property="valorParcelado" formatKey="money.format"/></td>
+							<td align="right"><bean:write name="parcelamento" property="valorParceladoCalculado" formatKey="money.format"/></td>
 							<td align="right"><bean:write name="parcelamento" property="numeroPrestacoes"/></td>
 							<td align="right"><bean:write name="parcelamento" property="valorPrestacao" formatKey="money.format"/></td>
 							<td align="right"><bean:write name="parcelamento" property="valorJurosParcelamento" formatKey="money.format"/></td>
@@ -586,7 +642,70 @@
 				</tr>
 				<tr>
 					<td colspan="3" height="10"></td>
-				</tr>				
+				</tr>	
+				
+				
+				
+				
+				
+				<tr>
+					<td colspan="3">
+					<table width="100%" align="center" bgcolor="#99CCFF" border="0">
+						<tr bordercolor="#90c7fc">
+							<td bgcolor="#90c7fc"><strong>Clientes associados ao débito do parcelamento:</strong></td>
+						</tr>
+					</table>
+					<table width="100%" align="center" bgcolor="#99CCFF" border="0">
+						<tr bordercolor="#90c7fc">
+							<td align="center" bgcolor="#90c7fc"><strong>Codigo Cliente</strong></td>
+							<td align="center" bgcolor="#90c7fc"><strong>Nome</strong></td>
+							<td align="center" bgcolor="#90c7fc"><strong>Relação</strong></td>
+						
+						</tr>
+						<% cor = "#FFFFFF";%>	
+						<logic:present name="colecaoClienteDebitoACobrar">
+						<logic:iterate name="colecaoClienteDebitoACobrar" id="clienteDebitoACobrar">
+						<%if (cor.equalsIgnoreCase("#FFFFFF")) {
+								cor = "#cbe5fe";%>
+							<tr bgcolor="#cbe5fe">
+								<%} else {
+								cor = "#FFFFFF";%>
+							<tr bgcolor="#FFFFFF">
+								<%}%>
+							<td align="right"><bean:write name="clienteDebitoACobrar" property="cliente.id" /></td>
+							<td align="right"><bean:write name="clienteDebitoACobrar" property="cliente.nome" /></td>
+							<td align="right"><bean:write name="clienteDebitoACobrar" property="clienteRelacaoTipo.descricao"/></td>
+						
+							
+						</tr>
+						</logic:iterate>
+						</logic:present>
+						
+						<logic:present name="colecaoClienteGuiaPagamento">
+						<logic:iterate name="colecaoClienteGuiaPagamento" id="clienteGuiaPagamento">
+						<%if (cor.equalsIgnoreCase("#FFFFFF")) {
+								cor = "#cbe5fe";%>
+							<tr bgcolor="#cbe5fe">
+								<%} else {
+								cor = "#FFFFFF";%>
+							<tr bgcolor="#FFFFFF">
+								<%}%>
+							<td align="right"><bean:write name="clienteGuiaPagamento" property="cliente.id" /></td>
+							<td align="right"><bean:write name="clienteGuiaPagamento" property="cliente.nome" /></td>
+							<td align="right"><bean:write name="clienteGuiaPagamento" property="clienteRelacaoTipo.descricao"/></td>
+						
+							
+						</tr>
+						</logic:iterate>
+						</logic:present>
+						
+							
+						
+					</table>
+					</td>
+				</tr>
+				
+							
 				<tr>
 					<td colspan="3" height="10"></td>
 				</tr>

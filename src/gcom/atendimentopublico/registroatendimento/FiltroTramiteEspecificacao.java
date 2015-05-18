@@ -66,37 +66,6 @@ public class FiltroTramiteEspecificacao
 
 	public final static String BAIRRO_CODIGO = "bairro.codigo";
 
-	public final static String SISTEMA_ABASTECIMENTO_ID = "sistemaAbastecimento.id";
-
-	public final static String SISTEMA_ABASTECIMENTO = "sistemaAbastecimento";
-
-	public final static String DISTRITO_OPERACIONAL_ID = "distritoOperacional.id";
-
-	public final static String DISTRITO_OPERACIONAL = "distritoOperacional";
-
-	public final static String ZONA_ABASTECIMENTO_ID = "zonaAbastecimento.id";
-
-	public final static String ZONA_ABASTECIMENTO = "zonaAbastecimento";
-
-	public final static String SETOR_ABASTECIMENTO_ID = "setorAbastecimento.id";
-
-	public final static String SETOR_ABASTECIMENTO = "setorAbastecimento";
-
-	public final static String SISTEMA_ESGOTO_ID = "sistemaEsgoto.id";
-
-	public final static String SISTEMA_ESGOTO = "sistemaEsgoto";
-
-	public final static String SUBSISTEMA_ESGOTO_ID = "subsistemaEsgoto.id";
-
-	public final static String SUBSISTEMA_ESGOTO = "subsistemaEsgoto";
-
-	public final static String BACIA_ID = "bacia.id";
-
-	public final static String BACIA = "bacia";
-
-	public final static String SUBBACIA_ID = "subBacia.id";
-
-	public final static String SUBBACIA = "subBacia";
 
 	public final static String UNID_ORGANIZACIONAL_ORIGEM_ID = "unidadeOrganizacionalOrigem.id";
 
@@ -107,4 +76,6 @@ public class FiltroTramiteEspecificacao
 	public final static String UNID_ORGANIZACIONAL_DESTINO = "unidadeOrganizacionalDestino";
 
 	public final static String INDICADOR_USO = "indicadorUso";
+
+	public final static String INDICADOR_PRIMEIRO_TRAMITE = "indicadorPrimeiroTramite";
 }

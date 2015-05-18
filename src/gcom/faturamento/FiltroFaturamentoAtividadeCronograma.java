@@ -138,6 +138,8 @@ public class FiltroFaturamentoAtividadeCronograma
 	 */
 	public final static String FATURAMENTO_ATIVIDADE_ID = "faturamentoAtividade.id";
 
+	public final static String FATURAMENTO_ATIVIDADE = "faturamentoAtividade";
+
 	/**
 	 * Description of the Field
 	 */

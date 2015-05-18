@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2007 the GSAN – Sistema Integrado de Gestão de Serviços de Saneamento
+ * Copyright (C) 2007-2007 the GSAN ? Sistema Integrado de Gestão de Serviços de Saneamento
  *
  * This file is part of GSAN, an integrated service management system for Sanitation
  *
@@ -14,11 +14,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place – Suite 330, Boston, MA 02111-1307, USA
+ * Foundation, Inc., 59 Temple Place ? Suite 330, Boston, MA 02111-1307, USA
  */
 
 /*
- * GSAN – Sistema Integrado de Gestão de Serviços de Saneamento
+ * GSAN ? Sistema Integrado de Gestão de Serviços de Saneamento
  * Copyright (C) <2007> 
  * Adriano Britto Siqueira
  * Alexandre Santos Cabral
@@ -82,6 +82,7 @@ import gcom.arrecadacao.pagamento.FiltroGuiaPagamentoHistorico;
 import gcom.arrecadacao.pagamento.GuiaPagamentoHistorico;
 import gcom.arrecadacao.pagamento.Pagamento;
 import gcom.arrecadacao.pagamento.PagamentoHistorico;
+import gcom.atendimentopublico.registroatendimento.bean.ObterIndicadorExistenciaHidrometroHelper;
 import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cobranca.DocumentoTipo;
@@ -90,10 +91,13 @@ import gcom.faturamento.conta.*;
 import gcom.faturamento.debito.DebitoACobrar;
 import gcom.faturamento.debito.DebitoACobrarHistorico;
 import gcom.faturamento.debito.FiltroDebitoACobrarHistorico;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
 import java.util.*;
 
@@ -182,9 +186,10 @@ public class ExibirConsultarImovelPagamentosAction
 			// sessao.removeAttribute("idImovelPrincipalAba");
 			// consultarImovelActionForm.setIdImovelPagamentos(null);
 			consultarImovelActionForm.setMatriculaImovelPagamentos(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelPagamentos(null);
 			consultarImovelActionForm.setSituacaoAguaPagamentos(null);
 			consultarImovelActionForm.setSituacaoEsgotoPagamentos(null);
-
+			consultarImovelActionForm.setTipoLigacao(null);
 			consultarImovelActionForm.setSituacaoCobrancaDadosComplementares(null);
 
 			if(indicadorNovo == null || indicadorNovo.equals("")){
@@ -242,8 +247,22 @@ public class ExibirConsultarImovelPagamentosAction
 					// seta na tela a inscrição do imovel
 					httpServletRequest.setAttribute("idImovelPagamentosNaoEncontrado", null);
 
-					consultarImovelActionForm.setMatriculaImovelPagamentos(fachada.pesquisarInscricaoImovel(Integer
-									.valueOf(idImovelPagamentos.trim()), true));
+					consultarImovelActionForm.setMatriculaImovelPagamentos(fachada.pesquisarInscricaoImovel(
+									Integer.valueOf(idImovelPagamentos.trim()), true));
+
+					try{
+						if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString()
+										.equals(ConstantesSistema.NAO.toString())){
+							if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+								consultarImovelActionForm.setDigitoVerificadorImovelPagamentos(Imovel
+												.getDigitoVerificadorMatricula(idImovelPagamentos.trim()));
+							}
+						}
+					}catch(ControladorException e1){
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						throw new ActionServletException(e1.getMessage(), e1);
+					}
 
 					// seta a situação de agua
 					if(imovel.getLigacaoAguaSituacao() != null){
@@ -254,22 +273,29 @@ public class ExibirConsultarImovelPagamentosAction
 						consultarImovelActionForm.setSituacaoEsgotoPagamentos(imovel.getLigacaoEsgotoSituacao().getDescricao());
 					}
 
+					// seta o tipo de ligação
+					if(idImovelPagamentos != null || idImovelPagamentos != ""){
+						boolean tipoLigacaoBoolean = false;
+						ObterIndicadorExistenciaHidrometroHelper obterIndicadorExistenciaHidrometroHelper = fachada
+										.obterIndicadorExistenciaHidrometroLigacaoAguaPoco(Util.obterInteger(idImovelPagamentos),
+														tipoLigacaoBoolean);
+						if(obterIndicadorExistenciaHidrometroHelper.getIndicadorLigacaoAgua().intValue() == 1
+										|| obterIndicadorExistenciaHidrometroHelper.getIndicadorPoco().intValue() == 1){
+							consultarImovelActionForm.setTipoLigacao("Hidrometrado");
+						}else{
+							consultarImovelActionForm.setTipoLigacao("Consumo Fixo");
+						}
+
+					}
+
 					// 1. O sistema seleciona os pagamentos do imóvel
 					// (a partir da tabela PAGAMENTO com IMOV_ID = Id do imóvel informado e demais
 					// parâmetros de seleção informada)
 
 					// pesquisa utilizada pelo do Consultar Pagamento
-					Collection colecaoImoveisPagamentos = fachada.pesquisarPagamentoImovel(idImovelPagamentos.trim(), null, null, null,
-									null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-									null);
+					Collection colecaoImoveisPagamentos = fachada.pesquisarPagamentoImovel(idImovelPagamentos.trim());
 
-					Collection colecaoImoveisPagamentosHistorico = fachada.pesquisarPagamentoHistoricoImovel(idImovelPagamentos.trim(),
-									null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-									null, null, null, null);
-
-					// Collection<PagamentoHistorico> colecaoImoveisPagamentosHistorico =
-					// fachada.pesquisarPagamentosHistoricoConsultaImovel(new
-					// Integer(idImovelPagamentos.trim()));
+					Collection colecaoImoveisPagamentosHistorico = fachada.pesquisarPagamentoHistoricoImovel(idImovelPagamentos.trim());
 
 					// Imóvel
 					Collection<Pagamento> colecaoPagamentosImovelConta = new ArrayList();
@@ -278,7 +304,25 @@ public class ExibirConsultarImovelPagamentosAction
 
 					// define as ordenações para Pagamentos de Conta, Guias e Debitos A Cobrar
 					ComparatorChain sortPagamentosConta = new ComparatorChain();
-					sortPagamentosConta.addComparator(new BeanComparator("anoMesReferenciaPagamento"), true);
+					sortPagamentosConta.addComparator(new BeanComparator("anoMesReferenciaPagamento", new Comparator<Integer>() {
+
+						public int compare(Integer o1, Integer o2){
+
+							if(o1 == null && o2 == null){
+								return 0;
+							}
+
+							if(o1 != null && o2 == null){
+								return 1;
+							}
+							if(o1 == null && o2 != null){
+								return -1;
+							}
+							return o1.compareTo(o2);
+
+						}
+
+					}), true);
 					sortPagamentosConta.addComparator(new BeanComparator("dataPagamento"), true);
 					sortPagamentosConta.addComparator(new BeanComparator("localidade.id"));
 					sortPagamentosConta.addComparator(new BeanComparator("imovel.id"));
@@ -318,8 +362,8 @@ public class ExibirConsultarImovelPagamentosAction
 									if(contaGeralId != null){
 										FiltroContaGeral filtroContaGeral = new FiltroContaGeral();
 										filtroContaGeral.adicionarParametro(new ParametroSimples(FiltroContaGeral.ID, contaGeralId));
-										Collection<ContaGeral> colecaoContaGeral = fachada.pesquisar(filtroContaGeral, ContaGeral.class
-														.getName());
+										Collection<ContaGeral> colecaoContaGeral = fachada.pesquisar(filtroContaGeral,
+														ContaGeral.class.getName());
 
 										// Pega a ContaGeral
 										ContaGeral contaGeral = null;
@@ -623,9 +667,11 @@ public class ExibirConsultarImovelPagamentosAction
 				sessao.removeAttribute("qtdePagGuiaPagamento");
 				sessao.removeAttribute("qtdePagDebitoACobrar");
 
+				consultarImovelActionForm.setDigitoVerificadorImovelPagamentos(null);
 				consultarImovelActionForm.setIdImovelPagamentos(null);
 				consultarImovelActionForm.setSituacaoAguaPagamentos(null);
 				consultarImovelActionForm.setSituacaoEsgotoPagamentos(null);
+				consultarImovelActionForm.setTipoLigacao(null);
 			}
 		}else{
 			consultarImovelActionForm.setIdImovelPagamentos(idImovelPagamentos);
@@ -646,8 +692,27 @@ public class ExibirConsultarImovelPagamentosAction
 
 			sessao.removeAttribute("idImovelPrincipalAba");
 			consultarImovelActionForm.setMatriculaImovelPagamentos(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelPagamentos(null);
 			consultarImovelActionForm.setSituacaoAguaPagamentos(null);
 			consultarImovelActionForm.setSituacaoEsgotoPagamentos(null);
+			consultarImovelActionForm.setTipoLigacao(null);
+		}
+
+		try{
+			if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+				if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+					httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '1');
+				}else{
+					throw new ControladorException("erro.parametro.nao.informado", null, "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+				}
+
+			}else{
+				httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '0');
+			}
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new ActionServletException(e.getMessage(), e);
 		}
 
 		return retorno;

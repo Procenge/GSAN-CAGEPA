@@ -134,9 +134,10 @@ public class ExibirConsultarDadosOrdemServicoAction
 	 * @param httpServletRequest
 	 * @param httpServletResponse
 	 * @return forward
+	 * @throws ControladorException
 	 */
 	public ActionForward execute(ActionMapping actionMapping, ActionForm actionForm, HttpServletRequest httpServletRequest,
-					HttpServletResponse httpServletResponse){
+					HttpServletResponse httpServletResponse) throws ControladorException{
 
 		// Seta o mapeamento de retorno
 		ActionForward retorno = actionMapping.findForward("consultarDadosOrdemServico");
@@ -159,16 +160,81 @@ public class ExibirConsultarDadosOrdemServicoAction
 
 		consultarDadosOrdemServicoActionForm.reset(actionMapping, httpServletRequest);
 
-		String permiteTramiteIndependente = "";
+		Short permiteTramiteIndependente = Short.parseShort( (String) ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar(ExecutorParametrosCobranca.getInstancia()));
 
-		try{
-			permiteTramiteIndependente = (String) ParametroAtendimentoPublico.P_OS_TRAMITE_INDEPENDENTE.executar(ExecutorParametrosCobranca
-							.getInstancia());
-		}catch(ControladorException e){
-			e.printStackTrace();
+		Collection<OrdemServicoValaPavimento> colecaoOsValaPavimento = fachada.pesquisarOrdemServicoValaPavimento(ordemServico.getId());
+		sessao.setAttribute("colecaoVala", colecaoOsValaPavimento);
+
+		Integer quantidadeDiasUnidade = fachada.recuperaQuantidadeDiasUnidade(ordemServico.getId(), permiteTramiteIndependente);
+
+		if(quantidadeDiasUnidade > 0){
+			consultarDadosOrdemServicoActionForm.setQuantidadeDiasUnidade(quantidadeDiasUnidade.toString());
 		}
 
-		consultarDadosOrdemServicoActionForm.setPermiteTramiteIndependente(permiteTramiteIndependente);
+		OrdemServicoProgramacao programacao = fachada.pesquisarOrdemServicoProgramacaoPorOS(ordemServico.getId());
+
+		if(programacao != null){
+			Collection<OSDadosInterrupcaoHelper> collectionOsInterrupcaoDeslocamentoHelpers = new ArrayList<OSDadosInterrupcaoHelper>();
+			Collection<OSDadosInterrupcaoHelper> collectionOsInterrupcaoExecucaoHelpers = new ArrayList<OSDadosInterrupcaoHelper>();
+			OSDadosInterrupcaoHelper helper = null;
+			Collection<OrdemServicoInterrupcaoDeslocamento> interrupcaoDeslocamento = fachada
+							.pesquisarOSInterrupcaoDeslocamento(programacao.getId());
+			Collection<OrdemServicoInterrupcaoExecucao> interrupcaoExecucao = fachada.pesquisarOSInterrupcaoExecucao(programacao.getId());
+			if(interrupcaoDeslocamento != null && interrupcaoDeslocamento.size() > 0){
+				for(OrdemServicoInterrupcaoDeslocamento deslocamento : interrupcaoDeslocamento){
+					helper = new OSDadosInterrupcaoHelper();
+					helper.setFimInterrupcao(Util.formatarData(deslocamento.getInterrupcaoFim()));
+					helper.setInicioInterrupcao(Util.formatarData(deslocamento.getInterrupcaoInicio()));
+					helper.setKm(deslocamento.getNumeroKm().toString());
+					helper.setMotivoInterrupcao(deslocamento.getMotivoInterrupcao().getDescricao());
+					collectionOsInterrupcaoDeslocamentoHelpers.add(helper);
+				}
+				httpServletRequest.setAttribute("achouDadosInterrupcaoDeslocamento", "ok");
+				consultarDadosOrdemServicoActionForm
+								.setCollectionOsInterrupcaoDeslocamentoHelpers(collectionOsInterrupcaoDeslocamentoHelpers);
+				sessao.setAttribute("collectionOsInterrupcaoDeslocamentoHelpers", collectionOsInterrupcaoDeslocamentoHelpers);
+			}
+			if(interrupcaoExecucao != null && interrupcaoExecucao.size() > 0){
+				for(OrdemServicoInterrupcaoExecucao execucao : interrupcaoExecucao){
+					helper = new OSDadosInterrupcaoHelper();
+					helper.setFimInterrupcao(Util.formatarData(execucao.getInterrupcaoFim()));
+					helper.setInicioInterrupcao(Util.formatarData(execucao.getInterrupcaoInicio()));
+					helper.setMotivoInterrupcao(execucao.getMotivoInterrupcao().getDescricao());
+					collectionOsInterrupcaoExecucaoHelpers.add(helper);
+				}
+				consultarDadosOrdemServicoActionForm.setCollectionOsInterrupcaoExecucaoHelpers(collectionOsInterrupcaoExecucaoHelpers);
+				httpServletRequest.setAttribute("achouDadosInterrupcaoExecucao", "ok");
+				sessao.setAttribute("collectionOsInterrupcaoExecucaoHelpers", collectionOsInterrupcaoExecucaoHelpers);
+			}
+		}
+
+		OrdemServico ordemServicoPai = fachada.pesquisarOrdemServicoPrincipal(ordemServico.getId());
+		if(ordemServicoPai != null){
+			consultarDadosOrdemServicoActionForm.setIdOSPrincipal(ordemServicoPai.getId().toString());
+			Collection<OrdemServicoValaPavimento> colecaoOsValaPavimentoOSPrincipal = fachada
+							.pesquisarOrdemServicoValaPavimento(ordemServicoPai.getId());
+			consultarDadosOrdemServicoActionForm.setExibirDadosReparoOSPrincipal("true");
+			sessao.setAttribute("colecaoValaOSPrincipal", colecaoOsValaPavimentoOSPrincipal);
+		}else{
+			consultarDadosOrdemServicoActionForm.setExibirDadosReparoOSPrincipal(null);
+			sessao.setAttribute("colecaoValaOSPrincipal", null);
+		}
+
+		Integer permiteGerarOSReparo = Integer.valueOf(ConstantesSistema.NAO);
+		if(ordemServico.getOrdemServicoReparo() == null
+						&& ordemServico.getServicoTipo().getIndicadorVala() == Integer.valueOf(ConstantesSistema.SIM)
+						&& ordemServico.getRegistroAtendimento() != null
+						&& ordemServico.getRegistroAtendimento().getCodigoSituacao() == RegistroAtendimento.SITUACAO_PENDENTE
+						&& colecaoOsValaPavimento != null && colecaoOsValaPavimento.size() > 0){
+			permiteGerarOSReparo = Integer.valueOf(ConstantesSistema.SIM);
+		}
+
+		if(ordemServico.getRegistroAtendimento() != null && ordemServico.getRegistroAtendimento().getDataPrevistaAtual() != null) consultarDadosOrdemServicoActionForm
+						.setDataPrevisaoCliente(Util.formatarData(ordemServico.getRegistroAtendimento().getDataPrevistaAtual()));
+
+		consultarDadosOrdemServicoActionForm.setPermiteGerarOSReparo(permiteGerarOSReparo.toString());
+
+		consultarDadosOrdemServicoActionForm.setPermiteTramiteIndependente(permiteTramiteIndependente.toString());
 
 		// Dados Gerais da OS
 		consultarDadosOrdemServicoActionForm.setOrdemServico(ordemServico);
@@ -354,6 +420,12 @@ public class ExibirConsultarDadosOrdemServicoAction
 			consultarDadosOrdemServicoActionForm.setDataUltimaEmissao("");
 		}
 
+		if(ordemServico.getOrdemServicoReparo() != null){
+			consultarDadosOrdemServicoActionForm.setIdOSServicoReparo(ordemServico.getOrdemServicoReparo().getId().toString());
+		}else{
+			consultarDadosOrdemServicoActionForm.setIdOSServicoReparo(null);
+		}
+
 		// Dados de Execução de OS
 		if(Short.valueOf(ordemServico.getSituacao()).intValue() == OrdemServico.SITUACAO_ENCERRADO.intValue()){
 
@@ -450,6 +522,7 @@ public class ExibirConsultarDadosOrdemServicoAction
 				consultarDadosOrdemServicoActionForm.setUsuarioEncerramentoId(ordemServicoUnidadeEncerramento.getUsuario().getId() + "");
 				consultarDadosOrdemServicoActionForm.setUsuarioEncerramentoNome(ordemServicoUnidadeEncerramento.getUsuario()
 								.getNomeUsuario());
+				consultarDadosOrdemServicoActionForm.setUsuarioEncerramentoLogin(ordemServicoUnidadeEncerramento.getUsuario().getLogin());
 			}
 		}
 
@@ -522,7 +595,16 @@ public class ExibirConsultarDadosOrdemServicoAction
 		}else{
 			consultarDadosOrdemServicoActionForm.setPossuiExecucaoServico("");
 		}
-
+		if(ordemServico.getValorHorasTrabalhadas() != null){
+			consultarDadosOrdemServicoActionForm.setValorHorasTrabalhadas(ordemServico.getValorHorasTrabalhadas().toString());
+		} else {
+			consultarDadosOrdemServicoActionForm.setValorHorasTrabalhadas("0");
+		}
+		if(ordemServico.getValorMateriais() != null){
+			consultarDadosOrdemServicoActionForm.setValorMateriais(ordemServico.getValorMateriais().toString());
+		} else {
+			consultarDadosOrdemServicoActionForm.setValorMateriais("0");
+		}
 		RelatorioParecerEncerramentoOSHelper relatorioParecerEncerramentoOSHelper = new RelatorioParecerEncerramentoOSHelper();
 
 		relatorioParecerEncerramentoOSHelper.setNumeroOS(consultarDadosOrdemServicoActionForm.getNumeroOS());
@@ -541,7 +623,7 @@ public class ExibirConsultarDadosOrdemServicoAction
 		relatorioParecerEncerramentoOSHelper.setUsuarioGeracaoNome(consultarDadosOrdemServicoActionForm.getUsuarioGeracaoNome());
 		relatorioParecerEncerramentoOSHelper.setDataUltimaEmissao(consultarDadosOrdemServicoActionForm.getDataUltimaEmissao());
 
-		if(consultarDadosOrdemServicoActionForm.getDataEncerramento() != null){
+		if(!Util.isVazioOuBranco(consultarDadosOrdemServicoActionForm.getDataEncerramento())){
 			Date dataEncerramento = Util.converterStringParaData(consultarDadosOrdemServicoActionForm.getDataEncerramento());
 			String data = Util.formatarData(dataEncerramento);
 			relatorioParecerEncerramentoOSHelper.setDataEncerramento(data);
@@ -556,6 +638,7 @@ public class ExibirConsultarDadosOrdemServicoAction
 		}else{
 			relatorioParecerEncerramentoOSHelper.setObservacaoEncerramento("");
 		}
+
 
 		sessao.setAttribute("relatorioParecerEncerramentoOSHelper", relatorioParecerEncerramentoOSHelper);
 
@@ -589,6 +672,8 @@ public class ExibirConsultarDadosOrdemServicoAction
 		this.recuperarDadosAgua(consultarDadosOrdemServicoActionForm, ordemServico);
 		this.recuperarDadosEsgoto(consultarDadosOrdemServicoActionForm, ordemServico);
 		this.recuperarDadosVala(consultarDadosOrdemServicoActionForm, fachada, ordemServico);
+
+
 		// ---------------------------------------------------------------------------------------------------------
 		// ---------------------------------------------------------------------------------------------------------
 
@@ -598,6 +683,7 @@ public class ExibirConsultarDadosOrdemServicoAction
 		}else{
 			consultarDadosOrdemServicoActionForm.setEmissaoOSHabilitada(ConstantesSistema.NAO.toString());
 		}
+
 
 		// Colocado por Raphael Rossiter em 26/10/2006
 		consultarDadosOrdemServicoActionForm.setNumeroOSParametro("");
@@ -621,6 +707,21 @@ public class ExibirConsultarDadosOrdemServicoAction
 			sessao.removeAttribute("colecaoInfracaoTipo");
 		}
 
+		try{
+			if(ParametroAtendimentoPublico.P_PERMITE_COBRAR_MATERIAL_OS.executar().equals(ConstantesSistema.SIM.toString())){
+				httpServletRequest.setAttribute("permiteCobrarMaterial", "1");
+			}else{
+				httpServletRequest.setAttribute("permiteCobrarMaterial", "0");
+			}
+			if(ParametroAtendimentoPublico.P_PERMITE_COBRAR_HORA_OS.executar().equals(ConstantesSistema.SIM.toString())){
+				httpServletRequest.setAttribute("permiteCobrarHora", "1");
+			}else{
+				httpServletRequest.setAttribute("permiteCobrarHora", "0");
+			}
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		return retorno;
 
@@ -828,7 +929,7 @@ public class ExibirConsultarDadosOrdemServicoAction
 	}
 
 	// 27012011
-	private void recuperarDadosVala(ConsultarDadosOrdemServicoActionForm form, Fachada fachada, OrdemServico ordemServico){
+	private Collection recuperarDadosVala(ConsultarDadosOrdemServicoActionForm form, Fachada fachada, OrdemServico ordemServico){
 
 		// pesquisar o objeto OrdemServicoValaPavimento que está associado à ordemServico que vem
 		// como parametro
@@ -864,7 +965,20 @@ public class ExibirConsultarDadosOrdemServicoAction
 				form.setDescricaoPavimento(vala.getPavimentoRua().getDescricao());
 
 			}
+			if(vala.getQuantidadeEntulho() != null){
+				form.setQuantidadeEntulho(vala.getQuantidadeEntulho().toString());
+			}
+			if(vala.getEntulhoMedida() != null){
+				form.setDescricaoEntulhoMedida(vala.getEntulhoMedida().getDescricao());
+			}
+			if(vala.getNumeroComprimentoTutulacaoAguaPluvial() != null){
+				form.setComprimentoTutulacaoAguaPluvial(vala.getNumeroComprimentoTutulacaoAguaPluvial().toString());
+			}
+			if(vala.getNumeroDiametroTutulacaoAguaPluvial() != null){
+				form.setDiametroTutulacaoAguaPluvial(vala.getNumeroDiametroTutulacaoAguaPluvial().toString());
+			}
 
 		}
+		return valas;
 	}
 }

@@ -3,6 +3,7 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/pager-taglib.tld" prefix="pg"%>
+<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@page import="gcom.cobranca.bean.CobrancaDocumentoHelper"%>
 <%@ page import="gcom.util.ConstantesSistema"%>
 <%@ page import="java.util.Collection"%>
@@ -28,9 +29,9 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
    	var form = document.forms[0];
 
     if (tipoConsulta == 'imovel') {
-      form.idImovelDadosCadastrais.value = codigoRegistro;
-      form.matriculaImovelDadosCadastrais.value = descricaoRegistro;
-      form.matriculaImovelDadosCadastrais.style.color = "#000000";
+      form.idImovelDocumentosCobranca.value = codigoRegistro;
+      form.matriculaImovelDocumentosCobranca.value = descricaoRegistro;
+      form.matriculaImovelDocumentosCobranca.style.color = "#000000";
 	  form.action = 'consultarImovelWizardAction.do?action=exibirConsultarImovelDocumentosCobrancaAction&indicadorNovo=OK'
 	  form.submit();
     }
@@ -41,6 +42,23 @@ function limparForm(){
    	var form = document.forms[0];
 	form.action = 'consultarImovelWizardAction.do?action=exibirConsultarImovelDocumentosCobrancaAction&limparForm=OK'
 	form.submit();
+}
+
+
+function limparImovelTecla() {
+
+	var form = document.forms[0];
+	
+	form.matriculaImovelDocumentosCobranca.value = "";
+
+	if (form.digitoVerificadorImovelDocumentosCobranca != undefined) {
+		form.digitoVerificadorImovelDocumentosCobranca.value = "";
+	}
+		
+	form.situacaoAguaDocumentosCobranca.value = "";
+	form.situacaoEsgotoDocumentosCobranca.value = "";
+	form.tipoLigacao.value = "";
+
 }
 -->
 
@@ -150,30 +168,72 @@ function limparForm(){
 										color="#FF0000">*</font></strong></td>
 									<td width="75%" colspan="3"><html:text
 										property="idImovelDocumentosCobranca" maxlength="9" size="9"
-										onkeypress="validaEnterComMensagem(event, 'consultarImovelWizardAction.do?action=exibirConsultarImovelDocumentosCobrancaAction&indicadorNovo=OK&limparForm=S','idImovelDocumentosCobranca','Im&oacute;vel');" />
+										onkeypress="validaEnterComMensagem(event, 'consultarImovelWizardAction.do?action=exibirConsultarImovelDocumentosCobrancaAction&indicadorNovo=OK&limparForm=S','idImovelDocumentosCobranca','Im&oacute;vel');" 
+										onkeyup="limparImovelTecla();"/>
 									<a
 										href="javascript:abrirPopup('exibirPesquisarImovelAction.do', 400, 800);">
 									<img width="23" height="21"
 										src="<bean:message key="caminho.imagens"/>pesquisa.gif"
 										border="0" /></a> <logic:present
 										name="idImovelDocumentosCobrancaNaoEncontrado" scope="request">
-										<html:text property="matriculaImovelDocumentosCobranca"
-											size="40" readonly="true"
-											style="background-color:#EFEFEF; border:0; color: #ff0000" />
-
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+											<html:text property="matriculaImovelDocumentosCobranca"
+												size="40" readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										</logic:equal>
+										
+										<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+											<html:text property="digitoVerificadorImovelDocumentosCobranca"
+												size="2" readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+																						
+											<html:text property="matriculaImovelDocumentosCobranca"
+												size="29" readonly="true"
+												style="background-color:#EFEFEF; border:0; color: #ff0000" />
+										</logic:equal>
+																				
 									</logic:present> <logic:notPresent
 										name="idImovelDocumentosCobrancaNaoEncontrado" scope="request">
 										<logic:present name="valorMatriculaImovelDocumentosCobranca"
 											scope="request">
-											<html:text property="matriculaImovelDocumentosCobranca"
-												size="40" readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">
+												<html:text property="matriculaImovelDocumentosCobranca"
+													size="40" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>
+													
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelDocumentosCobranca"
+													size="2" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+																								
+												<html:text property="matriculaImovelDocumentosCobranca"
+													size="29" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>
+																								
 										</logic:present>
 										<logic:notPresent
 											name="valorMatriculaImovelDocumentosCobranca" scope="request">
-											<html:text property="matriculaImovelDocumentosCobranca"
-												size="40" readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000" />
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="0" scope="request">											
+												<html:text property="matriculaImovelDocumentosCobranca"
+													size="40" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>		
+											
+											<logic:equal name="matriculaSemDigitoVerificador" value="1" scope="request">
+												<html:text property="digitoVerificadorImovelDocumentosCobranca"
+													size="2" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+																																			
+												<html:text property="matriculaImovelDocumentosCobranca"
+													size="29" readonly="true"
+													style="background-color:#EFEFEF; border:0; color: #000000" />
+											</logic:equal>											
+													
 										</logic:notPresent>
 									</logic:notPresent> <a href="javascript:limparForm();"> <img
 										src="<bean:message key="caminho.imagens"/>limparcampo.gif"
@@ -194,6 +254,19 @@ function limparForm(){
 										style="background-color:#EFEFEF; border:0; color: #000000"
 										size="15" maxlength="15" /></td>
 								</tr>
+								</tr>
+									<tr>
+									<td height="10">
+										<div class="style9"><strong>Tipo de Ligação:</strong></div>
+									</td>
+									<td><html:text property="tipoLigacao"
+										readonly="true"
+										style="background-color:#EFEFEF; border:0; color: #000000"
+										size="15" maxlength="15" />
+									</td>
+									<td width="90"></td>
+									<td width="120"></td>
+								</tr>
 							</table>
 							</td>
 						</tr>
@@ -210,20 +283,24 @@ function limparForm(){
 					<td>
 					<table width="590" bgcolor="#99CCFF">
 						<tr bgcolor="#99CCFF">
-							<td align="center" width="65"><FONT COLOR="#000000"><strong>DOC</strong></FONT></td>
-							<td align="center" width="40"><FONT COLOR="#000000"><strong>Sit. Doc.</strong></FONT></td>
-						<td align="center" width="90"><FONT COLOR="#000000"><strong>Ação
+						
+						<td align="center" width="70"><FONT COLOR="#000000"><strong>DOC</strong></FONT></td>
+						<td align="center" width="40"><FONT COLOR="#000000"><strong>Sit. Doc.</strong></FONT></td>
+						<td align="center" width="40"><FONT COLOR="#000000"><strong>Sit. Débito</strong></FONT></td>
+						<td align="center" width="95"><FONT COLOR="#000000"><strong>Ação
 						de Cobrança</strong></FONT></td>
-						<td align="center" width="65"><FONT COLOR="#000000"><strong>Emissão</strong></FONT></td>
+						<td align="center" width="75"><FONT COLOR="#000000"><strong>Emissão</strong></FONT></td>
 						<td align="center" width="95"><FONT COLOR="#000000"><strong>Forma
 						Emissão</strong></FONT></td>
 						<td align="center" width="90"><FONT COLOR="#000000"><strong>Tipo
 						Doc.</strong></FONT></td>
-						<td align="right" width="70"><FONT COLOR="#000000"><strong>Vl.
+						<td align="center" width="70"><FONT COLOR="#000000"><strong>Vl.
 						Doc.</strong></FONT></td>
 						<td align="center" width="60"><FONT COLOR="#000000"><strong>Qtde.
 						Itens</strong></FONT></td>
-						<td align="left" width="80"><FONT COLOR="#000000"><strong>Sit. OS</strong></FONT></td>
+						<td align="center" width="30"><FONT COLOR="#000000"><strong>Sit. OS</strong></FONT></td>
+						<td align="center" width="70"><FONT COLOR="#000000"><strong>DOC. </br>Associado </strong></FONT></td>						
+						
 						</tr>
 					</table>
 					</td>
@@ -259,8 +336,9 @@ function limparForm(){
 										title="<%="" + cobrancaDocumentoHelper.getCobrancaDocumento().getId()%>">${cobrancaDocumentoHelper.cobrancaDocumento.numeroSequenciaDocumento}</a>
 									</logic:notEmpty>
 									</td>
+									
 									<logic:notEmpty name="cobrancaDocumentoHelper" property="cobrancaDocumento.cobrancaAcaoSituacao">										
-										<td width="40" align="center" title="${cobrancaDocumentoHelper.cobrancaDocumento.cobrancaAcaoSituacao.descricao}">
+										<td width="40" align="center" title="${cobrancaDocumentoHelper.cobrancaDocumento.cobrancaAcaoSituacao.descricao} ${cobrancaDocumentoHelper.cobrancaDocumento.dataSituacaoAcaoFormatada}">
 											${cobrancaDocumentoHelper.cobrancaDocumento.cobrancaAcaoSituacao.id}
 										</td>
 									</logic:notEmpty>
@@ -269,19 +347,22 @@ function limparForm(){
 											&nbsp;
 										</td>
 									</logic:empty>
-									<td width="95" align="left"><logic:equal
-										name="cobrancaDocumentoHelper"
-										property="cobrancaDocumento.documentoEmissaoForma.id"
-										value="<%= "" + gcom.cobranca.DocumentoEmissaoForma.CRONOGRAMA %>">
-											${cobrancaDocumentoHelper.cobrancaDocumento.cobrancaAcaoAtividadeCronograma.cobrancaAcaoCronograma.cobrancaAcao.descricaoCobrancaAcao}&nbsp;
-										</logic:equal> <logic:equal name="cobrancaDocumentoHelper"
-										property="cobrancaDocumento.documentoEmissaoForma.id"
-										value="<%= "" + gcom.cobranca.DocumentoEmissaoForma.EVENTUAL %>">
-											${cobrancaDocumentoHelper.cobrancaDocumento.cobrancaAcaoAtividadeComando.cobrancaAcao.descricaoCobrancaAcao}
-										</logic:equal> <logic:equal name="cobrancaDocumentoHelper"
-										property="cobrancaDocumento.documentoEmissaoForma.id"
-										value="<%= "" + gcom.cobranca.DocumentoEmissaoForma.INDIVIDUAL %>">
-									</logic:equal> &nbsp;</td>									
+									
+									<logic:notEmpty name="cobrancaDocumentoHelper" property="cobrancaDocumento.cobrancaDebitoSituacao">										
+										 <td width="40" align="center" title="${cobrancaDocumentoHelper.cobrancaDocumento.cobrancaDebitoSituacao.descricao} ${cobrancaDocumentoHelper.cobrancaDocumento.dataSituacaoDebitoFormatada}">
+										   ${cobrancaDocumentoHelper.cobrancaDocumento.cobrancaDebitoSituacao.id}
+										 </td>
+									 </logic:notEmpty>
+									 <logic:empty name="cobrancaDocumentoHelper" property="cobrancaDocumento.cobrancaDebitoSituacao">
+										 <td width="40" align="center">
+										   &nbsp;
+										 </td>
+									 </logic:empty>									
+									
+									<td width="95" align="left">
+										${cobrancaDocumentoHelper.descricaoCobrancaAcao}
+									</td>
+									
 									<td width="75" align="center"><bean:write
 										name="cobrancaDocumentoHelper"
 										property="cobrancaDocumento.emissao"
@@ -293,6 +374,7 @@ function limparForm(){
 										property="cobrancaDocumento.valorDocumento"
 										formatKey="money.format" /></td>
 									<td width="60" align="center">${cobrancaDocumentoHelper.quantidadeItensCobrancaDocumento}</td>
+
 									<td width="30" align="center">
 										 <logic:notEmpty name="cobrancaDocumentoHelper" property="idOrdemServico">
 										   ${cobrancaDocumentoHelper.situacaoOrdemServico}
@@ -301,6 +383,19 @@ function limparForm(){
 										   &nbsp;
 										 </logic:empty>
 									</td>
+									
+									<td align="center" width="70">
+									   <c:if test="${not empty cobrancaDocumentoHelper.cobrancaDocumentoAcaoCobranca}">
+									   
+									   		<a href="/gsan/exibirApresentarItensDocumentoCobrancaAction.do?cobrancaDocumentosID=<c:out value="${cobrancaDocumentoHelper.cobrancaDocumentoAcaoCobranca.id}"/>">
+									   			
+									   			<c:out value="${cobrancaDocumentoHelper.cobrancaDocumentoAcaoCobranca.id}"/>		
+									   		
+									   		</a>		
+									   											   
+									   </c:if>
+									</td>									
+									
 								</tr>
 
 							</logic:iterate>

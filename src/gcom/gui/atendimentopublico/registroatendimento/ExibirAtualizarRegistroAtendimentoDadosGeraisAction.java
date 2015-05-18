@@ -76,6 +76,8 @@
 
 package gcom.gui.atendimentopublico.registroatendimento;
 
+import gcom.atendimentopublico.ordemservico.EspecificacaoServicoTipo;
+import gcom.atendimentopublico.ordemservico.FiltroEspecificacaoServicoTipo;
 import gcom.atendimentopublico.registroatendimento.*;
 import gcom.atendimentopublico.registroatendimento.bean.DefinirDataPrevistaUnidadeDestinoEspecificacaoHelper;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
@@ -261,6 +263,29 @@ public class ExibirAtualizarRegistroAtendimentoDadosGeraisAction
 		String pesquisarEspecificacao = httpServletRequest.getParameter("pesquisarEspecificacao");
 
 		String idEspecificacao = atualizarRegistroAtendimentoActionForm.getEspecificacao();
+
+		// [SB0042] - Exibir Serviços Associados à Especificação
+		if(idEspecificacao != null && !idEspecificacao.equalsIgnoreCase(String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+
+			FiltroEspecificacaoServicoTipo filtroEspecificacaoServicoTipo = new FiltroEspecificacaoServicoTipo();
+			filtroEspecificacaoServicoTipo.adicionarParametro(new ParametroSimples(
+							FiltroEspecificacaoServicoTipo.SOLICITACAO_TIPO_ESPECIFICACAO_ID, idEspecificacao));
+			filtroEspecificacaoServicoTipo.adicionarParametro(new ParametroSimples(
+							FiltroEspecificacaoServicoTipo.SERVICO_TIPO_INDICADOR_USO, ConstantesSistema.SIM));
+			filtroEspecificacaoServicoTipo
+							.adicionarCaminhoParaCarregamentoEntidade(FiltroEspecificacaoServicoTipo.SOLICITACAO_TIPO_ESPECIFICACAO);
+
+			Collection colecaoEspecificacaoServicoTipo = fachada.pesquisar(filtroEspecificacaoServicoTipo,
+							EspecificacaoServicoTipo.class.getName());
+
+			if(!Util.isVazioOrNulo(colecaoEspecificacaoServicoTipo)){
+				sessao.setAttribute("exibirBotaoServicoAssociado", true);
+
+			}else{
+				sessao.setAttribute("exibirBotaoServicoAssociado", false);
+			}
+
+		}
 
 		if(pesquisarEspecificacao != null
 						&& !pesquisarEspecificacao.equalsIgnoreCase("")

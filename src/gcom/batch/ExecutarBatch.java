@@ -87,8 +87,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -120,14 +122,16 @@ public class ExecutarBatch
 		}
 
 
+		Integer referencia = null;
+		String idsGrupos = null;
 
 		FaturamentoGrupo faturamentoGrupo = null;
 		if(tipoProcesso != null){
 			switch(tipoProcesso){
 
 				case 1:
-					System.out.println("*** executarAjustarRegistrosContaEGuiaDeso");
-					fachada.executarAjustarRegistrosContaEGuiaDeso();
+					System.out.println("*** executarAjustarRegistrosContaEGuia - CAERD");
+					// fachada.executarAjustarRegistrosContaEGuia();
 					break;
 
 				case 2:
@@ -395,8 +399,6 @@ public class ExecutarBatch
 
 					System.out.println("***CASO 17: Gerar Debito A Cobrar Conta Com Valor A Menor");
 
-					Integer referencia = null;
-					String idsGrupos = null;
 
 					if(Util.isInteger(executarBatchActionForm.get("anoMesReferencia").toString())){
 
@@ -456,10 +458,83 @@ public class ExecutarBatch
 					fachada.ajusteResumoAcaoCobranca();
 
 					break;
+				case 27:
+
+					System.out.println("***CASO 27: Ajuste para testar batimento de valores de conta após alteração no UC00120 calcular valores água e esgoto cascata");
+
+					String referenciaAjusteCaso27 = (String) executarBatchActionForm.get("anoMesReferencia");
+
+					if(!Util.isVazioOuBranco(referenciaAjusteCaso27)){
+
+						fachada.executarAjusteVerificarBatimentoCalculoValorConta(Util.obterInteger(referenciaAjusteCaso27));
+					}else{
+
+						throw new ActionServletException("atencao.required", null, "Referência");
+					}
+
+					break;
+
+				case 28:
+
+					System.out.println("***CASO 28: Ajuste gerar registros em CLIENTE_DEBITO_A_COBRAR");
+
+					fachada.executarAjusteClienteDebitoACobrar();
+
+					break;
+					
+				case 29:
+					
+					System.out.println("***Início: CASO 28: [DESO] Refaturar contas da localidade 062 (Siriri) - "
+									+ new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new Date()));
+									
+					Integer anoMesReferencia28 = null;
+
+					if(Util.isInteger(executarBatchActionForm.get("anoMesReferencia28").toString())){
+						anoMesReferencia28 = Util.obterInteger(executarBatchActionForm.get("anoMesReferencia28").toString());
+					}else{
+						throw new ActionServletException("atencao.required", null, "Ano Mês Referência Inicial");
+					}
+
+					fachada.refaturarContasDESOLocalidade062(anoMesReferencia28);
+
+					System.out.println("***Término: CASO 28: [DESO] Refaturar contas da localidade 062 (Siriri) - "
+									+ new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new Date()));
+					break;
+					
+				case 30:
+
+					System.out.println("***CASO 30: Ajuste Conversão tabela acordo_tac");
+
+					fachada.executarAjusteConversaoAcordoTac();
+
+					break;
+
+				case 31:
+
+					System.out.println("***CASO 29: Gerar Credito a Realizar Conta - CAERD");
+
+
+					if(Util.isInteger(executarBatchActionForm.get("anoMesReferencia").toString())){
+
+						referencia = Util.obterInteger(executarBatchActionForm.get("anoMesReferencia").toString());
+
+					}else{
+
+						throw new ActionServletException("atencao.required", null, "Ano Mês Referência ");
+					}
+
+					if(executarBatchActionForm.get("listaGrupos") != null && !"".equals(executarBatchActionForm.get("listaGrupos"))){
+						idsGrupos = executarBatchActionForm.get("listaGrupos").toString();
+					}
+
+					fachada.gerarCreditoARealizarAjuste(referencia, idsGrupos);
+
+					break;
 			}
+
+		}else{
+			throw new ActionServletException("atencao.campo.invalido", null, "Processo");
 		}
-
-
 
 		// montando página de sucesso
 		montarPaginaSucesso(httpServletRequest, "Rotina de Ajuste Enviada para Processamento em batch", "Voltar",

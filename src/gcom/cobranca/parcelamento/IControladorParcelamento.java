@@ -77,15 +77,24 @@
 package gcom.cobranca.parcelamento;
 
 import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacaoHistorico;
+import gcom.cadastro.imovel.Categoria;
+import gcom.cadastro.imovel.Imovel;
 import gcom.cobranca.ResolucaoDiretoriaLayout;
 import gcom.cobranca.bean.ContaValoresHelper;
+import gcom.cobranca.bean.GuiaPagamentoValoresHelper;
 import gcom.faturamento.conta.ContaHistorico;
+import gcom.faturamento.debito.DebitoACobrar;
 import gcom.faturamento.debito.DebitoACobrarHistorico;
 import gcom.faturamento.debito.DebitoCobradoHistorico;
+import gcom.financeiro.lancamento.bean.LancamentoItemContabilParcelamentoHelper;
 import gcom.relatorio.cobranca.parcelamento.GeradorRelatorioParcelamentoException;
+import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ControladorException;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Map;
 
 
 /**
@@ -127,8 +136,8 @@ public interface IControladorParcelamento {
 	 * @author Luciano Galvao
 	 * @date 02/11/2012
 	 */
-	public Object[] identificarTipoDebitoGuiaPagamento(Integer idGuiaPagamento, Short numeroPrestacao, Integer itemLancamentoContabilId)
-					throws ControladorException;
+	public Object[] identificarTipoDebitoGuiaPagamento(Integer idGuiaPagamento, Short numeroPrestacao, Integer itemLancamentoContabilId,
+					Integer idDebitoTipo) throws ControladorException;
 
 	/**
 	 * Identifica o tipo de débito dos acréscimos de uma Conta
@@ -212,4 +221,71 @@ public interface IControladorParcelamento {
 	 * @date 27/11/2013
 	 */
 	public ResolucaoDiretoriaLayout obterResolucaoDiretoriaLayoutParcCobrancaAdministrativa() throws GeradorRelatorioParcelamentoException;
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * [SB0064] Verificar Parcelamento de Execução Fiscal
+	 * 
+	 * @author Saulo Lima
+	 * @date 03/07/2014
+	 */
+	public ArrayList<Integer> pesquisarDebitoTipoExecucaoFiscal() throws ControladorException;
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * [SB0064] Verificar Parcelamento de Execução Fiscal
+	 * 
+	 * @author Saulo Lima
+	 * @date 03/07/2014
+	 */
+	public ArrayList<Integer> pesquisarDebitoTipoSucumbenciaDiligencia() throws ControladorException;
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * 
+	 * @author Saulo Lima
+	 * @date 03/07/2014
+	 */
+	public ArrayList<Integer> pesquisarDebitoTipoDividaAtiva() throws ControladorException;
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * 
+	 * @author Saulo Lima
+	 * @date 03/07/2014
+	 */
+	public ArrayList<Integer> pesquisarDebitoTipoJurosParcelamento() throws ControladorException;
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * 
+	 * @author Saulo Lima
+	 * @date 03/07/2014
+	 */
+	public ArrayList<Integer> pesquisarDebitoTipoParcelamentoNormal() throws ControladorException;
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * [FS0054] Verificar quantidade de parcelas da sucumbência
+	 * 
+	 * @author Saulo Lima
+	 * @date 15/08/2014
+	 */
+	public void verificarQuantidadeParcelasSucumbencia(Integer quantidadeParcelasSucumbencia, Usuario usuario) throws ControladorException;
+
+	/**
+	 * [UC0214] Efetuar Parcelamento de Débitos
+	 * [SB0047] Acumular Valor de Sucumbência
+	 * 
+	 * @author Saulo Lima
+	 * @date 15/09/2014
+	 */
+	public Object[] acumularValorSucumbencia(BigDecimal valorSucumbenciaCobradoEntradaParc, BigDecimal valorTotalSucumbencia,
+					Short quantidadeParcelasSucumbencia, Map<Integer, BigDecimal> mapProcessosSucumbencias, Imovel imovel,
+					Map<Integer, Map<LancamentoItemContabilParcelamentoHelper, Map<Categoria, BigDecimal>>> valorEntradaPorTipoDebito,
+					BigDecimal valorEntradaParaDeduzir, boolean existeContaComoEntradaParcelamento,
+					Short[] indicadorTotalRemuneracaoCobrancaAdm, Collection<Categoria> colecaoCategoria,
+					BigDecimal valorDescontoAcrescimos, String indicadorCobrancaParcelamento,
+					Collection<ContaValoresHelper> colecaoContaValores, Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores,
+					Collection<DebitoACobrar> colecaoDebitoACobrar) throws ControladorException;
 }

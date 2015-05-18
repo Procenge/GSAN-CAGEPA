@@ -81,7 +81,9 @@ import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao;
 import gcom.atendimentopublico.ordemservico.ServicoTipo;
 import gcom.atendimentopublico.ordemservico.ServicoTipoSubgrupo;
 import gcom.atendimentopublico.registroatendimento.AtendimentoMotivoEncerramento;
+import gcom.cadastro.cliente.ClienteTipo;
 import gcom.cadastro.imovel.ImovelCobrancaMotivoRetirada;
+import gcom.cadastro.imovel.PocoTipo;
 import gcom.cobranca.CobrancaSituacao;
 import gcom.contabil.EventoComercial;
 import gcom.contabil.ProvisaoDevedoresDuvidososMotivoBaixa;
@@ -92,6 +94,7 @@ import gcom.faturamento.debito.DebitoTipo;
 import gcom.financeiro.lancamento.LancamentoItemContabil;
 import gcom.micromedicao.consumo.ConsumoAnormalidade;
 import gcom.micromedicao.consumo.ConsumoTipo;
+import gcom.micromedicao.hidrometro.HidrometroSituacao;
 import gcom.micromedicao.leitura.LeituraAnormalidade;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesConfig;
@@ -278,6 +281,35 @@ public class InicializadorSistema
 			CobrancaSituacao.inicializarConstantes();
 		}catch(Exception e){
 			LOGGER.info("Erro ao inicializar constantes em: CobrancaSituacao", e);
+			LOGGER.error(e);
+			abortarAplicacao(simNao);
+		}
+
+		try{
+			// Carregar constantes com valores cadastrados no banco para cada empresa
+			PocoTipo.inicializarConstantes();
+		}catch(Exception e){
+			LOGGER.info("Erro ao inicializar constantes em: PocoTipo", e);
+			LOGGER.error(e);
+			abortarAplicacao(simNao);
+		}
+
+		try{
+
+			ClienteTipo.inicializarConstantes();
+		}catch(Exception e){
+
+			LOGGER.info("Erro ao inicializar constantes em: ClienteTipo", e);
+			LOGGER.error(e);
+			abortarAplicacao(simNao);
+		}
+
+		try{
+
+			HidrometroSituacao.inicializarConstantes();
+		}catch(Exception e){
+
+			LOGGER.info("Erro ao inicializar constantes em: ClienteTipo", e);
 			LOGGER.error(e);
 			abortarAplicacao(simNao);
 		}

@@ -9,6 +9,7 @@
 <%@ page import="gcom.micromedicao.hidrometro.HidrometroSituacao"%>
 <%@ page import="gcom.micromedicao.hidrometro.Hidrometro"
 	isELIgnored="false"%>
+<%@ page import="gcom.micromedicao.bean.OrdemServicoManutencaoHidrometroHelper"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html:html>
@@ -97,43 +98,27 @@
 
     function DateValidations(){
     	this.aa = new Array("dataAquisicao", "Data de Aquisição inválida.", new Function ("varName", "this.datePattern='dd/MM/yyyy';  return this[varName];"));
-    	this.bb = new Array("dataUltimaRevisao", "Data da revisão inválida.", new Function ("varName", "this.datePattern='dd/MM/yyyy';  return this[varName];"));
     }
 
     function caracteresespeciais(){
     	this.aa = new Array("numeroHidrometro", "Número do Hidrômetro possui caracteres especiais.", new Function ("varName", " return this[varName];"));
     	this.ab = new Array("dataAquisicao", "Data de Aquisição possui caracteres especiais.", new Function ("varName", " return this[varName];"));
     	this.ac = new Array("anoFabricacao", "Ano de Fabricação possui caracteres especiais.", new Function ("varName", " return this[varName];"));
-    	this.ad = new Array("dataUltimaRevisao", "Data de revisão possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+    	this.ad = new Array("numeroNotaFiscal", "Número da Nota Fiscal possui caracteres especiais.", new Function ("varName", " return this[varName];"));
     }
 
     function IntegerValidations(){
     	this.aa = new Array("anoFabricacao", "Ano de Fabricação deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+    	this.ab = new Array("numeroNotaFiscal", "Número da Nota Fiscal deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
     }
 
 	function validarForm(form){
 
 		if (validateAtualizarHidrometroActionForm(form) && testarCampoValorZero(form.numeroHidrometro, 'Número Hidrômetro') 
-				&& testarCampoValorZero(form.anoFabricacao, 'Data Fabricação') && validaDataRevisao()){
+				&& testarCampoValorZero(form.anoFabricacao, 'Data Fabricação')){
 
 			submeterFormPadrao(form);
 		}
-	}
-
-
-	function validaDataRevisao(){
-
-		var resposta = true;
-		
-		if(document.forms[0].dataUltimaRevisao!=null && document.forms[0].dataUltimaRevisao.value!=""){
-
-			resposta= comparaDatas(document.forms[0].dataUltimaRevisao.value,'>',document.forms[0].dataAquisicao.value);
-			
-			if(resposta==false){
-				alert("A Data da Última Revisão não pode ser anterior a Data de Aquisição do Hidrômetro.");
-			}
-		}
-		return resposta;
 	}
 
 	//Validacao Adicionada por Romulo Aurelio 24/05/2007 
@@ -266,6 +251,11 @@
 		var form = document.forms[0];
 		location.href = '/gsan/exibirFiltrarHidrometroAction.do?menu=sim';
 	}
+	
+	function consultarOs(idOs){
+		var url = 'exibirConsultarDadosOrdemServicoPopupAction.do?numeroOS='+idOs;
+		abrirPopup(url);
+	}
 //End -->
 </script>
 
@@ -387,7 +377,10 @@
 							labelProperty="descricao" property="id" />
 					</html:select></td>
 				</tr>
-
+				<tr>
+					<td><strong>Lote de Entrega:</strong></td>
+					<td><html:text maxlength="10" property="loteEntrega" size="6" tabindex="2"/></td>
+				</tr>
 				<logic:equal name="AtualizarHidrometroActionForm"
 					property="codigoFormatoNumeracao"
 					value="<%=Hidrometro.FORMATO_NUMERACAO_5_X_5.toString()%>">
@@ -418,6 +411,11 @@
 					<img border="0"
 						src="<bean:message key="caminho.imagens"/>calendario.gif"
 						width="20" border="0" align="absmiddle" alt="Exibir Calendário" /></a>dd/mm/aaaa</td>
+				</tr>
+				
+				<tr>
+					<td><strong>Número da Nota Fiscal:</strong></td>
+					<td><html:text property="numeroNotaFiscal" size="9" maxlength="9"/></td>
 				</tr>
 
 				<tr>
@@ -508,16 +506,6 @@
 						</td>
 					</tr>
 					<tr>
-						<td><strong>Data da Última Revisão:</strong></td>
-						<td><html:text property="dataUltimaRevisao" size="10"
-							maxlength="10" onkeyup="mascaraData(this,event)" tabindex="13" />
-						<a
-							href="javascript:abrirCalendario('AtualizarHidrometroActionForm', 'dataUltimaRevisao')">
-						<img border="0"
-							src="<bean:message key="caminho.imagens"/>calendario.gif"
-							width="20" border="0" align="absmiddle" alt="Exibir Calendário" /></a>dd/mm/aaaa</td>
-					</tr>
-					<tr>
 						<td><strong>Leitura Acumulada do Hidrômetro:</strong></td>
 						<td><html:text property="numeroLeituraAcumulada" size="4"
 							tabindex="14" readonly="true"
@@ -528,12 +516,110 @@
 				<tr>
 					<td><strong>Situação:<font color="#FF0000">*</font></strong></td>
 					<td>
-						<html:select property="idHidrometroSituacao" tabindex="10">
-						<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-						<logic:present name="colecaoHidrometroSituacao" scope="session">
-							<html:options collection="colecaoHidrometroSituacao" labelProperty="descricao" property="id" />
+						
+							
+							<logic:present scope="session" name="desabilitarSituacao">
+								<html:select property="idHidrometroSituacao" tabindex="10" disabled="true">
+									<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+									<logic:present name="colecaoHidrometroSituacao" scope="session">
+									<html:options collection="colecaoHidrometroSituacao" labelProperty="descricao" property="id" />
+									</logic:present>
+								</html:select>
+								
+							</logic:present>
+							
+						    
+						    <logic:notPresent scope="session" name="desabilitarSituacao">
+						        <html:select property="idHidrometroSituacao" tabindex="10" >
+									<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+									<logic:present name="colecaoHidrometroSituacao" scope="session">
+									<html:options collection="colecaoHidrometroSituacao" labelProperty="descricao" property="id" />
+									</logic:present>
+								</html:select>
+								
+						    </logic:notPresent>
+						
+					
+					</td>
+				</tr>
+				
+				<tr>
+					<td height="24" colspan="2">
+					<hr>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<logic:present name="colecaoOrdemServicoManutencaoHidrometroHelper">
+							<table width="100%" border="0">
+								<tr>
+									<td>
+										<table width="100%" bgcolor="#90c7fc">
+											<tr>
+												<td bgcolor="#79bbfd" colspan="4">
+												<div align="center" ><strong>Dados das Ordens de Serviço</strong></div>
+												</td>
+											</tr>
+											<tr bordercolor="#FFFFFF" bgcolor="#90c7fc">
+												<td>
+													<div align="center" class="style9"><strong>Ordem de Serviço</strong></div>
+												</td>
+												<td>
+													<div align="left" class="style9"><strong>Tipo de Serviço</strong></div>
+												</td>
+												<td>
+													<div align="center" class="style9"><strong>Data da Geração</strong></div>
+												</td>
+												<td>
+													<div align="left" class="style9"><strong>Situação</strong></div>
+												</td>
+											</tr>
+											
+											<%int cont3 = 0;%>
+											<logic:iterate name="colecaoOrdemServicoManutencaoHidrometroHelper" id="ordemServicoManutencaoHidrometroHelper">
+							
+												<%cont3 = cont3 + 1;
+													if (cont3 % 2 == 0) {%>
+												<tr bgcolor="#cbe5fe">
+													<%} else {
+							
+													%>
+												<tr bgcolor="#FFFFFF">
+													<%}%>
+													
+													<td>
+														<div align="center">
+															<a  title="Consultar Dados da Ordem de Serviço" href="javascript:consultarOs('<bean:write name="ordemServicoManutencaoHidrometroHelper" property="numeroOS"/>');">
+																<bean:write name="ordemServicoManutencaoHidrometroHelper" property="numeroOS" />
+															</a>
+														</div>
+													</td>
+													
+													<td>
+														<div align="left">
+															<bean:write name="ordemServicoManutencaoHidrometroHelper" property="descricaoTipoServico"/>
+														</div>
+													</td>
+							
+													<td>
+														<div align="center"><bean:write name="ordemServicoManutencaoHidrometroHelper"
+														property="dataGeracaoOS"/></div>
+													</td>
+													
+													<td>
+														<div align="left"><bean:write name="ordemServicoManutencaoHidrometroHelper"
+														property="descricaoSituacaoOS" /></div>
+													</td>
+							
+												</tr>
+												
+											</logic:iterate>
+											
+										</table>
+									</td>
+								</tr>
+							</table>
 						</logic:present>
-						</html:select>
 					</td>
 				</tr>
 
@@ -542,6 +628,7 @@
 					<td align="left"><font color="#FF0000">*</font> Campo
 					Obrigatório</td>
 				</tr>
+				
 			</table>
 			<table width="100%" border="0">
 				<tr>

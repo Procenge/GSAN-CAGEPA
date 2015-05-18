@@ -76,20 +76,17 @@
 
 package gcom.gui.cadastro.imovel;
 
-import gcom.cadastro.cliente.Cliente;
-import gcom.cadastro.cliente.ClienteImovel;
-import gcom.cadastro.cliente.ClienteRelacaoTipo;
-import gcom.cadastro.cliente.ClienteResponsavel;
-import gcom.cadastro.cliente.FiltroCliente;
-import gcom.cadastro.cliente.FiltroClienteResponsavel;
+import gcom.cadastro.cliente.*;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -154,6 +151,17 @@ public class AdicionarAtualizarImovelClienteAction
 			imovelClientesNovos = new ArrayList();
 		}
 
+		Boolean indicadorDataRelacaoFimInserir = false;
+		try{
+			if(ParametroCadastro.P_INDICADOR_INFORMAR_DATA_RELACAO_FIM_INSERIR_CLIENTE_IMOVEL.executar().equals(
+							ConstantesSistema.SIM.toString())){
+				indicadorDataRelacaoFimInserir = true;
+			}
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		// instância um cliente
 
 		Cliente cliente = new Cliente();
@@ -209,6 +217,7 @@ public class AdicionarAtualizarImovelClienteAction
 		data.set(Calendar.SECOND, 0);
 		data.set(Calendar.MILLISECOND, 0);
 		data.set(Calendar.HOUR, 0);
+		data.set(Calendar.HOUR_OF_DAY, 0);
 		data.set(Calendar.MINUTE, 0);
 		dataCorrente = data.getTime();
 
@@ -224,6 +233,168 @@ public class AdicionarAtualizarImovelClienteAction
 		// inicializa o cliente imovel
 		ClienteImovel clienteImovel = new ClienteImovel(dataInicioRelacao, null, null, cliente, clienteRelacaoTipo);
 
+		if(inserirImovelActionForm.get("dataFimClienteImovelRelacao") != null
+						&& !((String) inserirImovelActionForm.get("dataFimClienteImovelRelacao")).equals("")){
+			try{
+				Calendar cDataFimRelacao = Calendar.getInstance();
+				Calendar cDataInicioRelacao = Calendar.getInstance();
+
+				SimpleDateFormat dateformato = new SimpleDateFormat("dd/MM/yyyy");
+				try{
+					cDataFimRelacao.setTime(dateformato.parse((String) inserirImovelActionForm.get("dataFimClienteImovelRelacao")));
+				}catch(ParseException e){
+					// TODO Auto-generated catch block
+					throw new ActionServletException("erro.sistema", e);
+				}
+
+				cDataInicioRelacao.setTime(dataInicioRelacao);
+
+				cDataFimRelacao.set(Calendar.HOUR, cDataInicioRelacao.get(Calendar.HOUR));
+				cDataFimRelacao.set(Calendar.HOUR_OF_DAY, cDataInicioRelacao.get(Calendar.HOUR_OF_DAY));
+				cDataFimRelacao.set(Calendar.MINUTE, cDataInicioRelacao.get(Calendar.MINUTE));
+				cDataFimRelacao.set(Calendar.SECOND, cDataInicioRelacao.get(Calendar.SECOND));
+				cDataFimRelacao.set(Calendar.MILLISECOND, cDataInicioRelacao.get(Calendar.MILLISECOND));
+
+				if(cDataFimRelacao.before(cDataInicioRelacao)){
+					throw new ActionServletException("atencao.data_fim_relacao_maior.cliente_imovel_usuario");
+				}
+
+				clienteImovel.setDataPrevistaFimRelacao(dataFormato.parse((String) inserirImovelActionForm.get("dataFimClienteImovelRelacao")));
+
+				if(dataCorrente.after(clienteImovel.getDataPrevistaFimRelacao())){
+					clienteImovel.setDataFimRelacao(clienteImovel.getDataPrevistaFimRelacao());
+				}
+				
+			}catch(ParseException ex){
+				// dataInicioRelacao = null;
+			}
+		}
+
+		if(clienteImovel.getClienteRelacaoTipo().getId().intValue() == ConstantesSistema.CLIENTE_IMOVEL_TIPO_USUARIO.intValue()){
+			if(inserirImovelActionForm.get("idMotivoFimClienteImovelRelacao") != null
+							&& !((String) inserirImovelActionForm.get("idMotivoFimClienteImovelRelacao")).equals("")
+							&& !((String) inserirImovelActionForm.get("idMotivoFimClienteImovelRelacao")).equals(String
+											.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+				ClienteImovelFimRelacaoMotivo clienteImovelFimRelacaoMotivo = new ClienteImovelFimRelacaoMotivo();
+				clienteImovelFimRelacaoMotivo
+								.setId(Integer.valueOf((String) inserirImovelActionForm.get("idMotivoFimClienteImovelRelacao")));
+
+				clienteImovel.setClienteImovelFimRelacaoMotivo(clienteImovelFimRelacaoMotivo);
+			}
+		}
+
+		if(clienteRelacaoTipo.getId().intValue() == ConstantesSistema.CLIENTE_IMOVEL_TIPO_USUARIO.intValue()
+						&& indicadorDataRelacaoFimInserir){
+			FiltroClienteImovel filtroClienteImovel = new FiltroClienteImovel();
+			filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.IMOVEL_ID, imovel.getId()));
+			filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.CLIENTE_RELACAO_TIPO_ID, clienteRelacaoTipo
+							.getId().intValue()));
+
+			boolean existeDataFimMaiorQueDataInicio = false;
+			Date dataFimRelacaoComparacao = null;
+			
+			Collection<ClienteImovel> colecaoClientesImoveisRemovidos = (Collection<ClienteImovel>) sessao
+							.getAttribute("colecaoClientesImoveisRemovidos");
+			if(colecaoClientesImoveisRemovidos != null){
+				for(ClienteImovel clienteImovelRemovidos : colecaoClientesImoveisRemovidos){
+					if(clienteImovelRemovidos.getId() != null){
+						Date dataFimRelacaoAtual = clienteImovelRemovidos.getDataFimRelacao();
+						if (clienteImovelRemovidos.getDataFimRelacao() == null && clienteImovelRemovidos.getDataPrevistaFimRelacao() != null) {
+							dataFimRelacaoAtual = clienteImovelRemovidos.getDataPrevistaFimRelacao();
+						}
+						
+						if(dataFimRelacaoAtual != null){
+							if(dataFimRelacaoComparacao != null){
+								if (dataFimRelacaoAtual.after(dataFimRelacaoComparacao)){
+									dataFimRelacaoComparacao = dataFimRelacaoAtual;
+								}
+							}else{
+								dataFimRelacaoComparacao = dataFimRelacaoAtual;
+							}
+						}
+					}
+				}
+			}
+
+			Collection<ClienteImovel> colecaoClienteImovel = fachada.pesquisar(filtroClienteImovel, ClienteImovel.class.getName());
+			for(ClienteImovel clienteImovelBanco : colecaoClienteImovel) {
+				Boolean bFlagExisteItemRemovido = false;
+				if(colecaoClientesImoveisRemovidos != null){
+					bFlagExisteItemRemovido = colecaoClientesImoveisRemovidos.contains(clienteImovelBanco);
+				}
+
+				if(!bFlagExisteItemRemovido){
+					Date dataFimRelacaoAtualBanco = clienteImovelBanco.getDataFimRelacao();
+					if(clienteImovelBanco.getDataFimRelacao() == null && clienteImovelBanco.getDataPrevistaFimRelacao() != null){
+						dataFimRelacaoAtualBanco = clienteImovelBanco.getDataPrevistaFimRelacao();
+					}
+
+					if(dataFimRelacaoAtualBanco != null){
+						if(dataFimRelacaoComparacao != null){
+							if(dataFimRelacaoAtualBanco.after(dataFimRelacaoComparacao)){
+								dataFimRelacaoComparacao = dataFimRelacaoAtualBanco;
+							}
+						}else{
+							dataFimRelacaoComparacao = dataFimRelacaoAtualBanco;
+						}
+					}else{
+						dataFimRelacaoComparacao = null;
+					}
+				}
+			}
+
+			Date dataNovaMaiorFimRelacaoComparacao = dataFimRelacaoComparacao;
+			if (dataFimRelacaoComparacao != null) {
+				for(ClienteImovel clienteImovelNovos : imovelClientesNovos){
+					if(clienteImovelNovos.getClienteRelacaoTipo() != null
+									&& clienteImovelNovos.getClienteRelacaoTipo().getId() != null
+									&& clienteImovelNovos.getClienteRelacaoTipo().getId()
+													.equals(ConstantesSistema.CLIENTE_IMOVEL_TIPO_USUARIO)
+									&& clienteImovelNovos.getClienteRelacaoTipo().getId()
+													.equals(clienteImovel.getClienteRelacaoTipo().getId())){
+						Date dataFimRelacaoAtualNovo = clienteImovelNovos.getDataFimRelacao();
+						if(clienteImovelNovos.getDataFimRelacao() == null && clienteImovelNovos.getDataPrevistaFimRelacao() != null){
+							dataFimRelacaoAtualNovo = clienteImovelNovos.getDataPrevistaFimRelacao();
+						}
+
+						if(dataFimRelacaoAtualNovo != null){
+							if(dataFimRelacaoAtualNovo.after(dataNovaMaiorFimRelacaoComparacao)
+											&& dataNovaMaiorFimRelacaoComparacao != null){
+								dataNovaMaiorFimRelacaoComparacao = dataFimRelacaoAtualNovo;
+							}
+						}else{
+							dataNovaMaiorFimRelacaoComparacao = null;
+						}
+					}
+				}
+			}
+
+			
+			if(dataNovaMaiorFimRelacaoComparacao == null || clienteImovel.getDataInicioRelacao() == null){
+				existeDataFimMaiorQueDataInicio = true;
+			}else{
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(dataNovaMaiorFimRelacaoComparacao);
+				cal.add(Calendar.DATE, 1);
+				dataNovaMaiorFimRelacaoComparacao = cal.getTime();
+
+				if(clienteImovel.getDataInicioRelacao().equals(dataNovaMaiorFimRelacaoComparacao)){
+					existeDataFimMaiorQueDataInicio = false;
+				}else{
+					existeDataFimMaiorQueDataInicio = true;
+				}
+			}
+			
+			if(existeDataFimMaiorQueDataInicio){
+				if (dataNovaMaiorFimRelacaoComparacao != null) {
+					throw new ActionServletException("atencao.data_inicio_cliente_relacao_cliente_imovel", null, Util.formatarData(new Date(
+									dataNovaMaiorFimRelacaoComparacao.getTime())));
+				} else {
+					throw new ActionServletException("atencao.data_inicio_cliente_relacao_cliente_imovel_ativo", null, inserirImovelActionForm.get("textoSelecionado").toString());
+				}
+			}
+		}
+
 		// //Adicionando Conta envio para a DESO
 		// if
 		// (getParametroCompanhia(httpServletRequest).equals(SistemaParametro.INDICADOR_EMPRESA_DESO))
@@ -232,6 +403,7 @@ public class AdicionarAtualizarImovelClienteAction
 		// imovelContaEnvio.setId(ConstantesSistema.NUMERO_NAO_INFORMADO);
 		// clienteImovel.setImovelContaEnvio(imovelContaEnvio);
 		// }
+		clienteImovel.setIndicadorAtualizarDebitos(Short.valueOf(inserirImovelActionForm.get("indicadorAtualizarDebitos").toString()));
 
 		// Coloca a data de ultima alteração para identificar o objeto
 		clienteImovel.setUltimaAlteracao(new Date());
@@ -240,7 +412,17 @@ public class AdicionarAtualizarImovelClienteAction
 			// verifica se o tipo do cliente é usuário ou é responsável
 			if(clienteImovel.getClienteRelacaoTipo().getId().intValue() == ConstantesSistema.CLIENTE_IMOVEL_TIPO_USUARIO.intValue()){
 
-				if(sessao.getAttribute("idClienteImovelUsuario") == null || sessao.getAttribute("idClienteImovelUsuario").equals("")){
+				Boolean validarTipoClienteCadastrado = true;
+				if(!indicadorDataRelacaoFimInserir){
+					if(sessao.getAttribute("idClienteImovelUsuario") == null || sessao.getAttribute("idClienteImovelUsuario").equals("")){
+						validarTipoClienteCadastrado = true;
+					}else{
+						validarTipoClienteCadastrado = false;
+					}
+				}
+
+
+				if(validarTipoClienteCadastrado){
 					if(imovel != null && imovel.getImovelPerfil() != null && imovel.getImovelPerfil().getId() != null
 									&& imovel.getImovelPerfil().getId().equals(ConstantesSistema.INDICADOR_TARIFA_SOCIAL)){
 						throw new ActionServletException("atencao.cliente_na_tarifa_social", null, "usuário"); // cliente

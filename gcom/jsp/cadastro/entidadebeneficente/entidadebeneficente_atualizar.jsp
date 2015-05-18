@@ -44,8 +44,9 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
 
 function limparDebitoTipo(){
 	var form = document.forms[0];
+	
 	form.idDebitoTipo.value = "";
-   	  form.descricaoDebitoTipo.value = ""; 
+   	form.descricaoDebitoTipo.value = ""; 
 }
 	
  </script>
@@ -146,6 +147,15 @@ function limparDebitoTipo(){
 					</a>
 				  </td>
 				</tr>
+				
+				<tr>
+					<td width="162"><strong>Empresa:<font color="#ff0000">*</font></strong></td>
+					<td><html:select property="idEmpresa">
+						<option value=""></option>
+						<html:options name="request" collection="colecaoEmpresa"
+							labelProperty="descricao" property="id" />
+					</html:select></td>
+				</tr>					
 				
 				<tr>
                 	<td height="28"><strong>Indicador de Uso: <font color="#FF0000">*</font></strong></td>

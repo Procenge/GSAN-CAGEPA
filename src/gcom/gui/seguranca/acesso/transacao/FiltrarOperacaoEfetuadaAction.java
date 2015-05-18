@@ -398,6 +398,7 @@ public class FiltrarOperacaoEfetuadaAction
 			}
 		}
 
+
 		sessao.setAttribute("argumentos", argumentos);
 
 		// ---------------------------------------------------

@@ -76,33 +76,15 @@
 
 package gcom.tarefa;
 
-import gcom.batch.ControladorBatchLocal;
-import gcom.batch.ControladorBatchLocalHome;
-import gcom.batch.FuncionalidadeIniciada;
-import gcom.batch.Relatorio;
-import gcom.batch.RelatorioGerado;
+import gcom.batch.*;
 import gcom.relatorio.ConstantesRelatorios;
 import gcom.relatorio.RelatorioDataSource;
 import gcom.relatorio.RelatorioVazioException;
 import gcom.seguranca.acesso.usuario.Usuario;
-import gcom.util.ConstantesJNDI;
-import gcom.util.ConstantesSistema;
-import gcom.util.ControladorException;
-import gcom.util.ControladorUtilLocal;
-import gcom.util.ControladorUtilLocalHome;
-import gcom.util.IoUtil;
-import gcom.util.ServiceLocator;
-import gcom.util.ServiceLocatorException;
-import gcom.util.SistemaException;
-import gcom.util.WebUtil;
-import gcom.util.ZipUtil;
+import gcom.util.*;
+import gcom.util.parametrizacao.ParametroGeral;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -110,12 +92,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.ejb.CreateException;
 
-import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRExporterParameter;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.export.JRPdfExporter;
 import net.sf.jasperreports.engine.export.JRRtfExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporter;
@@ -214,6 +191,15 @@ public abstract class TarefaRelatorio
 	 */
 	public byte[] gerarRelatorio(String nomeRelatorio, Map parametrosRelatorio, RelatorioDataSource relatorioDataSource,
 					int tipoSaidaRelatorio) throws RelatorioVazioException{
+
+		if(parametrosRelatorio != null){
+			try{
+				parametrosRelatorio.put("P_NOME_EMPRESA_RELATORIO", ParametroGeral.P_NOME_EMPRESA_RELATORIO.executar());
+			}catch(ControladorException e1){
+				e1.printStackTrace();
+			}
+
+		}
 
 		// valor de retorno
 		ByteArrayOutputStream retorno = new ByteArrayOutputStream();

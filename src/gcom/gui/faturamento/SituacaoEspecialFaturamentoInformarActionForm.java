@@ -164,6 +164,8 @@ public class SituacaoEspecialFaturamentoInformarActionForm
 
 	private String sequencialRotaFinal;
 
+	private String idBairro;
+
 	private String nomeBairro;
 
 	private FormFile arquivoMatricula;
@@ -521,6 +523,7 @@ public class SituacaoEspecialFaturamentoInformarActionForm
 		sequencialRotaInicial = null;
 		cdRotaFinal = null;
 		sequencialRotaFinal = null;
+		idBairro = null;
 	}
 
 	public String getCdRotaFinal(){
@@ -611,6 +614,16 @@ public class SituacaoEspecialFaturamentoInformarActionForm
 	public String getEnderecoArquivoDownload(){
 
 		return enderecoArquivoDownload;
+	}
+
+	public String getIdBairro(){
+
+		return idBairro;
+	}
+
+	public void setIdBairro(String idBairro){
+
+		this.idBairro = idBairro;
 	}
 
 }

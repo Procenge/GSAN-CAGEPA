@@ -105,6 +105,7 @@ public class RecuperarDadosPesquisarImoveisSituacaoEspecialAction
 
 		// Set no mapeamento de retorno
 		ActionForward retorno = null;
+		SituacaoEspecialFaturamentoInformarActionForm form = (SituacaoEspecialFaturamentoInformarActionForm) actionForm;
 
 		// AdicionarSolicitacaoEspecificacaoActionForm adicionarSolicitacaoEspecificacaoActionForm =
 		// (AdicionarSolicitacaoEspecificacaoActionForm) actionForm;
@@ -114,6 +115,14 @@ public class RecuperarDadosPesquisarImoveisSituacaoEspecialAction
 		if(tipo != null && !tipo.equals("")){
 
 			retorno = actionMapping.findForward(tipo);
+
+			if(tipo.contains("quadraOrigem")){
+				httpServletRequest.setAttribute("idLocalidade", form.getLocalidadeOrigemID());
+				httpServletRequest.setAttribute("idSetorComercial", form.getSetorComercialOrigemID());
+			}else if(tipo.contains("quadraDestino")){
+					httpServletRequest.setAttribute("idLocalidade", form.getLocalidadeDestinoID());
+					httpServletRequest.setAttribute("idSetorComercial", form.getSetorComercialDestinoID());
+			}
 
 			if(httpServletRequest.getParameter("caminhoRetornoTelaPesquisaImovel") != null){
 				sessao.setAttribute("caminhoRetornoTelaPesquisa", httpServletRequest.getParameter("caminhoRetornoTelaPesquisaImovel"));

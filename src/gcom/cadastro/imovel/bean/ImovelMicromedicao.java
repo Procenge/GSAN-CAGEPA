@@ -77,6 +77,7 @@
 package gcom.cadastro.imovel.bean;
 
 import java.io.Serializable;
+import java.util.Collection;
 
 /**
  * @author Hibernate CodeGenerator
@@ -98,6 +99,10 @@ public class ImovelMicromedicao
 	private String qtdDias;
 
 	private Integer anoMesGrupoFaturamento;
+
+	private String numeroHidrometro;
+
+	private Collection<gcom.cadastro.imovel.Categoria> categorias;
 
 	public Integer getAnoMesGrupoFaturamento(){
 
@@ -175,4 +180,25 @@ public class ImovelMicromedicao
 
 		this.consumoHistoricoEsgoto = consumoHistoricoEsgoto;
 	}
+
+	public String getNumeroHidrometro(){
+
+		return numeroHidrometro;
+	}
+
+	public void setNumeroHidrometro(String numeroHidrometro){
+
+		this.numeroHidrometro = numeroHidrometro;
+	}
+
+	public Collection getCategorias(){
+
+		return this.categorias;
+	}
+
+	public void setCategorias(Collection<gcom.cadastro.imovel.Categoria> categorias){
+
+		this.categorias = categorias;
+	}
+
 }

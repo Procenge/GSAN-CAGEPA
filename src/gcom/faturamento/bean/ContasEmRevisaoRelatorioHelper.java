@@ -67,6 +67,8 @@ public class ContasEmRevisaoRelatorioHelper {
 
 	private String descricaoPerfilImovel;
 
+	private String existePagamento;
+
 	/**
 	 * @return Retorna o campo anoMesReferenciaConta.
 	 */
@@ -493,4 +495,13 @@ public class ContasEmRevisaoRelatorioHelper {
 		this.descricaoPerfilImovel = descricaoPerfilImovel;
 	}
 
+	public String getExistePagamento(){
+
+		return existePagamento;
+	}
+
+	public void setExistePagamento(String existePagamento){
+
+		this.existePagamento = existePagamento;
+	}
 }

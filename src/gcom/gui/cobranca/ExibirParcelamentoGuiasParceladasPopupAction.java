@@ -76,13 +76,10 @@
 
 package gcom.gui.cobranca;
 
-import gcom.cobranca.parcelamento.FiltroParcelamentoItem;
-import gcom.cobranca.parcelamento.ParcelamentoItem;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.util.filtro.ParametroNaoNulo;
-import gcom.util.filtro.ParametroSimples;
+import gcom.gui.faturamento.bean.GuiaPagamentoPrestacaoHelper;
 
 import java.util.Collection;
 
@@ -134,21 +131,11 @@ public class ExibirParcelamentoGuiasParceladasPopupAction
 		if(codigo != null && !codigo.trim().equals("")){
 
 			// Pesquisa o parfelamento Item na base
-			FiltroParcelamentoItem filtroParcelamentoItem = new FiltroParcelamentoItem();
-			filtroParcelamentoItem.adicionarParametro(new ParametroSimples(FiltroParcelamentoItem.PARCELAMENTO_ID, codigo));
-			filtroParcelamentoItem.adicionarParametro(new ParametroNaoNulo(FiltroParcelamentoItem.GUIA_PAGAMENTO_GERAL_ID));
-			filtroParcelamentoItem.adicionarCaminhoParaCarregamentoEntidade("guiaPagamentoGeral.guiaPagamento.guiasPagamentoPrestacao");
-			filtroParcelamentoItem
-							.adicionarCaminhoParaCarregamentoEntidade("guiaPagamentoGeral.guiaPagamento.guiasPagamentoPrestacaoHistorico");
-			filtroParcelamentoItem
-							.adicionarCaminhoParaCarregamentoEntidade("guiaPagamentoGeral.guiaPagamentoHistorico.guiasPagamentoPrestacaoHistorico");
-			filtroParcelamentoItem.adicionarCaminhoParaCarregamentoEntidade("parcelamento");
+			Collection<GuiaPagamentoPrestacaoHelper> colecaoGuiaPagamentoPrestacaoHelper = fachada
+							.pesquisarGuiasPagamentoPrestacaoPorParcelamento(Integer.valueOf(codigo));
 
-			Collection<ParcelamentoItem> colecaoParcelamentoItem = fachada.pesquisar(filtroParcelamentoItem, ParcelamentoItem.class
-							.getName());
-
-			if(colecaoParcelamentoItem != null && !colecaoParcelamentoItem.isEmpty()){
-				httpServletRequest.setAttribute("colecaoParcelamentoItem", colecaoParcelamentoItem);
+			if(colecaoGuiaPagamentoPrestacaoHelper != null && !colecaoGuiaPagamentoPrestacaoHelper.isEmpty()){
+				httpServletRequest.setAttribute("colecaoGuiaPagamentoPrestacao", colecaoGuiaPagamentoPrestacaoHelper);
 			}else{
 				throw new ActionServletException("atencao.guias.parceladas.inexistente");
 			}

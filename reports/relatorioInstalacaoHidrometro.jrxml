@@ -24,8 +24,8 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 
 	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="nomeEmpresa" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_NM_ESTADO" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NM_EMPRESA" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="solicitacao" class="java.lang.String"/>
 	<field name="endereco" class="java.lang.String"/>
@@ -63,6 +63,13 @@
 	<field name="numeroHidrometro" class="java.lang.String"/>
 	<field name="tipoRelacao" class="java.lang.String"/>
 
+	<variable name="endereco" class="java.lang.String" resetType="Report" calculation="Nothing">
+		<variableExpression><![CDATA[($F{complemento} == null || $F{complemento}.equals("") ? 
+	$F{endereco}+", "+$F{numero}
+ : 
+	$F{endereco}+", "+$F{numero}+", "+ $F{complemento}
+)]]></variableExpression>
+	</variable>
 		<background>
 			<band height="0"  isSplitAllowed="false" >
 			</band>
@@ -314,7 +321,7 @@
 					<textElement verticalAlignment="Middle">
 						<font fontName="Courier New" size="8"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{endereco}+", "+$F{numero}+", "+ $F{complemento}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$V{endereco}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
@@ -2951,7 +2958,7 @@
 					<textElement textAlignment="Justified">
 						<font fontName="Courier New" pdfFontName="Helvetica" size="8" isBold="false"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["Declaro ter tomado conhecimento de que foi realizada na data de hoje a instalação de hidrômetro em minha matrícula junto à " + $P{nomeEmpresa}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Declaro ter tomado conhecimento de que foi realizada na data de hoje a instalação de hidrômetro em minha matrícula junto à " + $P{P_NM_EMPRESA}]]></textFieldExpression>
 				</textField>
 				<line direction="TopDown">
 					<reportElement
@@ -3009,7 +3016,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="Courier New" pdfFontName="Courier-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["COMPANHIA DE SANEAMENTO DE  "  + $P{P_NM_ESTADO}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NM_EMPRESA}]]></textFieldExpression>
 				</textField>
 			</band>
 		</detail>

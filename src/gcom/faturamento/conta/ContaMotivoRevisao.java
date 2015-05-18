@@ -111,6 +111,8 @@ public class ContaMotivoRevisao
 
 	private Short indicadorInibeParcelamento;
 
+	private Short indicadorInibeDeclaracaoQuitacao;
+
 	public static Integer RETIDA_PARA_ANALISE;
 
 	public static Integer REVISAO_POR_COBRANCA_BANCARIA;
@@ -128,6 +130,8 @@ public class ContaMotivoRevisao
 	public static Integer REVISAO_SPC;
 
 	public static Integer CAUCIONAMENTO;
+
+	public static Integer FATURA_EM_PROCESSO_EMISSAO;
 
 	/** full constructor */
 	public ContaMotivoRevisao(String descricaoMotivoRevisaoConta, Short indicadorUso, Date ultimaAlteracao) {
@@ -243,6 +247,16 @@ public class ContaMotivoRevisao
 		this.indicadorInibeParcelamento = indicadorInibeParcelamento;
 	}
 
+	public Short getIndicadorInibeDeclaracaoQuitacao(){
+
+		return indicadorInibeDeclaracaoQuitacao;
+	}
+
+	public void setIndicadorInibeDeclaracaoQuitacao(Short indicadorInibeDeclaracaoQuitacao){
+
+		this.indicadorInibeDeclaracaoQuitacao = indicadorInibeDeclaracaoQuitacao;
+	}
+
 	/**
 	 * Este enum foi criado para dar suporte ao carregamento de constantes da classe em tempo de
 	 * execução. As constantes foram criadas aqui como atributos do enum, o que resolveu o problema
@@ -256,7 +270,8 @@ public class ContaMotivoRevisao
 	public static enum ContaMotivoRevisaoEnum {
 
 		RETIDA_PARA_ANALISE, REVISAO_POR_COBRANCA_BANCARIA, REVISAO_POR_PAGAMENTO_COMPROVADO, REVISAO_AUTOMATICA_ESTOURO_CONSUMO,
-		REVISAO_ENTRADA_DE_PARCELAMENTO, REVISAO_SUBJUDICE, REVISAO_AUTOMATICA_BAIXO_CONSUMO, CAUCIONAMENTO, REVISAO_SPC;
+		REVISAO_ENTRADA_DE_PARCELAMENTO, REVISAO_SUBJUDICE, REVISAO_AUTOMATICA_BAIXO_CONSUMO, CAUCIONAMENTO, REVISAO_SPC,
+		FATURA_EM_PROCESSO_EMISSAO;
 
 		private Integer id = -1;
 
@@ -294,6 +309,7 @@ public class ContaMotivoRevisao
 		REVISAO_AUTOMATICA_BAIXO_CONSUMO = ContaMotivoRevisaoEnum.REVISAO_AUTOMATICA_BAIXO_CONSUMO.getId();
 		CAUCIONAMENTO = ContaMotivoRevisaoEnum.CAUCIONAMENTO.getId();
 		REVISAO_SPC = ContaMotivoRevisaoEnum.REVISAO_SPC.getId();
+		FATURA_EM_PROCESSO_EMISSAO = ContaMotivoRevisaoEnum.FATURA_EM_PROCESSO_EMISSAO.getId();
 	}
 
 }

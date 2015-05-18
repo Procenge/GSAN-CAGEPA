@@ -4,8 +4,8 @@
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<head>
 <html:html>
+<head>
 <%@ include file="/jsp/util/titulo.jsp"%>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/regras_validator.js"></script><html:javascript staticJavascript="false"  formName="FiltrarConsumoTarifaActionForm" />
@@ -94,13 +94,14 @@ function valorCheckAtualizar(){
 </script>
 </head>
 
-<body leftmargin="5" topmargin="5"
-	onload="javascript:setarFoco('${requestScope.nomeCampo}');">
 <html:form action="/filtrarConsumoTarifaAction"
 	name="FiltrarConsumoTarifaActionForm"
 	onsubmit="return validateFiltrarConsumoTarifaActionForm(this);"
 	type="gcom.gui.faturamento.consumotarifa.FiltrarConsumoTarifaActionForm"
 	method="post">
+	
+<body leftmargin="5" topmargin="5"
+	onload="javascript:setarFoco('${requestScope.nomeCampo}');">
 
 	<%@ include file="/jsp/util/cabecalho.jsp"%>
 	<%@ include file="/jsp/util/menu.jsp"%>
@@ -194,6 +195,15 @@ function valorCheckAtualizar(){
 					
 					</td>
 				</tr>
+				
+				<tr>
+					<td width="184" class="style1"><strong>Ato Administrativo:</strong></td>
+					<td width="210" class="style1">
+						<html:text maxlength="30"
+							property="descricaoAtoAdministrativo" size="30"/>
+					</td>
+				</tr>
+				
 				<tr>
 					<td colspan="2">
 					<p>&nbsp;</p>

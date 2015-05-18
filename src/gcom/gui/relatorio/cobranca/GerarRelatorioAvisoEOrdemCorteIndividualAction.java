@@ -20,6 +20,7 @@ import gcom.gui.ActionServletException;
 import gcom.relatorio.ExibidorProcessamentoTarefaRelatorio;
 import gcom.relatorio.RelatorioVazioException;
 import gcom.relatorio.cobranca.RelatorioAvisoEOrdemCorteIndividual;
+import gcom.seguranca.acesso.PermissaoEspecial;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaRelatorio;
 import gcom.util.ConstantesSistema;
@@ -61,6 +62,10 @@ public class GerarRelatorioAvisoEOrdemCorteIndividualAction
 
 		// Obtém a sessão
 		HttpSession sessao = httpServletRequest.getSession(false);
+
+		// Captura o usuário - 1354032
+		Usuario usuarioLogado = (Usuario) sessao.getAttribute(Usuario.USUARIO_LOGADO);
+		//
 
 		String idImovelStr = (String) sessao.getAttribute("idImovelPrincipalAba");
 		Integer idImovel = null;
@@ -134,13 +139,16 @@ public class GerarRelatorioAvisoEOrdemCorteIndividualAction
 		Integer indicadorNotas = Integer.valueOf(2);
 		Integer indicadorGuias = Integer.valueOf(2);
 		Integer indicadorAtualizar = Integer.valueOf(2);
+		int indicadorCalcularAcrescimosSucumbenciaAnterior = 2;
 
 		// Obtendo os débitos do imovel
-		ObterDebitoImovelOuClienteHelper colecaoDebitoImovel = fachada.obterDebitoImovelOuCliente(tipoImovel.intValue(), idImovel
-						.toString().trim(), null, null, anoMesInicial, anoMesFinal, dataVencimentoDebitoI, dataVencimentoDebitoF,
-						indicadorPagamento.intValue(), indicadorConta.intValue(), indicadorDebito.intValue(), indicadorCredito.intValue(),
-						indicadorNotas.intValue(), indicadorGuias.intValue(), indicadorAtualizar.intValue(), null, null, null, null, null,
-						ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM);
+		ObterDebitoImovelOuClienteHelper colecaoDebitoImovel = fachada
+						.obterDebitoImovelOuCliente(tipoImovel.intValue(), idImovel.toString().trim(), null, null, anoMesInicial,
+										anoMesFinal, dataVencimentoDebitoI, dataVencimentoDebitoF, indicadorPagamento.intValue(),
+										indicadorConta.intValue(), indicadorDebito.intValue(), indicadorCredito.intValue(),
+										indicadorNotas.intValue(), indicadorGuias.intValue(), indicadorAtualizar.intValue(), null, null,
+										null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM,
+						indicadorCalcularAcrescimosSucumbenciaAnterior, null);
 
 		Collection<ContaValoresHelper> colecaoContaValores = colecaoDebitoImovel.getColecaoContasValores();
 		Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamentoValores = colecaoDebitoImovel.getColecaoGuiasPagamentoValores();
@@ -292,6 +300,26 @@ public class GerarRelatorioAvisoEOrdemCorteIndividualAction
 				}
 			}
 		}
+		
+		/**
+		 * [UC0203] Consultar Débitos
+		 * [FS0015] Verificar Existência de Conta em Execução Fiscal
+		 * 
+		 * @author Gicevalter Couto
+		 * @date 06/08/2014
+		 */
+		boolean temPermissaoAtualizarDebitosExecFiscal = fachada.verificarPermissaoEspecial(
+						PermissaoEspecial.ATUALIZAR_DEBITOS_EXECUCAO_FISCAL, this.getUsuarioLogado(httpServletRequest));
+
+		Short indicadorExecFiscal;
+		indicadorExecFiscal = fachada.verificarImovelDebitoExecucaoFiscal(
+						(Collection<DebitoACobrar>) sessao.getAttribute("colecaoDebitoACobrar"),
+						(Collection<GuiaPagamentoValoresHelper>) sessao.getAttribute("colecaoGuiaPagamentoValores"),
+						(Collection<ContaValoresHelper>) sessao.getAttribute("colecaoContaValores"));
+
+		if(!temPermissaoAtualizarDebitosExecFiscal && indicadorExecFiscal.equals(Short.valueOf("1"))){
+			throw new ActionServletException("atencao.imprimir.imovel.possui.debito.execucao.fiscal");
+		}
 
 		Collection<CreditoARealizar> colecaoCreditoARealizar = colecaoDebitoImovel.getColecaoCreditoARealizar();
 		Collection<CreditoARealizar> colecaoCreditoARealizarSemDescontoParcelamento = new ArrayList<CreditoARealizar>();
@@ -358,8 +386,6 @@ public class GerarRelatorioAvisoEOrdemCorteIndividualAction
 		/*
 		 * FIM DO TRATAMENTO
 		 */
-
-		Usuario usuarioLogado = (Usuario) sessao.getAttribute("usuarioLogado");
 
 		if(Util.isVazioOrNulo(colecaoContaValores) && Util.isVazioOrNulo(colecaoDebitoACobrar)
 						&& Util.isVazioOrNulo(colecaoGuiaPagamentoValores)

@@ -204,12 +204,35 @@
                       <property name="relatorioId" value="252" />
                 </bean>
                 
+                
+                
+                
+                
+                <bean class="br.com.procenge.geradorrelatorio.impl.RelatorioImpl">
+                      <property name="arquivo" value="crystal/RelatorioProvisoesParaPerdaRecebimentos.rpt" />
+                      <property name="classeValidacaoParametros" value="br.com.procenge.geradorrelatorio.impl.validador.RelatorioProvisaoParaPerdasRecebimentoImpl" />
+                      <property name="processoId" value="90032" />
+                      <property name="relatorioId" value="351" />
+                </bean>
+                
+                
+                
+                 <bean class="br.com.procenge.geradorrelatorio.impl.RelatorioImpl">
+                      <property name="arquivo" value="crystal/ResumoProvisoesParaPerdaRecebimentos.rpt" />
+                      <property name="classeValidacaoParametros" value="br.com.procenge.geradorrelatorio.impl.validador.RelatorioResumoProvisaoParaPerdasRecebimentoImpl" />
+                      <property name="processoId" value="90033" />
+                      <property name="relatorioId" value="352" />
+                </bean>
+                
+                
+                
                 <bean class="br.com.procenge.geradorrelatorio.impl.RelatorioImpl">
                       <property name="arquivo" value="crystal/RelatorioContasEmAtraso.rpt" />
                       <property name="classeValidacaoParametros" value="br.com.procenge.geradorrelatorio.impl.validador.RelatorioContasAtrasoValidadorImpl" />
                       <property name="processoId" value="286" />
                       <property name="relatorioId" value="257" />
                 </bean>
+                
                 
                 <bean class="br.com.procenge.geradorrelatorio.impl.RelatorioImpl">
                       <property name="arquivo" value="crystal/RelatorioResumoContasEmitida.rpt" />
@@ -289,7 +312,42 @@
                       <property name="processoId" value="350" />
                       <property name="relatorioId" value="310" />
                 </bean>
-                        
+                       
+                <bean class="br.com.procenge.geradorrelatorio.impl.RelatorioImpl">
+                      <property name="arquivo" value="crystal/RelatorioDeferimentoPeriodo.rpt" />
+                      <property name="classeValidacaoParametros" value="br.com.procenge.geradorrelatorio.impl.validador.RelatorioDeferimentoPeriodoValidadorImpl" />
+                      <property name="processoId" value="391" />
+                      <property name="relatorioId" value="348" />
+                </bean>
+                
+                <bean class="br.com.procenge.geradorrelatorio.impl.RelatorioImpl">
+                      <property name="arquivo" value="crystal/RelatorioClassificacaoContabil-Geral.rpt" />
+                      <property name="classeValidacaoParametros" value="br.com.procenge.geradorrelatorio.impl.validador.RelatorioClassificacaoContabilGeralValidadorImpl" />
+                      <property name="processoId" value="" />
+                      <property name="relatorioId" value="380" />
+                </bean>
+                
+                <bean class="br.com.procenge.geradorrelatorio.impl.RelatorioImpl">
+                      <property name="arquivo" value="crystal/RelatorioClassificacaoContabil-Execucao.rpt" />
+                      <property name="classeValidacaoParametros" value="br.com.procenge.geradorrelatorio.impl.validador.RelatorioClassificacaoContabilExecucaoValidadorImpl" />
+                      <property name="processoId" value="" />
+                      <property name="relatorioId" value="381" />
+                </bean>
+                
+                <bean class="br.com.procenge.geradorrelatorio.impl.RelatorioImpl">
+                      <property name="arquivo" value="crystal/RelatorioClassificacaoContabil-DividaAtiva.rpt" />
+                      <property name="classeValidacaoParametros" value="br.com.procenge.geradorrelatorio.impl.validador.RelatorioClassificacaoContabilDividaAtivaValidadorImpl" />
+                      <property name="processoId" value="" />
+                      <property name="relatorioId" value="382" />
+                </bean>                                                
+                 
+                <bean class="br.com.procenge.geradorrelatorio.impl.RelatorioImpl">
+                      <property name="arquivo" value="crystal/RelatorioDiferimentoAnterior.rpt" />
+                      <property name="classeValidacaoParametros" value="br.com.procenge.geradorrelatorio.impl.validador.RelatorioDiferimentoAnteriorValidadorImpl" />
+                      <property name="processoId" value="90034" />
+                      <property name="relatorioId" value="353" />
+                </bean>
+                 
           </list>
 		</property>
   </bean>

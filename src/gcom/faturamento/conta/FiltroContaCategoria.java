@@ -113,6 +113,8 @@ public class FiltroContaCategoria
 
 	public final static String CATEGORIA_DESCRICAO = "comp_id.categoria.descricao";
 
+	public final static String QUANTIDADE_ECONOMIA = "quantidadeEconomia";
+
 	/**
 	 * Description of the Field
 	 */

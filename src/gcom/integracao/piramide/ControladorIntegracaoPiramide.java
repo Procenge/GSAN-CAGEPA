@@ -1506,6 +1506,7 @@ public class ControladorIntegracaoPiramide
 			LOGGER.info(">> ultimoSeqConslDiaNfcl >> " + ultimoSeqConslDiaNfcl);
 
 			Collection<Integer> idsMunicipios = ServiceLocator.getInstancia().getControladorGeografico().pesquisarTodosIdsMunicipios();
+
 			DEBUG_TOTALIZADOR = new DebugTotalizador();
 			for(Integer idMunicipio : idsMunicipios){
 
@@ -1522,6 +1523,7 @@ public class ControladorIntegracaoPiramide
 					processarModulosDiaParaLocalidade(referenciaBase, dtInicio, ultimoSeqConslDiaNfcl, idMunicipio, modulosPorDia);
 					LOGGER.info("### MUNICIPIO[" + idMunicipio + "] - FIM da Integracao Sped Pis/Cofins");
 				}
+
 
 			}
 
@@ -1580,14 +1582,13 @@ public class ControladorIntegracaoPiramide
 
 	private String getCodigoFilialOrigem(Integer idMunicipio) throws ControladorException{
 
-		String codigoFilialOrigem;
+		String codigoFilialOrigem = idMunicipio.toString();
 		if(Integer.valueOf(0).equals(idMunicipio)){
 			codigoFilialOrigem = "1";
 		}else{
 			Integer idGerenciaParaLocalidade = ServiceLocator.getInstancia().getControladorLocalidade()
 							.pesquisarIdGerenciaParaLocalidade(idMunicipio);
-			codigoFilialOrigem = Util.isVazioOuBrancoOuZero(idGerenciaParaLocalidade) ? "1" : idGerenciaParaLocalidade
-							.toString();
+			codigoFilialOrigem = Util.isVazioOuBrancoOuZero(idGerenciaParaLocalidade) ? "1" : idGerenciaParaLocalidade.toString();
 		}
 		return codigoFilialOrigem;
 	}
@@ -1638,7 +1639,7 @@ public class ControladorIntegracaoPiramide
 
 		try{
 			Collection<Object[]> lancamentos = repositorioIntegracaoPiramide.consultarLancamentosContabeis(helper.getDataContabil(),
-							helper.getIdMunicipio(), false, idsEventosContabil);
+							helper.getIdMunicipio(), false, 0, idsEventosContabil);
 			LOGGER.info("	QTD JUROS CORRECOES DE PARCELAMENTO para processar: [" + lancamentos.size() + "]");
 
 			Integer idCategoria;
@@ -1666,7 +1667,7 @@ public class ControladorIntegracaoPiramide
 					throws ControladorException{
 		try{
 			Collection<Object[]> lancamentos = repositorioIntegracaoPiramide.consultarLancamentosContabeis(helper.getDataContabil(),
-							helper.getIdMunicipio(), true, idsEventosContabil);
+							helper.getIdMunicipio(), true, 0, idsEventosContabil);
 			LOGGER.info("	QTD GUIAS DE PAGAMENTO para processar: [" + lancamentos.size() + "]");
 
 			Integer idObjetoContabil;
@@ -1732,7 +1733,7 @@ public class ControladorIntegracaoPiramide
 
 		try{
 			Collection<Object[]> lancamentosParaCancelarSaldo = repositorioIntegracaoPiramide.consultarLancamentosContabeis(
-							helper.getDataContabil(), helper.getIdMunicipio(), false, idsEventosContabil);
+							helper.getDataContabil(), helper.getIdMunicipio(), false, 0, idsEventosContabil);
 			Integer idCategoria;
 			BigDecimal vlConta;
 			LOGGER.info("	QTD Lancamentos para CANCELAR SALDO: [" + lancamentosParaCancelarSaldo.size() + "]");
@@ -2073,11 +2074,14 @@ public class ControladorIntegracaoPiramide
 					throws ControladorException{
 
 		try{
+
+			// caso 1
 			boolean exibirItemContabil = TabelaIntegracaoConslDiaNfclHelper.MODULO_FINANCIAMENTO.equals(tipoAcumulo)
 							|| TabelaIntegracaoConslDiaNfclHelper.MODULO_GUIA_PAGAMENTO.equals(tipoAcumulo);
 
+
 			Collection<Object[]> lancamentos = repositorioIntegracaoPiramide.consultarLancamentosContabeis(helper.getDataContabil(),
-							helper.getIdMunicipio(), exibirItemContabil, idsEventosContabil);
+							helper.getIdMunicipio(), exibirItemContabil, tipoAcumulo, idsEventosContabil);
 			LOGGER.info("	QTD Lancamentos para processar: [" + lancamentos.size() + "]");
 
 			Integer idCategoria;
@@ -2097,6 +2101,30 @@ public class ControladorIntegracaoPiramide
 				codigoConsumoSped = repositorioIntegracaoPiramide.consultarClassificacaoLancamento(dtVigencia, idCategoria, vlConta);
 				calcularAcumulo(helper, codigoConsumoSped, tipoAcumulo, vlConta, idItemContabil);
 			}
+
+
+			if(TabelaIntegracaoConslDiaNfclHelper.MODULO_FATURAMENTO.equals(tipoAcumulo)){
+
+				// caso 2
+				Collection<Object[]> debitosLancamentos = repositorioIntegracaoPiramide
+.consultarLancamentosContabeisPorEventoComercial(
+								helper.getDataContabil(), helper.getIdMunicipio());
+				LOGGER.info("	QTD debitos Lancamentos para processar: [" + debitosLancamentos.size() + "]");
+
+				for(Object[] objects : debitosLancamentos){
+					vlConta = (BigDecimal) objects[1];
+					idCategoria = (Integer) objects[2];
+
+					idItemContabil = (Integer) objects[3];
+
+					if(Integer.valueOf(3).equals(idCategoria)) idCategoria = 2;
+
+					codigoConsumoSped = repositorioIntegracaoPiramide.consultarClassificacaoLancamento(dtVigencia, idCategoria, vlConta);
+					calcularAcumulo(helper, codigoConsumoSped, tipoAcumulo, vlConta, idItemContabil);
+				}
+
+			}
+
 		}catch(ErroRepositorioException e){
 			throw new ControladorException(e, "Falha ao consultar Lancamentos Analiticos.");
 		}
@@ -2107,8 +2135,14 @@ public class ControladorIntegracaoPiramide
 
 		switch(modulo){
 			case 1: // TabelaIntegracaoConslDiaNfclHelper.MODULO_FATURAMENTO:
-				helper.acumularValoresFaturamento(classeConsumo, vlConta);
-				DEBUG_TOTALIZADOR.add(DebugTotalizador.INC_CONTA, 1, vlConta);
+				if(Arrays.asList(2, 5).contains(idItemContabil)){
+					helper.acumularValoresJurosCorrecaoFaturamento(classeConsumo, vlConta);
+					DEBUG_TOTALIZADOR.add(DebugTotalizador.INC_CONTA_NORMAL, 1, vlConta);
+				}else{
+					helper.acumularValoresFaturamento(classeConsumo, vlConta);
+					DEBUG_TOTALIZADOR.add(DebugTotalizador.INC_CONTA_JUROS, 1, vlConta);
+				}
+
 				break;
 
 			case 3: // TabelaIntegracaoConslDiaNfclHelper.MODULO_PARCELAMENTO:
@@ -2134,6 +2168,7 @@ public class ControladorIntegracaoPiramide
 					helper.acumularValoresFaturamento(classeConsumo, vlConta);
 					DEBUG_TOTALIZADOR.add(DebugTotalizador.INC_GPGTO_NORMAL, 1, vlConta);
 				}
+
 				break;
 
 			default:
@@ -2170,7 +2205,9 @@ public class ControladorIntegracaoPiramide
 
 		public static final String INC_PARCELAMENTO = "005 INC_PARCELAMENTO";
 
-		public static final String INC_CONTA = "002 INC_CONTA";
+		public static final String INC_CONTA_NORMAL = "002 INC_CONTA_NORMAL";
+
+		public static final String INC_CONTA_JUROS = "002 INC_CONTA_JUROS";
 
 		public static final String CAN_CONTA_NM = "007 CAN_CONTA_NM";
 

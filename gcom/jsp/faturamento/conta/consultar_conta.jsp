@@ -121,9 +121,9 @@ function extendeTabela(tabela,display){
 				</tr>
 				<!--============================ KASSIA ALBUQUERQUE	30/08/2007 ============================ -->
 				<tr>
-					<td width="183" height="25"><strong>Situa&ccedil;&atilde;o da Conta:</strong>
+					<td><strong>Situa&ccedil;&atilde;o da Conta:</strong>
 					</td>
-					<td colspan="3">
+					<td>
 						<logic:equal name="conta" property="debitoCreditoSituacaoAtual.id" value="<%= DebitoCreditoSituacao.PRESCRITA.toString() %>">
 							<span style="color: #ff0000;"><html:text name="conta"
 								property="debitoCreditoSituacaoAtual.descricaoDebitoCreditoSituacao"
@@ -139,6 +139,15 @@ function extendeTabela(tabela,display){
 								style="background-color:#EFEFEF; border:0;" />
 						</logic:notEqual>
 					</td>
+					
+					<logic:present name="exibirDividaAtivaColuna" scope="session">
+						<td width="175"><strong>Dívida Ativa:</strong></td>
+						<td width="122">
+							<input type="text" name="ligacaoEsgotoSituacao" size="3"
+								value=<%="" + (String)session.getAttribute("statusDividaAtivaConta") %>								
+								readonly="true" style="background-color:#EFEFEF; border:0" />
+						</td>
+					</logic:present>					
 				</tr>
 
 				<tr>

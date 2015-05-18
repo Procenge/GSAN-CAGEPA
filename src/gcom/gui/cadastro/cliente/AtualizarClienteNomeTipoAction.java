@@ -76,13 +76,10 @@
 
 package gcom.gui.cadastro.cliente;
 
-import gcom.cadastro.cliente.Cliente;
-import gcom.cadastro.cliente.FiltroCliente;
-import gcom.cadastro.cliente.ClienteEndereco;
-import gcom.cadastro.cliente.ClienteTipo;
-import gcom.cadastro.cliente.FiltroClienteTipo;
+import gcom.cadastro.cliente.*;
 import gcom.cadastro.endereco.EnderecoTipo;
 import gcom.fachada.Fachada;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.gui.StatusWizard;
 import gcom.util.ConstantesSistema;
@@ -162,6 +159,36 @@ public class AtualizarClienteNomeTipoAction
 				}
 			}
 		}
+
+		if(tipoPessoaForm != null){
+
+			if(tipoPessoaForm.equals(ClienteTipo.APOSENTADO_PENSIONISTA.toString())){
+
+				String numeroBeneficio = (String) clienteActionForm.get("numeroBeneficio");
+				if(Util.isVazioOuBranco(numeroBeneficio)){
+
+					throw new ActionServletException("atencao.required", null, "Número do Benefício");
+				}
+
+				// Validar Cliente com Número do Benefício Já Existente
+				FiltroCliente filtroCliente = new FiltroCliente();
+				filtroCliente.adicionarParametro(new ParametroSimples(FiltroCliente.NUMERO_BENEFICIO, numeroBeneficio));
+
+				Collection<Cliente> colecaoClienteBeneficioExistente = fachada.pesquisar(filtroCliente, Cliente.class.getName());
+
+				if(!Util.isVazioOrNulo(colecaoClienteBeneficioExistente)){
+
+					Cliente clienteNumeroBeneficioExistente = colecaoClienteBeneficioExistente.iterator().next();
+
+					if(!clienteNumeroBeneficioExistente.getId().equals(Util.obterInteger(codigo))){
+
+						throw new ActionServletException("atencao.numero_beneficio_cliente_ja_cadastrado", null,
+										new String[] {clienteNumeroBeneficioExistente.getId().toString(), numeroBeneficio});
+					}
+				}
+			}
+		}
+
 		clienteActionForm.set("idUnidadeFederacao", idUnidadeFederacao);
 
 		String dataNascimento = (String) clienteActionForm.get("dataNascimento");

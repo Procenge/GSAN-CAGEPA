@@ -59,6 +59,13 @@
         column="ativ_icatividadeunica"
         length="2"
     />
+    
+    <property
+        name="valorHora"
+        type="java.math.BigDecimal"
+        column="ativ_vlhora "
+        length="13"
+    />
 
     <!-- Associations -->
   

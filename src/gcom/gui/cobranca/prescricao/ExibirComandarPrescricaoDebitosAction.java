@@ -213,6 +213,7 @@ public class ExibirComandarPrescricaoDebitosAction
 				Scanner scanner = new Scanner(formFile.getInputStream());
 				Collection colecaoImoveis = new ArrayList();
 				Collection<String> devolucao = new ArrayList<String>();
+				Collection<Integer> idsImoveis = new ArrayList();
 				String matricula;
 				Imovel imovel;
 
@@ -233,6 +234,7 @@ public class ExibirComandarPrescricaoDebitosAction
 						}else{
 
 							colecaoImoveis.add(imovel);
+							idsImoveis.add(imovel.getId());
 						}
 
 					}catch(NumberFormatException e){
@@ -241,12 +243,12 @@ public class ExibirComandarPrescricaoDebitosAction
 					}
 				}
 
-				// Seta os imoveis para a pesquisa
-				Collection<Integer> idsImoveis = new ArrayList();
-				for(Imovel item : (Collection<Imovel>) colecaoImoveis){
-
-					idsImoveis.add(item.getId());
-				}
+				// // Seta os imoveis para a pesquisa
+				// Collection<Integer> idsImoveis = new ArrayList();
+				// for(Imovel item : (Collection<Imovel>) colecaoImoveis){
+				//
+				// idsImoveis.add(item.getId());
+				// }
 
 				// Prepara arquivo com erros
 				File arquivoErro = new File("ArquivoErro.txt");

@@ -76,28 +76,19 @@
 
 package gcom.gui.cadastro.imovel;
 
-import gcom.cadastro.imovel.Categoria;
-import gcom.cadastro.imovel.FiltroCategoria;
-import gcom.cadastro.imovel.FiltroSubCategoria;
-import gcom.cadastro.imovel.Imovel;
-import gcom.cadastro.imovel.ImovelSubcategoria;
-import gcom.cadastro.imovel.ImovelSubcategoriaPK;
-import gcom.cadastro.imovel.Subcategoria;
+import gcom.cadastro.imovel.*;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.seguranca.acesso.PermissaoEspecial;
+import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -131,7 +122,7 @@ public class ExibirAtualizarImovelSubCategoriaAction
 	 * @return Descrição do retorno
 	 */
 	public ActionForward execute(ActionMapping actionMapping, ActionForm actionForm, HttpServletRequest httpServletRequest,
-					HttpServletResponse httpServletResponse) throws ControladorException{
+					HttpServletResponse httpServletResponse){
 
 		ActionForward retorno = actionMapping.findForward("atualizarImovelSubCategoria");
 
@@ -140,15 +131,25 @@ public class ExibirAtualizarImovelSubCategoriaAction
 
 		// Parâmtro utilizado para definir se na aba de subcategoria o botão CADASTRO IMOVEL CONSUMO
 		// FAIXA AREA CATG será exibido ou não.
-		String indicadorImovelConsumoFaixaAreaCatg = ParametroCadastro.P_INDICADOR_IMOVEL_CONSUMO_FAIXA_AREA_CATG.executar();
+		String indicadorImovelConsumoFaixaAreaCatg = "";
+		try{
+			indicadorImovelConsumoFaixaAreaCatg = ParametroCadastro.P_INDICADOR_IMOVEL_CONSUMO_FAIXA_AREA_CATG.executar();
+		}catch(ControladorException e){
+			e.printStackTrace();
+			throw new ActionServletException(e.getMessage(), e);
+		}
 
 		// Obtém o action form
 		DynaValidatorForm inserirImovelActionForm = (DynaValidatorForm) actionForm;
 
 		Collection colecaoImovelSubCategorias = null;
 
+		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
+
 		// Obtém a fachada
 		Fachada fachada = Fachada.getInstancia();
+
+
 
 		// Criação das coleções
 		Collection categorias = new HashSet();
@@ -200,14 +201,14 @@ public class ExibirAtualizarImovelSubCategoriaAction
 			Collection colecaoCategoria = fachada.pesquisar(filtroCategoria, Categoria.class.getName());
 			Categoria categoriaNaBase = (Categoria) Util.retonarObjetoDeColecao(colecaoCategoria);
 
-			if(categoriaNaBase.getConsumoMaximoEconomiasValidacao() < new Integer(quantidadeEconomia)){
+			if(categoriaNaBase.getQuantidadeMaximoEconomiasValidacao() < new Integer(quantidadeEconomia)){
 				if(httpServletRequest.getParameter("confirmado") == null){
 
 					httpServletRequest.setAttribute("destino", "4");
 					sessao.setAttribute("botaoAdicionar", botaoAdicionar);
 					retorno = montarPaginaConfirmacaoWizard("atencao.usuario.limite_ultrapassado_economias_validacao",
 									ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL, httpServletRequest, actionMapping, ""
-													+ categoriaNaBase.getConsumoMaximoEconomiasValidacao());
+ + categoriaNaBase.getQuantidadeMaximoEconomiasValidacao());
 
 				}else{
 					if(httpServletRequest.getParameter("confirmado").equalsIgnoreCase("ok")){
@@ -415,6 +416,36 @@ public class ExibirAtualizarImovelSubCategoriaAction
 
 				}
 			}
+
+			String paramIndicadorRestricaoAlteracao = "";
+			try{
+				paramIndicadorRestricaoAlteracao = ParametroCadastro.P_INDICADOR_RESTRICAO_ALTERACAO_QTDE_ECONOMIAS_IMOVEL.executar();
+			}catch(ControladorException e){
+				e.printStackTrace();
+				throw new ActionServletException(e.getMessage(), e);
+			}
+			if(!Util.isVazioOuBrancoOuZero(paramIndicadorRestricaoAlteracao)
+							&& paramIndicadorRestricaoAlteracao.equals(ConstantesSistema.SIM.toString())){
+
+				if(fachada.verificarPermissaoEspecial(PermissaoEspecial.ALTERAR_QUANTIDADE_ECONOMIAS_IMOVEL, usuario)){
+					// Caso o usuário tenha permissão especial para alterar a quantidade de
+					// economias do
+					// imóvel
+					// habilitar o campo Quantidade de economias
+
+					sessao.setAttribute("habilitarCampoQuantidadeEconomias", "true");
+				}else{
+
+					// Caso contrário, desabilitar o campo Quantidade de economias e não permitir
+					// alteração.
+					sessao.setAttribute("habilitarCampoQuantidadeEconomias", "false");
+				}
+			}else{
+				// Caso contrário, ou seja, não exista restrição para alteração da quantidade de
+				// economias do imóvel:
+				sessao.setAttribute("habilitarCampoQuantidadeEconomias", "true");
+			}
+
 		}
 
 		sessao.setAttribute("colecaoImovelSubCategorias", colecaoImovelSubCategorias);

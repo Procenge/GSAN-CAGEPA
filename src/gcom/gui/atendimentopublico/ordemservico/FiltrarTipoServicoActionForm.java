@@ -118,6 +118,10 @@ public class FiltrarTipoServicoActionForm
 
 	private String indicadorVistoria;
 
+	private String indicadorAfericaoHidrometro;
+
+	private String indicadorPagamentoAntecipado;
+
 	private String codigoServico;
 
 	private String tempoMedioIncial;
@@ -423,6 +427,8 @@ public class FiltrarTipoServicoActionForm
 		this.servicoTerceirizado = null;
 		this.indicadorFiscalizacaoInfracao = null;
 		this.indicadorVistoria = null;
+		this.indicadorAfericaoHidrometro = null;
+		this.indicadorPagamentoAntecipado = null;
 		this.codigoServico = null;
 		this.tempoMedioIncial = null;
 		this.tempoMedioFinal = null;
@@ -935,4 +941,23 @@ public class FiltrarTipoServicoActionForm
 		this.descricaoUnidadeOrganizacionalDestino = descricaoUnidadeOrganizacionalDestino;
 	}
 
+	public String getIndicadorAfericaoHidrometro(){
+
+		return indicadorAfericaoHidrometro;
+	}
+
+	public void setIndicadorAfericaoHidrometro(String indicadorAfericaoHidrometro){
+
+		this.indicadorAfericaoHidrometro = indicadorAfericaoHidrometro;
+	}
+
+	public String getIndicadorPagamentoAntecipado(){
+
+		return indicadorPagamentoAntecipado;
+	}
+
+	public void setIndicadorPagamentoAntecipado(String indicadorPagamentoAntecipado){
+
+		this.indicadorPagamentoAntecipado = indicadorPagamentoAntecipado;
+	}
 }

@@ -130,7 +130,7 @@ public class RelatorioGerarRelacaoDebitosContasBean
 		this.contaCodigoBarras = contaCodigoBarras;
 
 		this.arrayRelatorioGerarRelacaoDebitosContasTotalBean = new ArrayList();
-		this.arrayRelatorioGerarRelacaoDebitosContasTotalBean.addAll(colecaoGerarRelacaoDebitosContasTotalBean);
+		this.arrayRelatorioGerarRelacaoDebitosContasTotalBean.add(colecaoGerarRelacaoDebitosContasTotalBean);
 
 		this.arrayJR = new JRBeanCollectionDataSource(this.arrayRelatorioGerarRelacaoDebitosContasTotalBean);
 

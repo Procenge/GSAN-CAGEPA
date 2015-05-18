@@ -229,7 +229,7 @@
 		        <td colspan="2" width="380"></td>
 			</tr>
 			<tr> 
-				<td height="10" width="155"><strong>Data de Entrega:</strong></td>
+				<td height="10" width="155"><strong>Data da Situação do Documento :</strong></td>
 		        <td>
 				<html:text property="dataEntrega" size="8" readonly="true" style="background-color:#EFEFEF; border:0;"/>
 		        </td>

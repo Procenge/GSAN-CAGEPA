@@ -231,7 +231,7 @@ Util.converterStringParaInteger(grupoFaturamento), false,
 		colecaoCalcularValoresAguaEsgotoHelper = fachada.calcularValoresAguaEsgoto(new Integer(anoMesReferencia), ligacaoAguaSituacaoID,
 						ligacaoEsgotoSituacaoID, indicadorFaturamentoAgua, indicadorFaturamentoEsgoto, colecaoCategoriaOUSubcategoria,
 						consumoFaturadoAgua, consumoFaturadoEsgoto, consumoMinimoLigacao, dataLeituraAnterior, dataLeituraAtual,
-						percentualEsgoto, consumoTarifa.getId(), 21720002);
+						percentualEsgoto, consumoTarifa.getId(), 21720002, null);
 
 
 		// Método reponsável pela totalização dos valores de água e esgoto por

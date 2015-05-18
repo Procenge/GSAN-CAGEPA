@@ -158,6 +158,9 @@
 											<div align="center"><strong>Prest. Pendente</strong></div>
 										</td>
 										
+										<td>
+											<div align="center"><strong>Numero RA</strong></div>
+										</td>										
 										
 									</tr>
 	
@@ -281,6 +284,15 @@
 															<div align="center"></div>
 														</logic:empty>
 													</td>
+													
+													<td>
+														<logic:notEmpty	name="guiaPagamento" property="numeroRA">
+															<div align="center"><bean:write name="guiaPagamento" property="numeroRA"/></div>
+														</logic:notEmpty>
+														<logic:empty	name="guiaPagamento" property="numeroRA">
+															<div align="center"></div>
+														</logic:empty>
+													</td>													
 													
 												</pg:item>
 											</logic:iterate>

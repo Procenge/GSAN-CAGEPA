@@ -325,11 +325,12 @@ function limparCep(){
 						tabindex="3" size="4"
 						onkeypress="validaEnterDependencia(event, 'exibirPesquisarImovelAction.do?objetoConsulta=1',this,document.forms[0].codigoSetorComercial.value,'Setor Comercial');" 
 						onkeyup="javascript:verificarDigitosSetorComercial()"/>
-						<ahref="javascript:limparPesquisaBairro();redirecionarSubmitDependencia('exibirPesquisarQuadraAction.do?caminhoRetornoTelaPesquisa=exibirPesquisarImovelAction&idLocalidade='+document.forms[0].idLocalidade.value,document.forms[0].idLocalidade.value,'Localidade');limparPesquisaQuadra();">
+						
+																									
+					<a href="javascript:limparPesquisaBairro();redirecionarSubmitDependencia('exibirPesquisarQuadraAction.do?caminhoRetornoTelaPesquisa=exibirPesquisarImovelAction&idLocalidade='+document.forms[0].idLocalidade.value+'&idSetorComercial='+document.forms[0].codigoSetorComercial.value+'&tipo=Quadra',document.forms[0].codigoSetorComercial.value,'Setor Comercial');limparPesquisaQuadra();">
+						<img border="0" src="<bean:message key="caminho.imagens"/>pesquisa.gif" border="0"/>
+					</a>
 					
-					<a href="javascript:abrirPopupDependencia('exibirPesquisarQuadraAction.do?idSetorComercial='+document.forms[0].codigoSetorComercial.value+'&tipo=Quadra',document.forms[0].codigoSetorComercial.value,'Setor Comercial', 400, 800);">
-				          	<img border="0" src="<bean:message key="caminho.imagens"/>pesquisa.gif" border="0"/>
-				    </a>  			
 					<logic:present name="idQuadraNaoEncontrada">
 						<logic:equal name="idQuadraNaoEncontrada" value="exception">
 							<html:text property="descricaoQuadra" size="40" maxlength="30" readonly="true"
@@ -341,6 +342,11 @@ function limparCep(){
 							 border="0" title="Apagar" />
 						 </a>
 					</td>
+					
+					
+					
+					
+					
 				</tr>
 				<tr>
 					<td width="18%"><strong>Lote:</strong></td>

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping>
+
+<class
+    name="gcom.cadastro.atendimento.AtendimentoDocumentoTipo"
+    table="ATENDIMENTO_DOCUMENTO_TIPO"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ADTP_ID"
+    >
+      <generator class="sequence">
+          <param name="sequence">SQ_ATENDIMENTO_DOCMTO_TIPO</param>
+      </generator>
+    </id>
+
+    <property
+        name="descricaoAbreviada"
+        type="java.lang.String"
+        column="ADTP_DSABREVIADO"
+        not-null="true"
+        length="10"
+    />
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="ADTP_DSATENDIMENTODOCMTOTIPO"
+        length="60"
+    />
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="ADTP_ICUSO"
+        length="2"
+    />            
+	<property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ADTP_TMULTIMAALTERACAO"
+        length="6"
+    />
+
+</class>
+</hibernate-mapping>

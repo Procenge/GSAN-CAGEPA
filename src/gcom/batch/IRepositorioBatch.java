@@ -403,4 +403,25 @@ public interface IRepositorioBatch {
 	 */
 	public Collection<FaturamentoSimulacaoComando> pesquisarFaturamentoSimulacaoComandoNaoRealizados(Integer numeroPagina)
 					throws ErroRepositorioException;
+
+	/**
+	 * @param idProcessoIniciado
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+
+	public Integer verificarProcessoSituacao(Integer idProcessoIniciado) throws ErroRepositorioException;
+
+	/**
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+
+	public Collection<Integer> pesquisarProcessoDependeConcluido() throws ErroRepositorioException;
+
+	/**
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection pesquisarSetorComercialProcessamentoBatch() throws ErroRepositorioException;
 }

@@ -64,6 +64,17 @@ public class EmitirDocumentoOrdemCorteModelo4e5Helper
 
 	private String idTipoServico;
 
+	private Integer idClienteUsuario;
+
+	public void setIdClienteUsuario(Integer idClienteUsuario){
+
+		this.idClienteUsuario = idClienteUsuario;
+	}
+
+	public Integer getIdClienteUsuario(){
+
+		return idClienteUsuario;
+	}
 
 	public EmitirDocumentoOrdemCorteModelo4e5Helper() {
 

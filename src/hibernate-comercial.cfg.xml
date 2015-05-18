@@ -122,7 +122,9 @@
 		<mapping resource="gcom/atendimentopublico/ordemservico/OrdemServicoUnidade.hbm.xml" />
 		<mapping resource="gcom/atendimentopublico/ordemservico/OrdemServicoValaPavimento.hbm.xml" />
 		<mapping resource="gcom/atendimentopublico/ordemservico/OsAtividadeMaterialExecucao.hbm.xml" />
-		<mapping resource="gcom/atendimentopublico/ordemservico/OsAtividadePeriodoExecucao.hbm.xml" />
+		<mapping resource="gcom/atendimentopublico/ordemservico/OsAtividadePeriodoExecucao.hbm.xml" />		
+		<mapping resource="gcom/atendimentopublico/ordemservico/EntulhoMedida.hbm.xml" />
+		<mapping resource="gcom/atendimentopublico/ordemservico/EquipeTipo.hbm.xml" />
 		
 		<mapping resource="gcom/atendimentopublico/ordemservico/OsSeletivaComandoLocalGeo.hbm.xml" />
 		<mapping resource="gcom/atendimentopublico/ordemservico/OsSeletivaComandoImovelPerfil.hbm.xml" />
@@ -150,6 +152,7 @@
 		<mapping resource="gcom/atendimentopublico/ordemservico/ServicoNaoCobrancaMotivo.hbm.xml" />
 		<mapping resource="gcom/atendimentopublico/ordemservico/ServicoPerfilTipo.hbm.xml" />
 		<mapping resource="gcom/atendimentopublico/ordemservico/ServicoTipo.hbm.xml" />
+		<mapping resource="gcom/atendimentopublico/ordemservico/ServicoDebitoTipo.hbm.xml" />
 		<mapping resource="gcom/atendimentopublico/ordemservico/ServicoTipoAtividade.hbm.xml" />
 		<mapping resource="gcom/atendimentopublico/ordemservico/ServicoTipoGrupo.hbm.xml" />
 		<mapping resource="gcom/atendimentopublico/ordemservico/ServicoTipoMaterial.hbm.xml" />
@@ -258,6 +261,7 @@
 		<mapping resource="gcom/cadastro/imovel/Despejo.hbm.xml" />
 		<mapping resource="gcom/cadastro/imovel/EloAnormalidade.hbm.xml" />
 		<mapping resource="gcom/cadastro/imovel/EntidadeBeneficente.hbm.xml" />
+		<mapping resource="gcom/cadastro/imovel/EntidadeBeneficenteContrato.hbm.xml" />
 		<mapping resource="gcom/cadastro/imovel/Esgotamento.hbm.xml" />
 		<mapping resource="gcom/cadastro/imovel/FonteAbastecimento.hbm.xml" />
 		<mapping resource="gcom/cadastro/imovel/Imovel.hbm.xml" />
@@ -266,6 +270,7 @@
 		<mapping resource="gcom/cadastro/imovel/ImovelCobrancaAdministrivaItem.hbm.xml" />
 		<mapping resource="gcom/cadastro/imovel/ImovelCobrancaMotivoRetirada.hbm.xml" />
 		<mapping resource="gcom/cadastro/imovel/ImovelCobrancaSituacao.hbm.xml" />
+		<mapping resource="gcom/cadastro/imovel/ImovelCobrancaSituacaoItem.hbm.xml" />
 		<mapping resource="gcom/cadastro/imovel/ImovelContaEnvio.hbm.xml" />
 		<mapping resource="gcom/cadastro/imovel/ImovelDoacao.hbm.xml" />
 		<mapping resource="gcom/cadastro/imovel/ImovelEconomia.hbm.xml" />
@@ -320,6 +325,7 @@
 		<mapping resource="gcom/cobranca/CobrancaCriterio.hbm.xml" />
 		<mapping resource="gcom/cobranca/CobrancaCriterioLinha.hbm.xml" />
 		<mapping resource="gcom/cobranca/CobrancaDebitoSituacao.hbm.xml" />
+		<mapping resource="gcom/cobranca/CobrancaDocumentoSucumbencia.hbm.xml" />
 		<mapping resource="gcom/cobranca/CobrancaDocumento.hbm.xml" />
 		<mapping resource="gcom/cobranca/CobrancaDocumentoItem.hbm.xml" />
 		<mapping resource="gcom/cobranca/CobrancaEstagio.hbm.xml" />
@@ -415,6 +421,10 @@
 		<mapping resource="gcom/cobranca/parcelamento/ParcelamentoSituacaoEspecial.hbm.xml" />
 		<mapping resource="gcom/cobranca/parcelamento/ParcelamentoTipo.hbm.xml" />
 		<mapping resource="gcom/cobranca/parcelamento/ParcelamentoTermoTestemunhas.hbm.xml" />
+		<mapping resource="gcom/cobranca/parcelamento/ParcelamentoAcordoTipo.hbm.xml" />
+		<mapping resource="gcom/cobranca/parcelamento/ParcelamentoDadosTermo.hbm.xml" />
+		<mapping resource="gcom/cobranca/transferencia/TransferenciaDebitos.hbm.xml" />
+		<mapping resource="gcom/cobranca/transferencia/TransferenciaDebitosItem.hbm.xml" />
 		<mapping resource="gcom/cobranca/opcaoparcelamento/PreParcelamentoOpcao.hbm.xml" />
 		<mapping resource="gcom/cobranca/opcaoparcelamento/PreParcelamento.hbm.xml" />
 		<mapping resource="gcom/cobranca/programacobranca/ProgramaCobranca.hbm.xml" />
@@ -613,6 +623,8 @@
 		<mapping resource="gcom/seguranca/acesso/usuario/UsuarioPermissaoEspecial.hbm.xml" />
 		<mapping resource="gcom/seguranca/acesso/usuario/UsuarioSituacao.hbm.xml" />
 		<mapping resource="gcom/seguranca/acesso/usuario/UsuarioTipo.hbm.xml" />
+		<mapping resource="gcom/seguranca/acesso/usuario/UsuarioSenha.hbm.xml" />
+		<mapping resource="gcom/seguranca/acesso/usuario/UsuarioAcesso.hbm.xml" />
 		<mapping resource="gcom/seguranca/transacao/AlteracaoTipo.hbm.xml" />
 		<mapping resource="gcom/seguranca/transacao/SgbdTabela.hbm.xml" />
 		<mapping resource="gcom/seguranca/transacao/SgbdTabelaColuna.hbm.xml" />
@@ -663,6 +675,9 @@
 		<mapping resource="gcom/integracao/acquagis/TabelaIntegracaoContaAtualizada.hbm.xml" />
 		<mapping resource="gcom/cadastro/imovel/ImovelCheckListDocumentacao.hbm.xml"/>
 		<mapping resource="gcom/cadastro/cliente/EstadoCivil.hbm.xml"/>
+		<mapping resource="gcom/cadastro/atendimento/AtendimentoDocumentoTipo.hbm.xml"/>
+		<mapping resource="gcom/cadastro/atendimento/AtendimentoPessoaTipo.hbm.xml"/>
+		<mapping resource="gcom/cadastro/atendimento/NormaProcedimental.hbm.xml"/>
 		<mapping resource="gcom/cobranca/CobrancaAdministrativaRemuneracaoMensal.hbm.xml" />
 		<mapping resource="gcom/arrecadacao/AjusteCodigoBarras.hbm.xml" />
 		<mapping resource="gcom/faturamento/faturamentosimulacaocomando/FaturamentoSimulacaoComando.hbm.xml" />
@@ -678,7 +693,26 @@
 		<mapping resource="gcom/arrecadacao/pagamento/GuiaPagamentoPrescricaoHistorico.hbm.xml" />
 		<mapping resource="gcom/atendimentopublico/ordemservico/ServicoTipoValorLocalidade.hbm.xml" />
 		<mapping resource="gcom/faturamento/debito/DebitoTipoValorLocalidade.hbm.xml" />
-
+		<mapping resource="gcom/cadastro/cliente/AtividadeEconomica.hbm.xml" />
+		<mapping resource="gcom/cadastro/cliente/ClienteDebitoACobrar.hbm.xml" />
+		<mapping resource="gcom/cadastro/cliente/ClienteDebitoACobrarHistorico.hbm.xml" />
+		<mapping resource="gcom/cadastro/cliente/ClienteCreditoARealizar.hbm.xml" />		
+		<mapping resource="gcom/cadastro/cliente/ClienteCreditoARealizarHistorico.hbm.xml" />
+		<mapping resource="gcom/micromedicao/hidrometro/HidrometroCondicao.hbm.xml" />
+		<mapping resource="gcom/micromedicao/hidrometro/HidrometroHistoricoAfericao.hbm.xml" />
+		<mapping resource="gcom/cobranca/ajustetarifa/AjusteTarifa.hbm.xml" />
+		<mapping resource="gcom/cobranca/ajustetarifa/AjusteTarifaConta.hbm.xml" />
+		<mapping resource="gcom/cadastro/atendimento/AtendimentoProcedimento.hbm.xml"/>
+		<mapping resource="gcom/cadastro/atendimento/AtendProcDocumentoPessoaTipo.hbm.xml"/>			
+		<mapping resource="gcom/cadastro/atendimento/AtendProcNormaProcedimental.hbm.xml"/>
+		<mapping resource="gcom/cadastro/atendimento/Atendimento.hbm.xml"/>
+		<mapping resource="gcom/cadastro/atendimento/AtendimentoDocumentacao.hbm.xml"/>
+		<mapping resource="gcom/cadastro/atendimento/DocumentoEletronico.hbm.xml"/>
+		<mapping resource="gcom/seguranca/acesso/DocumentoEmissaoEfetuada.hbm.xml" />
+		<mapping resource="gcom/dividaativa/DividaAtivaInscricaoResumo.hbm.xml" />
+	    <mapping resource="gcom/dividaativa/DividaAtivaInscricaoDebito.hbm.xml" />
+		<mapping resource="gcom/cobranca/DocumentoTipoLayout.hbm.xml" />
+		<mapping resource="gcom/cobranca/DocumentoLayoutAssinatura.xml" />
     </session-factory>
 
 </hibernate-configuration>

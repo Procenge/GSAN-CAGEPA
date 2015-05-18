@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+<class
+    name="gcom.cadastro.atendimento.Atendimento"
+    table="ATENDIMENTO"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ATEN_ID"
+    >
+
+     <generator class="sequence">
+       <param name="sequence">SQ_ATENDIMENTO</param>
+   	</generator>
+    
+    </id>
+
+	<property
+        name="dataInicioAtendimento"
+        type="java.sql.Timestamp"
+        column="ATEN_TMATENDIMENTOINICIO"
+        length="6"
+    />
+    
+	<property
+        name="dataFimAtendimento"
+        type="java.sql.Timestamp"
+        column="ATEN_TMATENDIMENTOFIM"
+        length="6"
+    />    
+    
+	<property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ATEN_TMULTIMAALTERACAO"
+        length="6"
+    />
+    
+    <many-to-one
+        name="usuario"
+	    class="gcom.seguranca.acesso.usuario.Usuario"
+	>
+    	<column name="USUR_ID" />
+	</many-to-one> 
+
+     <many-to-one
+        name="imovel"
+        class="gcom.cadastro.imovel.Imovel"
+    >
+        <column name="IMOV_ID" />
+    </many-to-one>   
+    
+    <many-to-one
+        name="cliente"
+	    class="gcom.cadastro.cliente.Cliente"
+	>
+    	<column name="CLIE_ID" />
+	</many-to-one> 
+
+     <many-to-one
+        name="atendimentoProcedimento"
+        class="gcom.cadastro.atendimento.AtendimentoProcedimento"
+    >
+        <column name="ATPR_ID" />
+    </many-to-one>       
+
+</class>
+</hibernate-mapping>

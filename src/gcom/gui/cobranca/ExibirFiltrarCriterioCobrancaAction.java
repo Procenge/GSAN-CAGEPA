@@ -122,8 +122,10 @@ public class ExibirFiltrarCriterioCobrancaAction
 			criterioCobrancaFiltrarActionForm.setOpcaoAcaoImovelSitEspecial("");
 			criterioCobrancaFiltrarActionForm.setOpcaoAcaoInquilinoDebitoMesConta("");
 			criterioCobrancaFiltrarActionForm.setOpcaoContasRevisao("");
+			criterioCobrancaFiltrarActionForm.setOpcaoDividaAtiva("");
 			criterioCobrancaFiltrarActionForm.setComCpf("");
 			criterioCobrancaFiltrarActionForm.setComTelefone("");
+			criterioCobrancaFiltrarActionForm.setCriterioCobranca("");
 			criterioCobrancaFiltrarActionForm.setIndicadorUso("3");
 			sessao.setAttribute("indicadorAtualizar", "1");
 			httpServletRequest.setAttribute("nomeCampo", "descricaoCriterio");

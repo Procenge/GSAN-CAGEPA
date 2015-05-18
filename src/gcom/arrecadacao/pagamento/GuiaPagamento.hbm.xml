@@ -331,6 +331,11 @@
         <column name="dcst_idanterior" />
     </many-to-one>
     
-
+    <many-to-one
+        name="servicoTipo"
+        class="gcom.atendimentopublico.ordemservico.ServicoTipo"
+    >
+        <column name="SVTP_ID" />
+    </many-to-one>
 </class>
 </hibernate-mapping>

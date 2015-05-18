@@ -289,6 +289,14 @@ public class EncerrarOrdemServicoActionForm
 
 	private String descricaoPavimento;
 
+	private String quantidadeEntulho;
+
+	private String idEntulhoMedida;
+
+	private String comprimentoTutulacaoAguaPluvial;
+
+	private String diametroTutulacaoAguaPluvial;
+
 	// Rede/Ramal Água
 	private String idCausaAgua;
 
@@ -326,6 +334,35 @@ public class EncerrarOrdemServicoActionForm
 	private String submitAutomatico1;
 
 	private String submitAutomatico3;
+
+	// Indicador de Aferição Obrigatório
+	private String indicadorAfericaoServicoTipo;
+
+	private String idHidrometroCondicao;
+
+	private String indicadorResultado;
+
+	private String idFuncionario;
+
+	private String nomeFuncionario;
+
+	private String indicadorClienteAcompanhou;
+
+	private String indicadorCobraHorasMateriais;
+
+	private String tamanhoColecao;
+
+	private String indicadorResponsavel;
+
+	private String idEquipeComponente;
+
+	private String nomeComponente;
+
+	private Integer idEquipeTipo;
+
+	private String responsavelId;
+
+	private String responsavelDescricao;
 
 	public Collection<OrdemServicoFotoOcorrencia> getColecaoOSFoto(){
 
@@ -1570,6 +1607,186 @@ public class EncerrarOrdemServicoActionForm
 	public void setSubmitAutomatico3(String submitAutomatico3){
 
 		this.submitAutomatico3 = submitAutomatico3;
+	}
+
+	public String getIndicadorAfericaoServicoTipo(){
+
+		return indicadorAfericaoServicoTipo;
+	}
+
+	public void setIndicadorAfericaoServicoTipo(String indicadorAfericaoServicoTipo){
+
+		this.indicadorAfericaoServicoTipo = indicadorAfericaoServicoTipo;
+	}
+
+	public String getIdHidrometroCondicao(){
+
+		return idHidrometroCondicao;
+	}
+
+	public void setIdHidrometroCondicao(String idHidrometroCondicao){
+
+		this.idHidrometroCondicao = idHidrometroCondicao;
+	}
+
+	public String getIndicadorResultado(){
+
+		return indicadorResultado;
+	}
+
+	public void setIndicadorResultado(String indicadorResultado){
+
+		this.indicadorResultado = indicadorResultado;
+	}
+
+	public String getIdFuncionario(){
+
+		return idFuncionario;
+	}
+
+	public void setIdFuncionario(String idFuncionario){
+
+		this.idFuncionario = idFuncionario;
+	}
+
+	public String getNomeFuncionario(){
+
+		return nomeFuncionario;
+	}
+
+	public void setNomeFuncionario(String nomeFuncionario){
+
+		this.nomeFuncionario = nomeFuncionario;
+	}
+
+	public String getIndicadorClienteAcompanhou(){
+
+		return indicadorClienteAcompanhou;
+	}
+
+	public void setIndicadorClienteAcompanhou(String indicadorClienteAcompanhou){
+
+		this.indicadorClienteAcompanhou = indicadorClienteAcompanhou;
+	}
+
+	public String getQuantidadeEntulho(){
+
+		return quantidadeEntulho;
+	}
+
+	public void setQuantidadeEntulho(String quantidadeEntulho){
+
+		this.quantidadeEntulho = quantidadeEntulho;
+	}
+
+	public String getIdEntulhoMedida(){
+
+		return idEntulhoMedida;
+	}
+
+	public void setIdEntulhoMedida(String idEntulhoMedida){
+
+		this.idEntulhoMedida = idEntulhoMedida;
+	}
+
+	public String getComprimentoTutulacaoAguaPluvial(){
+
+		return comprimentoTutulacaoAguaPluvial;
+	}
+
+	public void setComprimentoTutulacaoAguaPluvial(String comprimentoTutulacaoAguaPluvial){
+
+		this.comprimentoTutulacaoAguaPluvial = comprimentoTutulacaoAguaPluvial;
+	}
+
+	public String getDiametroTutulacaoAguaPluvial(){
+
+		return diametroTutulacaoAguaPluvial;
+	}
+
+	public void setDiametroTutulacaoAguaPluvial(String diametroTutulacaoAguaPluvial){
+
+		this.diametroTutulacaoAguaPluvial = diametroTutulacaoAguaPluvial;
+	}
+
+	public String getIndicadorCobraHorasMateriais(){
+
+		return indicadorCobraHorasMateriais;
+	}
+
+	public void setIndicadorCobraHorasMateriais(String indicadorCobraHorasMateriais){
+
+		this.indicadorCobraHorasMateriais = indicadorCobraHorasMateriais;
+	}
+
+	public String getTamanhoColecao(){
+
+		return tamanhoColecao;
+	}
+
+	public void setTamanhoColecao(String tamanhoColecao){
+
+		this.tamanhoColecao = tamanhoColecao;
+	}
+
+	public String getIndicadorResponsavel(){
+
+		return indicadorResponsavel;
+	}
+
+	public void setIndicadorResponsavel(String indicadorResponsavel){
+
+		this.indicadorResponsavel = indicadorResponsavel;
+	}
+
+	public String getIdEquipeComponente(){
+
+		return idEquipeComponente;
+	}
+
+	public void setIdEquipeComponente(String idEquipeComponente){
+
+		this.idEquipeComponente = idEquipeComponente;
+	}
+
+	public String getNomeComponente(){
+
+		return nomeComponente;
+	}
+
+	public void setNomeComponente(String nomeComponente){
+
+		this.nomeComponente = nomeComponente;
+	}
+
+	public Integer getIdEquipeTipo(){
+
+		return idEquipeTipo;
+	}
+
+	public void setIdEquipeTipo(Integer idEquipeTipo){
+
+		this.idEquipeTipo = idEquipeTipo;
+	}
+
+	public String getResponsavelId(){
+
+		return responsavelId;
+	}
+
+	public void setResponsavelId(String responsavelId){
+
+		this.responsavelId = responsavelId;
+	}
+
+	public String getResponsavelDescricao(){
+
+		return responsavelDescricao;
+	}
+
+	public void setResponsavelDescricao(String responsavelDescricao){
+
+		this.responsavelDescricao = responsavelDescricao;
 	}
 
 }

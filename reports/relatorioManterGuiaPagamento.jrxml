@@ -39,6 +39,10 @@
 	<parameter name="periodoEmissao" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="periodoVencimento" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="idGuiaPagamento" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" isForPrompting="true" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["C:\\workspace\\Relatorio\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="exibirDividaAtivaColuna" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="getIdGuiaPagamento" class="java.lang.String"/>
 	<field name="getIdImovel" class="java.lang.String"/>
@@ -982,10 +986,30 @@
 						width="782"
 						height="42"
 						key="subreportConta1-1">
-							<printWhenExpression><![CDATA[new Boolean($F{getColecaoRelGuiPagDetalhePrestacaoBean} != null)]]></printWhenExpression>
+							<printWhenExpression><![CDATA[($F{getColecaoRelGuiPagDetalhePrestacaoBean} != null && $P{exibirDividaAtivaColuna}.equals("2") ?
+	Boolean.TRUE
+:
+	Boolean.FALSE
+)]]></printWhenExpression>
 						</reportElement>
 					<dataSourceExpression><![CDATA[$F{getColecaoRelGuiPagDetalhePrestacaoBean}]]></dataSourceExpression>
 					<subreportExpression  class="java.lang.String"><![CDATA["relatorioManterGuiaPagamentoDetalhePrestacao.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						x="0"
+						y="168"
+						width="782"
+						height="42"
+						key="subreportConta1-1-Divida">
+							<printWhenExpression><![CDATA[($F{getColecaoRelGuiPagDetalhePrestacaoBean} != null && $P{exibirDividaAtivaColuna}.equals("1") ?
+	Boolean.TRUE
+:
+	Boolean.FALSE
+)]]></printWhenExpression>
+						</reportElement>
+					<dataSourceExpression><![CDATA[$F{getColecaoRelGuiPagDetalhePrestacaoBean}]]></dataSourceExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA["relatorioManterGuiaPagamentoDetalhePrestacaoDividaAtiva.jasper"]]></subreportExpression>
 				</subreport>
 			</band>
 			</groupHeader>

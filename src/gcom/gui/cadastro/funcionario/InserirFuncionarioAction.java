@@ -79,8 +79,7 @@
 
 package gcom.gui.cadastro.funcionario;
 
-import java.util.Collection;
-
+import gcom.atendimentopublico.ordemservico.EquipeTipo;
 import gcom.cadastro.empresa.Empresa;
 import gcom.cadastro.funcionario.Funcionario;
 import gcom.cadastro.unidade.FiltroUnidadeOrganizacional;
@@ -91,6 +90,8 @@ import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.filtro.ParametroSimples;
+
+import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -166,6 +167,15 @@ public class InserirFuncionarioAction
 			funcionario.setDescricaoCargo(form.getDescricaoCargo());
 
 			funcionario.setNome(form.getNome());
+
+			EquipeTipo equipeTipo = new EquipeTipo();
+			equipeTipo.setId(form.getIdEquipeTipo());
+			if(equipeTipo.getId() != null && equipeTipo.getId() != 0){
+				funcionario.setEquipeTipo(equipeTipo);
+			}
+
+			funcionario.setJornadaTipo(Integer.parseInt(form.getJornadaTipo()));
+			funcionario.setNomeResumido(form.getNomeResumido());
 
 			String idEmpresa = form.getEmpresa();
 

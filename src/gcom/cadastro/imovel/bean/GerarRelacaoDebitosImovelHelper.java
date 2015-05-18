@@ -76,6 +76,10 @@
 
 package gcom.cadastro.imovel.bean;
 
+import gcom.cadastro.imovel.Categoria;
+import gcom.cobranca.OpcaoAgrupamento;
+import gcom.faturamento.FaturamentoGrupo;
+
 /**
  * Débitos de um imóvel
  * 
@@ -127,6 +131,51 @@ public class GerarRelacaoDebitosImovelHelper {
 	private String dataCorte;
 
 	private String consumoMediaImovel;
+
+	private Categoria categoria;
+
+	private FaturamentoGrupo faturamentoGrupo;
+
+	private String referencia;
+
+	public static void mudarLabelCabecalhoRelatorio(GerarRelacaoDebitosImovelHelper gerarRelacao, OpcaoAgrupamento opcaoAgrupamento){
+
+		switch(opcaoAgrupamento){
+			case CATEGORIA:
+
+				gerarRelacao.setIdGerenciaRegional(gerarRelacao.getCategoria().getId().toString());
+				gerarRelacao.setGerenciaRegional(gerarRelacao.getCategoria().getDescricao());
+
+				gerarRelacao.setIdLocalidade(gerarRelacao.getCategoria().getId().toString());
+
+				break;
+			case GRUPO_FATURAMENTO:
+				gerarRelacao.setIdGerenciaRegional(gerarRelacao.getFaturamentoGrupo().getId().toString());
+				gerarRelacao.setGerenciaRegional(gerarRelacao.getFaturamentoGrupo().getDescricao());
+
+				gerarRelacao.setIdLocalidade(gerarRelacao.getFaturamentoGrupo().getId().toString());
+
+				break;
+			case PERIODO_MENSAL:
+
+				gerarRelacao.setIdGerenciaRegional(gerarRelacao.getReferencia());
+				gerarRelacao.setGerenciaRegional(gerarRelacao.getReferencia());
+
+				gerarRelacao.setIdLocalidade(gerarRelacao.getReferencia());
+				gerarRelacao.setGerenciaRegional(gerarRelacao.getReferencia());
+
+				break;
+			case PERIODO_ANUAL:
+				gerarRelacao.setIdGerenciaRegional(gerarRelacao.getReferencia().substring(0, 4));
+
+				gerarRelacao.setIdLocalidade(gerarRelacao.getReferencia().substring(0, 4));
+
+				gerarRelacao.setGerenciaRegional(gerarRelacao.getReferencia().substring(0, 4));
+
+				break;
+		}
+
+	}
 
 	/**
 	 * @return Retorna o campo categoriaPrincipal.
@@ -500,6 +549,36 @@ public class GerarRelacaoDebitosImovelHelper {
 	public void setGerenciaRegional(String gerenciaRegional){
 
 		this.gerenciaRegional = gerenciaRegional;
+	}
+
+	public Categoria getCategoria(){
+
+		return categoria;
+	}
+
+	public void setCategoria(Categoria categoria){
+
+		this.categoria = categoria;
+	}
+
+	public FaturamentoGrupo getFaturamentoGrupo(){
+
+		return faturamentoGrupo;
+	}
+
+	public void setFaturamentoGrupo(FaturamentoGrupo faturamentoGrupo){
+
+		this.faturamentoGrupo = faturamentoGrupo;
+	}
+
+	public String getReferencia(){
+
+		return referencia;
+	}
+
+	public void setReferencia(String referencia){
+
+		this.referencia = referencia;
 	}
 
 }

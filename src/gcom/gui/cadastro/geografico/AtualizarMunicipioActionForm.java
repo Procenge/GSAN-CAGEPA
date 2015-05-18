@@ -76,16 +76,15 @@
 
 package gcom.gui.cadastro.geografico;
 
-import java.util.Date;
-
 import gcom.arrecadacao.banco.Agencia;
 import gcom.cadastro.geografico.Microrregiao;
 import gcom.cadastro.geografico.Municipio;
 import gcom.cadastro.geografico.RegiaoDesenvolvimento;
 import gcom.cadastro.geografico.UnidadeFederacao;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
-import gcom.util.ConstantesSistema;
 import gcom.util.Util;
+
+import java.util.Date;
 
 import org.apache.struts.validator.ValidatorForm;
 
@@ -419,7 +418,9 @@ public class AtualizarMunicipioActionForm
 		municipio.setDataConcessaoInicio(Util.converteStringParaDate(getDataInicioConcessao()));
 		municipio.setDataConcessaoFim(Util.converteStringParaDate(getDataFimConcessao()));
 		municipio.setUltimaAlteracao(new Date());
-		municipio.setIndicadorUso(ConstantesSistema.INDICADOR_USO_ATIVO);
+
+		municipio.setIndicadorUso(Short.parseShort(getIndicadorUso()));
+
 		if(parametroSistema == SistemaParametro.INDICADOR_EMPRESA_DESO.shortValue()){
 			municipio.setNomePrefeitura(getNomePrefeitura());
 			municipio.setEnderecoPrefeitura(getEnderecoPrefeitura());

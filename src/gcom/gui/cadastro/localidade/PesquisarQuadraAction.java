@@ -119,6 +119,18 @@ public class PesquisarQuadraAction
 		String tipoPesquisa = (String) pesquisarActionForm.get("tipoPesquisa");
 		String codigoSetorComercial = (String) pesquisarActionForm.get("codigoSetorComercial");
 
+		Integer idSetorComercial = null;
+		if(sessao.getAttribute("idSetorComercial") != null){
+			idSetorComercial = Integer.valueOf(sessao.getAttribute("idSetorComercial").toString());
+		}
+
+		Integer idLocalidade = null;
+		if(sessao.getAttribute("idLocalidade") != null){
+			idLocalidade = Integer.valueOf(sessao.getAttribute("idLocalidade").toString());
+		}
+
+		sessao.setAttribute("codigoSetorComercial", codigoSetorComercial);
+
 		boolean peloMenosUmParametroInformado = false;
 
 		FiltroQuadra filtroQuadra = new FiltroQuadra();
@@ -130,16 +142,30 @@ public class PesquisarQuadraAction
 		filtroQuadra.adicionarCaminhoParaCarregamentoEntidade("setorComercial.localidade");
 
 		if(nomeBairro != null && !nomeBairro.trim().equalsIgnoreCase("")){
-			peloMenosUmParametroInformado = true;
 			if(tipoPesquisa != null && tipoPesquisa.equals(ConstantesSistema.TIPO_PESQUISA_COMPLETA.toString())){
 				filtroQuadra.adicionarParametro(new ComparacaoTextoCompleto(FiltroQuadra.NOME_BAIRRO, nomeBairro));
-			}else{
+				peloMenosUmParametroInformado = true;
+			}else if(tipoPesquisa != null && tipoPesquisa.equals(ConstantesSistema.TIPO_PESQUISA_INICIAL.toString())){
 				filtroQuadra.adicionarParametro(new ComparacaoTexto(FiltroQuadra.NOME_BAIRRO, nomeBairro));
+				peloMenosUmParametroInformado = true;
+			}else{
+				filtroQuadra.adicionarParametro(new ParametroSimples(FiltroQuadra.NOME_BAIRRO, nomeBairro));
+				peloMenosUmParametroInformado = true;
 			}
 		}
 
+		if(idSetorComercial != null){
+			peloMenosUmParametroInformado = true;
+			filtroQuadra.adicionarParametro(new ParametroSimples(FiltroQuadra.ID_SETORCOMERCIAL, idSetorComercial));
+		}
+
+		if(idLocalidade != null){
+			peloMenosUmParametroInformado = true;
+			filtroQuadra.adicionarParametro(new ParametroSimples(FiltroQuadra.ID_LOCALIDADE, idLocalidade));
+		}
+
 		if(codigoSetorComercial != null && !codigoSetorComercial.trim().equals("")){
-			filtroQuadra.adicionarParametro(new ParametroSimples(FiltroQuadra.CODIGO_SETORCOMERCIAL, new Integer(codigoSetorComercial)));
+			filtroQuadra.adicionarParametro(new ParametroSimples(FiltroQuadra.CODIGO_SETORCOMERCIAL, Integer.valueOf(codigoSetorComercial)));
 		}
 
 		if(sessao.getAttribute("indicadorUsoTodos") == null){

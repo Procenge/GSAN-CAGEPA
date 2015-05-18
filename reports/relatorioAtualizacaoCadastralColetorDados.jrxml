@@ -31,6 +31,7 @@
 	<parameter name="localidade" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="setorComercial" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="rota" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NOME_EMPRESA_RELATORIO" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="getReferencia" class="java.lang.String"/>
 	<field name="getMatriculaImovel" class="java.lang.String"/>
@@ -395,7 +396,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="Courier New" pdfFontName="Courier-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["COMPANHIA DE SANEAMENTO DE  "  + $P{P_NM_ESTADO}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NOME_EMPRESA_RELATORIO}+" "  + $P{P_NM_ESTADO}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement

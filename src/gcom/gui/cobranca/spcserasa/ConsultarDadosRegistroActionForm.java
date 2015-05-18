@@ -284,6 +284,40 @@ public class ConsultarDadosRegistroActionForm
 
 	private String indicadorCorrecao;
 
+	private String codigoSistema;
+
+	private String descricaoCodigoSistema;
+
+	private String documentoPrincipal;
+
+	private String documentoSecundario;
+
+	private String documentoTerciario;
+
+	private String nomeConjuge;
+
+	private String unidadeFederacao;
+
+	private String naturalidade;
+
+	private String codigoTipoEndereco;
+
+	private String descricaoTipoEndereco;
+
+	private String tipoOcorrencia;
+
+	private String documentoAvalista;
+
+	private String codigoOpcaoCartaComBoletoParaDevedor;
+
+	private String codigoOpcaoCartaComBoletoParaAvalista;
+
+	private String descricaoOpcaoCartaComBoletoParaDevedor;
+
+	private String descricaoOpcaoCartaComBoletoParaAvalista;
+
+	private String valorCobranca;
+
 	@Override
 	public void reset(ActionMapping arg0, ServletRequest arg1){
 
@@ -398,6 +432,310 @@ public class ConsultarDadosRegistroActionForm
 
 		this.indicadorCorrecao = "";
 
+		this.codigoSistema = "";
+		this.documentoPrincipal = "";
+		this.documentoSecundario = "";
+		this.documentoTerciario = "";
+		this.descricaoCodigoEnvio = "";
+		this.nomeConjuge = "";
+		this.unidadeFederacao = "";
+		this.naturalidade = "";
+		this.descricaoCodigoSistema = "";
+		this.codigoTipoEndereco = "";
+		this.descricaoTipoEndereco = "";
+		this.tipoOcorrencia = "";
+		this.documentoAvalista = "";
+		this.codigoOpcaoCartaComBoletoParaDevedor = "";
+		this.descricaoOpcaoCartaComBoletoParaAvalista = "";
+		this.codigoOpcaoCartaComBoletoParaDevedor = "";
+		this.descricaoOpcaoCartaComBoletoParaAvalista = "";
+		this.valorCobranca = "";
+
+	}
+
+	/**
+	 * @return Retorna o campo valorCobranca.
+	 */
+	public String getValorCobranca(){
+
+		return valorCobranca;
+	}
+
+	/**
+	 * @param valorCobranca
+	 */
+	public void setValorCobranca(String valorCobranca){
+
+		this.valorCobranca = valorCobranca;
+	}
+
+	/**
+	 * @return Retorna o campo descricaoOpcaoCartaComBoletoParaAvalista.
+	 */
+	public String getDescricaoOpcaoCartaComBoletoParaAvalista(){
+
+		return descricaoOpcaoCartaComBoletoParaAvalista;
+	}
+
+	/**
+	 * @param descricaoOpcaoCartaComBoletoParaAvalista
+	 */
+	public void setDescricaoOpcaoCartaComBoletoParaAvalista(String descricaoOpcaoCartaComBoletoParaAvalista){
+
+		this.descricaoOpcaoCartaComBoletoParaAvalista = descricaoOpcaoCartaComBoletoParaAvalista;
+	}
+
+	/**
+	 * @return Retorna o campo codigoOpcaoCartaComBoletoParaAvalista.
+	 */
+	public String getCodigoOpcaoCartaComBoletoParaAvalista(){
+
+		return codigoOpcaoCartaComBoletoParaAvalista;
+	}
+
+	/**
+	 * @param codigoOpcaoCartaComBoletoParaAvalista
+	 */
+	public void setCodigoOpcaoCartaComBoletoParaAvalista(String codigoOpcaoCartaComBoletoParaAvalista){
+
+		this.codigoOpcaoCartaComBoletoParaAvalista = codigoOpcaoCartaComBoletoParaAvalista;
+	}
+
+	/**
+	 * @return Retorna o campo descricaoOpcaoCartaComBoletoParaDevedor.
+	 */
+	public String getDescricaoOpcaoCartaComBoletoParaDevedor(){
+
+		return descricaoOpcaoCartaComBoletoParaDevedor;
+	}
+
+	/**
+	 * @param descricaoOpcaoCartaComBoletoParaDevedor
+	 */
+	public void setDescricaoOpcaoCartaComBoletoParaDevedor(String descricaoOpcaoCartaComBoletoParaDevedor){
+
+		this.descricaoOpcaoCartaComBoletoParaDevedor = descricaoOpcaoCartaComBoletoParaDevedor;
+	}
+
+	/**
+	 * @return Retorna o campo codigoOpcaoCartaComBoletoParaDevedor.
+	 */
+	public String getCodigoOpcaoCartaComBoletoParaDevedor(){
+
+		return codigoOpcaoCartaComBoletoParaDevedor;
+	}
+
+	/**
+	 * @param codigoOpcaoCartaComBoletoParaDevedor
+	 */
+	public void setCodigoOpcaoCartaComBoletoParaDevedor(String codigoOpcaoCartaComBoletoParaDevedor){
+
+		this.codigoOpcaoCartaComBoletoParaDevedor = codigoOpcaoCartaComBoletoParaDevedor;
+	}
+
+
+	/**
+	 * @return Retorna o campo documentoAvalista.
+	 */
+	public String getDocumentoAvalista(){
+
+		return documentoAvalista;
+	}
+
+	/**
+	 * @param documentoAvalista
+	 *            O associado a ser setado.
+	 */
+	public void setDocumentoAvalista(String documentoAvalista){
+
+		this.documentoAvalista = documentoAvalista;
+	}
+
+	/**
+	 * @return Retorna o campo tipoOcorrencia.
+	 */
+	public String getTipoOcorrencia(){
+
+		return tipoOcorrencia;
+	}
+
+	/**
+	 * @param tipoOcorrencia
+	 *            O associado a ser setado.
+	 */
+	public void setTipoOcorrencia(String tipoOcorrencia){
+
+		this.tipoOcorrencia = tipoOcorrencia;
+	}
+
+	/**
+	 * @return Retorna o campo descricaoTipoEndereco.
+	 */
+	public String getDescricaoTipoEndereco(){
+
+		return descricaoTipoEndereco;
+	}
+
+	/**
+	 * @param descricaoTipoEndereco
+	 *            O associado a ser setado.
+	 */
+	public void setDescricaoTipoEndereco(String descricaoTipoEndereco){
+
+		this.descricaoTipoEndereco = descricaoTipoEndereco;
+	}
+
+	/**
+	 * @return Retorna o campo codigoTipoEndereco.
+	 */
+	public String getCodigoTipoEndereco(){
+
+		return codigoTipoEndereco;
+	}
+
+	/**
+	 * @param codigoTipoEndereco
+	 *            O associado a ser setado.
+	 */
+	public void setCodigoTipoEndereco(String codigoTipoEndereco){
+
+		this.codigoTipoEndereco = codigoTipoEndereco;
+	}
+
+	/**
+	 * @return Retorna o campo descricaoCodigoSistema.
+	 */
+	public String getDescricaoCodigoSistema(){
+
+		return descricaoCodigoSistema;
+	}
+
+	/**
+	 * @param descricaoCodigoSistema
+	 *            O associado a ser setado.
+	 */
+	public void setDescricaoCodigoSistema(String descricaoCodigoSistema){
+
+		this.descricaoCodigoSistema = descricaoCodigoSistema;
+	}
+
+	/**
+	 * @return Retorna o campo naturalidade.
+	 */
+	public String getNaturalidade(){
+
+		return naturalidade;
+	}
+
+	/**
+	 * @param naturalidade
+	 *            O associado a ser setado.
+	 */
+	public void setNaturalidade(String naturalidade){
+
+		this.naturalidade = naturalidade;
+	}
+
+	/**
+	 * @return Retorna o campo unidadeFederacao.
+	 */
+	public String getUnidadeFederacao(){
+
+		return unidadeFederacao;
+	}
+
+	/**
+	 * @param unidadeFederacao
+	 *            O associado a ser setado.
+	 */
+	public void setUnidadeFederacao(String unidadeFederacao){
+
+		this.unidadeFederacao = unidadeFederacao;
+	}
+
+	/**
+	 * @return Retorna o campo nomeConjuge.
+	 */
+	public String getNomeConjuge(){
+
+		return nomeConjuge;
+	}
+
+	/**
+	 * @param nomeConjuge
+	 *            O associado a ser setado.
+	 */
+	public void setNomeConjuge(String nomeConjuge){
+
+		this.nomeConjuge = nomeConjuge;
+	}
+
+	/**
+	 * @return Retorna o campo documentoTerciario.
+	 */
+	public String getDocumentoTerciario(){
+
+		return documentoTerciario;
+	}
+
+	/**
+	 * @param documentoTerciario
+	 *            O associado a ser setado.
+	 */
+	public void setDocumentoTerciario(String documentoTerciario){
+
+		this.documentoTerciario = documentoTerciario;
+	}
+
+	/**
+	 * @return Retorna o campo documentoSecundario.
+	 */
+	public String getDocumentoSecundario(){
+
+		return documentoSecundario;
+	}
+
+	/**
+	 * @param documentoSecundario
+	 *            O associado a ser setado.
+	 */
+	public void setDocumentoSecundario(String documentoSecundario){
+
+		this.documentoSecundario = documentoSecundario;
+	}
+
+	/**
+	 * @return Retorna o campo documentoPrincipal.
+	 */
+	public String getDocumentoPrincipal(){
+
+		return documentoPrincipal;
+	}
+
+	/**
+	 * @param documentoPrincipal
+	 *            O associado a ser setado.
+	 */
+	public void setDocumentoPrincipal(String documentoPrincipal){
+
+		this.documentoPrincipal = documentoPrincipal;
+	}
+
+	/**
+	 * @return Retorna o campo codigoSistema.
+	 */
+	public String getCodigoSistema(){
+
+		return codigoSistema;
+	}
+
+	/**
+	 * @param codigoSistema
+	 *            O associado a ser setado.
+	 */
+	public void setCodigoSistema(String codigoSistema){
+
+		this.codigoSistema = codigoSistema;
 	}
 
 	/**

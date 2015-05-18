@@ -97,6 +97,7 @@ import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
@@ -121,7 +122,7 @@ public class ExibirFiltrarOrdemServicoAction
 				extends GcomAction {
 
 	public ActionForward execute(ActionMapping actionMapping, ActionForm actionForm, HttpServletRequest httpServletRequest,
-					HttpServletResponse httpServletResponse){
+					HttpServletResponse httpServletResponse) throws ControladorException{
 
 		// Seta o mapeamento de retorno
 		ActionForward retorno = actionMapping.findForward("filtrarOrdemServico");
@@ -136,6 +137,11 @@ public class ExibirFiltrarOrdemServicoAction
 
 		// Colocado por Raphael Rossiter em 29/01/2007
 		String menu = httpServletRequest.getParameter("menu");
+
+		String limpar = httpServletRequest.getParameter("limpar");
+		if(limpar != null && limpar.equals("sim")){
+			filtrarOrdemServicoActionForm.setIndicadorReparo(null);
+		}
 
 		if(!Util.isVazioOuBranco(menu)){
 
@@ -289,7 +295,7 @@ public class ExibirFiltrarOrdemServicoAction
 		}
 		// Monta a colecao de tipos Servicos
 		if(indicadorTipoServico.equals("0") && sessao.getAttribute("colecaoTipoServicoSelecionados") == null){
-			this.pesquisarTipoServico(httpServletRequest);
+			this.pesquisarTipoServico(httpServletRequest, filtrarOrdemServicoActionForm.getIndicadorReparo());
 		}
 
 		// Monta a colecao de tipos Servicos selecionados
@@ -302,7 +308,7 @@ public class ExibirFiltrarOrdemServicoAction
 		}
 
 		if(indicadorTipoServico.equals("2")){
-			this.pesquisarTipoServico(httpServletRequest);
+			this.pesquisarTipoServico(httpServletRequest, filtrarOrdemServicoActionForm.getIndicadorReparo());
 			httpServletRequest.setAttribute("colecaoTipoServicoSelecionados", null);
 			sessao.setAttribute("colecaoTipoServicoSelecionados", null);
 		}
@@ -320,6 +326,7 @@ public class ExibirFiltrarOrdemServicoAction
 		if(Util.isVazioOuBranco(filtrarOrdemServicoActionForm.getSituacaoProgramacao())){
 			filtrarOrdemServicoActionForm.setSituacaoProgramacao(ConstantesSistema.SET_ZERO.toString());
 		}
+
 
 		return retorno;
 	}
@@ -700,9 +707,10 @@ public class ExibirFiltrarOrdemServicoAction
 	 * Pesquisa Tipo Servico
 	 * 
 	 * @author Rafael Pinto
+	 * @throws ControladorException
 	 * @date 17/08/2006
 	 */
-	private void pesquisarTipoServico(HttpServletRequest httpServletRequest){
+	private void pesquisarTipoServico(HttpServletRequest httpServletRequest, String indicadorReparo) throws ControladorException{
 
 		FiltroServicoTipo filtroServicoTipo = new FiltroServicoTipo();
 
@@ -710,6 +718,18 @@ public class ExibirFiltrarOrdemServicoAction
 		filtroServicoTipo.setCampoOrderBy(FiltroServicoTipo.DESCRICAO);
 
 		Collection colecaoTipoServico = Fachada.getInstancia().pesquisar(filtroServicoTipo, ServicoTipo.class.getName());
+
+		if(indicadorReparo != null){
+			Iterator itColecaoTipoServico = colecaoTipoServico.iterator();
+			Collection<ServicoTipo> colecaoTipoServicoRemover = new ArrayList<ServicoTipo>();
+			while(itColecaoTipoServico.hasNext()){
+				ServicoTipo servicoTipo = (ServicoTipo) itColecaoTipoServico.next();
+				if(servicoTipo.getIndicadorVala() != Integer.parseInt(ConstantesSistema.SIM.toString())){
+					colecaoTipoServicoRemover.add(servicoTipo);
+				}
+			}
+			colecaoTipoServico.removeAll(colecaoTipoServicoRemover);
+		}
 
 		BeanComparator comparador = new BeanComparator("descricao");
 		Collections.sort((List) colecaoTipoServico, comparador);
@@ -724,16 +744,19 @@ public class ExibirFiltrarOrdemServicoAction
 		}
 	}
 
+
 	/**
 	 * Pesquisa Tipo Servico
 	 * 
 	 * @author Eduardo Oliveira
+	 * @throws ControladorException
 	 * @date 26/03/2014
 	 */
-	private void pesquisarTipoServicoSelecionados(FiltrarOrdemServicoActionForm form, HttpServletRequest httpServletRequest){
+	private void pesquisarTipoServicoSelecionados(FiltrarOrdemServicoActionForm form, HttpServletRequest httpServletRequest
+					) throws ControladorException{
 
 		HttpSession sessao = httpServletRequest.getSession(false);
-
+		String indicadorReparo = form.getIndicadorReparo();
 		if(form.getTipoServicoSelecionados() != null){
 			Integer[] idsTiposServicosSelecionados = form.getTipoServicoSelecionados();
 
@@ -773,10 +796,35 @@ public class ExibirFiltrarOrdemServicoAction
 						BeanComparator comparadorcolecaoServicoTipoDisponivel = new BeanComparator("descricao");
 						Collections.sort((List) colecaoServicoTipoDisponivel, comparadorcolecaoServicoTipoDisponivel);
 
+						// selecionarOrdemServicoReparo(colecaoServicoTipoDisponivel,
+						// indicadorReparo);
+						if(indicadorReparo != null){
+							Iterator itColecaoTipoServico = colecaoServicoTipoDisponivel.iterator();
+							Collection<ServicoTipo> colecaoTipoServicoRemover = new ArrayList<ServicoTipo>();
+							while(itColecaoTipoServico.hasNext()){
+								ServicoTipo servicoTipoVala = (ServicoTipo) itColecaoTipoServico.next();
+								if(servicoTipoVala.getIndicadorVala() != Integer.parseInt(ConstantesSistema.SIM.toString())){
+									colecaoTipoServicoRemover.add(servicoTipoVala);
+								}
+							}
+							colecaoServicoTipoDisponivel.removeAll(colecaoTipoServicoRemover);
+						}
+
 						httpServletRequest.setAttribute("colecaoServicoTipoDisponivel", colecaoServicoTipoDisponivel);
 					}
+					if(indicadorReparo != null){
+						Iterator itColecaoTipoServico = colecaoTipoServicoSelecionados.iterator();
+						Collection<ServicoTipo> colecaoTipoServicoRemover = new ArrayList<ServicoTipo>();
+						while(itColecaoTipoServico.hasNext()){
+							ServicoTipo servicoTipoVala = (ServicoTipo) itColecaoTipoServico.next();
+							if(servicoTipoVala.getIndicadorVala() != Integer.parseInt(ConstantesSistema.SIM.toString())){
+								colecaoTipoServicoRemover.add(servicoTipoVala);
+							}
+						}
+						colecaoTipoServicoSelecionados.removeAll(colecaoTipoServicoRemover);
+					}
 
-					if(colecaoTipoServicoSelecionados == null || colecaoTipoServicoSelecionados.isEmpty()){
+					if((colecaoTipoServicoSelecionados == null || colecaoTipoServicoSelecionados.isEmpty()) && indicadorReparo == null){
 						throw new ActionServletException("atencao.naocadastrado", null, "Tipo de Serviço");
 					}else{
 						httpServletRequest.setAttribute("colecaoTipoServicoSelecionados", colecaoTipoServicoSelecionados);

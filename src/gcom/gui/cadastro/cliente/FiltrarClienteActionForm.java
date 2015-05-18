@@ -127,6 +127,8 @@ public class FiltrarClienteActionForm
 
 	private String indicadorUsoClienteFiltro;
 
+	private String documentoValidado;
+
 	private String tipoPesquisa;
 
 	private String tipoPesquisaNomeMae;
@@ -134,6 +136,8 @@ public class FiltrarClienteActionForm
 	private String inscricaoEstadualClienteFiltro;
 
 	private String indicadorContaBraille = "3";
+	
+	private String numeroBeneficioFiltro;
 
 	/**
 	 * @return Retorna o campo atualizarFiltro.
@@ -306,6 +310,24 @@ public class FiltrarClienteActionForm
 	}
 
 	/**
+	 * @return Retorna o campo DocumentoValidado.
+	 */
+
+	public String getDocumentoValidado(){
+
+		return documentoValidado;
+	}
+
+	/**
+	 * @param DocumentoValidadoFiltro
+	 *            O DocumentoValidadoFiltro a ser setado.
+	 */
+	public void setDocumentoValidado(String documentoValidado){
+
+		this.documentoValidado = documentoValidado;
+	}
+
+	/**
 	 * @return Retorna o campo logradouroClienteFiltro.
 	 */
 	public String getLogradouroClienteFiltro(){
@@ -459,6 +481,16 @@ public class FiltrarClienteActionForm
 	public void setIndicadorContaBraille(String indicadorContaBraille){
 
 		this.indicadorContaBraille = indicadorContaBraille;
+	}
+
+	public String getNumeroBeneficioFiltro(){
+
+		return numeroBeneficioFiltro;
+	}
+
+	public void setNumeroBeneficioFiltro(String numeroBeneficioFiltro){
+
+		this.numeroBeneficioFiltro = numeroBeneficioFiltro;
 	}
 
 }

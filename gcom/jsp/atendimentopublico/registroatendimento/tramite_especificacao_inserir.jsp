@@ -199,51 +199,7 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
 	
 }
 
-function carregarCombo(obj, nomeClasse, attPesquisa, objRet, tipoObj, textoCombo, nomeColecao){
-	var id = obj.options[obj.selectedIndex].value;
-	
-	if (id != "-1") {
-		carregarComboGenerico(obj, nomeClasse, attPesquisa, objRet, textoCombo, nomeColecao);
-	}else{
-		if(tipoObj == 'sistemaEsgoto'){
-			carregarComboGenerico(obj, nomeClasse, null, objRet, textoCombo, nomeColecao);
-			carregarComboGenerico(obj, 'gcom.operacional.Bacia', null, document.forms[0].bacia, 'descricaoComCodigoEId', 'colecaoBacia');
-			carregarComboGenerico(obj, 'gcom.operacional.SubBacia', null, document.forms[0].subBacia, 'descricaoComCodigo', 'colecaoSubBacia');
-		}else if(tipoObj == 'subsistemaEsgoto'){
-			if (document.forms[0].sistemaEsgoto.value == '-1') {
-				carregarComboGenerico(obj, 'gcom.operacional.Bacia', null, document.forms[0].bacia, 'descricaoComCodigoEId', 'colecaoBacia');
-				carregarComboGenerico(obj, 'gcom.operacional.SubBacia', null, document.forms[0].subBacia, 'descricaoComCodigo', 'colecaoSubBacia');
-			} else {
-				limparComboGenerico(document.forms[0].bacia);
-				//limparComboGenerico(document.forms[0].subBacia);
-			}
-		}else if(tipoObj == 'bacia'){
-			if (document.forms[0].sistemaEsgoto.value == '-1' && document.forms[0].subsistemaEsgoto.value == '-1') {
-				carregarComboGenerico(obj, 'gcom.operacional.SubBacia', null, document.forms[0].subBacia, 'descricaoComCodigo', 'colecaoSubBacia');
-			} else {
-				limparComboGenerico(document.forms[0].subBacia);
-			}
-		}else if (tipoObj == 'sistemaAbastecimento'){
-			carregarComboGenerico(obj, nomeClasse, null, objRet, textoCombo, nomeColecao);
-			carregarComboGenerico(obj, 'gcom.operacional.ZonaAbastecimento', null, document.forms[0].zonaAbastecimento, 'descricaoComCodigo', 'colecaoZonaAbastecimento');
-			carregarComboGenerico(obj, 'gcom.operacional.SetorAbastecimento', null, document.forms[0].setorAbastecimento, 'descricaoComCodigo', 'colecaoSetorAbastecimento');
-		}else if (tipoObj == 'distritoOperacional'){
-			if (document.forms[0].sistemaAbastecimento.value == '-1') {
-				carregarComboGenerico(obj, 'gcom.operacional.ZonaAbastecimento', null, document.forms[0].zonaAbastecimento, 'descricaoComCodigo', 'colecaoZonaAbastecimento');
-				carregarComboGenerico(obj, 'gcom.operacional.SetorAbastecimento', null, document.forms[0].setorAbastecimento, 'descricaoComCodigo', 'colecaoSetorAbastecimento');
-			} else {
-				limparComboGenerico(document.forms[0].zonaAbastecimento);
-				//limparComboGenerico(document.forms[0].SetorAbastecimento);
-			}
-		}else if (tipoObj == 'zonaAbastecimento'){
-			if (document.forms[0].sistemaAbastecimento.value == '-1' && document.forms[0].distritoOperacional.value == '-1') {
-				carregarComboGenerico(obj, 'gcom.operacional.SetorAbastecimento', null, document.forms[0].setorAbastecimento, 'descricaoComCodigo', 'colecaoSetorAbastecimento');
-			} else {
-				limparcombogenerico(document.forms[0].setorabastecimento);
-			}
-		}
-	}	
-}
+
 
 function consultarEspecificacao(obj) {
 
@@ -462,97 +418,8 @@ function consultarEspecificacao(obj) {
 						<html:hidden property="idBairro"/>
 					</td>
 				</tr>
+			
 				
-				<tr>
-					<td width="28%"><strong>Sistema de Abastecimento:<font color="#FF0000"></font></strong></td>
-					<td><html:select property="sistemaAbastecimento" style="width: 220px;" tabindex="6"
-						onchange="limparComboGenerico(zonaAbastecimento);limparComboGenerico(setorAbastecimento);carregarCombo(this, 'gcom.operacional.DistritoOperacional', 'sistemaAbastecimento.id', distritoOperacional, 'sistemaAbastecimento', 'descricaoComId', 'colecaoDistritoOperacional');">
-						<html:option
-							value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-						<html:options collection="colecaoSistemaAbastecimento"
-							labelProperty="descricaoComCodigo" property="id" />
-					</html:select></td>
-				</tr>
-				<tr>
-					<td width="28%"><strong>Distrito Operacional:<font color="#FF0000"></font></strong></td>
-					<td><html:select property="distritoOperacional" style="width: 220px;" tabindex="7"
-						onchange="limparComboGenerico(setorAbastecimento);carregarCombo(this, 'gcom.operacional.ZonaAbastecimento', 'distritoOperacional.id', zonaAbastecimento, 'distritoOperacional', 'descricaoComCodigo', 'colecaoZonaAbastecimento');">
-						<html:option
-							value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-						<logic:present name="colecaoDistritoOperacional">
-							<html:options collection="colecaoDistritoOperacional"
-								labelProperty="descricaoComId" property="id" />
-						</logic:present>
-					</html:select></td>
-				</tr>
-				<tr>
-					<td width="28%"><strong>Zona de Abastecimento:<font color="#FF0000"></font></strong></td>
-					<td><html:select property="zonaAbastecimento" style="width: 220px;" tabindex="8"
-						onchange="carregarCombo(this, 'gcom.operacional.SetorAbastecimento', 'zonaAbastecimento.id', setorAbastecimento, 'zonaAbastecimento', 'descricaoComCodigo', 'colecaoSetorAbastecimento');">
-						<html:option
-							value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-						<logic:present name="colecaoZonaAbastecimento">
-							<html:options collection="colecaoZonaAbastecimento"
-								labelProperty="descricaoComCodigo" property="id" />
-						</logic:present>
-					</html:select></td>
-				</tr>
-				<tr>
-					<td width="28%"><strong>Setor de Abastecimento:<font color="#FF0000"></font></strong></td>
-					<td><html:select property="setorAbastecimento" style="width: 220px;" tabindex="9">
-						<html:option
-							value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-						<logic:present name="colecaoSetorAbastecimento">
-							<html:options collection="colecaoSetorAbastecimento"
-								labelProperty="descricaoComCodigo" property="id" />
-						</logic:present>
-					</html:select></td>
-				</tr>
-				<tr>
-					<td width="28%"><strong>Sistema de Esgoto:<font color="#FF0000"></font></strong></td>
-					<td><html:select property="sistemaEsgoto" style="width: 220px;" tabindex="10"
-						onchange="limparComboGenerico(bacia);limparComboGenerico(subBacia);carregarCombo(this, 'gcom.operacional.SubsistemaEsgoto', 'sistemaEsgoto.id', subsistemaEsgoto, 'sistemaEsgoto', 'descricaoComCodigo', 'colecaoSubsistemaEsgoto');">
-						<html:option
-							value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-						<html:options collection="colecaoSistemaEsgoto"
-							labelProperty="descricaoComId" property="id" />
-					</html:select></td>
-				</tr>
-				<tr>
-					<td width="28%"><strong>Subsistema de Esgoto:<font color="#FF0000"></font></strong></td>
-					<td><html:select property="subsistemaEsgoto" style="width: 220px;" tabindex="11"
-						onchange="limparComboGenerico(subBacia);carregarCombo(this, 'gcom.operacional.Bacia', 'subsistemaEsgoto.id', bacia, 'subsistemaEsgoto', 'descricaoComCodigoEId', 'colecaoBacia');">
-						<html:option
-							value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-						<logic:present name="colecaoSubsistemaEsgoto">
-							<html:options collection="colecaoSubsistemaEsgoto"
-								labelProperty="descricaoComCodigo" property="id" />
-						</logic:present>
-					</html:select></td>
-				</tr>
-				<tr>
-					<td width="28%"><strong>Bacia:<font color="#FF0000"></font></strong></td>
-					<td><html:select property="bacia" style="width: 220px;" tabindex="12"
-						onchange="carregarCombo(this, 'gcom.operacional.SubBacia', 'bacia.id', subBacia, 'bacia', 'descricaoComCodigo', 'colecaoSubBacia');">
-						<html:option
-							value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-						<logic:present name="colecaoBacia">
-							<html:options collection="colecaoBacia"
-								labelProperty="descricaoComCodigoEId" property="id" />
-						</logic:present>
-					</html:select></td>
-				</tr>
-				<tr>
-					<td width="28%"><strong>Subbacia:<font color="#FF0000"></font></strong></td>
-					<td><html:select property="subBacia" style="width: 220px;" tabindex="13">
-						<html:option
-							value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
-						<logic:present name="colecaoSubBacia">
-							<html:options collection="colecaoSubBacia"
-								labelProperty="descricaoComCodigo" property="id" />
-						</logic:present>
-					</html:select></td>
-				</tr>
 				<tr>
 		            <td width="28%"><strong>Unidade Origem:<font color="#FF0000"></font></strong></td>
 		            <td>
@@ -595,6 +462,15 @@ function consultarEspecificacao(obj) {
 						</a>
 					</td>
 		        </tr>
+		        
+		        
+		        <tr>
+			       	<td width="25%" height="24">
+			       		<strong>Unidade do Primeiro Trâmite?<span class="style3"><font color="#FF0000">*</font></span></strong>
+			       	</td>
+			       	<td align="left"><label> <html:radio property="indicadorPrimeiroTramite" value="1" /> <strong>Sim</strong></label>
+					<label> <html:radio property="indicadorPrimeiroTramite" value="2" /> <strong>Não</strong></label></td>
+			     </tr>
 				<tr>
 					<td height="24" colspan="2">
 					<hr>
@@ -624,17 +500,10 @@ function consultarEspecificacao(obj) {
 								<td align="center"><font color="#000000"><strong>Especificação</strong></font></td>
 								<td align="center"><font color="#000000"><strong>Localidade</strong></font></td>
 								<td align="center"><font color="#000000"><strong>Setor Comercial</strong></font></td>
-								<td align="center"><font color="#000000"><strong>Bairro</strong></font></td>
-								<td align="center"><font color="#000000"><strong>Sistema de Abastecimento</strong></font></td>
-								<td align="center"><font color="#000000"><strong>Distrito Operacional</strong></font></td>
-								<td align="center"><font color="#000000"><strong>Zona de Abastecimento</strong></font></td>
-								<td align="center"><font color="#000000"><strong>Setor de Abastecimento</strong></font></td>
-								<td align="center"><font color="#000000"><strong>Sistema de Esgoto</strong></font></td>
-								<td align="center"><font color="#000000"><strong>Subsistema de Esgoto</strong></font></td>
-								<td align="center"><font color="#000000"><strong>Bacia</strong></font></td>
-								<td align="center"><font color="#000000"><strong>SubBacia</strong></font></td>
+								<td align="center"><font color="#000000"><strong>Bairro</strong></font></td>							
 								<td align="center"><font color="#000000"><strong>Unidade Origem</strong></font></td>
 								<td align="center"><font color="#000000"><strong>Unidade Destino</strong></font></td>
+								<td align="center"><font color="#000000"><strong>Unidade do Primeiro Trâmite</strong></font></td>
 							</tr>
 							<logic:present name="colecaoTramiteEspecificacao">
 							<%int cont = 0;%>
@@ -681,62 +550,7 @@ function consultarEspecificacao(obj) {
 												</logic:notEmpty>
 												</div>
 											</td>
-											<td>
-												<div align="center">
-												<logic:notEmpty name="especificacaoTramite" property="sistemaAbastecimento">
-													<bean:write name="especificacaoTramite" property="sistemaAbastecimento.descricaoComCodigo" />
-												</logic:notEmpty>
-												</div>
-											</td>
-											<td>
-												<div align="center">
-												<logic:notEmpty name="especificacaoTramite" property="distritoOperacional">
-													<bean:write name="especificacaoTramite" property="distritoOperacional.descricaoComId" />
-												</logic:notEmpty>
-												</div>
-											</td>
-											<td>
-												<div align="center">
-												<logic:notEmpty name="especificacaoTramite" property="zonaAbastecimento">
-													<bean:write name="especificacaoTramite" property="zonaAbastecimento.descricaoComCodigo" />
-												</logic:notEmpty>
-												</div>
-											</td>
-											<td>
-												<div align="center">
-												<logic:notEmpty name="especificacaoTramite" property="setorAbastecimento">
-													<bean:write name="especificacaoTramite" property="setorAbastecimento.descricaoComCodigo" />
-												</logic:notEmpty>
-												</div>
-											</td>
-											<td>
-												<div align="center">
-												<logic:notEmpty name="especificacaoTramite" property="sistemaEsgoto">
-													<bean:write name="especificacaoTramite" property="sistemaEsgoto.descricaoComId" />
-												</logic:notEmpty>
-												</div>
-											</td>
-											<td>
-												<div align="center">
-												<logic:notEmpty name="especificacaoTramite" property="subsistemaEsgoto">
-													<bean:write name="especificacaoTramite" property="subsistemaEsgoto.descricaoComCodigo" />
-												</logic:notEmpty>
-												</div>
-											</td>
-											<td>
-												<div align="center">
-												<logic:notEmpty name="especificacaoTramite" property="bacia">
-													<bean:write name="especificacaoTramite" property="bacia.descricaoComId" />
-												</logic:notEmpty>
-												</div>
-											</td>
-											<td>
-												<div align="center">
-												<logic:notEmpty name="especificacaoTramite" property="subBacia">
-													<bean:write name="especificacaoTramite" property="subBacia.descricaoComCodigo" />
-												</logic:notEmpty>
-												</div>
-											</td>
+										
 											<td>
 												<div align="center">
 												<logic:notEmpty name="especificacaoTramite" property="unidadeOrganizacionalOrigem">
@@ -748,6 +562,23 @@ function consultarEspecificacao(obj) {
 												<div align="center">
 												<logic:notEmpty name="especificacaoTramite" property="unidadeOrganizacionalDestino">
 													<bean:write name="especificacaoTramite" property="unidadeOrganizacionalDestino.descricaoComId" />
+												</logic:notEmpty>
+												</div>
+											</td>
+											<td>
+												<div align="center">
+												<logic:notEmpty name="especificacaoTramite" property="indicadorPrimeiroTramite">
+													
+													
+												   <logic:equal name="especificacaoTramite" property="indicadorPrimeiroTramite" value="1">
+													  SIM
+												  </logic:equal>
+												  <logic:equal name="especificacaoTramite" property="indicadorPrimeiroTramite" value="2">	
+												    NÃO
+												  </logic:equal>
+													
+													
+													
 												</logic:notEmpty>
 												</div>
 											</td>

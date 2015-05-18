@@ -88,9 +88,9 @@ public class RelatorioMaioresDevedoresHelper {
 
 	private String localidade;//
 
-	private BigDecimal setor;//
+	private String setor;//
 
-	private BigDecimal matricula;//
+	private String matricula;//
 
 	private String nome;//
 
@@ -100,7 +100,7 @@ public class RelatorioMaioresDevedoresHelper {
 
 	private String endereco;
 
-	private BigDecimal quantidade;
+	private String quantidade;
 
 	private BigDecimal valorDebito;
 
@@ -117,36 +117,42 @@ public class RelatorioMaioresDevedoresHelper {
 	}
 
 
-	public BigDecimal getSetor(){
+
+	public String getSetor(){
 
 		return setor;
 	}
 
 
-	public void setSetor(BigDecimal setor){
+	public void setSetor(String setor){
 
 		this.setor = setor;
 	}
 
-	public BigDecimal getMatricula(){
+
+	public String getMatricula(){
 
 		return matricula;
 	}
 
-	public void setMatricula(BigDecimal matricula){
+
+	public void setMatricula(String matricula){
 
 		this.matricula = matricula;
 	}
+
 
 	public String getNome(){
 
 		return nome;
 	}
 
+
 	public void setNome(String nome){
 
 		this.nome = nome;
 	}
+
 
 
 	public String getCpfCnpj(){
@@ -155,10 +161,12 @@ public class RelatorioMaioresDevedoresHelper {
 	}
 
 
+
 	public void setCpfCnpj(String cpfCnpj){
 
 		this.cpfCnpj = cpfCnpj;
 	}
+
 
 
 	public String getTipo(){
@@ -167,29 +175,32 @@ public class RelatorioMaioresDevedoresHelper {
 	}
 
 
+
 	public void setTipo(String tipo){
 
 		this.tipo = tipo;
 	}
+
 
 	public String getEndereco(){
 
 		return endereco;
 	}
 
+
 	public void setEndereco(String endereco){
 
 		this.endereco = endereco;
 	}
 
-
-	public BigDecimal getQuantidade(){
+	
+	public String getQuantidade(){
 
 		return quantidade;
 	}
 
 
-	public void setQuantidade(BigDecimal quantidade){
+	public void setQuantidade(String quantidade){
 
 		this.quantidade = quantidade;
 	}
@@ -201,9 +212,11 @@ public class RelatorioMaioresDevedoresHelper {
 	}
 
 
+
 	public void setValorDebito(BigDecimal valorDebito){
 
 		this.valorDebito = valorDebito;
 	}
+
 
 }

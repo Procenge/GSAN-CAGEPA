@@ -79,6 +79,18 @@
 
 package gcom.gui.cadastro.funcionario;
 
+import gcom.atendimentopublico.ordemservico.EquipeTipo;
+import gcom.atendimentopublico.ordemservico.FiltroEquipeTipo;
+import gcom.cadastro.empresa.Empresa;
+import gcom.cadastro.empresa.FiltroEmpresa;
+import gcom.cadastro.unidade.FiltroUnidadeOrganizacional;
+import gcom.cadastro.unidade.UnidadeOrganizacional;
+import gcom.fachada.Fachada;
+import gcom.gui.ActionServletException;
+import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
+import gcom.util.filtro.ParametroSimples;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -89,16 +101,6 @@ import javax.servlet.http.HttpSession;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-
-import gcom.cadastro.empresa.Empresa;
-import gcom.cadastro.empresa.FiltroEmpresa;
-import gcom.cadastro.unidade.FiltroUnidadeOrganizacional;
-import gcom.cadastro.unidade.UnidadeOrganizacional;
-import gcom.fachada.Fachada;
-import gcom.gui.ActionServletException;
-import gcom.gui.GcomAction;
-import gcom.util.ConstantesSistema;
-import gcom.util.filtro.ParametroSimples;
 
 /**
  * @author Rômulo Aurélio
@@ -148,6 +150,12 @@ public class ExibirFiltrarFuncionarioAction
 		}
 
 		httpServletRequest.setAttribute("colecaoEmpresa", colecaoEmpresa);
+
+		FiltroEquipeTipo filtroEquipeTipo = new FiltroEquipeTipo();
+		filtroEquipeTipo.setCampoOrderBy(FiltroEquipeTipo.DESCRICAO);
+
+		httpServletRequest
+						.setAttribute("colecaoEquipeTipo", Fachada.getInstancia().pesquisar(filtroEquipeTipo, EquipeTipo.class.getName()));
 
 		// -------Parte que trata do código quando o usuário tecla enter
 

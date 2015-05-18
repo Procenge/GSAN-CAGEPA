@@ -78,7 +78,6 @@ package gcom.gui.atendimentopublico.hidrometro;
 
 import gcom.atendimentopublico.ligacaoagua.LigacaoAgua;
 import gcom.cadastro.imovel.Imovel;
-import gcom.micromedicao.RateioTipo;
 import gcom.micromedicao.hidrometro.HidrometroInstalacaoHistorico;
 import gcom.micromedicao.hidrometro.HidrometroLocalInstalacao;
 import gcom.micromedicao.hidrometro.HidrometroProtecao;
@@ -179,6 +178,8 @@ public class EfetuarSubstituicaoHidrometroActionForm
 	private String indicadorTrocaProtecao;
 
 	private String indicadorTrocaRegistro;
+
+	private String submitAutomatico2;
 
 	public String getIndicadorTrocaProtecao(){
 
@@ -719,8 +720,6 @@ public class EfetuarSubstituicaoHidrometroActionForm
 		// numero hidrometro
 		hidrometroInstalacaoHistorico.setNumeroHidrometro(getNumeroHidrometro());
 
-		// tipo de rateio
-		hidrometroInstalacaoHistorico.setRateioTipo(new RateioTipo(RateioTipo.RATEIO_POR_IMOVEL));
 		hidrometroInstalacaoHistorico.setDataImplantacaoSistema(new Date());
 
 		// indicador instalação substituição
@@ -777,6 +776,16 @@ public class EfetuarSubstituicaoHidrometroActionForm
 	public String getDescricaoFuncionario(){
 
 		return descricaoFuncionario;
+	}
+
+	public String getSubmitAutomatico2(){
+
+		return submitAutomatico2;
+	}
+
+	public void setSubmitAutomatico2(String submitAutomatico2){
+
+		this.submitAutomatico2 = submitAutomatico2;
 	}
 
 }

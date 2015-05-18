@@ -226,6 +226,23 @@
 											maxlength="40" />
 	                               	</td>
 	                           	</tr>
+	                           	
+	                           	<tr> 
+	                           		<td><strong>Tipo da Equipe:</strong></td>
+	                           		<td>
+										<html:text property="equipeTipoId" 
+											readonly="true"
+											style="background-color:#EFEFEF; border:0;" 
+											size="4"
+											maxlength="4" />
+	                             		
+										<html:text property="equipeTipoDescricao" 
+											readonly="true"
+											style="background-color:#EFEFEF; border:0;" 
+											size="40"
+											maxlength="40" />
+	                               	</td>
+	                           	</tr>
                     			
                     			<tr> 
                       				<td height="10" colspan="2">

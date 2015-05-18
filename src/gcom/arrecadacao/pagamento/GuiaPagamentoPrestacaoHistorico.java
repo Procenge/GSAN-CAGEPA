@@ -96,6 +96,14 @@ public class GuiaPagamentoPrestacaoHistorico {
 
 	private Short indicadorRemuneraCobrancaAdministrativa = 2;
 
+	private Short indicadorDividaAtiva = 2;
+
+	private Date dataDividaAtiva;
+
+	private Short indicadorExecucaoFiscal = 2;
+
+	private Date dataExecucaoFiscal;
+
 	public GuiaPagamentoPrestacaoHistorico() {
 
 	}
@@ -105,7 +113,8 @@ public class GuiaPagamentoPrestacaoHistorico {
 											Short indicadorPagamentoPendente, Short indicadorCobrancaMulta,
 											Integer anoMesReferenciaFaturamento, Integer anoMesReferenciaArrecadacao, Date dataEmissao,
 											Date ultimaAlteracao, GuiaPagamento guiaPagamento, DebitoTipo debitoTipo,
-											LancamentoItemContabil lancamentoItemContabil) {
+											LancamentoItemContabil lancamentoItemContabil, Short indicadorDividaAtiva,
+											Date dataDividaAtiva, Short indicadorExecucaoFiscal, Date dataExecucaoFiscal) {
 
 		this.comp_id = comp_id;
 		this.debitoCreditoSituacao = debitoCreditoSituacao;
@@ -121,6 +130,10 @@ public class GuiaPagamentoPrestacaoHistorico {
 		this.guiaPagamento = guiaPagamento;
 		this.debitoTipo = debitoTipo;
 		this.lancamentoItemContabil = lancamentoItemContabil;
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+		this.dataDividaAtiva = dataDividaAtiva;
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+		this.dataExecucaoFiscal = dataExecucaoFiscal;
 	}
 
 	/**
@@ -424,6 +437,46 @@ public class GuiaPagamentoPrestacaoHistorico {
 	public void setDebitoCreditoSituacaoAnterior(DebitoCreditoSituacao debitoCreditoSituacaoAnterior){
 
 		this.debitoCreditoSituacaoAnterior = debitoCreditoSituacaoAnterior;
+	}
+
+	public Short getIndicadorDividaAtiva(){
+
+		return indicadorDividaAtiva;
+	}
+
+	public void setIndicadorDividaAtiva(Short indicadorDividaAtiva){
+
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+	}
+
+	public Date getDataDividaAtiva(){
+
+		return dataDividaAtiva;
+	}
+
+	public void setDataDividaAtiva(Date dataDividaAtiva){
+
+		this.dataDividaAtiva = dataDividaAtiva;
+	}
+
+	public Short getIndicadorExecucaoFiscal(){
+
+		return indicadorExecucaoFiscal;
+	}
+
+	public void setIndicadorExecucaoFiscal(Short indicadorExecucaoFiscal){
+
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+	}
+
+	public Date getDataExecucaoFiscal(){
+
+		return dataExecucaoFiscal;
+	}
+
+	public void setDataExecucaoFiscal(Date dataExecucaoFiscal){
+
+		this.dataExecucaoFiscal = dataExecucaoFiscal;
 	}
 
 }

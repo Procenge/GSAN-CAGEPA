@@ -412,6 +412,14 @@ public interface Funcionalidade {
 
 	String TELA_ESTADO_CIVIL = "?tela=estadoCivil";
 
+	String TELA_ATENDIMENTO_DOCUMENTO_TIPO = "?tela=atendimentoDocumentoTipo";
+
+	String TELA_ATENDIMENTO_PESSOA_TIPO = "?tela=atendimentoPessoaTipo";
+
 	String TELA_NACIONALIDADE = "?tela=nacionalidade";
+
+	String TELA_EQUIPE_TIPO = "?tela=equipeTipo";
+
+	String TELA_LEITURA_SITUACAO = "?tela=leituraSituacao";
 
 }

@@ -92,12 +92,7 @@ import gcom.util.Util;
 import gcom.util.agendadortarefas.AgendadorTarefas;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * classe responsável por criar o relatório de Acompanhamento do Faturamento
@@ -224,6 +219,12 @@ public class RelatorioAcompanhamentoFaturamento
 		// consumo Minimo Fixado Esgoto Final
 		String consumoMinimoFixadoEsgotoFinal = (String) getParametro("consumoMinimoFixadoEsgotoFinal");
 
+		// consumo Fixado Esgoto do Poço Inicial
+		String consumoFixadoEsgotoPocoInicial = (String) getParametro("consumoFixadoEsgotoPocoInicial");
+
+		// consumo Fixado Esgoto do Poço Final
+		String consumoFixadoEsgotoPocoFinal = (String) getParametro("consumoFixadoEsgotoPocoFinal");
+
 		// intervalo Percentual Esgoto Inicial
 		String intervaloPercentualEsgotoInicial = (String) getParametro("intervaloPercentualEsgotoInicial");
 
@@ -335,7 +336,8 @@ public class RelatorioAcompanhamentoFaturamento
 						loteDestino, cep, logradouroID, bairroID, municipioID, tipoMedicaoID, indicadorMedicao, subCategoriaID,
 						categoriaImovelID, quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimentoAlternativo, clienteID,
 						clienteTipoID, clienteRelacaoTipoID, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial,
-						numeroMoradoresFinal, areaConstruidaFaixa, anoMesReferencia);
+						numeroMoradoresFinal, areaConstruidaFaixa, anoMesReferencia, consumoFixadoEsgotoPocoInicial,
+						consumoFixadoEsgotoPocoFinal);
 
 		// coleção de beans do relatório
 		List relatorioBeans = new ArrayList();
@@ -505,6 +507,12 @@ public class RelatorioAcompanhamentoFaturamento
 		// consumo Minimo Fixado Esgoto Final
 		String consumoMinimoFixadoEsgotoFinal = (String) getParametro("consumoMinimoFixadoEsgotoFinal");
 
+		// consumo Fixado Esgoto do Poço Inicial
+		String consumoFixadoEsgotoPocoInicial = (String) getParametro("consumoFixadoEsgotoPocoInicial");
+
+		// consumo Fixado Esgoto do Poço Final
+		String consumoFixadoEsgotoPocoFinal = (String) getParametro("consumoFixadoEsgotoPocoFinal");
+
 		// intervalo Percentual Esgoto Inicial
 		String intervaloPercentualEsgotoInicial = (String) getParametro("intervaloPercentualEsgotoInicial");
 
@@ -602,7 +610,7 @@ public class RelatorioAcompanhamentoFaturamento
 						municipioID, tipoMedicaoID, indicadorMedicao, subCategoriaID, categoriaImovelID, quantidadeEconomiasInicial,
 						quantidadeEconomiasFinal, diaVencimentoAlternativo, clienteID, clienteTipoID, clienteRelacaoTipoID,
 						numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal, areaConstruidaFaixa,
-						anoMesReferencia);
+						anoMesReferencia, consumoFixadoEsgotoPocoInicial, consumoFixadoEsgotoPocoFinal);
 
 		return retorno;
 	}

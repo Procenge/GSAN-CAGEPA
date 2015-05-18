@@ -106,14 +106,18 @@ public class ContaMotivoCancelamento
 	/** nullable persistent field */
 	private Date ultimaAlteracao;
 
-	public static Integer TRASFERENCIA_DE_COBRANCA;
-
 	private String codigoConstante;
 
 	/** nullable persistent field */
 	private Short indicadorRegistroAtendimento;
 
 	private SolicitacaoTipoEspecificacao solicitacaoTipoEspecificacao;
+
+	// Constantes
+
+	public static Integer TRASFERENCIA_DE_COBRANCA;
+
+	public static Integer CANCELAMENTO_PARA_GUIA;
 
 	public String getCodigoConstante(){
 
@@ -218,6 +222,8 @@ public class ContaMotivoCancelamento
 	public static void inicializarConstantes(){
 
 		TRASFERENCIA_DE_COBRANCA = ContaMotivoCancelamentoEnum.TRASFERENCIA_DE_COBRANCA.getId();
+		CANCELAMENTO_PARA_GUIA = ContaMotivoCancelamentoEnum.CANCELAMENTO_PARA_GUIA.getId();
+
 
 	}
 
@@ -233,7 +239,7 @@ public class ContaMotivoCancelamento
 	 */
 	public static enum ContaMotivoCancelamentoEnum {
 
-		TRASFERENCIA_DE_COBRANCA;
+		TRASFERENCIA_DE_COBRANCA, CANCELAMENTO_PARA_GUIA;
 
 		private Integer id = -1;
 

@@ -339,4 +339,39 @@ public class Logradouro
 		return getId() + " " + getDescricaoFormatada();
 	}
 
+	/**
+	 * @author eduardo henrique
+	 * @date
+	 *       Equals Logradouro
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj){
+
+		if(this == obj) return true;
+		if(obj == null) return false;
+		if(!(obj instanceof Logradouro)) return false;
+		final Logradouro other = (Logradouro) obj;
+		if(this.id == null){
+			if(other.id != null) return false;
+		}else if(!this.id.equals(other.id)) return false;
+		return true;
+	}
+
+	/**
+	 * @see java.lang.Object#hashCode()
+	 * @author eduardo henrique
+	 * @date
+	 *       Equals Imovel
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public int hashCode(){
+
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
 }

@@ -5,7 +5,12 @@
 	<form-beans>
 		<form-bean 
 		    name="ConsultarDadosOrdemServicoPopupActionForm"
-			type="gcom.gui.atendimentopublico.ordemservico.ConsultarDadosOrdemServicoPopupActionForm" /> 
+			type="gcom.gui.atendimentopublico.ordemservico.ConsultarDadosOrdemServicoPopupActionForm" />
+			
+		<form-bean 
+		    name="ConsultarDadosAtendimentoPopupActionForm"
+			type="gcom.gui.cadastro.atendimento.ConsultarDadosAtendimentoPopupActionForm" />			
+			 
 	</form-beans>
 
 	<!--******************* PÁGINAS GLOBAIS *******************-->
@@ -21,6 +26,16 @@
 			<forward name="consultarDadosOrdemServicoPopup"
 			path="/jsp/atendimentopublico/ordemservico/ordem_servico_dados_consultar_popup.jsp" />
 		</action>
+		
+		<action name="ConsultarDadosAtendimentoPopupActionForm"  
+			type="gcom.gui.cadastro.atendimento.ExibirConsultarDadosAtendimentoPopupAction" 
+			validate="true"
+			scope="session"
+			path="/exibirConsultarDadosAtendimentoPopupAction">
+
+			<forward name="consultarDadosAtendimentoPopup"
+			path="/jsp/cadastro/atendimento/atendimento_dados_consultar_popup.jsp" />
+		</action>		
 		
 	</action-mappings>
 

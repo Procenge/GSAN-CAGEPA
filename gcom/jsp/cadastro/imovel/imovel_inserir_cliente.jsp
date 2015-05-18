@@ -26,6 +26,7 @@
 	dynamicJavascript="false" staticJavascript="false" page="3" />
 <script language="JavaScript"
 	src="<bean:message key="caminho.js"/>util.js"></script>
+<script language="JavaScript" src="<bean:message key="caminho.js"/>Calendario.js" ></script>	
 <script language="JavaScript"
 	src="<bean:message key="caminho.js"/>validacao/ManutencaoRegistro.js"></script>
 <script language="JavaScript">
@@ -35,11 +36,11 @@
 
     function validateInserirImovelActionForm(form) {
         if (bCancel)
-      return true;
+      		return true;
         else
-       return testarCampoValorZero(document.InserirImovelActionForm.idCliente, 'Código') && validateCaracterEspecial(form) && validateLong(form)  && validateRequired(form) ;
+       		return testarCampoValorZero(document.InserirImovelActionForm.idCliente, 'Código') && validateCaracterEspecial(form) && validateLong(form)  && validateRequired(form) ;
    }
-
+    
     function caracteresespeciais () {
 
      this.ad = new Array("idCliente", "Código deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
@@ -71,10 +72,11 @@
         	 }else if(!validateLong(form)){
 
 		  }else{
-	
-    	    form.action='inserirImovelWizardAction.do?action=adicionarInserirImovelClienteAction&indicadorNomeConta=SIM';
-	    	//form.submit(); Mudado para a tela de espera
-	    	submitForm(form);
+			if (validateDate(form)){ 
+    	    	form.action='inserirImovelWizardAction.do?action=adicionarInserirImovelClienteAction&indicadorNomeConta=SIM';
+	    		//form.submit(); Mudado para a tela de espera
+	    		submitForm(form);
+			}
 		  }
 	    }
       } else {
@@ -171,12 +173,74 @@ function removerCliente(url){
 -->
 </script>
 
+<logic:present name="indicadorDataRelacaoFimInserir" scope="session">
+
+	<script language="JavaScript">
+	
+	    function DateValidations () {
+	        var form = document.forms[0];
+			
+	    	if (document.InserirImovelActionForm.dataFimClienteImovelRelacao.value != null && document.InserirImovelActionForm.dataFimClienteImovelRelacao.value != "") {
+	        	this.fa = new Array("dataFimClienteImovelRelacao", "Data Fim Relação inválida.", new Function ("varName", "this.datePattern='dd/MM/yyyy';  return this[varName];"));
+	    	}
+	      } 
+    
+		function modificarTipoRelacaoCliente() {
+			var form = document.forms[0];
+			
+			if (form.tipoClienteImovel.value != form.idTipoRelacaoUsuario.value) {
+				form.dataFimClienteImovelRelacao.value = "";
+				document.InserirImovelActionForm.dataFimClienteImovelRelacao = "";
+				form.dataFimClienteImovelRelacao.readOnly = true;	
+				form.dataFimClienteImovelRelacao.style.backgroundColor = "#EFEFEF";
+				
+				form.idMotivoFimClienteImovelRelacao.selectedIndex = -1;
+				document.InserirImovelActionForm.idMotivoFimClienteImovelRelacao = "";
+				form.idMotivoFimClienteImovelRelacao.disabled = true;	
+				form.idMotivoFimClienteImovelRelacao.style.backgroundColor = "#EFEFEF";		
+			} else {
+				if (form.dataFimClienteImovelRelacao.disabled == true) {
+					form.dataFimClienteImovelRelacao.value = "";
+					document.InserirImovelActionForm.dataFimClienteImovelRelacao = "";
+					
+					form.idMotivoFimClienteImovelRelacao.selectedIndex = -1;
+					document.InserirImovelActionForm.dataFimClienteImovelRelacao = "";			
+				}
+				
+				form.dataFimClienteImovelRelacao.readOnly = false;
+				form.dataFimClienteImovelRelacao.style.backgroundColor = "FFFFFF";
+				
+				form.idMotivoFimClienteImovelRelacao.disabled = false;
+				form.idMotivoFimClienteImovelRelacao.style.backgroundColor = "FFFFFF";
+			}
+		}
+		
+		function abrirCalendarioFimRelacao() {
+			var form = document.forms[0];
+			
+			if (form.tipoClienteImovel.value == form.idTipoRelacaoUsuario.value) {
+				abrirCalendario('InserirImovelActionForm', 'dataFimClienteImovelRelacao');
+			}
+		}
+	
+	</script>
+</logic:present>
+
+<logic:notPresent name="indicadorDataRelacaoFimInserir" scope="session">
+	<script language="JavaScript">
+		function modificarTipoRelacaoCliente() {
+		}
+		
+	    function DateValidations () {
+	    } 		
+	</script>		
+</logic:notPresent>	
+
 </head>
 
 
-
 <body leftmargin="5" topmargin="5"
-	onload="javascript:setarFoco('idCliente');">
+	onload="javascript:setarFoco('idCliente');modificarTipoRelacaoCliente();">
 
 <div id="formDiv">
 <html:form action="/inserirImovelWizardAction" method="post"
@@ -186,13 +250,13 @@ function removerCliente(url){
 	<jsp:include
 		page="/jsp/util/wizard/navegacao_abas_wizard_valida_avancar.jsp?numeroPagina=3" />
 
-
+	<input type="hidden" id="idTipoRelacaoUsuario" name="idTipoRelacaoUsuario"  value="<%=""+ConstantesSistema.CLIENTE_IMOVEL_TIPO_USUARIO%>"/>
 	<html:hidden property="url" value="3" />
 	<%@ include file="/jsp/util/cabecalho.jsp"%>
 	<%@ include file="/jsp/util/menu.jsp"%>
 
+	<input type="hidden" name="numeroPagina" value="4" />
 	<table width="770" border="0" cellspacing="4" cellpadding="0">
-		<input type="hidden" name="numeroPagina" value="4" />
 		<tr>
 			<td width="149" valign="top" class="leftcoltext">
 			<div align="center">
@@ -291,7 +355,7 @@ function removerCliente(url){
 								src="<bean:message key="caminho.imagens"/>pesquisa.gif"
 								title="Pesquisar Cliente" /></a> <logic:present
 								name="codigoClienteNaoEncontrado" scope="request">
-								<input type="text" name="nomeCliente" size="40" readonly="true"
+								<input type="text" name="nomeCliente" size="40" readonly="readonly"
 									style="background-color:#EFEFEF; border:0; color: #ff0000"
 									value="<bean:message key="atencao.cliente.inexistente"/>" />
 							</logic:present> <logic:notPresent
@@ -309,11 +373,40 @@ function removerCliente(url){
 				<tr>
 					<td><strong>Tipo do Cliente:<font color="#FF0000">*</font></strong></td>
 					<td><html:select property="tipoClienteImovel"
-						onchange="javascript:document.InserirImovelActionForm.textoSelecionado.value = this[this.selectedIndex].text.substring(5);">
+						onchange="javascript:document.InserirImovelActionForm.textoSelecionado.value = this[this.selectedIndex].text.substring(5);modificarTipoRelacaoCliente();">
 						<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
 						<html:options collection="tipoClientesImoveis" labelProperty="descricaoComId" property="id" />
 					</html:select> <html:hidden property="textoSelecionado" /></td>
 				</tr>
+				
+				<logic:present name="indicadorDataRelacaoFimInserir" scope="session">
+					<tr> 
+						<td>
+							<strong>Data Fim da Relação:</strong>
+						</td>
+						<td>
+							<html:text property="dataFimClienteImovelRelacao" tabindex="10" size="10" maxlength="10"
+									onkeypress="mascaraData(this, event); " /> 
+							<a href="javascript:abrirCalendarioFimRelacao()">
+								<img border="0"	src="<bean:message key="caminho.imagens"/>calendario.gif"
+									width="20" border="0" align="middle" alt="Exibir Calendário" />
+							</a>
+							<font size="1">(dd/mm/aaaa) </font>
+						</td>
+					</tr>	
+					
+					<tr>
+	                     <td width="10%"><strong>Motivo</strong></td>
+	                     <td width="56%">
+	                       <html:select property="idMotivoFimClienteImovelRelacao">
+	                       	 <html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+	                         <html:options collection="clienteImoveisFimRelacaoMotivo" labelProperty="descricao" property="id"/>
+	                       </html:select>
+	                      </td>
+	                </tr>	
+	                						
+				</logic:present>
+				
 				<tr>
 					<td>&nbsp;</td>
 					<td><font color="#FF0000">*</font> Campo obrigatório.</td>
@@ -335,22 +428,35 @@ function removerCliente(url){
 					<table width="100%" cellpadding="0" cellspacing="0">
 						<tr>
 							<td height="0">
-							<table width="100%" bgcolor="#90c7fc">
-								<!--header da tabela interna -->
-								<tr bordercolor="#FFFFFF" bgcolor="#90c7fc">
-									<td width="10%"><strong>Remover</strong></td>
-									<td width="8%"><strong>Nome Conta</strong></td>
-									<td width="10%"><strong>Código</strong></td>
-									<td width="37%"><strong>Nome</strong></td>
-									<td width="15%"><strong>Tipo</strong></td>
-									<td width="20%"><strong>CPF/CNPJ</strong></td>
-								</tr>
-							</table>
+								<table width="587" bgcolor="#90c7fc">
+									<!--header da tabela interna -->
+									<tr bordercolor="#FFFFFF" bgcolor="#90c7fc">
+										<td width="24" align="center" ><strong></strong></td>
+										<td width="40" align="center" ><strong>Nome Conta</strong></td>
+										<td width="40" align="center" ><strong>Código</strong></td>
+										
+										<logic:present name="indicadorDataRelacaoFimInserir" scope="session">
+											<td width="100"><strong>Nome</strong></td>
+										</logic:present>
+										
+										<logic:notPresent name="indicadorDataRelacaoFimInserir" scope="session">
+											<td width="170"><strong>Nome</strong></td>	
+										</logic:notPresent>											
+										
+										<td width="95"><strong>Tipo</strong></td>
+										<td width="110"><strong>CPF/CNPJ</strong></td>
+										<td width="70" align="center"><strong>Data Início Relação</strong></td>
+										
+										<logic:present name="indicadorDataRelacaoFimInserir" scope="session">										
+											<td width="70" align="left"><strong>Data Fim Relação</strong></td>											
+										</logic:present>
+									</tr>
+								</table>
 							</td>
 						</tr>
 						<tr>
 							<td height="83">
-							<div style="width: 100%; height: 100%; overflow: auto;">
+							<div style="width: 587; height: 100%; overflow: auto;">
 							<table width="100%" align="left" bgcolor="#99CCFF">
 								<!--corpo da segunda tabela-->
 								<%int cont = 0;%>
@@ -359,41 +465,64 @@ function removerCliente(url){
 									<logic:iterate name="imovelClientesNovos"
 										id="imovelClienteNovo" type="ClienteImovel">
 										<%cont = cont + 1;
-			if (cont % 2 == 0) {%>
+										if (cont % 2 == 0) {%>
 										<tr bgcolor="#cbe5fe">
 										<%} else {%>
 										<tr bgcolor="#FFFFFF">
 											<%}%>
-											<td width="10%">
-											<div align="center"><a
+											<td >
+											<div  align="center" style="width: 24"><a
 												href="javascript:removerCliente('removerInserirImovelClienteAction.do?idRemocaoClienteImovel=<%=""+imovelClienteNovo.getUltimaAlteracao().getTime()%>');"><img
 												border="0" src="/gsan/imagens/Error.gif" /></a></div>
 											</td>
-											<td width="8%">
-    											<div align="center">
+											<td >
+    											<div  style="width: 40" align="center">
 	 											    <html:radio property="idNomeConta" onclick="javascript:validarNomeConta('${imovelClienteNovo.clienteRelacaoTipo.descricao}-${imovelClienteNovo.cliente.id}');"
 	 											    value="${imovelClienteNovo.clienteRelacaoTipo.descricao}-${imovelClienteNovo.cliente.id}"/>		
 												</div>									
 											</td>
-											<td width="10%">
-											<div align="center"><bean:write name="imovelClienteNovo"
+											<td >
+											<div align="center" style="width: 40"><bean:write name="imovelClienteNovo"
 												property="cliente.id" /></div>
 											</td>
-												<td align="left" width="37%">
-											<div align="left"><bean:write name="imovelClienteNovo"
-												property="cliente.nome" /></div>
-											</td>
-											<td width="15%">
-											<div align="left"><bean:write name="imovelClienteNovo"
+											
+											<logic:present name="indicadorDataRelacaoFimInserir" scope="session">
+												<td align="left" width="100">
+												<div align="left" style="width: 100"><bean:write name="imovelClienteNovo"
+													property="cliente.nome" /></div>
+												</td>
+											</logic:present>
+											
+											<logic:notPresent name="indicadorDataRelacaoFimInserir" scope="session">
+												<td align="left" width="170">
+												<div align="left" style="width: 170"><bean:write name="imovelClienteNovo"
+													property="cliente.nome" /></div>
+												</td>
+											</logic:notPresent>												
+											
+											<td width="95">
+											<div align="left"  style="width: 95"><bean:write name="imovelClienteNovo"
 												property="clienteRelacaoTipo.descricao" /></div>
 											</td>
-												<td width="20%" align="right"><logic:notEmpty name="imovelClienteNovo"
+												<td width="110" align="right"><logic:notEmpty name="imovelClienteNovo"
 												property="cliente.cpf">
 												<bean:write name="imovelClienteNovo" property="cliente.cpfFormatado" />
 											</logic:notEmpty> <logic:notEmpty name="imovelClienteNovo"
 												property="cliente.cnpj">
 												<bean:write name="imovelClienteNovo" property="cliente.cnpjFormatado"  />
 												</logic:notEmpty></td>
+												
+											<td align="center" width="65">
+											<div align="center" style="width: 65"><bean:write name="imovelClienteNovo"
+												property="dataInicioRelacao" formatKey="date.format" /></div>
+											</td>											
+											
+											<logic:present name="indicadorDataRelacaoFimInserir" scope="session">
+												<td align="center" width="65">
+												<div align="center" style="width: 65"><bean:write name="imovelClienteNovo"
+													property="dataPrevistaFimRelacao" formatKey="date.format" /></div>
+												</td>
+											</logic:present>												
 										</tr>
 									</logic:iterate>
 								</logic:notEmpty>

@@ -130,7 +130,16 @@ public class ConstantesConfig {
 
 	private static final String PATH_PADRAO_ARQUIVOS_ANEXADOS;
 
+	private static final String PATH_PADRAO_ARQUIVOS_A_PROCESSAR_ARRECADACAO;
+
+	private static final String PATH_PADRAO_ARQUIVOS_PROCESSADOS_ARRECADACAO;
+
 	private static final String DIRETORIO_DEPLOY_APLICACAO = "diretorio_deploy_aplicacao";
+
+	private static final String PATH_ARQUIVOS_A_PROCESSAR_ARRECADACAO = "path_arquivos_a_processar_arrecadacao";
+
+	private static final String PATH_ARQUIVOS_PROCESSADOS_ARRECADACAO = "path_arquivos_processados_arrecadacao";
+
 
 	// guarda as constantes contidas no application.properties juntamente com
 	// seus valores
@@ -142,6 +151,11 @@ public class ConstantesConfig {
 		DIR_RECURSOS_EXTERNOS = FiltroRecursosExternos.DIR_RECURSOS_EXTERNOS;
 		NOME_ARQUIVO_PROPRIEDADES = FiltroRecursosExternos.DIR_RECURSOS_EXTERNOS + "gcom/properties/config.properties";
 		PATH_PADRAO_ARQUIVOS_ANEXADOS = FiltroRecursosExternos.DIR_RECURSOS_EXTERNOS + "ARQUIVOS_ANEXADOS";
+
+		PATH_PADRAO_ARQUIVOS_A_PROCESSAR_ARRECADACAO = FiltroRecursosExternos.DIR_RECURSOS_EXTERNOS + "ARQUIVOS_A_PROCESSAR_ARRECADACAO";
+		PATH_PADRAO_ARQUIVOS_PROCESSADOS_ARRECADACAO = FiltroRecursosExternos.DIR_ARQUIVOS_PROCESSADOS_ARRECADACAO;
+
+
 		loadResources();
 	}
 
@@ -232,5 +246,23 @@ public class ConstantesConfig {
 			path = dev_path;
 		}
 		return path;
+	}
+
+	/**
+	 * @return
+	 */
+	public static String getPathRepositorioArquivosAProcessarArrecadacao(){
+
+		String path = get(PATH_ARQUIVOS_A_PROCESSAR_ARRECADACAO);
+		return Util.isVazioOuBranco(path) ? PATH_PADRAO_ARQUIVOS_A_PROCESSAR_ARRECADACAO : path;
+	}
+
+	/**
+	 * @return
+	 */
+	public static String getPathRepositorioArquivosProcessadosArrecadacao(){
+
+		String path = get(PATH_ARQUIVOS_PROCESSADOS_ARRECADACAO);
+		return Util.isVazioOuBranco(path) ? PATH_PADRAO_ARQUIVOS_PROCESSADOS_ARRECADACAO : path;
 	}
 }

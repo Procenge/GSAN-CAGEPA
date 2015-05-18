@@ -89,6 +89,8 @@ function desabilitaCampo(form){
 	type="gcom.gui.faturamento.FaturamentoActionForm" method="post"
 	onsubmit="return habilitaCampo(this) && validarCamposDinamicos(this) && validateFaturamentoActionForm(this);">
 
+	<html:hidden property="quantidadeCronogramas" value="1"/>
+	
 	<%@ include file="/jsp/util/cabecalho.jsp"%>
 	<%@ include file="/jsp/util/menu.jsp"%>
 
@@ -414,6 +416,6 @@ function desabilitaCampo(form){
 		</tr>
 	</table>
 	<%@ include file="/jsp/util/rodape.jsp"%>
-</body>
 </html:form>
+</body>
 </html:html>

@@ -819,9 +819,10 @@ public class GeradorHQLCondicional {
 					int numeroArgumentosIsoladosConector){
 
 		condicionalQueryRetorno.getQuery().append(
-						processarIsolamentoConector((maior.hasAlias() ? "" : aliasTabela + ".") + maior.getNomeAtributo() + " > "
-										+ (maior.hasAlias() ? "" : aliasTabela + ".") + maior.getNomeSegundoAtributo()
-										+ maior.getConector(), maior, numeroArgumentosIsoladosConector));
+						processarIsolamentoConector(
+										(maior.hasAlias() ? "" : aliasTabela + ".") + maior.getNomeAtributo() + " > "
+														+ (maior.hasAlias() ? "" : aliasTabela + ".") + maior.getNomeSegundoAtributo()
+														+ maior.getConector(), maior, numeroArgumentosIsoladosConector));
 	}
 
 	private static void geradorCondicional(CondicionalQuery condicionalQueryRetorno, MenorQueComparacaoColuna menorQueComparacaoColuna,

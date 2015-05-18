@@ -6,6 +6,7 @@ import gcom.gui.ActionServletException;
 import gcom.relatorio.RelatorioGeracaoCrystalReport;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaRelatorio;
+import gcom.util.ConstantesSistema;
 import gcom.util.ServiceLocator;
 import gcom.util.Util;
 import gcom.util.parametrizacao.ParametroContabil;
@@ -30,8 +31,12 @@ import br.com.procenge.util.StrutsDispatchAction;
 
 public class GeradorRelatorioAction
 				extends StrutsDispatchAction {
+
 	private static final Logger LOGGER = Logger.getLogger(GeradorRelatorioAction.class);
+
 	private static final String MIME_TYPE_APPLICATION_PDF = "application/pdf";
+
+	private static final String MIME_TYPE_APPLICATION_XLS = "application/xls";
 
 	public static final String RELATORIO_RELACAO_CONTAS_ADD_PDD = "RelatorioContasAdicionadasPDD.rpt";
 
@@ -39,7 +44,15 @@ public class GeradorRelatorioAction
 
 	public static final String RELATORIO_IMPOSTO_FEDERAL = "RelatorioUsuariosComRetencaoImpostoFederal.rpt";
 
+	public static final String RELATORIO_ARRECADACAO_CONTABIL_GERAL = "RelatorioClassificacaoContabil-Geral.rpt";
+
+	public static final String RELATORIO_ARRECADACAO_CONTABIL_DIVIDA = "RelatorioClassificacaoContabil-DividaAtiva.rpt";
+
+	public static final String RELATORIO_ARRECADACAO_CONTABIL_EXECUCAO = "RelatorioClassificacaoContabil-Execucao.rpt";
+
 	public static final String RELATORIO_RESUMO_DE_FATURAMENTO = "RelatorioResumoDeFaturamento.rpt";
+
+	public static final String RELATORIO_CONTAS_EM_ATRAZO_POR_IDADE_DA_DIVIDA = "RelatorioContasEmAtrasoPorIdadeDaDivida.rpt";
 
 	public static final String RELATORIO_RESUMO_RECEBIMENTO_ARRECADADOR = "RelatorioResumoRecebimentoArrecadador.rpt";
 
@@ -104,7 +117,7 @@ public class GeradorRelatorioAction
 									Util.formatarAnoMesSemBarraParaMesAnoComBarra(Util.obterInteger(parametroAnoMesReferenciaContabil)));
 				}
 			}
-			
+
 			// imprimir parâmetros no log - investigação
 			LOGGER.info(dynaForm.getMap().toString());
 			// Envia uma requisição para gerar relatório em batch
@@ -112,15 +125,29 @@ public class GeradorRelatorioAction
 				RelatorioGeracaoCrystalReport relatorioBatch = new RelatorioGeracaoCrystalReport(usuarioLogado);
 				relatorioBatch.addParametro("relatorio", relatorio);
 				relatorioBatch.addParametro("parametros", parametrosConvertidos);
-				relatorioBatch.addParametro("tipoFormatoRelatorio", TarefaRelatorio.TIPO_PDF);
+				if(nomeRelatorio.equals(RELATORIO_CONTAS_EM_ATRAZO_POR_IDADE_DA_DIVIDA)
+								&& dynaForm.get("formatoRelatorio").equals(ConstantesSistema.XLS)){
+					relatorioBatch.addParametro("tipoFormatoRelatorio", TarefaRelatorio.TIPO_XLS);
+				}else{
+					relatorioBatch.addParametro("tipoFormatoRelatorio", TarefaRelatorio.TIPO_PDF);
+				}
+
 				ServiceLocator.getInstancia().getControladorBatch().iniciarProcessoRelatorio(relatorioBatch);
 
 				retorno = mapping.findForward("telaApresentacaoBatch");
 
 			}else{
-				byteArrayInputStream = controladorRelatorio.gerarRelatorio(relatorio, parametrosConvertidos,
-								ControladorRelatorio.FORMATO_PDF);
-				downloadRelatorio(byteArrayInputStream, response, MIME_TYPE_APPLICATION_PDF);
+				if(nomeRelatorio.equals(RELATORIO_CONTAS_EM_ATRAZO_POR_IDADE_DA_DIVIDA)
+								&& dynaForm.get("formatoRelatorio").equals(ConstantesSistema.XLS)){
+					byteArrayInputStream = controladorRelatorio.gerarRelatorio(relatorio, parametrosConvertidos,
+									ControladorRelatorio.FORMATO_PLANILHA);
+					downloadRelatorio(byteArrayInputStream, response, MIME_TYPE_APPLICATION_XLS);
+				}else{
+					byteArrayInputStream = controladorRelatorio.gerarRelatorio(relatorio, parametrosConvertidos,
+									ControladorRelatorio.FORMATO_PDF);
+					downloadRelatorio(byteArrayInputStream, response, MIME_TYPE_APPLICATION_PDF);
+				}
+
 			}
 		}else{
 			throw new ActionServletException("atencao.relatorio.erro");

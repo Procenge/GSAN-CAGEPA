@@ -157,8 +157,9 @@ public class FiltrarCategoriaAction
 		if(indicadorUso != null && !indicadorUso.trim().equalsIgnoreCase("")){
 			peloMenosUmParametroInformado = true;
 			filtroCategoria.adicionarParametro(new ParametroSimples(FiltroCategoria.INDICADOR_USO, indicadorUso));
-		}
 
+		}
+		
 		// Erro caso o usuário mandou filtrar sem nenhum parâmetro
 		if(!peloMenosUmParametroInformado){
 			throw new ActionServletException("atencao.filtro.nenhum_parametro_informado");

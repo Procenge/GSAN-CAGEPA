@@ -86,11 +86,7 @@ import gcom.util.filtro.MenorQue;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -124,6 +120,7 @@ public class FiltrarConsumoTarifaAction
 		String descTarifa = filtrarConsumoTarifaActionForm.getDescTarifa();
 		String dataVigenciaInicial = filtrarConsumoTarifaActionForm.getDataVigencia();
 		String dataVigenciaFinal = filtrarConsumoTarifaActionForm.getDataVigenciaFim();
+		String descAtoAdministrativo = filtrarConsumoTarifaActionForm.getDescricaoAtoAdministrativo();
 		String atualizar = (String) httpServletRequest.getParameter("atualizarFiltro");
 
 		// valida o intervalo de datas
@@ -160,6 +157,14 @@ public class FiltrarConsumoTarifaAction
 
 			filtroConsumoTarifaVigencia.adicionarParametro(new ComparacaoTexto(FiltroConsumoTarifaVigencia.CONSUMO_TARIFA_DESCRICAO,
 							descTarifa));
+			parametroPesquisaInformando = true;
+		}
+
+		// Descricao do Ato Administrativo
+		if(descAtoAdministrativo != null && !descAtoAdministrativo.trim().equalsIgnoreCase("")){
+
+			filtroConsumoTarifaVigencia.adicionarParametro(new ComparacaoTexto(FiltroConsumoTarifaVigencia.DESCRICAO_ATO_ADMINISTRATIVO,
+							descAtoAdministrativo));
 			parametroPesquisaInformando = true;
 		}
 

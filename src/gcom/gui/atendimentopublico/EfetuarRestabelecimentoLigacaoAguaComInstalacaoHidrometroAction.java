@@ -87,7 +87,6 @@ import gcom.cadastro.imovel.Imovel;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.micromedicao.RateioTipo;
 import gcom.micromedicao.hidrometro.*;
 import gcom.micromedicao.medicao.MedicaoTipo;
 import gcom.seguranca.acesso.Operacao;
@@ -325,8 +324,10 @@ public class EfetuarRestabelecimentoLigacaoAguaComInstalacaoHidrometroAction
 
 			ordemServico.setDataEncerramento(new Date());
 
-			ordemServico.setDataExecucao(Util.converteStringParaDate(
-							efetuarRestabelecimentoLigacaoAguaComInstalacaoHidrometroActionForm.getDataRestabelecimento(), true));
+			if(efetuarRestabelecimentoLigacaoAguaComInstalacaoHidrometroActionForm.getDataRestabelecimento() != null){
+				ordemServico.setDataExecucao(Util.converteStringParaDate(
+								efetuarRestabelecimentoLigacaoAguaComInstalacaoHidrometroActionForm.getDataRestabelecimento(), true));
+			}
 
 			ordemServico.setUltimaAlteracao(new Date());
 
@@ -430,8 +431,7 @@ public class EfetuarRestabelecimentoLigacaoAguaComInstalacaoHidrometroAction
 		}else{
 			hidrometroInstalacaoHistorico.setNumeroSelo(null);
 		}
-		// tipo de rateio
-		hidrometroInstalacaoHistorico.setRateioTipo(new RateioTipo(RateioTipo.RATEIO_POR_IMOVEL));
+
 		hidrometroInstalacaoHistorico.setDataImplantacaoSistema(new Date());
 
 		// indicador instalação substituição

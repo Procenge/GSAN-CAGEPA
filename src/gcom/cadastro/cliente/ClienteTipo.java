@@ -78,6 +78,9 @@ package gcom.cadastro.cliente;
 
 import gcom.interceptor.ControleAlteracao;
 import gcom.interceptor.ObjetoTransacao;
+import gcom.util.ErroRepositorioException;
+import gcom.util.RepositorioUtilHBM;
+import gcom.util.SistemaException;
 import gcom.util.filtro.Filtro;
 import gcom.util.filtro.ParametroSimples;
 
@@ -124,10 +127,63 @@ public class ClienteTipo
 	 */
 	private gcom.cadastro.cliente.EsferaPoder esferaPoder;
 
-	/**
-	 * @since 19/09/2007
-	 */
+	private String codigoConstante;
+
 	private String descricaoComId;
+
+	// Constantes
+	public static Integer APOSENTADO_PENSIONISTA;
+
+	/**
+	 * Este método foi criado para inicializar as constantes. A sua implementação visa utilizar a
+	 * solução dada para casos em que haja constantes com descrições diferentes mas que utilizavam o
+	 * mesmo valor em clientes distintos.
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/08/2014
+	 */
+	public static void inicializarConstantes(){
+
+		APOSENTADO_PENSIONISTA = ClienteTipoEnum.APOSENTADO_PENSIONISTA.getId();
+	}
+
+	/**
+	 * Este enum foi criado para dar suporte ao carregamento de constantes da classe em tempo de
+	 * execução. As constantes foram criadas aqui como atributos do enum, o que resolveu o problema
+	 * das constantes com descrições diferentes mas que utilizavam o mesmo
+	 * valor. Caso a constante não seja utilizada por um determinado cliente será atribuído -1 ao
+	 * seu valor.
+	 * 
+	 * @author Anderson Italo
+	 * @date 29/08/2014
+	 */
+	public static enum ClienteTipoEnum {
+
+		APOSENTADO_PENSIONISTA;
+
+		private Integer id = -1;
+
+		private ClienteTipoEnum() {
+
+			try{
+				ClienteTipo clienteTipo = RepositorioUtilHBM.getInstancia().pesquisarPorCodigo(name(), ClienteTipo.class);
+
+				if(clienteTipo != null){
+
+					id = clienteTipo.getId();
+				}
+			}catch(ErroRepositorioException e){
+
+				e.printStackTrace();
+				throw new SistemaException(e, e.getMessage());
+			}
+		}
+
+		public Integer getId(){
+
+			return id;
+		}
+	}
 
 	/**
 	 * Description of the Field
@@ -361,6 +417,16 @@ public class ClienteTipo
 	public String getDescricaoParaRegistroTransacao(){
 
 		return getId() + " " + getDescricao();
+	}
+
+	public String getCodigoConstante(){
+
+		return codigoConstante;
+	}
+
+	public void setCodigoConstante(String codigoConstante){
+
+		this.codigoConstante = codigoConstante;
 	}
 
 }

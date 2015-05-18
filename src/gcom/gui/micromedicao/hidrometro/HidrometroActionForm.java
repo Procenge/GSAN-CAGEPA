@@ -160,12 +160,16 @@ public class HidrometroActionForm
 
 	private String idHidrometroTipoTurbina;
 
-	private String dataUltimaRevisao;
+	private String dataInstalacao;
+
+	private String numeroNotaFiscal;
 
 	// essa variável é usada na tela de manter do hidrometro
 	// para verificar se o botão atualizarConjuntoHidrometro vai ficar
 	// abilitado ou não.
 	private String conjuntoHidrometro;
+
+	private String loteEntrega;
 
 	/**
 	 * Retorna o valor de anoFabricacao
@@ -666,12 +670,23 @@ public class HidrometroActionForm
 	 * }
 	 */
 
+
 	/**
 	 * @return Retorna o campo idHidrometro.
 	 */
 	public String getIdHidrometro(){
 
 		return idHidrometro;
+	}
+
+	public String getLoteEntrega(){
+
+		return loteEntrega;
+	}
+
+	public void setLoteEntrega(String loteEntrega){
+
+		this.loteEntrega = loteEntrega;
 	}
 
 	/**
@@ -747,16 +762,6 @@ public class HidrometroActionForm
 		this.idHidrometroTipoTurbina = idHidrometroTipoTurbina;
 	}
 
-	public String getDataUltimaRevisao(){
-
-		return dataUltimaRevisao;
-	}
-
-	public void setDataUltimaRevisao(String dataUltimaRevisao){
-
-		this.dataUltimaRevisao = dataUltimaRevisao;
-	}
-
 	public void limparCampos(){
 
 		anoFabricacao = "";
@@ -793,8 +798,30 @@ public class HidrometroActionForm
 		fatorConversao = "1";
 		codigoFormatoNumeracao = Hidrometro.FORMATO_NUMERACAO_4_X_6.toString();
 		idHidrometroTipoTurbina = "" + ConstantesSistema.NUMERO_NAO_INFORMADO;
-		dataUltimaRevisao = "";
+		numeroNotaFiscal = "";
+		dataInstalacao = "";
+		loteEntrega = "";
 		// conjuntoHidrometro = "";
+	}
+
+	public String getDataInstalacao(){
+
+		return dataInstalacao;
+	}
+
+	public void setDataInstalacao(String dataInstalacao){
+
+		this.dataInstalacao = dataInstalacao;
+	}
+
+	public String getNumeroNotaFiscal(){
+
+		return numeroNotaFiscal;
+	}
+
+	public void setNumeroNotaFiscal(String numeroNotaFiscal){
+
+		this.numeroNotaFiscal = numeroNotaFiscal;
 	}
 
 }

@@ -173,6 +173,12 @@ public class ParametroArrecadacao
 	public static final Parametro P_INCLUIR_AGENCIA_NAO_CADASTRADA_INCLUSAO_DEBITO_AUTOMATICO = new ParametroArrecadacao(
 					"P_INCLUIR_AGENCIA_NAO_CADASTRADA_INCLUSAO_DEBITO_AUTOMATICO");
 
+	public static final Parametro P_NUM_DIAS_ESTORNO_DIVIDA_ATIVA = new ParametroArrecadacao("P_NUM_DIAS_ESTORNO_DIVIDA_ATIVA");
+
+	public static final Parametro P_VALOR_MAX_ESTORNO_DIVIDA_ATIVA = new ParametroArrecadacao("P_VALOR_MAX_ESTORNO_DIVIDA_ATIVA");
+
+	public static final Parametro P_REGISTRAR_POR_DIRETORIO = new ParametroArrecadacao("P_REGISTRAR_POR_DIRETORIO");
+
 	private ParametroArrecadacao(String parametro) {
 
 		super(parametro);

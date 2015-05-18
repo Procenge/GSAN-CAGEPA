@@ -80,13 +80,7 @@ import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.micromedicao.hidrometro.Hidrometro;
-import gcom.micromedicao.hidrometro.HidrometroCapacidade;
-import gcom.micromedicao.hidrometro.HidrometroClasseMetrologica;
-import gcom.micromedicao.hidrometro.HidrometroDiametro;
-import gcom.micromedicao.hidrometro.HidrometroMarca;
-import gcom.micromedicao.hidrometro.HidrometroTipo;
-import gcom.micromedicao.hidrometro.HidrometroTipoTurbina;
+import gcom.micromedicao.hidrometro.*;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
@@ -196,10 +190,8 @@ public class AtualizarConjuntoHidrometroAction
 		SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
 
 		Date dataAquisicao = null;
-		Date dataUltimaRevisao = null;
 		try{
 			dataAquisicao = formatoData.parse(hidrometroActionForm.getDataAquisicao());
-			dataUltimaRevisao = Util.converteStringParaDate(hidrometroActionForm.getDataUltimaRevisao(), false);
 		}catch(ParseException ex){
 			// Erro no hibernate
 			reportarErros(httpServletRequest, "erro.sistema", ex);
@@ -228,6 +220,13 @@ public class AtualizarConjuntoHidrometroAction
 
 		}
 
+		Integer numeroNotaFiscal = null;
+
+		if(!Util.isVazioOuBranco(numeroNotaFiscal)){
+
+			numeroNotaFiscal = Util.obterInteger(hidrometroActionForm.getNumeroNotaFiscal());
+		}
+
 		Integer anoFabricacao = 0;
 
 		if(hidrometroActionForm.getAnoFabricacao() != null){
@@ -254,7 +253,7 @@ public class AtualizarConjuntoHidrometroAction
 		}
 
 		hidrometroAtualizado.setDataAquisicao(dataAquisicao);
-		hidrometroAtualizado.setDataUltimaRevisao(dataUltimaRevisao);
+		hidrometroAtualizado.setNumeroNotaFiscal(numeroNotaFiscal);
 		hidrometroAtualizado.setIndicadorMacromedidor(new Short(hidrometroActionForm.getIndicadorMacromedidor()));
 		hidrometroAtualizado.setNumeroDigitosLeitura(new Short(hidrometroActionForm.getIdNumeroDigitosLeitura()));
 

@@ -125,7 +125,7 @@ public class RelatorioQuadroHidrometrosAnoInstalacao
 
 		parametros.put("imagem", sistemaParametro.getImagemRelatorio());
 
-		parametros.put("P_NM_ESTADO", sistemaParametro.getNomeEstado());
+		parametros.put("P_NM_EMPRESA", sistemaParametro.getNomeEmpresa());
 
 		// cria uma instância do dataSource do relatório
 		RelatorioDataSource ds = new RelatorioDataSource(relatorioBeans);

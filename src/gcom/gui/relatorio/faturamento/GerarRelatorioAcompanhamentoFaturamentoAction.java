@@ -84,11 +84,7 @@ import gcom.relatorio.ExibidorProcessamentoTarefaRelatorio;
 import gcom.relatorio.faturamento.RelatorioAcompanhamentoFaturamento;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaRelatorio;
-import gcom.util.ConstantesJNDI;
-import gcom.util.ControladorException;
-import gcom.util.ServiceLocator;
-import gcom.util.ServiceLocatorException;
-import gcom.util.SistemaException;
+import gcom.util.*;
 
 import java.util.Collection;
 
@@ -229,6 +225,14 @@ public class GerarRelatorioAcompanhamentoFaturamentoAction
 		// consumo Minimo Fixado Esgoto Final
 		relatorioAcompanhamentoFaturamento.addParametro("consumoMinimoFixadoEsgotoFinal", imovelOutrosCriteriosActionForm
 						.getConsumoMinimoFixadoEsgotoFinal());
+
+		// consumo Fixado Esgoto do Poço Inicial
+		relatorioAcompanhamentoFaturamento.addParametro("consumoFixadoEsgotoPocoInicial",
+						imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoInicial());
+
+		// consumo Fixado Esgoto do Poço Final
+		relatorioAcompanhamentoFaturamento.addParametro("consumoFixadoEsgotoPocoFinal",
+						imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoFinal());
 
 		// intervalo Percentual Esgoto Inicial
 		relatorioAcompanhamentoFaturamento.addParametro("intervaloPercentualEsgotoInicial", imovelOutrosCriteriosActionForm

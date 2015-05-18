@@ -82,9 +82,11 @@ import gcom.faturamento.faturamentosimulacaocomando.FaturamentoSimulacaoComando;
 import gcom.faturamento.faturamentosimulacaocomando.FiltroFaturamentoSimulacaoComando;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.Util;
 import gcom.util.filtro.ParametroNulo;
 
 import java.util.Collection;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -144,6 +146,7 @@ public class ExibirInserirProcessoFaturamentoComandadoAction
 
 		httpServletRequest.setAttribute("colecaoFaturamentoAtividadeCronograma", colecaoFaturamentoAtividadeCronograma);
 		httpServletRequest.setAttribute("colecaoFaturamentoSimulacaoComando", colecaoFaturamentoSimulacaoComando);
+		httpServletRequest.setAttribute("dataAtualServidor", Util.formatarDataComHora(new Date()));
 
 		return retorno;
 	}

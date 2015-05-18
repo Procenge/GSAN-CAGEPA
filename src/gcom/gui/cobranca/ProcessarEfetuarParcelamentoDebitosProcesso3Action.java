@@ -95,10 +95,7 @@ import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -362,6 +359,61 @@ public class ProcessarEfetuarParcelamentoDebitosProcesso3Action
 		Collection<GuiaPagamentoValoresHelper> colecaoGuiaPagamento = (Collection<GuiaPagamentoValoresHelper>) sessao
 						.getAttribute("colecaoGuiaPagamentoValoresSelecionadas");
 
+		BigDecimal valorSucumbenciaTotal = BigDecimal.ZERO;
+		String valorAcrescimosSucumbenciaImovelStr = (String) efetuarParcelamentoDebitosActionForm.get("valorAcrescimosSucumbenciaImovel");
+		if(!Util.isVazioOuBranco(valorAcrescimosSucumbenciaImovelStr)){
+			valorSucumbenciaTotal = valorSucumbenciaTotal.add(Util.formatarMoedaRealparaBigDecimal(valorAcrescimosSucumbenciaImovelStr));
+		}
+		String valorTotalSucumbenciaImovelStr = (String) efetuarParcelamentoDebitosActionForm.get("valorTotalSucumbenciaImovel");
+		if(!Util.isVazioOuBranco(valorTotalSucumbenciaImovelStr)){
+			valorSucumbenciaTotal = valorSucumbenciaTotal.add(Util.formatarMoedaRealparaBigDecimal(valorTotalSucumbenciaImovelStr));
+		}
+		String valorSucumbenciaAtualStr = (String) efetuarParcelamentoDebitosActionForm.get("valorSucumbenciaAtual");
+		BigDecimal valorSucumbenciaAtual = BigDecimal.ZERO;
+		if(!Util.isVazioOuBranco(valorSucumbenciaAtualStr)){
+			valorSucumbenciaAtual = Util.formatarMoedaRealparaBigDecimal(valorSucumbenciaAtualStr);
+		}
+		valorSucumbenciaTotal = valorSucumbenciaTotal.add(valorSucumbenciaAtual);
+
+		efetuarParcelamentoDebitosActionForm.set("valorTotalSucumbencia", Util.formatarMoedaReal(valorSucumbenciaTotal));
+
+		String valorDiligenciasStr = (String) efetuarParcelamentoDebitosActionForm.get("valorDiligencias");
+		BigDecimal valorDiligencias = BigDecimal.ZERO;
+		if(!Util.isVazioOuBranco(valorDiligenciasStr)){
+			valorDiligencias = Util.formatarMoedaRealparaBigDecimal(valorDiligenciasStr);
+		}
+
+		Map<Integer, BigDecimal> mapProcessos = (Map<Integer, BigDecimal>) sessao.getAttribute("mapProcessos");
+
+		Map<Integer, BigDecimal> mapProcessosValorSucumbenciaDistribuido = fachada.distribuirValorEntreProcessosExecucaoFiscal(
+						valorSucumbenciaAtual, mapProcessos, Integer.valueOf(codigoImovel));
+
+		Map<Integer, BigDecimal> mapProcessosValorDiligenciasDistribuido = fachada.distribuirValorEntreProcessosExecucaoFiscal(
+						valorDiligencias, mapProcessos, Integer.valueOf(codigoImovel));
+
+		sessao.setAttribute("mapProcessosValorSucumbenciaDistribuido", mapProcessosValorSucumbenciaDistribuido);
+		sessao.setAttribute("mapProcessosValorDiligenciasDistribuido", mapProcessosValorDiligenciasDistribuido);
+
+		String quantidadeParcelasSucumbenciaStr = (String) efetuarParcelamentoDebitosActionForm.get("quantidadeParcelasSucumbencia");
+		if(Util.isVazioOuBranco(quantidadeParcelasSucumbenciaStr)){
+			quantidadeParcelasSucumbenciaStr = "1";
+		}else{
+			fachada.verificarQuantidadeParcelasSucumbencia(Integer.valueOf(quantidadeParcelasSucumbenciaStr), usuario);
+		}
+		Integer quantidadeParcelasSucumbencia = Integer.valueOf(quantidadeParcelasSucumbenciaStr);
+		efetuarParcelamentoDebitosActionForm.set("quantidadeParcelasSucumbencia", quantidadeParcelasSucumbenciaStr);
+
+		BigDecimal valorParcelaSucumbencia = BigDecimal.ZERO;
+
+		if(valorSucumbenciaTotal.compareTo(BigDecimal.ZERO) > 0){
+			if(quantidadeParcelasSucumbencia.intValue() == 0){
+				throw new ActionServletException("atencao.invalido_zero", null, "Qtd. Parcelas da Sucumbência");
+			}
+			valorParcelaSucumbencia = valorSucumbenciaTotal.divide(new BigDecimal(quantidadeParcelasSucumbencia),
+						Parcelamento.CASAS_DECIMAIS, Parcelamento.TIPO_ARREDONDAMENTO);
+		}
+		efetuarParcelamentoDebitosActionForm.set("valorParcelaSucumbencia", Util.formatarMoedaReal(valorParcelaSucumbencia));
+
 		if(calculaOpcaoParcelamento != null && calculaOpcaoParcelamento.equals("1")){
 
 			// Verifica se a entrada informada é menor que a mínima caso venha da aba 2
@@ -401,7 +453,8 @@ public class ProcessarEfetuarParcelamentoDebitosProcesso3Action
 							valorDebitoTotalAtualizado, valorTotalMultas, valorTotalJurosMora, valorTotalAtualizacoesMonetarias,
 							numeroReparcelamentoConsecutivos, colecaoGuiaPagamento, usuario,
 							valorDebitoACobrarParcelamentoImovelBigDecimal, inicioIntervaloParcelamentoFormatado,
-							fimIntervaloParcelamentoFormatado, indicadoresParcelamentoHelper, dataVencimentoEntradaParcelamento);
+							fimIntervaloParcelamentoFormatado, indicadoresParcelamentoHelper, dataVencimentoEntradaParcelamento,
+							valorSucumbenciaTotal, quantidadeParcelasSucumbencia, valorSucumbenciaAtual, valorDiligencias);
 
 			valorEntradaMinima = opcoesParcelamento.getValorEntrada();
 
@@ -475,6 +528,12 @@ public class ProcessarEfetuarParcelamentoDebitosProcesso3Action
 		}
 
 		sessao.setAttribute("colecaoOpcoesParcelamento", colecaoOpcoesParcelamento);
+
+		// Removendo Variaveis Usadas no Preview do Relatorio, devido a ter possíveis Alterações no
+		// Parcelamento
+		sessao.removeAttribute("parcelamentoTermoTestemunhas");
+		sessao.removeAttribute("parcelamentoDadosTermo");
+		sessao.removeAttribute("TipoParcelamentoDadosTermo");
 
 		return retorno;
 	}

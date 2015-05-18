@@ -663,6 +663,14 @@ public class Imovel
 	private Integer codigoSetorComercial;
 
 	private Integer numeroQuadra;
+	
+	private Date dataAtualizacaoCadastral;
+	
+	private Short indicadorAtualizacaoCadastral;
+
+	private Short indicadorEnvioCorreio;
+
+	private Set clientesImovel;
 
 	/**
 	 * persistent field
@@ -719,320 +727,6 @@ public class Imovel
 
 	public final static Short INDICADOR_NAO_DEBITO_AUTOMATICO = Short.valueOf("2");
 
-	// ---------Construtores Antigos
-	/*
-	 * public Imovel( short lote, short subLote, short testadaLote, String
-	 * numeroImovel, String complementoEndereco, BigDecimal areaConstruida,
-	 * Short indicadorImovelCondominio, BigDecimal volumeReservatorioSuperior,
-	 * BigDecimal volumeReservatorioInferior, BigDecimal volumePiscina, Date
-	 * dataSupressaoParcial, Date dataInfracao, Short numeroPontosUtilizacao,
-	 * Short numeroMorador, Short numeroRetificacao, Short numeroLeituraExcecao,
-	 * Short numeroParcelamento, Short numeroReparcelamento, Short
-	 * diaVencimento, BigDecimal numeroIptu, Long numeroCelpe, Short
-	 * indicadorConta, Short indicadorEmissaoExtratoFaturamento, Short
-	 * indicadorDebitoConta, Short indicadorExclusao, BigDecimal coordenadaX,
-	 * BigDecimal coordenadaY, LigacaoEsgoto ligacaoEsgoto, TarifaSocialDado
-	 * tarifaSocialDado, LigacaoAgua ligacaoAgua, ImovelEnderecoAnterior
-	 * imovelEnderecoAnterior, gcom.cadastro.imovel.Imovel imovelPrincipal,
-	 * gcom.cadastro.imovel.Imovel imovelCondominio, LigacaoEsgotoSituacao
-	 * ligacaoEsgotoSituacao, Logradouro logradouro,
-	 * HidrometroInstalacaoHistorico hidrometroInstalacaoHistorico,
-	 * LeituraAnormalidade leituraAnormalidade,
-	 * gcom.cadastro.imovel.EloAnormalidade eloAnormalidade, SetorComercial
-	 * setorComercial, gcom.cadastro.imovel.AreaConstruidaFaixa
-	 * areaConstruidaFaixa, gcom.cadastro.imovel.PavimentoCalcada
-	 * pavimentoCalcada, gcom.cadastro.imovel.ImovelPerfil imovelPerfil,
-	 * gcom.cadastro.imovel.ReservatorioVolumeFaixa
-	 * reservatorioVolumeFaixaSuperior,
-	 * gcom.cadastro.imovel.ReservatorioVolumeFaixa
-	 * reservatorioVolumeFaixaInferior, Localidade localidade, Quadra quadra,
-	 * CobrancaSituacaoTipo cobrancaSituacaoTipo,
-	 * gcom.cadastro.imovel.PavimentoRua pavimentoRua, EnderecoReferencia
-	 * enderecoReferencia, gcom.faturamento.conta.NomeConta nomeConta,
-	 * gcom.cadastro.imovel.CadastroOcorrencia cadastroOcorrencia,
-	 * gcom.cadastro.imovel.PocoTipo pocoTipo, LigacaoAguaSituacao
-	 * ligacaoAguaSituacao, gcom.cadastro.imovel.Despejo despejo, Cep cep,
-	 * FaturamentoSituacaoTipo faturamentoSituacaoTipo,
-	 * gcom.cadastro.imovel.FonteAbastecimento fonteAbastecimento,
-	 * gcom.cadastro.imovel.PiscinaVolumeFaixa piscinaVolumeFaixa, Date
-	 * ultimaAlteracao) { this.lote = lote; this.subLote = subLote;
-	 * this.testadaLote = testadaLote; this.numeroImovel = numeroImovel;
-	 * this.complementoEndereco = complementoEndereco; this.areaConstruida =
-	 * areaConstruida; this.indicadorImovelCondominio =
-	 * indicadorImovelCondominio; this.volumeReservatorioSuperior =
-	 * volumeReservatorioSuperior; this.volumeReservatorioInferior =
-	 * volumeReservatorioInferior; this.volumePiscina = volumePiscina;
-	 * this.dataSupressaoParcial = dataSupressaoParcial; this.dataInfracao =
-	 * dataInfracao; this.numeroPontosUtilizacao = numeroPontosUtilizacao;
-	 * this.numeroMorador = numeroMorador; this.numeroRetificacao =
-	 * numeroRetificacao; this.numeroLeituraExcecao = numeroLeituraExcecao;
-	 * this.numeroParcelamento = numeroParcelamento; this.numeroReparcelamento =
-	 * numeroReparcelamento; this.diaVencimento = diaVencimento; this.numeroIptu =
-	 * numeroIptu; this.numeroCelpe = numeroCelpe; this.indicadorConta =
-	 * indicadorConta; this.indicadorEmissaoExtratoFaturamento =
-	 * indicadorEmissaoExtratoFaturamento; this.indicadorDebitoConta =
-	 * indicadorDebitoConta; this.indicadorExclusao = indicadorExclusao;
-	 * this.coordenadaX = coordenadaX; this.coordenadaY = coordenadaY;
-	 * this.ligacaoEsgoto = ligacaoEsgoto; this.tarifaSocialDado =
-	 * tarifaSocialDado; this.ligacaoAgua = ligacaoAgua;
-	 * this.imovelEnderecoAnterior = imovelEnderecoAnterior;
-	 * this.imovelPrincipal = imovelPrincipal; this.imovelCondominio =
-	 * imovelCondominio; this.ligacaoEsgotoSituacao = ligacaoEsgotoSituacao;
-	 * this.logradouro = logradouro; this.hidrometroInstalacaoHistorico =
-	 * hidrometroInstalacaoHistorico; this.leituraAnormalidade =
-	 * leituraAnormalidade; this.eloAnormalidade = eloAnormalidade;
-	 * this.setorComercial = setorComercial; this.areaConstruidaFaixa =
-	 * areaConstruidaFaixa; this.pavimentoCalcada = pavimentoCalcada;
-	 * this.imovelPerfil = imovelPerfil; this.reservatorioVolumeFaixaSuperior =
-	 * reservatorioVolumeFaixaSuperior; this.reservatorioVolumeFaixaInferior =
-	 * reservatorioVolumeFaixaInferior; this.localidade = localidade;
-	 * this.quadra = quadra; this.cobrancaSituacaoTipo = cobrancaSituacaoTipo;
-	 * this.pavimentoRua = pavimentoRua; this.enderecoReferencia =
-	 * enderecoReferencia; this.nomeConta = nomeConta; this.cadastroOcorrencia =
-	 * cadastroOcorrencia; this.pocoTipo = pocoTipo; this.ligacaoAguaSituacao =
-	 * ligacaoAguaSituacao; this.despejo = despejo; this.cep = cep;
-	 * this.faturamentoSituacaoTipo = faturamentoSituacaoTipo;
-	 * this.fonteAbastecimento = fonteAbastecimento; this.piscinaVolumeFaixa =
-	 * piscinaVolumeFaixa;
-	 * this.ultimaAlteracao = ultimaAlteracao; }
-	 * /** Constructor for the Imovel object
-	 * @param id Description of the Parameter @param numeroImovel Description of
-	 * the Parameter @param logradouro Description of the Parameter @param
-	 * quadra Description of the Parameter @param enderecoReferencia Description
-	 * of the Parameter @param cep Description of the Parameter @param
-	 * complementoEndereco Description of the Parameter
-	 * public Imovel(Integer id, String numeroImovel, Logradouro logradouro,
-	 * Quadra quadra, EnderecoReferencia enderecoReferencia, Cep cep, String
-	 * complementoEndereco) { this.id = id; this.numeroImovel = numeroImovel;
-	 * this.quadra = quadra; this.enderecoReferencia = enderecoReferencia;
-	 * this.cep = cep; this.logradouro = logradouro; this.complementoEndereco =
-	 * complementoEndereco; } // ---------Fim Construtores Antigos
-	 * /** full constructor
-	 * @param lote Description of the Parameter @param subLote Description of
-	 * the Parameter @param testadaLote Description of the Parameter @param
-	 * numeroImovel Description of the Parameter @param complementoEndereco
-	 * Description of the Parameter @param areaConstruida Description of the
-	 * Parameter @param indicadorImovelCondominio Description of the Parameter
-	 * @param volumeReservatorioSuperior Description of the Parameter @param
-	 * volumeReservatorioInferior Description of the Parameter @param
-	 * volumePiscina Description of the Parameter @param dataSupressaoParcial
-	 * Description of the Parameter @param dataInfracao Description of the
-	 * Parameter @param numeroPontosUtilizacao Description of the Parameter
-	 * @param numeroMorador Description of the Parameter @param
-	 * numeroRetificacao Description of the Parameter @param
-	 * numeroLeituraExcecao Description of the Parameter @param
-	 * numeroParcelamento Description of the Parameter @param
-	 * numeroReparcelamento Description of the Parameter @param diaVencimento
-	 * Description of the Parameter @param numeroIptu Description of the
-	 * Parameter @param numeroCelpe Description of the Parameter @param
-	 * indicadorConta Description of the Parameter @param
-	 * indicadorEmissaoExtratoFaturamento Description of the Parameter @param
-	 * indicadorDebitoConta Description of the Parameter @param
-	 * indicadorExclusao Description of the Parameter @param coordenadaX
-	 * Description of the Parameter @param coordenadaY Description of the
-	 * Parameter @param ligacaoEsgoto Description of the Parameter @param
-	 * tarifaSocialDado Description of the Parameter @param ligacaoAgua
-	 * Description of the Parameter @param imovelEnderecoAnterior Description of
-	 * the Parameter @param imovelPrincipal Description of the Parameter @param
-	 * imovelCondominio Description of the Parameter @param
-	 * ligacaoEsgotoSituacao Description of the Parameter @param logradouro
-	 * Description of the Parameter @param hidrometroInstalacaoHistorico
-	 * Description of the Parameter @param leituraAnormalidade Description of
-	 * the Parameter @param eloAnormalidade Description of the Parameter @param
-	 * setorComercial Description of the Parameter @param areaConstruidaFaixa
-	 * Description of the Parameter @param pavimentoCalcada Description of the
-	 * Parameter @param imovelPerfil Description of the Parameter @param
-	 * reservatorioVolumeFaixaSuperior Description of the Parameter @param
-	 * reservatorioVolumeFaixaInferior Description of the Parameter @param
-	 * localidade Description of the Parameter @param quadra Description of the
-	 * Parameter @param cobrancaSituacaoTipo Description of the Parameter @param
-	 * pavimentoRua Description of the Parameter @param enderecoReferencia
-	 * Descrição do parâmetro @param nomeConta Descrição do parâmetro @param
-	 * cadastroOcorrencia Description of the Parameter @param pocoTipo
-	 * Description of the Parameter @param ligacaoAguaSituacao Description of
-	 * the Parameter @param despejo Description of the Parameter @param cep
-	 * Description of the Parameter @param faturamentoSituacaoTipo Description
-	 * of the Parameter @param fonteAbastecimento Description of the Parameter
-	 * @param piscinaVolumeFaixa Description of the Parameter @param
-	 * cobrancaSituacao Description of the Parameter @param ultimaAlteracao
-	 * Descrição do parâmetro
-	 * public Imovel( short lote, short subLote, short testadaLote, Short
-	 * numeroReparcelamentoConsecutivos, String numeroImovel, String
-	 * complementoEndereco, BigDecimal areaConstruida, Short
-	 * indicadorImovelCondominio, BigDecimal volumeReservatorioSuperior,
-	 * BigDecimal volumeReservatorioInferior, BigDecimal volumePiscina, Date
-	 * dataSupressaoParcial, Date dataInfracao, Short numeroPontosUtilizacao,
-	 * Short numeroMorador, Short numeroRetificacao, Short numeroLeituraExcecao,
-	 * Short numeroParcelamento, Short numeroReparcelamento, Short
-	 * diaVencimento, BigDecimal numeroIptu, Long numeroCelpe, Short
-	 * indicadorConta, Short indicadorEmissaoExtratoFaturamento, Short
-	 * indicadorDebitoConta, Short indicadorExclusao, BigDecimal coordenadaX,
-	 * BigDecimal coordenadaY, LigacaoEsgoto ligacaoEsgoto, TarifaSocialDado
-	 * tarifaSocialDado, LigacaoAgua ligacaoAgua, ImovelEnderecoAnterior
-	 * imovelEnderecoAnterior, gcom.cadastro.imovel.Imovel imovelPrincipal,
-	 * gcom.cadastro.imovel.Imovel imovelCondominio, LigacaoEsgotoSituacao
-	 * ligacaoEsgotoSituacao, Logradouro logradouro,
-	 * HidrometroInstalacaoHistorico hidrometroInstalacaoHistorico,
-	 * LeituraAnormalidade leituraAnormalidade,
-	 * gcom.cadastro.imovel.EloAnormalidade eloAnormalidade, SetorComercial
-	 * setorComercial, gcom.cadastro.imovel.AreaConstruidaFaixa
-	 * areaConstruidaFaixa, gcom.cadastro.imovel.PavimentoCalcada
-	 * pavimentoCalcada, gcom.cadastro.imovel.ImovelPerfil imovelPerfil,
-	 * gcom.cadastro.imovel.ReservatorioVolumeFaixa
-	 * reservatorioVolumeFaixaSuperior,
-	 * gcom.cadastro.imovel.ReservatorioVolumeFaixa
-	 * reservatorioVolumeFaixaInferior, Localidade localidade, Quadra quadra,
-	 * CobrancaSituacaoTipo cobrancaSituacaoTipo,
-	 * gcom.cadastro.imovel.PavimentoRua pavimentoRua, EnderecoReferencia
-	 * enderecoReferencia, gcom.faturamento.conta.NomeConta nomeConta,
-	 * gcom.cadastro.imovel.CadastroOcorrencia cadastroOcorrencia,
-	 * gcom.cadastro.imovel.PocoTipo pocoTipo, LigacaoAguaSituacao
-	 * ligacaoAguaSituacao, gcom.cadastro.imovel.Despejo despejo, Cep cep,
-	 * FaturamentoSituacaoTipo faturamentoSituacaoTipo,
-	 * gcom.cadastro.imovel.FonteAbastecimento fonteAbastecimento,
-	 * gcom.cadastro.imovel.PiscinaVolumeFaixa piscinaVolumeFaixa,
-	 * FaturamentoTipo faturamentoTipo, FaturamentoSituacaoMotivo
-	 * faturamentoSituacaoMotivo, Short indicadorSuspensaoAbastecimento, Date
-	 * ultimaAlteracao) { this.lote = lote; this.subLote = subLote;
-	 * this.testadaLote = testadaLote; this.numeroImovel = numeroImovel;
-	 * this.numeroReparcelamentoConsecutivos = numeroReparcelamentoConsecutivos;
-	 * this.complementoEndereco = complementoEndereco; this.areaConstruida =
-	 * areaConstruida; this.indicadorImovelCondominio =
-	 * indicadorImovelCondominio; this.volumeReservatorioSuperior =
-	 * volumeReservatorioSuperior; this.volumeReservatorioInferior =
-	 * volumeReservatorioInferior; this.volumePiscina = volumePiscina;
-	 * this.dataSupressaoParcial = dataSupressaoParcial; this.dataInfracao =
-	 * dataInfracao; this.numeroPontosUtilizacao = numeroPontosUtilizacao;
-	 * this.numeroMorador = numeroMorador; this.numeroRetificacao =
-	 * numeroRetificacao; this.numeroLeituraExcecao = numeroLeituraExcecao;
-	 * this.numeroParcelamento = numeroParcelamento; this.numeroReparcelamento =
-	 * numeroReparcelamento; this.diaVencimento = diaVencimento; this.numeroIptu =
-	 * numeroIptu; this.numeroCelpe = numeroCelpe; this.indicadorConta =
-	 * indicadorConta; this.indicadorEmissaoExtratoFaturamento =
-	 * indicadorEmissaoExtratoFaturamento; this.indicadorDebitoConta =
-	 * indicadorDebitoConta; this.indicadorExclusao = indicadorExclusao;
-	 * this.coordenadaX = coordenadaX; this.coordenadaY = coordenadaY;
-	 * this.ligacaoEsgoto = ligacaoEsgoto; this.tarifaSocialDado =
-	 * tarifaSocialDado; this.ligacaoAgua = ligacaoAgua;
-	 * this.imovelEnderecoAnterior = imovelEnderecoAnterior;
-	 * this.imovelPrincipal = imovelPrincipal; this.imovelCondominio =
-	 * imovelCondominio; this.ligacaoEsgotoSituacao = ligacaoEsgotoSituacao;
-	 * this.logradouro = logradouro; this.hidrometroInstalacaoHistorico =
-	 * hidrometroInstalacaoHistorico; this.leituraAnormalidade =
-	 * leituraAnormalidade; this.eloAnormalidade = eloAnormalidade;
-	 * this.setorComercial = setorComercial; this.areaConstruidaFaixa =
-	 * areaConstruidaFaixa; this.pavimentoCalcada = pavimentoCalcada;
-	 * this.imovelPerfil = imovelPerfil; this.reservatorioVolumeFaixaSuperior =
-	 * reservatorioVolumeFaixaSuperior; this.reservatorioVolumeFaixaInferior =
-	 * reservatorioVolumeFaixaInferior; this.localidade = localidade;
-	 * this.quadra = quadra; this.cobrancaSituacaoTipo = cobrancaSituacaoTipo;
-	 * this.pavimentoRua = pavimentoRua; this.enderecoReferencia =
-	 * enderecoReferencia; this.nomeConta = nomeConta; this.cadastroOcorrencia =
-	 * cadastroOcorrencia; this.pocoTipo = pocoTipo; this.ligacaoAguaSituacao =
-	 * ligacaoAguaSituacao; this.despejo = despejo; this.cep = cep;
-	 * this.faturamentoSituacaoTipo = faturamentoSituacaoTipo;
-	 * this.fonteAbastecimento = fonteAbastecimento; this.piscinaVolumeFaixa =
-	 * piscinaVolumeFaixa; this.faturamentoTipo = faturamentoTipo;
-	 * this.faturamentoSituacaoMotivo = faturamentoSituacaoMotivo;
-	 * this.indicadorSuspensaoAbastecimento = indicadorSuspensaoAbastecimento;
-	 * this.ultimaAlteracao = ultimaAlteracao; }
-	 * /** Constructor for the Imovel object
-	 * @param id Description of the Parameter @param numeroImovel Description of
-	 * the Parameter @param logradouro Description of the Parameter @param
-	 * quadra Description of the Parameter @param enderecoReferencia Description
-	 * of the Parameter @param cep Description of the Parameter @param
-	 * complementoEndereco Description of the Parameter
-	 * public Imovel(Integer id, String numeroImovel, Logradouro logradouro,
-	 * Quadra quadra, EnderecoReferencia enderecoReferencia, Cep cep, String
-	 * complementoEndereco, FaturamentoTipo faturamentoTipo) { this.id = id;
-	 * this.numeroImovel = numeroImovel; this.quadra = quadra;
-	 * this.enderecoReferencia = enderecoReferencia; this.cep = cep;
-	 * this.logradouro = logradouro; this.complementoEndereco =
-	 * complementoEndereco; this.faturamentoTipo = faturamentoTipo; }
-	 * /** default constructor
-	 * public Imovel() { }
-	 * /** minimal constructor
-	 * @param lote Description of the Parameter @param subLote Description of
-	 * the Parameter @param testadaLote Description of the Parameter @param
-	 * numeroImovel Description of the Parameter @param complementoEndereco
-	 * Description of the Parameter @param numeroPontosUtilizacao Description of
-	 * the Parameter @param numeroMorador Description of the Parameter @param
-	 * imovelPrincipal Description of the Parameter @param imovelCondominio
-	 * Description of the Parameter @param ligacaoEsgotoSituacao Description of
-	 * the Parameter @param logradouro Description of the Parameter @param
-	 * hidrometroInstalacaoHistorico Description of the Parameter @param
-	 * leituraAnormalidade Description of the Parameter @param eloAnormalidade
-	 * Description of the Parameter @param setorComercial Description of the
-	 * Parameter @param areaConstruidaFaixa Description of the Parameter @param
-	 * pavimentoCalcada Description of the Parameter @param imovelPerfil
-	 * Description of the Parameter @param reservatorioVolumeFaixaSuperior
-	 * Description of the Parameter @param reservatorioVolumeFaixaInferior
-	 * Description of the Parameter @param localidade Description of the
-	 * Parameter @param quadra Description of the Parameter @param
-	 * cobrancaSituacaoTipo Description of the Parameter @param pavimentoRua
-	 * Description of the Parameter @param enderecoImovelReferencia Description
-	 * of the Parameter @param nomeConta Descrição do parâmetro @param
-	 * cadastroOcorrencia Description of the Parameter @param pocoTipo
-	 * Description of the Parameter @param ligacaoAguaSituacao Description of
-	 * the Parameter @param despejo Description of the Parameter @param cep
-	 * Description of the Parameter @param faturamentoSituacaoTipo Description
-	 * of the Parameter @param fonteAbastecimento Description of the Parameter
-	 * @param piscinaVolumeFaixa Description of the Parameter @param
-	 * cobrancaSituacao Description of the Parameter
-	 * public Imovel( short lote, short subLote, short testadaLote, String
-	 * numeroImovel, String complementoEndereco, Short numeroPontosUtilizacao,
-	 * Short numeroMorador, gcom.cadastro.imovel.Imovel imovelPrincipal,
-	 * gcom.cadastro.imovel.Imovel imovelCondominio, LigacaoEsgotoSituacao
-	 * ligacaoEsgotoSituacao, Logradouro logradouro,
-	 * HidrometroInstalacaoHistorico hidrometroInstalacaoHistorico,
-	 * LeituraAnormalidade leituraAnormalidade,
-	 * gcom.cadastro.imovel.EloAnormalidade eloAnormalidade, SetorComercial
-	 * setorComercial, gcom.cadastro.imovel.AreaConstruidaFaixa
-	 * areaConstruidaFaixa, gcom.cadastro.imovel.PavimentoCalcada
-	 * pavimentoCalcada, gcom.cadastro.imovel.ImovelPerfil imovelPerfil,
-	 * gcom.cadastro.imovel.ReservatorioVolumeFaixa
-	 * reservatorioVolumeFaixaSuperior,
-	 * gcom.cadastro.imovel.ReservatorioVolumeFaixa
-	 * reservatorioVolumeFaixaInferior, Localidade localidade, Quadra quadra,
-	 * CobrancaSituacaoTipo cobrancaSituacaoTipo,
-	 * gcom.cadastro.imovel.PavimentoRua pavimentoRua, EnderecoReferencia
-	 * enderecoImovelReferencia, gcom.faturamento.conta.NomeConta nomeConta,
-	 * gcom.cadastro.imovel.CadastroOcorrencia cadastroOcorrencia,
-	 * gcom.cadastro.imovel.PocoTipo pocoTipo, LigacaoAguaSituacao
-	 * ligacaoAguaSituacao, gcom.cadastro.imovel.Despejo despejo, Cep cep,
-	 * FaturamentoSituacaoTipo faturamentoSituacaoTipo,
-	 * gcom.cadastro.imovel.FonteAbastecimento fonteAbastecimento,
-	 * gcom.cadastro.imovel.PiscinaVolumeFaixa piscinaVolumeFaixa) { this.lote =
-	 * lote; this.subLote = subLote; this.testadaLote = testadaLote;
-	 * this.numeroImovel = numeroImovel; this.complementoEndereco =
-	 * complementoEndereco; this.numeroPontosUtilizacao =
-	 * numeroPontosUtilizacao; this.numeroMorador = numeroMorador;
-	 * this.imovelPrincipal = imovelPrincipal; this.imovelCondominio =
-	 * imovelCondominio; this.ligacaoEsgotoSituacao = ligacaoEsgotoSituacao;
-	 * this.logradouro = logradouro; this.hidrometroInstalacaoHistorico =
-	 * hidrometroInstalacaoHistorico; this.leituraAnormalidade =
-	 * leituraAnormalidade; this.eloAnormalidade = eloAnormalidade;
-	 * this.setorComercial = setorComercial; this.areaConstruidaFaixa =
-	 * areaConstruidaFaixa; this.pavimentoCalcada = pavimentoCalcada;
-	 * this.imovelPerfil = imovelPerfil; this.reservatorioVolumeFaixaSuperior =
-	 * reservatorioVolumeFaixaSuperior; this.reservatorioVolumeFaixaInferior =
-	 * reservatorioVolumeFaixaInferior; this.localidade = localidade;
-	 * this.quadra = quadra; this.cobrancaSituacaoTipo = cobrancaSituacaoTipo;
-	 * this.pavimentoRua = pavimentoRua; this.enderecoReferencia =
-	 * enderecoImovelReferencia; this.nomeConta = nomeConta;
-	 * this.cadastroOcorrencia = cadastroOcorrencia; this.pocoTipo = pocoTipo;
-	 * this.ligacaoAguaSituacao = ligacaoAguaSituacao; this.despejo = despejo;
-	 * this.cep = cep; this.faturamentoSituacaoTipo = faturamentoSituacaoTipo;
-	 * this.fonteAbastecimento = fonteAbastecimento; this.piscinaVolumeFaixa =
-	 * piscinaVolumeFaixa; }
-	 * public Imovel(Integer id, gcom.cadastro.localidade.Localidade localidade,
-	 * gcom.cadastro.localidade.SetorComercial setorComercial,
-	 * gcom.cadastro.localidade.Quadra quadra, short lote, short subLote,
-	 * FaturamentoSituacaoTipo faturamentoSituacaoTipo) {
-	 * this.id = id; this.localidade = localidade; this.setorComercial =
-	 * setorComercial; this.quadra = quadra; this.lote = lote; this.subLote =
-	 * subLote; this.faturamentoSituacaoTipo = faturamentoSituacaoTipo; }
-	 */
 
 	public Imovel(short lote, short subLote, Short testadaLote, String numeroImovel, String complementoEndereco, byte[] fotoFachada,
 					BigDecimal areaConstruida, Short indicadorImovelCondominio, BigDecimal volumeReservatorioSuperior,
@@ -3025,16 +2719,44 @@ public class Imovel
 	}
 
 	/**
+	 * Retorna o endereço formatado sem bairro e sem CEP
+	 * 
+	 * @see #obterEnderecoFormatado(int, boolean, boolean);
+	 * @param limiteTamanhoEndereco
+	 * @return
+	 */
+	public String[] obterEnderecoFormatadoSemBairroCEP(int limiteTamanhoEndereco){
+
+		return this.obterEnderecoFormatado(limiteTamanhoEndereco, false, false);
+	}
+
+	/**
+	 * Retorna o endereço formatado compelto
+	 * 
+	 * @see #obterEnderecoFormatado(int, boolean);
+	 * @param limiteTamanhoEndereco
+	 * @return
+	 */
+	public String[] obterEnderecoFormatado(int limiteTamanhoEndereco){
+
+		return this.obterEnderecoFormatado(limiteTamanhoEndereco, true, true);
+	}
+
+	/**
 	 * Retorna o endereço formatado do imóvel, podendo ter particionado em duas partes, de acordo
 	 * com o tamanho limite informado. É informado também uma flag indicando se o endereço deve ser
 	 * particionado
 	 * 
 	 * @param limiteTamanhoEndereco
 	 *            Tamanho de limite dos 2 Strings que compõem o endereço
+	 * @param incluirBairro
+	 *            Se o endereço deverá incluir o bairro
+	 * @param incluirCEP
+	 *            Se o endereço deverá incluir o CEP
 	 * @return Uma String de duas posições. Se o endereço não for particionado, o endereço estará
 	 *         apenas na primeira posição
 	 */
-	public String[] obterEnderecoFormatado(int limiteTamanhoEndereco){
+	public String[] obterEnderecoFormatado(int limiteTamanhoEndereco, boolean incluirBairro, boolean incluirCEP){
 
 		String[] enderecoParticionado = new String[3];
 		String enderecoParte1 = "";
@@ -3133,7 +2855,7 @@ public class Imovel
 				}
 			}
 
-			if(this.getLogradouroBairro() != null && this.getLogradouroBairro().getBairro() != null
+			if(incluirBairro && this.getLogradouroBairro() != null && this.getLogradouroBairro().getBairro() != null
 							&& this.getLogradouroBairro().getBairro().getId().intValue() != 0){
 				if(this.getLogradouroBairro().getBairro().getNome() != null){
 
@@ -3182,7 +2904,7 @@ public class Imovel
 				}
 			}
 
-			if(this.getLogradouroCep() != null && this.getLogradouroCep().getCep() != null){
+			if(incluirCEP && this.getLogradouroCep() != null && this.getLogradouroCep().getCep() != null){
 				// concatena o cep formatado do imóvel
 				if(this.getLogradouroCep().getCep().getCepFormatado() != null){
 
@@ -3658,14 +3380,34 @@ public class Imovel
 	 */
 	public String getInscricaoFormatada(){
 
+		String inscricao = "";
+
 		// Recuperando o tamanho a ser considerado para o número da quadra
 		int tamanhoNumeroQuadra = 3;
+
 		try{
-			String paramNumeroQuadra = ParametroCadastro.P_NUMERO_QUADRA_COM_4_DIGITOS.executar();
-			if(!Util.isVazioOuBranco(paramNumeroQuadra) && paramNumeroQuadra.equals(ConstantesSistema.SIM.toString())){
+
+			String paramNumeroQuadraQuatroDigitos = ParametroCadastro.P_NUMERO_QUADRA_COM_4_DIGITOS.executar();
+			if(!Util.isVazioOuBranco(paramNumeroQuadraQuatroDigitos)
+							&& paramNumeroQuadraQuatroDigitos.equals(ConstantesSistema.SIM.toString())){
+
 				tamanhoNumeroQuadra = 4;
 			}
 		}catch(ControladorException ex){
+
+			throw new RuntimeException("erro.parametro.sistema.inscricao.imovel", ex);
+		}
+
+		try{
+
+			String paramNumeroQuadraCincoDigitos = ParametroCadastro.P_NUMERO_QUADRA_COM_5_DIGITOS.executar();
+			if(!Util.isVazioOuBranco(paramNumeroQuadraCincoDigitos)
+							&& paramNumeroQuadraCincoDigitos.equals(ConstantesSistema.SIM.toString())){
+
+				tamanhoNumeroQuadra = 5;
+			}
+		}catch(ControladorException ex){
+
 			throw new RuntimeException("erro.parametro.sistema.inscricao.imovel", ex);
 		}
 
@@ -3675,7 +3417,8 @@ public class Imovel
 		String lote = Util.completarStringZeroEsquerda(String.valueOf(this.getLote()), 4);
 		String subLote = Util.completarStringZeroEsquerda(String.valueOf(this.getSubLote()), 3);
 
-		String inscricao = localidade + "." + setorComercial + "." + quadra + "." + lote + "." + subLote;
+		inscricao = localidade + "." + setorComercial + "." + quadra + "." + lote + "." + subLote;
+
 
 		return inscricao;
 	}
@@ -4222,41 +3965,6 @@ public class Imovel
 		return result;
 	}
 
-	// public String getInscricaoSemLocalidade(){
-	//
-	// String inscricao = "";
-	// String zeroUm = "0";
-	// String zeroDois = "00";
-	// String zeroTres = "000";
-	//
-	// if(String.valueOf(this.getLote()).length() < 4 && String.valueOf(this.getLote()).length() >
-	// 2){
-	// inscricao = zeroUm + this.getLote();
-	// }else if(String.valueOf(this.getLote()).length() < 3 &&
-	// String.valueOf(this.getLote()).length() > 1){
-	// inscricao = zeroDois + this.getLote();
-	// }else if(String.valueOf(this.getLote()).length() < 2){
-	// inscricao = zeroTres + this.getLote();
-	// }
-	//
-	// if(String.valueOf(this.getSubLote()).length() < 3 &&
-	// String.valueOf(this.getSubLote()).length() > 1){
-	// inscricao += zeroUm + this.getSubLote();
-	// }else if(String.valueOf(this.getSubLote()).length() < 3){
-	// inscricao += zeroDois + this.getSubLote();
-	// }
-	//
-	// if(this.getRota() != null && String.valueOf(this.getRota()).length() < 2){
-	// inscricao += zeroUm + this.getRota();
-	// }
-	//
-	// if(this.getNumeroSegmento() != null && String.valueOf(this.getNumeroSegmento()).length() <
-	// 2){
-	// inscricao += zeroUm + this.getNumeroSegmento();
-	// }
-	//
-	// return inscricao;
-	// }
 
 	public ConsumoTarifa getConsumoTarifaTemporaria(){
 
@@ -4302,11 +4010,28 @@ public class Imovel
 		// Recuperando o tamanho a ser considerado para o número da quadra
 		int tamanhoNumeroQuadra = 3;
 		try{
-			String paramNumeroQuadra = ParametroCadastro.P_NUMERO_QUADRA_COM_4_DIGITOS.executar();
-			if(!Util.isVazioOuBranco(paramNumeroQuadra) && paramNumeroQuadra.equals(ConstantesSistema.SIM)){
+
+			String paramNumeroQuadraQuatroDigitos = ParametroCadastro.P_NUMERO_QUADRA_COM_4_DIGITOS.executar();
+			if(!Util.isVazioOuBranco(paramNumeroQuadraQuatroDigitos)
+							&& paramNumeroQuadraQuatroDigitos.equals(ConstantesSistema.SIM.toString())){
+
 				tamanhoNumeroQuadra = 4;
 			}
 		}catch(ControladorException ex){
+
+			throw new RuntimeException("erro.parametro.sistema.inscricao.imovel", ex);
+		}
+
+		try{
+
+			String paramNumeroQuadraCincoDigitos = ParametroCadastro.P_NUMERO_QUADRA_COM_5_DIGITOS.executar();
+			if(!Util.isVazioOuBranco(paramNumeroQuadraCincoDigitos)
+							&& paramNumeroQuadraCincoDigitos.equals(ConstantesSistema.SIM.toString())){
+
+				tamanhoNumeroQuadra = 5;
+			}
+		}catch(ControladorException ex){
+
 			throw new RuntimeException("erro.parametro.sistema.inscricao.imovel", ex);
 		}
 
@@ -4424,6 +4149,32 @@ public class Imovel
 		this.numeroContratoEmissao = numeroContratoEmissao;
 	}
 
+	
+	
+	
+	public Date getDataAtualizacaoCadastral(){
+	
+		return dataAtualizacaoCadastral;
+	}
+
+	
+	public void setDataAtualizacaoCadastral(Date dataAtualizacaoCadastral){
+	
+		this.dataAtualizacaoCadastral = dataAtualizacaoCadastral;
+	}
+
+	
+	public Short getIndicadorAtualizacaoCadastral(){
+	
+		return indicadorAtualizacaoCadastral;
+	}
+
+	
+	public void setIndicadorAtualizacaoCadastral(Short indicadorAtualizacaoCadastral){
+	
+		this.indicadorAtualizacaoCadastral = indicadorAtualizacaoCadastral;
+	}
+
 	public int compareTo(Imovel o){
 
 		int x = localidade.getId().compareTo(o.getLocalidade().getId());
@@ -4458,4 +4209,233 @@ public class Imovel
 		return x;
 	}
 
+	public Short getIndicadorEnvioCorreio(){
+
+		return indicadorEnvioCorreio;
+	}
+
+	public void setIndicadorEnvioCorreio(Short indicadorEnvioCorreio){
+
+		this.indicadorEnvioCorreio = indicadorEnvioCorreio;
+	}
+
+	/**
+	 * @param matricula
+	 * @return
+	 */
+
+	public static String getMatriculaComDigitoVerificadorFormatada(String matricula){
+
+		String matriculaFormatada = "";
+		try{
+
+			if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+				if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+					// Completa Matricula com Zeros a Esquerda
+					matriculaFormatada = matricula;
+					for(int nCont = matricula.length(); nCont < 8; nCont++){
+						matriculaFormatada = "0" + matriculaFormatada;
+					}  
+					
+					// Coloca o 01 na frente da matricula
+					matriculaFormatada = "01" + matriculaFormatada;
+					
+					String primeiroDigitoVerificador = Util.obterDigitoVerificadorModulo11(matriculaFormatada).toString();
+					String segundoDigitoVerificador = Util.obterDigitoVerificadorModulo10(matriculaFormatada + primeiroDigitoVerificador)
+									.toString();
+					
+					matriculaFormatada = matricula + "-" + primeiroDigitoVerificador + "" + segundoDigitoVerificador;
+
+				}else{
+					throw new ControladorException("erro.parametro.nao.informado", null, "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+				}
+
+			}else{
+				matriculaFormatada = matricula.substring(0, matricula.length() - 1) + '-'
+								+ matricula.substring(matricula.length() - 1, matricula.length());
+			}
+
+		}catch(ControladorException ex){
+			throw new RuntimeException("erro.parametro.sistema.inscricao.imovel", ex);
+		}
+
+		return matriculaFormatada;
+	}
+
+	public static String getDigitoVerificadorMatricula(String matricula){
+
+		String digitoVerificador = "";
+		try{
+
+			if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+				if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+					// Completa Matricula com Zeros a Esquerda
+					for(int nCont = 0; matricula.length() < 8; nCont++){
+						matricula = "0" + matricula;
+					}
+
+					// Coloca o 01 na frente da matricula
+					matricula = "01" + matricula;
+
+					String primeiroDigitoVerificador = Util.obterDigitoVerificadorModulo11(matricula).toString();
+					String segundoDigitoVerificador = Util.obterDigitoVerificadorModulo10(matricula + primeiroDigitoVerificador).toString();
+
+					digitoVerificador = primeiroDigitoVerificador + "" + segundoDigitoVerificador;
+
+				}else{
+					throw new ControladorException("erro.parametro.nao.informado", null, "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+				}
+
+			}else{
+				digitoVerificador = matricula.substring(matricula.length() - 1);
+			}
+
+		}catch(ControladorException ex){
+			throw new RuntimeException("erro.parametro.sistema.inscricao.imovel", ex);
+		}
+
+		return digitoVerificador;
+	}
+
+	/**
+	 * @param matricula
+	 * @return
+	 */
+
+	public static String getMatriculaComDigitoVerificador(String matricula){
+
+		String matriculaFormatada = "";
+		try{
+
+			if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+				if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+					// Completa Matricula com Zeros a Esquerda
+					matriculaFormatada = matricula;
+					for(int nCont = matricula.length(); nCont < 8; nCont++){
+						matriculaFormatada = "0" + matriculaFormatada;
+					}
+
+					// Coloca o 01 na frente da matricula
+					matriculaFormatada = "01" + matriculaFormatada;
+
+					String primeiroDigitoVerificador = Util.obterDigitoVerificadorModulo11(matriculaFormatada).toString();
+					String segundoDigitoVerificador = Util.obterDigitoVerificadorModulo10(matriculaFormatada + primeiroDigitoVerificador)
+									.toString();
+
+					matriculaFormatada = matricula + primeiroDigitoVerificador + "" + segundoDigitoVerificador;
+
+				}else{
+					throw new ControladorException("erro.parametro.nao.informado", null, "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+				}
+
+			}else{
+				matriculaFormatada = matricula;
+			}
+
+		}catch(ControladorException ex){
+			throw new RuntimeException("erro.parametro.sistema.inscricao.imovel", ex);
+		}
+
+		return matriculaFormatada;
+	}
+
+	/**
+	 * @param matricula
+	 * @return
+	 */
+
+	public static String getMatriculaSemDigitoVerificador(String matriculaComDigito){
+
+		String matriculaFormatada = "";
+		try{
+
+			if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+				if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+					// Completa Matricula com Zeros a Esquerda
+					matriculaFormatada = matriculaComDigito.substring(0, matriculaComDigito.length() - 1) + '-'
+									+ matriculaComDigito.substring(matriculaComDigito.length(), -2);
+
+				}else{
+					throw new ControladorException("erro.parametro.nao.informado", null, "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+				}
+
+			}else{
+				matriculaFormatada = matriculaComDigito.substring(0, matriculaComDigito.length() - 1) + '-'
+								+ matriculaComDigito.substring(matriculaComDigito.length(), -1);
+			}
+
+		}catch(ControladorException ex){
+			throw new RuntimeException("erro.parametro.sistema.inscricao.imovel", ex);
+		}
+
+		return matriculaFormatada;
+
+	}
+
+	public String getInscricaoNaoFormataArquivoTextoFaturamentoMicrocoletorModelo2(){
+
+		/*
+		 * Composição levando em consideração que já foi migrado assim:
+		 * SETOR -> Setor(1) + Grupo Fat(2)
+		 * QUADRA-> Rota(2) + Quadra(3)
+		 * LOTE -> Face(4)
+		 * SUBLOTE -> Seq(3)
+		 */
+		String inscricaoSemFormatacao = "";
+
+		String setorComercial = Util.completarStringZeroEsquerda(String.valueOf(this.getSetorComercial().getCodigo()), 3);
+		String quadra = Util.completarStringZeroEsquerda(String.valueOf(this.getQuadra().getNumeroQuadra()), 5);
+		String lote = Util.completarStringZeroEsquerda(String.valueOf(this.getLote()), 4);
+		String subLote = Util.completarStringZeroEsquerda(String.valueOf(this.getSubLote()), 3);
+
+		inscricaoSemFormatacao = setorComercial + quadra + lote + subLote;
+
+		return inscricaoSemFormatacao;
+	}
+
+	public Set getClientesImovel(){
+
+		return clientesImovel;
+	}
+
+	public void setClientesImovel(Set clientesImovel){
+
+		this.clientesImovel = clientesImovel;
+	}
+
+	/**
+	 * @param matriculaRegistro
+	 * @return
+	 */
+	public static String obterMatriculaDebitoAutomatico(String matriculaRegistro){
+
+		String matriculaImovel = null;
+
+		try{
+
+			if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+				if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+					int quantidadeDigitosVericadores = 2;
+					int posicaoInicialMatricula = 3; // Neste Caso todas as matriculas começa por
+														// "01"
+
+					matriculaImovel = Integer.valueOf(
+									matriculaRegistro.substring(posicaoInicialMatricula,
+													matriculaRegistro.length() - quantidadeDigitosVericadores).trim()).toString();
+
+				}else{
+					throw new ControladorException("erro.parametro.nao.informado", null, "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+				}
+
+			}else{
+				matriculaImovel = Integer.valueOf(matriculaRegistro.trim()).toString();
+			}
+
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return matriculaImovel;
+	}
 }

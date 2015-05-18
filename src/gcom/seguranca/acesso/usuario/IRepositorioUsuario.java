@@ -245,4 +245,12 @@ public interface IRepositorioUsuario {
 	public boolean verificarPermissaoFuncionalidadeUsuario(Integer idUsuario, String descricaoCaminhoOperacao,
 					String descricaoCaminhoFuncionalidade)
 					throws ErroRepositorioException;
+
+	/**
+	 * Método que pesquisa as retrições de horário de acesso ao sistema de um usuário
+	 * 
+	 * @author Saulo Lima
+	 * @date 20/09/2014
+	 */
+	public Collection<UsuarioAcesso> pesquisarUsuarioAcesso(Integer idUsuario) throws ErroRepositorioException;
 }

@@ -135,4 +135,6 @@ public class FiltroParcelamento
 
 	public final static String COBRANCA_FORMA_ENTIDADE = "cobrancaForma";
 
+	public final static String IMOVEL = "imovel";
+
 }

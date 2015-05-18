@@ -22,7 +22,7 @@
 	function validaForm() {
 		var form = document.InserirGuiaPagamentoActionForm;
 		
-		if(validarValorDebito() && validaTipoDebito()) {
+		if(validarValorDebito() && validaTipoDebito() && validaNumeroProcessoAdministrativo()) {
 			 
 			submeterFormPadrao(form);
 		}
@@ -66,6 +66,22 @@
 			
 		return true;		
 	}
+	
+	function validaNumeroProcessoAdministrativo() {
+		var form = document.forms[0];
+
+		if (form.numeroProcessoAdministrativo != undefined){
+			if (form.numeroProcessoAdministrativo.value == '') {
+				alert("Informe o Número do Processo Administrativo da Execução Fiscal.");		
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return true;
+		}
+	
+	}	
 		
 	/* Recupera Dados Popup */	
 	function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
@@ -160,6 +176,24 @@
 	          				</strong>
 	          			</td>
 	        		</tr>
+	        		
+					<logic:present name="exibirColunaNumeroProcessoAdministrativo" scope="session">
+		        		<tr>
+		          			<td height="24">
+		          				<strong>Nº do Processo Administrativo da Execução Fiscal":</strong>
+		          				<font color="#FF0000">*</font>
+		          			</td>
+		          			<td colspan="4">
+		          				<strong>
+									<html:select property="numeroProcessoAdministrativoExecucaoFiscal" >
+										<html:option value="">&nbsp;</html:option>
+										<html:options collection="colecaoNumeroProcessoAdministrativo" labelProperty="value" property="key" />
+									</html:select>
+		          				</strong>
+		          			</td>
+		        		</tr>
+					</logic:present> 	        		
+	        		
 	        		<tr> 
 	          			<td height="24">
 	          				<strong> </strong>

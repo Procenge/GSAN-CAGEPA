@@ -84,7 +84,9 @@ import gcom.faturamento.conta.FiltroNomeConta;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -254,8 +256,30 @@ public class ExibirInserirImovelClienteAction
 			}
 		}
 
+		// Filtro FiltroClienteImovelFimRelacaoMotivo
+		FiltroClienteImovelFimRelacaoMotivo filtroClienteImovelFimRelacaoMotivo = new FiltroClienteImovelFimRelacaoMotivo();
+
+		filtroClienteImovelFimRelacaoMotivo.adicionarParametro(new ParametroSimples(FiltroClienteImovelFimRelacaoMotivo.INDICADOR_USO,
+						ConstantesSistema.INDICADOR_USO_ATIVO));
+		Collection clienteImoveisFimRelacaoMotivo = fachada.pesquisar(filtroClienteImovelFimRelacaoMotivo,
+						ClienteImovelFimRelacaoMotivo.class.getName());
+
+		sessao.setAttribute("clienteImoveisFimRelacaoMotivo", clienteImoveisFimRelacaoMotivo);
+
+		try{
+			if(ParametroCadastro.P_INDICADOR_INFORMAR_DATA_RELACAO_FIM_INSERIR_CLIENTE_IMOVEL.executar().equals(
+							ConstantesSistema.SIM.toString())){
+				sessao.setAttribute("indicadorDataRelacaoFimInserir", "S");
+			}else{
+				sessao.removeAttribute("indicadorDataRelacaoFimInserir");
+			}
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		sessao.setAttribute("imovelClientesNovos", clientesImoveis);
+		
 		return retorno;
 	}
 }

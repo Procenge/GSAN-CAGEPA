@@ -959,23 +959,20 @@
 
 	function configurarIndicador(){
 
-		var checkedInscricao = document.forms[0].indicadorOrdenacao[0].checked;
-		var checkedRotaLeitura = document.forms[0].indicadorOrdenacao[1].checked;
-		var checkedNome = document.forms[0].indicadorOrdenacao[0].checked;
-		var checkedEndereco = document.forms[0].indicadorOrdenacao[1].checked;
-
-		if(!checkedInscricao && !checkedRotaLeitura){
-
-			document.forms[0].indicadorOrdenacao[0].checked = true;
-
-		}
-
-		if(!checkedNome && !checkedEndereco){
-
-			document.forms[0].indicadorOrdenacao[0].checked = true;
-
-		}
+		if (document.forms[0].indicadorOrdenacao != undefined) {
+			var checkedInscricao = document.forms[0].indicadorOrdenacao[0].checked;	
+			var checkedRotaLeitura = document.forms[0].indicadorOrdenacao[1].checked;
+			var checkedNome = document.forms[0].indicadorOrdenacao[0].checked;
+			var checkedEndereco = document.forms[0].indicadorOrdenacao[1].checked;
 	
+			if(!checkedInscricao && !checkedRotaLeitura){
+				document.forms[0].indicadorOrdenacao[0].checked = true;
+			}
+	
+			if(!checkedNome && !checkedEndereco){
+				document.forms[0].indicadorOrdenacao[0].checked = true;
+			}
+		}	
 	}
 	
 -->    
@@ -1103,8 +1100,16 @@
 								<html:radio property="indicadorOrdenacao" value="4" tabindex="5">
 									<strong> Valor </strong> 
 								</html:radio>
+								
+								
+								
+								
 							</td>
+							
+							
 						</tr>
+						
+							
 					</logic:equal>
 				</logic:present> 
 				<logic:present name="ImovelOutrosCriteriosActionForm" property="exibirOrdenacao">
@@ -1142,11 +1147,85 @@
 					</logic:equal>
 				</logic:present> 
 				
+				<logic:equal name="gerarRelatorio" value="GerarRelacaoDebito">
+				      <tr>
+				            <td><strong>Op&ccedil;&otilde;es de Ordena&ccedil;&atilde;o:<font color="#FF0000"></font></strong></td>
+						   <td>
+							<html:radio property="indicadorOrdenacaoAscDesc" value="ASC" tabindex="5" >
+									<strong>Valor Crescente</strong> 
+								</html:radio>
+								<html:radio property="indicadorOrdenacaoAscDesc" value="DESC" tabindex="5">
+									<strong>Valor Decrescente</strong> 
+								</html:radio>
+							</td>
+					</tr>
+				</logic:equal>
 							
 
 				<tr height="1">
 					<td colspan="4">&nbsp;</td>
 				</tr>
+
+				<logic:equal name="gerarRelatorio" value="GerarRelacaoDebito">
+
+					<td colspan="4">
+						<table 
+							width="100%" 
+							align="center" 
+							bgcolor="#99CCFF" 
+							border="0">
+		                	
+		                	<tr> 
+		                      <td colspan="2">
+		                      	<strong>Op&ccedil;&otilde;es de Agrupamento:</strong>
+		                      </td>
+		                	</tr>
+		                	
+	                		<tr bgcolor="#cbe5fe"> 
+		                  	  	<td width="100%" 
+		                  	  		align="center" 
+		                  	  		colspan="2"> 
+		                  	    
+			                  	    <table width="100%" border="0">
+									
+										<tr bgcolor="#cbe5fe"> 
+											<td width="50%">
+											     <html:radio property="indicadorOpcaoAgrupamento" value="GERENCIA_REGIONAL_LOCALIDADE" tabindex="5">
+									               <strong>Ger&ecirc;ncia Regional/Localidade</strong> 
+								                  </html:radio>
+								                  <br></br>
+								                  <html:radio property="indicadorOpcaoAgrupamento" value="PERIODO_MENSAL" tabindex="5">
+										               <strong>Per&iacute;odo de Refer&ecirc;ncia Mensal do D&eacute;bito</strong> 
+									                  </html:radio>
+									                  <br></br>
+									         <html:radio property="indicadorOpcaoAgrupamento" value="PERIODO_ANUAL" tabindex="5">
+										               <strong>Per&iacute;odo de Refer&ecirc;ncia Anual do D&eacute;bito</strong> 
+									                  </html:radio>
+									                  <br></br>
+									                  <html:radio property="indicadorOpcaoAgrupamento" value="CATEGORIA" tabindex="5">
+										               <strong>Categoria</strong> 
+									                  </html:radio>
+									                  <br></br>
+									                  <html:radio property="indicadorOpcaoAgrupamento" value="GRUPO_FATURAMENTO" tabindex="5">
+										               <strong>Grupo de Faturamento</strong> 
+									                  </html:radio>
+									                  <br></br>         
+								            </td>
+							
+						                </tr>
+
+						            </table>
+						       </td>
+						     </tr>
+						
+		                	
+		                </table>
+		           </td>	
+
+
+				</logic:equal>
+
+
 				
 				<logic:equal name="<%=SistemaParametro.SISTEMA_PARAMETRO%>" property="parmId" value="<%="" + SistemaParametro.INDICADOR_EMPRESA_ADA%>" scope="session">
 				<tr>

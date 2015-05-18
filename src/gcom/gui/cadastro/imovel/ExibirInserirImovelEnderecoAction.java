@@ -77,20 +77,16 @@
 package gcom.gui.cadastro.imovel;
 
 import gcom.cadastro.imovel.FiltroImovelContaEnvio;
-import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.imovel.ImovelContaEnvio;
 import gcom.cadastro.localidade.FiltroSetorComercial;
-import gcom.cadastro.localidade.SetorComercial;
 import gcom.fachada.Fachada;
 import gcom.faturamento.conta.FiltroNomeConta;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.filtro.ParametroSimples;
 
 import java.util.Collection;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -182,6 +178,15 @@ public class ExibirInserirImovelEnderecoAction
 
 		}else{
 			throw new ActionServletException("atencao.naocadastrado", null, "Imovel Conta Envio");
+		}
+
+		if(inserirImovelLocalidadeActionForm.get("indicadorEnvioCorreio") != null
+						&& !inserirImovelLocalidadeActionForm.get("indicadorEnvioCorreio").equals("")
+						&& inserirImovelLocalidadeActionForm.get("indicadorEnvioCorreio").equals(ConstantesSistema.SIM.toString())){
+
+			inserirImovelLocalidadeActionForm.set("indicadorEnvioCorreio", ConstantesSistema.SIM.toString());
+		}else{
+			inserirImovelLocalidadeActionForm.set("indicadorEnvioCorreio", ConstantesSistema.NAO.toString());
 		}
 
 		// Obtém a instância da Fachada

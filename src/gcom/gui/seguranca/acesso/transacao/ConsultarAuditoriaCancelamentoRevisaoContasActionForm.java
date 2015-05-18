@@ -11,6 +11,8 @@ public class ConsultarAuditoriaCancelamentoRevisaoContasActionForm
 
 	private String idUsuario;
 
+	private String nomeUsuario;
+
 	private String dataInicial;
 
 	private String dataFinal;
@@ -64,5 +66,15 @@ public class ConsultarAuditoriaCancelamentoRevisaoContasActionForm
 	public void setDataFinal(String dataFinal){
 
 		this.dataFinal = dataFinal;
+	}
+
+	public String getNomeUsuario(){
+
+		return nomeUsuario;
+	}
+
+	public void setNomeUsuario(String nomeUsuario){
+
+		this.nomeUsuario = nomeUsuario;
 	}
 }

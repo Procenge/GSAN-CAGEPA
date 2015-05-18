@@ -154,10 +154,10 @@ public class CancelarConjuntoContaAction
 				dataVencimentoContaFim = (Date) sessao.getAttribute("dataVencimentoContaFinal");
 			}
 
-			if(sessao.getAttribute("idGrupoFaturamento") != null){
-
-				idGrupoFaturamento = (Integer) sessao.getAttribute("idGrupoFaturamento");
-			}
+			// if(sessao.getAttribute("idGrupoFaturamento") != null){
+			//
+			// idGrupoFaturamento = (Integer) sessao.getAttribute("idGrupoFaturamento");
+			// }
 
 			Integer codigoCliente = null;
 			if(sessao.getAttribute("codigoCliente") != null){

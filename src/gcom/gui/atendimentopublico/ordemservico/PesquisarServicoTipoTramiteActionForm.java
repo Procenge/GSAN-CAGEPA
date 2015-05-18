@@ -2,9 +2,12 @@
 package gcom.gui.atendimentopublico.ordemservico;
 
 import gcom.atendimentopublico.ordemservico.ServicoTipoTramite;
+import gcom.cadastro.geografico.Bairro;
+import gcom.cadastro.geografico.Municipio;
 import gcom.cadastro.localidade.Localidade;
 import gcom.cadastro.localidade.SetorComercial;
 import gcom.cadastro.unidade.UnidadeOrganizacional;
+import gcom.util.ConstantesSistema;
 
 import org.apache.struts.action.ActionForm;
 
@@ -38,6 +41,18 @@ public class PesquisarServicoTipoTramiteActionForm
 	private String idUnidadeOrganizacionalDestino;
 
 	private String descricaoUnidadeOrganizacionalDestino;
+
+	private String idMunicipio;
+
+	private String descricaoMunicipio;
+
+	private String codigoBairro;
+
+	private String descricaoBairro;
+
+	private String idBairro;
+
+	private String indicadorPrimeiroTramite;
 
 	public String getId(){
 
@@ -140,6 +155,11 @@ public class PesquisarServicoTipoTramiteActionForm
 		this.setDescricaoUnidadeOrganizacionalOrigem("");
 		this.setIdUnidadeOrganizacionalDestino("");
 		this.setDescricaoUnidadeOrganizacionalDestino("");
+		this.setIdMunicipio("");
+		this.setDescricaoMunicipio("");
+		this.setCodigoBairro("");
+		this.setDescricaoBairro("");
+		this.setIndicadorPrimeiroTramite(ConstantesSistema.NAO.toString());
 	}
 
 	public void preencherForm(ServicoTipoTramite servicoTipoTramite){
@@ -218,6 +238,92 @@ public class PesquisarServicoTipoTramiteActionForm
 
 		this.setIdUnidadeOrganizacionalDestino(idUnidadeOrganizacionalDestinoStr);
 		this.setDescricaoUnidadeOrganizacionalDestino(descricaoUnidadeOrganizacionalDestino);
+
+		// Municipio e Bairro
+
+		String idMunicipioStr = "";
+		String descricaoMunicipioDestino = "";
+		String codigoBairroStr = "";
+		String descricaoBairroDestino = "";
+
+		if(servicoTipoTramite.getBairro() != null && servicoTipoTramite.getBairro().getMunicipio() != null){
+
+			Municipio municipio = servicoTipoTramite.getBairro().getMunicipio();
+			idMunicipioStr = municipio.getId().toString();
+			descricaoMunicipioDestino = municipio.getNome();
+			this.setIdMunicipio(idMunicipioStr);
+			this.setDescricaoMunicipio(descricaoMunicipioDestino);
+
+			Bairro bairro = servicoTipoTramite.getBairro();
+			codigoBairroStr = bairro.getCodigo() + "";
+			descricaoBairroDestino = bairro.getNome();
+			this.setCodigoBairro(codigoBairroStr.trim());
+			this.setDescricaoBairro(descricaoBairroDestino);
+
+		}
+
+		this.setIndicadorPrimeiroTramite(servicoTipoTramite.getIndicadorPrimeiroTramite().toString());
+
+	}
+
+	public String getIdMunicipio(){
+
+		return idMunicipio;
+	}
+
+	public void setIdMunicipio(String idMunicipio){
+
+		this.idMunicipio = idMunicipio;
+	}
+
+	public String getDescricaoMunicipio(){
+
+		return descricaoMunicipio;
+	}
+
+	public void setDescricaoMunicipio(String descricaoMunicipio){
+
+		this.descricaoMunicipio = descricaoMunicipio;
+	}
+
+	public String getCodigoBairro(){
+
+		return codigoBairro;
+	}
+
+	public void setCodigoBairro(String codigoBairro){
+
+		this.codigoBairro = codigoBairro;
+	}
+
+	public String getDescricaoBairro(){
+
+		return descricaoBairro;
+	}
+
+	public void setDescricaoBairro(String descricaoBairro){
+
+		this.descricaoBairro = descricaoBairro;
+	}
+
+	public String getIdBairro(){
+
+		return idBairro;
+	}
+
+	public void setIdBairro(String idBairro){
+
+		this.idBairro = idBairro;
+	}
+
+	public String getIndicadorPrimeiroTramite(){
+
+		return indicadorPrimeiroTramite;
+	}
+
+	public void setIndicadorPrimeiroTramite(String indicadorPrimeiroTramite){
+
+		this.indicadorPrimeiroTramite = indicadorPrimeiroTramite;
 	}
 
 }

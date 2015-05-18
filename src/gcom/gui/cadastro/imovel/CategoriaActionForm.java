@@ -120,6 +120,44 @@ public class CategoriaActionForm
 
 	private String indicadorUso;
 
+	private Integer consumoViradaHidrometro;
+
+	private Integer numeroVezesMediaViradaHidrometro;
+
+	private Short indicadorValidarViradaHidrometro;
+
+	private Integer quantidadeMaximoEconomiasValidacao;
+
+	public Integer getConsumoViradaHidrometro(){
+
+		return consumoViradaHidrometro;
+	}
+
+	public void setConsumoViradaHidrometro(Integer consumoViradaHidrometro){
+
+		this.consumoViradaHidrometro = consumoViradaHidrometro;
+	}
+
+	public Integer getNumeroVezesMediaViradaHidrometro(){
+
+		return numeroVezesMediaViradaHidrometro;
+	}
+
+	public void setNumeroVezesMediaViradaHidrometro(Integer numeroVezesMediaViradaHidrometro){
+
+		this.numeroVezesMediaViradaHidrometro = numeroVezesMediaViradaHidrometro;
+	}
+
+	public Short getIndicadorValidarViradaHidrometro(){
+
+		return indicadorValidarViradaHidrometro;
+	}
+
+	public void setIndicadorValidarViradaHidrometro(Short indicadorValidarViradaHidrometro){
+
+		this.indicadorValidarViradaHidrometro = indicadorValidarViradaHidrometro;
+	}
+
 	/**
 	 * @return Returns the consumoAlto.
 	 */
@@ -356,5 +394,20 @@ public class CategoriaActionForm
 		vezesMediaAltoConsumo = null;
 		consumoMedioEconomiaMes = null;
 		indicadorUso = ConstantesSistema.INDICADOR_USO_ATIVO.toString();
+		consumoViradaHidrometro = null;
+		numeroVezesMediaViradaHidrometro = null;
+		indicadorValidarViradaHidrometro = null;
+
 	}
+
+	public Integer getQuantidadeMaximoEconomiasValidacao(){
+
+		return quantidadeMaximoEconomiasValidacao;
+	}
+
+	public void setQuantidadeMaximoEconomiasValidacao(Integer quantidadeMaximoEconomiasValidacao){
+
+		this.quantidadeMaximoEconomiasValidacao = quantidadeMaximoEconomiasValidacao;
+	}
+
 }

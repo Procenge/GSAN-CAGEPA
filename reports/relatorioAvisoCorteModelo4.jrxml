@@ -57,18 +57,6 @@
 	<field name="representacaoNumericaCodBarra1" class="java.lang.String"/>
 	<field name="representacaoNumericaCodBarra2" class="java.lang.String"/>
 
-
-		<group  name="OrdemServicoFiscalizacao" >
-			<groupExpression><![CDATA[$V{PAGE_NUMBER}]]></groupExpression>
-			<groupHeader>
-			<band height="0"  isSplitAllowed="true" >
-			</band>
-			</groupHeader>
-			<groupFooter>
-			<band height="0"  isSplitAllowed="true" >
-			</band>
-			</groupFooter>
-		</group>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -2673,7 +2661,9 @@ regularização ou negociação em nosso Atendimento, até o dia]]></text>
 						y="531"
 						width="40"
 						height="9"
-						key="staticText-424"/>
+						key="staticText-424">
+							<printWhenExpression><![CDATA[new Boolean($F{matriculaImovel2} != null)]]></printWhenExpression>
+						</reportElement>
 					<box></box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font pdfFontName="Helvetica-Bold" size="6" isBold="true"/>
@@ -2686,7 +2676,9 @@ regularização ou negociação em nosso Atendimento, até o dia]]></text>
 						y="16"
 						width="310"
 						height="13"
-						key="staticText-425"/>
+						key="staticText-425">
+							<printWhenExpression><![CDATA[new Boolean($F{matriculaImovel2} != null)]]></printWhenExpression>
+						</reportElement>
 					<box></box>
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Courier New" pdfFontName="Courier-Bold" size="6" isBold="true"/>
@@ -2702,7 +2694,9 @@ regularização ou negociação em nosso Atendimento, até o dia]]></text>
 						height="37"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="image-15"/>
+						key="image-15">
+							<printWhenExpression><![CDATA[new Boolean($F{matriculaImovel2} != null)]]></printWhenExpression>
+						</reportElement>
 					<box></box>
 					<graphicElement stretchType="NoStretch" fill="Solid" />
 					<imageExpression class="java.lang.String"><![CDATA[$P{imagem}]]></imageExpression>
@@ -2726,7 +2720,9 @@ regularização ou negociação em nosso Atendimento, até o dia]]></text>
 						y="518"
 						width="153"
 						height="8"
-						key="staticText-427"/>
+						key="staticText-427">
+							<printWhenExpression><![CDATA[new Boolean($F{matriculaImovel2} != null)]]></printWhenExpression>
+						</reportElement>
 					<box></box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
 						<font size="6"/>
@@ -2820,7 +2816,9 @@ regularização ou negociação em nosso Atendimento, até o dia]]></text>
 						y="518"
 						width="26"
 						height="9"
-						key="staticText-431"/>
+						key="staticText-431">
+							<printWhenExpression><![CDATA[new Boolean($F{matriculaImovel2} != null)]]></printWhenExpression>
+						</reportElement>
 					<box></box>
 					<textElement>
 						<font size="6"/>
@@ -2834,7 +2832,9 @@ regularização ou negociação em nosso Atendimento, até o dia]]></text>
 						width="128"
 						height="12"
 						key="textField-346"
-						isRemoveLineWhenBlank="true"/>
+						isRemoveLineWhenBlank="true">
+							<printWhenExpression><![CDATA[new Boolean($F{matriculaImovel2} != null)]]></printWhenExpression>
+						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
 						<font size="6"/>
@@ -2847,7 +2847,9 @@ regularização ou negociação em nosso Atendimento, até o dia]]></text>
 						y="531"
 						width="44"
 						height="9"
-						key="staticText-432"/>
+						key="staticText-432">
+							<printWhenExpression><![CDATA[new Boolean($F{matriculaImovel2} != null)]]></printWhenExpression>
+						</reportElement>
 					<box></box>
 					<textElement>
 						<font size="6"/>
@@ -2861,7 +2863,9 @@ regularização ou negociação em nosso Atendimento, até o dia]]></text>
 						width="112"
 						height="12"
 						key="textField-347"
-						isRemoveLineWhenBlank="true"/>
+						isRemoveLineWhenBlank="true">
+							<printWhenExpression><![CDATA[new Boolean($F{matriculaImovel2} != null)]]></printWhenExpression>
+						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
 						<font size="6"/>
@@ -2874,7 +2878,9 @@ regularização ou negociação em nosso Atendimento, até o dia]]></text>
 						y="542"
 						width="29"
 						height="9"
-						key="staticText-433"/>
+						key="staticText-433">
+							<printWhenExpression><![CDATA[new Boolean($F{matriculaImovel2} != null)]]></printWhenExpression>
+						</reportElement>
 					<box></box>
 					<textElement>
 						<font size="6"/>
@@ -2888,7 +2894,9 @@ regularização ou negociação em nosso Atendimento, até o dia]]></text>
 						width="124"
 						height="12"
 						key="textField-348"
-						isRemoveLineWhenBlank="true"/>
+						isRemoveLineWhenBlank="true">
+							<printWhenExpression><![CDATA[new Boolean($F{matriculaImovel2} != null)]]></printWhenExpression>
+						</reportElement>
 					<box></box>
 					<textElement verticalAlignment="Middle">
 						<font size="6"/>
@@ -2935,7 +2943,9 @@ regularização ou negociação em nosso Atendimento, até o dia]]></text>
 						height="37"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="barcode-2"/>
+						key="barcode-2">
+							<printWhenExpression><![CDATA[( $F{representacaoNumericaCodBarraSemDigito2} != null ?  Boolean.TRUE : Boolean.FALSE )]]></printWhenExpression>
+						</reportElement>
 					<box></box>
 					<graphicElement stretchType="NoStretch" fill="Solid" />
 					<imageExpression class="java.awt.Image"><![CDATA[it.businesslogic.ireport.barcode.BcImage.getBarcodeImage(13,$F{representacaoNumericaCodBarraSemDigito2},false,false,null,0,90)]]></imageExpression>
@@ -2946,7 +2956,9 @@ regularização ou negociação em nosso Atendimento, até o dia]]></text>
 						y="347"
 						width="310"
 						height="13"
-						key="textField-350"/>
+						key="textField-350">
+							<printWhenExpression><![CDATA[new Boolean($F{matriculaImovel2} != null)]]></printWhenExpression>
+						</reportElement>
 					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
 					<bottomPen lineWidth="0.0" lineColor="#000000"/>

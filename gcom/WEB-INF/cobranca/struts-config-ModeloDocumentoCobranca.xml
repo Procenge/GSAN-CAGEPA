@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+
+		<form-bean name="InserirModeloDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.InserirModeloDocumentoCobrancaActionForm" />	
+			
+			
+		<form-bean name="AtualizarModeloDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.AtualizarModeloDocumentoCobrancaActionForm" />	
+			
+		<form-bean name="InformarModeloDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.InformarModeloDocumentoCobrancaActionForm" />						
+			
+	</form-beans>
+
+	<!--******************* PÁGINAS GLOBAIS *******************-->
+	<global-forwards />
+	<action-mappings>
+
+		<action name="InformarModeloDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.ExibirInformarModeloDocumentoCobrancaAction"
+			scope="session" path="/exibirInformarModeloDocumentoCobrancaAction">
+			<forward name="exibirInformarModeloDocumentoCobrancaAction"
+				path="/jsp/cobranca/informar_modelo_documento_cobranca.jsp" />
+		</action>
+	
+		<action name="AtualizarModeloDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.ExibirAtualizarModeloDocumentoCobrancaAction"
+			scope="session" path="/exibirAtualizarModeloDocumentoCobrancaAction">
+			<forward name="exibirAtualizarModeloDocumentoCobranca"
+				path="/jsp/cobranca/cobranca_documento_modelo_atualizar.jsp" />
+				
+			<forward name="atualizarModeloDocumentoCobrancaAction"
+				path="/atualizarModeloDocumentoCobrancaAction" />
+				
+			<forward name="atualizarRemAdicCargoDocumentoLayoutAssinaturaAction"
+				path="/removerAdicionarCargoDocumentoLayoutAssinaturaAction" />					
+									
+		</action>
+		
+		<action name="AtualizarModeloDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.AtualizarModeloDocumentoCobrancaAction"
+			scope="session" path="/atualizarModeloDocumentoCobrancaAction">
+		</action>
+		
+		<action name="InserirModeloDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.ExibirInserirModeloDocumentoCobrancaAction"
+			scope="session" path="/exibirInserirModeloDocumentoCobrancaAction">
+			<forward name="exibirInserirModeloDocumentoCobranca"
+				path="/jsp/cobranca/cobranca_documento_modelo_inserir.jsp" />
+			
+			<forward name="inserirModeloDocumentoCobrancaAction"
+				path="/inserirModeloDocumentoCobrancaAction" />		
+
+			<forward name="inserirRemAdicCargoDocumentoLayoutAssinaturaAction"
+				path="/removerAdicionarCargoDocumentoLayoutAssinaturaAction" />
+				
+		</action>		
+		
+		<action name="InserirModeloDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.InserirModeloDocumentoCobrancaAction"
+			scope="session" path="/inserirModeloDocumentoCobrancaAction">
+		</action>			
+		
+		<action name="AtualizarModeloDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.RemoverAdicionarCargoDocumentoLayoutAssinaturaAction"
+			scope="session" path="/atualizarRemoverAdicionarCargoDocumentoLayoutAssinaturaAction">
+				
+			<forward name="atualizarAdicRemModeloDocumentoCobrancaAction"
+				path="/exibirAtualizarModeloDocumentoCobrancaAction.do" />
+							
+		</action>		
+		
+		<action name="InserirModeloDocumentoCobrancaActionForm"
+			type="gcom.gui.cobranca.RemoverAdicionarCargoDocumentoLayoutAssinaturaAction"
+			scope="session" path="/inserirRemoverAdicionarCargoDocumentoLayoutAssinaturaAction">
+			
+			<forward name="inserirAdicRemModeloDocumentoCobrancaAction"
+				path="/exibirInserirModeloDocumentoCobrancaAction.do" />
+							
+		</action>					
+	
+	</action-mappings>
+	<message-resources null="false"
+		parameter="gcom.properties.application" />
+</struts-config>

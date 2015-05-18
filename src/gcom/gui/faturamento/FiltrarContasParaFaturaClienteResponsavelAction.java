@@ -85,9 +85,13 @@ import gcom.faturamento.conta.ContaMotivoRevisao;
 import gcom.faturamento.conta.FiltroContaMotivoRevisao;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -150,21 +154,25 @@ public class FiltrarContasParaFaturaClienteResponsavelAction
 
 		// Indicador 'Selecionar apenas as contas em revisão?'
 		if(!Util.isVazioOuBranco(gerarFaturaClienteResponsavelActionForm.getIndicadorContasRevisao())){
-			indicadorContasRevisao = Short.valueOf(gerarFaturaClienteResponsavelActionForm.getIndicadorContasRevisao());
-		}
 
-		// Motivos de Revisão
-		if(!Util.isVazioOrNulo(gerarFaturaClienteResponsavelActionForm.getMotivosRevisao())){
-			motivosRevisao = new ArrayList<ContaMotivoRevisao>();
-			FiltroContaMotivoRevisao filtroContaMotivoRevisao = new FiltroContaMotivoRevisao();
-			Collection<Integer> contaMotivoRevisaoIds = new ArrayList<Integer>();
-			for(String idMotivoRevisao : gerarFaturaClienteResponsavelActionForm.getMotivosRevisao()){
-				if(!Util.isVazioOuBranco(idMotivoRevisao)){
-					contaMotivoRevisaoIds.add(Integer.valueOf(idMotivoRevisao));
+			indicadorContasRevisao = Short.valueOf(gerarFaturaClienteResponsavelActionForm.getIndicadorContasRevisao());
+
+			// Motivos de Revisão
+			if(!Util.isVazioOrNulo(gerarFaturaClienteResponsavelActionForm.getMotivosRevisao())
+							&& indicadorContasRevisao.equals(ConstantesSistema.CONTAS_EM_REVISAO)){
+
+				motivosRevisao = new ArrayList<ContaMotivoRevisao>();
+				FiltroContaMotivoRevisao filtroContaMotivoRevisao = new FiltroContaMotivoRevisao();
+				Collection<Integer> contaMotivoRevisaoIds = new ArrayList<Integer>();
+				for(String idMotivoRevisao : gerarFaturaClienteResponsavelActionForm.getMotivosRevisao()){
+					if(!Util.isVazioOuBranco(idMotivoRevisao)){
+						contaMotivoRevisaoIds.add(Integer.valueOf(idMotivoRevisao));
+					}
 				}
-			}
-			if(!Util.isVazioOrNulo(contaMotivoRevisaoIds)){
-				motivosRevisao = fachada.pesquisar(contaMotivoRevisaoIds, filtroContaMotivoRevisao, ContaMotivoRevisao.class.getName());
+
+				if(!Util.isVazioOrNulo(contaMotivoRevisaoIds)){
+					motivosRevisao = fachada.pesquisar(contaMotivoRevisaoIds, filtroContaMotivoRevisao, ContaMotivoRevisao.class.getName());
+				}
 			}
 		}
 

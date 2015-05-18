@@ -418,11 +418,12 @@ public class ArquivoFaturamentoImediatoCaerdHelper {
 	 * @param clienteResponsavel
 	 * @param endereco
 	 * @param ligacaoAgua
+	 * @param indicadorVencimentoAlternativo
 	 * @since 16/04/2013
 	 */
 	public void addRagistroTipo4(MovimentoRoteiroEmpresa mre, Cliente clienteResponsavel, DebitoAutomatico dadosDebitoAutomatico,
 					String endereco, LigacaoAgua ligacaoAgua, LigacaoEsgoto ligacaoEsgoto, String consumoMinimoLigacao,
-					String indicadorQuitacaoDebito){
+					String indicadorQuitacaoDebito, String indicadorVencimentoAlternativo){
 
 		qtdTipo04++;
 
@@ -574,8 +575,11 @@ public class ArquivoFaturamentoImediatoCaerdHelper {
 						&& imovel.getFaturamentoSituacaoTipo().getId()
 										.equals(FaturamentoSituacaoTipo.PARALISAR_LEITURA_FATURAR_TAXA_MINIMA)){
 			buffer.append('T');
+		}else if (imovel.getFaturamentoSituacaoTipo() != null
+						&& imovel.getFaturamentoSituacaoTipo().getId().equals(FaturamentoSituacaoTipo.FATURAR_MENOR_ENTRE_MEDIA_E_CONSUMO)){
+			buffer.append('E');
 		}else{
-
+		
 			buffer.append('N');
 		}
 
@@ -587,7 +591,9 @@ public class ArquivoFaturamentoImediatoCaerdHelper {
 			buffer.append(Util.formatRPad(0, 8, '0'));
 		}
 
-		buffer.append(Util.formatRPad("", 160, ' '));
+		buffer.append(indicadorVencimentoAlternativo);
+		
+		buffer.append(Util.formatRPad("", 159, ' '));
 
 		addLinha(buffer);
 

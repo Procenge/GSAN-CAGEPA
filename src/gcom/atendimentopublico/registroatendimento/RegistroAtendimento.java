@@ -438,6 +438,8 @@ public class RegistroAtendimento
 	@ControleAlteracao(funcionalidade = {ATRIBUTOS_REGISTRO_ATENDIMENTO_ATUALIZAR})
 	private BigDecimal coordenadaLeste;
 
+	private transient Integer quantidadeGuiasPendentes;
+
 	/** full constructor */
 	public RegistroAtendimento(short codigoSituacao, Date registroAtendimento, Date dataPrevistaOriginal, Date dataPrevistaAtual,
 								Date ultimaEmissao, Date dataEncerramento, Short quantidadeReiteracao, Date ultimaReiteracao,
@@ -538,6 +540,16 @@ public class RegistroAtendimento
 		this.localidade = localidade;
 		this.pavimentoRua = pavimentoRua;
 		this.divisaoEsgoto = divisaoEsgoto;
+	}
+
+	public Integer getQuantidadeGuiasPendentes(){
+
+		return quantidadeGuiasPendentes;
+	}
+
+	public void setQuantidadeGuiasPendentes(Integer quantidadeGuiasPendentes){
+
+		this.quantidadeGuiasPendentes = quantidadeGuiasPendentes;
 	}
 
 	public Integer getManual(){
@@ -1059,7 +1071,7 @@ public class RegistroAtendimento
 
 		// concate o complemento do endereço
 		if(this.getComplementoEndereco() != null && !this.getComplementoEndereco().trim().equalsIgnoreCase("")){
-			endereco = endereco + this.getComplementoEndereco().trim();
+			endereco = endereco + " - " + this.getComplementoEndereco().trim();
 		}
 
 		if(this.getLogradouroBairro() != null && this.getLogradouroBairro().getBairro() != null

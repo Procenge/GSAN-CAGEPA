@@ -41,7 +41,9 @@
 
 package gcom.gui.faturamento;
 
+import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 
 import javax.servlet.http.HttpServletRequest;
@@ -69,6 +71,8 @@ public class ExibirAlterarDadosDasPrestacoesAction
 		// Obtém a sessão
 		HttpSession sessao = httpServletRequest.getSession(false);
 
+		Fachada fachada = Fachada.getInstancia();
+
 		String numeroTotalPrestacoes = null;
 
 		// Recupera o numero total de prestações
@@ -83,6 +87,12 @@ public class ExibirAlterarDadosDasPrestacoesAction
 
 		if(retornarTela != null && !retornarTela.trim().equalsIgnoreCase("")){
 			sessao.setAttribute("retornarTela", retornarTela);
+		}
+
+		if(fachada.existeProcessoExecucaoFiscal().equals(ConstantesSistema.SIM)){
+			sessao.setAttribute("exibirDividaAtivaColuna", "S");
+		}else{
+			sessao.removeAttribute("exibirDividaAtivaColuna");
 		}
 
 		return retorno;

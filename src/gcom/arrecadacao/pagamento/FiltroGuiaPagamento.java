@@ -134,6 +134,8 @@ public class FiltroGuiaPagamento
 
 	public final static String REGISTRO_ATENDIMENTO_ID = "registroAtendimento.id";
 
+	public final static String ORDEM_SERVICO_ID = "ordemServico.id";
+
 	public final static String PARCELAMENTO_ID = "parcelamento.id";
 
 	public static final String PARCELAMENTO = "parcelamento";
@@ -141,6 +143,16 @@ public class FiltroGuiaPagamento
 	public final static String CLIENTE = "cliente";
 
 	public final static String IMOVEL = "imovel";
+
+	public final static String SERVICO_TIPO = "servicoTipo";
+
+	public final static String REGISTRO_ATENDIMENTO = "registroAtendimento";
+
+	public final static String ID_SERVICO_TIPO = "servicoTipo.id";
+
+	public final static String DEBITO_TIPO = "servicoTipo.debitoTipo";
+
+	public final static String ID_DEBITO_TIPO = "servicoTipo.debitoTipo.id";
 
 	public final static String NUMERO_PRESTACAO_TOTAL = "numeroPrestacaoTotal";
 

@@ -1,10 +1,10 @@
-/**
- * 
- */
-
 package gcom.util.parametrizacao.cobranca.parcelamento;
 
+import gcom.util.ControladorException;
 import gcom.util.parametrizacao.Parametro;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * @author Luciano Galvão
@@ -12,6 +12,14 @@ import gcom.util.parametrizacao.Parametro;
 public class ParametroParcelamento
 				extends Parametro {
 
+	/**
+	 * Contempla, para agrupamento, os valores de:
+	 * P_TIPO_DEBITO_PARCELAMENTO_CONTA
+	 * P_TIPO_DEBITO_PARCELAMENTO_GUIA_PAGAMENTO
+	 * P_TIPO_DEBITO_PARCELAMENTO_FINANCIAMENTO
+	 * P_TIPO_DEBITO_PARCELAMENTO_PARCELAMENTO
+	 */
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_NORMAL = new ParametroParcelamento("P_TIPO_DEBITO_PARCELAMENTO_NORMAL");
 
 	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_CONTA = new ParametroParcelamento("P_TIPO_DEBITO_PARCELAMENTO_CONTA");
 
@@ -52,6 +60,117 @@ public class ParametroParcelamento
 	public static final Parametro P_DEFINICAO_VALORES_PARCELAMENTO_TIPO_DEBITO_ITEM_LANCAMENTO_CONTABIL = new ParametroParcelamento(
 					"P_DEFINICAO_VALORES_PARCELAMENTO_TIPO_DEBITO_ITEM_LANCAMENTO_CONTABIL");
 
+	public static final Parametro P_INDICADOR_SELECIONAR_DEBITO_A_COBRAR_PARCELAMENTO = new ParametroParcelamento(
+					"P_INDICADOR_SELECIONAR_DEBITO_A_COBRAR_PARCELAMENTO");
+
+	public static final Parametro P_QUANTIDADE_MAXIMA_PARCELAS_SUCUMBENCIA = new ParametroParcelamento(
+					"P_QUANTIDADE_MAXIMA_PARCELAS_SUCUMBENCIA");
+
+	public static final Parametro P_PERCENTUAL_VALOR_SUCUMBENCIA_EM_RELACAO_DEBITO_PARCELADO = new ParametroParcelamento(
+					"P_PERCENTUAL_VALOR_SUCUMBENCIA_EM_RELACAO_DEBITO_PARCELADO");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_CORRECAO = new ParametroParcelamento("P_TIPO_DEBITO_PARCELAMENTO_CORRECAO");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_MULTA_ATRASO = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_MULTA_ATRASO");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_JUROS_MORA = new ParametroParcelamento("P_TIPO_DEBITO_PARCELAMENTO_JUROS_MORA");
+
+	/**
+	 * Contempla, para agrupamento, os valores de:
+	 * P_TIPO_DEBITO_PARCELAMENTO_CONTA_DIVIDA_ATIVA
+	 * P_TIPO_DEBITO_PARCELAMENTO_GUIA_PAGAMENTO_DIVIDA_ATIVA
+	 * P_TIPO_DEBITO_PARCELAMENTO_PARCELAMENTO_DIVIDA_ATIVA
+	 */
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_DIVIDA_ATIVA = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_DIVIDA_ATIVA");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_CORRECAO_DIVIDA_ATIVA = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_CORRECAO_DIVIDA_ATIVA");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_MULTA_ATRASO_DIVIDA_ATIVA = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_MULTA_ATRASO_DIVIDA_ATIVA");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_JUROS_MORA_DIVIDA_ATIVA = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_JUROS_MORA_DIVIDA_ATIVA");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_CONTA_DIVIDA_ATIVA = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_CONTA_DIVIDA_ATIVA");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_GUIA_PAGAMENTO_DIVIDA_ATIVA = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_GUIA_PAGAMENTO_DIVIDA_ATIVA");
+
+	// public static final Parametro
+	// P_TIPO_DEBITO_PARCELAMENTO_ACRESCIMO_IMPONTUALIDADE_DIVIDA_ATIVA = new ParametroParcelamento(
+	// "P_TIPO_DEBITO_PARCELAMENTO_ACRESCIMO_IMPONTUALIDADE_DIVIDA_ATIVA");
+
+	// public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_FINANCIAMENTO_DIVIDA_ATIVA = new
+	// ParametroParcelamento("P_TIPO_DEBITO_PARCELAMENTO_FINANCIAMENTO_DIVIDA_ATIVA");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_PARCELAMENTO_DIVIDA_ATIVA = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_PARCELAMENTO_DIVIDA_ATIVA");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_JUROS_PARCELAMENTO_DIVIDA_ATIVA = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_JUROS_PARCELAMENTO_DIVIDA_ATIVA");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_CONTA_EXECUCAO_FISCAL = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_CONTA_EXECUCAO_FISCAL");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_GUIA_PAGAMENTO_EXECUCAO_FISCAL = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_GUIA_PAGAMENTO_EXECUCAO_FISCAL");
+
+	// public static final Parametro
+	// P_TIPO_DEBITO_PARCELAMENTO_ACRESCIMO_IMPONTUALIDADE_EXECUCAO_FISCAL = new
+	// ParametroParcelamento("P_TIPO_DEBITO_PARCELAMENTO_ACRESCIMO_IMPONTUALIDADE_EXECUCAO_FISCAL");
+
+	// public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_FINANCIAMENTO_EXECUCAO_FISCAL = new
+	// ParametroParcelamento("P_TIPO_DEBITO_PARCELAMENTO_FINANCIAMENTO_EXECUCAO_FISCAL");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_PARCELAMENTO_EXECUCAO_FISCAL = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_PARCELAMENTO_EXECUCAO_FISCAL");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_JUROS_PARCELAMENTO_EXECUCAO_FISCAL = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_JUROS_PARCELAMENTO_EXECUCAO_FISCAL");
+
+	/**
+	 * Contempla, para agrupamento, os valores de:
+	 * P_TIPO_DEBITO_PARCELAMENTO_CONTA_EXECUCAO_FISCAL
+	 * P_TIPO_DEBITO_PARCELAMENTO_GUIA_PAGAMENTO_EXECUCAO_FISCAL
+	 * P_TIPO_DEBITO_PARCELAMENTO_PARCELAMENTO_EXECUCAO_FISCAL
+	 */
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_EXECUCAO_FISCAL = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_EXECUCAO_FISCAL");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_CORRECAO_EXECUCAO_FISCAL = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_CORRECAO_EXECUCAO_FISCAL");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_MULTA_ATRASO_EXECUCAO_FISCAL = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_MULTA_ATRASO_EXECUCAO_FISCAL");
+
+	public static final Parametro P_TIPO_DEBITO_PARCELAMENTO_JUROS_MORA_EXECUCAO_FISCAL = new ParametroParcelamento(
+					"P_TIPO_DEBITO_PARCELAMENTO_JUROS_MORA_EXECUCAO_FISCAL");
+
+	public static final Parametro P_PERMITIR_INFORMAR_CLIENTE_RESPONSAVEL_PARCELAMENTO = new ParametroParcelamento(
+					"P_PERMITIR_INFORMAR_CLIENTE_RESPONSAVEL_PARCELAMENTO");
+
+	public static final Parametro P_TIPO_PESSOA_CLIENTE_RESPONSAVEL_PARCELAMENTO = new ParametroParcelamento(
+					"P_TIPO_PESSOA_CLIENTE_RESPONSAVEL_PARCELAMENTO");
+
+	public static final Parametro P_INDICADOR_EMISSAO_TERMO_PARCELAMENTO_ANTES_CONCLUSAO = new ParametroParcelamento(
+					"P_INDICADOR_EMISSAO_TERMO_PARCELAMENTO_ANTES_CONCLUSAO");
+
+	public static final Parametro P_INFORMAR_DADOS_TERMO_PARCELAMENTO_NORMAL = new ParametroParcelamento(
+					"P_INFORMAR_DADOS_TERMO_PARCELAMENTO_NORMAL");
+
+	public static final Parametro P_INDICADOR_EXIBIR_DEBITOS_SITUACAO_DIVIDAATIVA_PARCELAMENTO = new ParametroParcelamento(
+					"P_INDICADOR_EXIBIR_DEBITOS_SITUACAO_DIVIDAATIVA_PARCELAMENTO");
+
+	public static final Parametro P_INDICADOR_PERMISSAO_ESPECIAL_EFETIVACAO_PARCELAMENTO = new ParametroParcelamento(
+					"P_INDICADOR_PERMISSAO_ESPECIAL_EFETIVACAO_PARCELAMENTO");
+
+	public static final Parametro P_INDICADOR_RESTRICAO_NUMERO_MAXIMO_REPARCELAMENTO = new ParametroParcelamento(
+					"P_INDICADOR_RESTRICAO_NUMERO_MAXIMO_REPARCELAMENTO");
+
 	/**
 	 * @param codigo
 	 */
@@ -59,6 +178,18 @@ public class ParametroParcelamento
 
 		super(parametro);
 		// TODO Auto-generated constructor stub
+	}
+
+	public static Collection<String> executarParametrosDiversos(Parametro... args) throws ControladorException{
+
+		Collection<String> colecaoValoresParametros = new ArrayList<String>();
+		if(args != null){
+			for(int i = 0; i < args.length; i++){
+				colecaoValoresParametros.add(args[i].executar());
+			}
+		}
+
+		return colecaoValoresParametros;
 	}
 
 }

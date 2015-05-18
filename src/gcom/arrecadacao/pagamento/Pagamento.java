@@ -112,33 +112,35 @@ public class Pagamento
 
 	public static final int ATRIBUTOS_ATUALIZAR_PAGAMENTO = 178;
 
+	public static final int ATRIBUTOS_ESTORNAR_PAGAMENTO = 1185;
+
 	/** identifier field */
 	private Integer id;
 
 	/** persistent field */
-	@ControleAlteracao(funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS})
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS, ATRIBUTOS_ESTORNAR_PAGAMENTO})
 	private Date dataPagamento;
 
 	/** nullable persistent field */
 	private Date ultimaAlteracao;
 
 	/** persistent field */
-	@ControleAlteracao(funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS})
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS, ATRIBUTOS_ESTORNAR_PAGAMENTO})
 	private int anoMesReferenciaArrecadacao;
 
 	/** persistent field */
-	@ControleAlteracao(value = FiltroPagamento.CONTA, funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS})
+	@ControleAlteracao(value = FiltroPagamento.CONTA, funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS, ATRIBUTOS_ESTORNAR_PAGAMENTO})
 	private Conta conta;
 
 	/** persistent field */
 	private Localidade localidade;
 
 	/** persistent field */
-	@ControleAlteracao(value = FiltroPagamento.DEBITO_TIPO, funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS})
+	@ControleAlteracao(value = FiltroPagamento.DEBITO_TIPO, funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS, ATRIBUTOS_ESTORNAR_PAGAMENTO})
 	private DebitoTipo debitoTipo;
 
 	/** persistent field */
-	@ControleAlteracao(value = FiltroPagamento.DEBITO_A_COBRAR, funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS})
+	@ControleAlteracao(value = FiltroPagamento.DEBITO_A_COBRAR, funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS, ATRIBUTOS_ESTORNAR_PAGAMENTO})
 	private DebitoACobrar debitoACobrar;
 
 	/** persistent field */
@@ -152,7 +154,7 @@ public class Pagamento
 	private gcom.arrecadacao.pagamento.PagamentoSituacao pagamentoSituacaoAnterior;
 
 	/** persistent field */
-	@ControleAlteracao(value = FiltroPagamento.GUIA_PAGAMENTO_GERAL, funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS})
+	@ControleAlteracao(value = FiltroPagamento.GUIA_PAGAMENTO_GERAL, funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS, ATRIBUTOS_ESTORNAR_PAGAMENTO})
 	private gcom.faturamento.GuiaPagamentoGeral guiaPagamentoGeral;
 
 	/** persistent field */
@@ -164,7 +166,7 @@ public class Pagamento
 	private AvisoBancario avisoBancario;
 
 	/** persistent field */
-	@ControleAlteracao(value = FiltroPagamento.IMOVEL, funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS})
+	@ControleAlteracao(value = FiltroPagamento.IMOVEL, funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS, ATRIBUTOS_ESTORNAR_PAGAMENTO})
 	private Imovel imovel;
 
 	/** persistent field */
@@ -176,7 +178,7 @@ public class Pagamento
 	private ArrecadacaoForma arrecadacaoForma;
 
 	/** persistent field */
-	@ControleAlteracao(funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS})
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS, ATRIBUTOS_ESTORNAR_PAGAMENTO})
 	private BigDecimal valorPagamento;
 
 	/** persistent field */
@@ -188,11 +190,11 @@ public class Pagamento
 	private Integer anoMesReferenciaPagamento;
 
 	/** persistent field */
-	@ControleAlteracao(value = FiltroPagamento.CLIENTE, funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS})
+	@ControleAlteracao(value = FiltroPagamento.CLIENTE, funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS, ATRIBUTOS_ESTORNAR_PAGAMENTO})
 	private Cliente cliente;
 
 	/** persistent field */
-	@ControleAlteracao(funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS})
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_ATUALIZAR_PAGAMENTO, ATRIBUTOS_INSERIR_PAGAMENTO_MANUAL, ATRIBUTOS_INSERIR_PAGAMENTO_CODIGOBARRAS, ATRIBUTOS_ESTORNAR_PAGAMENTO})
 	private Integer numeroPrestacao;
 
 	/** persistent field */

@@ -77,8 +77,10 @@
 
 package gcom.gui.cobranca.spcserasa;
 
+import gcom.cobranca.Negativador;
 import gcom.cobranca.NegativadorMovimentoReg;
 import gcom.fachada.Fachada;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 
 import java.util.Date;
@@ -142,6 +144,19 @@ public class AtualizarDadosRegistroAction
 		}
 
 		// Atualiza o negativadorContrato
+		Negativador negativador = negativadorMovimentoReg.getNegativadorMovimento().getNegativador();
+
+		if(negativador.getId().equals(Negativador.NEGATIVADOR_SPC_SAO_PAULO)){
+			retorno = actionMapping.findForward("consultarDadosRegistroSPC");
+		}else if(negativador.getId().equals(Negativador.NEGATIVADOR_SPC_BRASIL)){
+			retorno = actionMapping.findForward("consultarDadosRegistroSPC");
+		}else if(negativador.getId().equals(Negativador.NEGATIVADOR_SERASA)){
+			retorno = actionMapping.findForward("consultarDadosRegistroSERASA");
+		}else if(negativador.getId().equals(Negativador.NEGATIVADOR_SPC_BOA_VISTA)){
+			retorno = actionMapping.findForward("consultarDadosRegistroBOAVISTA");
+		}else{
+			throw new ActionServletException("atencao.negativador.nao.selecionado");
+		}
 
 		return retorno;
 

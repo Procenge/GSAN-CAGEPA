@@ -69,6 +69,10 @@ Definição dos campos dos formulários, da página principal e das outras pági
 			<form-property 
 				name="chavesPrestacoes" type="java.lang.String" />
 			<form-property 
+				name="chavesSucumbenciasConta" type="java.lang.String" />
+			<form-property 
+				name="chavesSucumbenciasGuia" type="java.lang.String" />
+			<form-property 
 				name="inPagamentoCartaoCredito" type="java.lang.String" />
 			
 			<!-- Valor dos Débitos do Imóvel Processo: 1,2 -->
@@ -228,7 +232,67 @@ Definição dos campos dos formulários, da página principal e das outras pági
 				name="valorParcelaConfiguravel" type="java.lang.String" />
 			<form-property 
 				name="valorRestante" type="java.lang.String" />
-							
+
+			<form-property
+				name="valorTotalSucumbencia" type="java.lang.String" />
+			<form-property
+				name="valorTotalSucumbenciaImovel" type="java.lang.String" />
+			<form-property
+				name="valorAcrescimosSucumbencia" type="java.lang.String" />
+			<form-property
+				name="valorMultaSucumbenciaImovel" type="java.lang.String" />
+			<form-property
+				name="valorJurosMoraSucumbenciaImovel" type="java.lang.String" />
+			<form-property
+				name="valorAtualizacaoMonetariaSucumbenciaImovel" type="java.lang.String" />
+			<form-property
+				name="valorAcrescimosSucumbenciaImovel" type="java.lang.String" />
+			<form-property 
+				name="indicadorImovelEmExecucaoFiscal" type="java.lang.String" />
+			<form-property
+				name="valorSucumbenciaAtual" type="java.lang.String" />
+			<form-property
+				name="valorParcelaSucumbencia" type="java.lang.String" />
+			<form-property
+				name="valorSucumbenciaAtualCobradoEntradaParc" type="java.lang.String" />
+			<form-property 
+				name="quantidadeParcelasSucumbencia" type="java.lang.String" />
+			<form-property 
+				name="valorDiligencias" type="java.lang.String" />
+			<form-property 
+				name="chavesDebitosACobrar" type="java.lang.String" />
+			<form-property 
+				name="valorTotalContaNormal" type="java.lang.String" />				
+			<form-property 
+				name="valorTotalContaDividaAtiva" type="java.lang.String" />
+			<form-property 
+				name="valorTotalContaExecFiscal" type="java.lang.String" />
+			<form-property 
+				name="valorTotalContaAcresNormal" type="java.lang.String" />
+			<form-property 
+				name="valorTotalContaAcresDividaAtiva" type="java.lang.String" />				
+			<form-property 
+				name="valorTotalContaAcresExecFiscal" type="java.lang.String" />																
+			<form-property 
+				name="valorTotalGuiaNormal" type="java.lang.String" />
+			<form-property 
+				name="valorTotalGuiaDividaAtiva" type="java.lang.String" />
+			<form-property 
+				name="valorTotalGuiaExecFiscal" type="java.lang.String" />
+			<form-property 
+				name="valorTotalGuiaAcresNormal" type="java.lang.String" />
+			<form-property 
+				name="valorTotalGuiaAcresDividaAtiva" type="java.lang.String" />
+			<form-property 
+				name="valorTotalGuiaAcresExecFiscal" type="java.lang.String" />																				
+			<form-property 
+				name="valorTotalDebitoACobrarServicoNormal" type="java.lang.String" />
+			<form-property 
+				name="valorTotalDebitoACobrarParcelamentoNormal" type="java.lang.String" />		
+			<form-property 
+				name="idClienteRelacaoImovelSelecionado" type="java.lang.String" />		
+			<form-property 
+				name="atendimentoSemPreencherDocumentosObrigatorios" type="java.lang.String" />				
 		</form-bean>
 	</form-beans>
 
@@ -266,7 +330,37 @@ Definição dos campos dos formulários, da página principal e das outras pági
 		<action name="EfetuarParcelamentoDebitosActionForm"
 			type="gcom.gui.relatorio.cobranca.parcelamento.GerarRelatorioExtratoDebitoAction"
 			validate="true" scope="session"
-			path="/gerarRelatorioExtratoDebitoAction" />	
+			path="/gerarRelatorioExtratoDebitoAction" />
+			
+		<action name="EfetuarParcelamentoDebitosActionForm"
+			type="gcom.gui.relatorio.cobranca.parcelamento.GerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction">
+			<forward name="exibirParcelamentoEditarResolucaoDiretoriaAction"
+				path="/exibirParcelamentoEditarResolucaoDiretoriaAction.do" />	
+			<forward name="exibirParcelamentoTermoTestemunhasAction"
+				path="/exibirParcelamentoTermoTestemunhasAction.do" />	
+			<forward name="exibirParcelamentoDadosTermoAction"
+				path="/exibirParcelamentoDadosTermoAction.do" />
+			<forward name="exibirParcelamentoDadosTermoExecFiscalAction"
+				path="/exibirParcelamentoDadosTermoExecFiscalAction.do" />																
+		</action>
+
+		<action name="EfetuarParcelamentoDebitosActionForm"
+			type="gcom.gui.cobranca.parcelamento.ImprimirPreviaTermoParcelamentoAction"
+			validate="true" scope="session"
+			path="/imprimirPreviaTermoParcelamentoAction">	
+			<forward name="exibirParcelamentoTermoTestemunhasAction"
+				path="/exibirParcelamentoTermoTestemunhasAction.do" />	
+			<forward name="exibirParcelamentoEditarResolucaoDiretoriaAction"
+				path="/exibirParcelamentoEditarResolucaoDiretoriaAction.do" />
+			<forward name="gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction"
+				path="/gerarRelatorioParcelamentoResolucaoDiretoriaLayoutAction.do" />	
+			<forward name="exibirParcelamentoDadosTermoAction"
+				path="/exibirParcelamentoDadosTermoAction.do" />	
+			<forward name="exibirParcelamentoDadosTermoExecFiscalAction"
+				path="/exibirParcelamentoDadosTermoExecFiscalAction.do" />												
+		</action>	
 
 	</action-mappings>
 

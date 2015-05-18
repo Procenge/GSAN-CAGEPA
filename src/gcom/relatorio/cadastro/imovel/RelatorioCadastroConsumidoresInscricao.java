@@ -217,6 +217,13 @@ public class RelatorioCadastroConsumidoresInscricao
 		String consumoMinimoFixadoEsgotoInicial = (String) getParametro("consumoMinimoFixadoEsgotoInicial");
 		// consumo Minimo Fixado Esgoto Final
 		String consumoMinimoFixadoEsgotoFinal = (String) getParametro("consumoMinimoFixadoEsgotoFinal");
+
+		// consumo Fixado Esgoto do Poço Inicial
+		String consumoFixadoEsgotoPocoInicial = (String) getParametro("consumoFixadoEsgotoPocoInicial");
+
+		// consumo Fixado Esgoto do Poço Final
+		String consumoFixadoEsgotoPocoFinal = (String) getParametro("consumoFixadoEsgotoPocoFinal");
+
 		// intervalo Percentual Esgoto Inicial
 		String intervaloPercentualEsgotoInicial = (String) getParametro("intervaloPercentualEsgotoInicial");
 		// intervalor Percentual Esgoto Final
@@ -299,7 +306,8 @@ public class RelatorioCadastroConsumidoresInscricao
 						quantidadeEconomiasInicial, quantidadeEconomiasFinal, diaVencimentoAlternativo, clienteID, clienteTipoID,
 						clienteRelacaoTipoID, numeroPontosInicial, numeroPontosFinal, numeroMoradoresInicial, numeroMoradoresFinal,
 						areaConstruidaFaixa, idUnidadeNegoio, rotaInicial, rotaFinal, sequencialRotaInicial, sequencialRotaFinal,
-						segmentoInicial, segmentoFinal, subloteInicial, subloteFinal, indicadorOrdenacao);
+						segmentoInicial, segmentoFinal, subloteInicial, subloteFinal, indicadorOrdenacao, consumoFixadoEsgotoPocoInicial,
+						consumoFixadoEsgotoPocoFinal);
 
 		// valor de retorno
 		byte[] retorno = null;

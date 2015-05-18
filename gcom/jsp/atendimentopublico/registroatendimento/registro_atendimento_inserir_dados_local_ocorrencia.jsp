@@ -1645,10 +1645,12 @@ window.onmousemove = verificarCamposHistoryBack;
       	<tr>
 		<td><strong>Unidade Destino:</strong></td>
 		<td colspan="2">
+		
 			
-			<logic:present name="desabilitarUnidadeDestino">
+			<logic:present name="desabilitarUnidadeDestino">			
+		
 			
-				<html:text property="idUnidadeDestino" size="8" maxlength="8" tabindex="12" disabled="true"/>
+				<html:text property="idUnidadeDestino" size="8" maxlength="8" tabindex="12" readonly="true" />
 			
 				<img width="23" height="21" border="0"
 				src="<bean:message key="caminho.imagens"/>pesquisa.gif"
@@ -1662,6 +1664,8 @@ window.onmousemove = verificarCamposHistoryBack;
 			</logic:present>
 			
 			<logic:notPresent name="desabilitarUnidadeDestino">
+			
+			
 			
 				<html:text property="idUnidadeDestino" size="8" maxlength="8" tabindex="12" onkeypress="validaEnterComMensagem(event, 'inserirRegistroAtendimentoWizardAction.do?action=exibirInserirRegistroAtendimentoDadosLocalOcorrenciaAction&pesquisarUnidadeDestino=OK&pesquisarUnidadeDestinoEmEspecificacoTramite=N', 'idUnidadeDestino', 'Unidade Destino');" onkeyup="limpar(12); habilitarDesabilitarDescricaoLocalOcorrencia();"/>
 				

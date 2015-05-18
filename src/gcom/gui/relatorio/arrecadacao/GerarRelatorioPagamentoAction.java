@@ -164,6 +164,7 @@ public class GerarRelatorioPagamentoAction
 		String codigoSetorComercialInicial = null;
 		String codigoSetorComercialFinal = null;
 		String indicadorTotalizarPorDataPagamento = null;
+		String totalizadorMes = Boolean.FALSE.toString();
 		Collection<Integer> idsArrecadadores = null;
 
 		if(sessao.getAttribute("idImovelPrincipalAba") != null && !sessao.getAttribute("idImovelPrincipalAba").equals("")){
@@ -192,6 +193,7 @@ public class GerarRelatorioPagamentoAction
 			codigoSetorComercialInicial = consultarPagamentoActionForm.getCodigoSetorComercialInicial();
 			codigoSetorComercialFinal = consultarPagamentoActionForm.getCodigoSetorComercialFinal();
 			indicadorTotalizarPorDataPagamento = consultarPagamentoActionForm.getIndicadorTotalizarPorDataPagamento();
+			totalizadorMes = consultarPagamentoActionForm.getTotalizadorMes();
 
 			Collection<Arrecadador> colecaoArrecadadores = (Collection<Arrecadador>) sessao.getAttribute("colecaoArrecadadores");
 
@@ -266,8 +268,10 @@ public class GerarRelatorioPagamentoAction
 		relatorioPagamento.addParametro("codigoSetorComercialInicial", codigoSetorComercialInicial);
 		relatorioPagamento.addParametro("codigoSetorComercialFinal", codigoSetorComercialFinal);
 		relatorioPagamento.addParametro("indicadorTotalizarPorDataPagamento", indicadorTotalizarPorDataPagamento);
+		relatorioPagamento.addParametro("totalizadorMes", totalizadorMes);
 		relatorioPagamento.addParametro("idsArrecadadores", idsArrecadadores);
 		relatorioPagamento.addParametro("idsCategoria", idsCategoria);
+
 
 		String tipoRelatorio = httpServletRequest.getParameter("tipoRelatorio");
 		if(tipoRelatorio == null){

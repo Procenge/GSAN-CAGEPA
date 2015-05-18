@@ -79,20 +79,8 @@ package gcom.gui.relatorio.micromedicao.hidrometro;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.micromedicao.hidrometro.HidrometroActionForm;
-import gcom.micromedicao.hidrometro.FiltroHidrometro;
-import gcom.micromedicao.hidrometro.FiltroHidrometroCapacidade;
-import gcom.micromedicao.hidrometro.FiltroHidrometroClasseMetrologica;
-import gcom.micromedicao.hidrometro.FiltroHidrometroDiametro;
-import gcom.micromedicao.hidrometro.FiltroHidrometroLocalArmazenagem;
-import gcom.micromedicao.hidrometro.FiltroHidrometroMarca;
-import gcom.micromedicao.hidrometro.FiltroHidrometroTipo;
-import gcom.micromedicao.hidrometro.Hidrometro;
-import gcom.micromedicao.hidrometro.HidrometroCapacidade;
-import gcom.micromedicao.hidrometro.HidrometroClasseMetrologica;
-import gcom.micromedicao.hidrometro.HidrometroDiametro;
-import gcom.micromedicao.hidrometro.HidrometroLocalArmazenagem;
-import gcom.micromedicao.hidrometro.HidrometroMarca;
-import gcom.micromedicao.hidrometro.HidrometroTipo;
+import gcom.micromedicao.bean.FiltroHidrometroHelper;
+import gcom.micromedicao.hidrometro.*;
 import gcom.relatorio.ExibidorProcessamentoTarefaRelatorio;
 import gcom.relatorio.RelatorioVazioException;
 import gcom.relatorio.micromedicao.hidrometro.RelatorioManterHidrometro;
@@ -153,7 +141,7 @@ public class GerarRelatorioHidrometroManterAction
 
 		Fachada fachada = Fachada.getInstancia();
 
-		FiltroHidrometro filtroHidrometro = (FiltroHidrometro) sessao.getAttribute("filtroHidrometro");
+		FiltroHidrometroHelper filtroHidrometroHelper = (FiltroHidrometroHelper) sessao.getAttribute("filtroHidrometroHelper");
 
 		// Inicio da parte que vai mandar os parametros para o relatório
 
@@ -361,7 +349,7 @@ public class GerarRelatorioHidrometroManterAction
 		RelatorioManterHidrometro relatorioManterHidrometro = new RelatorioManterHidrometro(
 						(Usuario) (httpServletRequest.getSession(false)).getAttribute("usuarioLogado"));
 
-		relatorioManterHidrometro.addParametro("filtroHidrometro", filtroHidrometro);
+		relatorioManterHidrometro.addParametro("filtroHidrometroHelper", filtroHidrometroHelper);
 		relatorioManterHidrometro.addParametro("hidrometroParametros", hidrometroParametros);
 		relatorioManterHidrometro.addParametro("fixo", fixo);
 		relatorioManterHidrometro.addParametro("faixaInicial", faixaInicial);

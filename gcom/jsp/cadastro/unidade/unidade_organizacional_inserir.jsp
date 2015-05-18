@@ -76,6 +76,7 @@
 
 	function limparForm(limpaCodigo){
 
+
 		var form = document.forms[0];
 
 		form.idEmpresa.disabled=false;
@@ -111,7 +112,7 @@
 		form.unidadeTarifaSocial[0].checked = false;
 		form.unidadeTarifaSocial[1].checked = false;
 		
-        form.idEmpresa.selectedIndex = "";
+       // form.idEmpresa.selectedIndex = "";
         
 		limparPesquisaLocalidade();
 		limparUnidadeSuperior();
@@ -181,6 +182,8 @@
 	    	form.idUnidadeSuperior.value = codigoRegistro;
    	    	form.descricaoUnidadeSuperior.value = descricaoRegistro;
       		form.descricaoUnidadeSuperior.style.color = "#000000";
+      		
+      	
 	    }
 	}
 
@@ -252,6 +255,11 @@
 		}
 
     }
+	
+	
+
+    
+    
 </script>
 </head>
 <body leftmargin="5" topmargin="5" onload="javascript:verificaForm();">
@@ -261,6 +269,9 @@
 	method="post">
 
 	<html:hidden property="codigoUnidadeTipo" />
+	<html:hidden property="idEmpresa" />
+	
+	
 
 	<%@ include file="/jsp/util/cabecalho.jsp"%>
 	<%@ include file="/jsp/util/menu.jsp"%>
@@ -566,6 +577,47 @@
 												</logic:present>
 											</html:select> </strong></td>
 										</tr>
+										
+										
+										<tr>
+											<td><strong>DDD:<font color="#FF0000">*</font></strong></td>
+											<td><html:text maxlength="2" property="ddd" size="5" onkeyup="javascript:verificaNumeroInteiro(this);"/></td>
+										</tr>
+										
+										
+												<tr>
+											<td><strong>Fone:</strong></td>
+											<td><html:text maxlength="10" property="telefone" size="20" onkeyup="javascript:verificaNumeroInteiro(this);"/></td>
+										</tr>
+										
+										
+												<tr>
+											<td><strong>Ramal:</strong></td>
+											<td><html:text maxlength="4" property="ramal" size="5" onkeyup="javascript:verificaNumeroInteiro(this);"/></td>
+										</tr>
+										
+										
+										<tr>
+											<td><strong>Fax:</strong></td>
+											<td><html:text maxlength="10" property="fax" size="20" onkeyup="javascript:verificaNumeroInteiro(this);" /></td>
+										</tr>
+										
+										
+										
+										<tr>
+											<td><strong>Observação:</strong></td>
+											<td>
+											<html:textarea property="observacao" cols="40" rows="5" onkeyup="limitTextArea(document.forms[0].observacao, 400, document.getElementById('utilizado'), document.getElementById('limite'));"/>
+												<strong><span id="utilizado">0</span>/<span id="limite">400</span></strong>
+											
+											</td>
+										</tr>
+										
+										
+										
+										
+										
+										
 
 									</table>
 									</td>

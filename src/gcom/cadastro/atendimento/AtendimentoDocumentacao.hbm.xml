@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+
+<hibernate-mapping>
+
+<class
+    name="gcom.cadastro.atendimento.AtendimentoDocumentacao"
+    table="ATENDIMENTO_DOCUMENTACAO"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ATDC_ID"
+    >
+
+     <generator class="sequence">
+       <param name="sequence">SQ_ATENDIMENTO_DOCUMENTACAO</param>
+   	</generator>
+    
+    </id>
+    
+    <property
+        name="indicadorDocumentoApresentado"
+        type="java.lang.Short"
+        column="ATDC_ICDOCUMENTOAPRESENTADO"
+        length="2"
+    />    
+    
+    <property
+        name="identificadorDocumentoApresentado"
+        type="java.lang.String"
+        column="ATDC_IDDOCUMENTOAPRESENTADO"
+        length="255"
+    />    
+
+	<property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ATDC_TMULTIMAALTERACAO"
+        length="6"
+    />
+    
+    <many-to-one
+        name="atendimento"
+	    class="gcom.cadastro.atendimento.Atendimento"
+	>
+    	<column name="ATEN_ID" />
+	</many-to-one> 
+
+     <many-to-one
+        name="atendProcDocumentoPessoaTipo"
+        class="gcom.cadastro.atendimento.AtendProcDocumentoPessoaTipo"
+    >
+        <column name="ATDP_ID" />
+    </many-to-one>   
+    
+</class>
+</hibernate-mapping>

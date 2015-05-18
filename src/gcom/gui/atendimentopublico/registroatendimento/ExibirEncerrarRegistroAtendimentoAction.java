@@ -155,8 +155,9 @@ public class ExibirEncerrarRegistroAtendimentoAction
 		encerrarRegistroAtendimentoActionForm.setDataEncerramento(Util.formatarData(new Date()));
 		encerrarRegistroAtendimentoActionForm.setHoraEncerramento(Util.formatarHoraSemSegundos(new Date()));
 		// Valida Pré-Encerramento
-		fachada.validarPreEncerramentoRASemTarifaSocial(registroAtendimentoHelper.getRegistroAtendimento(), usuario, new Short(
-						encerrarRegistroAtendimentoActionForm.getIndicadorAutorizacaoManutencaoRA()));
+		// fachada.validarPreEncerramentoRASemTarifaSocial(registroAtendimentoHelper.getRegistroAtendimento(),
+		// usuario, new Short(
+		// encerrarRegistroAtendimentoActionForm.getIndicadorAutorizacaoManutencaoRA()));
 		getMotivoEncerramentoCollection(encerrarRegistroAtendimentoActionForm, sessao);
 		// Número do RA de Referência
 		if(encerrarRegistroAtendimentoActionForm.getNumeroRAReferencia() != null

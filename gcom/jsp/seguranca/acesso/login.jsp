@@ -54,7 +54,7 @@
                     </tr>
                     <tr>
                       <td>
-                        <html:password maxlength="6" property="senha" size="14" redisplay="false"  style="text-transform: none;"/>
+                        <html:password maxlength="12" property="senha" size="14" redisplay="false"  style="text-transform: none;"/>
                       </td>
                     </tr>
                     <tr>

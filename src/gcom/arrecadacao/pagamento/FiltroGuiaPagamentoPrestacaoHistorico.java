@@ -82,7 +82,14 @@ public class FiltroGuiaPagamentoPrestacaoHistorico
 	/**
 	 * Description of the Field
 	 */
+	public final static String NUMERO_PROCESSO_ADM_EXEC_FISCAL = "comp_id.numeroProcessoAdministrativoExecucaoFiscal";
+
+	/**
+	 * Description of the Field
+	 */
 	public final static String DEBITO_TIPO = "debitoTipo";
+
+	public final static String DEBITO_TIPO_ID = "debitoTipo.id";
 
 	/**
 	 * Description of the Field
@@ -91,7 +98,11 @@ public class FiltroGuiaPagamentoPrestacaoHistorico
 
 	public final static String INDICADOR_REMUNERA_COBRANCA_ADMINISTRATIVA = "indicadorRemuneraCobrancaAdministrativa";
 
+	public final static String INDICADOR_PAGAMENTO = "indicadorPagamentoPendente";
+
 	public final static String LANCAMENTO_CONTABIL_ID = "comp_id.itemLancamentoContabilId";
+
+	public final static String DEBITO_CREDITO_SITUACAO_ATUAL_ID = "debitoCreditoSituacao.id";
 
 	/**
 	 * Constructor for the FiltroGuiaPagamentoPrestacao object

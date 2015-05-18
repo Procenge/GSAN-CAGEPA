@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cadastro.atendimento.AtendimentoProcedimento" 
+    table="ATENDIMENTO_PROCEDIMENTO"
+    dynamic-insert="true" dynamic-update="true"    
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ATPR_ID"
+    >
+        <generator class="sequence">
+          <param name="sequence">SQ_ATENDIMENTO_PROCEDIMENTO</param>
+      	</generator>
+
+    </id>
+
+    <property
+        name="descricao"
+        type="java.lang.String"
+        column="ATPR_DSPROCEDIMENTO"
+        length="60"
+    />
+    
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ATPR_TMULTIMAALTERACAO"
+        length="8"
+    />
+
+    <property
+        name="indicadorUso"
+        type="java.lang.Short"
+        column="ATPR_ICUSO"
+        length="2"
+    />
+    
+    <property
+        name="indicadorCliente"
+        type="java.lang.Short"
+        column="ATPR_ICCLIENTE"
+        length="2"
+    />
+    
+    <property
+        name="indicadorDispensadoDocumentacaoObrigatoria"
+        type="java.lang.Short"
+        column="ATPC_ICDISPENSADOCOBRIGATORIA"
+        length="2"
+    />    
+    
+    <property
+        name="indicadorImovel"
+        type="java.lang.Short"
+        column="ATPR_ICIMOVEL"
+        length="2"
+    />        
+
+    <!-- Associations -->
+  
+    <many-to-one
+        name="funcionalidade"
+	    class="gcom.seguranca.acesso.Funcionalidade"
+	>
+    	<column name="fncd_id" />
+	</many-to-one> 
+
+     <many-to-one
+        name="solicitacaoTipoEspecificacao"
+        class="gcom.atendimentopublico.registroatendimento.SolicitacaoTipoEspecificacao"
+    >
+        <column name="step_id" />
+    </many-to-one>
+    
+</class>
+</hibernate-mapping>

@@ -80,6 +80,8 @@ import gcom.atendimentopublico.ordemservico.FiltroMaterial;
 import gcom.atendimentopublico.ordemservico.Material;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ControladorException;
+import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 
 import java.util.Collection;
 import java.util.Map;
@@ -155,6 +157,16 @@ public class ExibirManterMaterialAction
 
 		}
 		sessao.removeAttribute("tipoPesquisaRetorno");
+
+		String permiteCobrarMaterial = "0";
+		try{
+			permiteCobrarMaterial = ParametroAtendimentoPublico.P_PERMITE_COBRAR_MATERIAL_OS.executar();
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		sessao.setAttribute("permiteCobrarMaterial", permiteCobrarMaterial);
 
 		return retorno;
 

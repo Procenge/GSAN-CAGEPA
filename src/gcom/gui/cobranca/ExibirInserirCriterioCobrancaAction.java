@@ -88,8 +88,10 @@ import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -136,71 +138,84 @@ public class ExibirInserirCriterioCobrancaAction
 
 		}
 
-		if(criterioCobrancaActionForm.getDataInicioVigencia() == null || criterioCobrancaActionForm.getDataInicioVigencia().equals("")){
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getDataInicioVigencia())){
 			DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 			String dataInicioVigencia = formatter.format(new Date());
 
 			criterioCobrancaActionForm.setDataInicioVigencia(dataInicioVigencia);
 		}
 
-		if(criterioCobrancaActionForm.getNumeroAnoContaAntiga() == null || criterioCobrancaActionForm.getNumeroAnoContaAntiga().equals("")){
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getNumeroAnoContaAntiga())){
 			criterioCobrancaActionForm.setNumeroAnoContaAntiga("99");
 		}
 
-		if(criterioCobrancaActionForm.getValorLimitePrioridade() == null
-						|| criterioCobrancaActionForm.getValorLimitePrioridade().equalsIgnoreCase("")){
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getValorLimitePrioridade())){
 			criterioCobrancaActionForm.setValorLimitePrioridade("0");
 		}
 
-		if(criterioCobrancaActionForm.getPercentualValorMinimoPagoParceladoCancelado() == null
-						|| criterioCobrancaActionForm.getPercentualValorMinimoPagoParceladoCancelado().equals("")){
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getPercentualValorMinimoPagoParceladoCancelado())){
 			criterioCobrancaActionForm.setPercentualValorMinimoPagoParceladoCancelado("100");
 		}
 
-		if(criterioCobrancaActionForm.getPercentualQuantidadeMinimoPagoParceladoCancelado() == null
-						|| criterioCobrancaActionForm.getPercentualQuantidadeMinimoPagoParceladoCancelado().equals("")){
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getPercentualQuantidadeMinimoPagoParceladoCancelado())){
 			criterioCobrancaActionForm.setPercentualQuantidadeMinimoPagoParceladoCancelado("100");
 		}
 
-		if(criterioCobrancaActionForm.getOpcaoAcaoImovelSitEspecial() == null
-						|| criterioCobrancaActionForm.getOpcaoAcaoImovelSitEspecial().equals("")){
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getOpcaoAcaoImovelSitEspecial())){
 			criterioCobrancaActionForm.setOpcaoAcaoImovelSitEspecial("2");
 		}
 
-		if(criterioCobrancaActionForm.getOpcaoAcaoImovelSit() == null || criterioCobrancaActionForm.getOpcaoAcaoImovelSit().equals("")){
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getOpcaoAcaoImovelSit())){
 			criterioCobrancaActionForm.setOpcaoAcaoImovelSit("2");
 		}
 
-		if(criterioCobrancaActionForm.getOpcaoContasRevisao() == null || criterioCobrancaActionForm.getOpcaoContasRevisao().equals("")){
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getOpcaoContasRevisao())){
 			criterioCobrancaActionForm.setOpcaoContasRevisao("2");
 		}
 
-		if(criterioCobrancaActionForm.getOpcaoAcaoImovelDebitoMesConta() == null
-						|| criterioCobrancaActionForm.getOpcaoAcaoImovelDebitoMesConta().equals("")){
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getOpcaoDividaAtiva())){
+			criterioCobrancaActionForm.setOpcaoDividaAtiva("2");
+		}
+
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getOpcaoAcaoImovelDebitoMesConta())){
 			criterioCobrancaActionForm.setOpcaoAcaoImovelDebitoMesConta("2");
 		}
-		if(criterioCobrancaActionForm.getOpcaoAcaoInquilinoDebitoMesConta() == null
-						|| criterioCobrancaActionForm.getOpcaoAcaoInquilinoDebitoMesConta().equals("")){
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getOpcaoAcaoInquilinoDebitoMesConta())){
 			criterioCobrancaActionForm.setOpcaoAcaoInquilinoDebitoMesConta("2");
 		}
 
-		if(criterioCobrancaActionForm.getOpcaoAcaoImovelDebitoContasAntigas() == null
-						|| criterioCobrancaActionForm.getOpcaoAcaoImovelDebitoContasAntigas().equals("")){
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getOpcaoAcaoImovelDebitoContasAntigas())){
 			criterioCobrancaActionForm.setOpcaoAcaoImovelDebitoContasAntigas("2");
 		}
 
-		if(criterioCobrancaActionForm.getComCpf() == null || criterioCobrancaActionForm.getComCpf().equals("")){
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getComCpf())){
 			criterioCobrancaActionForm.setComCpf("3");
 		}
 
-		if(criterioCobrancaActionForm.getComTelefone() == null || criterioCobrancaActionForm.getComTelefone().equals("")){
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getComTelefone())){
 			criterioCobrancaActionForm.setComTelefone("3");
 		}
 
-		if(criterioCobrancaActionForm.getIndicadorConsiderarApenasDebitoTitularAtual() == null
-						|| criterioCobrancaActionForm.getIndicadorConsiderarApenasDebitoTitularAtual().equals("")){
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getCriterioCobranca())){
+			criterioCobrancaActionForm.setCriterioCobranca("3");
+		}
 
+		if(Util.isVazioOuBranco(criterioCobrancaActionForm.getIndicadorConsiderarApenasDebitoTitularAtual())){
 			criterioCobrancaActionForm.setIndicadorConsiderarApenasDebitoTitularAtual(ConstantesSistema.NAO.toString());
+		}
+
+		boolean indicadorFaturamentoTitularDebito = false;
+		try{
+			indicadorFaturamentoTitularDebito = ParametroFaturamento.P_INDICADOR_FATURAMENTO_ATUAL_TITULAR_DEBITO_IMOVEL.executar().equals(
+							ConstantesSistema.SIM.toString());
+
+			if(indicadorFaturamentoTitularDebito){
+				httpServletRequest.setAttribute("indicadorFaturamentoTitularDebito", "S");
+			}else{
+				httpServletRequest.removeAttribute("indicadorFaturamentoTitularDebito");
+			}
+		}catch(ControladorException e){
+			e.printStackTrace();
 		}
 
 		Fachada fachada = Fachada.getInstancia();
@@ -209,6 +224,12 @@ public class ExibirInserirCriterioCobrancaAction
 
 		filtroClienteRelacaoTipo.adicionarParametro(new ParametroSimples(FiltroClienteRelacaoTipo.INDICADOR_USO,
 						ConstantesSistema.INDICADOR_USO_ATIVO));
+
+		if(indicadorFaturamentoTitularDebito){
+			filtroClienteRelacaoTipo.adicionarParametro(new ParametroSimples(FiltroClienteRelacaoTipo.CLIENTE_RELACAO_TIPO_ID,
+							ClienteRelacaoTipo.RESPONSAVEL));
+		}
+
 		filtroClienteRelacaoTipo.setCampoOrderBy(FiltroClienteRelacaoTipo.DESCRICAO);
 		List<ClienteRelacaoTipo> colecaoClienteRelacaoTipo = (List<ClienteRelacaoTipo>) fachada.pesquisar(filtroClienteRelacaoTipo,
 						ClienteRelacaoTipo.class.getName());
@@ -218,10 +239,12 @@ public class ExibirInserirCriterioCobrancaAction
 			throw new ActionServletException("atencao.pesquisa.nenhumresultado", null, "Tipo da Relação do Cliente");
 		}else{
 
-			ClienteRelacaoTipo clienteRelacaoTipo = new ClienteRelacaoTipo("Cliente com Nome na Conta",
-							ConstantesSistema.INDICADOR_USO_DESATIVO, new Date());
-			clienteRelacaoTipo.setId(ConstantesSistema.NUMERO_NAO_INFORMADO);
-			colecaoClienteRelacaoTipo.add(clienteRelacaoTipo);
+			if(!indicadorFaturamentoTitularDebito){
+				ClienteRelacaoTipo clienteRelacaoTipo = new ClienteRelacaoTipo("Cliente com Nome na Conta",
+								ConstantesSistema.INDICADOR_USO_DESATIVO, new Date());
+				clienteRelacaoTipo.setId(ConstantesSistema.NUMERO_NAO_INFORMADO);
+				colecaoClienteRelacaoTipo.add(clienteRelacaoTipo);
+			}
 
 			// Ordenar a coleção por mais de um campo
 			List sortFields = new ArrayList();

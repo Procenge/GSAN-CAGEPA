@@ -85,14 +85,13 @@ import gcom.faturamento.credito.FiltroCreditoTipo;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.ordemservico.ParametroOrdemServico;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -101,6 +100,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+
+import br.com.procenge.comum.exception.PCGException;
 
 /**
  * Action responsável por exibir a tela de geração da ordem de serviço
@@ -115,7 +116,7 @@ public class ExibirGerarOrdemServicoAction
 				extends GcomAction {
 
 	public ActionForward execute(ActionMapping actionMapping, ActionForm actionForm, HttpServletRequest httpServletRequest,
-					HttpServletResponse httpServletResponse){
+					HttpServletResponse httpServletResponse) throws PCGException, ControladorException{
 
 		String forward = null;
 		ActionForward retorno = null;
@@ -127,6 +128,24 @@ public class ExibirGerarOrdemServicoAction
 			form = (GerarOrdemServicoActionForm) sessao.getAttribute("GerarOrdemServicoActionForm");
 			sessao.removeAttribute("GerarOrdemServicoActionForm");
 		}
+
+		Integer idOSPrincipal = null;
+		if(httpServletRequest.getParameter("numeroOS") != null && form.getIndicadorTelaOrdemServico() == null){
+			idOSPrincipal = Integer.valueOf(httpServletRequest.getParameter("numeroOS"));
+			form.setIdOSPrincipal(String.valueOf(idOSPrincipal));
+			sessao.setAttribute("desabilitaBotaoAnterior", 1);
+			sessao.setAttribute("desabilitaBotaoProximo", 1);
+			httpServletRequest.setAttribute("idOSPrincipal", idOSPrincipal);
+			form.setIndicadorTelaOrdemServico("true");
+
+		}else if(form.getIndicadorTelaOrdemServico() != null && form.getIdOSPrincipal() != null){
+			httpServletRequest.setAttribute("idOSPrincipal", form.getIdOSPrincipal());
+		}else if(form.getIndicadorTelaOrdemServico() == null){
+			sessao.removeAttribute("desabilitaBotaoProximo");
+			sessao.removeAttribute("desabilitaBotaoAnterior");
+			httpServletRequest.removeAttribute("idOSPrincipal");
+		}
+
 
 		Collection<Integer> colecaoCompleta = new ArrayList<Integer>();
 		if(Util.isVazioOuBranco(form.getColecaoCompleta())){
@@ -301,6 +320,14 @@ public class ExibirGerarOrdemServicoAction
 			fachada.validarServicoTipo(ra.getId(), idServicoTipo);
 
 			if(servicoTipo != null){
+
+				if(servicoTipo.getIndicadorPagamentoAntecipado() == ConstantesSistema.SIM.intValue()){
+					sessao.setAttribute("habilitarPrestacaoGuia", "S");
+				}else{
+					form.setQuantidadePrestacoesGuiaPagamento("");
+					sessao.removeAttribute("habilitarPrestacaoGuia");
+				}
+
 				descricaoServicoTipo = servicoTipo.getDescricao();
 				if(servicoTipo.getValor() != null){
 					String valorFormatado = servicoTipo.getValor().toString().replace('.', ',');
@@ -326,6 +353,41 @@ public class ExibirGerarOrdemServicoAction
 					descricaoServicoTipoPrioridadeOriginal = servicoTipo.getServicoTipoPrioridade().getDescricao();
 				}
 				httpServletRequest.setAttribute("idServicoTipoEncontrada", "true");
+
+				// Caso utilize o parametro servico do tipo Reparo
+				String idServicosTipoReparoString = ParametroOrdemServico.P_SERVICO_TIPO_REPARO.executar();
+				if(idServicosTipoReparoString != null && httpServletRequest.getAttribute("idOSPrincipal") == null
+								&& form.getIndicadorTelaOrdemServico() == null){
+
+					String[] idServicosTipoReparo = idServicosTipoReparoString.split(",");
+					if(idServicosTipoReparo != null && idServicosTipoReparo.length > 0){
+
+						Map<String, String> mapaTipoServicoReparo = new HashMap<String, String>();
+						for(int i = 0; i < idServicosTipoReparo.length; i++){
+							mapaTipoServicoReparo.put(idServicosTipoReparo[i], idServicosTipoReparo[i]);
+						}
+
+						if(mapaTipoServicoReparo.containsKey(String.valueOf(servicoTipo.getId()))){
+
+							Collection<OrdemServico> colecaoOSRA = fachada.obterOSRA(ra.getId());
+							Collection<OrdemServico> colecaoOrdemServicoPrincipal = new ArrayList<OrdemServico>();
+
+							for(OrdemServico osPrincipal : colecaoOSRA){
+								Collection<OrdemServicoValaPavimento> listaOrdemServicoValaPavimento = fachada
+												.pesquisarOrdemServicoValaPavimento(osPrincipal.getId());
+								ServicoTipo srvt = fachada.pesquisarSevicoTipo(osPrincipal.getServicoTipo().getId());
+								if(srvt.getIndicadorVala() == Integer.parseInt(ConstantesSistema.SIM.toString())
+												&& osPrincipal.getOrdemServicoReparo() == null && listaOrdemServicoValaPavimento.size() > 0){
+									colecaoOrdemServicoPrincipal.add(osPrincipal);
+								}
+							}
+							httpServletRequest.setAttribute("temServicoPrincipal", "true");
+							sessao.setAttribute("colecaoOrdemServicoPrincipal", colecaoOrdemServicoPrincipal);
+						}
+					}
+				}
+				// ----------------------------
+
 			}else{
 				form.setIdServicoTipo("");
 				descricaoServicoTipo = "Tipo de Serviço inexistente";
@@ -377,12 +439,21 @@ public class ExibirGerarOrdemServicoAction
 			}
 		}
 
-		// Coleção de Serviços Tipo
+		// Coleção de Serviços Tipo		
 		Collection colecaoServicosTipo = new ArrayList();
-		for(Iterator iter = ra.getSolicitacaoTipoEspecificacao().getEspecificacaoServicoTipos().iterator(); iter.hasNext();){
-			EspecificacaoServicoTipo est = (EspecificacaoServicoTipo) iter.next();
-			if(est.getServicoTipo() != null && est.getServicoTipo().getIndicadorUso() == ConstantesSistema.INDICADOR_USO_ATIVO){
-				colecaoServicosTipo.add(est.getServicoTipo());
+		if(idOSPrincipal == null){
+			for(Iterator iter = ra.getSolicitacaoTipoEspecificacao().getEspecificacaoServicoTipos().iterator(); iter.hasNext();){
+				EspecificacaoServicoTipo est = (EspecificacaoServicoTipo) iter.next();
+				if(est.getServicoTipo() != null && est.getServicoTipo().getIndicadorUso() == ConstantesSistema.INDICADOR_USO_ATIVO){
+					colecaoServicosTipo.add(est.getServicoTipo());
+				}
+			}
+		}else{
+			for(Iterator iter = ra.getSolicitacaoTipoEspecificacao().getEspecificacaoServicoTipos().iterator(); iter.hasNext();){
+				EspecificacaoServicoTipo est = (EspecificacaoServicoTipo) iter.next();
+				if(est.getServicoTipo() != null && est.getServicoTipo().getIndicadorUso() == ConstantesSistema.INDICADOR_USO_ATIVO){
+					colecaoServicosTipo.add(est.getServicoTipo());
+				}
 			}
 		}
 

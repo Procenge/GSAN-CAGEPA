@@ -93,6 +93,9 @@ public class Argumento
 	/** Representa o Id do argumento. */
 	public static final Integer RESOLUCAO_DIRETORIA_PARCELAMENTO = 13;
 
+	/** Representa o Id do argumento. */
+	public static final Integer PAGAMENTO = 14;
+
 	/** default constructor */
 	public Argumento() {
 

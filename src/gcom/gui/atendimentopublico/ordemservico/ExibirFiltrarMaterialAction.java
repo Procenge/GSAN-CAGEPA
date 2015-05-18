@@ -80,6 +80,8 @@ import gcom.atendimentopublico.ordemservico.FiltroMaterialUnidade;
 import gcom.atendimentopublico.ordemservico.MaterialUnidade;
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
+import gcom.util.ControladorException;
+import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 
 import java.util.Collection;
 
@@ -126,6 +128,16 @@ public class ExibirFiltrarMaterialAction
 			form.setIndicadorUso("3");
 			sessao.setAttribute("indicadorAtualizar", "1");
 		}
+
+		String permiteCobrarMaterial = "0";
+		try{
+			permiteCobrarMaterial = ParametroAtendimentoPublico.P_PERMITE_COBRAR_MATERIAL_OS.executar();
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		sessao.setAttribute("permiteCobrarMaterial", permiteCobrarMaterial);
 		return retorno;
 	}
 }

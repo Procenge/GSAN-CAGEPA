@@ -76,15 +76,11 @@
 
 package gcom.gui.operacional.abastecimento;
 
+import gcom.atendimentopublico.ordemservico.DiametroRedeAgua;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.operacional.DistritoOperacional;
-import gcom.operacional.FiltroDistritoOperacional;
-import gcom.operacional.FiltroSistemaAbastecimento;
-import gcom.operacional.FiltroZonaAbastecimento;
-import gcom.operacional.SistemaAbastecimento;
-import gcom.operacional.ZonaAbastecimento;
+import gcom.operacional.*;
 import gcom.util.ConstantesSistema;
 import gcom.util.filtro.ParametroSimples;
 
@@ -139,6 +135,14 @@ public class ExibirInserirSetorAbastecimentoAction
 			distritosOperacionais = fachada.pesquisar(filtroDistritoOperacional, DistritoOperacional.class.getName());
 		}
 
+		// Recuperar Diametro
+
+		// Grupo Faturamento
+		FiltroDiametroRedeAgua filtroDiametroRedeAgua = new FiltroDiametroRedeAgua();
+		Collection<DiametroRedeAgua> diametroRedeAgua = fachada.pesquisar(filtroDiametroRedeAgua, DiametroRedeAgua.class.getName());
+
+
+
 		// Recuperar Zona Abastecimento
 		Collection<ZonaAbastecimento> zonaAbastecimento = new ArrayList<ZonaAbastecimento>();
 
@@ -160,6 +164,7 @@ public class ExibirInserirSetorAbastecimentoAction
 		sessao.setAttribute("colecaoSistemaAbastecimento", sistemasAbastecimento);
 		sessao.setAttribute("colecaoDistritoOperacional", distritosOperacionais);
 		sessao.setAttribute("colecaoZonaAbastecimento", zonaAbastecimento);
+		sessao.setAttribute("colecaoDiamentroRedeAgua", diametroRedeAgua);
 
 		return retorno;
 	}

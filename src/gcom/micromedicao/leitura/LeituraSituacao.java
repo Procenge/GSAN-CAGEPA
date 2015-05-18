@@ -110,6 +110,11 @@ public class LeituraSituacao
 	/**
 	 * nullable persistent field
 	 */
+	private String descricaoAbreviada;
+
+	/**
+	 * nullable persistent field
+	 */
 	private Short indicadorUso;
 
 	/**
@@ -252,6 +257,16 @@ public class LeituraSituacao
 	public void setUltimaAlteracao(Date ultimaAlteracao){
 
 		this.ultimaAlteracao = ultimaAlteracao;
+	}
+
+	public String getDescricaoAbreviada(){
+
+		return descricaoAbreviada;
+	}
+
+	public void setDescricaoAbreviada(String descricaoAbreviada){
+
+		this.descricaoAbreviada = descricaoAbreviada;
 	}
 
 	/**

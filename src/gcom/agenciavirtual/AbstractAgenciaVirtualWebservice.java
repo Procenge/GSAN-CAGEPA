@@ -6,8 +6,11 @@ package gcom.agenciavirtual;
 
 import gcom.fachada.Fachada;
 import gcom.relatorio.ExibidorProcessamentoTarefaRelatorio;
+import gcom.seguranca.acesso.usuario.FiltroUsuario;
+import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.Util;
 import gcom.util.exception.GcomSystemException;
+import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.webservice.ParametrosAgenciaVirtual;
 
 import java.io.IOException;
@@ -239,10 +242,37 @@ public abstract class AbstractAgenciaVirtualWebservice
 
 		try{
 			if(isServicoRestrito()){
-				String cpfCnpjCliente = recuperarParametroString("cpfcnpj", LABEL_CAMPO_CPF_CNPJ,
-								ParametrosAgenciaVirtual.isCpfCnpjObrigatorio(), true, request);
-				String matriculaImovel = recuperarParametroStringObrigatorio("matricula", LABEL_CAMPO_MATRICULA_DO_IMOVEL, false, request);
-				Fachada.getInstancia().validarPermissaoClienteImovel(cpfCnpjCliente, matriculaImovel);
+
+				Fachada fachada = Fachada.getInstancia();
+
+				String cpfCnpjCliente = "";
+				if(ParametrosAgenciaVirtual.isCpfCnpjObrigatorio()){
+					cpfCnpjCliente = recuperarParametroString("cpfcnpj", LABEL_CAMPO_CPF_CNPJ,
+									ParametrosAgenciaVirtual.isCpfCnpjObrigatorio(), true, request);
+				}
+
+				String matriculaImovel = recuperarParametroString("matricula", LABEL_CAMPO_MATRICULA_DO_IMOVEL, false, false, request);
+				String cliente = recuperarParametroString("cliente", "CLIENTE", false, false, request);
+				String usuario = recuperarParametroString("usuario", "USUARIO", false, false, request);
+
+				if(!Util.isVazioOuBranco(cliente)){
+					// ...
+				}else if(!Util.isVazioOuBranco(usuario)){
+					
+					FiltroUsuario filtroUsuario = new FiltroUsuario();
+					filtroUsuario.adicionarParametro(new ParametroSimples(FiltroUsuario.ID, usuario));
+					Collection usuarios = fachada.pesquisar(filtroUsuario, Usuario.class.getName());
+				
+					if(Util.isVazioOrNulo(usuarios)){
+						throw new NegocioException(MensagemUtil.obterMensagem(Constantes.RESOURCE_BUNDLE,
+										"atencao.erro.campo_obrigatorio_masculino", "USUÁRIO ACESSO"));
+					}
+
+				}else if(!Util.isVazioOuBranco(cpfCnpjCliente) && !Util.isVazioOuBranco(matriculaImovel)){
+					fachada.validarPermissaoClienteImovel(cpfCnpjCliente, matriculaImovel);
+				}else{
+					fachada.validarPermissaoClienteImovel(matriculaImovel);
+				}
 			}
 			processarRequisicao(mapping, form, request, response);
 		}catch(Exception e){

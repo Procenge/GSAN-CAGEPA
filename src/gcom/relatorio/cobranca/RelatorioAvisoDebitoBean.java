@@ -3,12 +3,12 @@ package gcom.relatorio.cobranca;
 
 import gcom.cobranca.bean.EmitirAvisoCobrancaHelper;
 import gcom.relatorio.RelatorioBean;
+import gcom.util.Util;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import gcom.util.Util;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 public class RelatorioAvisoDebitoBean
@@ -96,6 +96,10 @@ public class RelatorioAvisoDebitoBean
 
 	private Integer numeroPagina2;
 
+	private String cep1;
+
+	private String cep2;
+
 	public RelatorioAvisoDebitoBean(EmitirAvisoCobrancaHelper emitirAvisoCobrancaHelper1,
 									EmitirAvisoCobrancaHelper emitirAvisoCobrancaHelper2) {
 
@@ -125,6 +129,7 @@ public class RelatorioAvisoDebitoBean
 			this.dataPermanenciaRegistro1 = emitirAvisoCobrancaHelper1.getDataImpressao() != null ? emitirAvisoCobrancaHelper1
 							.getDataImpressao() : "";
 			this.numeroPagina1 = emitirAvisoCobrancaHelper1.getNumeroPagina();
+			this.cep1 = emitirAvisoCobrancaHelper1.getCep();
 		}
 
 		if(emitirAvisoCobrancaHelper2 != null){
@@ -157,6 +162,7 @@ public class RelatorioAvisoDebitoBean
 			this.dataPermanenciaRegistro2 = emitirAvisoCobrancaHelper2.getDataImpressao() != null ? emitirAvisoCobrancaHelper2
 							.getDataImpressao() : "";
 			this.numeroPagina2 = emitirAvisoCobrancaHelper2.getNumeroPagina();
+			this.cep2 = emitirAvisoCobrancaHelper2.getCep();
 		}
 	}
 
@@ -614,4 +620,25 @@ public class RelatorioAvisoDebitoBean
 
 		return numeroPagina2;
 	}
+
+	public String getCep1(){
+
+		return cep1;
+	}
+
+	public void setCep1(String cep1){
+
+		this.cep1 = cep1;
+	}
+
+	public String getCep2(){
+
+		return cep2;
+	}
+
+	public void setCep2(String cep2){
+
+		this.cep2 = cep2;
+	}
+
 }

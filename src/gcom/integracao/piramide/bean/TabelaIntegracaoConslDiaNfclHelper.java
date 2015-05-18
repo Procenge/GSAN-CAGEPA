@@ -238,6 +238,27 @@ public class TabelaIntegracaoConslDiaNfclHelper {
 	}
 
 	/**
+	 * Método acumularValoresJurosCorrecaoFaturamento
+	 * <p>
+	 * Esse método implementa [mgrb] descrever o que implemntar
+	 * </p>
+	 * RASTREIO: [OCXXXXX][UCXXXX][SBXXXX]
+	 * 
+	 * @param classeConsumo
+	 * @param vlConta
+	 * @author Marlos Ribeiro
+	 * @since 18/03/2013
+	 */
+	public void acumularValoresJurosCorrecaoFaturamento(Integer classeConsumo, BigDecimal valorJurosCorrecaoFaturamento){
+
+		AcumuladorValoresSpedPisCofins acumulador = getAcumulador(classeConsumo);
+		acumulador.addQtdDoctoJuros(1);
+		acumulador.addValDoctoJuros(valorJurosCorrecaoFaturamento);
+		addAcumulador(classeConsumo, acumulador);
+
+	}
+
+	/**
 	 * Método acumularValoresParcelamento
 	 * <p>
 	 * Esse método implementa [mgrb] descrever o que implemntar
@@ -273,6 +294,8 @@ public class TabelaIntegracaoConslDiaNfclHelper {
 	 */
 	public List<TabelaIntegracaoConslDiaNfcl> getTIConslDiaNfclConsolidados(BigDecimal aliquotaPis, BigDecimal aliquotaCofins){
 
+		BigDecimal base_100 = BigDecimal.valueOf(100);
+
 		List<TabelaIntegracaoConslDiaNfcl> retorno = new ArrayList<TabelaIntegracaoConslDiaNfcl>();
 		for(Integer codClasseConsumo : mapConslDiaNfcl.keySet()){
 			TabelaIntegracaoConslDiaNfcl tiConslDiaNfcl = getNovaInstanciaConslDiaNfcl(idMunicipio, dataContabil);
@@ -292,8 +315,8 @@ public class TabelaIntegracaoConslDiaNfclHelper {
 
 			tiConslDiaNfcl.setValorAcumuladoFornecimento(valFornecimento);
 			tiConslDiaNfcl.setValorServicoNaoTributados(acumulador.getValDoctoJuros().subtract(acumulador.getValCancDoctoJuros()));
-			tiConslDiaNfcl.setValorAcumuladoPisPasep(tiConslDiaNfcl.getValorAcumuladoFornecimento().multiply(aliquotaPis));
-			tiConslDiaNfcl.setValorAcumuladoCofins(tiConslDiaNfcl.getValorAcumuladoFornecimento().multiply(aliquotaCofins));
+			tiConslDiaNfcl.setValorAcumuladoPisPasep(tiConslDiaNfcl.getValorAcumuladoFornecimento().multiply(aliquotaPis).divide(base_100));
+			tiConslDiaNfcl.setValorAcumuladoCofins(tiConslDiaNfcl.getValorAcumuladoFornecimento().multiply(aliquotaCofins).divide(base_100));
 			retorno.add(tiConslDiaNfcl);
 		}
 		return retorno;

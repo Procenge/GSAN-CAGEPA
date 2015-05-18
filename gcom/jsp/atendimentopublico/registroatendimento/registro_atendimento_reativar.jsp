@@ -773,10 +773,27 @@
 											</html:select> <font size="1">&nbsp; </font></td>
 										</tr>
 										<tr>
+										
+										
 											<td class="style3"><strong>Unidade Destino:</strong></td>
-											<td colspan="3"><html:text property="idUnidadeDestino"
-												size="6" maxlength="8" tabindex="11"
-												onkeypress="validaEnterComMensagem(event, 'exibirReativarRegistroAtendimentoAction.do?validaUnidadeDestino=true', 'idUnidadeDestino','Unidade Destino');" />
+											<td colspan="3">
+											
+											<logic:present name="desabilitarUnidadeDestino">			
+			
+											<html:text property="idUnidadeDestino" size="8" maxlength="8" tabindex="12" readonly="true" />
+			
+											<img width="23" height="21" border="0" src="<bean:message key="caminho.imagens"/>pesquisa.gif" title="Pesquisar Unidade Destino" />
+			
+											<html:text property="descricaoUnidadeDestino" size="40" disabled="true" style="background-color:#EFEFEF; border:0; color: #000000"/>				
+											<img src="<bean:message key="caminho.imagens"/>limparcampo.gif" border="0" title="Apagar" />
+				
+									    	</logic:present>
+											
+											
+											<logic:notPresent name="desabilitarUnidadeDestino">
+											
+											
+											<html:text property="idUnidadeDestino" size="6" maxlength="8" tabindex="11" onkeypress="validaEnterComMensagem(event, 'exibirReativarRegistroAtendimentoAction.do?validaUnidadeDestino=true', 'idUnidadeDestino','Unidade Destino');" />
 											<img src="<bean:message key='caminho.imagens'/>pesquisa.gif"
 												width="23" height="21" style="cursor:hand;" name="imagem"
 												onclick="setUnidade(2); chamarPopup('exibirPesquisarUnidadeOrganizacionalAction.do', 'unidadeOrganizacional', null, null, 275, 480, '',document.forms[0].idUnidadeDestino);"
@@ -812,7 +829,14 @@
 												href="javascript:limparUnidadeDestino()"> <img border="0"
 												title="Apagar"
 												src="<bean:message key='caminho.imagens'/>limparcampo.gif" />
-											</a></td>
+											</a>
+											
+											</logic:notPresent>
+											
+											</td>
+											
+											
+											
 										</tr>
 										<tr>
 											<td class="style3"><strong>Parecer para a Unidade Destino:</strong></td>

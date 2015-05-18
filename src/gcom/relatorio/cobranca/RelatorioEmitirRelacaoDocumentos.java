@@ -81,15 +81,10 @@ import gcom.atendimentopublico.ordemservico.OrdemServico;
 import gcom.batch.Relatorio;
 import gcom.cadastro.cliente.ClienteImovel;
 import gcom.cadastro.cliente.ClienteRelacaoTipo;
-import gcom.cadastro.cliente.FiltroClienteImovel;
 import gcom.cadastro.imovel.Categoria;
 import gcom.cadastro.imovel.ImovelSubcategoria;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
-import gcom.cobranca.CobrancaAcaoAtividadeComando;
-import gcom.cobranca.CobrancaDocumento;
-import gcom.cobranca.CobrancaDocumentoItem;
-import gcom.cobranca.FiltroCobrancaAcaoAtividadeComando;
-import gcom.cobranca.FiltroCobrancaDocumentoItem;
+import gcom.cobranca.*;
 import gcom.fachada.Fachada;
 import gcom.relatorio.ConstantesRelatorios;
 import gcom.relatorio.RelatorioDataSource;
@@ -102,12 +97,7 @@ import gcom.util.Util;
 import gcom.util.agendadortarefas.AgendadorTarefas;
 import gcom.util.filtro.ParametroSimples;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * [UC3023] Manter Boleto Bancário
@@ -195,8 +185,7 @@ public class RelatorioEmitirRelacaoDocumentos
 		Integer idCobrancaAcao = comandoAtividadeAcaoComando.getCobrancaAcao().getId();
 		Collection<CobrancaDocumento> collCobrancaDocumento = null;
 
-		collCobrancaDocumento = fachada.pesquisarCobrancaDocumentoRelatorioEmitirRelacaoDocumentos(comandoAtividadeAcaoComando
-						.getId());
+		collCobrancaDocumento = fachada.pesquisarCobrancaDocumentoRelatorioEmitirRelacaoDocumentos(comandoAtividadeAcaoComando.getId());
 
 		// faz uma busca pelo CobrancaAcaoAtividadeComando
 		// para obter o valor da data de realização atualizada
@@ -371,19 +360,19 @@ public class RelatorioEmitirRelacaoDocumentos
 		relatorioEmitirRelacaoDocumentosBean.setMatriculaImovel(String.valueOf(cobrancaDocumento.getImovel().getId()));
 
 		// pesquisa cliente imovel
-		FiltroClienteImovel filtroClienteImovel = new FiltroClienteImovel();
-		filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.IMOVEL_ID, cobrancaDocumento.getImovel().getId()));
-		filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade("clienteRelacaoTipo");
-		filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade("cliente");
-		Collection<ClienteImovel> colecaoClienteImovel = fachada.pesquisar(filtroClienteImovel, ClienteImovel.class.getName());
 
-		if(colecaoClienteImovel != null && !colecaoClienteImovel.isEmpty()){
-			ClienteImovel clienteImovel = colecaoClienteImovel.iterator().next();
-			if(clienteImovel.getClienteRelacaoTipo() != null
-							&& clienteImovel.getClienteRelacaoTipo().getId().equals(ClienteRelacaoTipo.USUARIO)
-							&& clienteImovel.getDataFimRelacao() == null){
-				relatorioEmitirRelacaoDocumentosBean.setNomeCliente(clienteImovel.getCliente().getNome());
+		Collection<ClienteImovel> colecaoClienteImovel = fachada.pesquisarClientesImovel(cobrancaDocumento.getImovel().getId());
+
+		if(colecaoClienteImovel != null){
+			for(ClienteImovel clienteImovel : colecaoClienteImovel){
+
+				if(clienteImovel.getClienteRelacaoTipo() != null
+								&& clienteImovel.getClienteRelacaoTipo().getId().equals(ClienteRelacaoTipo.USUARIO)){
+					relatorioEmitirRelacaoDocumentosBean.setNomeCliente(clienteImovel.getCliente().getNome());
+					break;
+				}
 			}
+
 		}
 
 		relatorioEmitirRelacaoDocumentosBean.setValorDebito(Util.formatarMoedaReal(cobrancaDocumento.getValorDocumento()));

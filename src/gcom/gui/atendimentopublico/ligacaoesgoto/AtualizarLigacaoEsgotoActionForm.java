@@ -123,6 +123,8 @@ public class AtualizarLigacaoEsgotoActionForm
 
 	private String veioEncerrarOS;
 
+	private String consumoFixoPoco;
+
 	// Controle
 	private String redirect = "false";
 
@@ -452,4 +454,15 @@ public class AtualizarLigacaoEsgotoActionForm
 
 		this.indicadorCaixaGordura = indicadorCaixaGordura;
 	}
+
+	public String getConsumoFixoPoco(){
+
+		return consumoFixoPoco;
+	}
+
+	public void setConsumoFixoPoco(String consumoFixoPoco){
+
+		this.consumoFixoPoco = consumoFixoPoco;
+	}
+
 }

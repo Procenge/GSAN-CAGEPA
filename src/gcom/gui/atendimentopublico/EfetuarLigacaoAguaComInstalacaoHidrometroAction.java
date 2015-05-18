@@ -77,12 +77,7 @@
 package gcom.gui.atendimentopublico;
 
 import gcom.atendimentopublico.bean.IntegracaoComercialHelper;
-import gcom.atendimentopublico.ligacaoagua.CorteRegistroTipo;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAgua;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAguaDiametro;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAguaMaterial;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAguaPerfil;
-import gcom.atendimentopublico.ligacaoagua.RamalLocalInstalacao;
+import gcom.atendimentopublico.ligacaoagua.*;
 import gcom.atendimentopublico.ordemservico.OrdemServico;
 import gcom.atendimentopublico.ordemservico.ServicoNaoCobrancaMotivo;
 import gcom.cadastro.funcionario.Funcionario;
@@ -90,7 +85,6 @@ import gcom.cadastro.imovel.Imovel;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.micromedicao.RateioTipo;
 import gcom.micromedicao.hidrometro.Hidrometro;
 import gcom.micromedicao.hidrometro.HidrometroInstalacaoHistorico;
 import gcom.micromedicao.hidrometro.HidrometroLocalInstalacao;
@@ -486,8 +480,7 @@ public class EfetuarLigacaoAguaComInstalacaoHidrometroAction
 		}else{
 			hidrometroInstalacaoHistorico.setNumeroSelo(null);
 		}
-		// tipo de rateio
-		hidrometroInstalacaoHistorico.setRateioTipo(new RateioTipo(RateioTipo.RATEIO_POR_IMOVEL));
+
 		hidrometroInstalacaoHistorico.setDataImplantacaoSistema(new Date());
 
 		// indicador instalação substituição

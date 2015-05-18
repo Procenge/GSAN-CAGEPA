@@ -9,6 +9,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
 
@@ -100,6 +101,30 @@ public class Util {
 		DecimalFormat df = new DecimalFormat("#,###.##", new DecimalFormatSymbols(new Locale("pt", "BR")));
 		df.setParseBigDecimal(true);
 		return df.format(valor);
+	}
+
+	public static <T> Comparator<T> getComparator(){
+
+		return new Comparator<T>() {
+
+			public int compare(T o1, T o2){
+
+				if(o1 == null && o2 == null){
+					return 0;
+				}
+
+				if(o1 == null){
+					return -1;
+				}
+
+				if(o2 == null){
+					return 1;
+				}
+
+				return ((Comparable) o1).compareTo(((Comparable) o2));
+			}
+
+		};
 	}
 
 }

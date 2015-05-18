@@ -79,6 +79,8 @@ public class FiltrarFaturamentoGrupoAction
 		String indicadorVencimentoMesFatura = (String) form.get("indicadorVencimentoMesFatura");
 		String checkAtualizar = (String) form.get("checkAtualizar");
 		String tipoPesquisaDescricao = (String) form.get("tipoPesquisaDescricao");
+		String diaVencimentoDebitoAutomatico = (String) form.get("diaVencimentoDebitoAutomatico");
+		String diaVencimentoEntregaAlternativa = (String) form.get("diaVencimentoEntregaAlternativa");
 
 		FiltroFaturamentoGrupo filtroFaturamentoGrupo = new FiltroFaturamentoGrupo(FiltroFaturamentoGrupo.DESCRICAO);
 
@@ -134,6 +136,20 @@ public class FiltrarFaturamentoGrupoAction
 		if(!Util.isVazioOuBranco(diaVencimento)){
 			peloMenosUmParametroInformado = true;
 			filtroFaturamentoGrupo.adicionarParametro(new ParametroSimples(FiltroFaturamentoGrupo.DIA_VENCIMENTO, diaVencimento));
+		}
+
+		// Dia Vencimento Debito Automatico
+		if(!Util.isVazioOuBranco(diaVencimentoDebitoAutomatico)){
+			peloMenosUmParametroInformado = true;
+			filtroFaturamentoGrupo.adicionarParametro(new ParametroSimples(FiltroFaturamentoGrupo.DIA_VENCIMENTO_DEBITO_AUTOMATICO,
+							diaVencimentoDebitoAutomatico));
+		}
+
+		// Dia Vencimento Entrega Alternativa
+		if(!Util.isVazioOuBranco(diaVencimentoEntregaAlternativa)){
+			peloMenosUmParametroInformado = true;
+			filtroFaturamentoGrupo.adicionarParametro(new ParametroSimples(FiltroFaturamentoGrupo.DIA_VENCIMENTO_ENTREGA_ALTERNATIVA,
+							diaVencimentoEntregaAlternativa));
 		}
 
 		// Indicador Vencimeto Mes Fatura

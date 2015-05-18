@@ -125,6 +125,7 @@ public class GerarRelatorioRelacaoParcelamentoActionForm
 
 	private String descricaoUsuarioResponsavel;
 
+
 	/**
 	 * @return Retorna o campo dataParcelamentoFinal.
 	 */
@@ -430,5 +431,6 @@ public class GerarRelatorioRelacaoParcelamentoActionForm
 
 		this.valorDebitoInicial = valorDebitoInicial;
 	}
+
 
 }

@@ -312,9 +312,11 @@ function resizePageSemLink(largura, altura){
 
 
 			<tr>
-				<td align="left"><input type="button" name="fechar" class="bottonRightCol"
-					value="Voltar" tabindex="2" style="width: 70px;"
-					onclick="javascript:history.back();"></td>
+				<td align="left">
+				<input name="Submit222"
+								class="bottonRightCol" value="Voltar" type="button"
+								onclick="window.location.href='/gsan/exibirPesquisarItensMovimentoArrecadadorAction.do?arrecadadorMovimentoID=1022&limparPopup=OK';">	
+					</td>
 				<td align="right"><input type="button" name="fechar" class="bottonRightCol"
 					value="Fechar" tabindex="2" style="width: 70px;"
 					onclick="javascript:window.close();"></td>

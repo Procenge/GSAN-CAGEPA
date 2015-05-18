@@ -56,6 +56,7 @@ function limparOrigem(tipo){
 		   form.nomeSetorComercialEventual.value = "";
 	}
 	verificarHabilitarGrupoCobrancaEventual();
+
 }
 
 function limparComando(tipo){
@@ -80,6 +81,7 @@ function limparComando(tipo){
 		if (tipoConsulta == 'localidade') {
 			form.idLocalidadeEventual.value = codigoRegistro;
 			form.nomeLocalidadeEventual.value = descricaoRegistro;
+			verificarHabilitarSetor();
 		}
 		
 		if (tipoConsulta == 'setorComercial') {
@@ -162,6 +164,7 @@ function ativarCamposCronogramaOuEventual(campo){
 		form.idComandoEventual.disabled = true;
 		form.nomeComandoEventual.disabled = true;
 		
+		
 		//habilitar os comandos do cronograma
 		form.idCobrancaAcaoCronograma.disabled = false;
 		form.idCobrancaGrupoCronograma.disabled = false;
@@ -195,13 +198,14 @@ function ativarCamposCronogramaOuEventual(campo){
 		form.dataFinalEventual.disabled = false;
 		form.idComandoEventual.disabled = false;
 		form.nomeComandoEventual.disabled = false;
-		
+		verificarHabilitarSetor();
 		
 		form.idCobrancaGrupoEventual.focus();
 	}
 }
 
 function verificarHabilitarGrupoCobrancaEventual(){
+	//verificarHabilitarSetor();
 	form = document.forms[0];
 	if(form.idLocalidadeEventual.value == "" && form.idSetorComercialEventual.value == ""){
 		form.idCobrancaGrupoEventual.disabled = false;
@@ -231,12 +235,25 @@ function desabilitarLocalSetorEventual(habilitar){
 	form.ativoLocalidadeSetorEventual.value = habilitar;
 }
 
+
+function verificarHabilitarSetor(){
+	form = document.forms[0];
+	if(form.idLocalidadeEventual.value == ""){
+		form.idSetorComercialEventual.disabled = true;
+	} else {
+		form.idSetorComercialEventual.selectedIndex = 0;
+		form.idSetorComercialEventual.disabled = false;
+	}
+
+}
+
+
 -->
 </script>
 </head>
 
 <body leftmargin="5" topmargin="5"
-	onload="javascript:ativarTipoFiltroPadrao();mensagem('${requestScope.mensagem}');"
+	onload="javascript:ativarTipoFiltroPadrao();mensagem('${requestScope.mensagem}'); verificarHabilitarSetor();"
 	onreset="alet('O form foi limpo')">
 <html:form action="/filtrarEmitirOSCobrancaAction.do"
    name="FiltrarEmitirOSCobrancaActionForm"
@@ -256,7 +273,7 @@ function desabilitarLocalSetorEventual(habilitar){
 					</td>
 					<td>
 						<strong>
-							A&ccedil;&atilde;o do Cronograma:
+							A&ccedil;&atilde;o do Cronograma: 
 						</strong>
 					</td>
 				</tr>

@@ -79,7 +79,14 @@
 
 package gcom.gui.relatorio.micromedicao;
 
+import gcom.cadastro.localidade.*;
+import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
+import gcom.util.ConstantesSistema;
+import gcom.util.Util;
+import gcom.util.filtro.ParametroSimples;
+
+import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -101,8 +108,97 @@ public class ExibirGerarRelatorioQuadroHidrometrosAction
 		// Seta o mapeamento de retorno
 		ActionForward retorno = actionMapping.findForward("exibirGerarRelatorioQuadroHidrometros");
 
+		GerarRelatorioQuadroHidrometrosActionForm form = (GerarRelatorioQuadroHidrometrosActionForm) actionForm;
+
+		// Flag indicando que o usuário fez uma consulta a partir da tecla Enter
+		String objetoConsultaStr = httpServletRequest.getParameter("objetoConsulta");
+
+		Integer objetoConsulta = null;
+		if(objetoConsultaStr != null){
+			objetoConsulta = Integer.valueOf(objetoConsultaStr);
+		}
+
+		if(objetoConsulta != null){
+
+			this.pesquisarLocalidade(form);
+		}
+
+		this.pesquisarGerenciaRegional(httpServletRequest);
+		this.pesquisarUnidadeNegocio(httpServletRequest);
+
+
 		return retorno;
 
 	}
+
+	/**
+	 * @param httpServletRequest
+	 */
+	private void pesquisarGerenciaRegional(HttpServletRequest httpServletRequest){
+
+		FiltroGerenciaRegional filtroGerenciaRegional = new FiltroGerenciaRegional();
+
+		filtroGerenciaRegional.adicionarParametro(new ParametroSimples(FiltroQuadra.INDICADORUSO, ConstantesSistema.INDICADOR_USO_ATIVO));
+
+		filtroGerenciaRegional.setCampoOrderBy(FiltroGerenciaRegional.ID);
+
+		filtroGerenciaRegional.setConsultaSemLimites(true);
+
+		Collection colecaoGerenciaRegional = this.getFachada().pesquisar(filtroGerenciaRegional, GerenciaRegional.class.getName());
+
+		if(colecaoGerenciaRegional == null || colecaoGerenciaRegional.isEmpty()){
+			throw new ActionServletException("atencao.naocadastrado", null, "Gerência Regional");
+		}else{
+			httpServletRequest.setAttribute("colecaoGerenciaRegional", colecaoGerenciaRegional);
+		}
+	}
+
+	/**
+	 * @param httpServletRequest
+	 */
+	private void pesquisarUnidadeNegocio(HttpServletRequest httpServletRequest){
+
+		FiltroUnidadeNegocio filtroUnidadeNegocio = new FiltroUnidadeNegocio();
+
+		filtroUnidadeNegocio.adicionarParametro(new ParametroSimples(FiltroUnidadeNegocio.INDICADOR_USO,
+						ConstantesSistema.INDICADOR_USO_ATIVO));
+		filtroUnidadeNegocio.setCampoOrderBy(FiltroUnidadeNegocio.ID);
+		filtroUnidadeNegocio.setConsultaSemLimites(true);
+		Collection colecaoUnidadeNegocio = this.getFachada().pesquisar(filtroUnidadeNegocio, UnidadeNegocio.class.getName());
+
+		if(colecaoUnidadeNegocio == null || colecaoUnidadeNegocio.isEmpty()){
+			throw new ActionServletException("atencao.naocadastrado", null, "Unidade de Negócio");
+		}else{
+			httpServletRequest.setAttribute("colecaoUnidadeNegocio", colecaoUnidadeNegocio);
+		}
+	}
+
+
+
+	/**
+	 * @param form
+	 */
+	private void pesquisarLocalidade(GerarRelatorioQuadroHidrometrosActionForm form){
+
+		FiltroLocalidade filtroLocalidade = new FiltroLocalidade();
+		filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, (String) form.getIdLocalidade()));
+
+		// Recupera Localidade
+		Collection colecaoLocalidade = this.getFachada().pesquisar(filtroLocalidade, Localidade.class.getName());
+
+		if(colecaoLocalidade != null && !colecaoLocalidade.isEmpty()){
+
+			Localidade localidade = (Localidade) Util.retonarObjetoDeColecao(colecaoLocalidade);
+
+			form.setIdLocalidade(localidade.getId().toString());
+			form.setDescricaoLocalidade(localidade.getDescricao());
+
+		}else{
+			form.setIdLocalidade(null);
+			form.setDescricaoLocalidade("Localidade inexistente");
+		}
+
+	}
+
 
 }

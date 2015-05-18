@@ -1,10 +1,12 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <%@ taglib uri="/WEB-INF/struts-logic.tld" prefix="logic"%>
 <%@ taglib uri="/WEB-INF/struts-template.tld" prefix="template"%>
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
+
+<%@ page import="gcom.util.ConstantesSistema" %>
 
 <html:html>
 <head>
@@ -375,6 +377,23 @@
                     					</div>
                     				</td>
              					</tr>
+             					
+             					<tr> 
+                					<td>
+                						<strong>
+                							Tipo de Equipe :
+                						</strong>
+                					</td>
+                					<td colspan="3" align="right">
+                						<div align="left"> 
+                    						<html:select property="idEquipeTipo" tabindex="3">
+												<html:option value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;</html:option>
+												<html:options collection="colecaoEquipeTipo" labelProperty="descricao" property="id" />
+						                   	</html:select>
+                    					</div>
+                    				</td>
+              					</tr>
+             					
               					<tr> 
                 					<td height="24" colspan="3">
                 						<hr>

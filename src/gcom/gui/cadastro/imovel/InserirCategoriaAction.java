@@ -164,18 +164,26 @@ public class InserirCategoriaAction
 		BigDecimal vezesMediaAltoConsumo = new BigDecimal(categoriaActionForm.getVezesMediaAltoConsumo().replace(",", "."));
 		Integer consumoMedioEconomiaMes = Util.obterInteger(categoriaActionForm.getConsumoMedioEconomiaMes());
 		Short indicadorDeUso = ConstantesSistema.INDICADOR_USO_ATIVO;
+		Integer consumoViradaHidrometro=  categoriaActionForm.getConsumoViradaHidrometro();
+		Integer numeroVezesMediaViradaHidrometro= categoriaActionForm.getNumeroVezesMediaViradaHidrometro();
+		Short indicadorValidarViradaHidrometro = categoriaActionForm.getIndicadorValidarViradaHidrometro();
+		Integer quantidadeMaximoEconomiasValidacao = categoriaActionForm.getQuantidadeMaximoEconomiasValidacao();
 
+		
+		
 		// Tipo de Categoria
 		CategoriaTipo categoriaTipo = new CategoriaTipo();
 		categoriaTipo.setId(Util.obterInteger(tipoCategoria));
 
 		Categoria categoria = new Categoria(descricao, descricaoAbreviada, consumoMinimo, consumoEstouro, vezesMediaEstouro,
 						mediaBaixoConsumo, porcentagemMediaBaixoConsumo, consumoAlto, vezesMediaAltoConsumo, indicadorDeUso, new Date(),
-						categoriaTipo);
+						categoriaTipo, consumoViradaHidrometro, numeroVezesMediaViradaHidrometro, indicadorValidarViradaHidrometro);
 
+		categoria.setQuantidadeMaximoEconomiasValidacao(quantidadeMaximoEconomiasValidacao);
 		categoria.setConsumoMedioEconomiaMes(consumoMedioEconomiaMes);
 
 		// ------------ REGISTRAR TRANSAÇÃO ----------------
+
 		categoria.setOperacaoEfetuada(operacaoEfetuada);
 		categoria.adicionarUsuario(getUsuarioLogado(httpServletRequest), UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
 		registradorOperacao.registrarOperacao(categoria);

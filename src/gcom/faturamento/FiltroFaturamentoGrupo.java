@@ -132,5 +132,9 @@ public class FiltroFaturamentoGrupo
 
 	public final static String DIA_VENCIMENTO = "diaVencimento";
 
+	public final static String DIA_VENCIMENTO_DEBITO_AUTOMATICO = "diaVencimentoDebitoAutomatico";
+
+	public final static String DIA_VENCIMENTO_ENTREGA_ALTERNATIVA = "diaVencimentoEntregaAlternativa";
+
 	public final static String INDICADOR_VENCIMENTO_MES_FATURA = "indicadorVencimentoMesFatura";
 }

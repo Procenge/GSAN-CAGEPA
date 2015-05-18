@@ -76,63 +76,27 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
 function validaEnterCliente(tecla, caminhoActionReload, nomeCampo) {
 
 	var form = document.InserirNegativadorActionForm;
-	validaEnterComMensagem(tecla, caminhoActionReload, nomeCampo, "Código do Cliente");
-	
-	// Código comentado por não se achar conformidade com a descrição do caso de uso
-	// UC0656 Inserir Negativador
-	// Saulo Lima 5.6.2008
-//	if(form.codigoCliente.value.length > 0){
-//		form.codigoAgente.readOnly = true;
-//		form.codigoImovel.readOnly = true;
-//	} else {
-//		form.codigoAgente.readOnly = false;
-//		form.codigoImovel.readOnly = false;
-//	}
+	validaEnterComMensagem(tecla, caminhoActionReload, nomeCampo, "Código do Cliente");	
+
 }
 
 function validaEnterImovel(tecla, caminhoActionReload, nomeCampo) {
 
 	var form = document.InserirNegativadorActionForm;
 	validaEnterComMensagem(tecla, caminhoActionReload, nomeCampo, "Matrícula do Imóvel");
-
-	// Código comentado por não se achar conformidade com a descrição do caso de uso
-	// UC0656 Inserir Negativador
-	// Saulo Lima 5.6.2008
-//	if(form.codigoImovel.value.length > 0){
-//		form.codigoAgente.readOnly = true;
-//		form.codigoCliente.readOnly = true;
-//		form.inscricaoEstadual.readOnly = true;
-//	} else {
-//		form.codigoAgente.readOnly = false;
-//		form.codigoCliente.readOnly = false;
-//		form.inscricaoEstadual.readOnly = false;
-//	}	
 }
 
 function validaEnterAgente(tecla, caminhoActionReload, nomeCampo) {
 
 	var form = document.InserirNegativadorActionForm;
 	validaEnterComMensagem(tecla, caminhoActionReload, nomeCampo, "Código do Agente");
-	
-	// Código comentado por não se achar conformidade com a descrição do caso de uso
-	// UC0656 Inserir Negativador
-	// Saulo Lima 5.6.2008
-//	if(form.codigoAgente.value.length > 0){
-//		form.codigoImovel.readOnly = true;
-//		form.codigoCliente.readOnly = true;
-//		form.inscricaoEstadual.readOnly = true;
-//	} else {
-//		form.codigoImovel.readOnly = false;
-//		form.codigoCliente.readOnly = false;
-//		form.inscricaoEstadual.readOnly = false;
-//	}	
 }
 
 function limparForm(tipo){
     var form = document.InserirNegativadorActionForm;
     if(tipo == 'imovel')
     {
-//    	form.codigoCliente.readOnly = false;
+
 		var ObjCodigoImovel = returnObject(form,"codigoImovel");
 		var ObjInscricaoImovel = returnObject(form,"inscricaoImovel");
 		ObjCodigoImovel.value = "";
@@ -142,7 +106,7 @@ function limparForm(tipo){
 	}
 	if(tipo == 'cliente')
     {
-//    	form.codigoImovel.readOnly = false;
+
 		var ObjCodigoCliente = returnObject(form,"codigoCliente");
 		var ObjNomeCliente = returnObject(form,"nomeCliente");
 		ObjCodigoCliente.value = "";
@@ -154,23 +118,6 @@ function limparForm(tipo){
 function validaCampos(){
 	var form = document.InserirNegativadorActionForm;
 
-	//if (form.okImovel.value != 'true'){
-		//alert('Matrícula do Imóvel não preenchida corretamente');
-		//return false;
-	//}
-
-	//if (form.okCliente.value != 'true'){
-		//alert('Código do Cliente não preenchido corretamente');
-		//return false;
-	//}
-	
-	// Código comentado por não se achar conformidade com a descrição do caso de uso
-	// UC0656 Inserir Negativador
-	// Saulo Lima 5.6.2008
-//	if (form.okAgente.value != 'true'){
-//		alert('Código do Agente não preenchido corretamente');
-//		return false;
-//	}
 	if (!validateLong(form)){
 		return false;
 	}

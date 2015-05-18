@@ -87,8 +87,10 @@ import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.util.*;
 
@@ -143,10 +145,30 @@ public class ExibirAtualizarCriterioCobrancaAction
 
 			String idCriterioCobranca = null;
 
+			boolean indicadorFaturamentoTitularDebito = false;
+			try{
+				indicadorFaturamentoTitularDebito = ParametroFaturamento.P_INDICADOR_FATURAMENTO_ATUAL_TITULAR_DEBITO_IMOVEL.executar()
+								.equals(ConstantesSistema.SIM.toString());
+
+				if(indicadorFaturamentoTitularDebito){
+					httpServletRequest.setAttribute("indicadorFaturamentoTitularDebito", "S");
+				}else{
+					httpServletRequest.removeAttribute("indicadorFaturamentoTitularDebito");
+				}
+			}catch(ControladorException e){
+				e.printStackTrace();
+			}
+
 			FiltroClienteRelacaoTipo filtroClienteRelacaoTipo = new FiltroClienteRelacaoTipo();
 
 			filtroClienteRelacaoTipo.adicionarParametro(new ParametroSimples(FiltroClienteRelacaoTipo.INDICADOR_USO,
 							ConstantesSistema.INDICADOR_USO_ATIVO));
+
+			if(indicadorFaturamentoTitularDebito){
+				filtroClienteRelacaoTipo.adicionarParametro(new ParametroSimples(FiltroClienteRelacaoTipo.CLIENTE_RELACAO_TIPO_ID,
+								ClienteRelacaoTipo.RESPONSAVEL));
+			}
+
 			filtroClienteRelacaoTipo.setCampoOrderBy(FiltroClienteRelacaoTipo.DESCRICAO);
 			List<ClienteRelacaoTipo> colecaoClienteRelacaoTipo = (List<ClienteRelacaoTipo>) fachada.pesquisar(filtroClienteRelacaoTipo,
 							ClienteRelacaoTipo.class.getName());
@@ -156,10 +178,12 @@ public class ExibirAtualizarCriterioCobrancaAction
 				throw new ActionServletException("atencao.pesquisa.nenhumresultado", null, "Tipo da Relação do Cliente");
 			}else{
 
-				ClienteRelacaoTipo clienteRelacaoTipo = new ClienteRelacaoTipo("Cliente com Nome na Conta",
-								ConstantesSistema.INDICADOR_USO_DESATIVO, new Date());
-				clienteRelacaoTipo.setId(ConstantesSistema.NUMERO_NAO_INFORMADO);
-				colecaoClienteRelacaoTipo.add(clienteRelacaoTipo);
+				if(!indicadorFaturamentoTitularDebito){
+					ClienteRelacaoTipo clienteRelacaoTipo = new ClienteRelacaoTipo("Cliente com Nome na Conta",
+									ConstantesSistema.INDICADOR_USO_DESATIVO, new Date());
+					clienteRelacaoTipo.setId(ConstantesSistema.NUMERO_NAO_INFORMADO);
+					colecaoClienteRelacaoTipo.add(clienteRelacaoTipo);
+				}
 
 				// Ordenar a coleção por mais de um campo
 				List sortFields = new ArrayList();
@@ -245,6 +269,7 @@ public class ExibirAtualizarCriterioCobrancaAction
 
 				criterioCobrancaActionForm.setOpcaoAcaoImovelSit("" + cobrancaCriterio.getIndicadorEmissaoImovelSituacaoCobranca());
 				criterioCobrancaActionForm.setOpcaoContasRevisao("" + cobrancaCriterio.getIndicadorEmissaoContaRevisao());
+				criterioCobrancaActionForm.setOpcaoDividaAtiva("" + cobrancaCriterio.getIndicadorDividaAtiva());
 				criterioCobrancaActionForm.setOpcaoAcaoImovelDebitoMesConta("" + cobrancaCriterio.getIndicadorEmissaoDebitoContaMes());
 				criterioCobrancaActionForm.setOpcaoAcaoInquilinoDebitoMesConta(""
 								+ cobrancaCriterio.getIndicadorEmissaoInquilinoDebitoContaMes());
@@ -267,6 +292,7 @@ public class ExibirAtualizarCriterioCobrancaAction
 
 				criterioCobrancaActionForm.setComCpf("" + cobrancaCriterio.getIndicadorComCpf());
 				criterioCobrancaActionForm.setComTelefone("" + cobrancaCriterio.getIndicadorComTelefone());
+				criterioCobrancaActionForm.setCriterioCobranca("" + cobrancaCriterio.getIndicadorCriterioCobranca());
 
 				// recupera a coleção de cobrança critério linha
 				FiltroCobrancaCriterioLinha filtroCobrancaCriterioLinha = new FiltroCobrancaCriterioLinha();

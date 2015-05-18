@@ -76,24 +76,23 @@
 
 package gcom.gui.util;
 
+import gcom.cadastro.atendimento.AtendimentoProcedimento;
+import gcom.cadastro.atendimento.FiltroAtendimentoProcedimento;
 import gcom.fachada.Fachada;
 import gcom.seguranca.acesso.Abrangencia;
 import gcom.seguranca.acesso.Grupo;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesConfig;
+import gcom.util.ConstantesSistema;
 import gcom.util.FachadaException;
 import gcom.util.Util;
+import gcom.util.filtro.ParametroSimples;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Map;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.*;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -172,9 +171,11 @@ public class FiltroSegurancaAcesso
 					FachadaException e = (FachadaException) sx.getCause();
 					e.setUrlBotaoVoltar("/gsan/exibirEncerrarOrdemServicoAction.do?carregarCampos="
 									+ "&processoAutorizacaoServicosAssociados=&idServicoTipo=");
+					// Correção da OC1395832
 				}
 
 			}
+
 			throw sx;
 		}catch(IOException iox){
 			throw iox;
@@ -189,6 +190,7 @@ public class FiltroSegurancaAcesso
 
 		// Recupera o usuário que está logado da sessão
 		Usuario usuarioLogado = null;
+		String enderecoURLChamada = enderecoURL;
 		if(sessao != null) usuarioLogado = (Usuario) sessao.getAttribute("usuarioLogado");
 
 		Abrangencia abrangencia = (Abrangencia) request.getAttribute(Abrangencia.ABRANGENCIA);
@@ -206,6 +208,21 @@ public class FiltroSegurancaAcesso
 		// Cria uma instância da fachada
 		Fachada fachada = Fachada.getInstancia();
 
+		boolean bFlagAtendimentoPreenchimentoOK = false;
+		if(sessao.getAttribute(enderecoURL) != null && sessao.getAttribute(enderecoURL).equals("OK")){
+			bFlagAtendimentoPreenchimentoOK = true;
+			sessao.removeAttribute(enderecoURL);
+		}else{
+			if(request.getParameter("menuprincipal") == null){
+				bFlagAtendimentoPreenchimentoOK = true;
+			}else{
+				if(!request.getParameter("menuprincipal").toString().toUpperCase().equals("SIM")){
+					bFlagAtendimentoPreenchimentoOK = true;
+				}
+			}
+		}
+
+
 		/*
 		 * Caso a url seja de um processo de abas
 		 * recupera a url pelo parametro do wizard adicionando o ".do" no final
@@ -215,7 +232,34 @@ public class FiltroSegurancaAcesso
 		}
 
 		// Verifica se a url requisitada pelo usuário é uma operação ou uma funcionalidade
-		String tipoURL = fachada.verificarTipoURL(enderecoURL);
+		Map<Integer, String> maptipoURL = fachada.verificarTipoURL(enderecoURL);
+		String tipoURL = null;
+		Integer codigoFuncionalidade = null;
+
+		if(maptipoURL != null){
+			for(Integer chaveMapTipoURL : maptipoURL.keySet()){
+				codigoFuncionalidade = chaveMapTipoURL;
+
+				tipoURL = maptipoURL.get(chaveMapTipoURL);
+			}
+		}
+
+		// Verifica se existe Procedimento de Atendimentos Associados a esta funcionalidade
+		// existindo e chamando a tela de atendimento para validar os itens
+		boolean existeAtendimentoProcedimento = false;
+		if(tipoURL != null && tipoURL.equalsIgnoreCase("funcionalidade") && !bFlagAtendimentoPreenchimentoOK){
+			FiltroAtendimentoProcedimento filtroAtendimentoProcedimento = new FiltroAtendimentoProcedimento();
+			filtroAtendimentoProcedimento.adicionarParametro(new ParametroSimples(FiltroAtendimentoProcedimento.INDICADOR_USO,
+							ConstantesSistema.SIM));
+			filtroAtendimentoProcedimento.adicionarParametro(new ParametroSimples(FiltroAtendimentoProcedimento.FUNCIONALIDADE_ID,
+							codigoFuncionalidade));
+
+			Collection<AtendimentoProcedimento> colecaoAtendimentoProcedimento = fachada.pesquisar(filtroAtendimentoProcedimento,
+							AtendimentoProcedimento.class.getName());
+			if(colecaoAtendimentoProcedimento.size() > 0){
+				existeAtendimentoProcedimento = true;
+			}
+		}
 
 		// Caso o usuário esteja logado e não tenha clicado no link de logoff
 		if(usuarioLogado != null && !enderecoURL.contains("Logoff") && !enderecoURL.contains("Login")
@@ -223,6 +267,10 @@ public class FiltroSegurancaAcesso
 						&& !enderecoURL.contains("executarBatch") && !enderecoURL.toLowerCase().contains("pesquisar")
 						&& !enderecoURL.toLowerCase().contains("relatorio") && !enderecoURL.contains("efetuarAlteracaoSenhaAction")
 						&& !enderecoURL.contains("carregarParametrosAction") && !enderecoURL.contains("exibirInformarMelhoriasGcomAction")
+						&& !enderecoURL.contains("exibirInformarImovelComentarioAction")
+						&& !enderecoURL.contains("informarImovelComentarioAction")
+						&& !enderecoURL.contains("exibirAtualizarImovelComentarioAction")
+						&& !enderecoURL.contains("atualizarImovelComentarioAction")
 						&& !enderecoURL.contains("informarMelhoriasGcomAction")
 						&& !enderecoURL.contains("exibirEfetuarAlteracaoSenhaSimplificadaAction")
 						&& !enderecoURL.contains("efetuarAlteracaoSenhaSimplificadaAction")
@@ -231,7 +279,8 @@ public class FiltroSegurancaAcesso
 						&& !enderecoURL.contains("exibirConsultarDadosPagamentoAction")
 						&& !enderecoURL.contains("processarRequisicaoDipositivoMovelAction")
 						&& !enderecoURL.contains("servicosManutencaoAction") && !enderecoURL.contains("processarRequisicaoGisAction")
-						&& !enderecoURL.contains("processarRequisicaoExtratoDebitoAction")){
+						&& !enderecoURL.contains("processarRequisicaoExtratoDebitoAction")
+						&& !enderecoURL.contains("exibirInserirAtendimentoAction") && !enderecoURL.contains("inserirAtendimentoAction")){
 
 			// Caso o tipo da url não esteja nulo
 			if(tipoURL != null){
@@ -248,7 +297,15 @@ public class FiltroSegurancaAcesso
 						request.setAttribute("URL", enderecoURL);
 						rd.forward(request, response);
 					}else{
-						filterChain.doFilter(request, response);
+						if(!existeAtendimentoProcedimento){
+							filterChain.doFilter(request, response);
+						}else{
+							RequestDispatcher rd = filterConfig.getServletContext().getRequestDispatcher(
+											"/exibirInserirAtendimentoAction.do");
+							request.setAttribute("idFuncionalidade", codigoFuncionalidade);
+							request.setAttribute("enderecoURLChamada", enderecoURLChamada);
+							rd.forward(request, response);
+						}
 					}
 					// Caso o usuário tenha solicitado uma operação
 				}else if(tipoURL.equalsIgnoreCase("operacao")){
@@ -269,10 +326,26 @@ public class FiltroSegurancaAcesso
 												"/jsp/util/acesso_negado_abrangencia.jsp");
 								rd.forward(request, response);
 							}else{
-								filterChain.doFilter(request, response);
+								if(!existeAtendimentoProcedimento){
+									filterChain.doFilter(request, response);
+								}else{
+									RequestDispatcher rd = filterConfig.getServletContext().getRequestDispatcher(
+													"/exibirInserirAtendimentoAction.do");
+									request.setAttribute("idFuncionalidade", codigoFuncionalidade);
+									request.setAttribute("enderecoURLChamada", enderecoURLChamada);
+									rd.forward(request, response);
+								}
 							}
 						}else{
-							filterChain.doFilter(request, response);
+							if(!existeAtendimentoProcedimento){
+								filterChain.doFilter(request, response);
+							}else{
+								RequestDispatcher rd = filterConfig.getServletContext().getRequestDispatcher(
+												"/exibirInserirAtendimentoAction.do");
+								request.setAttribute("idFuncionalidade", codigoFuncionalidade);
+								request.setAttribute("enderecoURLChamada", enderecoURLChamada);
+								rd.forward(request, response);
+							}
 						}
 					}
 				}
@@ -295,6 +368,10 @@ public class FiltroSegurancaAcesso
 						|| enderecoURL.contains("efetuarAlteracaoSenhaAction") //
 						|| enderecoURL.contains("carregarParametrosAction") //
 						|| enderecoURL.contains("exibirInformarMelhoriasGcomAction") //
+						|| enderecoURL.contains("exibirInformarImovelComentarioAction") //
+						|| enderecoURL.contains("informarImovelComentarioAction") //
+						|| enderecoURL.contains("exibirAtualizarImovelComentarioAction") //
+						|| enderecoURL.contains("atualizarImovelComentarioAction")
 						|| enderecoURL.contains("informarMelhoriasGcomAction") //
 						|| enderecoURL.contains("exibirEfetuarAlteracaoSenhaSimplificadaAction") //
 						|| enderecoURL.contains("efetuarAlteracaoSenhaSimplificadaAction") //
@@ -314,9 +391,17 @@ public class FiltroSegurancaAcesso
 						|| enderecoURL.contains("processarRequisicaoDipositivoMovelAction") //
 						|| enderecoURL.contains("servicosManutencaoAction") //
 						|| enderecoURL.contains("processarRequisicaoGisAction") //
-						|| enderecoURL.contains("processarRequisicaoExtratoDebitoAction")){
+						|| enderecoURL.contains("processarRequisicaoExtratoDebitoAction")
+						|| enderecoURL.contains("exibirInserirAtendimentoAction") || enderecoURL.contains("inserirAtendimentoAction")){
 
-			filterChain.doFilter(request, response);
+			if(!existeAtendimentoProcedimento){
+				filterChain.doFilter(request, response);
+			}else{
+				RequestDispatcher rd = filterConfig.getServletContext().getRequestDispatcher("/exibirInserirAtendimentoAction.do");
+				request.setAttribute("idFuncionalidade", codigoFuncionalidade);
+				request.setAttribute("enderecoURLChamada", enderecoURLChamada);
+				rd.forward(request, response);
+			}
 		}else{
 
 			RequestDispatcher rd = filterConfig.getServletContext().getRequestDispatcher("/jsp/util/acesso_negado_funcionalidade.jsp");

@@ -64,6 +64,13 @@
         length="2"
     />
     
+    <property
+        name="numeroConsumoFixoPoco"
+        type="java.lang.Integer"
+        column="lesg_nnconsumofixopoco"
+        length="9"
+    />
+    
 
     <!-- associations -->
     <!-- bi-directional one-to-one association to Imovel -->

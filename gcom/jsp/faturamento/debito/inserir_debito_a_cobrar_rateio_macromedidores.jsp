@@ -56,6 +56,11 @@
 					alert('Informe o Mês/Ano Faturamento');
 					concluir = false;
 				}
+				
+				if(form.tipoDebitosRateio.selectedIndex == 0)   { 
+					alert('Informe o Tipo de débitos de rateio');
+					concluir = false;
+				}
 							
 				if(concluir==true){
 					var retorno = CheckboxNaoVazioMensagemGenerico("Nenhum registro selecionado para inserção", document.InserirDebitoACobrarRateioMacromedidoresActionForm.idImoveisCondominio);
@@ -382,12 +387,21 @@
 								<td>&nbsp;</td>
 							</tr>
 							<tr>
-								<td  width="200"><strong>Tipo de débitos de rateio :<strong></strong></strong></td>
-								<td>
-									<html:text property="tipoDebitosRateio"
-												readonly="true"
-												style="background-color:#EFEFEF; border:0; color: #000000"
-												size="40" />
+								<td  width="200"><strong>Tipo de débitos de rateio :<strong><font color="#FF0000">*</font></strong></strong></td>
+								<td align="right">
+									<div align="left">
+										<span class="style1">
+											<html:select property="tipoDebitosRateio" style="width: 200px; " tabindex="11" size="1">
+												<html:option
+													value="">&nbsp;
+												</html:option>
+												
+												<logic:present name="colecaoDebitoTipoRateio" scope="request">
+													<html:options collection="colecaoDebitoTipoRateio" labelProperty="descricao" property="id"/>
+												</logic:present>
+											</html:select>
+										</span>
+									</div>
 								</td>
 							</tr>							
 							<tr>

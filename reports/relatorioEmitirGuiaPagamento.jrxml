@@ -36,6 +36,7 @@
 	<parameter name="P_JUCOR" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_FONE" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_INSC_EST" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="getArrayJRDetail" class="java.lang.Object"/>
 	<field name="getNomeCliente" class="java.lang.String"/>
@@ -404,23 +405,6 @@
 						key="rectangle-20"/>
 					<graphicElement stretchType="NoStretch"/>
 				</rectangle>
-				<staticText>
-					<reportElement
-						x="8"
-						y="541"
-						width="58"
-						height="16"
-						key="staticText-53"/>
-					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-</box>
-					<textElement verticalAlignment="Top">
-						<font fontName="Courier New" size="9"/>
-					</textElement>
-				<text><![CDATA[MATRÍCULA]]></text>
-				</staticText>
 				<line direction="TopDown">
 					<reportElement
 						x="1"
@@ -843,6 +827,23 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{getRepresentacaoNumericaCodBarraFormatada}]]></textFieldExpression>
 				</textField>
+				<textField isStretchWithOverflow="true" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="6"
+						y="542"
+						width="65"
+						height="12"
+						key="textField-12"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Top">
+						<font fontName="Courier New" pdfFontName="Helvetica" size="9"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS}]]></textFieldExpression>
+				</textField>
 			</band>
 			</groupHeader>
 			<groupFooter>
@@ -880,23 +881,6 @@
 						key="ellipse-1"/>
 					<graphicElement stretchType="NoStretch"/>
 				</ellipse>
-				<staticText>
-					<reportElement
-						x="5"
-						y="66"
-						width="58"
-						height="12"
-						key="staticText-1"/>
-					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="0.0" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-</box>
-					<textElement verticalAlignment="Bottom">
-						<font fontName="Courier New" pdfFontName="Helvetica-Bold" size="8" isBold="true"/>
-					</textElement>
-				<text><![CDATA[MATRÍCULA]]></text>
-				</staticText>
 				<rectangle radius="5" >
 					<reportElement
 						x="82"
@@ -1110,7 +1094,7 @@
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
 						x="2"
-						y="76"
+						y="77"
 						width="76"
 						height="14"
 						key="textField"/>
@@ -1246,6 +1230,23 @@
 						<font fontName="Courier New" pdfFontName="Courier-Bold" size="6" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[( $P{P_FONE}.equals("-1") ? "" : "Informações e/ou Reclamações - Ligue " + $P{P_FONE})]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="5"
+						y="68"
+						width="58"
+						height="10"
+						key="textField-11"/>
+					<box>					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+</box>
+					<textElement verticalAlignment="Top">
+						<font fontName="Courier New" pdfFontName="Helvetica" size="8"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS}]]></textFieldExpression>
 				</textField>
 			</band>
 		</pageHeader>

@@ -227,7 +227,8 @@ public class ControladorUsuarioSEJB
 	 *            grupos que o usuario faz parte
 	 * @throws ControladorException
 	 */
-	public void inserirUsuario(Usuario usuario, Integer[] idGrupos) throws ControladorException{
+	public void inserirUsuario(Usuario usuario, Integer[] idGrupos, Collection<UsuarioAcesso> colecaoUsuarioAcesso)
+					throws ControladorException{
 
 		/*
 		 * [UC0107] Registrar Transação
@@ -365,6 +366,26 @@ public class ControladorUsuarioSEJB
 			}
 		}
 
+		if(!Util.isVazioOrNulo(colecaoUsuarioAcesso)){
+
+			for(UsuarioAcesso usuarioAcesso : colecaoUsuarioAcesso){
+
+				if(usuarioAcesso.getIndicadorSelecionado() == 1){
+					usuarioAcesso.setUsuario(usuario);
+					usuarioAcesso.setIndicadorUso(ConstantesSistema.SIM);
+					usuarioAcesso.setUltimaAlteracao(new Date());
+
+					try{
+						// salvando o UsuarioAcesso
+						repositorioUtil.inserir(usuarioAcesso);
+					}catch(ErroRepositorioException ex){
+						sessionContext.setRollbackOnly();
+						throw new ControladorException("erro.sistema", ex);
+					}
+				}
+			}
+		}
+
 		// Envia e-mail para o usuario informando usuario e senha
 		if(usuario.getDescricaoEmail() != null && !usuario.getDescricaoEmail().equals("")){
 			String mensagem = "Login:" + usuario.getLogin() + " \n" + "Senha:" + senhaGerada;
@@ -391,7 +412,8 @@ public class ControladorUsuarioSEJB
 	 *            grupos que o usuario faz parte
 	 * @throws ControladorException
 	 */
-	public void atualizarUsuario(Usuario usuario, Integer[] idGrupos, String processo, Usuario usuarioLogado) throws ControladorException{
+	public void atualizarUsuario(Usuario usuario, Integer[] idGrupos, String processo, Usuario usuarioLogado,
+					Collection<UsuarioAcesso> colecaoUsuarioAcesso, String indicadorHorarioAcessoRestrito) throws ControladorException{
 
 		/*
 		 * [UC0107] Registrar Transação
@@ -405,6 +427,7 @@ public class ControladorUsuarioSEJB
 
 		OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
 		operacaoEfetuada.setOperacao(operacao);
+		operacaoEfetuada.setIdObjetoPrincipal(usuario.getId());
 
 		// removendo os usuarios grupos
 		FiltroUsuario filtroUsuario = new FiltroUsuario();
@@ -643,6 +666,87 @@ public class ControladorUsuarioSEJB
 			}
 		}
 
+		if(!Util.isVazioOrNulo(colecaoUsuarioAcesso)){
+
+			Collection colecaoUsuarioAcessoRemover = this.pesquisarUsuarioAcesso(usuario.getId());
+			this.getControladorUtil().removerColecaoObjetos(colecaoUsuarioAcessoRemover);
+			
+			for(UsuarioAcesso usuarioAcesso : colecaoUsuarioAcesso){
+
+				if(usuarioAcesso.getIndicadorSelecionado() == 1){
+					usuarioAcesso.setUsuario(usuario);
+					usuarioAcesso.setIndicadorUso(ConstantesSistema.SIM);
+					usuarioAcesso.setUltimaAlteracao(new Date());
+
+					try{
+						// salvando o UsuarioAcesso
+						repositorioUtil.inserir(usuarioAcesso);
+					}catch(ErroRepositorioException ex){
+						sessionContext.setRollbackOnly();
+						throw new ControladorException("erro.sistema", ex);
+					}
+				}
+			}
+		}else if(indicadorHorarioAcessoRestrito != null && indicadorHorarioAcessoRestrito.equals("2")){
+			Collection colecaoUsuarioAcessoRemover = this.pesquisarUsuarioAcesso(usuario.getId());
+			this.getControladorUtil().removerColecaoObjetos(colecaoUsuarioAcessoRemover);
+		}
+	}
+
+	public Collection<UsuarioAcesso> atualizarHorarioAcessoRestrito(Map<String, String[]> mapParametros) throws ControladorException{
+
+		Collection<UsuarioAcesso> retorno = new ArrayList<UsuarioAcesso>();
+
+		for(int i = 1; i <= 7; i++){
+
+			String dia = "diaSemana";
+			String[] valor = mapParametros.get(dia + i);
+
+			if(valor != null && valor[0] != null){
+
+				String inicio = "horaInicio";
+				String fim = "horaFim";
+
+				String[] horaInicio = mapParametros.get(inicio + i);
+				String[] horaFim = mapParametros.get(fim + i);
+
+				this.validaHorarios(horaInicio, horaFim);
+
+				Date horaInicial = Util.converterStringParaHoraMinuto(horaInicio[0]);
+				Date horaFinal = Util.converterStringParaHoraMinuto(horaFim[0]);
+
+				UsuarioAcesso usuarioAcessoDia = new UsuarioAcesso(i, Util.obterDiaSemanaDescricao(i), horaInicial, horaFinal, 1);
+
+				retorno.add(usuarioAcessoDia);
+			}else{
+
+				Date data = Util.converteStringParaDate("01/01/1900", true);
+
+				Date horaInicial = Util.formatarDataInicial(data);
+				Date horaFinal = Util.formatarDataFinal(data);
+
+				UsuarioAcesso usuarioAcessoDia = new UsuarioAcesso(i, Util.obterDiaSemanaDescricao(i), horaInicial, horaFinal, 2);
+
+				retorno.add(usuarioAcessoDia);
+			}
+		}
+
+		return retorno;
+	}
+
+	private void validaHorarios(String[] horaInicio, String[] horaFim){
+
+		if(horaInicio == null || horaInicio.length == 0 || !Util.validaHoraMinuto(horaInicio[0])){
+			throw new ActionServletException("atencao.usuario.hora_inicio");
+		}
+
+		if(horaFim == null || horaFim.length == 0 || !Util.validaHoraMinuto(horaFim[0])){
+			throw new ActionServletException("atencao.usuario.hora_fim");
+		}
+
+		if(!Util.compararHoraMinuto(horaInicio[0], horaFim[0], "<")){
+			throw new ActionServletException("atencao.usuario.hora_inicio_fim");
+		}
 	}
 
 	/**
@@ -838,6 +942,57 @@ public class ControladorUsuarioSEJB
 
 			registradorOperacao.registrarOperacao(usuarioParaRemover);
 			this.getControladorUtil().remover(usuarioParaRemover);
+		}
+	}
+
+	/**
+	 * Ativa/Inativa usuario(s)
+	 * [UC0231] Manter Usuario
+	 * 
+	 * @param idsUsuario
+	 * @param usuario
+	 */
+	public void ativarInativarUsuario(String[] idsUsuario, Usuario usuario, boolean ativar) throws ControladorException{
+
+		UsuarioSituacao usuarioSituacao = new UsuarioSituacao();
+		if(ativar){
+			usuarioSituacao.setId(UsuarioSituacao.ATIVO);
+		}else{
+			usuarioSituacao.setId(UsuarioSituacao.INATIVO);
+		}
+
+		// removendo os usuarios grupos
+		for(int i = 0; i < idsUsuario.length; i++){
+
+			// ------------ REGISTRAR TRANSAÇÃO ----------------
+			RegistradorOperacao registradorOperacao = new RegistradorOperacao(Operacao.OPERACAO_USUARIO_ATUALIZAR,
+							new UsuarioAcaoUsuarioHelper(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+			Operacao operacao = new Operacao();
+			operacao.setId(Operacao.OPERACAO_USUARIO_ATUALIZAR);
+
+			OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
+			operacaoEfetuada.setOperacao(operacao);
+
+			// Parte da verificação do filtro
+			FiltroUsuario filtroUsuario = new FiltroUsuario();
+
+			// filtroUsuario.setCampoOrderBy(FiltroUsuario.NOME_USUARIO);
+			filtroUsuario.adicionarParametro(new ParametroSimples(FiltroUsuario.ID, idsUsuario[i]));
+			filtroUsuario.adicionarCaminhoParaCarregamentoEntidade("unidadeOrganizacional");
+			filtroUsuario.adicionarCaminhoParaCarregamentoEntidade("funcionario.unidadeOrganizacional");
+			Collection colecaoUsuario = this.getControladorUtil().pesquisar(filtroUsuario, Usuario.class.getName());
+
+			Usuario usuarioParaInativar = (Usuario) Util.retonarObjetoDeColecao(colecaoUsuario);
+
+			// atualiza situação
+			usuarioParaInativar.setUsuarioSituacao(usuarioSituacao);
+
+			usuarioParaInativar.setUltimaAlteracao(new Date());
+			usuarioParaInativar.setOperacaoEfetuada(operacaoEfetuada);
+			usuarioParaInativar.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+
+			registradorOperacao.registrarOperacao(usuarioParaInativar);
+			this.getControladorUtil().atualizar(usuarioParaInativar);
 		}
 	}
 
@@ -1689,6 +1844,50 @@ public class ControladorUsuarioSEJB
 			sessionContext.setRollbackOnly();
 			throw new ControladorException("erro.sistema", ex);
 		}
+	}
+
+	/**
+	 * Método que cria uma coleção de UsuarioAcesso
+	 * 
+	 * @author Saulo Lima
+	 * @date 16/09/2014
+	 */
+	public Collection<UsuarioAcesso> criarColecaoUsuarioAcesso(int indicadorSelecionado) throws ControladorException{
+
+		Collection<UsuarioAcesso> retorno = new ArrayList<UsuarioAcesso>();
+
+		Date data = Util.converteStringParaDate("01/01/1900", true);
+
+		Date horaInicial = Util.formatarDataInicial(data);
+		Date horaFinal = Util.formatarDataFinal(data);
+
+		for(int i = 1; i <= 7; i++){
+			UsuarioAcesso usuarioAcessoDia = new UsuarioAcesso(i, Util.obterDiaSemanaDescricao(i), horaInicial, horaFinal,
+							indicadorSelecionado);
+
+			retorno.add(usuarioAcessoDia);
+		}
+
+		return retorno;
+	}
+
+	/**
+	 * Método que pesquisa as retrições de horário de acesso ao sistema de um usuário
+	 * 
+	 * @author Saulo Lima
+	 * @date 20/09/2014
+	 */
+	public Collection<UsuarioAcesso> pesquisarUsuarioAcesso(Integer idUsuario) throws ControladorException{
+
+		Collection<UsuarioAcesso> retorno = null;
+		try{
+			retorno = repositorioUsuario.pesquisarUsuarioAcesso(idUsuario);
+		}catch(ErroRepositorioException ex){
+			sessionContext.setRollbackOnly();
+			throw new ControladorException("erro.sistema", ex);
+		}
+
+		return retorno;
 	}
 
 }

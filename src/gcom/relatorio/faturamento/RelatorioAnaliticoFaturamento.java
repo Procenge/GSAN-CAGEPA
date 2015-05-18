@@ -174,19 +174,19 @@ public class RelatorioAnaliticoFaturamento
 			rel.setDescricaoSetorComercial(setorComercial.getDescricao());
 
 			RelatorioAnaliticoFaturamentoBean relatorioAnaliticoFaturamentoBean = new RelatorioAnaliticoFaturamentoBean(rel.getIdImovel()
-							+ "", rel.getConsumoAgua() != null ? new BigDecimal(rel.getConsumoAgua()) : BigDecimal.ZERO, rel
-							.getConsumoRateioAgua() != null ? new BigDecimal(rel.getConsumoRateioAgua()) : BigDecimal.ZERO, rel
-							.getValorAgua() != null ? rel.getValorAgua() : BigDecimal.ZERO,
-							rel.getConsumoEsgoto() != null ? new BigDecimal(rel.getConsumoEsgoto()) : BigDecimal.ZERO, rel
-											.getConsumoRateioEsgoto() != null ? new BigDecimal(rel.getConsumoRateioEsgoto())
-											: BigDecimal.ZERO, rel.getValorEsgoto() != null ? rel.getValorEsgoto() : BigDecimal.ZERO, rel
-											.getDebitos() != null ? rel.getDebitos() : BigDecimal.ZERO,
-							rel.getValorCreditos() != null ? rel.getValorCreditos() : BigDecimal.ZERO, rel.getValorImposto() != null ? rel
-											.getValorImposto() : BigDecimal.ZERO, valorTotal != null ? valorTotal : BigDecimal.ZERO,
-							valorTotalGeral != null ? valorTotalGeral + "" : "0", rel.getCodigoSetorComercial() != null ? Util
-											.adicionarZerosEsquedaNumero(3, rel.getCodigoSetorComercial() + "") : "0",
-							rel.getInscricao() != null ? rel.getInscricao() + "" : "0", rel.getIdLocalidade() != null ? Util
-.adicionarZerosEsquedaNumero(3, rel.getIdLocalidade() + "") : "0",
+							+ "", rel.getConsumoAgua() != null ? new BigDecimal(rel.getConsumoAgua()) : BigDecimal.ZERO,
+							rel.getConsumoRateioAgua() != null ? new BigDecimal(rel.getConsumoRateioAgua()) : BigDecimal.ZERO,
+							rel.getValorAgua() != null ? rel.getValorAgua() : BigDecimal.ZERO,
+							rel.getConsumoEsgoto() != null ? new BigDecimal(rel.getConsumoEsgoto()) : BigDecimal.ZERO,
+							rel.getConsumoRateioEsgoto() != null ? new BigDecimal(rel.getConsumoRateioEsgoto()) : BigDecimal.ZERO,
+							rel.getValorEsgoto() != null ? rel.getValorEsgoto() : BigDecimal.ZERO,
+							rel.getDebitos() != null ? rel.getDebitos() : BigDecimal.ZERO,
+							rel.getValorCreditos() != null ? rel.getValorCreditos() : BigDecimal.ZERO,
+							rel.getValorImposto() != null ? rel.getValorImposto() : BigDecimal.ZERO, valorTotal != null ? valorTotal
+											: BigDecimal.ZERO, valorTotalGeral != null ? valorTotalGeral + "" : "0",
+							rel.getCodigoSetorComercial() != null ? Util.adicionarZerosEsquedaNumero(3, rel.getCodigoSetorComercial() + "")
+											: "0", rel.getInscricao() != null ? rel.getInscricao() + "" : "0",
+							rel.getIdLocalidade() != null ? Util.adicionarZerosEsquedaNumero(3, rel.getIdLocalidade() + "") : "0",
 							codigoBarra, rel.getDescricaoLocalidade() != null ? rel.getDescricaoLocalidade() : "",
 							rel.getDescricaoSetorComercial() != null ? rel.getDescricaoSetorComercial() : "");
 
@@ -227,6 +227,7 @@ public class RelatorioAnaliticoFaturamento
 
 		parametros.put("imagem", sistemaParametro.getImagemRelatorio());
 		parametros.put("P_NM_ESTADO", sistemaParametro.getNomeEstado());
+
 		parametros.put("imagemConta", sistemaParametro.getImagemConta());
 		parametros.put("mesAno", mesAno);
 		parametros.put("vencimento", vencimento);

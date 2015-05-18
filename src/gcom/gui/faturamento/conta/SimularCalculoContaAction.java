@@ -93,10 +93,14 @@ import gcom.faturamento.consumotarifa.ConsumoTarifa;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.micromedicao.ParametroMicromedicao;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -149,46 +153,74 @@ public class SimularCalculoContaAction
 		Integer consumoFaturadoAgua = null;
 		Integer consumoFaturadoEsgoto = null;
 		Date dataLeituraAnterior = null;
-		Date dataLeituraAtual = null;
+		Date dataLeituraAtual = null ;
 
-		// Verifica qual atributo do action form foi informado no JSP
-		if(simularCalculoContaActionForm.getMesAnoReferencia() != null
-						&& !simularCalculoContaActionForm.getMesAnoReferencia().equalsIgnoreCase("")){
-
-			String mes = simularCalculoContaActionForm.getMesAnoReferencia().substring(0, 2);
-			String ano = simularCalculoContaActionForm.getMesAnoReferencia().substring(3, 7);
-
-			anoMesReferencia = Util.formatarMesAnoParaAnoMes(mes + ano);
-
-			// Obtém as datas de leitura anterior e atual da tabela
-			// FATURAMENTO_ATIVIDADE_CRONOGRAMA.
-			if(Util.verificarIdNaoVazio(simularCalculoContaActionForm.getFaturamentoGrupoID())){
-
-				dataLeituraAnterior = this.buscarDataLeituraCronograma(Util.converterStringParaInteger(simularCalculoContaActionForm
-								.getFaturamentoGrupoID()), true, Util.formatarMesAnoComBarraParaAnoMes(simularCalculoContaActionForm
-								.getMesAnoReferencia()), fachada);
-				dataLeituraAtual = this.buscarDataLeituraCronograma(Util.converterStringParaInteger(simularCalculoContaActionForm
-								.getFaturamentoGrupoID()), false, Util.formatarMesAnoComBarraParaAnoMes(simularCalculoContaActionForm
-								.getMesAnoReferencia()), fachada);
-			}
-
-			if(dataLeituraAnterior == null){
-
-				dataLeituraAnterior = Util.converteStringParaDate("01/" + simularCalculoContaActionForm.getMesAnoReferencia());
-				simularCalculoContaActionForm.setDataLeituraAnteriorMedicaoHistoricoAgua("01/"
-								+ simularCalculoContaActionForm.getMesAnoReferencia());
-			}
-
-			if(dataLeituraAtual == null){
-
-				String ultimoDiaMes = Util.obterUltimoDiaMes(Util.converterStringParaInteger(mes).intValue(), Util
-								.converterStringParaInteger(ano).intValue());
-
-				dataLeituraAtual = Util.converteStringParaDate(ultimoDiaMes + "/" + simularCalculoContaActionForm.getMesAnoReferencia());
-				simularCalculoContaActionForm.setDataLeituraAtualMedicaoHistoricoAgua(ultimoDiaMes + "/"
-								+ simularCalculoContaActionForm.getMesAnoReferencia());
+		if (simularCalculoContaActionForm.getDataLeituraAnteriorMedicaoHistoricoAgua() != null
+						&& !simularCalculoContaActionForm.getDataLeituraAnteriorMedicaoHistoricoAgua().equals("") ) {
+			
+			SimpleDateFormat fmtDate = new SimpleDateFormat("dd/MM/yyyy");
+			try{
+				dataLeituraAnterior = fmtDate.parse(simularCalculoContaActionForm.getDataLeituraAnteriorMedicaoHistoricoAgua());
+			}catch(ParseException e){
+				throw new ActionServletException("erro.sistema");
 			}
 		}
+		
+		if (simularCalculoContaActionForm.getDataLeituraAtualMedicaoHistoricoAgua() != null
+						&& !simularCalculoContaActionForm.getDataLeituraAtualMedicaoHistoricoAgua().equals("") ) {
+
+			SimpleDateFormat fmtDate = new SimpleDateFormat("dd/MM/yyyy");
+			try{
+				dataLeituraAtual = fmtDate.parse(simularCalculoContaActionForm.getDataLeituraAtualMedicaoHistoricoAgua());
+			}catch(ParseException e){
+				throw new ActionServletException("erro.sistema");
+			}
+			
+		}
+
+		String mes = simularCalculoContaActionForm.getMesAnoReferencia().substring(0, 2);
+		String ano = simularCalculoContaActionForm.getMesAnoReferencia().substring(3, 7);
+
+		anoMesReferencia = Util.formatarMesAnoParaAnoMes(mes + ano);
+		
+		// Verifica qual atributo do action form foi informado no JSP
+//		if(simularCalculoContaActionForm.getMesAnoReferencia() != null
+//						&& !simularCalculoContaActionForm.getMesAnoReferencia().equalsIgnoreCase("")){
+//
+//			String mes = simularCalculoContaActionForm.getMesAnoReferencia().substring(0, 2);
+//			String ano = simularCalculoContaActionForm.getMesAnoReferencia().substring(3, 7);
+//
+//			anoMesReferencia = Util.formatarMesAnoParaAnoMes(mes + ano);
+//
+//			// Obtém as datas de leitura anterior e atual da tabela
+//			// FATURAMENTO_ATIVIDADE_CRONOGRAMA.
+//			if(Util.verificarIdNaoVazio(simularCalculoContaActionForm.getFaturamentoGrupoID())){
+//
+//				dataLeituraAnterior = this.buscarDataLeituraCronograma(Util.converterStringParaInteger(simularCalculoContaActionForm
+//								.getFaturamentoGrupoID()), true, Util.formatarMesAnoComBarraParaAnoMes(simularCalculoContaActionForm
+//								.getMesAnoReferencia()), fachada);
+//				dataLeituraAtual = this.buscarDataLeituraCronograma(Util.converterStringParaInteger(simularCalculoContaActionForm
+//								.getFaturamentoGrupoID()), false, Util.formatarMesAnoComBarraParaAnoMes(simularCalculoContaActionForm
+//								.getMesAnoReferencia()), fachada);
+//			}
+//
+//			if(dataLeituraAnterior == null){
+//
+//				dataLeituraAnterior = Util.converteStringParaDate("01/" + simularCalculoContaActionForm.getMesAnoReferencia());
+//				simularCalculoContaActionForm.setDataLeituraAnteriorMedicaoHistoricoAgua("01/"
+//								+ simularCalculoContaActionForm.getMesAnoReferencia());
+//			}
+//
+//			if(dataLeituraAtual == null){
+//
+//				String ultimoDiaMes = Util.obterUltimoDiaMes(Util.converterStringParaInteger(mes).intValue(), Util
+//								.converterStringParaInteger(ano).intValue());
+//
+//				dataLeituraAtual = Util.converteStringParaDate(ultimoDiaMes + "/" + simularCalculoContaActionForm.getMesAnoReferencia());
+//				simularCalculoContaActionForm.setDataLeituraAtualMedicaoHistoricoAgua(ultimoDiaMes + "/"
+//								+ simularCalculoContaActionForm.getMesAnoReferencia());
+//			}
+//		}
 
 		if(simularCalculoContaActionForm.getLigacaoAguaSituacaoID() != null
 						&& !simularCalculoContaActionForm.getLigacaoAguaSituacaoID().equalsIgnoreCase("")){
@@ -320,7 +352,7 @@ public class SimularCalculoContaAction
 		colecaoCalcularValoresAguaEsgotoHelper = fachada.calcularValoresAguaEsgoto(new Integer(anoMesReferencia), ligacaoAguaSituacaoID,
 						ligacaoEsgotoSituacaoID, indicadorFaturamentoAgua, indicadorFaturamentoEsgoto, colecaoCategoriaOUSubcategoria,
 						consumoFaturadoAgua, consumoFaturadoEsgoto, consumoMinimoLigacao, dataLeituraAnterior, dataLeituraAtual,
-						percentualEsgoto, consumoTarifa.getId(), 21720002);
+						percentualEsgoto, consumoTarifa.getId(), 21720002, null);
 
 		if(colecaoCalcularValoresAguaEsgotoHelper != null){
 
@@ -355,6 +387,50 @@ public class SimularCalculoContaAction
 
 		BigDecimal valorTotalEsgoto = this.obterValorTotalCategorias(colecaoCalcularValoresAguaEsgotoHelperPorCategoria,
 						ConstantesSistema.CALCULAR_ESGOTO);
+		
+		String pAcumularConsumoEsgotoPoco = null;
+		try{
+
+			pAcumularConsumoEsgotoPoco = ParametroMicromedicao.P_ACUMULA_CONSUMO_ESGOTO_POCO.executar();
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
+
+		// Caso a empresa não acumule o volume do poço com o volume da ligação de água para cálculo
+		// do valor de esgoto
+		if(pAcumularConsumoEsgotoPoco.equals(ConstantesSistema.NAO.toString())){
+
+			BigDecimal valorDebitoPoco = BigDecimal.ZERO;
+			String consumoFixoPoco = simularCalculoContaActionForm.getConsumoFixoPoco();
+
+			if(!Util.isVazioOuBranco(consumoFixoPoco)){
+
+				Collection<CalcularValoresAguaEsgotoHelper> valoresContaPoco = fachada.calcularValoresAguaEsgoto(new Integer(
+								anoMesReferencia), LigacaoAguaSituacao.POTENCIAL, ligacaoEsgotoSituacaoID, ConstantesSistema.NAO,
+								indicadorFaturamentoEsgoto, colecaoCategoriaOUSubcategoria,
+								0, Util.obterInteger(consumoFixoPoco), consumoMinimoLigacao, dataLeituraAnterior, dataLeituraAtual,
+ percentualEsgoto, consumoTarifa.getId(),
+								21720002, null);
+
+				for(Iterator iteratorValoresPoco = valoresContaPoco.iterator(); iteratorValoresPoco.hasNext();){
+
+					CalcularValoresAguaEsgotoHelper calcularValoresAguaEsgotoHelperPoco = (CalcularValoresAguaEsgotoHelper) iteratorValoresPoco
+									.next();
+
+					if(calcularValoresAguaEsgotoHelperPoco.getValorFaturadoEsgotoCategoria() != null){
+
+						valorDebitoPoco = valorDebitoPoco.add(calcularValoresAguaEsgotoHelperPoco.getValorFaturadoEsgotoCategoria());
+					}
+				}
+			}
+
+			if(valorDebitoPoco.compareTo(BigDecimal.ZERO) == 1){
+
+				httpServletRequest.setAttribute("valorDebitoPoco", valorDebitoPoco);
+				valorTotalCategorias = valorTotalCategorias.add(valorDebitoPoco);
+			}
+		}
 
 		httpServletRequest.setAttribute("valorTotalAgua", valorTotalAgua);
 		httpServletRequest.setAttribute("valorTotalEsgoto", valorTotalEsgoto);

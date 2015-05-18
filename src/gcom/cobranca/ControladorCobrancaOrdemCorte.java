@@ -331,6 +331,11 @@ public class ControladorCobrancaOrdemCorte
 				RelatorioOrdemCorteModelo5 relatorio = new RelatorioOrdemCorteModelo5(usuario);
 				relatorio.addParametro("colecaoHelperOrdenada", colecaoHelperOrdenada);
 				relatorio.addParametro("tipoFormatoRelatorio", TarefaRelatorio.TIPO_PDF);
+				String descricaoArquivo = "";
+				if(cobrancaAcaoAtividadeComando.getDescricaoTitulo() != null){
+					descricaoArquivo = cobrancaAcaoAtividadeComando.getDescricaoTitulo();
+				}
+				relatorio.addParametro("descricaoArquivo", descricaoArquivo);
 				this.getControladorBatch().iniciarProcessoRelatorio(relatorio);
 
 			}
@@ -502,7 +507,7 @@ public class ControladorCobrancaOrdemCorte
 
 				// Nome Cliente
 				if(parametros[8] != null){
-					helper.setNomeClienteUsuario((String) parametros[8]);
+					helper.setNomeClienteUsuario(((String) parametros[8]).trim());
 				}
 
 				// Número Hidrômetro
@@ -545,6 +550,13 @@ public class ControladorCobrancaOrdemCorte
 					Integer idServicoTipo = (Integer) parametros[16];
 
 					helper.setIdTipoServico(idServicoTipo.toString());
+				}
+
+				// Id Cliente
+				if(parametros[17] != null){
+					Integer iCliente = (Integer) parametros[17];
+
+					helper.setIdClienteUsuario(iCliente);
 				}
 
 				colecaoDocumentoOrdemCorteModelo5Helper.add(helper);

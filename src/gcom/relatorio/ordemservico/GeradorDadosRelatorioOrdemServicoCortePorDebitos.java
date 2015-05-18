@@ -15,11 +15,7 @@ import gcom.util.ControladorException;
 import gcom.util.Util;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author isilva
@@ -60,6 +56,7 @@ public class GeradorDadosRelatorioOrdemServicoCortePorDebitos
 
 				Date dataAtual = new Date();
 				Integer anoMesVencimentoFinal = Util.formataAnoMes(dataAtual);
+				int indicadorCalcularAcrescimosSucumbenciaAnterior = 2;
 
 				SistemaParametro sistemaParametro = getControladorUtil().pesquisarParametrosDoSistema();
 
@@ -68,7 +65,8 @@ public class GeradorDadosRelatorioOrdemServicoCortePorDebitos
 								anoMesVencimentoFinal.toString(), Util.criarData(1, 1, 1900), dataAtual, ConstantesSistema.SIM.intValue(),
 								ConstantesSistema.NAO.intValue(), ConstantesSistema.NAO.intValue(), ConstantesSistema.NAO.intValue(),
 								ConstantesSistema.NAO.intValue(), ConstantesSistema.NAO.intValue(), ConstantesSistema.NAO.intValue(), true,
-								sistemaParametro, null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM);
+								sistemaParametro, null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM,
+								indicadorCalcularAcrescimosSucumbenciaAnterior, null);
 
 				Integer qtdeDebitos = Integer.valueOf("0");
 				BigDecimal valorDebitos = new BigDecimal("0.00");

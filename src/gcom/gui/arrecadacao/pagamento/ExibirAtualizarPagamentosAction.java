@@ -76,13 +76,7 @@
 
 package gcom.gui.arrecadacao.pagamento;
 
-import gcom.arrecadacao.pagamento.FiltroGuiaPagamentoPrestacao;
-import gcom.arrecadacao.pagamento.FiltroPagamento;
-import gcom.arrecadacao.pagamento.FiltroPagamentoSituacao;
-import gcom.arrecadacao.pagamento.GuiaPagamento;
-import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao;
-import gcom.arrecadacao.pagamento.Pagamento;
-import gcom.arrecadacao.pagamento.PagamentoSituacao;
+import gcom.arrecadacao.pagamento.*;
 import gcom.cadastro.cliente.Cliente;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.localidade.Localidade;
@@ -95,11 +89,7 @@ import gcom.faturamento.credito.CreditoOrigem;
 import gcom.faturamento.credito.CreditoTipo;
 import gcom.faturamento.credito.CreditoTipoOrigem;
 import gcom.faturamento.credito.FiltroCreditoTipoOrigem;
-import gcom.faturamento.debito.DebitoACobrar;
-import gcom.faturamento.debito.DebitoACobrarHistorico;
-import gcom.faturamento.debito.DebitoTipo;
-import gcom.faturamento.debito.FiltroDebitoACobrar;
-import gcom.faturamento.debito.FiltroDebitoACobrarHistorico;
+import gcom.faturamento.debito.*;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.PermissaoEspecial;
@@ -112,11 +102,7 @@ import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -647,6 +633,7 @@ public class ExibirAtualizarPagamentosAction
 									|| pagamentoSituacaoAtual.getId().equals(PagamentoSituacao.VALOR_EM_EXCESSO)
 									|| pagamentoSituacaoAtual.getId().equals(PagamentoSituacao.PAGAMENTO_DUPLICADO)
 									|| pagamentoSituacaoAtual.getId().equals(PagamentoSituacao.PAGAMENTO_A_MAIOR)
+									|| pagamentoSituacaoAtual.getId().equals(PagamentoSituacao.PAGAMENTO_A_MENOR)
 									|| pagamentoSituacaoAtual.getId().equals(PagamentoSituacao.PAGAMENTO_DOC_PAGO)
 									|| pagamentoSituacaoAtual.getId().equals(PagamentoSituacao.PAGAMENTO_DOC_CANCELADO)
 									|| pagamentoSituacaoAtual.getId().equals(PagamentoSituacao.PAGAMENTO_DOC_PARCELADO)

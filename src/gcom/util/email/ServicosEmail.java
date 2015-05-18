@@ -82,6 +82,7 @@ package gcom.util.email;
 import gcom.cadastro.sistemaparametro.bean.DadosEnvioEmailHelper;
 import gcom.fachada.Fachada;
 import gcom.util.ConstantesConfig;
+import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.parametrizacao.ParametroGeral;
 
@@ -273,6 +274,20 @@ public final class ServicosEmail {
 
 			if(!Util.isVazioOuBrancoOuZero(porta)){
 				props.put("mail.smtp.port", porta);
+
+				String indicadorSmtpSocketFactory = null;
+				try{
+					indicadorSmtpSocketFactory = ParametroGeral.P_PORTA_SERVIDOR_SMTP_SOCKET_FACTORY_INDICADOR.executar();
+				}catch(Exception e){
+					LOGGER.error("Falha no carregamento dos parametros de email.", e);
+				}
+				if(indicadorSmtpSocketFactory != null && indicadorSmtpSocketFactory.equals(ConstantesSistema.ATIVO)){
+					props.put("mail.smtp.socketFactory.port", porta);
+					// props.put("mail.smtp.socketFactory.port", "587");
+					props.put("mail.smtp.auth", "true");
+					// props.put("mail.smtp.socketFactory.fallback", "false");
+					// props.put("mail.smtp.starttls.enable", "true");
+				}
 			}
 
 			Session session = Session.getDefaultInstance(props, null);
@@ -323,6 +338,17 @@ public final class ServicosEmail {
 
 			if(!Util.isVazioOuBrancoOuZero(porta)){
 				props.put("mail.smtp.port", porta);
+
+				String indicadorSmtpSocketFactory = null;
+				try{
+					indicadorSmtpSocketFactory = ParametroGeral.P_PORTA_SERVIDOR_SMTP_SOCKET_FACTORY_INDICADOR.executar();
+				}catch(Exception e){
+					LOGGER.error("Falha no carregamento dos parametros de email.", e);
+				}
+				if(indicadorSmtpSocketFactory != null && indicadorSmtpSocketFactory.equals(ConstantesSistema.ATIVO)){
+					props.put("mail.smtp.socketFactory.port", porta);
+					props.put("mail.smtp.auth", "true");
+				}
 			}
 
 			Session session = Session.getDefaultInstance(props, null);

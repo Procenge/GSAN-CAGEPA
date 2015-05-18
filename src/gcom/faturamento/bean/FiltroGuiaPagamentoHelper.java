@@ -37,6 +37,18 @@ public class FiltroGuiaPagamentoHelper {
 
 	private Integer numeroPagina;
 
+	private Integer numeroRA;
+
+	public Integer getNumeroRA(){
+
+		return numeroRA;
+	}
+
+	public void setNumeroRA(Integer numeroRA){
+
+		this.numeroRA = numeroRA;
+	}
+
 	public Integer getIdGuiaPagamento(){
 
 		return idGuiaPagamento;

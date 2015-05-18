@@ -29,6 +29,10 @@
 		<action name="TransferenciaDebitoCreditoDadosImovelActionForm" 
 			type="gcom.gui.cobranca.TransferirDebitoCreditoAction"
 			validate="true" path="/transferirDebitoCreditoAction"/>
+			
+		<action name="TransferenciaDebitoCreditoDadosImovelActionForm" 
+			type="gcom.gui.cobranca.GerarRelatorioTransferenciaAction"
+			validate="true" path="/gerarRelatorioTransferenciaAction"/>			
 
 	</action-mappings>
 

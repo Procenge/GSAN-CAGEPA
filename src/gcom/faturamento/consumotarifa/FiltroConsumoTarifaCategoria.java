@@ -132,10 +132,16 @@ public class FiltroConsumoTarifaCategoria
 	 */
 	public final static String CATEGORIA_ID = "categoria.id";
 
+	public final static String CATEGORIA = "categoria";
+
 	public final static String CATEGORIA_Descricao = "categoria.descricao";
 
 	public final static String SUBCATEGORIA_ID = "subCategoria.id";
 
 	public final static String CONSUMO_VIGENCIA_ID = "consumoTarifaVigencia.id";
+
+	public final static String CONSUMO_VIGENCIA = "consumoTarifaVigencia";
+
+	public final static String CONSUMO_VIGENCIA_CONSUMO_TARIFA = "consumoTarifaVigencia.consumoTarifa";
 
 }

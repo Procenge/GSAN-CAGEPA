@@ -138,6 +138,9 @@ public class AtualizarTipoServicoAction
 		String terceirizado = atualizarTipoServicoActionForm.getServicoTerceirizado();
 		String fiscalizacao = atualizarTipoServicoActionForm.getIndicadorFiscalizacaoInfracao();
 		String vistoria = atualizarTipoServicoActionForm.getIndicadorVistoria();
+		String indicadorAfericaoHidrometro = atualizarTipoServicoActionForm.getIndicadorAfericaoHidrometro();
+		String indicadorPagamentoAntecipado = atualizarTipoServicoActionForm.getIndicadorPagamentoAntecipado();
+
 		String codigo = atualizarTipoServicoActionForm.getCodigoServico();
 		String tempoMedio = atualizarTipoServicoActionForm.getTempoMedioExecucao();
 		String debitoTipo = atualizarTipoServicoActionForm.getIdTipoDebito();
@@ -151,6 +154,9 @@ public class AtualizarTipoServicoAction
 		String percentualRemuneracao = atualizarTipoServicoActionForm.getPercentualRemuneracao();
 		String prazoExecucao = atualizarTipoServicoActionForm.getPrazoExecucao();
 		String tipoRemuneracao = atualizarTipoServicoActionForm.getTipoRemuneracao();
+		String numeroMaximoVisitasImprodutivasPermitidas = atualizarTipoServicoActionForm.getNumeroMaximoVisitasImprodutivasPermitidas();
+		String numeroMaximoGuiaPrestacaoAntecipadaPermitidas = atualizarTipoServicoActionForm
+						.getNumeroMaximoGuiaPrestacaoAntecipadaPermitidas();
 
 		String idOrdemServicoLayout = atualizarTipoServicoActionForm.getIdOrdemServicoLayout();
 		String indicadorDeslocamento = atualizarTipoServicoActionForm.getIndicadorDeslocamento();
@@ -162,6 +168,7 @@ public class AtualizarTipoServicoAction
 		String indicadorVala = atualizarTipoServicoActionForm.getIndicadorVala();
 		String indicadorOrdemSeletiva = atualizarTipoServicoActionForm.getIndicadorOrdemSeletiva();
 		String indicadorServicoCritico = atualizarTipoServicoActionForm.getIndicadorServicoCritico();
+		String indicadorPermiteAlterarValor = atualizarTipoServicoActionForm.getIndicadorPermiteAlterarValor();
 
 		String indicadorAtividadeUnica = atualizarTipoServicoActionForm.getIndicadorAtividadeUnica();
 		Short indicadorGerarHistoricoImovel = atualizarTipoServicoActionForm.getIndicadorGerarHistoricoImovel();
@@ -185,6 +192,8 @@ public class AtualizarTipoServicoAction
 		servicoTipo.setIndicadorTerceirizado(Short.valueOf(terceirizado));
 		servicoTipo.setIndicadorFiscalizacaoInfracao(Short.valueOf(fiscalizacao));
 		servicoTipo.setIndicadorVistoria(Short.valueOf(vistoria));
+		servicoTipo.setIndicadorAfericaoHidrometro(Short.valueOf(indicadorAfericaoHidrometro));
+		servicoTipo.setIndicadorPagamentoAntecipado(Short.valueOf(indicadorPagamentoAntecipado));
 		servicoTipo.setIndicadorFiscalizacaoInfracao(Short.valueOf(fiscalizacao));
 		servicoTipo.setCodigoServicoTipo(codigo);
 		servicoTipo.setTempoMedioExecucao(Short.valueOf(tempoMedio));
@@ -206,6 +215,7 @@ public class AtualizarTipoServicoAction
 		servicoTipo.setIndicadorVala(Integer.parseInt(indicadorVala));
 		servicoTipo.setIndicadorOrdemSeletiva(Integer.parseInt(indicadorOrdemSeletiva));
 		servicoTipo.setIndicadorServicoCritico(Integer.parseInt(indicadorServicoCritico));
+		servicoTipo.setIndicadorPermiteAlterarValor(Short.parseShort(indicadorPermiteAlterarValor));
 		servicoTipo.setIndicadorGerarHistoricoImovel(indicadorGerarHistoricoImovel);
 
 		// Verificando se tipo debito informado é válido
@@ -306,6 +316,18 @@ public class AtualizarTipoServicoAction
 		}else{
 			servicoTipo.setPrazoExecucao(null);
 		}
+
+		if(numeroMaximoVisitasImprodutivasPermitidas != null && !numeroMaximoVisitasImprodutivasPermitidas.equals("")){
+			servicoTipo.setNumeroMaximoVisitasImprodutivasPermitidas(Integer.valueOf(numeroMaximoVisitasImprodutivasPermitidas));
+		}else{
+			servicoTipo.setNumeroMaximoVisitasImprodutivasPermitidas(null);
+		}
+		
+		if(numeroMaximoGuiaPrestacaoAntecipadaPermitidas != null && !numeroMaximoGuiaPrestacaoAntecipadaPermitidas.equals("")){
+			servicoTipo.setNumeroMaximoGuiaPrestacaoAntecipadaPermitidas(Short.valueOf(numeroMaximoGuiaPrestacaoAntecipadaPermitidas));
+		}else{
+			servicoTipo.setNumeroMaximoVisitasImprodutivasPermitidas(null);
+		}		
 
 		if(tipoRemuneracao != null && !tipoRemuneracao.equals("")){
 			servicoTipo.setTipoRemuneracao(Short.parseShort(tipoRemuneracao));

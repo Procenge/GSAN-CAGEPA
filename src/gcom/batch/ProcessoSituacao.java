@@ -106,6 +106,8 @@ public class ProcessoSituacao
 
 	public static final int EXECUCAO_CANCELADA = 7;
 
+	public static final int AGUARDANDO_PROCESSAMENTO = 8;
+
 	/** identifier field */
 	/*
 	 * private Integer id;

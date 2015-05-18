@@ -119,6 +119,8 @@ public class HidrometroRelatorioOSHelper
 
 	private String anoFabricacaoHidrometro;
 
+	private String descricaoLocalInstalacao;
+
 	public String getHidrometroCapacidade(){
 
 		return hidrometroCapacidade;
@@ -268,4 +270,15 @@ public class HidrometroRelatorioOSHelper
 
 		this.anoFabricacaoHidrometro = anoFabricacaoHidrometro;
 	}
+
+	public String getDescricaoLocalInstalacao(){
+
+		return descricaoLocalInstalacao;
+	}
+
+	public void setDescricaoLocalInstalacao(String descricaoLocalInstalacao){
+
+		this.descricaoLocalInstalacao = descricaoLocalInstalacao;
+	}
+
 }

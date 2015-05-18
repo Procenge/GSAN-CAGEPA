@@ -259,6 +259,12 @@ public class Relatorio2ViaContaBean
 
 	private String consumoMedido;
 
+	private String valorImpostoPisCofins;
+
+	private String anoQuitacaoDebitoAnual;
+
+	private String mensagemSubstitutaCodigoBarras;
+
 	public Relatorio2ViaContaBean(String indicadorPrimeiraPagina, Collection colecaoDetail, String descricaoLocalidade,
 									String matriculaImovelFormatada, String dataVencimento, String nomeCliente, String enderecoImovel,
 									String fatura, String inscricao, String enderecoClienteEntrega, String descricaoAguaSituacao,
@@ -277,7 +283,7 @@ public class Relatorio2ViaContaBean
 									String numeroAmostrasMediaCloro, String numeroAmostrasMediaCor, String numeroAmostrasMediaPH,
 									String numeroAmostrasMediaBacteriasHeterotroficas, String numeroAmostrasMediaColiformesTermotolerantes,
 									String numeroAmostrasMediaColiformesTotais, String numeroHidrometro, String contaMotivoRetificacao,
-									String funcionario, String consumoMedido) {
+									String funcionario, String consumoMedido, String valorImpostoPisCofins) {
 
 		this.indicadorPrimeiraPagina = indicadorPrimeiraPagina;
 		this.arrayRelatorio2ViaContaDetailBean = new ArrayList();
@@ -343,6 +349,7 @@ public class Relatorio2ViaContaBean
 		this.contaMotivoRetificacao = contaMotivoRetificacao;
 		this.funcionario = funcionario;
 		this.consumoMedido = consumoMedido;
+		this.valorImpostoPisCofins = valorImpostoPisCofins;
 
 	}
 
@@ -1014,6 +1021,51 @@ public class Relatorio2ViaContaBean
 	public void setConsumoMedido(String consumoMedido){
 
 		this.consumoMedido = consumoMedido;
+	}
+
+	
+	/**
+	 * @return the valorImpostoPisCofins
+	 */
+	public String getValorImpostoPisCofins(){
+
+		return valorImpostoPisCofins;
+	}
+
+	/**
+	 * @param valorImpostoPisCofins
+	 *            the valorImpostoPisCofins to set
+	 */
+	public void setValorImpostoPisCofins(String valorImpostoPisCofins){
+	
+		this.valorImpostoPisCofins = valorImpostoPisCofins;
+	}
+
+	/**
+	 * @return the anoQuitacaoDebitoAnual
+	 */
+	public String getAnoQuitacaoDebitoAnual(){
+
+		return anoQuitacaoDebitoAnual;
+	}
+
+	/**
+	 * @param anoQuitacaoDebitoAnual
+	 *            the anoQuitacaoDebitoAnual to set
+	 */
+	public void setAnoQuitacaoDebitoAnual(String anoQuitacaoDebitoAnual){
+
+		this.anoQuitacaoDebitoAnual = anoQuitacaoDebitoAnual;
+	}
+
+	public String getMensagemSubstitutaCodigoBarras(){
+
+		return mensagemSubstitutaCodigoBarras;
+	}
+
+	public void setMensagemSubstitutaCodigoBarras(String mensagemSubstitutaCodigoBarras){
+
+		this.mensagemSubstitutaCodigoBarras = mensagemSubstitutaCodigoBarras;
 	}
 
 }

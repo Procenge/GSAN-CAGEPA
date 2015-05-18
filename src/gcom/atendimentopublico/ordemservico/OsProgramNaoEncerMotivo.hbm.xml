@@ -46,6 +46,23 @@
         not-null="true"
         length="2"
     />
+    
+    <property
+        name="indicadorVisitaImprodutiva"
+        type="short"
+        column="OPNE_ICVISITAIMPRODUTIVA"
+        not-null="true"
+        length="2"
+    />
+    
+    <property
+        name="indicadorCobraVisitaImprodutiva"
+        type="short"
+        column="OPNE_ICCOBRAVISITAIMPRODUTIVA"
+        not-null="true"
+        length="2"
+    />
+            
     <property
         name="ultimaAlteracao"
         type="java.sql.Timestamp"
@@ -53,23 +70,6 @@
         not-null="true"
         length="8"
     />
-
-    <!-- Associations -->
-  
-    <!-- bi-directional one-to-many association to OsProgramacaoRoteiro 
-    <set
-        name="osProgramacaoRoteiros"
-        lazy="true"
-        inverse="true"
-		cascade="all"
-    >
-        <key>
-            <column name="opne_id" />
-        </key>
-        <one-to-many 
-            class="gcom.OsProgramacaoRoteiro"
-        />
-    </set> -->
 
 </class>
 </hibernate-mapping>

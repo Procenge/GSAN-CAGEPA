@@ -22,6 +22,8 @@ public class AtividadeActionForm
 
 	private String verificadorAtividadeUnica;
 
+	private String valorHora;
+
 	public String getVerificadorAtividadeUnica(){
 
 		return verificadorAtividadeUnica;
@@ -100,6 +102,16 @@ public class AtividadeActionForm
 	public String getAtualizar(){
 
 		return atualizar;
+	}
+
+	public String getValorHora(){
+
+		return valorHora;
+	}
+
+	public void setValorHora(String valorHora){
+
+		this.valorHora = valorHora;
 	}
 
 }

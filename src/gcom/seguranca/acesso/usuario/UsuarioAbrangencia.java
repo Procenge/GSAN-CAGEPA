@@ -293,4 +293,24 @@ public class UsuarioAbrangencia
 
 	}
 
+	public boolean equals(Object arg){
+
+		if(arg == null){
+			return false;
+		}
+		if(!(arg instanceof UsuarioAbrangencia)){
+			return false;
+		}
+		return this.id.intValue() == ((UsuarioAbrangencia) arg).getId().intValue();
+	}
+
+	@Override
+	public int hashCode(){
+
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
 }

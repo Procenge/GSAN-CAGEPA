@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cadastro.cliente.ClienteCreditoARealizarHistorico" 
+    table="CLIENTE_CREDITO_A_REALIZAR_HST"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="CCRH_ID"
+    >
+         <generator class="assigned" />
+    </id>
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="CCRH_TMULTIMAALTERACAO"
+        not-null="true"
+        length="8"
+    />
+
+    <!-- Associations -->
+  
+    <!-- bi-directional many-to-one association to Cliente -->
+    <many-to-one
+        name="cliente"
+        class="gcom.cadastro.cliente.Cliente"
+        not-null="true"
+    >
+        <column name="clie_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to CreditoARealizarHistorico -->
+    <many-to-one
+        name="creditoARealizarHistorico"
+        class="gcom.faturamento.credito.CreditoARealizarHistorico"
+        not-null="true"
+    >
+        <column name="crar_id" />
+    </many-to-one>
+    <!-- bi-directional many-to-one association to ClienteRelacaoTipo -->
+    <many-to-one
+        name="clienteRelacaoTipo"
+        class="gcom.cadastro.cliente.ClienteRelacaoTipo"
+        not-null="true"
+    >
+        <column name="crtp_id" />
+    </many-to-one>
+
+</class>
+</hibernate-mapping>

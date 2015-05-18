@@ -89,6 +89,14 @@ public class GerarRelatorioQuadroHidrometrosActionForm
 
 	private String dataReferencia;
 
+	private String idLocalidade;
+
+	private String descricaoLocalidade;
+
+	private String idGerenciaRegional;
+
+	private String idUnidadeNegocio;
+
 	public String getDataReferencia(){
 
 		return dataReferencia;
@@ -97,6 +105,46 @@ public class GerarRelatorioQuadroHidrometrosActionForm
 	public void setDataReferencia(String dataReferencia){
 
 		this.dataReferencia = dataReferencia;
+	}
+
+	public String getIdLocalidade(){
+
+		return idLocalidade;
+	}
+
+	public void setIdLocalidade(String idLocalidade){
+
+		this.idLocalidade = idLocalidade;
+	}
+
+	public String getDescricaoLocalidade(){
+
+		return descricaoLocalidade;
+	}
+
+	public void setDescricaoLocalidade(String descricaoLocalidade){
+
+		this.descricaoLocalidade = descricaoLocalidade;
+	}
+
+	public String getIdGerenciaRegional(){
+
+		return idGerenciaRegional;
+	}
+
+	public void setIdGerenciaRegional(String idGerenciaRegional){
+
+		this.idGerenciaRegional = idGerenciaRegional;
+	}
+
+	public String getIdUnidadeNegocio(){
+
+		return idUnidadeNegocio;
+	}
+
+	public void setIdUnidadeNegocio(String idUnidadeNegocio){
+
+		this.idUnidadeNegocio = idUnidadeNegocio;
 	}
 
 	/**

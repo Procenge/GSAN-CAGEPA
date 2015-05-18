@@ -85,6 +85,7 @@ import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.usuario.Usuario;
+import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 
 import java.util.Map;
@@ -232,14 +233,43 @@ public class GerarOrdemServicoAction
 			idLocalidade = (Integer) dadosDaRA[0];
 			idSetorComercial = (Integer) dadosDaRA[1];
 			idBairro = (Integer) dadosDaRA[2];
+		}
+
+		Integer idServicoTipo = null;
+		Integer idRegistroAtendimento = null;
+
+		if(ordemServico != null && ordemServico.getServicoTipo() != null && ordemServico.getServicoTipo().getId() != null){
+			idServicoTipo = ordemServico.getServicoTipo().getId();
+		}
+
+		if(ordemServico != null && ordemServico.getRegistroAtendimento() != null && ordemServico.getRegistroAtendimento().getId() != null){
+			idRegistroAtendimento = ordemServico.getRegistroAtendimento().getId();
 
 			UnidadeOrganizacional unidadeAtual = fachada.obterUnidadeAtendimentoRA(ordemServico.getRegistroAtendimento().getId());
 			idUnidadeAtual = unidadeAtual.getId();
 		}
 
+		// Verifica se irá Gerar Guia de Pagamento ou Ordem de Servico
+		Boolean flagGerarGuiaPagamento = fachada.validarGerarGuiaPagamentoOS(idServicoTipo, idRegistroAtendimento);
+
+		Short qtdPrestacaoGuiaPagamento = null;
+		if(form.getQuantidadePrestacoesGuiaPagamento() != null && !form.getQuantidadePrestacoesGuiaPagamento().equals("")){
+			qtdPrestacaoGuiaPagamento = Short.valueOf(form.getQuantidadePrestacoesGuiaPagamento());
+		} else {
+			if(form.getOrdemServico() != null
+							&& form.getOrdemServico().getServicoTipo() != null
+							&& form.getOrdemServico().getServicoTipo().getIndicadorPagamentoAntecipado() == ConstantesSistema.SIM
+											.intValue()){
+				if(form.getQuantidadePrestacoesGuiaPagamento() == null || form.getQuantidadePrestacoesGuiaPagamento().equals("")){
+					throw new ActionServletException("atencao.informe_campo", null, "Quantidade de Prestação da Guia de Pagamento");
+				}
+			}
+		}
+
 		// gera a ordem de serviço
 		Integer idOrdemServico = fachada.gerarOrdemServico(ordemServico, usuario, mapServicosAutorizados, idLocalidade, idSetorComercial,
-						idBairro, idUnidadeAtual, null, parecerUnidadeDestinoString);
+						idBairro, idUnidadeAtual, null, parecerUnidadeDestinoString, form.getIdOSPrincipal(), qtdPrestacaoGuiaPagamento);
+
 
 		String veioAcompanhamento = (String) sessao.getAttribute("veioAcompanhamento");
 
@@ -265,18 +295,39 @@ public class GerarOrdemServicoAction
 				caminhoRetornoGerarOs = caminhoRetornoGerarOs + "?numeroRA=" + idRa;
 			}
 
-			String msg = "Geração da Ordem de Serviço " + ordemServico.getId() + " para o RA - Registro de Atendimento número "
-							+ ordemServico.getRegistroAtendimento().getId() + " efetuada com sucesso.";
+			String msg = "";
+			if(!flagGerarGuiaPagamento){
+				msg = "Geração da Ordem de Serviço " + idOrdemServico + " para o RA - Registro de Atendimento número "
+								+ ordemServico.getRegistroAtendimento().getId() + " efetuada com sucesso.";
+			}else{
+				msg = "Geração da Guia de Pagamento " + idOrdemServico + " para o RA - Registro de Atendimento número "
+								+ ordemServico.getRegistroAtendimento().getId() + " efetuada com sucesso."
+								+ ". Após o pagamento da guia no vencimento, será gerado o Ordem de serviço";
+			}
+			
+			String msgImprimir = "";
+			if(!flagGerarGuiaPagamento){
+				msgImprimir = "gerarRelatorioOrdemServicoAction.do?idsOS=" + idOrdemServico;
+			} else {
+				msgImprimir = "exibirAtualizarGuiaPagamentoAction.do?manter=sim&idRegistroAtualizacao=" + idOrdemServico;
+			}
+			
+			String msgTipo = "";
+			if(!flagGerarGuiaPagamento){
+				msgTipo = "OS";
+			} else {
+				msgTipo = "Guia de Pagamento";
+			}			
 
 			if(caminhoRetornoGerarOs == null){
 
 				montarPaginaSucessoUmRelatorio(httpServletRequest, msg, "", "",
 								"exibirGerarOrdemServicoAction.do?forward=exibirGerarOrdemServico&veioRA=OK&idRegistroAtendimento=" + idRa,
-								"Voltar", "Imprimir OS", "gerarRelatorioOrdemServicoAction.do?idsOS=" + idOrdemServico);
+								"Voltar", "Imprimir " + msgTipo, msgImprimir);
 
 			}else{
-				montarPaginaSucessoUmRelatorio(httpServletRequest, msg, "", "", caminhoRetornoGerarOs, "Voltar", "Imprimir OS",
-								"gerarRelatorioOrdemServicoAction.do?idsOS=" + idOrdemServico);
+				montarPaginaSucessoUmRelatorio(httpServletRequest, msg, "", "", caminhoRetornoGerarOs, "Voltar", "Imprimir " + msgTipo,
+								msgImprimir);
 
 			}
 		}

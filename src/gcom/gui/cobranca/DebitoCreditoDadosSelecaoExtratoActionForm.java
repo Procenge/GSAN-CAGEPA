@@ -124,6 +124,18 @@ public class DebitoCreditoDadosSelecaoExtratoActionForm
 
 	private String permitirSelecaoAcrescimoExtrato;
 
+	private String idClienteRelacaoImovelSelecionado;
+
+	public String getIdClienteRelacaoImovelSelecionado(){
+
+		return idClienteRelacaoImovelSelecionado;
+	}
+
+	public void setIdClienteRelacaoImovelSelecionado(String idClienteRelacaoImovelSelecionado){
+
+		this.idClienteRelacaoImovelSelecionado = idClienteRelacaoImovelSelecionado;
+	}
+
 	public String getDescricaoLigacaoAguaSituacaoImovel(){
 
 		return descricaoLigacaoAguaSituacaoImovel;

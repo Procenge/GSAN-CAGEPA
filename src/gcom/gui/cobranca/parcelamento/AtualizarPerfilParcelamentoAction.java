@@ -260,8 +260,6 @@ public class AtualizarPerfilParcelamentoAction
 		ParcelamentoPerfil parcelamentoPerfil = new ParcelamentoPerfil();
 		if(parcelamentoPerfilNaBase != null){
 			parcelamentoPerfil = parcelamentoPerfilNaBase;
-		}else{
-			parcelamentoPerfil.setId(Integer.valueOf(idPerfilParcelamento));
 		}
 
 		ResolucaoDiretoria resolucaoDiretoria = null;

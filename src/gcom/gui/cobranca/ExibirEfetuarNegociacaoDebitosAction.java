@@ -293,12 +293,14 @@ public class ExibirEfetuarNegociacaoDebitosAction
 						int indicadorNotas = 1;
 						int indicadorGuias = 1;
 						int indicadorAtualizar = 1;
+						int indicadorCalcularAcrescimosSucumbenciaAnterior = 2;
 
 						ObterDebitoImovelOuClienteHelper colecaoDebitoCliente = fachada.obterDebitoImovelOuCliente(tipoImovel, idImovelStr,
 										null, null, anoMesInicialReferenciaDebito, anoMesFinalReferenciaDebito,
 										dataInicialVencimentoDebito, dataFinalVencimentoDebito, indicadorPagamento, indicadorConta,
 										indicadorDebito, indicadorCredito, indicadorNotas, indicadorGuias, indicadorAtualizar, null, null,
-										null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM);
+										null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM,
+										indicadorCalcularAcrescimosSucumbenciaAnterior, null);
 
 						Collection<ContaValoresHelper> colecaoContaValores = colecaoDebitoCliente.getColecaoContasValores();
 						Collection<DebitoACobrar> colecaoDebitoACobrar = colecaoDebitoCliente.getColecaoDebitoACobrar();
@@ -386,7 +388,7 @@ public class ExibirEfetuarNegociacaoDebitosAction
 								valorTotalPrestacao = guiaPagamentoValoresHelper.getValorTotalPrestacao();
 								valorTotalGuiaPagamento = valorTotalGuiaPagamento.add(valorTotalPrestacao);
 
-								valorTotalAcrescimoAux = guiaPagamentoValoresHelper.getValorTotalContaValores();
+								valorTotalAcrescimoAux = guiaPagamentoValoresHelper.getValorAcrescimosImpontualidadeSemSucumbencia();
 								valorTotalAcrescimoImpontualidade = valorTotalAcrescimoImpontualidade.add(valorTotalAcrescimoAux);
 
 								valorMulta = guiaPagamentoValoresHelper.getValorMulta().setScale(Parcelamento.CASAS_DECIMAIS,
@@ -699,6 +701,11 @@ public class ExibirEfetuarNegociacaoDebitosAction
 											numeroReparcelamentoConsecutivos = 0;
 										}
 
+										BigDecimal valorSucumbenciaTotal = BigDecimal.ZERO;
+										Integer quantidadeParcelasSucumbencia = Integer.valueOf("1");
+										BigDecimal valorSucumbenciaAtual = BigDecimal.ZERO;
+										BigDecimal valorDiligencias = BigDecimal.ZERO;
+
 										// [SB0002] - Obter Opções de Parcelamento
 										opcoesParcelamento = fachada.obterOpcoesDeParcelamento(idResolucaoDiretoria, idImovel, null,
 														idLigacaoAguaSituacao, idLigacaoEsgotoSituacao, idPerfilImovel,
@@ -706,9 +713,10 @@ public class ExibirEfetuarNegociacaoDebitosAction
 														valorDebitoTotalAtualizado, valorTotalMulta, valorTotalJurosMora,
 														valorTotalAtualizacaoMonetaria, numeroReparcelamentoConsecutivos.intValue(),
 														colecaoGuiaPagamentoValores, usuarioLogado, valorTotalRestanteParcelamentosACobrar,
-														Integer.valueOf(anoMesInicialReferenciaDebito), Integer
-																		.valueOf(anoMesFinalReferenciaDebito),
-														indicadoresParcelamentoHelper, dataVencimentoEntradaStr);
+														Integer.valueOf(anoMesInicialReferenciaDebito),
+														Integer.valueOf(anoMesFinalReferenciaDebito), indicadoresParcelamentoHelper,
+														dataVencimentoEntradaStr, valorSucumbenciaTotal, quantidadeParcelasSucumbencia,
+														valorSucumbenciaAtual, valorDiligencias);
 
 										ParcelamentoPerfil parcelamentoPerfil = opcoesParcelamento.getParcelamentoPerfil();
 

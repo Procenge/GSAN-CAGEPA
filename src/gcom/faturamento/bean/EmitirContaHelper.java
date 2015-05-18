@@ -381,6 +381,12 @@ public class EmitirContaHelper
 
 	private String descricaoContaMotivoRetificacao;
 
+	private BigDecimal valorImpostoPisCofins;
+
+	private Integer anoQuitacaoDebitoAnual;
+
+	private String mensagemSubstitutaCodigoBarras;
+
 	public EmitirContaHelper() {
 
 	}
@@ -431,6 +437,7 @@ public class EmitirContaHelper
 		this.percentualEsgotoConta = percentualEsgotoConta;
 		this.idImovelContaEnvio = idImovelContaEnvio;
 		this.nomeImovel = nomeImovel;
+		this.valorImpostoPisCofins = valorImpostoPisCofins;
 	}
 
 	// utilizado no Emitir Segunda Via de Conta Tipo 2 (CAER e CAERN)
@@ -682,7 +689,6 @@ public class EmitirContaHelper
 		this.indicadorPagamento = indicadorPagamento;
 		this.indicadorCobrancaMulta = indicadorCobrancaMulta;
 		this.descricaoContaMotivoRetificacao = descricaoContaMotivoRetificacao;
-
 	}
 
 	public EmitirContaHelper(Integer idConta, String nomeCliente, Date dataVencimentoConta, int amReferencia, short digitoVerificadorConta,
@@ -765,6 +771,87 @@ public class EmitirContaHelper
 		this.idConsumoTarifa = idConsumoTarifa;
 		this.percentualEsgotoConta = percentualEsgoto;
 
+	}
+
+	public EmitirContaHelper(Integer idConta, String nomeCliente, String cpfCliente, String cnpjCliente, Date dataVencimentoConta, int amReferencia, short digitoVerificadorConta,
+								Integer codigoSetorComercialConta, Integer idQuadraConta, Short loteConta, Short subLoteConta,
+								Integer consumoAgua, Integer consumoEsgoto, BigDecimal valorAgua, BigDecimal valorEsgoto,
+								BigDecimal debitos, BigDecimal valorCreditos, BigDecimal valorImpostos, Date dataValidadeConta,
+								Integer idImovel, Integer idLocalidade, Integer idGerenciaRegional, String nomeGerenciaRegional,
+								Integer idLigacaoAguaSituacao, Integer idLigacaoEsgotoSituacao, Integer idImovelPerfil,
+								Integer idSetorComercial, Integer idFaturamentoGrupo, Integer idEmpresa, String descricaoLocalidade,
+								String descricaoLigacaoAguaSituacao, String descricaoLigacaoEsgotoSituacao, Integer idImovelContaEnvio,
+								BigDecimal percentualEsgotoConta, String nomeImovel, Integer debitoCreditoSituacaoAtualConta,
+								Integer contaMotivoRetificacao, Integer funcionario, Date dataEmissaoConta, Short indicadorPagamento,
+								Short indicadorCobrancaMulta, String descricaoContaMotivoRetificacao) {
+
+		this.idConta = idConta;
+		this.nomeCliente = nomeCliente;
+		
+		if(cpfCliente != null){
+			this.setTipoDocCliente("CPF");
+			this.setCpfCnpjCliente(cpfCliente);
+
+		}else if(cnpjCliente != null){
+			this.setTipoDocCliente("CNPJ");
+			this.setCpfCnpjCliente(cnpjCliente);
+		}
+		
+		this.dataVencimentoConta = dataVencimentoConta;
+		this.amReferencia = amReferencia;
+		this.digitoVerificadorConta = digitoVerificadorConta;
+		this.codigoSetorComercialConta = codigoSetorComercialConta;
+		this.idQuadraConta = idQuadraConta;
+		this.loteConta = loteConta;
+		this.subLoteConta = subLoteConta;
+		this.consumoAgua = consumoAgua;
+		this.consumoEsgoto = consumoEsgoto;
+		this.valorAgua = valorAgua;
+		this.valorEsgoto = valorEsgoto;
+		this.debitos = debitos;
+		this.valorCreditos = valorCreditos;
+		this.valorImpostos = valorImpostos;
+		this.dataValidadeConta = dataValidadeConta;
+		this.idImovel = idImovel;
+		this.idLocalidade = idLocalidade;
+		this.idGerenciaRegional = idGerenciaRegional;
+		this.nomeGerenciaRegional = nomeGerenciaRegional;
+		this.idLigacaoAguaSituacao = idLigacaoAguaSituacao;
+		this.idLigacaoEsgotoSituacao = idLigacaoEsgotoSituacao;
+		this.idImovelPerfil = idImovelPerfil;
+		this.idSetorComercial = idSetorComercial;
+		this.idFaturamentoGrupo = idFaturamentoGrupo;
+		this.idEmpresa = idEmpresa;
+		this.descricaoLocalidade = descricaoLocalidade;
+		this.descricaoLigacaoAguaSituacao = descricaoLigacaoAguaSituacao;
+		this.descricaoLigacaoEsgotoSituacao = descricaoLigacaoEsgotoSituacao;
+		this.percentualEsgotoConta = percentualEsgotoConta;
+		this.idImovelContaEnvio = idImovelContaEnvio;
+		this.nomeImovel = nomeImovel;
+		this.debitoCreditoSituacaoAtualConta = debitoCreditoSituacaoAtualConta;
+		this.contaMotivoRetificacao = contaMotivoRetificacao;
+		this.funcionario = funcionario;
+		this.dataEmissaoConta = dataEmissaoConta;
+		this.indicadorPagamento = indicadorPagamento;
+		this.indicadorCobrancaMulta = indicadorCobrancaMulta;
+		this.descricaoContaMotivoRetificacao = descricaoContaMotivoRetificacao;
+	}
+
+	/**
+	 * @return the anoQuitacaoDebitoAnual
+	 */
+	public Integer getAnoQuitacaoDebitoAnual(){
+
+		return anoQuitacaoDebitoAnual;
+	}
+
+	/**
+	 * @param anoQuitacaoDebitoAnual
+	 *            the anoQuitacaoDebitoAnual to set
+	 */
+	public void setAnoQuitacaoDebitoAnual(Integer anoQuitacaoDebitoAnual){
+
+		this.anoQuitacaoDebitoAnual = anoQuitacaoDebitoAnual;
 	}
 
 	public Integer getIdOrigem(){
@@ -1104,6 +1191,8 @@ public class EmitirContaHelper
 		// Caso a matrícula tenha a quantidade de dígitos menor do que a cadastrada no parâmetro
 		// P_NUMERO_DIGITOS_MATRICULA_IMOVEL adiciona zeros a esquerda do número
 		matriculaImovelFormatada = Util.retornaMatriculaImovelFormatadaParametrizada(getIdImovel());
+
+
 
 		return matriculaImovelFormatada;
 	}
@@ -2185,4 +2274,32 @@ public class EmitirContaHelper
 		this.descricaoContaMotivoRetificacao = descricaoContaMotivoRetificacao;
 	}
 
+
+	/**
+	 * @return the valorImpostoPisCofins
+	 */
+	public BigDecimal getValorImpostoPisCofins(){
+
+		return valorImpostoPisCofins;
+	}
+
+
+	/**
+	 * @param valorImpostoPisCofins
+	 *            the valorImpostoPisCofins to set
+	 */
+	public void setValorImpostoPisCofins(BigDecimal valorImpostoPisCofins){
+
+		this.valorImpostoPisCofins = valorImpostoPisCofins;
+	}
+
+	public String getMensagemSubstitutaCodigoBarras(){
+
+		return mensagemSubstitutaCodigoBarras;
+	}
+
+	public void setMensagemSubstitutaCodigoBarras(String mensagemSubstitutaCodigoBarras){
+
+		this.mensagemSubstitutaCodigoBarras = mensagemSubstitutaCodigoBarras;
+	}
 }

@@ -65,7 +65,7 @@
 	this.ae = new Array("percentualQuantidadeMinimoPagoParceladoCancelado", "Informe Percentual Quantidade de Itens.", new Function ("varName", " return this[varName];"));
 	this.bg = new Array("comCpf", "Informe Com CPF.", new Function ("varName", " return this[varName];"));
 	this.bh = new Array("comTelefone", "Informe Com Telefone.", new Function ("varName", " return this[varName];"));
-
+	this.bi = new Array("criterioCobranca", "Informe Criterio de Cobranca.", new Function ("varName", "return this[varName];"));
 	//this.ba = new Array("idsSituacaoLigacaoAgua", "Informe Situação de Ligação de Água.", new Function ("varName", " return this[varName];"));
 	//this.bb = new Array("idsSituacaoLigacaoEsgoto", "Informe Situação de Ligação de Esgoto.", new Function ("varName", " return this[varName];"));
 	} 
@@ -104,6 +104,9 @@ function validaTodosRadioButton(){
 	if(validaRadioButton(form.opcaoContasRevisao,"Considerar Contas em Revisão") != ""){
 		mensagem = mensagem + validaRadioButton(form.opcaoContasRevisao,"Considerar Contas em Revisão")+"\n";
 	}
+	if(validaRadioButton(form.opcaoDividaAtiva,"Considerar Debitos na divida Ativa") != ""){
+		mensagem = mensagem + validaRadioButton(form.opcaoDividaAtiva,"Considerar Debitos na divida Ativa")+"\n";
+	}
 	if(validaRadioButton(form.opcaoAcaoImovelDebitoMesConta,"Emissão da Ação para Imóvel com Débito só da Conta do Mês") != ""){
 		mensagem = mensagem + validaRadioButton(form.opcaoAcaoImovelDebitoMesConta,"Emissão da Ação para Imóvel com Débito só da Conta do Mês")+"\n";
 	}
@@ -118,6 +121,9 @@ function validaTodosRadioButton(){
 	}
 	if(validaRadioButton(form.comTelefone,"Com Telefone") != ""){
 		mensagem = mensagem + validaRadioButton(form.comTelefone,"Com Telefone")+"\n";
+	}
+	if(validaRadioButton(form.criterioCobranca, "Criterio de Cobranca") != ""){
+		mensagem = mensagem + validaRadioButton(form.criterioCobranca, "Criterio de Cobranca")+"\n";
 	}
  
 	if(mensagem != ""){
@@ -507,13 +513,19 @@ function habilitarSelectComCor(radio, select, posicaoCursor){
 			                <td colspan="2">
 			                <table width="100%" border="0">
 			                
-			                <tr> 
-			                 	<td width="65%">
+			                <tr>
+			                	<td width="65%">
 			                 		<strong>Considerar apenas o Débito do Titular Atual do Imóvel:<font color="#FF0000">*</font></strong>
 			                 	</td>
-			                  	<td>
-			                  		<html:radio property="indicadorConsiderarApenasDebitoTitularAtual" value="<%=""+ConstantesSistema.SIM%>" onclick="javascript:habilitarSelectComCor(document.forms[0].indicadorConsiderarApenasDebitoTitularAtual, document.forms[0].idClienteRelacaoTipo, 0)"/><strong>Sim</strong>			    
-			                  		<html:radio property="indicadorConsiderarApenasDebitoTitularAtual" value="<%=""+ConstantesSistema.NAO%>" onclick="javascript:habilitarSelectComCor(document.forms[0].indicadorConsiderarApenasDebitoTitularAtual, document.forms[0].idClienteRelacaoTipo, 0)"/><strong>N&atilde;o</strong>
+			                 	<td>
+				                  	<logic:present name="indicadorFaturamentoTitularDebito" scope="request">
+			                 			<input type="radio" name="indicadorConsiderarApenasDebitoTitularAtual" value="1" checked="checked"><strong>Sim</strong>			    
+			                  			<input type="radio" name="indicadorConsiderarApenasDebitoTitularAtual" value="1" disabled="disabled"><strong>Não</strong>
+			                  		</logic:present>
+			                  		<logic:notPresent name="indicadorFaturamentoTitularDebito" scope="request">
+				                  		<html:radio property="indicadorConsiderarApenasDebitoTitularAtual" value="<%=""+ConstantesSistema.SIM%>" onclick="javascript:habilitarSelectComCor(document.forms[0].indicadorConsiderarApenasDebitoTitularAtual, document.forms[0].idClienteRelacaoTipo, 0)"/><strong>Sim</strong>			    
+			                  			<html:radio property="indicadorConsiderarApenasDebitoTitularAtual" value="<%=""+ConstantesSistema.NAO%>" onclick="javascript:habilitarSelectComCor(document.forms[0].indicadorConsiderarApenasDebitoTitularAtual, document.forms[0].idClienteRelacaoTipo, 0)"/><strong>N&atilde;o</strong>
+				                  	</logic:notPresent>
 			                   	</td>
 			                 </tr>
 			                  
@@ -582,13 +594,24 @@ function habilitarSelectComCor(radio, select, posicaoCursor){
 			                 </tr>
 			                 <tr> 
 			                 	<td>
+			                 		<strong>Considerar Debitos na Divida Ativa:<font color="#FF0000">*</font></strong>
+			                 	</td>
+			                  	<td>
+			                  		<html:radio property="opcaoDividaAtiva" value="1" tabindex="19"/><strong>Sim</strong>
+			                    </td>
+			                  	<td colspan="2">
+			                  		<html:radio property="opcaoDividaAtiva" value="2" tabindex="20"/><strong>N&atilde;o</strong>
+			                   	</td>
+			                 </tr>			                 
+			                 <tr> 
+			                 	<td>
 			                 		<strong>Emiss&atilde;o da A&ccedil;&atilde;o para Im&oacute;vel com D&eacute;bito s&oacute; da Conta do M&ecirc;s:<font color="#FF0000">*</font></strong>
 			                 	</td>
 			                  	<td>
-			                  		<html:radio property="opcaoAcaoImovelDebitoMesConta" value="1" tabindex="19"/><strong>Sim</strong>
+			                  		<html:radio property="opcaoAcaoImovelDebitoMesConta" value="1" tabindex="21"/><strong>Sim</strong>
 			                  	</td>
 			                  	<td colspan="2">
-			                  		<html:radio property="opcaoAcaoImovelDebitoMesConta" value="2" tabindex="20"/><strong>N&atilde;o</strong>
+			                  		<html:radio property="opcaoAcaoImovelDebitoMesConta" value="2" tabindex="22"/><strong>N&atilde;o</strong>
 			                  	</td>
 			                 </tr>
 			                 <tr> 
@@ -596,10 +619,10 @@ function habilitarSelectComCor(radio, select, posicaoCursor){
 			                 		<strong>Emiss&atilde;o da A&ccedil;&atilde;o para Inquilino Com D&eacute;bito s&oacute; da Conta do M&ecirc;s Independentemente do Valor da Conta:<font color="#FF0000">*</font></strong>
 			                 	</td>
 			                  	<td>
-			                  		<html:radio property="opcaoAcaoInquilinoDebitoMesConta" value="1" tabindex="21"/><strong>Sim</strong>
+			                  		<html:radio property="opcaoAcaoInquilinoDebitoMesConta" value="1" tabindex="23"/><strong>Sim</strong>
 			                  	</td>
 			                  	<td colspan="2">
-			                  		<html:radio property="opcaoAcaoInquilinoDebitoMesConta" value="2" tabindex="22"/><strong>N&atilde;o</strong>
+			                  		<html:radio property="opcaoAcaoInquilinoDebitoMesConta" value="2" tabindex="24"/><strong>N&atilde;o</strong>
 			                  	</td>
 			                 </tr>
 			                 <tr> 
@@ -607,10 +630,10 @@ function habilitarSelectComCor(radio, select, posicaoCursor){
 			                 		<strong>Emiss&atilde;o da A&ccedil;&atilde;o para Im&oacute;vel com D&eacute;bito s&oacute; de Contas Antigas:<font color="#FF0000">*</font></strong>
 			                 	</td>
 			                  	<td>
-			                  		<html:radio property="opcaoAcaoImovelDebitoContasAntigas" value="1" tabindex="23"/><strong>Sim</strong>
+			                  		<html:radio property="opcaoAcaoImovelDebitoContasAntigas" value="1" tabindex="25"/><strong>Sim</strong>
 			                  	</td>
 			                  	<td colspan="2">
-			                  		<html:radio property="opcaoAcaoImovelDebitoContasAntigas" value="2" tabindex="24"/><strong>N&atilde;o</strong>
+			                  		<html:radio property="opcaoAcaoImovelDebitoContasAntigas" value="2" tabindex="26"/><strong>N&atilde;o</strong>
 			                  	</td>
 			                 </tr>
 			                 
@@ -621,21 +644,21 @@ function habilitarSelectComCor(radio, select, posicaoCursor){
 			                 		</strong>
 			                 	</td>
 			                 	<td>
-			                 		<html:radio property="comCpf" value="1" tabindex="25">
+			                 		<html:radio property="comCpf" value="1" tabindex="27">
 			                 			 <strong>
 			                 			 	Sim
 			                 			 </strong>
 			                 		</html:radio>                 	
 			                 	</td>
 			                 	<td>
-			                 		<html:radio property="comCpf" value="2" tabindex="26">
+			                 		<html:radio property="comCpf" value="2" tabindex="28">
 			                 			<strong>
 			                 				Não
 			                 			</strong>
 			                 		</html:radio>
 			                 	</td>
 			                 	<td>
-			                 		<html:radio property="comCpf" value="3" tabindex="27">
+			                 		<html:radio property="comCpf" value="3" tabindex="29">
 			                 			<strong>
 			                 				Ambos
 			                 			</strong>
@@ -650,21 +673,50 @@ function habilitarSelectComCor(radio, select, posicaoCursor){
 			                 		</strong>                 	
 			                 	</td>
 			                 	<td>
-			                 		<html:radio property="comTelefone" value="1" tabindex="28">
+			                 		<html:radio property="comTelefone" value="1" tabindex="30">
 			                 			<strong>
 			                 			 	Sim
 			                 			</strong>                 		
 			                 		</html:radio>                 	
 			                 	</td>
 			                 	<td>
-			                 		<html:radio property="comTelefone" value="2" tabindex="29">
+			                 		<html:radio property="comTelefone" value="2" tabindex="31">
 			                 			<strong>
 			                 				Não
 			                 			</strong>
 			                 		</html:radio>   
 			                 	</td>
 			                 	<td>
-			                 		<html:radio property="comTelefone" value="3" tabindex="30">
+			                 		<html:radio property="comTelefone" value="3" tabindex="32">
+			                 			<strong>
+			                 				Ambos
+			                 			</strong>
+			                 		</html:radio>                 	
+			                 	</td>
+			               	</tr>
+			               	
+			               	<tr>
+			                 	<td>
+			                 		<strong>
+			                 			Emiss&atilde;o da A&ccedil;&atilde;o para Im&oacute;vel cujo Cliente Titular Atual do D&eacute;bito possua CPF/CNPJ Validado:<font color="#FF0000">*</font>
+			                 		</strong>                 	
+			                 	</td>
+			                 	<td>
+			                 		<html:radio property="criterioCobranca" value="1" tabindex="33">
+			                 			<strong>
+			                 			 	Sim
+			                 			</strong>                 		
+			                 		</html:radio>                 	
+			                 	</td>
+			                 	<td>
+			                 		<html:radio property="criterioCobranca" value="2" tabindex="34">
+			                 			<strong>
+			                 				Não
+			                 			</strong>
+			                 		</html:radio>   
+			                 	</td>
+			                 	<td>
+			                 		<html:radio property="criterioCobranca" value="3" tabindex="35">
 			                 			<strong>
 			                 				Ambos
 			                 			</strong>

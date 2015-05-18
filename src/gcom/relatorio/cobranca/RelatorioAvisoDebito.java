@@ -3,6 +3,7 @@ package gcom.relatorio.cobranca;
 
 import gcom.batch.Relatorio;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
+import gcom.cobranca.CobrancaAcao;
 import gcom.cobranca.bean.EmitirAvisoCobrancaHelper;
 import gcom.fachada.Fachada;
 import gcom.relatorio.ConstantesRelatorios;
@@ -92,6 +93,10 @@ public class RelatorioAvisoDebito
 		SistemaParametro sistemaParametro = Fachada.getInstancia().pesquisarParametrosDoSistema();
 
 		parametros.put("imagem", sistemaParametro.getImagemRelatorio());
+
+		// Carregar Dados para Menssagem do Documento
+		parametros.put("descricaoMensagemDocumento",
+						Fachada.getInstancia().pesquisarMensagemDocumentoCobrancaAcao(CobrancaAcao.AVISO_DEBITO));
 
 		RelatorioDataSource ds = new RelatorioDataSource(collRelatorioAvisoDebitoBean);
 

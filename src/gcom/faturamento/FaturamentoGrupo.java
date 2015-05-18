@@ -119,9 +119,13 @@ public class FaturamentoGrupo
 	/** nullable persistent field */
 	private Short indicadorVencimentoMesFatura;
 
+	private Short diaVencimentoDebitoAutomatico;
+
+	private Short diaVencimentoEntregaAlternativa;
+
 	/** full constructor */
 	public FaturamentoGrupo(String descricao, String descricaoAbreviada, Short indicadorUso, Integer anoMesReferencia, Short diaVencimento,
-							Date ultimaAlteracao) {
+							Date ultimaAlteracao, Short diaVencimentoDebitoAutomatico, Short diaVencimentoEntregaAlternativa ) {
 
 		this.descricao = descricao;
 		this.descricaoAbreviada = descricaoAbreviada;
@@ -129,6 +133,9 @@ public class FaturamentoGrupo
 		this.anoMesReferencia = anoMesReferencia;
 		this.diaVencimento = diaVencimento;
 		this.ultimaAlteracao = ultimaAlteracao;
+		this.diaVencimentoDebitoAutomatico = diaVencimentoDebitoAutomatico;
+		this.diaVencimentoEntregaAlternativa = diaVencimentoEntregaAlternativa;
+		
 	}
 
 	/** default constructor */
@@ -301,6 +308,26 @@ public class FaturamentoGrupo
 			if(other.id != null) return false;
 		}else if(!id.equals(other.id)) return false;
 		return true;
+	}
+
+	public Short getDiaVencimentoDebitoAutomatico(){
+
+		return diaVencimentoDebitoAutomatico;
+	}
+
+	public void setDiaVencimentoDebitoAutomatico(Short diaVencimentoDebitoAutomatico){
+
+		this.diaVencimentoDebitoAutomatico = diaVencimentoDebitoAutomatico;
+	}
+
+	public Short getDiaVencimentoEntregaAlternativa(){
+
+		return diaVencimentoEntregaAlternativa;
+	}
+
+	public void setDiaVencimentoEntregaAlternativa(Short diaVencimentoEntregaAlternativa){
+
+		this.diaVencimentoEntregaAlternativa = diaVencimentoEntregaAlternativa;
 	}
 
 }

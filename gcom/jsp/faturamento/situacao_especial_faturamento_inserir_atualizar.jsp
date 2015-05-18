@@ -394,7 +394,7 @@
 											name="mesAnoInicial${situacaoEspecialFaturamentoHelper.idImovel}"
 											type="text" size="5" maxlength="7"
 											value="${situacaoEspecialFaturamentoHelper.mesAnoReferenciaFaturamentoInicial}"
-											id="mesAnoInicial" onkeypress="mascaraAnoMes(this, event);">
+											id="mesAnoInicial" onkeypress="mascaraAnoMes(this, event);"  readonly="readonly">
 										<%} %>
 									</c:if></font></td>
 	
@@ -414,7 +414,7 @@
 											name="mesAnoFinal${situacaoEspecialFaturamentoHelper.idImovel}"
 											type="text" size="5" maxlength="7"
 											value="${situacaoEspecialFaturamentoHelper.mesAnoReferenciaFaturamentoFinal}"
-											onkeypress="mascaraAnoMes(this, event);" />
+											onkeypress="mascaraAnoMes(this, event);" readonly="readonly" />
 										<%} %>
 									</c:if></font></td>
 	
@@ -424,12 +424,12 @@
 										<input
 											name="volume${situacaoEspecialFaturamentoHelper.idImovel}"
 											type="text" size="3" maxlength="6"
-											value="${situacaoEspecialFaturamentoHelper.volume}" />
+											value="${situacaoEspecialFaturamentoHelper.volume}"  readonly="readonly"/>
 									</c:if> <c:if
 										test="${situacaoEspecialFaturamentoHelper.volume == null}">
 										<input
 											name="volume${situacaoEspecialFaturamentoHelper.idImovel}"
-											type="text" size="3" maxlength="6" />
+											type="text" size="3" maxlength="6" readonly="readonly" />
 									</c:if></font></td>
 	
 									<td width="9%"><font style="font-size: 9px"
@@ -439,13 +439,13 @@
 											name="percentualEsgoto${situacaoEspecialFaturamentoHelper.idImovel}"
 											type="text" size="3" maxlength="6"
 											value="${situacaoEspecialFaturamentoHelper.percentualEsgoto}"
-											onkeyup="formataValorMonetario(this, 5)" />
+											onkeyup="formataValorMonetario(this, 5)"  readonly="readonly" />
 									</c:if> <c:if
 										test="${situacaoEspecialFaturamentoHelper.percentualEsgoto == null}">
 										<input
 											name="percentualEsgoto${situacaoEspecialFaturamentoHelper.idImovel}"
 											type="text" size="3" maxlength="6"
-											onkeyup="formataValorMonetario(this, 5)" />
+											onkeyup="formataValorMonetario(this, 5)"  readonly="readonly" />
 									</c:if></font></td>
 	
 								</tr>

@@ -401,6 +401,10 @@ if(valor == "1"){
 						border="0" src="imagens/limparcampo.gif" height="21" width="23"> </a></td>
 				</tr>
 				<tr>
+					<td width="26%"><strong>ID do Usuário:</strong></td>
+					<td width="74%"><html:text property="idUsuario" size="9" maxlength="9" /></td>
+				</tr>
+				<tr>
 					<td width="26%"><strong>Nome do Usuário:</strong></td>
 					<td width="74%"><html:text property="nome" size="50" maxlength="50" /></td>
 				</tr>

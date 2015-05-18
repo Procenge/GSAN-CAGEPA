@@ -94,6 +94,7 @@ import gcom.faturamento.FaturamentoTipo;
 import gcom.faturamento.consumotarifa.ConsumoTarifa;
 import gcom.faturamento.debito.DebitoCobrado;
 import gcom.faturamento.debito.DebitoCreditoSituacao;
+import gcom.faturamento.debito.DebitoTipo;
 import gcom.interceptor.ControleAlteracao;
 import gcom.interceptor.ObjetoTransacao;
 import gcom.micromedicao.Rota;
@@ -104,6 +105,7 @@ import gcom.util.filtro.Filtro;
 import gcom.util.filtro.ParametroSimples;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Set;
 
@@ -359,8 +361,24 @@ public class Conta
 
 	private Short indicadorRemuneraCobrancaAdministrativa = 2;
 
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_RETIFICAR_CONTA, ATRIBUTOS_INSERIR_CONTA})
+	private Short indicadorDividaAtiva = 2;
+
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_RETIFICAR_CONTA, ATRIBUTOS_INSERIR_CONTA})
+	private Date dataDividaAtiva;
+
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_RETIFICAR_CONTA, ATRIBUTOS_INSERIR_CONTA})
+	private Short indicadorExecucaoFiscal = 2;
+
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_RETIFICAR_CONTA, ATRIBUTOS_INSERIR_CONTA})
+	private Date dataExecucaoFiscal;
+
+	private Integer numeroProcessoAdministrativoExecucaoFiscal;
+
 	@ControleAlteracao(value = FiltroConta.PRESCRICAO_COMANDO, funcionalidade = {ATRIBUTOS_DESMARCAR_PRESCRICAO_DEBITOS})
 	private PrescricaoComando prescricaoComando;
+
+	private Integer consumoPoco;
 
 	// Constantes
 	public static final Short INDICADOR_ALTERACAO_VENCIMENTO_ATIVO = new Short("1");
@@ -384,7 +402,8 @@ public class Conta
 					gcom.faturamento.conta.ContaMotivoRetificacao contaMotivoRetificacao, DebitoCreditoSituacao debitoCreditoSituacaoAtual,
 					DebitoCreditoSituacao debitoCreditoSituacaoAnterior, Funcionario funcionarioLeitura, Set contaCategorias,
 					Set debitoCobrados, Set creditoRealizados, Parcelamento parcelamento, Date dataVencimentoOriginal,
-					BigDecimal valorImposto, Set<Pagamento> pagamentos) {
+					BigDecimal valorImposto, Set<Pagamento> pagamentos, Short indicadorDividaAtiva, Date dataDividaAtiva,
+					Short indicadorExecucaoFiscal, Date dataExecucaoFiscal, Integer numeroProcessoAdministrativoExecucaoFiscal) {
 
 		this.referenciaContabil = referenciaContabil;
 		this.referencia = referencia;
@@ -446,6 +465,11 @@ public class Conta
 
 		this.indicadorPDD = ConstantesSistema.NAO;
 
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+		this.dataDividaAtiva = dataDividaAtiva;
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+		this.dataExecucaoFiscal = dataExecucaoFiscal;
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
 	}
 
 	/** default constructor */
@@ -471,7 +495,7 @@ public class Conta
 					Funcionario funcionarioEntrega, gcom.faturamento.conta.ContaMotivoRevisao contaMotivoRevisao,
 					gcom.faturamento.conta.ContaMotivoRetificacao contaMotivoRetificacao, DebitoCreditoSituacao debitoCreditoSituacaoAtual,
 					DebitoCreditoSituacao debitoCreditoSituacaoAnterior, Funcionario funcionarioLeitura, Set contaCategorias,
-					Set debitoCobrados, Set creditoRealizados) {
+					Set debitoCobrados, Set creditoRealizados, Short indicadorDividaAtiva, Short indicadorExecucaoFiscal) {
 
 		this.referencia = referencia;
 		this.digitoVerificadorConta = digitoVerificadorConta;
@@ -505,6 +529,9 @@ public class Conta
 		this.creditoRealizados = creditoRealizados;
 
 		this.indicadorPDD = ConstantesSistema.NAO;
+
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
 	}
 
 	public Integer getId(){
@@ -1142,7 +1169,7 @@ public class Conta
 			valorTotalConta = valorTotalConta.subtract(this.getValorCreditos());
 		}
 
-		// Valor dos créditos
+		// Valor dos Impostos
 		if(this.getValorImposto() != null){
 			valorTotalConta = valorTotalConta.subtract(this.getValorImposto());
 		}
@@ -1192,6 +1219,78 @@ public class Conta
 
 		return valorTotalConta;
 	}
+
+	/**
+	 * Este método retorna o valor da conta sem os débitos de sucumbência
+	 * 
+	 * @author Saulo Lima
+	 * @date 10/06/2014
+	 */
+	public BigDecimal getValorSemSucumbencia(){
+
+		BigDecimal valorContaSemSucumbencia = this.getValorTotalContaSemImposto().subtract(this.getValorSucumbencias());
+
+		return valorContaSemSucumbencia;
+	}
+
+	/**
+	 * Este método retorna o valor da conta sem os débitos de sucumbência
+	 * 
+	 * @author Saulo Lima
+	 * @date 10/06/2014
+	 */
+	public BigDecimal getValorSucumbencias(){
+
+		BigDecimal valorTotalSucumbencias = BigDecimal.ZERO;
+
+		// Valor dos débitos
+		if(this.getDebitoCobrados() != null){
+
+			Integer idDebitoTipoSucumbencia = DebitoTipo.SUCUMBENCIA;
+			Collection<DebitoCobrado> debitosCobrados = this.getDebitoCobrados();
+
+			if(!Util.isVazioOrNulo(debitosCobrados)){
+				for(DebitoCobrado cobrado : debitosCobrados){
+					if(cobrado.getDebitoTipo().getId().equals(idDebitoTipoSucumbencia)){
+						valorTotalSucumbencias = valorTotalSucumbencias.add(cobrado.getValorPrestacao());
+					}
+				}
+			}
+		}
+
+		valorTotalSucumbencias = valorTotalSucumbencias.setScale(2, BigDecimal.ROUND_HALF_UP);
+
+		return valorTotalSucumbencias;
+	}
+
+	/**
+	 * Este método retorna o valor da conta sem os débitos de sucumbência
+	 * 
+	 * @author Saulo Lima
+	 * @date 10/06/2014
+	 */
+	public BigDecimal getValorDebitosCobradosDebitoTipo(Collection<Integer> colecaoDebitoTipo){
+
+		BigDecimal valorDebitosCobradosDebitoTipo = BigDecimal.ZERO;
+
+		if(this.getDebitoCobrados() != null){
+
+			Collection<DebitoCobrado> debitosCobrados = this.getDebitoCobrados();
+
+			if(!Util.isVazioOrNulo(debitosCobrados)){
+				for(DebitoCobrado cobrado : debitosCobrados){
+					if(colecaoDebitoTipo.contains(cobrado.getDebitoTipo().getId())){
+						valorDebitosCobradosDebitoTipo = valorDebitosCobradosDebitoTipo.add(cobrado.getValorPrestacao());
+					}
+				}
+			}
+		}
+
+		valorDebitosCobradosDebitoTipo = valorDebitosCobradosDebitoTipo.setScale(2, BigDecimal.ROUND_HALF_UP);
+
+		return valorDebitosCobradosDebitoTipo;
+	}
+
 
 	public String getFormatarAnoMesParaMesAno(){
 
@@ -1273,13 +1372,7 @@ public class Conta
 		filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.PARCELAMENTO);
 		filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.PRESCRICAO_COMANDO);
 
-		// os campos abaixo são apenas para o regsitro
-		// criar um método especifico para o filtro do registro, após os testes
-		// filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.CONTA_CATEGORIA);
-		// filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.CONTA_CATEGORIA_CATEGORIA);
-		// filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.CONTA_CATEGORIA_SUBCATEGORIA);
-		// filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.DEBITOS_COBRADOS);
-		// filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.CREDITOS_REALIZADOS);
+
 
 		filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.ID, this.getId()));
 		return filtroConta;
@@ -1349,15 +1442,7 @@ public class Conta
 		return Util.formatarAnoMesParaMesAno(this.referencia);
 	}
 
-	// public Filtro retornaFiltroRegistroOperacao(){
-	// FiltroContaCategoria filtro = new FiltroContaCategoria();
-	// filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroContaCategoria.CATEGORIA);
-	// filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroContaCategoria.SUBCATEGORIA);
-	// filtro.adicionarCaminhoParaCarregamentoEntidade(FiltroContaCategoria.CONTA);
-	// filtro.adicionarParametro(
-	// new ParametroSimples(FiltroContaCategoria.CONTA_ID, this.getId()));
-	// return retornaFiltroRegistroOperacao();
-	// }
+
 
 	public void initializeLazy(){
 
@@ -1507,6 +1592,94 @@ public class Conta
 	public void setPrescricaoComando(PrescricaoComando prescricaoComando){
 
 		this.prescricaoComando = prescricaoComando;
+	}
+
+	public Short getIndicadorDividaAtiva(){
+
+		return indicadorDividaAtiva;
+	}
+
+	public void setIndicadorDividaAtiva(Short indicadorDividaAtiva){
+
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+	}
+
+	public Date getDataDividaAtiva(){
+
+		return dataDividaAtiva;
+	}
+
+	public void setDataDividaAtiva(Date dataDividaAtiva){
+
+		this.dataDividaAtiva = dataDividaAtiva;
+	}
+
+	public Short getIndicadorExecucaoFiscal(){
+
+		return indicadorExecucaoFiscal;
+	}
+
+	public void setIndicadorExecucaoFiscal(Short indicadorExecucaoFiscal){
+
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+	}
+
+	public Date getDataExecucaoFiscal(){
+
+		return dataExecucaoFiscal;
+	}
+
+	public void setDataExecucaoFiscal(Date dataExecucaoFiscal){
+
+		this.dataExecucaoFiscal = dataExecucaoFiscal;
+	}
+
+	public Integer getConsumoPoco(){
+
+		return consumoPoco;
+	}
+
+	public void setConsumoPoco(Integer consumoPoco){
+
+		this.consumoPoco = consumoPoco;
+	}
+
+		public Integer getNumeroProcessoAdministrativoExecucaoFiscal(){
+
+		return numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public void setNumeroProcessoAdministrativoExecucaoFiscal(Integer numeroProcessoAdministrativoExecucaoFiscal){
+
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	/**
+	 * Soma todos os valores de uma conta para obter o seu valor total
+	 * 
+	 * @param conta
+	 * @return o valor total de uma conta
+	 */
+	public String getValorTotalContaSemImpostoECredito(){
+
+		BigDecimal valorTotalConta = BigDecimal.ZERO;
+
+		// Valor de água
+		if(this.getValorAgua() != null){
+			valorTotalConta = valorTotalConta.add(this.getValorAgua());
+		}
+
+		// Valor de esgoto
+		if(this.getValorEsgoto() != null){
+			valorTotalConta = valorTotalConta.add(this.getValorEsgoto());
+		}
+
+		// Valor dos débitos
+		if(this.getDebitos() != null){
+			valorTotalConta = valorTotalConta.add(this.getDebitos());
+		}
+
+		return valorTotalConta.toString();
 	}
 
 }

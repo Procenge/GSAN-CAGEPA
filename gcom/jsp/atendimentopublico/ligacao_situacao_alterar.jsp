@@ -47,7 +47,7 @@
 				alert('Informe a Nova Situação da Ligacao de Esgoto');
 				validou = 1;
 				}
-				if(form.indicadorTipoLigacao[2].checked == true && form.situacaoLigacaoAguaNova.value == '-1' && form.situacaoLigacaoEsgotoNova.value == '-1'){
+				if(form.indicadorTipoLigacao[2].checked == true && (form.situacaoLigacaoAguaNova.value == '-1' || form.situacaoLigacaoEsgotoNova.value == '-1')){
 				alert('Informe a Nova Situação da Ligacao de Água e Esgoto');
 				validou = 1;
 				}
@@ -236,7 +236,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td><strong>Ordem de Servi&ccedil;o:<font color="#FF0000">*</font>
+							<td width="150"><strong>Ordem de Servi&ccedil;o:<font color="#FF0000">*</font>
 							</strong></td>
 							<td colspan="3"><html:text property="idOrdemServico" size="8"
 								maxlength="9"

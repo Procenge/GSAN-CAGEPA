@@ -80,6 +80,7 @@
 package gcom.gui.cadastro.imovel;
 
 import gcom.atendimentopublico.ordemservico.OrdemServico;
+import gcom.cadastro.atendimento.Atendimento;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -487,6 +488,8 @@ public class ConsultarImovelActionForm
 
 	private String descricaoPocoTipo;
 
+	private String consumoFixoPoco;
+
 	private String idGrupoFaturamentoFiltro;
 
 	private String idEmpresaFiltro;
@@ -742,7 +745,217 @@ public class ConsultarImovelActionForm
 
 	private String descricaoOpcaoEnvioConta;
 
+	private String indicadorImovelEmExecucaoFiscal;
+
+	private String indicadorPrimeiroAcessoImovelDebito;
+
 	private Collection<OrdemServico> colecaoOS = new ArrayList();
+
+	private String valorSucumbenciaAnterior;
+
+	private String valorSucumbenciaAtual;
+
+	private String valorAcrescimosSucumbenciaAnterior;
+
+	private String numeroParcelasSucumbencia;
+
+	private String valorDiligencias;
+
+	private String idClienteRelacaoImovelSelecionado;
+	
+	private Collection<Atendimento> colecaoAtendimento;
+
+	private String digitoVerificadorImovelDebitos;
+
+	private String digitoVerificadorImovelHistoricoFaturamento;
+
+	private String digitoVerificadorImovelAnaliseMedicaoConsumo;
+
+	private String digitoVerificadorImovelDadosComplementares;
+
+	private String digitoVerificadorImovelDadosCadastrais;
+
+	private String digitoVerificadorImovelPagamentos;
+
+	private String digitoVerificadorImovelDevolucoesImovel;
+
+	private String digitoVerificadorImovelDocumentosCobranca;
+
+	private String digitoVerificadorImovelParcelamentosDebitos;
+
+	private String digitoVerificadorImovelRegistroAtendimento;
+
+	private String digitoVerificadorImovelHistoricoAlteracao;
+
+	public String getDigitoVerificadorImovelHistoricoAlteracao(){
+
+		return digitoVerificadorImovelHistoricoAlteracao;
+	}
+
+	public void setDigitoVerificadorImovelHistoricoAlteracao(String digitoVerificadorImovelHistoricoAlteracao){
+
+		this.digitoVerificadorImovelHistoricoAlteracao = digitoVerificadorImovelHistoricoAlteracao;
+	}
+
+	public String getDigitoVerificadorImovelRegistroAtendimento(){
+
+		return digitoVerificadorImovelRegistroAtendimento;
+	}
+
+	public void setDigitoVerificadorImovelRegistroAtendimento(String digitoVerificadorImovelRegistroAtendimento){
+
+		this.digitoVerificadorImovelRegistroAtendimento = digitoVerificadorImovelRegistroAtendimento;
+	}
+
+	public String getDigitoVerificadorImovelParcelamentosDebitos(){
+
+		return digitoVerificadorImovelParcelamentosDebitos;
+	}
+
+	public void setDigitoVerificadorImovelParcelamentosDebitos(String digitoVerificadorImovelParcelamentosDebitos){
+
+		this.digitoVerificadorImovelParcelamentosDebitos = digitoVerificadorImovelParcelamentosDebitos;
+	}
+
+	public String getDigitoVerificadorImovelDocumentosCobranca(){
+
+		return digitoVerificadorImovelDocumentosCobranca;
+	}
+
+	public void setDigitoVerificadorImovelDocumentosCobranca(String digitoVerificadorImovelDocumentosCobranca){
+
+		this.digitoVerificadorImovelDocumentosCobranca = digitoVerificadorImovelDocumentosCobranca;
+	}
+
+	public String getDigitoVerificadorImovelDevolucoesImovel(){
+
+		return digitoVerificadorImovelDevolucoesImovel;
+	}
+
+	public void setDigitoVerificadorImovelDevolucoesImovel(String digitoVerificadorImovelDevolucoesImovel){
+
+		this.digitoVerificadorImovelDevolucoesImovel = digitoVerificadorImovelDevolucoesImovel;
+	}
+
+	public String getDigitoVerificadorImovelPagamentos(){
+
+		return digitoVerificadorImovelPagamentos;
+	}
+
+	public void setDigitoVerificadorImovelPagamentos(String digitoVerificadorImovelPagamentos){
+
+		this.digitoVerificadorImovelPagamentos = digitoVerificadorImovelPagamentos;
+	}
+
+	public String getDigitoVerificadorImovelDadosCadastrais(){
+
+		return digitoVerificadorImovelDadosCadastrais;
+	}
+
+	public void setDigitoVerificadorImovelDadosCadastrais(String digitoVerificadorImovelDadosCadastrais){
+
+		this.digitoVerificadorImovelDadosCadastrais = digitoVerificadorImovelDadosCadastrais;
+	}
+
+	public String getDigitoVerificadorImovelDadosComplementares(){
+
+		return digitoVerificadorImovelDadosComplementares;
+	}
+
+	public void setDigitoVerificadorImovelDadosComplementares(String digitoVerificadorImovelDadosComplementares){
+
+		this.digitoVerificadorImovelDadosComplementares = digitoVerificadorImovelDadosComplementares;
+	}
+
+	public String getDigitoVerificadorImovelAnaliseMedicaoConsumo(){
+
+		return digitoVerificadorImovelAnaliseMedicaoConsumo;
+	}
+
+	public void setDigitoVerificadorImovelAnaliseMedicaoConsumo(String digitoVerificadorImovelAnaliseMedicaoConsumo){
+
+		this.digitoVerificadorImovelAnaliseMedicaoConsumo = digitoVerificadorImovelAnaliseMedicaoConsumo;
+	}
+
+	public String getDigitoVerificadorImovelHistoricoFaturamento(){
+
+		return digitoVerificadorImovelHistoricoFaturamento;
+	}
+
+	public void setDigitoVerificadorImovelHistoricoFaturamento(String digitoVerificadorImovelHistoricoFaturamento){
+
+		this.digitoVerificadorImovelHistoricoFaturamento = digitoVerificadorImovelHistoricoFaturamento;
+	}
+
+	public String getIdClienteRelacaoImovelSelecionado(){
+
+		return idClienteRelacaoImovelSelecionado;
+	}
+
+	public void setIdClienteRelacaoImovelSelecionado(String idClienteRelacaoImovelSelecionado){
+
+		this.idClienteRelacaoImovelSelecionado = idClienteRelacaoImovelSelecionado;
+	}
+
+	public String getDigitoVerificadorImovelDebitos(){
+
+		return digitoVerificadorImovelDebitos;
+	}
+
+	public void setDigitoVerificadorImovelDebitos(String digitoVerificadorImovelDebitos){
+
+		this.digitoVerificadorImovelDebitos = digitoVerificadorImovelDebitos;
+	}
+
+	public String getValorSucumbenciaAnterior(){
+
+		return valorSucumbenciaAnterior;
+	}
+
+	public void setValorSucumbenciaAnterior(String valorSucumbenciaAnterior){
+
+		this.valorSucumbenciaAnterior = valorSucumbenciaAnterior;
+	}
+
+	public String getValorSucumbenciaAtual(){
+
+		return valorSucumbenciaAtual;
+	}
+
+	public void setValorSucumbenciaAtual(String valorSucumbenciaAtual){
+
+		this.valorSucumbenciaAtual = valorSucumbenciaAtual;
+	}
+
+	public String getValorAcrescimosSucumbenciaAnterior(){
+
+		return valorAcrescimosSucumbenciaAnterior;
+	}
+
+	public void setValorAcrescimosSucumbenciaAnterior(String valorAcrescimosSucumbenciaAnterior){
+
+		this.valorAcrescimosSucumbenciaAnterior = valorAcrescimosSucumbenciaAnterior;
+	}
+
+	public String getNumeroParcelasSucumbencia(){
+
+		return numeroParcelasSucumbencia;
+	}
+
+	public void setNumeroParcelasSucumbencia(String numeroParcelasSucumbencia){
+
+		this.numeroParcelasSucumbencia = numeroParcelasSucumbencia;
+	}
+
+	public String getValorDiligencias(){
+
+		return valorDiligencias;
+	}
+
+	public void setValorDiligencias(String valorDiligencias){
+
+		this.valorDiligencias = valorDiligencias;
+	}
 
 	/**
 	 * Description of the Method
@@ -754,6 +967,26 @@ public class ConsultarImovelActionForm
 	 */
 	public void reset(ActionMapping actionMapping, HttpServletRequest httpServletRequest){
 
+	}
+
+	public String getIndicadorPrimeiroAcessoImovelDebito(){
+
+		return indicadorPrimeiroAcessoImovelDebito;
+	}
+
+	public void setIndicadorPrimeiroAcessoImovelDebito(String indicadorPrimeiroAcessoImovelDebito){
+
+		this.indicadorPrimeiroAcessoImovelDebito = indicadorPrimeiroAcessoImovelDebito;
+	}
+
+	public String getIndicadorImovelEmExecucaoFiscal(){
+
+		return indicadorImovelEmExecucaoFiscal;
+	}
+
+	public void setIndicadorImovelEmExecucaoFiscal(String indicadorImovelEmExecucaoFiscal){
+
+		this.indicadorImovelEmExecucaoFiscal = indicadorImovelEmExecucaoFiscal;
 	}
 
 	public String getIdImovelDadosCadastrais(){
@@ -4540,6 +4773,16 @@ public class ConsultarImovelActionForm
 
 		this.colecaoOS = colecaoOS;
 	}
+	
+	public Collection<Atendimento> getColecaoAtendimento(){
+
+		return colecaoAtendimento;
+	}
+
+	public void setColecaoAtendimento(Collection<Atendimento> colecaoAtendimento){
+
+		this.colecaoAtendimento = colecaoAtendimento;
+	}	
 
 	/**
 	 * @return the idHidrometro
@@ -4745,6 +4988,16 @@ public class ConsultarImovelActionForm
 	public void setNumeroSegmento(String numeroSegmento){
 
 		this.numeroSegmento = numeroSegmento;
+	}
+
+	public String getConsumoFixoPoco(){
+
+		return consumoFixoPoco;
+	}
+
+	public void setConsumoFixoPoco(String consumoFixoPoco){
+
+		this.consumoFixoPoco = consumoFixoPoco;
 	}
 
 }

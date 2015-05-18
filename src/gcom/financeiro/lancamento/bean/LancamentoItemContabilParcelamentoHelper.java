@@ -76,8 +76,6 @@
 
 package gcom.financeiro.lancamento.bean;
 
-import gcom.financeiro.lancamento.LancamentoItemContabil;
-import gcom.util.ConstantesSistema;
 
 /**
  * Esta classe agrupa o Id do Lançamento de Item Contábil e seu indicador de remuneração por
@@ -89,22 +87,35 @@ import gcom.util.ConstantesSistema;
 public class LancamentoItemContabilParcelamentoHelper {
 
 	// Constantes
-	public static final LancamentoItemContabilParcelamentoHelper TARIFA_DE_AGUA = new LancamentoItemContabilParcelamentoHelper(
-					LancamentoItemContabil.TARIFA_DE_AGUA, ConstantesSistema.NAO);
+	// public static final LancamentoItemContabilParcelamentoHelper TARIFA_DE_AGUA = new
+	// LancamentoItemContabilParcelamentoHelper(LancamentoItemContabil.TARIFA_DE_AGUA,
+	// ConstantesSistema.NAO);
 
-	public static final LancamentoItemContabilParcelamentoHelper TARIFA_DE_ESGOTO = new LancamentoItemContabilParcelamentoHelper(
-					LancamentoItemContabil.TARIFA_DE_ESGOTO, ConstantesSistema.NAO);
+	// public static final LancamentoItemContabilParcelamentoHelper TARIFA_DE_ESGOTO = new
+	// LancamentoItemContabilParcelamentoHelper(LancamentoItemContabil.TARIFA_DE_ESGOTO,
+	// ConstantesSistema.NAO);
 
 	// Atributos
 	private Integer idLancamentoItemContabil;
 
 	private Short indicadorRemuneracaoCobrancaAdm;
 
+	private Integer numeroProcessoAdministrativoExecucaoFiscal;
+
+	private Short indicadorDividaAtiva;
+
+	private Short indicadorExecucaoFiscal;
+
 	// Construtores
-	public LancamentoItemContabilParcelamentoHelper(Integer idLancamentoItemContabil, Short indicadorRemuneracaoCobrancaAdm) {
+	public LancamentoItemContabilParcelamentoHelper(Integer idLancamentoItemContabil, Short indicadorRemuneracaoCobrancaAdm,
+													Integer numeroProcessoAdministrativoExecucaoFiscal, Short indicadorDividaAtiva,
+													Short indicadorExecucaoFiscal) {
 
 		this.idLancamentoItemContabil = idLancamentoItemContabil;
 		this.setIndicadorRemuneracaoParcialCobrancaAdm(indicadorRemuneracaoCobrancaAdm);
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
 	}
 
 	public LancamentoItemContabilParcelamentoHelper() {
@@ -132,12 +143,49 @@ public class LancamentoItemContabilParcelamentoHelper {
 		this.indicadorRemuneracaoCobrancaAdm = indicadorRemuneracaoParcialCobrancaAdm;
 	}
 
+	public Integer getNumeroProcessoAdministrativoExecucaoFiscal(){
+
+		return numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public void setNumeroProcessoAdministrativoExecucaoFiscal(Integer numeroProcessoAdministrativoExecucaoFiscal){
+
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public Short getIndicadorDividaAtiva(){
+
+		return indicadorDividaAtiva;
+	}
+
+	public void setIndicadorDividaAtiva(Short indicadorDividaAtiva){
+
+		this.indicadorDividaAtiva = indicadorDividaAtiva;
+	}
+
+	public Short getIndicadorExecucaoFiscal(){
+
+		return indicadorExecucaoFiscal;
+	}
+
+	public void setIndicadorExecucaoFiscal(Short indicadorExecucaoFiscal){
+
+		this.indicadorExecucaoFiscal = indicadorExecucaoFiscal;
+	}
+
 	@Override
 	public int hashCode(){
 
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((idLancamentoItemContabil == null) ? 0 : idLancamentoItemContabil.hashCode());
+		result = prime
+						* result
+						+ ((numeroProcessoAdministrativoExecucaoFiscal == null) ? 0 : numeroProcessoAdministrativoExecucaoFiscal.hashCode());
+		// result = prime * result + ((indicadorDividaAtiva == null) ? 0 :
+		// indicadorDividaAtiva.hashCode());
+		// result = prime * result + ((indicadorExecucaoFiscal == null) ? 0 :
+		// indicadorExecucaoFiscal.hashCode());
 		return result;
 	}
 
@@ -148,9 +196,29 @@ public class LancamentoItemContabilParcelamentoHelper {
 		if(obj == null) return false;
 		if(getClass() != obj.getClass()) return false;
 		LancamentoItemContabilParcelamentoHelper other = (LancamentoItemContabilParcelamentoHelper) obj;
+
 		if(idLancamentoItemContabil == null){
 			if(other.idLancamentoItemContabil != null) return false;
 		}else if(!idLancamentoItemContabil.equals(other.idLancamentoItemContabil)) return false;
+
+		if(numeroProcessoAdministrativoExecucaoFiscal == null){
+			if(other.numeroProcessoAdministrativoExecucaoFiscal != null
+							&& !other.numeroProcessoAdministrativoExecucaoFiscal.equals(Integer.valueOf(0))){
+				return false;
+			}
+		}else if(!(numeroProcessoAdministrativoExecucaoFiscal.equals(Integer.valueOf(0)) && other.numeroProcessoAdministrativoExecucaoFiscal == null)
+						&& !numeroProcessoAdministrativoExecucaoFiscal.equals(other.numeroProcessoAdministrativoExecucaoFiscal)){
+			return false;
+		}
+
+		// if(indicadorDividaAtiva == null){
+		// if(other.indicadorDividaAtiva != null) return false;
+		// }else if(!indicadorDividaAtiva.equals(other.indicadorDividaAtiva)) return false;
+		//
+		// if(indicadorExecucaoFiscal == null){
+		// if(other.indicadorExecucaoFiscal != null) return false;
+		// }else if(!indicadorExecucaoFiscal.equals(other.indicadorExecucaoFiscal)) return false;
+
 		return true;
 	}
 

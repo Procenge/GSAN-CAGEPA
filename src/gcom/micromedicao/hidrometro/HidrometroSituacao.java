@@ -78,6 +78,9 @@ package gcom.micromedicao.hidrometro;
 
 import gcom.interceptor.ControleAlteracao;
 import gcom.interceptor.ObjetoTransacao;
+import gcom.util.ErroRepositorioException;
+import gcom.util.RepositorioUtilHBM;
+import gcom.util.SistemaException;
 import gcom.util.filtro.Filtro;
 import gcom.util.filtro.ParametroSimples;
 
@@ -116,25 +119,78 @@ public class HidrometroSituacao
 	 */
 	private Short indicadorUso;
 
+	private String codigoConstante;
+
 	/**
 	 * nullable persistent field
 	 */
 	private Date ultimaAlteracao;
 
-	/**
-	 * Description of the Field
-	 */
-	public final static Integer INSTALADO = Integer.valueOf("1");
+	public static Integer INSTALADO;
+
+	public static Integer EM_MANUTENCAO;
+
+	public static Integer DISPONIVEL;
+
+	public static Integer DESCARTADO;
 
 	/**
-	 * Description of the Field
+	 * Este método foi criado para inicializar as constantes. A sua implementação visa utilizar a
+	 * solução dada para casos em que haja constantes com descrições diferentes mas que utilizavam o
+	 * mesmo valor em clientes distintos.
+	 * 
+	 * @author Anderson Italo
+	 * @date 03/09/2014
 	 */
-	public final static Integer EM_MANUTENCAO = Integer.valueOf("2");
+	public static void inicializarConstantes(){
+
+		INSTALADO = HidrometroSituacaoEnum.INSTALADO.getId();
+
+		EM_MANUTENCAO = HidrometroSituacaoEnum.EM_MANUTENCAO.getId();
+
+		DISPONIVEL = HidrometroSituacaoEnum.DISPONIVEL.getId();
+
+		DESCARTADO = HidrometroSituacaoEnum.DESCARTADO.getId();
+	}
 
 	/**
-	 * Description of the Field
+	 * Este enum foi criado para dar suporte ao carregamento de constantes da classe em tempo de
+	 * execução. As constantes foram criadas aqui como atributos do enum, o que resolveu o problema
+	 * das constantes com descrições diferentes mas que utilizavam o mesmo
+	 * valor. Caso a constante não seja utilizada por um determinado cliente será atribuído -1 ao
+	 * seu valor.
+	 * 
+	 * @author Anderson Italo
+	 * @date 03/09/2014
 	 */
-	public final static Integer DISPONIVEL = Integer.valueOf("3");
+	public static enum HidrometroSituacaoEnum {
+
+		INSTALADO, EM_MANUTENCAO, DISPONIVEL, DESCARTADO;
+
+		private Integer id = -1;
+
+		private HidrometroSituacaoEnum() {
+
+			try{
+				HidrometroSituacao hidrometroSituacao = RepositorioUtilHBM.getInstancia().pesquisarPorCodigo(name(),
+								HidrometroSituacao.class);
+
+				if(hidrometroSituacao != null){
+
+					id = hidrometroSituacao.getId();
+				}
+			}catch(ErroRepositorioException e){
+
+				e.printStackTrace();
+				throw new SistemaException(e, e.getMessage());
+			}
+		}
+
+		public Integer getId(){
+
+			return id;
+		}
+	}
 
 	/**
 	 * full constructor
@@ -260,6 +316,16 @@ public class HidrometroSituacao
 		FiltroHidrometroSituacao filtroHidrometroSituacao = new FiltroHidrometroSituacao();
 		filtroHidrometroSituacao.adicionarParametro(new ParametroSimples(FiltroHidrometroSituacao.ID, this.getId()));
 		return filtroHidrometroSituacao;
+	}
+
+	public String getCodigoConstante(){
+
+		return codigoConstante;
+	}
+
+	public void setCodigoConstante(String codigoConstante){
+
+		this.codigoConstante = codigoConstante;
 	}
 
 }

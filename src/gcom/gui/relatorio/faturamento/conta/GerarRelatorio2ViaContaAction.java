@@ -77,16 +77,24 @@
 package gcom.gui.relatorio.faturamento.conta;
 
 import gcom.cadastro.sistemaparametro.SistemaParametro;
+import gcom.cobranca.DocumentoTipo;
 import gcom.fachada.Fachada;
 import gcom.faturamento.conta.Conta;
 import gcom.faturamento.conta.ContaCategoriaConsumoFaixa;
 import gcom.faturamento.conta.FiltroConta;
 import gcom.gui.ActionServletException;
 import gcom.gui.faturamento.conta.ManterContaConjuntoImovelActionForm;
+import gcom.interceptor.RegistradorOperacao;
 import gcom.relatorio.ExibidorProcessamentoTarefaRelatorio;
 import gcom.relatorio.RelatorioVazioException;
 import gcom.relatorio.faturamento.conta.Relatorio2ViaConta;
+import gcom.seguranca.acesso.Argumento;
+import gcom.seguranca.acesso.DocumentoEmissaoEfetuada;
+import gcom.seguranca.acesso.Operacao;
+import gcom.seguranca.acesso.PermissaoEspecial;
 import gcom.seguranca.acesso.usuario.Usuario;
+import gcom.seguranca.acesso.usuario.UsuarioAcao;
+import gcom.seguranca.acesso.usuario.UsuarioAcaoUsuarioHelper;
 import gcom.tarefa.TarefaRelatorio;
 import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
@@ -95,10 +103,7 @@ import gcom.util.filtro.ParametroSimples;
 import gcom.util.filtro.ParametroSimplesColecao;
 import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -133,8 +138,13 @@ public class GerarRelatorio2ViaContaAction
 
 		HttpSession sessao = httpServletRequest.getSession(false);
 
+		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
+
 		ManterContaConjuntoImovelActionForm manterContaConjuntoImovelActionForm = (ManterContaConjuntoImovelActionForm) actionForm;
 		
+		boolean temPermissaoAtualizarDebitosExecFiscal = fachada.verificarPermissaoEspecial(
+						PermissaoEspecial.ATUALIZAR_DEBITOS_EXECUCAO_FISCAL, this.getUsuarioLogado(httpServletRequest));
+
 		Collection idsConta = new ArrayList();
 		Integer idContaHistorico = null;
 		String contaSelected = null;
@@ -154,11 +164,20 @@ public class GerarRelatorio2ViaContaAction
 		Collection<Conta> colecaoContasSelecionadas = new ArrayList<Conta>();
 
 		// Carregando contas selecionadas
-		contaSelected = manterContaConjuntoImovelActionForm.getContaSelected();
+		if(httpServletRequest.getParameter("conta") != null){
+			contaSelected = (String) httpServletRequest.getParameter("conta");
+		}else{
+			if(sessao.getAttribute("idConta") != null){
+				contaSelected = (String) sessao.getAttribute("idConta");
+			}else{
+				contaSelected = manterContaConjuntoImovelActionForm.getContaSelected();
+			}
+		}
 
 		if(!Util.isVazioOuBranco(contaSelected)){
 			// Contas selecionadas pelo usuário
 			String[] arrayIdentificadores = contaSelected.split(",");
+			StringBuffer parametroExecucaoFiscal = new StringBuffer();
 
 			for(int i = 0; i < arrayIdentificadores.length; i++){
 
@@ -171,6 +190,7 @@ public class GerarRelatorio2ViaContaAction
 				filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.IMOVEL);
 				filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.LOCALIDADE);
 				filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.DEBITO_CREDITO_SITUACAO_ATUAL);
+				filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.DEBITOS_COBRADOS);
 
 				filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.ID, idConta));
 				Collection colecaoContas = fachada.pesquisar(filtroConta, Conta.class.getName());
@@ -181,9 +201,31 @@ public class GerarRelatorio2ViaContaAction
 						throw new ActionServletException("atencao.conta_em_situacao_nao_permitida", contaSelecao
 										.getDebitoCreditoSituacaoAtual().getDescricaoDebitoCreditoSituacao(), "ação");
 					}
+
+					/**
+					 * [UC0146] Manter Conta
+					 * [SB0012] Verificar Execução Fiscal
+					 * 
+					 * @param parcelamento
+					 * @author Gicevalter Couto
+					 * @date 05/08/2014
+					 */					
+					if(fachada.verificarContaExecucaoFiscal(contaSelecao).equals(Short.valueOf("1"))
+									&& !temPermissaoAtualizarDebitosExecFiscal){
+						parametroExecucaoFiscal.append(contaSelecao.getReferenciaFormatada());
+						parametroExecucaoFiscal.append(", ");
+					}
 				}
 
 				colecaoContasSelecionadas.add(contaSelecao);
+			}
+
+			String parametroMensagemExecFiscal = parametroExecucaoFiscal.toString();
+			if(!Util.isVazioOuBranco(parametroMensagemExecFiscal)){
+				parametroMensagemExecFiscal = parametroMensagemExecFiscal.substring(0, parametroMensagemExecFiscal.length() - 2);
+
+				throw new ActionServletException("atencao.imprimir.conta.debito.execucao.fiscal", usuario.getNomeUsuario().toString(),
+								parametroMensagemExecFiscal);
 			}
 
 			// [FS0039] - Verifica existência de débito prescrito
@@ -231,7 +273,7 @@ public class GerarRelatorio2ViaContaAction
 
 			Date dataVencimentoContaInicio = null;
 			Date dataVencimentoContaFim = null;
-			Integer idGrupoFaturamento = null;
+			String idGrupoFaturamento = null;
 
 			String dataVencimentoContaInicioParam = httpServletRequest.getParameter("dataVencimentoContaInicial");
 
@@ -261,11 +303,12 @@ public class GerarRelatorio2ViaContaAction
 			String idGrupoFaturamentoParam = httpServletRequest.getParameter("idGrupoFaturamento");
 			if(idGrupoFaturamentoParam != null && !idGrupoFaturamentoParam.equals("")){
 
-				idGrupoFaturamento = new Integer((String) httpServletRequest.getParameter("idGrupoFaturamento"));
+				idGrupoFaturamento = (String) httpServletRequest.getParameter("idGrupoFaturamento");
+
 				sessao.setAttribute("idGrupoFaturamento", idGrupoFaturamento);
 			}else{
 				if(!Util.isVazioOuBranco(sessao.getAttribute("idGrupoFaturamento"))){
-					idGrupoFaturamento = (Integer) sessao.getAttribute("idGrupoFaturamento");
+					idGrupoFaturamento = (String) sessao.getAttribute("idGrupoFaturamento");
 				}
 
 			}
@@ -483,6 +526,7 @@ public class GerarRelatorio2ViaContaAction
 		SistemaParametro sistemaParametro = fachada.pesquisarParametrosDoSistema();
 		String nomeEmpresa = sistemaParametro.getNomeAbreviadoEmpresa();
 
+
 		// Parte que vai mandar o relatório para a tela
 		// cria uma instância da classe do relatório
 		Relatorio2ViaConta relatorio2ViaConta = new Relatorio2ViaConta(
@@ -522,6 +566,64 @@ public class GerarRelatorio2ViaContaAction
 			// seta o mapeamento de retorno para a tela de atenção de popup
 			retorno = actionMapping.findForward("telaAtencaoPopup");
 		}
+
+		// ------------------------------------------------------------
+		// REGISTRO DE EMISSÃO DO DOCUMENTO
+		// ------------------------------------------------------------
+		DocumentoEmissaoEfetuada documentoEmissaoEfetuada = null;
+		if(!Util.isVazioOuBranco(idsConta)){
+			if(!Util.isVazioOrNulo(idsConta)){
+
+				Iterator it = idsConta.iterator();
+				while(it.hasNext()){
+
+					Integer idConta = (Integer) it.next();
+
+					documentoEmissaoEfetuada = new DocumentoEmissaoEfetuada();
+
+					// ------------ REGISTRAR TRANSação----------------------------
+
+					filtroConta = new FiltroConta();
+					filtroConta.adicionarCaminhoParaCarregamentoEntidade(FiltroConta.IMOVEL);
+					filtroConta.adicionarParametro(new ParametroSimples(FiltroConta.ID, idConta));
+					Collection colecaoConta = fachada.pesquisar(filtroConta, Conta.class.getName());
+					Conta contaSelecao = (Conta) colecaoConta.iterator().next();
+					if(contaSelecao != null){
+
+						documentoEmissaoEfetuada.setImovel(contaSelecao.getImovel());
+						documentoEmissaoEfetuada.setUsuario(usuario);
+						DocumentoTipo documentoTipo = new DocumentoTipo();
+						documentoTipo.setId(DocumentoTipo.SEGUNDA_VIA_CONTA);
+						documentoEmissaoEfetuada.setDocumentoTipo(documentoTipo);
+						documentoEmissaoEfetuada.setUltimaAlteracao(new Date());
+
+						if(!Util.isVazioOuBranco(contaSelecao.getAnoMesReferenciaConta())){
+							documentoEmissaoEfetuada.setReferenciaInicialDebito(contaSelecao.getAnoMesReferenciaConta() + "");
+							documentoEmissaoEfetuada.setReferenciaFinalDebito(contaSelecao.getAnoMesReferenciaConta() + "");
+						}
+
+						Argumento argumento = new Argumento();
+						argumento.setId(Argumento.IMOVEL);
+
+						RegistradorOperacao registradorOperacao = new RegistradorOperacao(
+										Operacao.OPERACAO_EMITIR_DOCUMENTO_SEGUNDA_VIA_CONTA, contaSelecao.getImovel().getId(), argumento,
+										contaSelecao.getImovel().getId(), new UsuarioAcaoUsuarioHelper(usuario,
+														UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO));
+						RegistradorOperacao.set(registradorOperacao);
+						documentoEmissaoEfetuada.adicionarUsuario(usuario, UsuarioAcao.USUARIO_ACAO_EFETUOU_OPERACAO);
+						registradorOperacao.registrarOperacao(documentoEmissaoEfetuada);
+						this.getFachada().inserir(documentoEmissaoEfetuada);
+
+						// ------------ REGISTRAR TRANSAÇÃO ----------------
+					}
+
+
+				}
+
+			}
+		}
+
+
 
 		return retorno;
 	}

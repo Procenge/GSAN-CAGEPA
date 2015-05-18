@@ -115,9 +115,14 @@ method="post">
 	      		<tr HEIGHT="30">
 					<td width="10%" align="left"><bean:write name="raReiterada" property="ultimaAlteracao" format="dd/MM/yyyy" /></td>
 					<td width="10%" align="left"><bean:write name="raReiterada" property="ultimaAlteracao" format="hh:mm:ss" /></td>
-					<td width="30%" align="center"><logic:present name="raReiterada" property="registroAtendimentoUnidade.usuario.funcionario">
+					<td width="30%" align="center">
+						<logic:present name="raReiterada" property="registroAtendimentoUnidade.usuario.funcionario">
 						<bean:write name="raReiterada" property="registroAtendimentoUnidade.usuario.funcionario.id"/> - <bean:write name="raReiterada" property="registroAtendimentoUnidade.usuario.funcionario.nome"/>
-					</logic:present> </td>
+						</logic:present>
+						<logic:notPresent name="raReiterada" property="registroAtendimentoUnidade.usuario.funcionario">
+						<bean:write name="raReiterada" property="registroAtendimentoUnidade.usuario.id"/> - <bean:write name="raReiterada" property="registroAtendimentoUnidade.usuario.nomeUsuario"/>						
+						</logic:notPresent>
+					</td>
 					<td width="50%" align="center"><html:textarea name="raReiterada" property="observacao" readonly="true" rows="3" cols="35"/></td>
 				</tr>
       		</logic:iterate>

@@ -6,14 +6,7 @@ import gcom.cadastro.localidade.Localidade;
 import gcom.cadastro.localidade.SetorComercial;
 import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.interceptor.ObjetoGcom;
-import gcom.operacional.Bacia;
-import gcom.operacional.DistritoOperacional;
-import gcom.operacional.SetorAbastecimento;
-import gcom.operacional.SistemaAbastecimento;
-import gcom.operacional.SistemaEsgoto;
-import gcom.operacional.SubBacia;
-import gcom.operacional.SubsistemaEsgoto;
-import gcom.operacional.ZonaAbastecimento;
+import gcom.operacional.*;
 
 import java.util.Date;
 
@@ -61,6 +54,8 @@ public class EspecificacaoTramite
 	private Short indicadorUso;
 
 	private Date ultimaAlteracao;
+
+	private Short indicadorPrimeiroTramite;
 
 	/**
 	 * @return the id
@@ -351,6 +346,16 @@ public class EspecificacaoTramite
 		this.ultimaAlteracao = ultimaAlteracao;
 	}
 
+	public Short getIndicadorPrimeiroTramite(){
+
+		return indicadorPrimeiroTramite;
+	}
+
+	public void setIndicadorPrimeiroTramite(Short indicadorPrimeiroTramite){
+
+		this.indicadorPrimeiroTramite = indicadorPrimeiroTramite;
+	}
+
 	public String[] retornaCamposChavePrimaria(){
 
 		String[] retorno = {"id"};
@@ -423,6 +428,8 @@ public class EspecificacaoTramite
 			if(castOther.getUnidadeOrganizacionalDestino() != null) return false;
 		}else if(castOther.getUnidadeOrganizacionalDestino() == null) return false;
 		else if(!this.getUnidadeOrganizacionalDestino().getId().equals(castOther.getUnidadeOrganizacionalDestino().getId())) return false;
+
+
 		return true;
 	}
 }

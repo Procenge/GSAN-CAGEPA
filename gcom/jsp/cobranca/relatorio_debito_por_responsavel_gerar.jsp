@@ -241,6 +241,8 @@
 			return false;
 		}
 		
+		
+		/*
 		if(form.indicadorContasEmRevisao[0].checked == true && form.idMotivoRevisao.value == "-1") {
 
 			alert('Selecione um motivo da revisão.');			
@@ -248,6 +250,7 @@
 			return false;
 		}
 
+		*/
 		if (validateGerarRelatorioDebitoPorResponsavelActionForm(form)){
 			toggleBox('demodiv',1);
 		}

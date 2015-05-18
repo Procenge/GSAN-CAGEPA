@@ -2135,7 +2135,7 @@ public class RepositorioEnderecoHBM
 				sql = sql + " and ";
 			}
 
-			retorno = session.createQuery(Util.formatarHQL(sql, 4)).setFirstResult(10 * numeroPaginas).setMaxResults(10).list();
+			retorno = session.createQuery(Util.formatarHQL(sql, 4)).list();
 
 		}catch(HibernateException e){
 			// levanta a exceção para a próxima camada

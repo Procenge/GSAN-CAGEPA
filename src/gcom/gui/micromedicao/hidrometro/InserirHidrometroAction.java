@@ -80,23 +80,7 @@ import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.micromedicao.hidrometro.FiltroHidrometroCapacidade;
-import gcom.micromedicao.hidrometro.FiltroHidrometroClasseMetrologica;
-import gcom.micromedicao.hidrometro.FiltroHidrometroDiametro;
-import gcom.micromedicao.hidrometro.FiltroHidrometroLocalArmazenagem;
-import gcom.micromedicao.hidrometro.FiltroHidrometroMarca;
-import gcom.micromedicao.hidrometro.FiltroHidrometroSituacao;
-import gcom.micromedicao.hidrometro.FiltroHidrometroTipo;
-import gcom.micromedicao.hidrometro.FiltroHidrometroTipoTurbina;
-import gcom.micromedicao.hidrometro.Hidrometro;
-import gcom.micromedicao.hidrometro.HidrometroCapacidade;
-import gcom.micromedicao.hidrometro.HidrometroClasseMetrologica;
-import gcom.micromedicao.hidrometro.HidrometroDiametro;
-import gcom.micromedicao.hidrometro.HidrometroLocalArmazenagem;
-import gcom.micromedicao.hidrometro.HidrometroMarca;
-import gcom.micromedicao.hidrometro.HidrometroSituacao;
-import gcom.micromedicao.hidrometro.HidrometroTipo;
-import gcom.micromedicao.hidrometro.HidrometroTipoTurbina;
+import gcom.micromedicao.hidrometro.*;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
@@ -323,6 +307,13 @@ public class InserirHidrometroAction
 			retorno = actionMapping.findForward("telaErro");
 		}
 
+		Integer numeroNotaFiscal = null;
+
+		if(!Util.isVazioOuBranco(hidrometroActionForm.getNumeroNotaFiscal())){
+
+			numeroNotaFiscal = Util.obterInteger(hidrometroActionForm.getNumeroNotaFiscal());
+		}
+
 		Date dataAquisicaoAnterior = null;
 		try{
 			dataAquisicaoAnterior = formatoData.parse("01/01/1985");
@@ -401,8 +392,10 @@ public class InserirHidrometroAction
 							// hidrometroLocalArmazenagem
 							hidrometroClasseMetrologica,
 							// hidrometroClasseMetrologica
-							hidrometroDiametro);
+							hidrometroDiametro, hidrometroActionForm.getLoteEntrega());
 			// hidrometroDiametro
+
+			hidrometro.setNumeroNotaFiscal(numeroNotaFiscal);
 
 			if(SistemaParametro.INDICADOR_EMPRESA_DESO.equals(getParametroCompanhia(httpServletRequest))){
 				boolean indicadorHidrometroComposto = hidrometroActionForm.isIndicadorHidrometroComposto();

@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cobranca.DocumentoLayoutAssinatura" 
+    table="documento_layout_assinatura"
+    dynamic-insert="true" dynamic-update="true"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="DLAS_ID"
+    >
+	    <generator class="sequence">
+	       <param name="sequence">SQ_DOCUMENTO_LAYOUT_ASSINAT</param>
+	    </generator>
+    </id>
+    
+
+    <!-- bi-directional many-to-one association to documentoTipo -->
+    <many-to-one
+        name="documentoTipoLayout"
+        class="gcom.cobranca.DocumentoTipoLayout"
+        not-null="true"
+    >
+        <column name="DTLA_ID" />
+    </many-to-one>    
+    
+    <property
+        name="descricaoCargo"
+        type="java.lang.String"
+        column="DLAS_DSCARGO"
+        length="60"
+    />	
+
+
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="DLAS_TMULTIMAALTERACAO"
+        length="8"
+        not-null="true"
+    />
+    
+
+</class>
+</hibernate-mapping>

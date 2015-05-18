@@ -105,6 +105,8 @@ public class InserirCriterioCobrancaActionForm
 
 	private String opcaoContasRevisao;
 
+	private String opcaoDividaAtiva;
+
 	private String opcaoAcaoImovelDebitoMesConta;
 
 	private String opcaoAcaoInquilinoDebitoMesConta;
@@ -293,6 +295,7 @@ public class InserirCriterioCobrancaActionForm
 		opcaoAcaoImovelSitEspecial = null;
 		opcaoAcaoImovelSit = null;
 		opcaoContasRevisao = null;
+		opcaoDividaAtiva = null;
 		opcaoAcaoImovelDebitoMesConta = null;
 		opcaoAcaoInquilinoDebitoMesConta = null;
 		opcaoAcaoImovelDebitoContasAntigas = null;
@@ -303,6 +306,16 @@ public class InserirCriterioCobrancaActionForm
 		vlMinimoDebitoCliente = null;
 		qtdMinContasCliente = null;
 		vlMinimoContasMes = null;
+	}
+
+	public String getOpcaoDividaAtiva(){
+
+		return opcaoDividaAtiva;
+	}
+
+	public void setOpcaoDividaAtiva(String opcaoDividaAtiva){
+
+		this.opcaoDividaAtiva = opcaoDividaAtiva;
 	}
 
 }

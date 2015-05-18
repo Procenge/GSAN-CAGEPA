@@ -25,6 +25,9 @@ function limpar(){
 	form.id.value = '';
 	form.descricao.value = '';
 	form.descricaoAbreviada.value = '';
+	form.indicadorUso.value = "3";
+	
+	
 }
 
 function validaCampoCodigo(){
@@ -110,6 +113,17 @@ function validaCampoCodigo(){
 					<font color="red"><html:errors property="descricaoAbreviada" /></font>
 					</td>
 				</tr>
+				<logic:equal name="tela" value="hidrometroProtecao">
+					<tr>
+						<td width="19%"><strong><bean:write name="indicadorUso"
+							scope="session" />:</strong></td>
+						
+							<td><html:radio property="indicadorUso" value="1" /> <strong>Ativos
+						        <html:radio property="indicadorUso" value="2" />Inativos
+						        <html:radio property="indicadorUso" value="3" />Todos</strong></td>
+					</tr>
+					
+				</logic:equal>
 				<tr>
 					<td>&nbsp;</td>
 					<td>&nbsp;</td>

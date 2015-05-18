@@ -196,7 +196,8 @@ public class ManterConsumoTarifaExistenteSubCategoriaAction
 		// fachada.removerTarifaConsumo(ids);
 
 		fachada.atualizarConsumoTarifa(consumoTarifaVigencia, (Collection<CategoriaFaixaConsumoTarifaHelper>) sessao
-						.getAttribute("colecaoCategoria"));
+.getAttribute("colecaoCategoria"),
+						this.getUsuarioLogado(httpServletRequest));
 
 		montarPaginaSucesso(httpServletRequest, consumoTarifaVigencia.getConsumoTarifa().getDescricao() + " de vigência "
 						+ gcom.util.Util.formatarData(consumoTarifaVigencia.getDataVigencia()) + " atualizada com sucesso.",

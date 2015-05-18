@@ -127,11 +127,31 @@
 												</logic:notEmpty>
 												
 												<logic:empty name="mostrarLogin" scope="session">
-													<a href="javascript:enviarDados('<bean:write name="usuario" property="id"/>', '<bean:write name="usuario" property="nomeUsuario"/>', 'usuario');">
-														<font style="text-transform: uppercase;"> 
-															<bean:write name="usuario" property="nomeUsuario" />
-														</font>
-													</a>
+															 <logic:equal name="tipoPesquisa" value="origem" >
+																<a href="javascript:enviarDados('<bean:write name="usuario" property="id"/>', '<bean:write name="usuario" property="nomeUsuario"/>', 'idUsuarioOrigem');">
+																	<font style="text-transform: uppercase;"> 
+																		<bean:write name="usuario" property="nomeUsuario" />
+																	</font>
+																</a>
+															</logic:equal>
+															<logic:equal name="tipoPesquisa" value="destino" >
+														
+																<a href="javascript:enviarDados('<bean:write name="usuario" property="id"/>', '<bean:write name="usuario" property="nomeUsuario"/>', 'idUsuarioDestino');">
+																	<font style="text-transform: uppercase;"> 
+																		<bean:write name="usuario" property="nomeUsuario" />
+																	</font>
+																</a>
+															</logic:equal>
+															<logic:empty name="tipoPesquisa" scope="session">
+																<a href="javascript:enviarDados('<bean:write name="usuario" property="id"/>', '<bean:write name="usuario" property="nomeUsuario"/>', 'usuario');">
+																	<font style="text-transform: uppercase;"> 
+																		<bean:write name="usuario" property="nomeUsuario" />
+																	</font>
+																</a>
+															</logic:empty>
+															
+															
+															
 												</logic:empty>	
 											</td>										
 											

@@ -76,6 +76,8 @@
 
 package gcom.gui.cadastro.funcionario;
 
+import gcom.atendimentopublico.ordemservico.EquipeTipo;
+import gcom.atendimentopublico.ordemservico.FiltroEquipeTipo;
 import gcom.cadastro.unidade.FiltroUnidadeOrganizacional;
 import gcom.cadastro.unidade.UnidadeOrganizacional;
 import gcom.fachada.Fachada;
@@ -185,7 +187,14 @@ public class ExibirPesquisarFuncionarioAction
 			pesquisarFuncionarioActionForm.setId("");
 			pesquisarFuncionarioActionForm.setIdUnidadeEmpresa("");
 			pesquisarFuncionarioActionForm.setNome("");
+			pesquisarFuncionarioActionForm.setIdEquipeTipo("");
 		}
+
+		FiltroEquipeTipo filtroEquipeTipo = new FiltroEquipeTipo();
+		filtroEquipeTipo.setCampoOrderBy(FiltroEquipeTipo.DESCRICAO);
+
+		httpServletRequest
+						.setAttribute("colecaoEquipeTipo", Fachada.getInstancia().pesquisar(filtroEquipeTipo, EquipeTipo.class.getName()));
 
 		return retorno;
 

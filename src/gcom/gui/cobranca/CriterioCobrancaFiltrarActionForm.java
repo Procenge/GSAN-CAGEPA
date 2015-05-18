@@ -102,6 +102,8 @@ public class CriterioCobrancaFiltrarActionForm
 
 	private String opcaoContasRevisao;
 
+	private String opcaoDividaAtiva;
+
 	private String opcaoAcaoImovelDebitoMesConta;
 
 	private String opcaoAcaoInquilinoDebitoMesConta;
@@ -115,6 +117,8 @@ public class CriterioCobrancaFiltrarActionForm
 	private String comCpf;
 
 	private String comTelefone;
+
+	private String criterioCobranca;
 
 	public String getDataInicioVigencia(){
 
@@ -245,4 +249,25 @@ public class CriterioCobrancaFiltrarActionForm
 
 		this.comTelefone = comTelefone;
 	}
+
+	public String getCriterioCobranca(){
+
+		return criterioCobranca;
+	}
+
+	public void setCriterioCobranca(String criterioCobranca){
+
+		this.criterioCobranca = criterioCobranca;
+	}
+
+	public String getOpcaoDividaAtiva(){
+
+		return opcaoDividaAtiva;
+	}
+
+	public void setOpcaoDividaAtiva(String opcaoDividaAtiva){
+
+		this.opcaoDividaAtiva = opcaoDividaAtiva;
+	}
+
 }

@@ -78,12 +78,7 @@ package gcom.gui.faturamento;
 
 import gcom.cadastro.imovel.FiltroImovelPerfil;
 import gcom.cadastro.imovel.ImovelPerfil;
-import gcom.cadastro.localidade.FiltroGerenciaRegional;
-import gcom.cadastro.localidade.FiltroLocalidade;
-import gcom.cadastro.localidade.FiltroUnidadeNegocio;
-import gcom.cadastro.localidade.GerenciaRegional;
-import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.localidade.UnidadeNegocio;
+import gcom.cadastro.localidade.*;
 import gcom.cadastro.sistemaparametro.FiltroSistemaParametro;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
@@ -169,8 +164,8 @@ public class ExibirGerarRelatorioAnormalidadeConsumoAction
 			// -------[FS0001 - VERIFICAR EXISTENCIA DE DADOS] ---- GERENCIA REGIONAL
 
 			FiltroGerenciaRegional filtroGerenciaRegional = new FiltroGerenciaRegional();
-			Collection<GerenciaRegional> colecaoGerenciaRegional = fachada.pesquisar(filtroGerenciaRegional, GerenciaRegional.class
-							.getName());
+			Collection<GerenciaRegional> colecaoGerenciaRegional = fachada.pesquisar(filtroGerenciaRegional,
+							GerenciaRegional.class.getName());
 
 			if(colecaoGerenciaRegional == null || colecaoGerenciaRegional.isEmpty()){
 
@@ -297,8 +292,8 @@ public class ExibirGerarRelatorioAnormalidadeConsumoAction
 				if(resultado >= 0){
 
 					httpServletRequest.setAttribute("nomeCampo", "referencia");
-					throw new ActionServletException("atencao.ano_mes_referencia_anterior_que_ano_mes_faturamento_corrente", null, Util
-									.formatarAnoMesParaMesAno(sistemaParametro.getAnoMesFaturamento()));
+					throw new ActionServletException("atencao.ano_mes_referencia_anterior_que_ano_mes_faturamento_corrente", null,
+									Util.formatarAnoMesParaMesAno(sistemaParametro.getAnoMesFaturamento()));
 				}
 
 			}
@@ -320,32 +315,32 @@ public class ExibirGerarRelatorioAnormalidadeConsumoAction
 		// String idLeituraAnormalidade = form.getIdLeituraAnormalidade();
 		//
 		// if (idLeituraAnormalidade != null && !idLeituraAnormalidade.equals("")) {
-		//		
+		//
 		// FiltroLeituraAnormalidade filtroLeituraAnormalidade = new FiltroLeituraAnormalidade();
 		// filtroLeituraAnormalidade.adicionarParametro(new ParametroSimples(
 		// FiltroLeituraAnormalidade.ID, idLeituraAnormalidade));
-		//		
+		//
 		// Collection colecaoLeiturasAnormalidades = fachada.pesquisar(filtroLeituraAnormalidade,
 		// LeituraAnormalidade.class.getName());
-		//		
+		//
 		// if (colecaoLeiturasAnormalidades != null && !colecaoLeiturasAnormalidades.isEmpty()) {
-		//					
+		//
 		// LeituraAnormalidade leituraAnormalidade = (LeituraAnormalidade) Util
 		// .retonarObjetoDeColecao(colecaoLeiturasAnormalidades);
-		//		
+		//
 		// form.setDescricaoLeituraAnormalidade(leituraAnormalidade.getDescricao());
 		// httpServletRequest.setAttribute("nomeCampo", "idLeituraAnormalidade");
-		//					
+		//
 		// } else {
-		//					
+		//
 		// form.setIdLeituraAnormalidade("");
 		// form.setDescricaoLeituraAnormalidade("ANORM. DE LEITURA INEXISTENTE");
 		// httpServletRequest.setAttribute("anormalidadeLeituraInexistente", true);
 		// httpServletRequest.setAttribute("nomeCampo", "idLeituraAnormalidade");
 		// }
-		//		
+		//
 		// } else {
-		//				
+		//
 		// form.setDescricaoLeituraAnormalidade("");
 		// }
 
@@ -356,8 +351,8 @@ public class ExibirGerarRelatorioAnormalidadeConsumoAction
 		if(idElo != null && !idElo.equals("")){
 
 			FiltroLocalidade filtroLocalidade = new FiltroLocalidade();
-			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, idElo));
-			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID_ELO, idElo));
+			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, Integer.valueOf(idElo)));
+			filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID_ELO, Integer.valueOf(idElo)));
 
 			Collection colecaoElos = fachada.pesquisar(filtroLocalidade, Localidade.class.getName());
 
@@ -372,7 +367,7 @@ public class ExibirGerarRelatorioAnormalidadeConsumoAction
 			}else{
 
 				FiltroLocalidade filtroLocalidadeNaoEloPolo = new FiltroLocalidade();
-				filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, idElo));
+				filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.ID, Integer.valueOf(idElo)));
 
 				Collection colecaoNaoEloPolo = fachada.pesquisar(filtroLocalidadeNaoEloPolo, Localidade.class.getName());
 

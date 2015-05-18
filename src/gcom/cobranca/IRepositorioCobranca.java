@@ -205,10 +205,10 @@ public interface IRepositorioCobranca {
 	 * @return Coleção de Contas do Imovel
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarContasImovel(String id, Integer contaSituacaoNormal, Integer contaSituacaoRetificada,
-					Integer contaSituacaoIncluida, Integer contaSituacaoParcelada, String anoMesInicialReferenciaDebito,
-					String anoMesFinalReferenciaDebito, Date anoMesInicialVecimentoDebito, Date anoMesFinalVencimentoDebito,
-					Integer contaSituacaoPrescrita)
+	public Collection pesquisarContasImovel(String idImovel, String idCliente, Integer idClienteRelacaoTipo, Integer contaSituacaoNormal,
+					Integer contaSituacaoRetificada, Integer contaSituacaoIncluida, Integer contaSituacaoParcelada,
+					String anoMesInicialReferenciaDebito, String anoMesFinalReferenciaDebito, Date dataInicialVecimentoDebito,
+					Date dataFinalVencimentoDebito, Integer contaSituacaoPrescrita, Short indicadorTituloImovel)
 					throws ErroRepositorioException;
 
 	/**
@@ -237,8 +237,7 @@ public interface IRepositorioCobranca {
 	public Collection pesquisarContasCliente(Collection idsContas, String contaSituacaoNormal, String contaSituacaoRetificada,
 					String contaSituacaoIncluida, String contaSituacaoParcelada, String anoMesInicialReferenciaDebito,
 					String anoMesFinalReferenciaDebito, Date anoMesInicialVecimentoDebito, Date anoMesFinalVencimentoDebito,
-					String contaSituacaoPrescrita)
-					throws ErroRepositorioException;
+					String contaSituacaoPrescrita) throws ErroRepositorioException;
 
 	/**
 	 * Faz parte de [UC0067] Obter Débito do Imóvel ou Cliente Obtem o Valor
@@ -284,8 +283,9 @@ public interface IRepositorioCobranca {
 	 * @return Coleção de Debitos A Cobrar
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarDebitosACobrarImovel(String idImovel, String situacaoNormal, Integer anoMesReferenciaDebitoInicial,
-					Integer anoMesReferenciaDebitoFinal) throws ErroRepositorioException;
+	public Collection pesquisarDebitosACobrarImovel(String idImovel, String idCliente, Integer idClienteRelacaoTipo, String situacaoNormal,
+					Integer anoMesReferenciaDebitoInicial, Integer anoMesReferenciaDebitoFinal, Short indicadorTituloImovel)
+					throws ErroRepositorioException;
 
 	/**
 	 * @param idImovel
@@ -365,7 +365,8 @@ public interface IRepositorioCobranca {
 	 * @return Coleção de Creditos A Realizar
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarCreditosARealizarImovel(String idImovel, String situacaoNormal) throws ErroRepositorioException;
+	public Collection pesquisarCreditosARealizarImovel(String idImovel, String idCliente, Integer idClienteRelacaoTipo,
+					String situacaoNormal, Short indicadorTituloImovel) throws ErroRepositorioException;
 
 	public Collection pesquisarCreditosARealizarImovelSimplificado(String idImovel, String situacaoNormal) throws ErroRepositorioException;
 
@@ -449,9 +450,10 @@ public interface IRepositorioCobranca {
 	 * @return Coleção de Prestações das Guias de Pagamentos
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarGuiasPagamentoImovel(String idImovel, Integer situacaoNormal, Integer situacaoIncluida,
-					Integer situacaoRetificada, Integer situacaoParcelada, Date dataVencimentoInicial, Date dataVencimentoFinal,
-					Integer anoMesInicialReferenciaDebito, Integer anoMesFinalReferenciaDebito, Integer situacaoPrescrita)
+	public Collection pesquisarGuiasPagamentoImovel(String idImovel, String idCliente, Integer idClienteRelacaoTipo,
+					Integer situacaoNormal, Integer situacaoIncluida, Integer situacaoRetificada, Integer situacaoParcelada,
+					Date dataVencimentoInicial, Date dataVencimentoFinal, Integer anoMesInicialReferenciaDebito,
+					Integer anoMesFinalReferenciaDebito, Integer situacaoPrescrita, Short indicadorTituloImovel)
 					throws ErroRepositorioException;
 
 	public Collection pesquisarGuiasPagamentoImovelSimplificado(String idImovel, String situacaoNormal, Date dataVencimentoInicial,
@@ -976,6 +978,12 @@ public interface IRepositorioCobranca {
 	 */
 	public void removerContratoCobranca(Integer[] idsContratoCobranca) throws ErroRepositorioException;
 
+	public List<Object[]> gerarRelatorioContasReceberValoresCorrigidos(Integer matriculaImovel, Integer referencia)
+					throws ErroRepositorioException;
+
+	public Long quantidadeRegistrosRelatorioContasReceberValoresCorrigidos(Integer matriculaImovel, Integer referencia)
+					throws ErroRepositorioException;
+
 	public Collection gerarRelacaoDebitos(String idImovelCondominio, String idImovelPrincipal, String idNomeConta,
 					String[] idSituacaoLigacaoAgua, String consumoMinimoInicialAgua, String consumoMinimoFinalAgua,
 					String[] idSituacaoLigacaoEsgoto, String consumoMinimoInicialEsgoto, String consumoMinimoFinalEsgoto,
@@ -991,26 +999,9 @@ public interface IRepositorioCobranca {
 					String quantidadeEconomiasFinal, String diaVencimento, String idCliente, String idClienteTipo,
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, int quantidadeImovelInicio, String indicadorOrdenacao,
-					String idUnidadeNegocio) throws ErroRepositorioException;
+					String idUnidadeNegocio, String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal,
+					String indicadorOpcaoAgrupamento, String indicadorOrdenacaoAscDesc) throws ErroRepositorioException;
 
-	/**
-	 * [UC0349] Emitir Documento de Cobrança
-	 * O sistema ordena a lista de documentos de cobrança por empresa (EMPR_ID
-	 * da tabela DOCUMENTO_COBRANCA), localidade (LOCA_ID), setor
-	 * (CBDO_CDSETORCOMERCIAL), quadra (CBDO_NNQUADRA), lote e sublote
-	 * (IMOV_NNLOTE e IMOV_SUBLOTE da tabela IMOVEL com IMOV_ID da tabela
-	 * DOCUMENTO_COBRANCA)
-	 * 
-	 * @author Raphael Rossiter
-	 * @data 26/05/2006
-	 * @param idBairro
-	 *            ,
-	 *            idLogradouro
-	 * @return Collection<CobrancaDocumento>
-	 */
-	public Collection<CobrancaDocumento> pesquisarCobrancaDocumentoParaEmitir(Integer idCobrancaAcaoCronograma,
-					Integer idCobrancaAcaoComando, Date dataEmissao, Integer idCobrancaAcao, int quantidadeCobrancaDocumentoInicio)
-					throws ErroRepositorioException;
 
 	public Collection<Object[]> pesquisarTodosCobrancaDocumentoParaEmitir(Integer idCobrancaAcaoCronograma, Integer idCobrancaAcaoComando,
 					Date dataEmissao, Integer idCobrancaAcao) throws ErroRepositorioException;
@@ -1042,24 +1033,6 @@ public interface IRepositorioCobranca {
 	 */
 	public Collection pesquisarCobrancaDocumentoArquivoTXT(Integer idCobrancaAcaoCronograma, Integer idCobrancaAcaoComando,
 					Integer cdSetorComercial) throws ErroRepositorioException;
-
-	/**
-	 * [UC0349] Emitir Documento de Cobrança
-	 * O sistema ordena a lista de documentos de cobrança por empresa (EMPR_ID
-	 * da tabela DOCUMENTO_COBRANCA), localidade (LOCA_ID), setor
-	 * (CBDO_CDSETORCOMERCIAL), rota (ROTA_ID), sequencial da rota (IMOV_NNSEQUENCIALROTA)e
-	 * cobranca documento (CBDO_ID)
-	 * 
-	 * @author Raphael Rossiter
-	 * @data 27/06/2007
-	 * @param idBairro
-	 *            ,
-	 *            idLogradouro
-	 * @return Collection<CobrancaDocumento>
-	 */
-	public Collection<CobrancaDocumento> pesquisarCobrancaDocumentoParaEmitirPorRota(Integer idCobrancaAcaoCronograma,
-					Integer idCobrancaAcaoComando, Date dataEmissao, Integer idCobrancaAcao, int quantidadeCobrancaDocumentoInicio)
-					throws ErroRepositorioException;
 
 	/**
 	 * [UC0349] Emitir Documento de Cobrança
@@ -1184,21 +1157,6 @@ public interface IRepositorioCobranca {
 	 * @return Collection<CobrancaDocumento>
 	 */
 	public Collection<EmitirDocumentoCobrancaHelper> pesquisarCobrancaDocumentoOrdemCorte(Integer idCobrancaAcaoCronograma,
-					Integer idCobrancaAcaoComando, Date dataEmissao, Integer idCobrancaAcao, int quantidadeCobrancaDocumentoInicio)
-					throws ErroRepositorioException;
-
-	/**
-	 * [UC0476] Emitir Documento de Cobrança
-	 * O sistema ordena a lista de documentos de cobrança por empresa (EMPR_ID
-	 * da tabela DOCUMENTO_COBRANCA), localidade (LOCA_ID), setor
-	 * (CBDO_CDSETORCOMERCIAL), rota (ROTA_ID), sequencial da rota
-	 * (IMOV_NNSEQUENCIALROTA)e cobranca documento (CBDO_ID)
-	 * 
-	 * @author Raphael Rossiter
-	 * @data 07/08/2007
-	 * @return Collection<EmitirDocumentoCobrancaHelper>
-	 */
-	public Collection<EmitirDocumentoCobrancaHelper> pesquisarCobrancaDocumentoOrdemCortePorRota(Integer idCobrancaAcaoCronograma,
 					Integer idCobrancaAcaoComando, Date dataEmissao, Integer idCobrancaAcao, int quantidadeCobrancaDocumentoInicio)
 					throws ErroRepositorioException;
 
@@ -2552,8 +2510,7 @@ public interface IRepositorioCobranca {
 	public Collection pesquisarContasImoveis(Collection idsImoveis, String contaSituacaoNormal, String contaSituacaoRetificada,
 					String contaSituacaoIncluida, String contaSituacaoParcelada, String anoMesInicialReferenciaDebito,
 					String anoMesFinalReferenciaDebito, Date anoMesInicialVecimentoDebito, Date anoMesFinalVencimentoDebito,
-					String contaSituacaoPrescrita)
-					throws ErroRepositorioException;
+					String contaSituacaoPrescrita) throws ErroRepositorioException;
 
 	/**
 	 * Faz parte de [UC0067] Obter Débito do Imovel ou Cliente
@@ -2582,8 +2539,7 @@ public interface IRepositorioCobranca {
 	 */
 	public Collection pesquisarGuiasPagamentoIdsImoveis(Collection idsImoveis, Integer situacaoNormal, Integer situacaoIncluida,
 					Integer situacaoRetificada, Integer situacaoParcelada, Date dataVencimentoInicial, Date dataVencimentoFinal,
-					Integer situacaoPrescrita)
-					throws ErroRepositorioException;
+					Integer situacaoPrescrita) throws ErroRepositorioException;
 
 	public Collection pesquisarGuiasPagamentoIdsImoveisSimplificado(Collection idsImoveis, String situacaoNormal,
 					Date dataVencimentoInicial, Date dataVencimentoFinal) throws ErroRepositorioException;
@@ -2638,7 +2594,7 @@ public interface IRepositorioCobranca {
 	 * @return
 	 * @throws ErroRepositorioException
 	 */
-	public Collection pesquisarParcelamentosSituacaoNormal(Integer idImovel) throws ErroRepositorioException;
+	public Collection<Parcelamento> pesquisarParcelamentosSituacaoNormal(Integer idImovel) throws ErroRepositorioException;
 
 	/**
 	 * [UC0630] - Solicitar Emissão do Extrato de Débitos
@@ -2661,25 +2617,6 @@ public interface IRepositorioCobranca {
 	 * @throws ErroRepositorioException
 	 */
 	public Collection pesquisarCreditosARealizarParcelamento(Integer idParcelamento) throws ErroRepositorioException;
-
-	/**
-	 * [UC0349] Emitir Documento de Cobrança
-	 * O sistema ordena a lista de documentos de cobrança por empresa (EMPR_ID
-	 * da tabela DOCUMENTO_COBRANCA), localidade (LOCA_ID), setor
-	 * (CBDO_CDSETORCOMERCIAL), quadra (CBDO_NNQUADRA), lote e sublote
-	 * (IMOV_NNLOTE e IMOV_SUBLOTE da tabela IMOVEL com IMOV_ID da tabela
-	 * DOCUMENTO_COBRANCA)
-	 * 
-	 * @author Sávio Luiz
-	 * @data 26/05/2006
-	 * @param idBairro
-	 *            ,
-	 *            idLogradouro
-	 * @return Collection<CobrancaDocumento>
-	 */
-	public Collection<CobrancaDocumento> pesquisarCobrancaDocumentoParaEmitirCAER(Integer idCobrancaAcaoCronograma,
-					Integer idCobrancaAcaoComando, Date dataEmissao, Integer idCobrancaAcao, int quantidadeCobrancaDocumentoInicio)
-					throws ErroRepositorioException;
 
 	/**
 	 * [UC0214] - Efetuar Parcelamento de Débitos
@@ -3079,8 +3016,7 @@ public interface IRepositorioCobranca {
 
 	public Integer filtrarRelatorioImovelPorAcaoCobrancaCount(String comando, String idComando, String idCronograma, String[] acao,
 					Date dataInicial, Date dataFinal, String grupo, String[] setorComercial, String[] bairro, String[] categoria,
-					String localidade)
-					throws ErroRepositorioException;
+					String localidade) throws ErroRepositorioException;
 
 	/**
 	 * @author isilva
@@ -4872,8 +4808,11 @@ public interface IRepositorioCobranca {
 	 * @author Hebert Falcão
 	 * @date 31/10/2012
 	 */
+	public Collection pesquisarResolucaoDiretoriaParametrosPagamentoAVista(Integer idResolucaoDiretoria) throws ErroRepositorioException;
+
 	public ResolucaoDiretoriaParametrosPagamentoAVista pesquisarResolucaoDiretoriaParametrosPagamentoAVista(Integer idResolucaoDiretoria,
-					Date dataPagamento) throws ErroRepositorioException;
+					Date dataPagamento)
+					throws ErroRepositorioException;
 
 	/**
 	 * [UC0444] Gerar e Emitir Extrato de Débito
@@ -5153,7 +5092,6 @@ public interface IRepositorioCobranca {
 	 */
 	public boolean verificarGuiaPagamentoParcelamentoComConcessaoDesconto(Integer idGuiaPagamento) throws ErroRepositorioException;
 
-
 	/**
 	 * [FS0042] - Verificar existência de créditos a realizar correspondentes a desconto nos
 	 * acréscimos concedido no parcelamento
@@ -5210,7 +5148,6 @@ public interface IRepositorioCobranca {
 	 */
 	public GuiaPagamentoHistorico obterGuiaPagamentoHistoricoDoParcelamento(Integer idParcelamento) throws ErroRepositorioException;
 
-
 	/**
 	 * [UC3019] Identificar Cobrança com Negociação
 	 * [SB0007] – Trata cobrança bancária com pagamento da primeira prestação e sem boleto
@@ -5245,8 +5182,7 @@ public interface IRepositorioCobranca {
 	 * @return Collection<EmitirArquivoPdfAvisoCorteHelper>
 	 */
 	public Collection<IEmitirArquivoAvisoOrdemCorteHelper> pesquisarCobrancaDocumentoArquivoPDFAvisoCorteModelo4e5(
-					Integer idCobrancaAcaoCronograma, Integer idCobrancaAcaoComando)
-					throws ErroRepositorioException;
+					Integer idCobrancaAcaoCronograma, Integer idCobrancaAcaoComando) throws ErroRepositorioException;
 
 	/**
 	 * Rotina batch: Marcar Itens Remuneráveis por Cobrança Administrativa
@@ -5310,7 +5246,7 @@ public interface IRepositorioCobranca {
 	 */
 	public void atualizarIndicadorRemuneraCobrancaAdm(GuiaPagamentoPrestacaoHistorico guiaPagamentoPrestacaoHistorico)
 					throws ErroRepositorioException;
-	
+
 	/**
 	 * @param idCobrancaDocumento
 	 * @param idSituacao
@@ -5379,12 +5315,13 @@ public interface IRepositorioCobranca {
 	 * @return
 	 * @throws ErroRepositorioException
 	 */
-	public List<Conta> selecionarContasRemuneraveisMarcadasNaCobrancaAdministrativa(Integer idImovel,
-					Integer idCobrancaAcaoAtividadeComando) throws ErroRepositorioException;
+	public List<Conta> selecionarContasRemuneraveisMarcadasNaCobrancaAdministrativa(Integer idImovel, Integer idCobrancaAcaoAtividadeComando)
+					throws ErroRepositorioException;
 	
 	/**
 	 * [UC3060] Manter Imóvel Cobrança Administrativa
-	 * 1.3.1.2.	Seleciona as Contas Remuneráveis Com Vencimento a partir da Entrada do Imóvel na Cobrança Administrativa.
+	 * 1.3.1.2. Seleciona as Contas Remuneráveis Com Vencimento a partir da Entrada do Imóvel na
+	 * Cobrança Administrativa.
 	 * 
 	 * @param dataImplantacaoCobranca
 	 * @param idImovel
@@ -5692,8 +5629,7 @@ public interface IRepositorioCobranca {
 	 */
 	public Collection pesquisarDadosGuiasPagamentoComandoPrescricaoDebitos(Integer idImovel,
 					Date dataCorrenteMenosNumeroAnosPrescDebOrgaoPublico, Date dataCorrenteMenosNumeroAnosPrescDebParticular,
-					ComandoDebitosPrescritosHelper helper)
-					throws ErroRepositorioException;
+					ComandoDebitosPrescritosHelper helper) throws ErroRepositorioException;
 
 	/**
 	 * [UC3141] Filtrar Imóveis com Débitos Prescritos
@@ -5766,5 +5702,160 @@ public interface IRepositorioCobranca {
 	 */
 
 	public Collection pesquisarImovelEmCobrancaAdministrativaAjuste() throws ErroRepositorioException;
+	
+	
+	/**
+	 * [UC3153] - Verificar Titularidade Débito/Crédito
+	 * 
+	 * @author Yara Souza
+	 * @date 30/07/2014
+	 * @param idCreditoARealizar
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Integer pesquisarIdClienteCreditoARealizarComNomeConta(Integer idCreditoARealizar) throws ErroRepositorioException;
+	
 
+	/**
+	 * [UC3153] - Verificar Titularidade Débito/Crédito
+	 * 
+	 * @author Yara Souza
+	 * @date 30/07/2014
+	 * @param idCreditoARealizar
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+
+	public Integer pesquisarIdClienteCreditoARealizarTitularRelacao(Integer idCreditoARealizar, Integer idClienteRelacaoTipo)
+					throws ErroRepositorioException;
+	
+	
+	/**
+	 * 
+	 */
+	public Collection<Integer> pesquisarIdParcelamento() throws ErroRepositorioException;
+
+	public Collection<Object[]> pesquisarDebitoACobrarPorParcelamento() throws ErroRepositorioException;
+
+	public Collection<Object[]> pesquisarClienteImovelPorDataEImovel(Date dataGeracaoDebito, Integer idImovel)
+					throws ErroRepositorioException;
+
+	public Collection<Object[]> pesquisarCreditoARealizarPorParcelamento() throws ErroRepositorioException;
+
+	public Collection<Object[]> pesquisarClienteImovelPorImovel(Integer idImovel) throws ErroRepositorioException;
+
+	public Collection<Object[]> pesquisarImovelPorPeriodoVencimentoConta(Date periodoInicial, Date periodoFinal, Integer idSetorComercial)
+					throws ErroRepositorioException;
+
+	public Collection<Object[]> pesquisarImovelPorPeriodoVencimentoGuiaPagamento(Date periodoInicial, Date periodoFinal,
+					Integer idSetorComercial)
+					throws ErroRepositorioException;
+
+	/**
+	 * [UCXXXX] Gerar Notificacao Amigavel
+	 * Pesquisar Documento de Cobrança
+	 * 
+	 * @author Genival Barbosa
+	 * @date 09/09/2014
+	 */
+	public Collection<CobrancaDocumentoItem> pesquisarCobrancaDocumentoParaNotificacaoAmigavel(Integer idImovel,
+					Integer anoMesReferenciaFaturamento) throws ErroRepositorioException;
+
+	/**
+	 * Pesquisar Documento de Cobrança
+	 * 
+	 * @author Anderson Italo
+	 * @date 21/10/2014
+	 */
+	public Collection<CobrancaDocumentoItem> pesquisarCobrancaDocumentoParaAvisoCorte(Integer idImovel, Integer anoMesReferenciaFaturamento)
+					throws ErroRepositorioException;
+	/**
+	 * [OC1381720]
+	 * 
+	 * @author Magno Silveira (magno.silveira@procenge.com.br)
+	 * @since 22/10/2014
+	 * @param boletoBancarioId
+	 * @return
+	 */
+	public boolean boletoBancarioPodeSerCancelado(Integer boletoBancarioId) throws ErroRepositorioException;
+
+	public String pesquisarMensagemDocumentoCobrancaAcao(Integer idCobrancaAcao) throws ErroRepositorioException;
+
+	/**
+	 * TODO Saulo Lima - 12/11/2014
+	 * Remover código. Solução paleativa enquanto existem problemas de migração
+	 */
+	public Integer recuperarCobrancaDocumentoLegado(Integer idConta) throws ErroRepositorioException;
+
+	/**
+	 * <p>
+	 * [OC1366820]
+	 * </p>
+	 * 
+	 * @author Magno Silveira (magno.silveira@procenge.com.br)
+	 * @since 10/10/2014
+	 * @param idImovel
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public boolean verificarSeImovelPossuiDebitos(Integer idImovel) throws ErroRepositorioException;
+
+	/**
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection pesquisarDebitoACobrarEmCobAdm(Integer idCobrancaDocumento) throws ErroRepositorioException;
+
+	/**
+	 * @param idCobrancaDocumento
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection pesquisarDebitoCobradoEmCobAdm(Integer idCobrancaDocumento) throws ErroRepositorioException;
+
+	/**
+	 * @param idCobrancaDocumento
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection pesquisarGuiaPagamentoPrestacaoEmCobAdm(Integer idCobrancaDocumento) throws ErroRepositorioException;
+
+	/**
+	 * @param idImovel
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+	public Collection pesquisarCobrancaDocumentoItemParcelado(Integer idImovel) throws ErroRepositorioException;
+
+	/**
+	 * @throws ErroRepositorioException
+	 */
+	public void removerDividaAtivaInscricaoDebito() throws ErroRepositorioException;
+
+	/**
+	 * @throws ErroRepositorioException
+	 */
+	public void removerDividaAtivaInscricaoResumo() throws ErroRepositorioException;
+
+	/**
+	 * @param periodoInicial
+	 * @param periodoFinal
+	 * @return
+	 * @throws ErroRepositorioException
+	 */
+
+	public Collection<Object[]> pesquisarClientePorPeriodoVencimentoGuiaPagamento(Date periodoInicial, Date periodoFinal,
+					Integer idSetorComercial)
+					throws ErroRepositorioException;
+
+
+	public Collection<Conta> pesquisarContaAgrupado(List<Integer> idsImoveis);
+
+	public Collection<DocumentoTipo> pesquisarDocumentoTipoModelo() throws ErroRepositorioException;
+
+	public Collection<DocumentoTipoLayoutCobrancaAcaoHelper> pesquisarDocumentoTipoLayoutPorAcaoCobranca(Integer idAcaoCobranca,
+					Short indicadorUsoDocumentoTipoLayout)
+					throws ErroRepositorioException;
+
+	public void atualizarContaHistoricoIdParcelamento(Collection<Integer> idContas, Integer idParcelamento) throws ErroRepositorioException;
 }

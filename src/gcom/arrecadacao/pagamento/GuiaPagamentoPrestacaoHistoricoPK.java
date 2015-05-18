@@ -63,6 +63,8 @@ public class GuiaPagamentoPrestacaoHistoricoPK
 	/** identifier field */
 	private Integer itemLancamentoContabilId;
 
+	private Integer numeroProcessoAdministrativoExecucaoFiscal;
+
 	/**
 	 * @param guiaPagamentoId
 	 * @param numeroPrestacao
@@ -70,12 +72,13 @@ public class GuiaPagamentoPrestacaoHistoricoPK
 	 * @param itemLancamentoContabilId
 	 */
 	public GuiaPagamentoPrestacaoHistoricoPK(Integer guiaPagamentoId, Short numeroPrestacao, Integer debitoTipoId,
-												Integer itemLancamentoContabilId) {
+												Integer itemLancamentoContabilId, Integer numeroProcessoAdministrativoExecucaoFiscal) {
 
 		this.guiaPagamentoId = guiaPagamentoId;
 		this.numeroPrestacao = numeroPrestacao;
 		this.debitoTipoId = debitoTipoId;
 		this.itemLancamentoContabilId = itemLancamentoContabilId;
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
 	}
 
 	/**
@@ -87,11 +90,12 @@ public class GuiaPagamentoPrestacaoHistoricoPK
 
 	public String[] retornaCamposChavePrimaria(){
 
-		String[] retorno = new String[4];
+		String[] retorno = new String[5];
 		retorno[0] = "guiaPagamentoId";
 		retorno[1] = "numeroPrestacaoId";
 		retorno[2] = "debitoTipoId";
 		retorno[3] = "itemLancamentoContabilId";
+		retorno[4] = "numeroProcessoAdministrativoExecucaoFiscal";
 		return retorno;
 	}
 
@@ -135,6 +139,16 @@ public class GuiaPagamentoPrestacaoHistoricoPK
 		this.itemLancamentoContabilId = itemLancamentoContabilId;
 	}
 
+	public Integer getNumeroProcessoAdministrativoExecucaoFiscal(){
+
+		return numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
+	public void setNumeroProcessoAdministrativoExecucaoFiscal(Integer numeroProcessoAdministrativoExecucaoFiscal){
+
+		this.numeroProcessoAdministrativoExecucaoFiscal = numeroProcessoAdministrativoExecucaoFiscal;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
@@ -148,6 +162,9 @@ public class GuiaPagamentoPrestacaoHistoricoPK
 		result = prime * result + ((guiaPagamentoId == null) ? 0 : guiaPagamentoId.hashCode());
 		result = prime * result + ((itemLancamentoContabilId == null) ? 0 : itemLancamentoContabilId.hashCode());
 		result = prime * result + ((numeroPrestacao == null) ? 0 : numeroPrestacao.hashCode());
+		result = prime
+						* result
+						+ ((numeroProcessoAdministrativoExecucaoFiscal == null) ? 0 : numeroProcessoAdministrativoExecucaoFiscal.hashCode());
 		return result;
 	}
 
@@ -174,6 +191,9 @@ public class GuiaPagamentoPrestacaoHistoricoPK
 		if(numeroPrestacao == null){
 			if(other.numeroPrestacao != null) return false;
 		}else if(!numeroPrestacao.equals(other.numeroPrestacao)) return false;
+		if(numeroProcessoAdministrativoExecucaoFiscal == null){
+			if(other.numeroProcessoAdministrativoExecucaoFiscal != null) return false;
+		}else if(!numeroProcessoAdministrativoExecucaoFiscal.equals(other.numeroProcessoAdministrativoExecucaoFiscal)) return false;
 		return true;
 	}
 }

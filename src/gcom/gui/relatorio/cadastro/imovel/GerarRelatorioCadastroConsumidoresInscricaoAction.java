@@ -1151,6 +1151,12 @@ public class GerarRelatorioCadastroConsumidoresInscricaoAction
 		// consumo Minimo Fixado Esgoto Final
 		relatorio.addParametro("consumoMinimoFixadoEsgotoFinal", imovelOutrosCriteriosActionForm.getConsumoMinimoFixadoEsgotoFinal());
 
+		// consumo Fixado Esgoto do Poço Final
+		relatorio.addParametro("consumoFixadoEsgotoPocoInicial", imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoInicial());
+
+		// consumo Fixado Esgoto do Poço Final
+		relatorio.addParametro("consumoFixadoEsgotoPocoFinal", imovelOutrosCriteriosActionForm.getConsumoFixadoEsgotoPocoFinal());
+
 		// intervalo Percentual Esgoto Inicial
 		relatorio.addParametro("intervaloPercentualEsgotoInicial", imovelOutrosCriteriosActionForm.getIntervaloPercentualEsgotoInicial());
 		// intervalor Percentual Esgoto Final

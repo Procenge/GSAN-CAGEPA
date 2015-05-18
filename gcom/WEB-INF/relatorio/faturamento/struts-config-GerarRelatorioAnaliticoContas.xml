@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.1//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_1.dtd">
+<struts-config>
+	<form-beans>
+		<form-bean name="GerarRelatorioAnaliticoContasActionForm"
+			type="gcom.gui.relatorio.faturamento.GerarRelatorioAnaliticoContasActionForm" />					
+	</form-beans>
+
+	<global-forwards />
+
+	
+	
+		<action-mappings>
+		<action name="GerarRelatorioAnaliticoContasActionForm"
+			type="gcom.gui.relatorio.faturamento.ExibirGerarRelatorioAnaliticoContasAction"
+			validate="true" scope="session"
+			path="/exibirGerarRelatorioAnaliticoContasAction">
+			<forward name="exibirGerarRelatorioAnaliticoContas"
+				path="/jsp/relatorio/faturamento/relatorio_analitico_contas.jsp" />
+		</action>
+		<action name="GerarRelatorioAnaliticoContasActionForm"
+			type="gcom.gui.relatorio.faturamento.GerarRelatorioAnaliticoContasAction"
+			validate="true" scope="session"
+			path="/gerarRelatorioAnaliticoContasAction">
+		</action>
+
+	</action-mappings>
+
+</struts-config>

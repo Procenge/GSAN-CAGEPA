@@ -318,6 +318,20 @@ public class RelatorioContaModelo3Bean
 
 	private String debitosExercicio;
 
+	private String dataEntrega;
+
+	private String grupoResidencial;
+
+	private String grupoComercial;
+
+	private String grupoIndustrial;
+
+	private String grupoPublico;
+
+	private String consumoMedio;
+
+	private String pagina;
+
 	public String getSequencial(){
 
 		return sequencial;
@@ -1485,4 +1499,73 @@ public class RelatorioContaModelo3Bean
 		this.debitosExercicio = debitosExercicio;
 	}
 
+	public String getDataEntrega(){
+
+		return dataEntrega;
+	}
+
+	public void setDataEntrega(String dataEntrega){
+
+		this.dataEntrega = dataEntrega;
+	}
+
+	public String getGrupoResidencial(){
+
+		return grupoResidencial;
+	}
+
+	public void setGrupoResidencial(String grupoResidencial){
+
+		this.grupoResidencial = grupoResidencial;
+	}
+
+	public String getGrupoComercial(){
+
+		return grupoComercial;
+	}
+
+	public void setGrupoComercial(String grupoComercial){
+
+		this.grupoComercial = grupoComercial;
+	}
+
+	public String getGrupoIndustrial(){
+
+		return grupoIndustrial;
+	}
+
+	public void setGrupoIndustrial(String grupoIndustrial){
+
+		this.grupoIndustrial = grupoIndustrial;
+	}
+
+	public String getGrupoPublico(){
+
+		return grupoPublico;
+	}
+
+	public void setGrupoPublico(String grupoPublico){
+
+		this.grupoPublico = grupoPublico;
+	}
+
+	public String getConsumoMedio(){
+
+		return consumoMedio;
+	}
+
+	public void setConsumoMedio(String consumoMedio){
+
+		this.consumoMedio = consumoMedio;
+	}
+
+	public String getPagina(){
+
+		return pagina;
+	}
+
+	public void setPagina(String pagina){
+
+		this.pagina = pagina;
+	}
 }

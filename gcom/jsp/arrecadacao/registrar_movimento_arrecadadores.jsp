@@ -81,12 +81,40 @@
 	   }
 	}
 
+	
+	
+	function validarFormListaArquivos(){
+	 var form = document.forms[0];
+	  var mensagem = '';
+	  
+
+		form.action='registrarMovimentoArredadadoresAction.do?objetoConsulta=2';
+		form.submit();
+	  
+		   
+	}
+	
+	
+	
+	
+	
 function limparPesquisaArrecadador(form) {
     form.idArrecadador.value = "";
     form.nomeArrecadador.value = "";
     form.idTipoMovimento.value = "";
     form.uploadPicture.value = "";
 }
+
+
+function reload(tipoDeProcessamento) {
+	 var form = document.forms[0];
+	form.action = 'exibirRegistrarMovimentoArredadadoresAction.do?tipoDeProcessamento='+ tipoDeProcessamento;
+
+	form.submit();
+}  
+
+
+
 
 -->
 </script>
@@ -137,11 +165,7 @@ function limparPesquisaArrecadador(form) {
 
 
 		<td valign="top" class="centercoltext">
-		<table>
-			<tr>
-				<td></td>
-			</tr>
-		</table>
+	
 		<table width="100%" border="0" align="center" cellpadding="0"
 			cellspacing="0">
 			<tr>
@@ -153,16 +177,78 @@ function limparPesquisaArrecadador(form) {
 			</tr>
 		</table>
 
-		<p>&nbsp;</p>
+
 		<table width="100%" border="0">
+			
 			<tr>
 				<td colspan="2">Para registrar movimento de arrecadador, informe os
 				dados abaixo:</td>
 			</tr>
+			
+		
+			<tr>
+				<td>&nbsp;</td>		
+			</tr>
+			
+			
+			  <tr>
+				<td colspan="1">  <strong>Qual a forma de processamento? </strong></td>
+			  </tr>	
+				
+				
+			<tr>
+				
+			     
+			     <logic:present name="desabilitarTipoDeProcessamento"> 
+			           <td>			    
+			             <input type="radio" onclick="javascript:reload(1);"  name="tipoDeProcessamento" value="1" checked="true">			        
+			             <label> Upload de arquivo</label>
+			         
+			             </td>
+			             
+			             <td>
+			                <input type="radio" onclick="javascript:reload(2);"  name="tipoDeProcessamento" value="2"   disabled="true">
+			            <label>Processamento de arquivos disponível em diretório </label> 
+			            
+			            </td>
+			     
+			     </logic:present>
+			     
+			     <logic:notPresent name="desabilitarTipoDeProcessamento"> 
+			     
+			           <td>			    
+			             <input type="radio" onclick="javascript:reload(1);"  name="tipoDeProcessamento" value="1" >			        
+			             <label> Upload de arquivo</label>
+			         
+			             </td>
+			       
+			           <td>	
+			             <input type="radio" onclick="javascript:reload(2);"  name="tipoDeProcessamento" value="2"  >
+			              <label>Processamento de arquivos disponível em diretório </label>
+			            
+			            </td>
+			      </logic:notPresent>
+			         
+			     
+			</tr>
+			
+			<p>&nbsp;</p>
+			
+			
+			<logic:equal name="tipoDeProcessamento" value="1">
+			
+			<tr>
+				<td>&nbsp;</td>			
+				
+			</tr>
+			<tr>
+				<td>&nbsp;</td>		
+			</tr>
+			
 			<tr>
 				<td><strong>Arrecadador:<font color="#FF0000">*</font></strong></td>
 				<td><input type="text" maxlength="3" name="idArrecadador" size="4"
-					onkeypress="validaEnterComMensagem(event, 'exibirRegistrarMovimentoArredadadoresAction.do?objetoConsulta=1', 'idArrecadador','Arrecadador');"
+					onkeypress="validaEnterComMensagem(event, 'exibirRegistrarMovimentoArredadadoresAction.do?objetoConsulta=1&tipoDeProcessamento=1', 'idArrecadador','Arrecadador');"
 					value="${requestScope.parametroidArrecadador}"> <a
 					href="javascript:abrirPopup('exibirPesquisarArrecadadorAction.do');">
 				<img width="23" height="21" border="0"
@@ -210,10 +296,12 @@ function limparPesquisaArrecadador(form) {
 				<td>&nbsp;</td>
 				<td align="left"><font color="#FF0000">*</font> Campo
 				Obrigat&oacute;rio</td>
+				
+				
 			</tr>
-		</table>
-
-		<table width="100%">
+			
+			
+			<table width="100%">
 			<tr>
 				<td align="left"><input name="Button" type="button" class="bottonRightCol"
 						value="Desfazer" align="left"
@@ -223,10 +311,48 @@ function limparPesquisaArrecadador(form) {
 						onClick="javascript:window.location.href='/gsan/telaPrincipal.do'"></td>
 				<td align="right">
 				  <gcom:controleAcessoBotao name="Button" value="Registrar" onclick="javascript:validarForm();" url="registrarMovimentoArredadadoresAction.do"/>
-				  <%-- <input type="button" name="Button" class="bottonRightCol" value="Registrar" onclick="validarForm();" /> --%>
+			
+				</td>
+			</tr>
+		   </table>
+			
+			
+			
+			</logic:equal>
+			                                  						                                	
+			                                		
+		     <logic:equal name="tipoDeProcessamento" value="2">
+		     
+		     <table width="100%">
+		     
+		     <tr>
+				<td>&nbsp;</td>
+			
+				
+			</tr>
+		    	
+		    	<tr>
+			
+				<td colspan="2"><strong>Favor confirmar os arquivos no diretório GSAN\recursoExterno\ARQUIVOS_A_PROCESSAR_ARRECADACAO </strong> </td>
+			
+				<td colspan="2"> 
+			
+				   <input type="button" name="Button" class="bottonRightCol" value="Registrar Diretório" onclick="validarFormListaArquivos();" /> 
 				</td>
 			</tr>
 		</table>
+		     
+		     
+			
+			</logic:equal>
+			
+			
+			
+			
+			
+		</table>
+
+		
 	</tr>
 
 

@@ -259,8 +259,8 @@
 	<%@ include file="/jsp/util/cabecalho.jsp"%>
 	<%@ include file="/jsp/util/menu.jsp"%>
 
+	<input type="hidden" name="numeroPagina" value="7" />
 	<table width="770" border="0" cellspacing="4" cellpadding="0">
-		<input type="hidden" name="numeroPagina" value="7" />
 		<html:hidden property="url" value="6" />
 		<tr>
 			<td width="149" valign="top" class="leftcoltext">
@@ -325,23 +325,41 @@
 	    </tr> -->
 				<tr>
 					<td width="21%" height="24"><strong>N&uacute;mero de Pontos:</strong></td>
-					<td width="79%"><html:text maxlength="4" size="4"
-						property="numeroPontos" /></td>
+					<td width="79%">
+						<logic:present name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="4" size="4"property="numeroPontos" />
+						</logic:present>
+						<logic:notPresent name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="4" size="4"property="numeroPontos" disabled="true" />
+						</logic:notPresent>							
+					</td>
 				</tr>
 
 				<logic:equal name="<%=SistemaParametro.SISTEMA_PARAMETRO%>" property="parmId" value="<%="" + SistemaParametro.INDICADOR_EMPRESA_ADA%>" scope="session">
-				<tr>
-					<td width="21%" height="24"><strong>N&uacute;mero de Quartos:<font
-						color="#FF0000">*</font></strong></td>
-					<td width="79%"><html:text maxlength="4" size="4"
-						property="numeroQuarto" /></td>
-				</tr>
-				<tr>
-					<td width="21%" height="24"><strong>N&uacute;mero de Banheiros:<font
-						color="#FF0000">*</font></strong></td>
-					<td width="79%"><html:text maxlength="4" size="4"
-						property="numeroBanheiro" /></td>
-				</tr>
+					<tr>
+						<td width="21%" height="24"><strong>N&uacute;mero de Quartos:<font
+							color="#FF0000">*</font></strong></td>
+						<td width="79%">
+							<logic:present name="permitirAtualizarConclusao" scope="session">
+								<html:text maxlength="4" size="4" property="numeroQuarto" />
+							</logic:present>
+							<logic:notPresent name="permitirAtualizarConclusao" scope="session">
+								<html:text maxlength="4" size="4" property="numeroQuarto" disabled="true" />
+							</logic:notPresent>								
+						</td>
+					</tr>
+					<tr>
+						<td width="21%" height="24"><strong>N&uacute;mero de Banheiros:<font
+							color="#FF0000">*</font></strong></td>
+						<td width="79%">
+							<logic:present name="permitirAtualizarConclusao" scope="session">
+								<html:text maxlength="4" size="4" property="numeroBanheiro" />
+							</logic:present>
+							<logic:notPresent name="permitirAtualizarConclusao" scope="session">	
+								<html:text maxlength="4" size="4" property="numeroBanheiro" disabled="true" />
+							</logic:notPresent>							
+						</td>
+					</tr>
 				</logic:equal>
 
 				<tr>
@@ -353,41 +371,84 @@
 				<logic:equal name="<%=SistemaParametro.SISTEMA_PARAMETRO%>" property="parmId" value="<%="" + SistemaParametro.INDICADOR_EMPRESA_ADA%>" scope="session">
 				<tr>
 					<td width="21%" height="24"><strong>N&uacute;mero de Adultos:<font color="#FF0000"></font></strong></td>
-					<td width="79%"><html:text maxlength="4" size="4" property="numeroAdulto" onkeyup="somaMoradores();"/></td>
+					<td width="79%">
+						<logic:present name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="4" size="4" property="numeroAdulto" onkeyup="somaMoradores();"/>
+						</logic:present>
+						<logic:notPresent name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="4" size="4" property="numeroAdulto" onkeyup="somaMoradores();" disabled="true" />
+						</logic:notPresent>							
+					</td>
 				</tr>
 				<tr>
 					<td width="21%" height="24"><strong>N&uacute;mero de Crianças:<font	color="#FF0000"></font></strong></td>
-					<td width="79%"><html:text maxlength="4" size="4" property="numeroCrianca" onkeyup="somaMoradores();"/></td>
+					<td width="79%">
+						<logic:present name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="4" size="4" property="numeroCrianca" onkeyup="somaMoradores();"/>
+						</logic:present>
+						<logic:notPresent name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="4" size="4" property="numeroCrianca" onkeyup="somaMoradores();" disabled="true" />
+						</logic:notPresent>					
+					</td>
 				</tr>				
 				</logic:equal>
 
 				<logic:present name="indicadorCamposObrigatorios" scope="session">
 				<tr>
 					<td height="24"><strong>N&uacute;mero de Moradores:<font color="#FF0000">*</font></strong></td>
-					<td><html:text maxlength="4" size="4" property="numeroMoradores" /></td>
+					<td>
+						<logic:present name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="4" size="4" property="numeroMoradores" />
+						</logic:present>
+						<logic:notPresent name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="4" size="4" property="numeroMoradores" disabled="true" />
+						</logic:notPresent>					
+					</td>
 				</tr>		
 				</logic:present>
 				<logic:notPresent name="indicadorCamposObrigatorios" scope="session">
 				<tr>
 					<td height="24"><strong>N&uacute;mero de Moradores:<font color="#FF0000"></font></strong></td>
-					<td><html:text maxlength="4" size="4" property="numeroMoradores" /></td>
+					<td>
+						<logic:present name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="4" size="4" property="numeroMoradores" />
+						</logic:present>
+						<logic:notPresent name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="4" size="4" property="numeroMoradores" disabled="true" />
+						</logic:notPresent>												
+					</td>
 				</tr>		
 				</logic:notPresent>
 				
 				<logic:equal name="<%=SistemaParametro.SISTEMA_PARAMETRO%>" property="parmId" value="<%="" + SistemaParametro.INDICADOR_EMPRESA_ADA%>" scope="session">
 				<tr>
 					<td height="24"><strong>N&uacute;mero de Moradores que Trabalham:<font color="#FF0000"></font></strong></td>
-					<td><html:text maxlength="4" size="4" property="numeroMoradorTrabalhador" onkeyup="validaNumeroMoradorTrabalhador();"/></td>
+					<td>
+						<logic:present name="permitirAtualizarConclusao" scope="session">					
+							<html:text maxlength="4" size="4" property="numeroMoradorTrabalhador" onkeyup="validaNumeroMoradorTrabalhador();"/>
+						</logic:present>
+						<logic:notPresent name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="4" size="4" disabled="true" property="numeroMoradorTrabalhador" onkeyup="validaNumeroMoradorTrabalhador();"/>
+						</logic:notPresent>							
+					</td>
 				</tr>
 				<tr>
                    	<td>
                    		<p><strong>Renda Familiar:</strong></p>
                    	</td>
                    	<td>
-                   		<html:select property="faixaRendaFamiliar">
-		                 <html:option value="-1">&nbsp;</html:option>
-                            <html:options collection="rendaFamiliarFaixas" labelProperty="faixaCompletaComId" property="id"/>
-                      </html:select>
+                   		<logic:present name="permitirAtualizarConclusao" scope="session">
+                   			<html:select property="faixaRendaFamiliar">
+		                 		<html:option value="-1">&nbsp;</html:option>
+                            	<html:options collection="rendaFamiliarFaixas" labelProperty="faixaCompletaComId" property="id"/>
+                      		</html:select>
+						</logic:present>
+						<logic:notPresent name="permitirAtualizarConclusao" scope="session">
+                   			<html:select property="faixaRendaFamiliar" disabled="true" >
+		                 		<html:option value="-1">&nbsp;</html:option>
+                            	<html:options collection="rendaFamiliarFaixas" labelProperty="faixaCompletaComId" property="id"/>
+                      		</html:select>						
+						</logic:notPresent>                      		
                    	</td>
                   </tr>				
 				<tr>
@@ -397,21 +458,35 @@
 				</tr>
 				<tr>
 					<td height="24"><strong>N&uacute;mero de IPTU:</strong></td>
-					<td><logic:equal name="tarifaSocial" value="1">
-						<html:text maxlength="20" size="20" property="numeroIptu"
-							disabled="true" />
-					</logic:equal> <logic:notEqual name="tarifaSocial" value="1">
-						<html:text maxlength="20" size="20" property="numeroIptu" />
-					</logic:notEqual></td>
+					<td>
+						<logic:present name="permitirAtualizarConclusao" scope="session">
+							<logic:equal name="tarifaSocial" value="1">
+								<html:text maxlength="20" size="20" property="numeroIptu" disabled="true" />
+							</logic:equal> 
+							<logic:notEqual name="tarifaSocial" value="1">
+								<html:text maxlength="20" size="20" property="numeroIptu" />
+							</logic:notEqual>
+						</logic:present>
+						<logic:notPresent name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="20" size="20" property="numeroIptu" disabled="true" />
+						</logic:notPresent>							
+					</td>
 				</tr>
 				<tr>
 					<td height="24"><strong>Contrato Companhia de Energia:</strong></td>
-					<td><logic:equal name="tarifaSocial" value="1">
-						<html:text maxlength="10" size="10" property="numeroContratoCelpe"
-							disabled="true" />
-					</logic:equal> <logic:notEqual name="tarifaSocial" value="1">
-						<html:text maxlength="10" size="10" property="numeroContratoCelpe" />
-					</logic:notEqual></td>
+					<td>
+						<logic:present name="permitirAtualizarConclusao" scope="session">
+							<logic:equal name="tarifaSocial" value="1">
+								<html:text maxlength="10" size="10" property="numeroContratoCelpe" disabled="true" />
+							</logic:equal> 
+							<logic:notEqual name="tarifaSocial" value="1">
+								<html:text maxlength="10" size="10" property="numeroContratoCelpe" />
+							</logic:notEqual>
+						</logic:present>
+						<logic:notPresent name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="10" size="10" property="numeroContratoCelpe" disabled="true" />
+						</logic:notPresent>							
+					</td>
 				</tr>
 
 				<tr>
@@ -430,15 +505,25 @@
 				</tr>
 				<tr>
 					<td height="24"><strong>Coordenadas UTM X:</strong></td>
-					<td><html:text maxlength="25" property="cordenadasUtmX"
-						style="text-align: right;"
-						 /></td>
+					<td>
+						<logic:present name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="25" property="cordenadasUtmX"	style="text-align: right;" />
+						</logic:present>
+						<logic:notPresent name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="25" property="cordenadasUtmX"	style="text-align: right;" disabled="true" />
+						</logic:notPresent>					
+					</td>
 				</tr>
 				<tr>
 					<td height="24"><strong>Coordenadas UTM Y:</strong></td>
-					<td><html:text maxlength="25" property="cordenadasUtmY"
-						style="text-align: right;"
-						 /></td>
+					<td>
+						<logic:present name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="25" property="cordenadasUtmY"	style="text-align: right;" />
+						</logic:present>
+						<logic:notPresent name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="25" property="cordenadasUtmY"	style="text-align: right;" disabled="true" />
+						</logic:notPresent>							
+					</td>
 				</tr>
 				<tr>
 					<td height="24" colspan="2">
@@ -450,33 +535,54 @@
 				<logic:equal name="<%=SistemaParametro.SISTEMA_PARAMETRO%>" property="parmId" value="<%="" + SistemaParametro.INDICADOR_EMPRESA_ADA%>" scope="session">
 				<tr>
 					<td width="10%"><strong>Imóvel Principal:</strong></td>
-					<td width="90%"><html:text property="idImovel" maxlength="9"
-						size="9"
-						onkeypress="javascript:return validaEnter(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelConclusaoAction&pesquisar=SIM', 'idImovel');" />
-					<a
-						href="javascript:abrirPopup('exibirPesquisarImovelAction.do', 400, 800);"><img
-						width="23" height="21"
-						src="<bean:message key="caminho.imagens"/>pesquisa.gif" border="0" /></a>
+					<td width="90%">
+						<logic:present name="permitirAtualizarConclusao" scope="session">
+							<html:text property="idImovel" maxlength="9" size="9"
+								onkeypress="javascript:return validaEnter(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelConclusaoAction&pesquisar=SIM', 'idImovel');" />
+							<a href="javascript:abrirPopup('exibirPesquisarImovelAction.do', 400, 800);">
+								<img width="23" height="21"	src="<bean:message key="caminho.imagens"/>pesquisa.gif" border="0" />
+							</a>
 
-		   		        <logic:present name="idImovelPrincipalNaoEncontrado" scope="request">
-                        	<input type="text" name="matriculaImovelPrincipal" size="50" readonly="true" style="background-color:#EFEFEF; border:0; color: #ff0000"
-                        		value="${valorMatriculaImovelPrincipal}">
-                        </logic:present>
-                        <logic:notPresent name="idImovelPrincipalNaoEncontrado" scope="request">
-                        	<logic:present name="valorMatriculaImovelPrincipal" scope="request">
-                        	<input type="text" name="matriculaImovelPrincipal" size="50" readonly="true" style="background-color:#EFEFEF; border:0; color: #000000"
-    	                    	value="<bean:write name="valorMatriculaImovelPrincipal" scope="request" />">
+		   		        	<logic:present name="idImovelPrincipalNaoEncontrado" scope="request">
+                        		<input type="text" name="matriculaImovelPrincipal" size="50" readonly="readonly" style="background-color:#EFEFEF; border:0; color: #ff0000"
+                        			value="${valorMatriculaImovelPrincipal}">
                         	</logic:present>
-                        	<logic:notPresent name="valorMatriculaImovelPrincipal" scope="request">
-                        	<input type="text" name="matriculaImovelPrincipal" size="50" readonly="true" style="background-color:#EFEFEF; border:0; color: #000000"
-	                        	value="">
+                        	<logic:notPresent name="idImovelPrincipalNaoEncontrado" scope="request">
+                        		<logic:present name="valorMatriculaImovelPrincipal" scope="request">
+                        			<input type="text" name="matriculaImovelPrincipal" size="50" readonly="readonly" style="background-color:#EFEFEF; border:0; color: #000000"
+    	                    				value="<bean:write name="valorMatriculaImovelPrincipal" scope="request" />">
+                        		</logic:present>
+                        		<logic:notPresent name="valorMatriculaImovelPrincipal" scope="request">
+                        			<input type="text" name="matriculaImovelPrincipal" size="50" readonly="readonly" style="background-color:#EFEFEF; border:0; color: #000000"
+	                        				value="">
+                        		</logic:notPresent>
                         	</logic:notPresent>
-                        </logic:notPresent>
+                        	
+							<a href="javascript:limpaImovelPrincipal()"> 
+								<img src="<bean:message key="caminho.imagens"/>limparcampo.gif"	border="0" title="Apagar" />
+							</a>                        	
+						</logic:present>
+						<logic:notPresent name="permitirAtualizarConclusao" scope="session">                        	
+							<html:text property="idImovel" maxlength="9" size="9"  disabled="true"
+								onkeypress="javascript:return validaEnter(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelConclusaoAction&pesquisar=SIM', 'idImovel');" />
+
+		   		        	<logic:present name="idImovelPrincipalNaoEncontrado" scope="request">
+                        		<input type="text" name="matriculaImovelPrincipal" disabled="disabled" size="50" readonly="readonly" style="background-color:#EFEFEF; border:0; color: #ff0000"
+                        			value="${valorMatriculaImovelPrincipal}">
+                        	</logic:present>
+                        	<logic:notPresent name="idImovelPrincipalNaoEncontrado" scope="request">
+                        		<logic:present name="valorMatriculaImovelPrincipal" scope="request">
+                        			<input type="text" name="matriculaImovelPrincipal" disabled="disabled" size="50" readonly="readonly" style="background-color:#EFEFEF; border:0; color: #000000"
+    	                    				value="<bean:write name="valorMatriculaImovelPrincipal" scope="request" />">
+                        		</logic:present>
+                        		<logic:notPresent name="valorMatriculaImovelPrincipal" scope="request">
+                        			<input type="text" name="matriculaImovelPrincipal" disabled="disabled" size="50" readonly="readonly" style="background-color:#EFEFEF; border:0; color: #000000"
+	                        				value="">
+                        		</logic:notPresent>
+                        	</logic:notPresent>
+						</logic:notPresent>
 
 
-						<a href="javascript:limpaImovelPrincipal()"> <img
-						src="<bean:message key="caminho.imagens"/>limparcampo.gif"
-						border="0" title="Apagar" /></a>
 					</td>
 				</tr>
 				<tr>
@@ -489,7 +595,7 @@
 								bgcolor="#99CCFF" bordercolor="#99CCFF">
 								<!--header da tabela interna -->
 								<tr>
-									<td align="center"><strong>Endere&ccedil;o</td>
+									<td align="center"><strong>Endere&ccedil;o</strong></td>
 								</tr>
 							</table>
 							</td>
@@ -533,43 +639,69 @@
 				<tr>
 					<td width="26%"><strong>Funcionário:</strong></td>
 					<td width="74%">
-						
-						<html:text maxlength="9" 
-							property="idFuncionario" 
-							size="9"
-							onkeypress="javascript:return validaEnter(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelConclusaoAction', 'idFuncionario');"
-							onkeyup="limparCamposFuncionario();" /> 
-						
-						<a href="javascript:abrirPopup('exibirPesquisarFuncionarioAction.do?limpaForm=S', 495, 300);">
-							<img src="<bean:message key='caminho.imagens'/>pesquisa.gif"
-								width="23" 
-								height="21" 
-								alt="Pesquisar" 
-								border="0"></a> 
+						<logic:present name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="9" 
+								property="idFuncionario" 
+								size="9"
+								onkeypress="javascript:return validaEnter(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelConclusaoAction', 'idFuncionario');"
+								onkeyup="limparCamposFuncionario();" /> 
+						</logic:present>
+						<logic:notPresent name="permitirAtualizarConclusao" scope="session">
+							<html:text maxlength="9" disabled="true"
+								property="idFuncionario" 
+								size="9"
+								onkeypress="javascript:return validaEnter(event, 'atualizarImovelWizardAction.do?action=exibirAtualizarImovelConclusaoAction', 'idFuncionario');"
+								onkeyup="limparCamposFuncionario();" /> 
+						</logic:notPresent>
+							
+						<logic:present name="permitirAtualizarConclusao" scope="session">											
+							<a href="javascript:abrirPopup('exibirPesquisarFuncionarioAction.do?limpaForm=S', 495, 300);">
+								<img src="<bean:message key='caminho.imagens'/>pesquisa.gif"
+									width="23" 
+									height="21" 
+									alt="Pesquisar" 
+									border="0"></a>
+						</logic:present> 
 
 		   		        <logic:present name="idImovelPrincipalEncontrado" scope="request">
-								
-							<html:text property="nomeFuncionario" 
-								size="40"
-								maxlength="40" 
-								readonly="true"
-								style="background-color:#EFEFEF; border:0; color: #000000" />
-								
+		   		        	<logic:present name="permitirAtualizarConclusao" scope="session">
+								<html:text property="nomeFuncionario" 
+									size="40"
+									maxlength="40" 
+									readonly="true"
+									style="background-color:#EFEFEF; border:0; color: #000000" />
+							</logic:present>
+							<logic:notPresent name="permitirAtualizarConclusao" scope="session">
+								<html:text property="nomeFuncionario" disabled="true"
+									size="40"
+									maxlength="40" 
+									readonly="true"
+									style="background-color:#EFEFEF; border:0; color: #000000" />							
+							</logic:notPresent>
 						</logic:present> 
 						
 						<logic:notPresent name="idImovelPrincipalEncontrado" scope="request">						
-
-							<html:text property="nomeFuncionario" 
-								size="40"
-								maxlength="40" 
-								readonly="true"
-								style="background-color:#EFEFEF; border:0; color: red" />								
-								
+							<logic:present name="permitirAtualizarConclusao" scope="session">
+								<html:text property="nomeFuncionario" 
+									size="40"
+									maxlength="40" 
+									readonly="true"
+									style="background-color:#EFEFEF; border:0; color: red" />								
+							</logic:present>
+							<logic:notPresent name="permitirAtualizarConclusao" scope="session">
+								<html:text property="nomeFuncionario" disabled="true" 
+									size="40"
+									maxlength="40" 
+									readonly="true"
+									style="background-color:#EFEFEF; border:0; color: red" />								
+							</logic:notPresent>								
 						</logic:notPresent> 
 						
-						<a href="javascript:limparFuncionario();"> 
-							<img border="0" src="imagens/limparcampo.gif" height="21" width="23">
-						</a>
+						<logic:present name="permitirAtualizarConclusao" scope="session">
+							<a href="javascript:limparFuncionario();"> 
+								<img border="0" src="imagens/limparcampo.gif" height="21" width="23">
+							</a>
+						</logic:present>
 					</td>
 				</tr>
 				</logic:equal>

@@ -62,6 +62,51 @@ function cpf(){
  
 //-->
 </script>
+
+<logic:present name="TermoParcelamentoPreview" scope="session">
+	<logic:equal name="TermoParcelamentoPreview" value="True" scope="session">
+		<script language="JavaScript">
+				function fecharForm(){
+					var form = document.forms[0];
+				
+					form.action = "/gsan/efetuarParcelamentoDebitosWizardAction.do?action=exibirEfetuarParcelamentoDebitosProcesso4Action"
+					form.submit();
+				
+				}
+		</script>
+	</logic:equal>
+</logic:present>
+
+<logic:notPresent name="TermoParcelamentoPreview" scope="session">
+	<logic:notPresent name="TermoParcelamentoConsultar" scope="session">
+		<script language="JavaScript">
+				function fecharForm(){
+					var form = document.forms[0];
+					
+					form.action = "/gsan/efetuarParcelamentoDebitosWizardAction.do?retornoTelaSucesso=S&action=concluirProcessoAction"
+					form.submit();
+				
+				}
+		</script>
+	</logic:notPresent>			
+</logic:notPresent>
+
+<logic:notPresent name="TermoParcelamentoPreview" scope="session">
+	<logic:present name="TermoParcelamentoConsultar" scope="session">
+		<logic:equal name="TermoParcelamentoConsultar" value="True" scope="session">
+			<script language="JavaScript">
+					function fecharForm(){
+						var form = document.forms[0];
+						
+						form.action = "/gsan/exibirConsultarParcelamentoDebitoAction.do?codigoImovel=" + form.idImovel.value + "&codigoParcelamento=" + form.parcelamentoId.value						
+						form.submit();
+					
+					}
+			</script>
+		</logic:equal>			
+	</logic:present>	
+</logic:notPresent>
+
 </head>
 
 <body leftmargin="5" topmargin="5">
@@ -75,6 +120,7 @@ function cpf(){
 
 	<html:hidden property="id"/>
 	<html:hidden property="parcelamentoId"/>
+	<html:hidden property="idImovel"/>	
 
 <table width="770" border="0" cellspacing="4" cellpadding="0">
 	<tr>
@@ -172,7 +218,7 @@ function cpf(){
 				<tr>
 					<td align="left">
 						<input name="Voltar" type="button" class="bottonRightCol" value="Fechar" style="width: 80px"
-							onClick="javascript:history.back();" />
+							onClick="javascript:fecharForm();" />
 					</td>
 					
 					<td align="right" colspan="2">

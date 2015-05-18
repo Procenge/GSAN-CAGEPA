@@ -141,6 +141,11 @@ public class FiltroClienteImovel
 	/**
 	 * Description of the Field
 	 */
+	public final static String CLIENTE_ENDERECOS = "cliente.clienteEnderecos";
+
+	/**
+	 * Description of the Field
+	 */
 	public final static String IMOVEL_ID = "imovel.id";
 
 	/**
@@ -277,6 +282,8 @@ public class FiltroClienteImovel
 
 	public final static String DATA_FIM_RELACAO = "dataFimRelacao";
 
+	public final static String DATA_PREVISTA_FIM_RELACAO = "dataPrevistaFimRelacao";
+
 	public final static String DATA_INICIO_RELACAO = "dataInicioRelacao";
 
 	public final static String GERA_ARQUIVO_TEXTO = "cliente.indicadorGeraArquivoTexto";
@@ -367,5 +374,7 @@ public class FiltroClienteImovel
 	public final static String CLIENTE_UNIDADE_FEDERACAO = "cliente.unidadeFederacao";
 
 	public final static String INDICADOR_NOME_CONTA = "indicadorNomeConta";
+
+	public static final String CLIENTE_CLIENTE_ATIVIDADE_ECONOMICA = "cliente.atividadeEconomica";
 
 }

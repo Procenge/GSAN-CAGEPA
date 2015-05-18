@@ -277,4 +277,76 @@ public class RepositorioAcessoHBM
 		return retorno;
 	}
 
+	/**
+	 * 
+	 */
+
+	public Object[] consultarDadosAcessoDividaAtivaME(Usuario usuariologado) throws ErroRepositorioException{
+
+		Session session = HibernateUtil.getSession();
+		Object[] retorno = null;
+
+		String consulta = "select func.func_id, AR.ID_REGIONAL, MA.CODPERFIL" + " from funcionario func "
+						+ " inner join SCIADM.ACESSO_REGIONAL AR on func.func_id = AR.ID_USUARIO "
+						+ " inner join SCIADM.METACESSO MA on MA.USUARIO = func.FUNC_ID " + " where func.func_id = ?";
+
+		try{
+
+			Connection c = session.connection();
+			PreparedStatement statement = c.prepareStatement(consulta);
+			statement.setInt(1, usuariologado.getFuncionario().getId());
+
+			ResultSet rs = statement.executeQuery();
+
+			if(rs.next()){
+				retorno = new Object[3];
+				retorno[0] = rs.getInt(1);
+				retorno[1] = rs.getInt(2);
+				retorno[2] = rs.getInt(3);
+			}
+
+			rs.close();
+			statement.close();
+			c.close();
+
+		}catch(HibernateException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}catch(SQLException e){
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			HibernateUtil.closeSession(session);
+			consulta = null;
+		}
+
+		// TODO Auto-generated method stub
+		return retorno;
+	}
+
+	public Collection<String> pesquisarUsuarioSenha(Integer idUsuario, int quantidadeHistorico) throws ErroRepositorioException{
+
+		Collection<String> retorno = null;
+
+		// cria uma sessão com o hibernate
+		Session session = HibernateUtil.getSession();
+
+		// cria a variável que vai conter o hql
+		String consulta = null;
+
+		try{
+			consulta = "SELECT us.nomeSenha FROM UsuarioSenha us WHERE us.usuario.id = :idUsuario ORDER BY us.ultimaAlteracao DESC";
+
+			retorno = session.createQuery(consulta).setInteger("idUsuario", idUsuario).setMaxResults(quantidadeHistorico).list();
+
+			// erro no hibernate
+		}catch(HibernateException e){
+			// levanta a exceção para a próxima camada
+			throw new ErroRepositorioException(e, "Erro no Hibernate");
+		}finally{
+			// fecha a sessão com o hibernate
+			HibernateUtil.closeSession(session);
+		}
+
+		return retorno;
+	}
+
 }

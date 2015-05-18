@@ -5,6 +5,7 @@ import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.util.ConstantesConfig;
 import gcom.util.ControladorException;
 import gcom.util.ServiceLocator;
+import gcom.util.parametrizacao.ParametroGeral;
 
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
@@ -26,10 +27,11 @@ public class GeradorRelatorioCrystalImpl
 				implements ControladorRelatorio {
 
 	private static final String P_CAMINHO_IMAGEM = "P_CAMINHO_IMAGEM";
+
 	private static final String P_NM_ESTADO = "P_NM_ESTADO";
 
-	
-	
+	private static final String P_NM_EMPRESA = "P_NM_EMPRESA";
+
 	private RelatorioDAO relatorioDAO;
 
 	public RelatorioDAO getRelatorioDAO(){
@@ -52,6 +54,13 @@ public class GeradorRelatorioCrystalImpl
 			reportClientDoc.open(relatorio.getArquivo(), 0);
 
 			if(parametros != null && !parametros.isEmpty()){
+
+				try{
+					parametros.put("P_NOME_EMPRESA_RELATORIO", ParametroGeral.P_NOME_EMPRESA_RELATORIO.executar());
+				}catch(ControladorException e){
+					e.printStackTrace();
+				}
+
 				ParameterFieldController paramController = reportClientDoc.getDataDefController().getParameterFieldController();
 				Fields fields = reportClientDoc.getDataDefController().getDataDefinition().getParameterFields();
 				for(int i = 0; i < fields.size(); i++){
@@ -175,14 +184,13 @@ public class GeradorRelatorioCrystalImpl
 		String caminhoImagem = ConstantesConfig.getDiretorioDeployAplicacao()// DEPLOY BASE
 						.concat("gcom.ear/gcom.war"// WAR BASE
 						.concat(sistemaParametro.getImagemRelatorio().substring(1).replaceAll(".gif", ".jpg"))); // IMAGE
-		
+
 		System.out.println("XXX  Caminho da Imagem " + caminhoImagem);
-
-
 
 		parametrosConvertidos.put(P_CAMINHO_IMAGEM, caminhoImagem);
 
 		parametrosConvertidos.put(P_NM_ESTADO, sistemaParametro.getNomeEstado());
+		parametrosConvertidos.put(P_NM_EMPRESA, sistemaParametro.getNomeEmpresa());
 
 	}
 }

@@ -81,10 +81,9 @@ import gcom.cadastro.imovel.Imovel;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.micromedicao.hidrometro.FiltroHidrometro;
-import gcom.micromedicao.hidrometro.FiltroHidrometroInstalacaoHistorico;
-import gcom.micromedicao.hidrometro.Hidrometro;
-import gcom.micromedicao.hidrometro.HidrometroInstalacaoHistorico;
+import gcom.micromedicao.bean.OrdemServicoManutencaoHidrometroHelper;
+import gcom.micromedicao.hidrometro.*;
+import gcom.util.Util;
 import gcom.util.filtro.FiltroParametro;
 import gcom.util.filtro.ParametroSimples;
 
@@ -246,6 +245,7 @@ public class ConsultarHistoricoInstalacaoHidrometroAction
 			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade("hidrometroDiametro");
 			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade("hidrometroCapacidade");
 			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade("hidrometroTipo");
+			filtroHidrometro.adicionarCaminhoParaCarregamentoEntidade(FiltroHidrometro.EMPRESA_ULTIMA_AFERICAO);
 
 			filtroHidrometro.adicionarParametro(new ParametroSimples(FiltroHidrometro.NUMERO_HIDROMETRO, codigoHidrometro));
 
@@ -264,6 +264,37 @@ public class ConsultarHistoricoInstalacaoHidrometroAction
 
 				// Manda o Hidrometro pelo request
 				httpServletRequest.setAttribute("hidrometro", hidrometro);
+
+				// Dados das Ordens de Servico
+				Collection<OrdemServicoManutencaoHidrometroHelper> colecaoOrdemServicoManutencaoHidrometroHelper = fachada
+								.pesquisarDadosOrdensServicoManutencaoHidrometro(hidrometro.getId());
+
+				if(!Util.isVazioOrNulo(colecaoOrdemServicoManutencaoHidrometroHelper)){
+
+					sessao.setAttribute("colecaoOrdemServicoManutencaoHidrometroHelper", colecaoOrdemServicoManutencaoHidrometroHelper);
+				}else{
+
+					sessao.removeAttribute("colecaoOrdemServicoManutencaoHidrometroHelper");
+				}
+
+				// Histórico de Aferições relacionadas ao hidrômetro
+				FiltroHidrometroHistoricoAfericao filtroHidrometroHistoricoAfericao = new FiltroHidrometroHistoricoAfericao();
+				filtroHidrometroHistoricoAfericao.adicionarParametro(new ParametroSimples(FiltroHidrometroHistoricoAfericao.HIDROMETRO_ID,
+								hidrometro.getId()));
+				filtroHidrometroHistoricoAfericao
+								.adicionarCaminhoParaCarregamentoEntidade(FiltroHidrometroHistoricoAfericao.HIDROMETRO_CONDICAO);
+				filtroHidrometroHistoricoAfericao.adicionarCaminhoParaCarregamentoEntidade(FiltroHidrometroHistoricoAfericao.FUNCIONARIO);
+
+				Collection<HidrometroHistoricoAfericao> colecaoHidrometroHistoricoAfericao = fachada.pesquisar(
+								filtroHidrometroHistoricoAfericao, HidrometroHistoricoAfericao.class.getName());
+
+				if(!Util.isVazioOrNulo(colecaoHidrometroHistoricoAfericao)){
+
+					sessao.setAttribute("colecaoHidrometroHistoricoAfericao", colecaoHidrometroHistoricoAfericao);
+				}else{
+
+					sessao.removeAttribute("colecaoHidrometroHistoricoAfericao");
+				}
 
 				// Faz uma busca do historico de instalacao do hidrometro para
 				// mostrar na pagina

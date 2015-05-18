@@ -76,22 +76,9 @@
 
 package gcom.relatorio.faturamento;
 
-import gcom.arrecadacao.pagamento.FiltroGuiaPagamentoGeral;
-import gcom.arrecadacao.pagamento.FiltroPagamento;
-import gcom.arrecadacao.pagamento.FiltroPagamentoHistorico;
-import gcom.arrecadacao.pagamento.Pagamento;
-import gcom.arrecadacao.pagamento.PagamentoHistorico;
+import gcom.arrecadacao.pagamento.*;
 import gcom.batch.Relatorio;
-import gcom.cadastro.cliente.Cliente;
-import gcom.cadastro.cliente.ClienteGuiaPagamento;
-import gcom.cadastro.cliente.ClienteGuiaPagamentoHistorico;
-import gcom.cadastro.cliente.ClienteImovel;
-import gcom.cadastro.cliente.ClienteRelacaoTipo;
-import gcom.cadastro.cliente.ClienteTipo;
-import gcom.cadastro.cliente.FiltroCliente;
-import gcom.cadastro.cliente.FiltroClienteGuiaPagamento;
-import gcom.cadastro.cliente.FiltroClienteGuiaPagamentoHistorico;
-import gcom.cadastro.cliente.FiltroClienteImovel;
+import gcom.cadastro.cliente.*;
 import gcom.cadastro.imovel.FiltroImovel;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
@@ -117,12 +104,7 @@ import gcom.util.agendadortarefas.AgendadorTarefas;
 import gcom.util.filtro.ParametroSimples;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * classe responsável por criar o relatório de guia de pagamento manter
@@ -463,6 +445,20 @@ public class RelatorioManterGuiaPagamento
 
 						relatorioManterGuiaPagamentoPrestacoesBean.setDsSituacao(guiaPagamentoPrestacaoHelper
 										.getDescricaoDebitoCreditoSituacao());
+						
+						if(guiaPagamentoPrestacaoHelper.getIndicadorExecucaoFiscal().equals(ConstantesSistema.SIM)){
+							relatorioManterGuiaPagamentoPrestacoesBean.setStatusDividaAtiva("E");
+						}else if(guiaPagamentoPrestacaoHelper.getIndicadorDividaAtiva().equals(ConstantesSistema.SIM)){
+							relatorioManterGuiaPagamentoPrestacoesBean.setStatusDividaAtiva("A");
+						}else{
+							relatorioManterGuiaPagamentoPrestacoesBean.setStatusDividaAtiva("N");
+						}
+
+						if(guiaPagamentoPrestacaoHelper.getNumeroProcessoAdministrativoExecucaoFiscal() != null){
+							relatorioManterGuiaPagamentoPrestacoesBean
+											.setNumeroProcessoAdministrativoExecucaoFiscal(guiaPagamentoPrestacaoHelper
+															.getNumeroProcessoAdministrativoExecucaoFiscal().toString());
+						}
 
 						colecaoRelatorioManterGuiaPagamentoPrestacoesBean.add(relatorioManterGuiaPagamentoPrestacoesBean);
 					}
@@ -628,6 +624,12 @@ public class RelatorioManterGuiaPagamento
 		if(relatorioManterGuiaPagamentoParametrosHelper.getIdGuiaPagamento() != null){
 			parametros.put("idGuiaPagamento", relatorioManterGuiaPagamentoParametrosHelper.getIdGuiaPagamento());
 		}
+
+		Short exibirDividaAtivaColuna = ConstantesSistema.NAO;
+		if(fachada.existeProcessoExecucaoFiscal().equals(ConstantesSistema.SIM)){
+			exibirDividaAtivaColuna = ConstantesSistema.SIM;
+		}
+		parametros.put("exibirDividaAtivaColuna", exibirDividaAtivaColuna.toString());
 
 		RelatorioDataSource dataSource = new RelatorioDataSource((List) relatorioBeans);
 

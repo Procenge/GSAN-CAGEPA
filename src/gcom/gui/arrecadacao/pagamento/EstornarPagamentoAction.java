@@ -141,7 +141,15 @@ public class EstornarPagamentoAction
 
 		// Recupera o Pagamento Histórico selecionado pelo usuário
 		FiltroPagamentoHistorico filtroPagamentoHistoricoBase = new FiltroPagamentoHistorico();
+
 		filtroPagamentoHistoricoBase.adicionarParametro(new ParametroSimples(FiltroPagamentoHistorico.ID, idPagamentoHistorico));
+
+		filtroPagamentoHistoricoBase.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.IMOVEL);
+		filtroPagamentoHistoricoBase.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.CLIENTE);
+		filtroPagamentoHistoricoBase.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.GUIA_PAGAMENTO_GERAL);
+		filtroPagamentoHistoricoBase.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.CONTA);
+		filtroPagamentoHistoricoBase.adicionarCaminhoParaCarregamentoEntidade(FiltroPagamentoHistorico.DEBITO_A_COBRAR);
+
 		Collection<PagamentoHistorico> colecaoPagamentoHistoricoBase = fachada.pesquisar(filtroPagamentoHistoricoBase,
 						PagamentoHistorico.class.getName());
 

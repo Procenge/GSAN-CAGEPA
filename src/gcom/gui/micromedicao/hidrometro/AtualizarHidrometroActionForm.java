@@ -156,18 +156,30 @@ public class AtualizarHidrometroActionForm
 
 	private String fatorConversao;
 
-	private String dataUltimaRevisao;
-
 	private String numeroLeituraAcumulada;
 
 	private String codigoFormatoNumeracao;
 
 	private String idHidrometroTipoTurbina;
 
+	private String numeroNotaFiscal;
+
 	// essa variável é usada na tela de manter do hidrometro
 	// para verificar se o botão atualizarConjuntoHidrometro vai ficar
 	// abilitado ou não.
 	private String conjuntoHidrometro;
+
+	private String loteEntrega;
+
+	public String getLoteEntrega(){
+
+		return loteEntrega;
+	}
+
+	public void setLoteEntrega(String loteEntrega){
+
+		this.loteEntrega = loteEntrega;
+	}
 
 	/**
 	 * Retorna o valor de anoFabricacao
@@ -738,23 +750,6 @@ public class AtualizarHidrometroActionForm
 	}
 
 	/**
-	 * @return the dataUltimaRevisao
-	 */
-	public String getDataUltimaRevisao(){
-
-		return dataUltimaRevisao;
-	}
-
-	/**
-	 * @param dataUltimaRevisao
-	 *            the dataUltimaRevisao to set
-	 */
-	public void setDataUltimaRevisao(String dataUltimaRevisao){
-
-		this.dataUltimaRevisao = dataUltimaRevisao;
-	}
-
-	/**
 	 * @return the numeroLeituraAcumulada
 	 */
 	public String getNumeroLeituraAcumulada(){
@@ -789,6 +784,16 @@ public class AtualizarHidrometroActionForm
 	public void setIdHidrometroTipoTurbina(String idHidrometroTipoTurbina){
 
 		this.idHidrometroTipoTurbina = idHidrometroTipoTurbina;
+	}
+
+	public String getNumeroNotaFiscal(){
+
+		return numeroNotaFiscal;
+	}
+
+	public void setNumeroNotaFiscal(String numeroNotaFiscal){
+
+		this.numeroNotaFiscal = numeroNotaFiscal;
 	}
 
 }

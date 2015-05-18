@@ -138,7 +138,6 @@ public class ExibirInserirRegistroAtendimentoDadosSolicitanteAction
 
 		/*
 		 * Pesquisas realizadas a partir do ENTER
-		 * 
 		 * ==========================================================================================
 		 * =================
 		 */
@@ -147,9 +146,29 @@ public class ExibirInserirRegistroAtendimentoDadosSolicitanteAction
 
 		if(pesquisarCliente != null && !pesquisarCliente.equalsIgnoreCase("")){
 
+			SolicitacaoTipoEspecificacao solicitacaoTipoEspecificacao = null;
+			if(!Util.isVazioOuBranco(form.getEspecificacao())){
+				FiltroSolicitacaoTipoEspecificacao filtroSolicitacaoTipoEspecificacao = new FiltroSolicitacaoTipoEspecificacao();
+				filtroSolicitacaoTipoEspecificacao.adicionarParametro(new ParametroSimples(FiltroSolicitacaoTipoEspecificacao.ID, Integer
+								.valueOf(form.getEspecificacao())));
+
+				solicitacaoTipoEspecificacao = (SolicitacaoTipoEspecificacao) Util.retonarObjetoDeColecao(fachada.pesquisar(
+								filtroSolicitacaoTipoEspecificacao,
+								SolicitacaoTipoEspecificacao.class.getName()));
+
+			}
 			// [FS0027] – Verificar informação do imóvel
-			Cliente cliente = fachada.verificarInformacaoImovel(Util.converterStringParaInteger(form.getIdCliente()), Util
+			Cliente cliente = null;
+
+			if(solicitacaoTipoEspecificacao == null || solicitacaoTipoEspecificacao.getIndicadorCliente().equals(ConstantesSistema.SIM)){
+				cliente = fachada.verificarInformacaoImovel(Util.converterStringParaInteger(form.getIdCliente()),
+								Util
 							.converterStringParaInteger(form.getIdImovel()), false);
+			}else{
+				if(form.getIdCliente() != null){
+					cliente = fachada.pesquisarClienteDigitado(Integer.valueOf(form.getIdCliente()));
+				}
+			}
 
 			if(cliente == null){
 
@@ -203,7 +222,7 @@ public class ExibirInserirRegistroAtendimentoDadosSolicitanteAction
 										&& fone.getIndicadorTelefonePadrao().equals(ConstantesSistema.INDICADOR_TELEFONE_PRINCIPAL)){
 
 							form.setClienteFoneSelected(fone.getId().toString());
-							form.setFoneClienteFoneSelected(fone.getDddTelefone().toString());
+							form.setFoneClienteFoneSelected((fone.getDddTelefone() != null ? fone.getDddTelefone().toString() : ""));
 							form.setClienteFoneSelected(fone.getId().toString());
 							break;
 						}
@@ -304,10 +323,8 @@ public class ExibirInserirRegistroAtendimentoDadosSolicitanteAction
 
 		/*
 		 * Fim das pesquisas realizadas pelo ENTER
-		 * 
 		 * ==========================================================================================
 		 * =================
-		 * 
 		 * ==========================================================================================
 		 * =================
 		 */
@@ -691,8 +708,8 @@ public class ExibirInserirRegistroAtendimentoDadosSolicitanteAction
 				filtroMunicipio.adicionarParametro(new ParametroSimples(FiltroMunicipio.ID, idMunicipio));
 				filtroMunicipio.adicionarParametro(new ParametroSimples(FiltroMunicipio.INDICADOR_USO,
 								ConstantesSistema.INDICADOR_USO_ATIVO));
-				Collection<Municipio> colecaoMunicipio = (ArrayList<Municipio>) fachada.pesquisar(filtroMunicipio, Municipio.class
-								.getName());
+				Collection<Municipio> colecaoMunicipio = (ArrayList<Municipio>) fachada.pesquisar(filtroMunicipio,
+								Municipio.class.getName());
 
 				if(colecaoMunicipio == null || colecaoMunicipio.isEmpty()){
 					throw new ActionServletException("atencao.pesquisa_inexistente", null, "Município");
@@ -703,8 +720,8 @@ public class ExibirInserirRegistroAtendimentoDadosSolicitanteAction
 				filtroLocalidade.adicionarParametro(new ParametroSimples(FiltroLocalidade.INDICADORUSO,
 								ConstantesSistema.INDICADOR_USO_ATIVO));
 
-				Collection<Localidade> colecaoLocalidade = (ArrayList<Localidade>) fachada.pesquisar(filtroLocalidade, Localidade.class
-								.getName());
+				Collection<Localidade> colecaoLocalidade = (ArrayList<Localidade>) fachada.pesquisar(filtroLocalidade,
+								Localidade.class.getName());
 
 				if(colecaoLocalidade == null || colecaoLocalidade.isEmpty()){
 					throw new ActionServletException("atencao.pesquisa_inexistente", null, "Localidade");

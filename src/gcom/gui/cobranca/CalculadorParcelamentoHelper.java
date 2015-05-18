@@ -27,6 +27,11 @@ class CalculadorParcelamentoHelper {
 	public static void recalcularParcelamento(HttpServletRequest httpServletRequest, Fachada fachada, HttpSession sessao,
 					DynaActionForm efetuarParcelamentoDebitosActionForm, String verificaCalcula){
 
+		// String chavesSucumbenciasConta = (String)
+		// efetuarParcelamentoDebitosActionForm.get("chavesSucumbenciasConta");
+		// String chavesSucumbenciasGuia = (String)
+		// efetuarParcelamentoDebitosActionForm.get("chavesSucumbenciasGuia");
+
 		String indicadorAcrescimosImpotualidade = (String) efetuarParcelamentoDebitosActionForm.get("indicadorAcrescimosImpotualidade");
 		String chavesPrestacoes = (String) efetuarParcelamentoDebitosActionForm.get("chavesPrestacoes");
 		// Pega variáveis da sessão
@@ -52,6 +57,9 @@ class CalculadorParcelamentoHelper {
 		BigDecimal valorAtualizacaoMonetaria = BigDecimal.ZERO;
 		BigDecimal valorJurosMora = BigDecimal.ZERO;
 		BigDecimal valorMulta = BigDecimal.ZERO;
+		BigDecimal valorAtualizacaoMonetariaSucumbencia = BigDecimal.ZERO;
+		BigDecimal valorJurosMoraSucumbencia = BigDecimal.ZERO;
+		BigDecimal valorSucumbencia = BigDecimal.ZERO;
 
 		if(colecaoContaValores != null && !colecaoContaValores.isEmpty()){
 			Iterator<ContaValoresHelper> contaValores = colecaoContaValores.iterator();
@@ -228,27 +236,38 @@ class CalculadorParcelamentoHelper {
 				Collection<GuiaPagamentoValoresHelper> colecaoGuiaHelperSelecionadas = fachada.retornarGuiaPagamentoValoresSelecionadas(
 								chavesPrestacoes, colecaoGuiasHelper);
 
+				BigDecimal atualizacaoSucumbencia = fachada.calcularValoresGuia(colecaoGuiaHelperSelecionadas,
+								ConstantesSistema.PARCELAMENTO_VALOR_GUIA_ATUALIZACAO_MONETARIA_SUCUMBENCIA);
+				BigDecimal jurosMoraSucumbencia = fachada.calcularValoresGuia(colecaoGuiaHelperSelecionadas,
+								ConstantesSistema.PARCELAMENTO_VALOR_GUIA_JUROS_MORA_SUCUMBENCIA);
+
 				BigDecimal valorTotalGuias = fachada.calcularValoresGuia(colecaoGuiaHelperSelecionadas,
 								ConstantesSistema.PARCELAMENTO_VALOR_GUIA_TOTAL);
 				BigDecimal valorTotalAcrescimoImpontualidadeGuias = fachada.calcularValoresGuia(colecaoGuiaHelperSelecionadas,
 								ConstantesSistema.PARCELAMENTO_VALOR_GUIA_ACRESCIMO_IMPONTUALIDADE);
-
-				valorDebitoTotalAtualizado = valorDebitoTotalAtualizado.subtract(valorGuiasForm);
-				valorDebitoTotalAtualizado = valorDebitoTotalAtualizado.add(valorTotalGuias);
-
 				if(indicadorAcrescimosImpotualidade.equals("1")){
 					// valorDebitoTotalAtualizado =
 					// valorDebitoTotalAtualizado.add(valorTotalAcrescimoImpontualidadeGuias);
 					valorAcrescimosImpontualidade = valorAcrescimosImpontualidade.add(valorTotalAcrescimoImpontualidadeGuias);
 				}
 
-				valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.add(fachada.calcularValoresGuia(colecaoGuiaHelperSelecionadas,
-								ConstantesSistema.PARCELAMENTO_VALOR_GUIA_ATUALIZACAO_MONETARIA));
-				valorJurosMora = valorJurosMora.add(fachada.calcularValoresGuia(colecaoGuiaHelperSelecionadas,
-								ConstantesSistema.PARCELAMENTO_VALOR_GUIA_JUROS_MORA));
+				valorAtualizacaoMonetaria = valorAtualizacaoMonetaria.add(
+								fachada.calcularValoresGuia(colecaoGuiaHelperSelecionadas,
+												ConstantesSistema.PARCELAMENTO_VALOR_GUIA_ATUALIZACAO_MONETARIA)).add(
+								atualizacaoSucumbencia);
+				valorJurosMora = valorJurosMora.add(
+								fachada.calcularValoresGuia(colecaoGuiaHelperSelecionadas,
+												ConstantesSistema.PARCELAMENTO_VALOR_GUIA_JUROS_MORA)).add(jurosMoraSucumbencia);
 				valorMulta = valorMulta.add(fachada.calcularValoresGuia(colecaoGuiaHelperSelecionadas,
 								ConstantesSistema.PARCELAMENTO_VALOR_GUIA_MULTA));
 
+				valorAtualizacaoMonetariaSucumbencia = valorAtualizacaoMonetariaSucumbencia.add(atualizacaoSucumbencia);
+				valorJurosMoraSucumbencia = valorJurosMoraSucumbencia.add(jurosMoraSucumbencia);
+				valorSucumbencia = valorSucumbencia.add(fachada.calcularValoresGuia(colecaoGuiaHelperSelecionadas,
+								ConstantesSistema.PARCELAMENTO_VALOR_GUIA_SUCUMBENCIA));
+
+				valorDebitoTotalAtualizado = valorDebitoTotalAtualizado.subtract(valorGuiasForm);
+				valorDebitoTotalAtualizado = valorDebitoTotalAtualizado.add(valorTotalGuias);
 				efetuarParcelamentoDebitosActionForm.set("valorGuiasPagamento", Util.formatarMoedaReal(valorTotalGuias));
 				sessao.setAttribute("colecaoGuiaPagamentoValoresSelecionadas", colecaoGuiaHelperSelecionadas);
 			}

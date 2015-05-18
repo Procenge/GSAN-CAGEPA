@@ -5,6 +5,8 @@
 <%@ taglib uri="/WEB-INF/struts-bean.tld" prefix="bean"%>
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
+<%@ page import="java.util.Date"%>
+<%@ page import="gcom.util.Util"%>
 
 <html:html>
 <head>
@@ -19,7 +21,7 @@
 <script language="JavaScript" src="<bean:message key="caminho.js"/>util.js"></script>
 <script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/ManutencaoRegistro.js"></script>
 <script language="JavaScript" src="<bean:message key="caminho.js"/>Calendario.js"></script>
-
+<script language="JavaScript" src="<bean:message key="caminho.js"/>validacao/regras_validator.js"></script>
 <%-- Novos Javascripts --%>
 
 <script language="JavaScript">
@@ -39,7 +41,6 @@
 		if(validaSelect() != false){
 	    	
 			if(form.situacaoOrdemServico.value == 2){
-				
 				var lista = new Array();
 		    	lista[0] = form.idOrdemServico.value;
 		    	lista[1] = form.dataRoteiro.value;
@@ -58,6 +59,16 @@
 		    	lista[1] = form.motivoNaoEncerramento.value;
 		    	lista[2] = form.idOrdemServico.value;
 		    	lista[3] = form.chaveEquipe.value;
+		    	
+		    	alert(form.dataVisita);
+		    	
+		    	if (form.dataVisita != undefined) {
+		    		lista[4] = form.dataVisita.value;
+		    		lista[5] = form.horaVisita.value;
+		    	} else {
+		    		lista[4] = '';
+		    		lista[5] = '';		    		
+		    	}
 		    	
 				window.opener.recuperarDadosPopup('', lista, 'situacaoOs');
 				window.close();
@@ -99,6 +110,18 @@
 			return false;
     	
     	}
+    	
+    	if (form.motivoVisitaImprodutiva.value == '1' && form.situacaoOrdemServico.value == <%=""+OrdemServico.SITUACAO_PENDENTE%>) {
+			if (!validateRequired(form) || !validateCaracterEspecial(form) || !validateDate(form)) {
+				return false;
+			} else {
+				if (form.horaVisita.value.length != 5) {
+					alert("Hora da visita inválida.")
+					return false;
+				}
+			}	
+    	}
+    	
     	return true;
 	}
 
@@ -108,6 +131,29 @@
    			concluir();
       	}
    }
+   
+   function modificarMotivoEncerramento() {
+		 var form = document.forms[0];	
+		 
+		form.action = 'exibirAcompanharRoteiroProgramacaoOrdemServicoInformarSituacaoAction.do?modificarMotivoEncerramento=S'
+		form.submit();	
+
+	} 
+   
+   function required () { 
+	     this.aa = new Array("dataVisita", "Informe Data da Visita.", new Function ("varName", "this.datePattern='dd/MM/yyyy';  return this[varName];"));
+	     this.ab = new Array("horaVisita", "Informe Hora da Visita.", new Function ("varName", " return this[varName];"));
+   } 
+
+    function caracteresespeciais () { 
+     this.aa = new Array("dataVisita", "Data da Visita possui caracteres especiais.", new Function ("varName", "this.datePattern='dd/MM/yyyy';  return this[varName];"));
+     this.ab = new Array("horaVisita", "Hora da Visita possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+    } 
+	
+    function DateValidations () { 
+     this.aa = new Array("dataVisita", "Data da Visita inválida.", new Function ("varName", "this.datePattern='dd/MM/yyyy';  return this[varName];"));
+    } 
+	    
 </script>
 </head>
 
@@ -121,6 +167,9 @@
 	
 	<html:hidden property="dataRoteiro"/>
 	<html:hidden property="chaveEquipe"/>
+	
+	<html:hidden property="motivoVisitaImprodutiva"/>
+	<html:hidden property="motivoCobrarVisitaImprodutiva"/>
 		
 	<table width="570" border="0" cellpadding="0" cellspacing="5">
 		<tr> 
@@ -235,7 +284,7 @@
 			        	</td>
 						<td>
 							<strong> 
-							<html:select property="motivoNaoEncerramento" style="width: 230px;">
+							<html:select property="motivoNaoEncerramento" style="width: 230px;" onchange="javascript:modificarMotivoEncerramento();">
 								<html:option
 									value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
 								</html:option>
@@ -249,6 +298,29 @@
 							</strong>
 						</td>
         			</tr>
+        			
+        		<logic:equal name="AcompanharRoteiroProgramacaoOrdemServicoActionForm"  property="motivoVisitaImprodutiva" value="1">
+					<tr>
+						<td HEIGHT="30"><strong>Data da Visita:<font color="#FF0000">*</font></strong></td>
+						<td>
+							<html:text property="dataVisita" size="11" maxlength="10"
+								tabindex="3" onkeyup="mascaraData(this, event)" />
+							<a
+								href="javascript:abrirCalendario('AcompanharRoteiroProgramacaoOrdemServicoActionForm', 'dataVisita');">
+							<img border="0"
+								src="<bean:message key='caminho.imagens'/>calendario.gif"
+								width="20" border="0" alt="Exibir Calendário" tabindex="4" /></a>
+						<strong>&nbsp;(dd/mm/aaaa)</strong></td>
+					</tr>
+					<tr>
+						<td HEIGHT="30"><strong>Hora da Visita:<font color="#FF0000">*</font></strong></td>
+						<td>
+							<html:text property="horaVisita" size="10" maxlength="5" tabindex="5"
+								onkeyup="mascaraHora(this, event)" />
+						<strong>&nbsp;(hh:mm)</strong></td>
+					</tr>   
+				</logic:equal>     			
+        			
 
 					<tr>
 						<logic:lessEqual name="AcompanharRoteiroProgramacaoOrdemServicoActionForm" property="qtdFotos" value="2">

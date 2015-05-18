@@ -5,14 +5,7 @@ import gcom.arrecadacao.Arrecadador;
 import gcom.arrecadacao.ArrecadadorMovimentoItem;
 import gcom.arrecadacao.FiltroArrecadador;
 import gcom.cadastro.imovel.Imovel;
-import gcom.cobranca.BoletoBancario;
-import gcom.cobranca.BoletoBancarioLancamentoEnvio;
-import gcom.cobranca.BoletoBancarioMotivoCancelamento;
-import gcom.cobranca.BoletoBancarioMovimentacao;
-import gcom.cobranca.BoletoBancarioSituacao;
-import gcom.cobranca.BoletoBancarioSituacaoHistorico;
-import gcom.cobranca.FiltroBoletoBancarioMovimentacao;
-import gcom.cobranca.FiltroBoletoBancarioSituacaoHistorico;
+import gcom.cobranca.*;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
@@ -145,7 +138,6 @@ public class ExibirManterBoletoBancarioAction
 				Collection<BoletoBancarioSituacaoHistorico> colecaoSituacaoHistorico = null;
 				Collection<BoletoBancarioMovimentacao> colecaoMovimentacao = null;
 				FiltroBoletoBancarioSituacaoHistorico filtroSituacaoHistorico = null;
-				FiltroBoletoBancarioMovimentacao filtroMovimentacao = null;
 
 				for(BoletoBancario boletoBancario : colecaoBoletoBancario){
 					Integer boletoBancarioId = boletoBancario.getId();
@@ -178,29 +170,14 @@ public class ExibirManterBoletoBancarioAction
 
 					// Verifica se não foi cancelado
 					if(motivoCancelamento == null){
-						// Verifica se não foi enviado ao banco
-						filtroMovimentacao = new FiltroBoletoBancarioMovimentacao();
-						filtroMovimentacao.adicionarParametro(new ParametroSimples(FiltroBoletoBancarioMovimentacao.BOLETO_BANCARIO_ID,
-										boletoBancarioId));
-						filtroMovimentacao.adicionarParametro(new ParametroSimples(
-										FiltroBoletoBancarioMovimentacao.BOLETO_BANCARIO_LANCAMENTO_ENVIO_ID,
-										BoletoBancarioLancamentoEnvio.ENTRADA_DE_TITULOS.getId()));
+						// Valida se o boleto por ser cancelado [UC3023][SB000B]
+						if(fachada.boletoBancarioPodeSerCancelado(boletoBancarioId)){
+							habilitarCancelamento = true;
+						}
 
-						colecaoMovimentacao = fachada.pesquisar(filtroMovimentacao, BoletoBancarioMovimentacao.class.getName());
-
-						if(!Util.isVazioOrNulo(colecaoMovimentacao)){
-							boletoBancarioMovimentacao = (BoletoBancarioMovimentacao) Util.retonarObjetoDeColecao(colecaoMovimentacao);
-
-							arrecadadorMovimentoItem = boletoBancarioMovimentacao.getArrecadadorMovimentoItem();
-
-							if(arrecadadorMovimentoItem == null){
-								habilitarCancelamento = true;
-							}
-
-							if(!habilitarCancelamento){
-								habilitarCancelamento = fachada
-												.verificaExistenciaBoletoAgregadorComSituacaoBaixadoEProtestado(boletoBancarioId);
-							}
+						if(!habilitarCancelamento){
+							habilitarCancelamento = fachada
+											.verificaExistenciaBoletoAgregadorComSituacaoBaixadoEProtestado(boletoBancarioId);
 						}
 					}
 

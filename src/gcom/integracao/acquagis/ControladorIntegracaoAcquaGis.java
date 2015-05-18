@@ -385,6 +385,7 @@ public class ControladorIntegracaoAcquaGis
 		Integer indicadorGuias = Integer.valueOf(2);
 		Integer indicadorAtualizar = Integer.valueOf(1);
 		Short indicadorConsiderarPagamentoNaoClassificado = 1;
+		int indicadorCalcularAcrescimosSucumbenciaAnterior = 2;
 		// Para auxiliar na formatação de uma data
 		SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
 		String referenciaInicial = "01/0001";
@@ -432,7 +433,7 @@ public class ControladorIntegracaoAcquaGis
 								indicadorDebito.intValue(), indicadorCredito.intValue(), indicadorNotas.intValue(),
 								indicadorGuias.intValue(), indicadorAtualizar.intValue(), null, null, new Date(), ConstantesSistema.SIM,
 								indicadorConsiderarPagamentoNaoClassificado, ConstantesSistema.SIM, ConstantesSistema.SIM,
-								ConstantesSistema.SIM);
+								ConstantesSistema.SIM, indicadorCalcularAcrescimosSucumbenciaAnterior, null);
 
 				LOGGER.info("=====> INCLUINDO OS DADOS NA TABELA CONTA ATUALIZADA DO IMÓVEL: " + idImovel + " <=====");
 				// 3. Incluir registro com o valor da conta + acrescimos

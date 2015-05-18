@@ -41,6 +41,7 @@
 
 package gcom.gui.cadastro.entidadebeneficente;
 
+import gcom.cadastro.empresa.Empresa;
 import gcom.cadastro.imovel.EntidadeBeneficente;
 import gcom.cadastro.imovel.FiltroEntidadeBeneficente;
 import gcom.fachada.Fachada;
@@ -103,6 +104,13 @@ public class AtualizarEntidadeBeneficenteAction
 			}
 		}
 
+		Integer idEmpresa = null;
+		if(form.get("idEmpresa") != null && !form.get("idEmpresa").equals("")){
+			idEmpresa = Integer.valueOf(form.get("idEmpresa").toString().trim());
+		}
+
+		
+		entidadeBeneficente.setEmpresa(new Empresa(idEmpresa));
 		entidadeBeneficente.setDebitoTipo(new DebitoTipo(Integer.parseInt(form.get("idDebitoTipo").toString())));
 		entidadeBeneficente.setUltimaAlteracao(new Date());
 		entidadeBeneficente.setIndicadorUso(Short.parseShort(form.get("indicadorUso").toString()));

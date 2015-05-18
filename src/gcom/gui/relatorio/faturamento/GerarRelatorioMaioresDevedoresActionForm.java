@@ -76,6 +76,8 @@
 
 package gcom.gui.relatorio.faturamento;
 
+import java.util.Collection;
+
 import org.apache.struts.action.ActionForm;
 
 /**
@@ -94,6 +96,12 @@ public class GerarRelatorioMaioresDevedoresActionForm
 	private String nomeLocalidade;
 
 	private String qntRegistros;
+
+	private String idTipoCliente;
+
+	private String[] tipoCliente;
+
+	private Collection colecaoClienteTipo;
 
 	public String getLocalidade(){
 
@@ -123,6 +131,36 @@ public class GerarRelatorioMaioresDevedoresActionForm
 	public void setNomeLocalidade(String nomeLocalidade){
 
 		this.nomeLocalidade = nomeLocalidade;
+	}
+
+	public String getIdTipoCliente(){
+
+		return idTipoCliente;
+	}
+
+	public void setIdTipoCliente(String idTipoCliente){
+
+		this.idTipoCliente = idTipoCliente;
+	}
+
+	public String[] getTipoCliente(){
+
+		return tipoCliente;
+	}
+
+	public void setTipoCliente(String[] tipoCliente){
+
+		this.tipoCliente = tipoCliente;
+	}
+
+	public Collection getColecaoClienteTipo(){
+
+		return colecaoClienteTipo;
+	}
+
+	public void setColecaoClienteTipo(Collection colecaoClienteTipo){
+
+		this.colecaoClienteTipo = colecaoClienteTipo;
 	}
 
 }

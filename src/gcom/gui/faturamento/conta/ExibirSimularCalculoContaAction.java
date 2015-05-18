@@ -92,8 +92,10 @@ import gcom.faturamento.consumotarifa.FiltroConsumoTarifa;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.micromedicao.ParametroMicromedicao;
 
 import java.util.Collection;
 import java.util.Date;
@@ -265,6 +267,27 @@ public class ExibirSimularCalculoContaAction
 			sessao.setAttribute("existeColecao", "nao");
 		}else if(sessao.getAttribute("adicionar") != null){
 			sessao.removeAttribute("existeColecao");
+		}
+
+		String pAcumularConsumoEsgotoPoco = null;
+		try{
+
+			pAcumularConsumoEsgotoPoco = ParametroMicromedicao.P_ACUMULA_CONSUMO_ESGOTO_POCO.executar();
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
+
+		// Caso a empresa não acumule o volume do poço com o volume da ligação de água para cálculo
+		// do valor de esgoto
+		if(pAcumularConsumoEsgotoPoco.equals(ConstantesSistema.NAO.toString())){
+
+			simularCalculoContaActionForm.setHabilitarConsumoFixoPoco(ConstantesSistema.SIM.toString());
+
+		}else{
+
+			simularCalculoContaActionForm.setHabilitarConsumoFixoPoco(ConstantesSistema.NAO.toString());
+			simularCalculoContaActionForm.setConsumoFixoPoco(null);
 		}
 
 		/*

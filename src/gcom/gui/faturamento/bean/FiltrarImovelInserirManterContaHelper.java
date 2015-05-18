@@ -127,6 +127,10 @@ public class FiltrarImovelInserirManterContaHelper {
 
 	private String nomeBairro;
 
+	Collection<Integer> colecaoFaturamentoGrupo;
+
+	Collection<Integer> colecaoLogradouro;
+
 	public Collection getColecaoQuadraSelecionada(){
 
 		if(this.quadras != null && !this.quadras.equals("")){
@@ -321,6 +325,26 @@ public class FiltrarImovelInserirManterContaHelper {
 	public void setNomeBairro(String nomeBairro){
 
 		this.nomeBairro = nomeBairro;
+	}
+
+	public Collection<Integer> getColecaoFaturamentoGrupo(){
+
+		return colecaoFaturamentoGrupo;
+	}
+
+	public void setColecaoFaturamentoGrupo(Collection<Integer> colecaoFaturamentoGrupo){
+
+		this.colecaoFaturamentoGrupo = colecaoFaturamentoGrupo;
+	}
+
+	public Collection<Integer> getColecaoLogradouro(){
+
+		return colecaoLogradouro;
+	}
+
+	public void setColecaoLogradouro(Collection<Integer> colecaoLogradouro){
+
+		this.colecaoLogradouro = colecaoLogradouro;
 	}
 
 }

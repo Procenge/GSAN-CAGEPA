@@ -101,6 +101,7 @@ import gcom.util.filtro.ParametroNulo;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
+import gcom.util.parametrizacao.cobranca.ParametroCobranca;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
@@ -175,6 +176,12 @@ public class ExibirConsultarDebitoImovelAction
 			}else{
 				sessao.removeAttribute("indicadorEmiteAvisoEOrdemCorteIndividual");
 			}
+
+			if(!ParametroCobranca.P_MODELO_CERTIDAO_POSITIVA_DEBITOS.executar().equals(ConstantesSistema.VALOR_NAO_INFORMADO)){
+				sessao.setAttribute("indicadorCertidaoPositivaDebitos", true);
+			}else{
+				sessao.removeAttribute("indicadorCertidaoPositivaDebitos");
+			}
 		}catch(ControladorException e){
 			throw new ActionServletException(e.getMessage(), e);
 		}
@@ -242,6 +249,7 @@ public class ExibirConsultarDebitoImovelAction
 
 		// seta valores constantes para chamar o metodo que consulta debitos do imovel
 		Integer tipoImovel = Integer.valueOf(1);
+		Integer tipoCliente = Integer.valueOf(2);
 		Integer indicadorPagamento = Integer.valueOf(1);
 		Integer indicadorConta = Integer.valueOf(1);
 		Integer indicadorDebito = Integer.valueOf(1);
@@ -249,6 +257,7 @@ public class ExibirConsultarDebitoImovelAction
 		Integer indicadorNotas = Integer.valueOf(1);
 		Integer indicadorGuias = Integer.valueOf(1);
 		Integer indicadorAtualizar = Integer.valueOf(1);
+		int indicadorCalcularAcrescimosSucumbenciaAnterior = 2;
 
 		// Obtendo dados do imovel
 		if(!Util.isVazioOuBranco(codigoImovel) && Integer.parseInt(codigoImovel) > 0){
@@ -323,12 +332,31 @@ public class ExibirConsultarDebitoImovelAction
 			httpServletRequest.setAttribute("enderecoFormatado", enderecoFormatado);
 		}
 
+		Integer idClienteOrigem = null;
+		Integer idRelacaoClienteOrigem = null;
+
+		if(httpServletRequest.getAttribute("idClienteDebito") != null && httpServletRequest.getAttribute("idRelacaoClienteDebito") != null){
+			idClienteOrigem = Integer.valueOf(httpServletRequest.getAttribute("idClienteDebito").toString());
+			idRelacaoClienteOrigem = Integer.valueOf(httpServletRequest.getAttribute("idRelacaoClienteDebito").toString());
+		}
+
 		// Obtendo os débitos do imovel
-		ObterDebitoImovelOuClienteHelper colecaoDebitoImovel = fachada.obterDebitoImovelOuCliente(tipoImovel.intValue(), codigoImovel,
-						null, tipoRelacao, anoMesInicial, anoMesFinal, dataVencimentoDebitoI, dataVencimentoDebitoF, indicadorPagamento
-										.intValue(), indicadorConta.intValue(), indicadorDebito.intValue(), indicadorCredito.intValue(),
-						indicadorNotas.intValue(), indicadorGuias.intValue(), indicadorAtualizar.intValue(), null, null, new Date(),
-						ConstantesSistema.SIM, null, ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM);
+		ObterDebitoImovelOuClienteHelper colecaoDebitoImovel = null;
+		if(idClienteOrigem != null && idRelacaoClienteOrigem != null){
+			colecaoDebitoImovel = fachada.obterDebitoImovelOuCliente(tipoCliente.intValue(), codigoImovel, idClienteOrigem.toString(),
+							idRelacaoClienteOrigem, anoMesInicial, anoMesFinal, dataVencimentoDebitoI, dataVencimentoDebitoF,
+							indicadorPagamento.intValue(), indicadorConta.intValue(), indicadorDebito.intValue(),
+							indicadorCredito.intValue(), indicadorNotas.intValue(), indicadorGuias.intValue(),
+							indicadorAtualizar.intValue(), null, null, new Date(), ConstantesSistema.SIM, null, ConstantesSistema.SIM,
+							ConstantesSistema.SIM, ConstantesSistema.SIM, indicadorCalcularAcrescimosSucumbenciaAnterior, null);
+		}else{
+			colecaoDebitoImovel = fachada.obterDebitoImovelOuCliente(tipoImovel.intValue(), codigoImovel, null, tipoRelacao, anoMesInicial,
+							anoMesFinal, dataVencimentoDebitoI, dataVencimentoDebitoF, indicadorPagamento.intValue(),
+							indicadorConta.intValue(), indicadorDebito.intValue(), indicadorCredito.intValue(), indicadorNotas.intValue(),
+							indicadorGuias.intValue(), indicadorAtualizar.intValue(), null, null, new Date(), ConstantesSistema.SIM, null,
+							ConstantesSistema.SIM, ConstantesSistema.SIM, ConstantesSistema.SIM,
+							indicadorCalcularAcrescimosSucumbenciaAnterior, null);
+		}
 
 		Collection<ContaValoresHelper> colecaoContaValores = colecaoDebitoImovel.getColecaoContasValores();
 
@@ -430,6 +458,7 @@ public class ExibirConsultarDebitoImovelAction
 
 		// Manda a colecao pelo request
 		httpServletRequest.setAttribute("colecaoContaValores", colecaoContaValores);
+		sessao.setAttribute("colecaoContaValores", colecaoContaValores);
 
 		try{
 
@@ -456,6 +485,7 @@ public class ExibirConsultarDebitoImovelAction
 
 		// Manda a colecao e o valor total de DebitoACobrar pelo request
 		httpServletRequest.setAttribute("colecaoDebitoACobrar", colecaoDebitoACobrar);
+		sessao.setAttribute("colecaoDebitoACobrar", colecaoDebitoACobrar);
 		httpServletRequest.setAttribute("valorDebitoACobrar", Util.formatarMoedaReal(valorDebitoACobrar));
 
 		// Manda a colecao e o valor total de CreditoARealizar pelo request
@@ -464,6 +494,7 @@ public class ExibirConsultarDebitoImovelAction
 
 		// Manda a colecao e o valor total de GuiaPagamento pelo request
 		httpServletRequest.setAttribute("colecaoGuiaPagamentoValores", colecaoGuiaPagamentoValores);
+		sessao.setAttribute("colecaoGuiaPagamentoValores", colecaoGuiaPagamentoValores);
 		httpServletRequest.setAttribute("valorGuiaPagamento", Util.formatarMoedaReal(valorGuiaPagamento));
 
 		// Soma o valor total dos debitos e subtrai dos creditos

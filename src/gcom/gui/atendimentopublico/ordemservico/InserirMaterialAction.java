@@ -83,6 +83,8 @@ import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.usuario.Usuario;
 
+import java.math.BigDecimal;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -131,10 +133,19 @@ public class InserirMaterialAction
 
 		String unidadeMaterial = inserirMaterialActionForm.getUnidadeMaterial();
 
+		BigDecimal materialValor = BigDecimal.valueOf(0);
+
+		if(inserirMaterialActionForm.getMaterialValor() != null && inserirMaterialActionForm.getMaterialValor().length() != 0){
+			String valorAux1 = inserirMaterialActionForm.getMaterialValor().toString().replace(".", "");
+
+			valorAux1 = valorAux1.replace(",", ".");
+			materialValor = BigDecimal.valueOf(Double.valueOf(valorAux1));
+		}
+
 		Usuario usuarioLogado = (Usuario) sessao.getAttribute("usuarioLogado");
 
 		// Inserir na base de dados Material
-		Integer idMaterial = fachada.inserirMaterial(descricao, descricaoAbreviada, unidadeMaterial, usuarioLogado);
+		Integer idMaterial = fachada.inserirMaterial(descricao, descricaoAbreviada, unidadeMaterial, materialValor, usuarioLogado);
 
 		sessao.setAttribute("caminhoRetornoVoltar", "/gsan/exibirFiltrarMaterialAction.do");
 

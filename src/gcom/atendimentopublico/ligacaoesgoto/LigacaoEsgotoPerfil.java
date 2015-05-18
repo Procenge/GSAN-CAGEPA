@@ -76,8 +76,11 @@
 
 package gcom.atendimentopublico.ligacaoesgoto;
 
-import gcom.interceptor.ObjetoGcom;
+import gcom.interceptor.ControleAlteracao;
+import gcom.interceptor.ObjetoTransacao;
 import gcom.util.Util;
+import gcom.util.filtro.Filtro;
+import gcom.util.filtro.ParametroSimples;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -86,8 +89,9 @@ import java.util.Date;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
+@ControleAlteracao()
 public class LigacaoEsgotoPerfil
-				extends ObjetoGcom
+				extends ObjetoTransacao
 				implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -107,7 +111,6 @@ public class LigacaoEsgotoPerfil
 
 	// private BigDecimal percentual;
 
-	/** nullable persistent field */
 	private String descricao;
 
 	/** nullable persistent field */
@@ -210,4 +213,18 @@ public class LigacaoEsgotoPerfil
 		return retorno;
 	}
 
+	@Override
+	public Filtro retornaFiltro(){
+
+		FiltroLigacaoEsgotoPerfil filtroLigacaoEsgotoPerfil = new FiltroLigacaoEsgotoPerfil();
+		filtroLigacaoEsgotoPerfil.adicionarParametro(new ParametroSimples(FiltroLigacaoEsgotoPerfil.ID, this.getId()));
+
+		return filtroLigacaoEsgotoPerfil;
+	}
+
+	@Override
+	public String getDescricaoParaRegistroTransacao(){
+
+		return this.getId() + " - " + this.getDescricao();
+	}
 }

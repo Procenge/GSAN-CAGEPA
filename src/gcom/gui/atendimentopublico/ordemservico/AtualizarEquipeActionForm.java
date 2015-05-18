@@ -115,6 +115,8 @@ public class AtualizarEquipeActionForm
 
 	private String nomeComponente;
 
+	private Integer idEquipeTipo;
+
 	/**
 	 * @return Retorna o campo qtdeComponentesEquipe.
 	 */
@@ -385,6 +387,16 @@ public class AtualizarEquipeActionForm
 	public void setIdEquipeComponente(String idEquipeComponente){
 
 		this.idEquipeComponente = idEquipeComponente;
+	}
+
+	public Integer getIdEquipeTipo(){
+
+		return idEquipeTipo;
+	}
+
+	public void setIdEquipeTipo(Integer idEquipeTipo){
+
+		this.idEquipeTipo = idEquipeTipo;
 	}
 
 }

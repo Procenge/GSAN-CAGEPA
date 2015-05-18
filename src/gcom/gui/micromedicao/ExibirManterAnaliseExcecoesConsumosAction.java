@@ -76,15 +76,18 @@
 
 package gcom.gui.micromedicao;
 
+import gcom.cadastro.imovel.bean.ImovelMicromedicao;
 import gcom.fachada.Fachada;
 import gcom.faturamento.FaturamentoGrupo;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.micromedicao.medicao.FiltroMedicaoHistoricoSql;
+import gcom.util.ConstantesSistema;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -150,6 +153,18 @@ public class ExibirManterAnaliseExcecoesConsumosAction
 			if(colecaoImovelMedicao == null || colecaoImovelMedicao.isEmpty()){
 				// Nenhum cliente cadastrado
 				throw new ActionServletException("atencao.pesquisa.nenhumresultado");
+			}
+
+			// Verifica se tem algum imóvel condomínio na coleção para exibir o botão do
+			// [UC0532] Gerar Relatório de Faturamento das Ligações com Medição Individualizada
+			for(Iterator iterator = colecaoImovelMedicao.iterator(); iterator.hasNext();){
+				ImovelMicromedicao imovelMicromedicao = (ImovelMicromedicao) iterator.next();
+
+				if(imovelMicromedicao.getImovel().getIndicadorImovelCondominio().equals(ConstantesSistema.SIM)){
+
+					sessao.setAttribute("indicadorImovelCondominio", ConstantesSistema.SIM.toString());
+					break;
+				}
 			}
 
 			sessao.setAttribute("colecaoImovelMedicao", colecaoImovelMedicao);
@@ -269,7 +284,10 @@ public class ExibirManterAnaliseExcecoesConsumosAction
 			String medicaoTipo = httpServletRequest.getParameter("medicaoTipo");
 
 			linkAnalise = linkAnalise + "?idRegistroAtualizacao=" + idRegistroAtualizacao;
-			linkAnalise = linkAnalise + "&medicaoTipo=" + medicaoTipo;
+
+			if(medicaoTipo != null){
+				linkAnalise = linkAnalise + "&medicaoTipo=" + medicaoTipo;
+			}
 
 			httpServletRequest.setAttribute("telaAnalise", linkAnalise);
 		}

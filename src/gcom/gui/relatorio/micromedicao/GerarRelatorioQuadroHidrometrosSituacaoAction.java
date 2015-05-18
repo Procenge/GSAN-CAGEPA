@@ -6,6 +6,7 @@ import gcom.relatorio.ExibidorProcessamentoTarefaRelatorio;
 import gcom.relatorio.micromedicao.RelatorioQuadroHidrometrosSituacao;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.tarefa.TarefaRelatorio;
+import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 
 import java.util.Date;
@@ -28,9 +29,9 @@ public class GerarRelatorioQuadroHidrometrosSituacaoAction
 
 		Fachada fachada = Fachada.getInstancia();
 
-		GerarRelatorioQuadroHidrometrosSituacaoActionForm gerarRelatorioQuadroHidrometrosActionForm = (GerarRelatorioQuadroHidrometrosSituacaoActionForm) actionForm;
+		GerarRelatorioQuadroHidrometrosSituacaoActionForm form = (GerarRelatorioQuadroHidrometrosSituacaoActionForm) actionForm;
 
-		String mesAno = gerarRelatorioQuadroHidrometrosActionForm.getMesAno();
+		String mesAno = form.getMesAno();
 
 		if(mesAno == null || mesAno.equals("")){
 			throw new ActionServletException("atencao.informe_campo", null, "Mês/Ano");
@@ -43,7 +44,51 @@ public class GerarRelatorioQuadroHidrometrosSituacaoAction
 		Date dateInicioMes = Util.converterMesAnoParaDataInicial(mesAno);
 		Date dateFimMes = Util.converterMesAnoParaDataFinalMes(mesAno);
 
-		Integer qtdeRegistros = fachada.pesquisarQuadroHidrometrosSituacaoCount(dateInicioMes, dateFimMes);
+		Integer idGerenciaRegional = null;
+		if(!Util.isVazioOuBranco(form.getIdGerenciaRegional())
+						&& !form.getIdGerenciaRegional().equals(ConstantesSistema.NUMERO_NAO_INFORMADO_STRING)){
+			idGerenciaRegional = Util.converterStringParaInteger(form.getIdGerenciaRegional());
+		}
+
+		Integer idUnidadeNegocio = null;
+		if(!Util.isVazioOuBranco(form.getIdUnidadeNegocio())
+						&& !form.getIdUnidadeNegocio().equals(ConstantesSistema.NUMERO_NAO_INFORMADO_STRING)){
+			idUnidadeNegocio = Util.converterStringParaInteger(form.getIdUnidadeNegocio());
+		}
+
+		Integer idUnidadeFederacao = null;
+		if(!Util.isVazioOuBranco(form.getIdUnidadeFederacao())
+						&& !form.getIdUnidadeFederacao().equals(ConstantesSistema.NUMERO_NAO_INFORMADO_STRING)){
+			idUnidadeFederacao = Util.converterStringParaInteger(form.getIdUnidadeFederacao());
+		}
+
+		Integer idLocalidade = null;
+		if(!Util.isVazioOuBranco(form.getIdLocalidade()) && !form.getIdLocalidade().equals(ConstantesSistema.NUMERO_NAO_INFORMADO_STRING)){
+			idLocalidade = Util.converterStringParaInteger(form.getIdLocalidade());
+		}
+
+		Integer idHidrometroCapacidade = null;
+		if(!Util.isVazioOuBranco(form.getIdHidrometroCapacidade())
+						&& !form.getIdHidrometroCapacidade().equals(ConstantesSistema.NUMERO_NAO_INFORMADO_STRING)){
+			idHidrometroCapacidade = Util.converterStringParaInteger(form.getIdHidrometroCapacidade());
+		}
+
+		Integer idHidrometroDiametro = null;
+		if(!Util.isVazioOuBranco(form.getIdHidrometroDiametro())
+						&& !form.getIdHidrometroDiametro().equals(ConstantesSistema.NUMERO_NAO_INFORMADO_STRING)){
+			idHidrometroDiametro = Util.converterStringParaInteger(form.getIdHidrometroDiametro());
+		}
+
+		Integer idHidrometroMarca = null;
+		if(!Util.isVazioOuBranco(form.getIdHidrometroMarca())
+						&& !form.getIdHidrometroMarca().equals(ConstantesSistema.NUMERO_NAO_INFORMADO_STRING)){
+			idHidrometroMarca = Util.converterStringParaInteger(form.getIdHidrometroMarca());
+		}
+
+
+		Integer qtdeRegistros = fachada
+						.pesquisarQuadroHidrometrosSituacaoCount(dateInicioMes, dateFimMes, idGerenciaRegional, idUnidadeNegocio,
+										idUnidadeFederacao, idLocalidade, idHidrometroCapacidade, idHidrometroMarca, idHidrometroDiametro);
 
 		if(qtdeRegistros.intValue() == 0){
 			throw new ActionServletException("atencao.nenhum_hidrometro_encontrado", null, mesAno);

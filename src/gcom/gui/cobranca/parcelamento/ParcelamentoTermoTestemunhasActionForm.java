@@ -95,6 +95,18 @@ public class ParcelamentoTermoTestemunhasActionForm
 
 	private String cpfTestemunha2;
 
+	private String idImovel;
+
+	public String getIdImovel(){
+
+		return idImovel;
+	}
+
+	public void setIdImovel(String idImovel){
+
+		this.idImovel = idImovel;
+	}
+
 	public String getId(){
 
 		return id;

@@ -425,7 +425,9 @@ public class ExibirAlterarSituacaoLigacaoAction
 							throw new ActionServletException("erro.sistema");
 						}
 
-						if(indicadorRedeEsgoto.equalsIgnoreCase("" + Quadra.SEM_REDE)){
+						if(indicadorRedeEsgoto.equalsIgnoreCase("" + Quadra.SEM_REDE)){// valor
+																						// sem_rede
+																						// = 1
 
 							filtroLigacaoEsgotoSituacao.adicionarParametro(new ParametroSimples(FiltroLigacaoEsgotoSituacao.ID,
 											LigacaoEsgotoSituacao.POTENCIAL));
@@ -433,7 +435,10 @@ public class ExibirAlterarSituacaoLigacaoAction
 							colecaoLigacaoEsgotoSituacao = fachada.pesquisar(filtroLigacaoEsgotoSituacao,
 											LigacaoEsgotoSituacao.class.getName());
 
-						}else if(indicadorRedeEsgoto.equalsIgnoreCase("" + Quadra.COM_REDE)){
+						}else if(indicadorRedeEsgoto.equalsIgnoreCase("" + Quadra.COM_REDE)){// valor
+																								// sem_rede
+																								// =
+																								// 2
 							
 							filtroLigacaoEsgotoSituacao.adicionarParametro(new ParametroSimples(FiltroLigacaoEsgotoSituacao.ID,
 											LigacaoEsgotoSituacao.FACTIVEL, ConectorOr.CONECTOR_OR));
@@ -443,9 +448,8 @@ public class ExibirAlterarSituacaoLigacaoAction
 											&& parametroReligarImovelFactivelFaturado.equals("" + ConstantesSistema.SIM)){
 								
 								if(imovel.getLigacaoEsgotoSituacao() != null
-									&& imovel.getLigacaoEsgotoSituacao().getId().equals(LigacaoEsgotoSituacao.FACTIVEL_FATURADA)
-									&& imovel.getImovelPerfil() != null
-									&& imovel.getImovelPerfil().getId().equals(ImovelPerfil.FACTIVEL_FATURADO)){
+												&& imovel.getLigacaoEsgotoSituacao().getId()
+																.equals(LigacaoEsgotoSituacao.FACTIVEL_FATURADA)){
 									
 									filtroLigacaoEsgotoSituacao.adicionarParametro(new ParametroSimples(FiltroLigacaoEsgotoSituacao.ID,
 													LigacaoEsgotoSituacao.LIGADO, ConectorOr.CONECTOR_OR));

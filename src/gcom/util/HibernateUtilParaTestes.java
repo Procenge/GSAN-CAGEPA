@@ -76,26 +76,7 @@
 
 package gcom.util;
 
-import gcom.arrecadacao.ArrecadacaoContabilParametros;
-import gcom.arrecadacao.ArrecadacaoDadosDiarios;
-import gcom.arrecadacao.ArrecadacaoForma;
-import gcom.arrecadacao.Arrecadador;
-import gcom.arrecadacao.ArrecadadorContrato;
-import gcom.arrecadacao.ArrecadadorContratoTarifa;
-import gcom.arrecadacao.ArrecadadorMovimento;
-import gcom.arrecadacao.ArrecadadorMovimentoItem;
-import gcom.arrecadacao.AvisoInteligest;
-import gcom.arrecadacao.ContratoDemanda;
-import gcom.arrecadacao.ContratoMotivoCancelamento;
-import gcom.arrecadacao.DeducaoTipo;
-import gcom.arrecadacao.Devolucao;
-import gcom.arrecadacao.DevolucaoHistorico;
-import gcom.arrecadacao.DevolucaoSituacao;
-import gcom.arrecadacao.GuiaDevolucao;
-import gcom.arrecadacao.MetasArrecadacao;
-import gcom.arrecadacao.RecebimentoTipo;
-import gcom.arrecadacao.RegistroCodigo;
-import gcom.arrecadacao.ResumoArrecadacao;
+import gcom.arrecadacao.*;
 import gcom.arrecadacao.aviso.AvisoAcerto;
 import gcom.arrecadacao.aviso.AvisoBancario;
 import gcom.arrecadacao.aviso.AvisoDeducoes;
@@ -105,101 +86,12 @@ import gcom.arrecadacao.banco.ContaBancaria;
 import gcom.arrecadacao.debitoautomatico.DebitoAutomatico;
 import gcom.arrecadacao.debitoautomatico.DebitoAutomaticoMovimento;
 import gcom.arrecadacao.debitoautomatico.DebitoAutomaticoRetornoCodigo;
-import gcom.arrecadacao.pagamento.GuiaPagamento;
-import gcom.arrecadacao.pagamento.GuiaPagamentoCategoria;
-import gcom.arrecadacao.pagamento.GuiaPagamentoCategoriaHistorico;
-import gcom.arrecadacao.pagamento.GuiaPagamentoHistorico;
-import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao;
-import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacaoHistorico;
-import gcom.arrecadacao.pagamento.Pagamento;
-import gcom.arrecadacao.pagamento.PagamentoHistorico;
-import gcom.arrecadacao.pagamento.PagamentoSituacao;
-import gcom.atendimentopublico.ligacaoagua.CorteTipo;
-import gcom.atendimentopublico.ligacaoagua.EmissaoOrdemCobrancaTipo;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAgua;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAguaDiametro;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAguaMaterial;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAguaPerfil;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao;
-import gcom.atendimentopublico.ligacaoagua.MotivoCorte;
-import gcom.atendimentopublico.ligacaoagua.RamalLocalInstalacao;
-import gcom.atendimentopublico.ligacaoagua.SupressaoTipo;
-import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgoto;
-import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoDiametro;
-import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoMaterial;
-import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoPerfil;
-import gcom.atendimentopublico.ligacaoesgoto.LigacaoEsgotoSituacao;
-import gcom.atendimentopublico.ordemservico.Atividade;
-import gcom.atendimentopublico.ordemservico.EquipamentosEspeciais;
-import gcom.atendimentopublico.ordemservico.Equipe;
-import gcom.atendimentopublico.ordemservico.EquipeComponentes;
-import gcom.atendimentopublico.ordemservico.EspecificacaoServicoTipo;
-import gcom.atendimentopublico.ordemservico.FiscalizacaoColetiva;
-import gcom.atendimentopublico.ordemservico.FiscalizacaoSituacao;
-import gcom.atendimentopublico.ordemservico.FiscalizacaoSituacaoAgua;
-import gcom.atendimentopublico.ordemservico.FiscalizacaoSituacaoEsgoto;
-import gcom.atendimentopublico.ordemservico.FiscalizacaoSituacaoHidrometroCapacidade;
-import gcom.atendimentopublico.ordemservico.FiscalizacaoSituacaoServicoACobrar;
-import gcom.atendimentopublico.ordemservico.Material;
-import gcom.atendimentopublico.ordemservico.MaterialUnidade;
-import gcom.atendimentopublico.ordemservico.OrdemServico;
-import gcom.atendimentopublico.ordemservico.OrdemServicoAtividade;
-import gcom.atendimentopublico.ordemservico.OrdemServicoProgramacao;
-import gcom.atendimentopublico.ordemservico.OrdemServicoUnidade;
-import gcom.atendimentopublico.ordemservico.OsAtividadeMaterialExecucao;
-import gcom.atendimentopublico.ordemservico.OsAtividadePeriodoExecucao;
-import gcom.atendimentopublico.ordemservico.OsExecucaoEquipe;
-import gcom.atendimentopublico.ordemservico.OsExecucaoEquipeComponentes;
-import gcom.atendimentopublico.ordemservico.OsProgramNaoEncerMotivo;
-import gcom.atendimentopublico.ordemservico.OsReferidaRetornoTipo;
-import gcom.atendimentopublico.ordemservico.ProgramacaoRoteiro;
-import gcom.atendimentopublico.ordemservico.ServicoCobrancaValor;
-import gcom.atendimentopublico.ordemservico.ServicoNaoCobrancaMotivo;
-import gcom.atendimentopublico.ordemservico.ServicoPerfilTipo;
-import gcom.atendimentopublico.ordemservico.ServicoTipo;
-import gcom.atendimentopublico.ordemservico.ServicoTipoAtividade;
-import gcom.atendimentopublico.ordemservico.ServicoTipoGrupo;
-import gcom.atendimentopublico.ordemservico.ServicoTipoMaterial;
-import gcom.atendimentopublico.ordemservico.ServicoTipoOperacao;
-import gcom.atendimentopublico.ordemservico.ServicoTipoPrioridade;
-import gcom.atendimentopublico.ordemservico.ServicoTipoReferencia;
-import gcom.atendimentopublico.ordemservico.ServicoTipoSubgrupo;
-import gcom.atendimentopublico.ordemservico.SupressaoMotivo;
-import gcom.atendimentopublico.registroatendimento.AgenciaReguladoraMotReclamacao;
-import gcom.atendimentopublico.registroatendimento.AgenciaReguladoraMotRetorno;
-import gcom.atendimentopublico.registroatendimento.AtendimentoMotivoEncerramento;
-import gcom.atendimentopublico.registroatendimento.AtendimentoRelacaoTipo;
-import gcom.atendimentopublico.registroatendimento.EspecificacaoImovSitCriterio;
-import gcom.atendimentopublico.registroatendimento.EspecificacaoImovelSituacao;
-import gcom.atendimentopublico.registroatendimento.EspecificacaoTipoValidacao;
-import gcom.atendimentopublico.registroatendimento.LocalOcorrencia;
-import gcom.atendimentopublico.registroatendimento.LocalidadeSolicTipoGrupo;
-import gcom.atendimentopublico.registroatendimento.MeioSolicitacao;
-import gcom.atendimentopublico.registroatendimento.RaDadosAgenciaReguladora;
-import gcom.atendimentopublico.registroatendimento.RaDadosAgenciaReguladoraFone;
-import gcom.atendimentopublico.registroatendimento.RaEnderecoDescritivo;
-import gcom.atendimentopublico.registroatendimento.RaMotivoReativacao;
-import gcom.atendimentopublico.registroatendimento.RegistroAtendimento;
-import gcom.atendimentopublico.registroatendimento.RegistroAtendimentoColetor;
-import gcom.atendimentopublico.registroatendimento.RegistroAtendimentoSolicitante;
-import gcom.atendimentopublico.registroatendimento.RegistroAtendimentoUnidade;
-import gcom.atendimentopublico.registroatendimento.SolicitacaoTipo;
-import gcom.atendimentopublico.registroatendimento.SolicitacaoTipoEspecificacao;
-import gcom.atendimentopublico.registroatendimento.SolicitacaoTipoGrupo;
-import gcom.atendimentopublico.registroatendimento.SolicitanteFone;
-import gcom.atendimentopublico.registroatendimento.Tramite;
-import gcom.batch.FuncionalidadeIniciada;
-import gcom.batch.FuncionalidadeSituacao;
-import gcom.batch.Processo;
-import gcom.batch.ProcessoFuncionalidade;
-import gcom.batch.ProcessoIniciado;
-import gcom.batch.ProcessoSituacao;
-import gcom.batch.ProcessoTipo;
-import gcom.batch.Relatorio;
-import gcom.batch.RelatorioGerado;
-import gcom.batch.UnidadeIniciada;
-import gcom.batch.UnidadeProcessamento;
-import gcom.batch.UnidadeSituacao;
+import gcom.arrecadacao.pagamento.*;
+import gcom.atendimentopublico.ligacaoagua.*;
+import gcom.atendimentopublico.ligacaoesgoto.*;
+import gcom.atendimentopublico.ordemservico.*;
+import gcom.atendimentopublico.registroatendimento.*;
+import gcom.batch.*;
 import gcom.cadastro.DbVersaoImplementada;
 import gcom.cadastro.EnvioEmail;
 import gcom.cadastro.imovel.Categoria;
@@ -207,236 +99,40 @@ import gcom.cadastro.imovel.ImovelSituacao;
 import gcom.cadastro.imovel.ImovelSituacaoTipo;
 import gcom.cadastro.localidade.Localidade;
 import gcom.cadastro.localidade.Quadra;
-import gcom.cobranca.CobrancaAcao;
-import gcom.cobranca.CobrancaAcaoAtividadeComando;
-import gcom.cobranca.CobrancaAcaoAtividadeCronograma;
-import gcom.cobranca.CobrancaAcaoCronograma;
-import gcom.cobranca.CobrancaAtividade;
-import gcom.cobranca.CobrancaAtividadeComandoRota;
-import gcom.cobranca.CobrancaCriterio;
-import gcom.cobranca.CobrancaCriterioLinha;
-import gcom.cobranca.CobrancaDocumento;
-import gcom.cobranca.CobrancaDocumentoItem;
-import gcom.cobranca.CobrancaGrupoCronogramaMes;
-import gcom.cobranca.DocumentoEmissaoForma;
-import gcom.cobranca.DocumentoTipo;
-import gcom.cobranca.ResolucaoDiretoria;
-import gcom.cobranca.ResumoCobrancaAcaoEventual;
-import gcom.cobranca.ResumoPendencia;
-import gcom.cobranca.RotaAcaoCriterio;
-import gcom.cobranca.parcelamento.Parcelamento;
-import gcom.cobranca.parcelamento.ParcelamentoDescontoAntiguidade;
-import gcom.cobranca.parcelamento.ParcelamentoDescontoInatividade;
-import gcom.cobranca.parcelamento.ParcelamentoItem;
-import gcom.cobranca.parcelamento.ParcelamentoMotivoDesfazer;
-import gcom.cobranca.parcelamento.ParcelamentoPerfil;
-import gcom.cobranca.parcelamento.ParcelamentoQuantidadePrestacao;
-import gcom.cobranca.parcelamento.ParcelamentoQuantidadeReparcelamento;
-import gcom.cobranca.parcelamento.ParcelamentoSituacao;
-import gcom.cobranca.parcelamento.ParcelamentoTipo;
-import gcom.faturamento.ConsumoFaixaCategoria;
-import gcom.faturamento.ConsumoFaixaLigacao;
-import gcom.faturamento.ContaRevisaoFaixaValor;
-import gcom.faturamento.DocumentoNaoEntregue;
-import gcom.faturamento.FaturamentoAtivCronRota;
-import gcom.faturamento.FaturamentoAtividade;
-import gcom.faturamento.FaturamentoAtividadeCronograma;
-import gcom.faturamento.FaturamentoContabilParametros;
-import gcom.faturamento.FaturamentoDados;
-import gcom.faturamento.FaturamentoGrupo;
-import gcom.faturamento.FaturamentoGrupoCronogramaMensal;
-import gcom.faturamento.FaturamentoImediatoAjuste;
-import gcom.faturamento.FaturamentoSituacaoHistorico;
-import gcom.faturamento.FaturamentoSituacaoMotivo;
-import gcom.faturamento.FaturamentoSituacaoTipo;
-import gcom.faturamento.FaturamentoTipo;
-import gcom.faturamento.GuiaPagamentoGeral;
-import gcom.faturamento.HistogramaAguaEconomia;
-import gcom.faturamento.HistogramaAguaLigacao;
-import gcom.faturamento.HistogramaEsgotoEconomia;
-import gcom.faturamento.HistogramaEsgotoLigacao;
-import gcom.faturamento.ImpostoTipo;
-import gcom.faturamento.ImpostoTipoAliquota;
-import gcom.faturamento.LocalEntregaDocumento;
-import gcom.faturamento.QualidadeAgua;
-import gcom.faturamento.QualidadeAguaPadrao;
-import gcom.faturamento.ResumoFaturamentoSimulacao;
-import gcom.faturamento.ResumoFaturamentoSituacaoEspecial;
-import gcom.faturamento.VencimentoAlternativo;
+import gcom.cobranca.*;
+import gcom.cobranca.parcelamento.*;
+import gcom.faturamento.*;
 import gcom.faturamento.consumotarifa.ConsumoTarifa;
 import gcom.faturamento.consumotarifa.ConsumoTarifaCategoria;
 import gcom.faturamento.consumotarifa.ConsumoTarifaFaixa;
 import gcom.faturamento.consumotarifa.ConsumoTarifaVigencia;
-import gcom.faturamento.conta.Conta;
-import gcom.faturamento.conta.ContaCategoria;
-import gcom.faturamento.conta.ContaCategoriaConsumoFaixa;
-import gcom.faturamento.conta.ContaCategoriaConsumoFaixaHistorico;
-import gcom.faturamento.conta.ContaCategoriaHistorico;
-import gcom.faturamento.conta.ContaGeral;
-import gcom.faturamento.conta.ContaHistorico;
-import gcom.faturamento.conta.ContaImpostosDeduzidos;
-import gcom.faturamento.conta.ContaImpostosDeduzidosHistorico;
-import gcom.faturamento.conta.ContaImpressao;
-import gcom.faturamento.conta.ContaMensagem;
-import gcom.faturamento.conta.ContaMotivoCancelamento;
-import gcom.faturamento.conta.ContaMotivoInclusao;
-import gcom.faturamento.conta.ContaMotivoRetificacao;
-import gcom.faturamento.conta.ContaMotivoRevisao;
-import gcom.faturamento.conta.ContaTipo;
-import gcom.faturamento.conta.Fatura;
-import gcom.faturamento.conta.FaturaItem;
-import gcom.faturamento.conta.MotivoNaoEntregaDocumento;
-import gcom.faturamento.conta.MovimentoSegundaVia;
-import gcom.faturamento.conta.Refaturamento;
-import gcom.faturamento.credito.CreditoARealizar;
-import gcom.faturamento.credito.CreditoARealizarCategoria;
-import gcom.faturamento.credito.CreditoARealizarCategoriaHistorico;
-import gcom.faturamento.credito.CreditoARealizarCategoriaPK;
-import gcom.faturamento.credito.CreditoARealizarGeral;
-import gcom.faturamento.credito.CreditoARealizarHistorico;
-import gcom.faturamento.credito.CreditoOrigem;
-import gcom.faturamento.credito.CreditoRealizado;
-import gcom.faturamento.credito.CreditoRealizadoCategoria;
-import gcom.faturamento.credito.CreditoRealizadoCategoriaHistorico;
-import gcom.faturamento.credito.CreditoRealizadoHistorico;
-import gcom.faturamento.credito.CreditoTipo;
-import gcom.faturamento.debito.DebitoACobrar;
-import gcom.faturamento.debito.DebitoACobrarCategoria;
-import gcom.faturamento.debito.DebitoACobrarCategoriaHistorico;
-import gcom.faturamento.debito.DebitoACobrarCategoriaPK;
-import gcom.faturamento.debito.DebitoACobrarGeral;
-import gcom.faturamento.debito.DebitoACobrarHistorico;
-import gcom.faturamento.debito.DebitoCobrado;
-import gcom.faturamento.debito.DebitoCobradoCategoria;
-import gcom.faturamento.debito.DebitoCobradoCategoriaHistorico;
-import gcom.faturamento.debito.DebitoCobradoCategoriaHistoricoPK;
-import gcom.faturamento.debito.DebitoCobradoHistorico;
-import gcom.faturamento.debito.DebitoCreditoSituacao;
-import gcom.faturamento.debito.DebitoFaixaValore;
-import gcom.faturamento.debito.DebitoTipo;
-import gcom.financeiro.ContaAReceberContabil;
-import gcom.financeiro.ContaContabil;
-import gcom.financeiro.DevedoresDuvidososContabilParametro;
-import gcom.financeiro.FinanciamentoTipo;
-import gcom.financeiro.LancamentoResumo;
-import gcom.financeiro.LancamentoResumoConta;
-import gcom.financeiro.LancamentoResumoContaHistorico;
-import gcom.financeiro.LancamentoResumoValorTipo;
-import gcom.financeiro.ParametrosDevedoresDuvidosos;
-import gcom.financeiro.ParametrosDevedoresDuvidososItem;
-import gcom.financeiro.ResumoDevedoresDuvidosos;
-import gcom.financeiro.ResumoFaturamento;
-import gcom.financeiro.lancamento.LancamentoContabil;
-import gcom.financeiro.lancamento.LancamentoContabilItem;
-import gcom.financeiro.lancamento.LancamentoItem;
-import gcom.financeiro.lancamento.LancamentoItemContabil;
-import gcom.financeiro.lancamento.LancamentoOrigem;
-import gcom.financeiro.lancamento.LancamentoTipo;
-import gcom.financeiro.lancamento.LancamentoTipoItem;
-import gcom.micromedicao.ArquivoTextoRoteiroEmpresa;
-import gcom.micromedicao.ImovelTestesMedicaoConsumo;
-import gcom.micromedicao.Leiturista;
-import gcom.micromedicao.MovimentoRoteiroEmpresa;
-import gcom.micromedicao.RateioTipo;
-import gcom.micromedicao.ResumoAnormalidadeLeitura;
-import gcom.micromedicao.Rota;
-import gcom.micromedicao.RoteiroEmpresa;
-import gcom.micromedicao.SituacaoTransmissaoLeitura;
-import gcom.micromedicao.consumo.ConsumoAnormalidade;
-import gcom.micromedicao.consumo.ConsumoFixoFaixa;
-import gcom.micromedicao.consumo.ConsumoFixoUnidade;
-import gcom.micromedicao.consumo.ConsumoHistorico;
-import gcom.micromedicao.consumo.ConsumoHistoricoAnterior;
-import gcom.micromedicao.consumo.ConsumoTipo;
-import gcom.micromedicao.consumo.LigacaoTipo;
-import gcom.micromedicao.consumo.ResumoAnormalidadeConsumo;
-import gcom.micromedicao.hidrometro.Hidrometro;
-import gcom.micromedicao.hidrometro.HidrometroCapacidade;
-import gcom.micromedicao.hidrometro.HidrometroClasseMetrologica;
-import gcom.micromedicao.hidrometro.HidrometroDiametro;
-import gcom.micromedicao.hidrometro.HidrometroInstalacaoHistorico;
-import gcom.micromedicao.hidrometro.HidrometroLocalArmazenagem;
-import gcom.micromedicao.hidrometro.HidrometroLocalInstalacao;
-import gcom.micromedicao.hidrometro.HidrometroMarca;
-import gcom.micromedicao.hidrometro.HidrometroMotivoBaixa;
-import gcom.micromedicao.hidrometro.HidrometroMotivoMovimentacao;
-import gcom.micromedicao.hidrometro.HidrometroMovimentacao;
-import gcom.micromedicao.hidrometro.HidrometroMovimentado;
-import gcom.micromedicao.hidrometro.HidrometroProtecao;
-import gcom.micromedicao.hidrometro.HidrometroSituacao;
-import gcom.micromedicao.hidrometro.HidrometroTipo;
-import gcom.micromedicao.leitura.LeituraAnormalidade;
-import gcom.micromedicao.leitura.LeituraAnormalidadeConsumo;
-import gcom.micromedicao.leitura.LeituraAnormalidadeLeitura;
-import gcom.micromedicao.leitura.LeituraFaixaFalsa;
-import gcom.micromedicao.leitura.LeituraFiscalizacao;
-import gcom.micromedicao.leitura.LeituraSituacao;
-import gcom.micromedicao.leitura.LeituraTipo;
+import gcom.faturamento.conta.*;
+import gcom.faturamento.credito.*;
+import gcom.faturamento.debito.*;
+import gcom.financeiro.*;
+import gcom.financeiro.lancamento.*;
+import gcom.micromedicao.*;
+import gcom.micromedicao.consumo.*;
+import gcom.micromedicao.hidrometro.*;
+import gcom.micromedicao.leitura.*;
 import gcom.micromedicao.medicao.MedicaoHistorico;
 import gcom.micromedicao.medicao.MedicaoHistoricoAnterior;
 import gcom.micromedicao.medicao.MedicaoTipo;
-import gcom.operacional.Bacia;
-import gcom.operacional.DistritoOperacional;
-import gcom.operacional.DivisaoEsgoto;
-import gcom.operacional.ProducaoAgua;
-import gcom.operacional.SetorAbastecimento;
-import gcom.operacional.SistemaAbastecimento;
-import gcom.operacional.SistemaEsgoto;
-import gcom.operacional.SistemaEsgotoTratamentoTipo;
-import gcom.operacional.ZonaAbastecimento;
-import gcom.operacional.ZonaPressao;
+import gcom.operacional.*;
 import gcom.operacional.abastecimento.AbastecimentoProgramacao;
 import gcom.operacional.abastecimento.ManutencaoProgramacao;
-import gcom.seguranca.acesso.Funcionalidade;
-import gcom.seguranca.acesso.FuncionalidadeDependencia;
-import gcom.seguranca.acesso.Grupo;
-import gcom.seguranca.acesso.GrupoAcesso;
-import gcom.seguranca.acesso.GrupoFuncionalidadeOperacao;
-import gcom.seguranca.acesso.Modulo;
-import gcom.seguranca.acesso.Operacao;
-import gcom.seguranca.acesso.OperacaoEfetuada;
-import gcom.seguranca.acesso.OperacaoOrdemExibicao;
-import gcom.seguranca.acesso.OperacaoTabela;
-import gcom.seguranca.acesso.OperacaoTipo;
-import gcom.seguranca.acesso.PermissaoEspecial;
-import gcom.seguranca.acesso.usuario.Usuario;
-import gcom.seguranca.acesso.usuario.UsuarioAbrangencia;
-import gcom.seguranca.acesso.usuario.UsuarioAcao;
-import gcom.seguranca.acesso.usuario.UsuarioAlteracao;
-import gcom.seguranca.acesso.usuario.UsuarioFavorito;
-import gcom.seguranca.acesso.usuario.UsuarioGrupo;
-import gcom.seguranca.acesso.usuario.UsuarioGrupoRestricao;
-import gcom.seguranca.acesso.usuario.UsuarioPermissaoEspecial;
-import gcom.seguranca.acesso.usuario.UsuarioSituacao;
-import gcom.seguranca.acesso.usuario.UsuarioTipo;
-import gcom.seguranca.transacao.AlteracaoTipo;
-import gcom.seguranca.transacao.SgbdTabela;
-import gcom.seguranca.transacao.SgbdTabelaColuna;
-import gcom.seguranca.transacao.Tabela;
-import gcom.seguranca.transacao.TabelaColuna;
-import gcom.seguranca.transacao.TabelaLinhaAlteracao;
-import gcom.seguranca.transacao.TabelaLinhaColunaAlteracao;
+import gcom.seguranca.acesso.*;
+import gcom.seguranca.acesso.usuario.*;
+import gcom.seguranca.transacao.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.beanutils.PropertyUtils;
-import org.hibernate.Hibernate;
-import org.hibernate.HibernateException;
-import org.hibernate.MappingException;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.StatelessSession;
-import org.hibernate.Transaction;
+import org.hibernate.*;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.PersistentClass;
@@ -760,12 +456,14 @@ public class HibernateUtilParaTestes {
 							.addClass(TabelaColuna.class)
 							.addClass(Tabela.class)
 							.addClass(UsuarioAcao.class)
+							.addClass(UsuarioSenha.class)
 							.addClass(UsuarioFavorito.class)
 							.addClass(GrupoAcesso.class)
 							// gcom.seguranca.transacao
-							.addClass(SgbdTabela.class).addClass(SgbdTabelaColuna.class).addClass(UsuarioSituacao.class).addClass(
-											UsuarioPermissaoEspecial.class).addClass(UsuarioAlteracao.class).addClass(
-											UsuarioGrupoRestricao.class).addClass(UsuarioGrupo.class).addClass(UsuarioAbrangencia.class)
+							.addClass(SgbdTabela.class).addClass(SgbdTabelaColuna.class).addClass(UsuarioSituacao.class)
+							.addClass(UsuarioPermissaoEspecial.class).addClass(UsuarioAlteracao.class)
+							.addClass(UsuarioGrupoRestricao.class).addClass(UsuarioGrupo.class).addClass(UsuarioAbrangencia.class)
+							.addClass(UsuarioAcesso.class)
 							.addClass(Usuario.class).addClass(ResolucaoDiretoria.class).addClass(CreditoRealizadoCategoriaHistorico.class)
 							.addClass(CreditoARealizarCategoriaHistorico.class).addClass(DebitoCobradoCategoriaHistorico.class).addClass(
 											DebitoACobrarCategoriaHistorico.class).addClass(PermissaoEspecial.class).addClass(
@@ -1130,103 +828,111 @@ public class HibernateUtilParaTestes {
 		// transferirCreditoARealizarHistoricoParaCreditoARealizar(713);
 	}
 
-	/**
-	 * [UC0213] Desfazer Parcelamento Débitos Remove débitos a cobrar referentes
-	 * ao parcelamento historico
-	 * 
-	 * @author Vitor
-	 * @created 20/02/2006
-	 * @param idImovel
-	 *            idParcelamento
-	 * @exception ErroRepositorioException
-	 *                Repositorio Exception
-	 */
-	public static void transferirDebitoACobrarHistoricoParaDebitoACobrar(Integer idDebitoACobrarHistorico) throws ErroRepositorioException{
-
-		Session session = getSession();
-		Transaction tx = null;
-
-		try{
-			tx = session.beginTransaction();
-			String consulta = "select dac " + "from DebitoACobrarHistorico dac " + "where dac.id = :idDebitoACobrarHistorico";
-
-			DebitoACobrarHistorico debitoACobrarHistorico = (DebitoACobrarHistorico) session.createQuery(consulta).setInteger(
-							"idDebitoACobrarHistorico", idDebitoACobrarHistorico.intValue()).uniqueResult();
-
-			consulta = "select dac " + "from DebitoACobrarGeral dac " + "where dac.id = :idDebitoACobrarHistorico";
-
-			Date ultimaAlt = new Date();
-			DebitoACobrar debitoACobrar = new DebitoACobrar();
-			try{
-				PropertyUtils.copyProperties(debitoACobrar, debitoACobrarHistorico);
-			}catch(IllegalAccessException e){
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}catch(InvocationTargetException e){
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}catch(NoSuchMethodException e){
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			DebitoCreditoSituacao dcsAnteriorHistorico = debitoACobrarHistorico.getDebitoCreditoSituacaoAnterior();
-			if(dcsAnteriorHistorico == null){
-				DebitoCreditoSituacao debitoCreditoSituacaoAtual = new DebitoCreditoSituacao();
-				debitoCreditoSituacaoAtual.setId(DebitoCreditoSituacao.NORMAL);
-				debitoACobrar.setDebitoCreditoSituacaoAtual(debitoCreditoSituacaoAtual);
-			}else{
-				debitoACobrar.setDebitoCreditoSituacaoAtual(dcsAnteriorHistorico);
-			}
-
-			debitoACobrar.setDebitoCreditoSituacaoAnterior(null);
-			debitoACobrar.setUltimaAlteracao(ultimaAlt);
-			debitoACobrar.setGeracaoDebito(debitoACobrarHistorico.getDebitoGeradoRealizar());
-
-			DebitoACobrarGeral debitoACobrarGeral = (DebitoACobrarGeral) session.createQuery(consulta).setInteger(
-							"idDebitoACobrarHistorico", idDebitoACobrarHistorico.intValue()).uniqueResult();
-			debitoACobrarGeral.setIndicadorHistorico(ConstantesSistema.NAO);
-			debitoACobrarGeral.setUltimaAlteracao(ultimaAlt);
-			debitoACobrar.setDebitoACobrarGeral(debitoACobrarGeral);
-
-			DebitoACobrarCategoria debitoACobrarCategoria = new DebitoACobrarCategoria();
-			DebitoACobrarCategoriaHistorico debitoACobrarCategoriaHistorico = debitoACobrarHistorico.getDebitoACobrarCategoriasHistorico()
-							.iterator().next();
-
-			debitoACobrarCategoria.setCategoria(debitoACobrarCategoriaHistorico.getCategoria());
-			debitoACobrarCategoria.setDebitoACobrar(debitoACobrar);
-			debitoACobrarCategoria.setUltimaAlteracao(ultimaAlt);
-			debitoACobrarCategoria.setValorCategoria(debitoACobrarCategoriaHistorico.getValorCategoria());
-			debitoACobrarCategoria.setQuantidadeEconomia(debitoACobrarCategoriaHistorico.getQuantidadeEconomia());
-
-			DebitoACobrarCategoriaPK pk = new DebitoACobrarCategoriaPK();
-			pk.setCategoria(debitoACobrarCategoriaHistorico.getCategoria());
-			pk.setDebitoACobrar(debitoACobrar);
-			debitoACobrarCategoria.setComp_id(pk);
-
-			Set<DebitoACobrarCategoria> debitoACobrarCategorias = new HashSet<DebitoACobrarCategoria>();
-			debitoACobrarCategorias.add(debitoACobrarCategoria);
-			debitoACobrar.setDebitoACobrarCategorias(debitoACobrarCategorias);
-
-			session.delete(debitoACobrarCategoriaHistorico);
-			session.delete(debitoACobrarHistorico);
-
-			session.save(debitoACobrar);
-			session.save(debitoACobrarCategoria);
-
-			tx.commit(); // Flush happens automatically
-			System.out.println("huuhuu");
-		}catch(HibernateException e){
-			e.printStackTrace();
-			tx.rollback();
-			// levanta a exceção para a próxima camada
-			throw new ErroRepositorioException(e, "Erro no Hibernate");
-		}finally{
-			// fecha a sessão
-			closeSession(session);
-		}
-	}
-
+	// /**
+	// * [UC0213] Desfazer Parcelamento Débitos Remove débitos a cobrar referentes
+	// * ao parcelamento historico
+	// *
+	// * @author Vitor
+	// * @created 20/02/2006
+	// * @param idImovel
+	// * idParcelamento
+	// * @exception ErroRepositorioException
+	// * Repositorio Exception
+	// */
+	// public static void transferirDebitoACobrarHistoricoParaDebitoACobrar(Integer
+	// idDebitoACobrarHistorico) throws ErroRepositorioException{
+	//
+	// Session session = getSession();
+	// Transaction tx = null;
+	//
+	// try{
+	// tx = session.beginTransaction();
+	// String consulta = "select dac " + "from DebitoACobrarHistorico dac " +
+	// "where dac.id = :idDebitoACobrarHistorico";
+	//
+	// DebitoACobrarHistorico debitoACobrarHistorico = (DebitoACobrarHistorico)
+	// session.createQuery(consulta).setInteger(
+	// "idDebitoACobrarHistorico", idDebitoACobrarHistorico.intValue()).uniqueResult();
+	//
+	// consulta = "select dac " + "from DebitoACobrarGeral dac " +
+	// "where dac.id = :idDebitoACobrarHistorico";
+	//
+	// Date ultimaAlt = new Date();
+	// DebitoACobrar debitoACobrar = new DebitoACobrar();
+	// try{
+	// PropertyUtils.copyProperties(debitoACobrar, debitoACobrarHistorico);
+	// }catch(IllegalAccessException e){
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }catch(InvocationTargetException e){
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }catch(NoSuchMethodException e){
+	// // TODO Auto-generated catch block
+	// e.printStackTrace();
+	// }
+	//
+	// DebitoCreditoSituacao dcsAnteriorHistorico =
+	// debitoACobrarHistorico.getDebitoCreditoSituacaoAnterior();
+	// if(dcsAnteriorHistorico == null){
+	// DebitoCreditoSituacao debitoCreditoSituacaoAtual = new DebitoCreditoSituacao();
+	// debitoCreditoSituacaoAtual.setId(DebitoCreditoSituacao.NORMAL);
+	// debitoACobrar.setDebitoCreditoSituacaoAtual(debitoCreditoSituacaoAtual);
+	// }else{
+	// debitoACobrar.setDebitoCreditoSituacaoAtual(dcsAnteriorHistorico);
+	// }
+	//
+	// debitoACobrar.setDebitoCreditoSituacaoAnterior(null);
+	// debitoACobrar.setUltimaAlteracao(ultimaAlt);
+	// debitoACobrar.setGeracaoDebito(debitoACobrarHistorico.getDebitoGeradoRealizar());
+	//
+	// DebitoACobrarGeral debitoACobrarGeral = (DebitoACobrarGeral)
+	// session.createQuery(consulta).setInteger(
+	// "idDebitoACobrarHistorico", idDebitoACobrarHistorico.intValue()).uniqueResult();
+	// debitoACobrarGeral.setIndicadorHistorico(ConstantesSistema.NAO);
+	// debitoACobrarGeral.setUltimaAlteracao(ultimaAlt);
+	// debitoACobrar.setDebitoACobrarGeral(debitoACobrarGeral);
+	//
+	// DebitoACobrarCategoria debitoACobrarCategoria = new DebitoACobrarCategoria();
+	// DebitoACobrarCategoriaHistorico debitoACobrarCategoriaHistorico =
+	// debitoACobrarHistorico.getDebitoACobrarCategoriasHistorico()
+	// .iterator().next();
+	//
+	// debitoACobrarCategoria.setCategoria(debitoACobrarCategoriaHistorico.getCategoria());
+	// debitoACobrarCategoria.setDebitoACobrar(debitoACobrar);
+	// debitoACobrarCategoria.setUltimaAlteracao(ultimaAlt);
+	// debitoACobrarCategoria.setValorCategoria(debitoACobrarCategoriaHistorico.getValorCategoria());
+	// debitoACobrarCategoria.setQuantidadeEconomia(debitoACobrarCategoriaHistorico.getQuantidadeEconomia());
+	//
+	// DebitoACobrarCategoriaPK pk = new DebitoACobrarCategoriaPK();
+	// pk.setCategoria(debitoACobrarCategoriaHistorico.getCategoria());
+	// pk.setDebitoACobrar(debitoACobrar);
+	// debitoACobrarCategoria.setComp_id(pk);
+	//
+	// Set<DebitoACobrarCategoria> debitoACobrarCategorias = new HashSet<DebitoACobrarCategoria>();
+	// debitoACobrarCategorias.add(debitoACobrarCategoria);
+	// debitoACobrar.setDebitoACobrarCategorias(debitoACobrarCategorias);
+	//
+	// session.delete(debitoACobrarCategoriaHistorico);
+	// session.delete(debitoACobrarHistorico);
+	//
+	//
+	// session.save(debitoACobrar);
+	// session.save(debitoACobrarCategoria);
+	//
+	// tx.commit(); // Flush happens automatically
+	// System.out.println("huuhuu");
+	// }catch(HibernateException e){
+	// e.printStackTrace();
+	// tx.rollback();
+	// // levanta a exceção para a próxima camada
+	// throw new ErroRepositorioException(e, "Erro no Hibernate");
+	// }finally{
+	// // fecha a sessão
+	// closeSession(session);
+	// }
+	// }
+	//
 	/**
 	 * [UC0213] Desfazer Parcelamento Débitos Remove débitos a cobrar referentes
 	 * ao parcelamento historico

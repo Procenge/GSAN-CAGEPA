@@ -3,7 +3,6 @@ package gcom.gui.operacional;
 
 import gcom.cadastro.localidade.FiltroLocalidade;
 import gcom.cadastro.localidade.Localidade;
-import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.operacional.DistritoOperacional;
@@ -42,7 +41,8 @@ public class ExibirFiltrarZonaAbastecimentoAction
 		HttpSession sessao = httpServletRequest.getSession(false);
 
 		FiltrarZonaAbastecimentoActionForm form = (FiltrarZonaAbastecimentoActionForm) actionForm;
-
+		String objetoConsulta = (String) httpServletRequest.getParameter("objetoConsulta");
+		String idSistemaAbastecimento = (String) form.getIdSistemaAbastecimento();
 		// Código para checar ou não o ATUALIZAR
 
 		String primeiraVez = httpServletRequest.getParameter("menu");
@@ -59,8 +59,9 @@ public class ExibirFiltrarZonaAbastecimentoAction
 		// Preenche o combo Sistema Abastecimento
 		pesquisarSistemaAbastecimento(sessao);
 
-		// Preenche o combo Distrito Operacional
-		pesquisarDistritoOperacional(sessao);
+		if(objetoConsulta != null && !objetoConsulta.trim().equalsIgnoreCase("")){
+			pesquisarDistritoOperacional(sessao, objetoConsulta, idSistemaAbastecimento);
+		}
 
 		// Preenche o combo Localidade
 		pesquisarLocalidade(sessao);
@@ -121,6 +122,34 @@ public class ExibirFiltrarZonaAbastecimentoAction
 			filtroDistritoOperacional.setCampoOrderBy(FiltroDistritoOperacional.DESCRICAO);
 			filtroDistritoOperacional.adicionarParametro(new ParametroSimples(FiltroDistritoOperacional.INDICADORUSO,
 							ConstantesSistema.INDICADOR_USO_ATIVO));
+
+			colecaoDistritoOperacional = (ArrayList<DistritoOperacional>) getFachada().pesquisar(filtroDistritoOperacional,
+							DistritoOperacional.class.getName());
+
+			if(colecaoDistritoOperacional == null || colecaoDistritoOperacional.isEmpty()){
+				throw new ActionServletException("atencao.pesquisa.nenhum_registro_tabela", null, "DISTRITO_OPERACIONAL");
+			}
+
+			sessao.setAttribute("colecaoDistritoOperacional", colecaoDistritoOperacional);
+		}
+	}
+
+	/**
+	 * @author isilva
+	 * @param sessao
+	 */
+	@SuppressWarnings("unchecked")
+	private void pesquisarDistritoOperacional(HttpSession sessao, String objetoConsulta, String idSistemaAbastecimento){
+
+		Collection<DistritoOperacional> colecaoDistritoOperacional = (ArrayList<DistritoOperacional>) sessao
+						.getAttribute("colecaoDistritoOperacional");
+
+		if(colecaoDistritoOperacional == null || colecaoDistritoOperacional.isEmpty()){
+			FiltroDistritoOperacional filtroDistritoOperacional = new FiltroDistritoOperacional();
+			filtroDistritoOperacional.setCampoOrderBy(FiltroDistritoOperacional.DESCRICAO);
+			filtroDistritoOperacional.adicionarParametro(new ParametroSimples(FiltroDistritoOperacional.INDICADORUSO,
+							ConstantesSistema.INDICADOR_USO_ATIVO));
+			filtroDistritoOperacional.adicionarParametro(new ParametroSimples(FiltroDistritoOperacional.SISTEMA_ABASTECIMENTO_ID, idSistemaAbastecimento));
 
 			colecaoDistritoOperacional = (ArrayList<DistritoOperacional>) getFachada().pesquisar(filtroDistritoOperacional,
 							DistritoOperacional.class.getName());

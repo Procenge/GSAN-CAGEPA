@@ -80,25 +80,11 @@ import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.micromedicao.hidrometro.FiltroHidrometro;
-import gcom.micromedicao.hidrometro.FiltroHidrometroCapacidade;
-import gcom.micromedicao.hidrometro.FiltroHidrometroClasseMetrologica;
-import gcom.micromedicao.hidrometro.FiltroHidrometroDiametro;
-import gcom.micromedicao.hidrometro.FiltroHidrometroMarca;
-import gcom.micromedicao.hidrometro.FiltroHidrometroSituacao;
-import gcom.micromedicao.hidrometro.FiltroHidrometroTipo;
-import gcom.micromedicao.hidrometro.FiltroHidrometroTipoTurbina;
-import gcom.micromedicao.hidrometro.Hidrometro;
-import gcom.micromedicao.hidrometro.HidrometroCapacidade;
-import gcom.micromedicao.hidrometro.HidrometroClasseMetrologica;
-import gcom.micromedicao.hidrometro.HidrometroDiametro;
-import gcom.micromedicao.hidrometro.HidrometroMarca;
-import gcom.micromedicao.hidrometro.HidrometroSituacao;
-import gcom.micromedicao.hidrometro.HidrometroTipo;
-import gcom.micromedicao.hidrometro.HidrometroTipoTurbina;
+import gcom.micromedicao.hidrometro.*;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
+import gcom.util.filtro.ParametroNulo;
 import gcom.util.filtro.ParametroSimples;
 
 import java.math.BigDecimal;
@@ -201,7 +187,7 @@ public class AtualizarHidrometroAction
 						.equals(Hidrometro.FORMATO_NUMERACAO_5_X_5))
 						&& !hidrometroMarca.getCodigoHidrometroMarca().equalsIgnoreCase(
 										atualizarHidrometroActionForm.getNumeroHidrometro().substring(3, 4))){
-			throw new ActionServletException("atencao.marca_incompativel_numero_fixo");
+			// throw new ActionServletException("atencao.marca_incompativel_numero_fixo");
 		}
 
 		hidrometro.setHidrometroMarca(hidrometroMarca);
@@ -284,16 +270,20 @@ public class AtualizarHidrometroAction
 		SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
 
 		Date dataAquisicao = null;
-		Date dataUltimaRevisao = null;
 		try{
 			dataAquisicao = formatoData.parse(atualizarHidrometroActionForm.getDataAquisicao());
-			dataUltimaRevisao = Util.converteStringParaDate(atualizarHidrometroActionForm.getDataUltimaRevisao(), false);
 
 		}catch(ParseException ex){
 			// Erro no hibernate
 			reportarErros(httpServletRequest, "erro.sistema", ex);
 			// Atribui o mapeamento de retorno para a tela de erro
 			retorno = actionMapping.findForward("telaErro");
+		}
+
+		Integer numeroNotaFiscal = null;
+		if(!Util.isVazioOuBranco(atualizarHidrometroActionForm.getNumeroNotaFiscal())){
+
+			numeroNotaFiscal = Util.obterInteger(atualizarHidrometroActionForm.getNumeroNotaFiscal());
 		}
 
 		Integer anoFabricacao = new Integer(atualizarHidrometroActionForm.getAnoFabricacao());
@@ -337,8 +327,9 @@ public class AtualizarHidrometroAction
 
 		hidrometro.setNumero(atualizarHidrometroActionForm.getNumeroHidrometro());
 		hidrometro.setDataAquisicao(dataAquisicao);
-		hidrometro.setDataUltimaRevisao(dataUltimaRevisao);
+		hidrometro.setNumeroNotaFiscal(numeroNotaFiscal);
 		hidrometro.setAnoFabricacao(new Short(atualizarHidrometroActionForm.getAnoFabricacao()));
+		hidrometro.setLoteEntrega(atualizarHidrometroActionForm.getLoteEntrega());
 		if(!Util.isVazioOuBranco(atualizarHidrometroActionForm.getIndicadorMacromedidor())){
 			hidrometro.setIndicadorMacromedidor(new Short(atualizarHidrometroActionForm.getIndicadorMacromedidor()));
 		}
@@ -373,7 +364,26 @@ public class AtualizarHidrometroAction
 
 		if(hidrometroSituacao == null){
 			throw new ActionServletException("atencao.pesquisa_inexistente", null, "Situação");
+		}else{
+
+			if(HidrometroSituacao.INSTALADO.equals(Integer.valueOf(atualizarHidrometroActionForm.getIdHidrometroSituacao()))){
+
+				FiltroHidrometroInstalacaoHistorico filtroHidrometroInstalacaoHistorico = new FiltroHidrometroInstalacaoHistorico();
+				filtroHidrometroInstalacaoHistorico.adicionarParametro(new ParametroSimples(
+								FiltroHidrometroInstalacaoHistorico.HIDROMETRO_ID, hidrometro.getId()));
+				filtroHidrometroInstalacaoHistorico
+								.adicionarParametro(new ParametroNulo(FiltroHidrometroInstalacaoHistorico.DATA_RETIRADA));
+
+				Collection colecao = fachada.pesquisar(filtroHidrometroInstalacaoHistorico, HidrometroInstalacaoHistorico.class.getName());
+
+				if(Util.isVazioOrNulo(colecao)){
+					throw new ActionServletException("atencao.hidrometro_situacao_instalado", null, "Situação");
+				}
+
+			}
+
 		}
+
 
 		hidrometro.setHidrometroSituacao(hidrometroSituacao);
 

@@ -78,15 +78,21 @@ package gcom.gui.faturamento.consumotarifa;
 
 import gcom.cadastro.imovel.Categoria;
 import gcom.cadastro.imovel.FiltroCategoria;
+import gcom.cadastro.imovel.FiltroSubCategoria;
+import gcom.cadastro.imovel.Subcategoria;
 import gcom.fachada.Fachada;
 import gcom.faturamento.consumotarifa.ConsumoTarifaCategoria;
 import gcom.faturamento.consumotarifa.ConsumoTarifaFaixa;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.gui.faturamento.consumotarifa.bean.CategoriaFaixaConsumoTarifaHelper;
+import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -119,6 +125,20 @@ public class ManterCategoriaConsumoTarifaAction
 
 		HttpSession sessao = httpServletRequest.getSession(false);
 
+		String indicadorTarifaCosumoPorSubCategoria = null;
+		try{
+			indicadorTarifaCosumoPorSubCategoria = (String) ParametroFaturamento.P_INDICADOR_TARIFA_CONSUMO_SUBCATEGORIA.executar();
+			if(indicadorTarifaCosumoPorSubCategoria.equals(ConstantesSistema.SIM.toString())){
+				sessao.setAttribute("indicadorTarifaCosumoPorSubCategoria", "S");
+			}else{
+				sessao.removeAttribute("indicadorTarifaCosumoPorSubCategoria");
+			}
+
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
+
 		Collection colecaoFaixa = (Collection) sessao.getAttribute("colecaoFaixa");
 
 		if(colecaoFaixa != null){
@@ -131,19 +151,42 @@ public class ManterCategoriaConsumoTarifaAction
 			throw new ActionServletException("atencao.faixa_categoria_consumo_tarifa");
 		}
 
+		String pQuantidadeDecimaisValorTarifa = null;
+
+		try{
+
+			pQuantidadeDecimaisValorTarifa = (String) ParametroFaturamento.P_QUANTIDADE_DECIMAIS_VALOR_TARIFA.executar();
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
+
 		Iterator iteratorColecaoFaixa = colecaoFaixa.iterator();
 
 		while(iteratorColecaoFaixa.hasNext()){
 			ConsumoTarifaFaixa consumoTarifaFaixa = (ConsumoTarifaFaixa) iteratorColecaoFaixa.next();
 			String parametroConsumoTarifaFaixa = "valorConsumoTarifa" + consumoTarifaFaixa.getId();
 			String parametroConsumoTarifaFaixaEsgoto = "valorConsumoTarifaEsgoto" + consumoTarifaFaixa.getId();
-			consumoTarifaFaixa.setValorConsumoTarifa(Util.formatarMoedaRealparaBigDecimal(httpServletRequest
-							.getParameter(parametroConsumoTarifaFaixa), 4));
+
+			if(Util.formatarMoedaRealparaBigDecimal(httpServletRequest.getParameter(parametroConsumoTarifaFaixa),
+							Util.obterInteger(pQuantidadeDecimaisValorTarifa)).compareTo(BigDecimal.ZERO) > 0){
+
+				consumoTarifaFaixa
+							.setValorConsumoTarifa(Util.formatarMoedaRealparaBigDecimal(
+											httpServletRequest.getParameter(parametroConsumoTarifaFaixa),
+											Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
+			}
 
 			if(httpServletRequest.getParameter(parametroConsumoTarifaFaixaEsgoto) != null
 							&& !httpServletRequest.getParameter(parametroConsumoTarifaFaixaEsgoto).equals("")){
-				consumoTarifaFaixa.setValorUsoEsgotoTarifa(Util.formatarMoedaRealparaBigDecimal(
-								httpServletRequest.getParameter(parametroConsumoTarifaFaixaEsgoto), 4));
+
+				if(Util.formatarMoedaRealparaBigDecimal(httpServletRequest.getParameter(parametroConsumoTarifaFaixaEsgoto),
+								Util.obterInteger(pQuantidadeDecimaisValorTarifa)).compareTo(BigDecimal.ZERO) > 0){
+
+					consumoTarifaFaixa.setValorUsoEsgotoTarifa(Util.formatarMoedaRealparaBigDecimal(
+								httpServletRequest.getParameter(parametroConsumoTarifaFaixaEsgoto),
+								Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
+				}
 			}
 
 		}
@@ -153,30 +196,48 @@ public class ManterCategoriaConsumoTarifaAction
 		String idCategoria = inserirCategoriaConsumoTarifaActionForm.getSlcCategoria();
 
 		FiltroCategoria filtroCategoria = new FiltroCategoria();
-
 		filtroCategoria.adicionarParametro(new ParametroSimples(FiltroCategoria.CODIGO, idCategoria));
 
 		Collection colecaoCategoriaPesquisadas = fachada.pesquisar(filtroCategoria, Categoria.class.getName());
-
 		Categoria categoriaSelected = (Categoria) Util.retonarObjetoDeColecao(colecaoCategoriaPesquisadas);
+
+		Subcategoria subCategoriaSelected = null;
+		if(inserirCategoriaConsumoTarifaActionForm.getSlcSubCategoria() != null
+						&& !inserirCategoriaConsumoTarifaActionForm.getSlcSubCategoria().toString().equals("")
+						&& !inserirCategoriaConsumoTarifaActionForm.getSlcSubCategoria().toString().equals("-1")){
+			FiltroSubCategoria filtroSubCategoria = new FiltroSubCategoria();
+			filtroSubCategoria.adicionarParametro(new ParametroSimples(FiltroSubCategoria.CATEGORIA_ID, Integer
+							.valueOf(inserirCategoriaConsumoTarifaActionForm.getSlcCategoria())));
+			filtroSubCategoria.adicionarParametro(new ParametroSimples(FiltroSubCategoria.ID, Integer
+							.valueOf(inserirCategoriaConsumoTarifaActionForm.getSlcSubCategoria())));
+
+			Collection<Subcategoria> colecaoSubCategoriaPesquisadas = fachada.pesquisar(filtroSubCategoria, Subcategoria.class.getName());
+			subCategoriaSelected = (Subcategoria) Util.retonarObjetoDeColecao(colecaoSubCategoriaPesquisadas);
+		}
 
 		ConsumoTarifaCategoria consumoTarifaCategoria = new ConsumoTarifaCategoria();
 
 		// Categoria
 		consumoTarifaCategoria.setCategoria(categoriaSelected);
 
+		// SubCategoria
+		consumoTarifaCategoria.setSubCategoria(subCategoriaSelected);
+
 		// Consumo mínimo
 		consumoTarifaCategoria.setNumeroConsumoMinimo(new Integer(inserirCategoriaConsumoTarifaActionForm.getConsumoMinimo()));
 
 		// Tarifa mínima
-		consumoTarifaCategoria.setValorTarifaMinima(Util.formatarMoedaRealparaBigDecimal(inserirCategoriaConsumoTarifaActionForm
-						.getValorTarifaMinima(), 4));
+		consumoTarifaCategoria.setValorTarifaMinima(Util.formatarMoedaRealparaBigDecimal(
+						inserirCategoriaConsumoTarifaActionForm.getValorTarifaMinima(), Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
 
 		// Tarifa mínima Esgoto
 		if(inserirCategoriaConsumoTarifaActionForm.getValorTarifaMinimaEsgoto() != null
 						&& !inserirCategoriaConsumoTarifaActionForm.getValorTarifaMinimaEsgoto().equals("")){
 			consumoTarifaCategoria.setValorTarifaMinimaEsgoto(Util.formatarMoedaRealparaBigDecimal(
-							inserirCategoriaConsumoTarifaActionForm.getValorTarifaMinimaEsgoto(), 4));
+							inserirCategoriaConsumoTarifaActionForm.getValorTarifaMinimaEsgoto(),
+							Util.obterInteger(pQuantidadeDecimaisValorTarifa)));
+		}else{
+			consumoTarifaCategoria.setValorTarifaMinimaEsgoto(BigDecimal.ZERO);
 		}
 
 		// Ultima alteração
@@ -227,24 +288,65 @@ public class ManterCategoriaConsumoTarifaAction
 							consumoTarifaCategoria, (Collection) sessao.getAttribute("colecaoFaixa"));
 
 			String trava = (String) sessao.getAttribute("trava");
-			if(colecaoCategoria.contains(consumoTarifaHelper)){
+			
+			Boolean procurarCategoria = false;
+
+			for(CategoriaFaixaConsumoTarifaHelper categoriaFaixaConsumoTarifaHelper : (ArrayList<CategoriaFaixaConsumoTarifaHelper>) colecaoCategoria){
+
+				if(indicadorTarifaCosumoPorSubCategoria.equals(ConstantesSistema.SIM.toString())){
+					if(categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getId()
+									.equals(consumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getId())
+									&& categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getSubCategoria().getId()
+									.equals(consumoTarifaHelper.getConsumoTarifaCategoria().getSubCategoria().getId())){
+						procurarCategoria = true;
+					}
+				}else{
+					if(categoriaFaixaConsumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getId()
+									.equals(consumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getId())){
+						procurarCategoria = true;
+					}
+				}
+
+			}
+
+			if(procurarCategoria){
 				String novaCategoria = (String) sessao.getAttribute("novaCategoria");
 
 				if(novaCategoria != null && novaCategoria.equals("sim")){
-					throw new ActionServletException("atencao.consumotaria.categoria_existente");
+					if(indicadorTarifaCosumoPorSubCategoria.equals(ConstantesSistema.SIM.toString())){
+						throw new ActionServletException("atencao.consumotaria.subcategoria_existente");
+					}else{
+						throw new ActionServletException("atencao.consumotaria.categoria_existente");
+					}
 				}
 
 				if(novaCategoria != null && novaCategoria.equals("sim") && !"sim".equals(trava)){
-					throw new ActionServletException("atencao.consumotaria.categoria_existente");
+					if(indicadorTarifaCosumoPorSubCategoria.equals(ConstantesSistema.SIM.toString())){
+						throw new ActionServletException("atencao.consumotaria.subcategoria_existente");
+					}else{
+						throw new ActionServletException("atencao.consumotaria.categoria_existente");
+					}
 				}else{
 					Iterator iteratorColecaoCategoria = colecaoCategoria.iterator();
 					while(iteratorColecaoCategoria.hasNext()){
 						CategoriaFaixaConsumoTarifaHelper helper = (CategoriaFaixaConsumoTarifaHelper) iteratorColecaoCategoria.next();
-						if(helper.getConsumoTarifaCategoria().getCategoria().getId().equals(
-										consumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getId())){
-							iteratorColecaoCategoria.remove();
-						}
 
+						if(consumoTarifaHelper.getConsumoTarifaCategoria().getSubCategoria() != null){
+							if(helper.getConsumoTarifaCategoria().getCategoria().getId()
+											.equals(consumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getId())
+											&& helper.getConsumoTarifaCategoria()
+															.getSubCategoria()
+															.getId()
+															.equals(consumoTarifaHelper.getConsumoTarifaCategoria().getSubCategoria()
+																			.getId())){
+								iteratorColecaoCategoria.remove();
+							}
+						}else{
+							if(helper.getConsumoTarifaCategoria().getCategoria().getId()
+											.equals(consumoTarifaHelper.getConsumoTarifaCategoria().getCategoria().getId())){
+								iteratorColecaoCategoria.remove();
+							}
+						}
 					}
 
 					colecaoCategoria.add(consumoTarifaHelper);

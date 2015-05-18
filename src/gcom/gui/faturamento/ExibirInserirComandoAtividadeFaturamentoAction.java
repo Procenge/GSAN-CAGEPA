@@ -90,11 +90,7 @@ import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -174,6 +170,7 @@ public class ExibirInserirComandoAtividadeFaturamentoAction
 			colecaoFaturamentoGrupo = (Collection) sessao.getAttribute("colecaoGrupoFaturamento");
 
 			FaturamentoGrupo faturamentoGrupo = obterFaturamentoGrupoSelecionado(grupoFaturamentoJSP, colecaoFaturamentoGrupo);
+			faturamentoGrupo = (FaturamentoGrupo) fachada.pesquisar(faturamentoGrupo.getId(), FaturamentoGrupo.class);
 
 			// [FS0003] - Verificar existência do cronograma para o grupo
 			// fachada.verificarExistenciaCronogramaGrupo(faturamentoGrupo);
@@ -217,7 +214,8 @@ public class ExibirInserirComandoAtividadeFaturamentoAction
 									&& faturamentoGrupo.getDiaVencimento() != null){
 
 						// [UC0618] Obter Data de Vencimento do Grupo
-						Date dataVencimento = fachada.obterDataVencimentoGrupo(faturamentoGrupo.getId());
+						Date dataVencimento = fachada.obterDataVencimentoGrupo(faturamentoGrupo.getId(), faturamentoGrupo
+										.getAnoMesReferencia().intValue());
 
 						String pSugerirData = "";
 
@@ -276,7 +274,7 @@ public class ExibirInserirComandoAtividadeFaturamentoAction
 					// [SB0002] - Verificar Situação da Atividade para a Rota
 					// true = Rotas habilitadas
 					Collection colecaoRotasSituacao = fachada.verificarSituacaoAtividadeRota(colecaoRotasGrupo, faturamentoAtividade,
-									faturamentoGrupo, true);
+									faturamentoGrupo.getAnoMesReferencia(), true);
 
 					// [FS0007] - Verificar seleção de pelo menos uma rota
 					// habilitada

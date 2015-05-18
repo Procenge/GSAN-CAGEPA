@@ -108,6 +108,10 @@ public class ConsultarDadosEquipeActionForm
 
 	private String tipoPerfilServicoDescricao;
 
+	private String equipeTipoId;
+
+	private String equipeTipoDescricao;
+
 	// Equipe Componente
 	private Collection<EquipeComponentes> equipeComponentes = new ArrayList<EquipeComponentes>();
 
@@ -260,5 +264,25 @@ public class ConsultarDadosEquipeActionForm
 	public void setIdEquipe(String idEquipe){
 
 		this.idEquipe = idEquipe;
+	}
+
+	public String getEquipeTipoId(){
+
+		return equipeTipoId;
+	}
+
+	public void setEquipeTipoId(String equipeTipoId){
+
+		this.equipeTipoId = equipeTipoId;
+	}
+
+	public String getEquipeTipoDescricao(){
+
+		return equipeTipoDescricao;
+	}
+
+	public void setEquipeTipoDescricao(String equipeTipoDescricao){
+
+		this.equipeTipoDescricao = equipeTipoDescricao;
 	}
 }

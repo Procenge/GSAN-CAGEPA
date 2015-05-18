@@ -14,10 +14,16 @@
 	href="<bean:message key="caminho.css"/>EstilosCompesa.css"
 	type="text/css">
 
+<%@ page import="gcom.util.ConstantesSistema"%>
+
 <script language="JavaScript"
 	src="<bean:message key="caminho.js"/>util.js"></script>
 <script language="JavaScript"
 	src="<bean:message key="caminho.js"/>Calendario.js"></script>
+	
+<script type='text/javascript' src='${pageContext.request.contextPath}/dwr/engine.js'> </script>
+<script type='text/javascript' src='${pageContext.request.contextPath}/dwr/util.js'> </script>
+<script type='text/javascript' src='${pageContext.request.contextPath}/dwr/interface/AjaxService.js'> </script>
 
 
 <SCRIPT LANGUAGE="JavaScript">
@@ -70,6 +76,10 @@ function desfazer(){
 	form.nomeSetorComercialDestino.value = "";
 	form.quadraDestinoNM.value = "";
 	form.quadraDestinoID.value = "";
+	form.idCategoria.value = '';
+	form.idCategoria.selectedIndex = 0;
+	form.idSubCategoria.value = '';
+	form.idSubCategoria.selectedIndex = 0;
 	bloquearM();
 	form.idImovel.focus;
 }
@@ -106,6 +116,78 @@ function replicarQuadra(){
 	formulario.quadraDestinoNM.value = formulario.quadraOrigemNM.value;
 	formulario.loteOrigem.focus;
 }
+
+function carregarSubcategorias() {
+	
+	var form = document.forms[0];
+	var campo = form.idCategoria;
+	var count = 0;
+	var temSelecionado = 0;
+	var idCategoria;
+	var idSubCategoria = form.idSubCategoria;
+	
+	for(i = 1; i <= campo.length; i++){
+		
+		if(campo[i - 1].selected){
+			
+			count ++;
+			idCategoria = campo[i - 1].value;
+			temSelecionado = 1;
+		}
+	}
+	
+	if (count == 1 && idCategoria != "-1") {
+		
+		form.selecionar.disabled = false;
+		form.idSubCategoria.disabled = false;
+		
+		AjaxService.carregaSubcategorias(idCategoria, {callback: 
+			function(list) {
+    		
+				//Função que remove caso exista os valores da combo.  
+                DWRUtil.removeAllOptions(idSubCategoria);  
+                
+				//Adicionando valores na combo.  
+                DWRUtil.addOptions(idSubCategoria, {'-1':' '});
+				
+    
+                DWRUtil.addOptions(idSubCategoria, list);
+                
+     
+                
+             
+			}
+		});
+	} else {
+		
+		form.idSubCategoria.length = 0;
+		form.idSubCategoria.value = "-1";
+		form.idSubCategoria.disabled = true;
+		
+		if (form.idImovel.value == '' && form.localidadeOrigemID.value == ''){
+			
+			form.selecionar.disabled = true;
+		}
+	}
+}
+
+function controleCategoriaSubCategoria() {
+	
+	var form = document.forms[0];
+	var obj = form.idCategoria;
+	
+	if (obj.selectedIndex == 0) {
+		form.idSubCategoria.disabled = true;
+		form.idSubCategoria[0].selected = true;
+	}else {
+		if (form.idCategoria.selectedIndex == 0 || form.idCategoria.selectedIndex == -1) {
+			form.idSubCategoria.disabled = true;
+			form.idSubCategoria.value = "-1";
+		}else {
+			form.idSubCategoria.disabled = false;
+		}
+	}
+}
     
 </script>
 
@@ -136,7 +218,27 @@ function replicarQuadra(){
   
   function verificarBotoes(){
   var form = document.AssociarTarifaConsumoImoveisActionForm;
-  	if(form.idImovel.value == '' && form.localidadeOrigemID.value == ''){
+  
+    var campoCategoria = form.idCategoria;
+	var countCateg = 0;
+	var idCategoria;
+	var selecionouCategoria = 0;
+	
+	for(i = 1; i <= campoCategoria.length; i++){
+		
+		if(campoCategoria[i - 1].selected){
+			
+			countCateg ++;
+			idCategoria = campoCategoria[i - 1].value;
+		}
+	}
+	
+	if (countCateg == 1 && idCategoria != "-1") {
+		
+		selecionouCategoria = 1;
+	}
+  
+  	if(form.idImovel.value == '' && form.localidadeOrigemID.value == '' && selecionouCategoria == 0){
   		form.selecionar.disabled = true;
   		form.inserir.disabled = true;
   		//form.retirar.disabled = true;  		
@@ -331,6 +433,7 @@ function bloquearLSQLS(){
 
 function bloquearM(){
 	var form = document.AssociarTarifaConsumoImoveisActionForm;
+	
 	if(form.localidadeOrigemID.value != ""){
 	  form.idImovel.disabled = true;
 	  form.selecionar.disabled = false;
@@ -1034,7 +1137,7 @@ var form = document.AssociarTarifaConsumoImoveisActionForm;
 </head>
 
 <body leftmargin="5" topmargin="5"
-	onload="bloquearM();bloquearLSQLS();desabilitaIntervaloDiferente(${requestScope.campoDesabilita});javascript:setarFoco('${requestScope.nomeCampo}');">
+	onload="bloquearM();bloquearLSQLS();desabilitaIntervaloDiferente(${requestScope.campoDesabilita});javascript:setarFoco('${requestScope.nomeCampo}');javascript:controleCategoriaSubCategoria();">
 
 
 <html:form action="/associarTarifaConsumoImoveisAction"
@@ -1743,6 +1846,57 @@ var form = document.AssociarTarifaConsumoImoveisActionForm;
 						<html:options collection="colecaoConsumoTarifa"
 							labelProperty="descricao" property="id" />
 					</html:select> <font size="1">&nbsp; </font></td>
+				</tr>
+				
+				<tr>
+					<td>
+						<strong>Categoria:</strong>
+					</td>
+
+					<td>
+						<strong> 
+						<html:select property="idCategoria" 
+							style="width: 230px;"
+							multiple="true"
+							onchange="javascript:carregarSubcategorias();">
+							
+							<html:option
+								value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+							</html:option>
+					
+							<logic:present name="colecaoCategoria" scope="request">
+								<html:options collection="colecaoCategoria"
+									labelProperty="descricao" 
+									property="id"/>
+							</logic:present>
+						</html:select> 														
+						</strong>
+					</td>
+				</tr>
+				
+				<tr>
+					<td>
+						<strong>Subcategoria:</strong>
+					</td>
+
+					<td>
+						<strong> 
+						<html:select property="idSubCategoria" 
+							style="width: 230px;"
+							multiple="true">
+							
+							<html:option
+								value="<%="" + ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+							</html:option>
+					
+							<logic:present name="colecaoSubCategoria" scope="request">
+								<html:options collection="colecaoSubCategoria"
+									labelProperty="descricao" 
+									property="id" />
+							</logic:present>
+						</html:select> 														
+						</strong>
+					</td>
 				</tr>
 				
 				<tr>

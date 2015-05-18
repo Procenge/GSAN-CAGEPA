@@ -78,7 +78,6 @@ package gcom.gui.cadastro.unidade;
 
 import gcom.cadastro.unidade.FiltroUnidadeOrganizacional;
 import gcom.cadastro.unidade.UnidadeOrganizacional;
-
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
@@ -250,6 +249,7 @@ public class PesquisarUnidadeSuperiorAction
 
 		// adiciona as dependências para serem mostradas na página
 		filtroUnidadeOrganizacional.adicionarCaminhoParaCarregamentoEntidade("unidadeTipo");
+		filtroUnidadeOrganizacional.adicionarCaminhoParaCarregamentoEntidade("empresa");
 
 		Collection colecaoUnidadeOrganizacionalSuperior = null;
 

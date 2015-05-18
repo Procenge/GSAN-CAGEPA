@@ -35,8 +35,12 @@ public class FiltroDebitoAutomaticoMovimento
 
 	public final static String DEBITO_AUTOMATICO = "debitoAutomatico";
 
+	public final static String DEBITO_AUTOMATICO_ID = "debitoAutomatico.id";
+
 	public final static String FATURAMENTO_GRUPO = "faturamentoGrupo";
 
 	public final static String NUMERO_PRESTACAO = "numeroPrestacao";
+
+	public final static String MOTIVO_CANCELAMENTO_ID = "debitoAutomaticoMovimentoCancelamentoMotivo.id";
 
 }

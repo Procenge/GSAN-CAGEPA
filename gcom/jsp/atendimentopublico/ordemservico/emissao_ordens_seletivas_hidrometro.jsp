@@ -42,9 +42,14 @@ function validarForm(form){
 				alert('O Número de Ocorrências Consecutivas deve ser Menor ou Igual a 10.');
 				form.numeroOcorrenciasConsecutivas.focus();
 				return false;
-			}			
-
+			}
 			
+			if (form.referenciaUltimaAfericaoAnterior.value != '' && !validaAnoMesSemAlert(form.referenciaUltimaAfericaoAnterior)) {
+				
+				alert("Última Aferição anterior a Inválida.");
+				return false;
+			}
+
 			return true;
 		}else {
 			return false;
@@ -271,6 +276,13 @@ function validarForm(form){
 								<td><html:text property="numeroOcorrenciasConsecutivas" size="3" maxlength="2" disabled="true"></html:text></td>
 							</tr>
 						</table>
+					</td>
+				</tr>
+				
+				<tr>
+					<td height="10" width="145"><strong>Última Aferição anterior a:</strong></td>
+					<td><html:text property="referenciaUltimaAfericaoAnterior" size="8" maxlength="7"
+						onkeyup="mascaraAnoMes(this, event);"/>
 					</td>
 				</tr>
 				

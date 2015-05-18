@@ -76,7 +76,7 @@ function habilitarSetorQuadra(){
 }
 
 function chamarPopup(url, tipo, objeto, codigoObjeto, altura, largura, msg){
-
+	
 	if (objeto == null || codigoObjeto == null){
 		abrirPopup(url + "?" + "tipo=" + tipo, altura, largura);
 	}
@@ -138,6 +138,8 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
       form.idQuadra.focus();
     }
 }
+
+
 -->
 </script>
 
@@ -157,6 +159,7 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
 
 <%@ include file="/jsp/util/cabecalho.jsp"%>
 <%@ include file="/jsp/util/menu.jsp" %>
+
 
 <table width="770" border="0" cellspacing="4" cellpadding="0">
   	
@@ -265,11 +268,11 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
 					  <img  border="0" src="imagens/pesquisa.gif" height="21" width="23"></a>
 							
 					<logic:present name="eloInexistente" scope="request">
-					  <html:text property="descricaoElo" readonly="true" style="background-color:#EFEFEF; border:0; color: #ff0000" size="40" maxlength="40" />
+					  <html:text property="descricaoElo" readonly="true" style="background-color:#EFEFEF; border:0; color: #ff0000" size="39" maxlength="40" />
 					</logic:present>
 									
 					<logic:notPresent name="eloInexistente" scope="request">
-					  <html:text property="descricaoElo" readonly="true" style="background-color:#EFEFEF; border:0" size="40" maxlength="40" />
+					  <html:text property="descricaoElo" readonly="true" style="background-color:#EFEFEF; border:0" size="39" maxlength="40" />
 					</logic:notPresent>		
 					
 					<a href="javascript:limparElo();"> 
@@ -278,7 +281,7 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
 				  </strong>
 				</td>
 			  </tr>
-			
+			  
 			  <tr>
 			    <td><strong>Localidade:</strong></td>
 			    <td>
@@ -286,16 +289,16 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
 					<html:text property="idLocalidade" size="5" maxlength="3"
 					onfocus="javascript:habilitarSetorQuadra();"
 					onkeyup="javascript:habilitarSetorQuadra();"
-					 onkeypress="validaEnterComMensagem(event, 'exibirGerarRelatorioRelacaoParcelamentoAction.do', 'idLocalidade', 'Localidade');" />
+					onkeypress="validaEnterComMensagem(event, 'exibirGerarRelatorioRelacaoParcelamentoAction.do', 'idLocalidade', 'Localidade');" />
 					<a href="javascript:chamarPopup('exibirPesquisarLocalidadeAction.do?indicadorUsoTodos=1', 'localidade', null, null, 275, 480, '');">
 					  <img  border="0" src="imagens/pesquisa.gif" height="21" width="23"></a>
 							
 					<logic:present name="localidadeInexistente" scope="request">
-					  <html:text property="descricaoLocalidade" readonly="true" style="background-color:#EFEFEF; border:0; color: #ff0000" size="40" maxlength="40" />
+					  <html:text property="descricaoLocalidade" readonly="true" style="background-color:#EFEFEF; border:0; color: #ff0000" size="39" maxlength="40" />
 					</logic:present>
 									
 					<logic:notPresent name="localidadeInexistente" scope="request">
-					  <html:text property="descricaoLocalidade" readonly="true" style="background-color:#EFEFEF; border:0" size="40" maxlength="40" />
+					  <html:text property="descricaoLocalidade" readonly="true" style="background-color:#EFEFEF; border:0" size="39" maxlength="40" />
 					</logic:notPresent>		
 					
 					<a href="javascript:limparLocalidade();"> 
@@ -309,16 +312,18 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
 			    <td><strong>Setor Comercial:</strong></td>
 			    <td>
 				  <strong>
-					<html:text property="idSetorComercial" size="7" maxlength="4" disabled="true" onkeyup="return validaEnterComMensagem(event, 'exibirGerarRelatorioRelacaoParcelamentoAction.do', 'idSetorComercial', 'Setor Comercial');" onchange="controleSetorComercial(this.value);"/>
+					<html:text property="idSetorComercial" size="5" maxlength="4" disabled="true" 
+					onkeyup="return validaEnterComMensagem(event, 'exibirGerarRelatorioRelacaoParcelamentoAction.do', 'idSetorComercial', 'Setor Comercial');" 
+					onchange="controleSetorComercial(this.value);"/>
 					<a href="javascript:abrirPopupDependencia('exibirPesquisarSetorComercialAction.do?idLocalidade='+document.forms[0].idLocalidade.value+'&tipo=SetorComercial',document.forms[0].idLocalidade.value,'Localidade', 400, 800);">
 					  <img  border="0" src="imagens/pesquisa.gif" height="21" width="23"></a>
 							
 					<logic:present name="setorComercialInexistente" scope="request">
-					  <html:text property="descricaoSetorComercial" readonly="true" style="background-color:#EFEFEF; border:0; color: #ff0000" size="40" maxlength="40" />
+					  <html:text property="descricaoSetorComercial" readonly="true" style="background-color:#EFEFEF; border:0; color: #ff0000" size="39" maxlength="40" />
 					</logic:present>
 									
 					<logic:notPresent name="setorComercialInexistente" scope="request">
-					  <html:text property="descricaoSetorComercial" readonly="true" style="background-color:#EFEFEF; border:0" size="40" maxlength="40" />
+					  <html:text property="descricaoSetorComercial" readonly="true" style="background-color:#EFEFEF; border:0" size="39" maxlength="40" />
 					</logic:notPresent>		
 					
 					<a href="javascript:limparSetorComercial();"> 
@@ -401,16 +406,17 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
 			    <td>
 				  <strong>
 					
-					<html:text property="idUsuarioResponsavel" size="5" maxlength="3" disabled="true" onkeyup="return validaEnterComMensagem(event, 'exibirFiltrarRelacaoParcelamentoAction.do', 'idUsuarioResponsavel', 'Usuário Responsável');" />
+					<html:text property="idUsuarioResponsavel" size="5" maxlength="3" disabled="true" 
+					onkeyup="return validaEnterComMensagem(event, 'exibirFiltrarRelacaoParcelamentoAction.do', 'idUsuarioResponsavel', 'Usuário Responsável');" />
 					<a href="javascript:chamarPopup('exibirPesquisarUsuarioAction.do', 'idUsuarioResponsavel', null, null, 400, 800, '',document.forms[0].idUsuarioResponsavel,'idElo',document.forms[0].idElo.value);">
 					  <img  border="0" src="imagens/pesquisa.gif" height="21" width="23"/></a>
 					
 					<logic:present name="usuarioResponsavelInexistente" scope="request">
-					  <html:text property="descricaoUsuarioResponsavel" readonly="true" style="background-color:#EFEFEF; border:0; color: #ff0000" size="40" maxlength="40" />
+					  <html:text property="descricaoUsuarioResponsavel" readonly="true" style="background-color:#EFEFEF; border:0; color: #ff0000" size="39" maxlength="40" />
 					</logic:present>
 					
 					<logic:notPresent name="usuarioResponsavelInexistente" scope="request">
-					  <html:text property="descricaoUsuarioResponsavel" readonly="true" style="background-color:#EFEFEF; border:0" size="40" maxlength="40" />
+					  <html:text property="descricaoUsuarioResponsavel" readonly="true" style="background-color:#EFEFEF; border:0" size="39" maxlength="40" />
 					</logic:notPresent>		
 
 					<a href="javascript:limparUsuarioResponsavel();"> 
@@ -437,15 +443,16 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
 			  <tr> 
                 <td> 
                   <div align="left">
-                    <input type="submit" name="adicionar2" class="bottonRightCol" value="Limpar" onclick="javascript:limparForm();">
+                    <input type="button" name="adicionar2" class="bottonRightCol" value="Limpar" onclick="javascript:limparForm();">
                   </div>
                 </td>
                 <td>&nbsp;</td>
-                <td>
-                  <div align="right">
-                    <input type="submit" name="Submit" class="bottonRightCol" value="Filtrar">
-                  </div>
-                </td>
+                <td align="right">
+						<input type="Button" 
+							class="bottonRightCol" 
+							value="Gerar" 
+							onClick="javascript:toggleBox('demodiv',1);"/>
+					</td>
               </tr>
               
 		    </table>
@@ -454,13 +461,13 @@ function recuperarDadosPopup(codigoRegistro, descricaoRegistro, tipoConsulta) {
 		  </td>
 	    </tr>
 	  
-	    <%@ include file="/jsp/util/rodape.jsp"%>
-	  
 	  </table>
     </td>
   </tr>
 
 </table>
+	  <jsp:include page="/jsp/relatorio/escolher_tipo_relatorio.jsp?relatorio=gerarRelatorioRelacaoParcelamentoAction.do&left=500&top=450" />
+	    <%@ include file="/jsp/util/rodape.jsp"%>
 
 </html:form>
 </body>

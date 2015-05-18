@@ -56,28 +56,88 @@ var bCancel = false;
         else
        return validateCaracterEspecial(form) && validateLong(form);
    }
-   
-
-    function caracteresespeciais () {
-     this.aa = new Array("dataLeituraAnteriorFaturamento", "Data Anterior possui caracteres especiais.", new Function ("varName", " return this[varName];"));
-     this.ab = new Array("leituraAnteriorFaturamento", "Leitura Anterior possui caracteres especiais.", new Function ("varName", " return this[varName];"));
-     this.ac = new Array("dataLeituraAtualInformada", "Data Atual possui caracteres especiais.", new Function ("varName", " return this[varName];"));
-     this.ad = new Array("leituraAtualInformada", "Leitura Atual possui caracteres especiais.", new Function ("varName", " return this[varName];"));
-     this.ae = new Array("consumoInformado", "Consumo Inf. possui caracteres especiais.", new Function ("varName", " return this[varName];"));
-     this.af = new Array("codigoImovel", "Imóvel possui caracteres especiais.", new Function ("varName", " return this[varName];"));
-     this.ag = new Array("idAnormalidade", "Anorm. possui caracteres especiais.", new Function ("varName", " return this[varName];"));
-     
-    }
-
-
-    function IntegerValidations () {
-     this.aa = new Array("leituraAnteriorFaturamento", "Leitura Anterior deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
-     this.ab = new Array("leituraAtualInformada", "Leitura Atual deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
-     this.aa = new Array("consumoInformado", "Consumo Inf deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
-     this.ab = new Array("codigoImovel", "Imóvel deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
-     this.ac = new Array("idAnormalidade", "Anorm. deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
-    }
+--></script>   
     
+    <logic:notPresent name="naoValidarLeitura" scope="session">    
+
+		<script language="JavaScript"><!--
+		    function caracteresespeciais () {
+			     this.aa = new Array("dataLeituraAnteriorFaturamento", "Data Anterior possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+			     this.ab = new Array("leituraAnteriorFaturamento", "Leitura Anterior possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+			     this.ac = new Array("dataLeituraAtualInformada", "Data Atual possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+			     this.ad = new Array("leituraAtualInformada", "Leitura Atual possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+			     this.ae = new Array("consumoInformado", "Consumo Inf. possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+			     this.af = new Array("codigoImovel", "Imóvel possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+			     this.ag = new Array("idAnormalidade", "Anorm. possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+			     
+		    }
+		
+	    	function IntegerValidations () {
+	        	this.aa = new Array("leituraAnteriorFaturamento", "Leitura Anterior deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+	        	this.ab = new Array("leituraAtualInformada", "Leitura Atual deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+	        	this.aa = new Array("consumoInformado", "Consumo Inf deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+	        	this.ab = new Array("codigoImovel", "Imóvel deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+	        	this.ac = new Array("idAnormalidade", "Anorm. deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+	       }	
+	    	
+	    	function submeterForm(){
+	    		var form = document.forms[0];
+	    		
+	    		if(validateLeituraConsumoActionForm(form)){
+	    			
+	    			if(!verificaDataMensagemSemApagar(form.dataLeituraAnteriorFaturamento,'Data Anterior Inválida')){
+	    				
+	    			}else if(!verificaDataMensagemSemApagar(form.dataLeituraAtualInformada, 'Data Atual Inválida')){
+	    				
+	    			}else
+	    			if (form.dataLeituraAtualInformada.value == '' && form.leituraAtualInformada.value !=''){
+	    				alert('Informe Data Atual');
+	    			}else{
+	    				if(form.dataLeituraAnteriorFaturamento.value != '' && form.leituraAnteriorFaturamento.value ==''){
+	    					alert('Informe Leitura Anterior');
+	    				}else
+	    				if (form.dataLeituraAnteriorFaturamento.value == '' && form.leituraAnteriorFaturamento.value !=''){
+	    					alert('Informe Data Anterior');
+	    				}else{
+	    					submeterFormPadrao(document.forms[0]);
+	    				}
+	    			}
+	    		}
+	    	}
+	    	
+		--></script>   
+
+	</logic:notPresent>
+	
+   <logic:present name="naoValidarLeitura" scope="session">    
+
+		<script language="JavaScript"><!--
+		    function caracteresespeciais () {
+			     this.ae = new Array("consumoInformado", "Consumo Inf. possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+			     this.af = new Array("codigoImovel", "Imóvel possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+			     this.ag = new Array("idAnormalidade", "Anorm. possui caracteres especiais.", new Function ("varName", " return this[varName];"));
+			     
+		    }
+		
+	    	function IntegerValidations () {
+	        	this.aa = new Array("consumoInformado", "Consumo Inf deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+	        	this.ab = new Array("codigoImovel", "Imóvel deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+	        	this.ac = new Array("idAnormalidade", "Anorm. deve somente conter números positivos.", new Function ("varName", " return this[varName];"));
+	       }
+	    	
+	    	function submeterForm(){
+	    		var form = document.forms[0];
+	    		
+	    		if(validateLeituraConsumoActionForm(form)){
+	    			submeterFormPadrao(document.forms[0]);
+	    		}
+	    	}	    	
+		--></script>   
+
+	</logic:present>	
+
+
+  <script language="JavaScript"><!--  
    // function InteiroZeroPositivoValidations () { 
    //  this.aa = new Array("leituraAnteriorFaturamento", "Leitura Anterior deve somente conter números positivos ou zero.", new Function ("varName", " return this[varName];"));
    //  this.ab = new Array("leituraAtualInformada", "Leitura Atual deve somente conter números positivos ou zero.", new Function ("varName", " return this[varName];"));
@@ -106,31 +166,7 @@ var bCancel = false;
 <script language="JavaScript">
 
 
-function submeterForm(){
-	var form = document.forms[0];
-	if(validateLeituraConsumoActionForm(form)){
-		if(!verificaDataMensagemSemApagar(form.dataLeituraAnteriorFaturamento,'Data Anterior Inválida')){
-			
-		}else if(!verificaDataMensagemSemApagar(form.dataLeituraAtualInformada, 'Data Atual Inválida')){
-			
-		}else
-		if(form.dataLeituraAtualInformada.value != '' && form.leituraAtualInformada.value ==''){
-			alert('Informe Leitura Atual');
-		}else
-		if (form.dataLeituraAtualInformada.value == '' && form.leituraAtualInformada.value !=''){
-			alert('Informe Data Atual');
-		}else{
-			if(form.dataLeituraAnteriorFaturamento.value != '' && form.leituraAnteriorFaturamento.value ==''){
-				alert('Informe Leitura Anterior');
-			}else
-			if (form.dataLeituraAnteriorFaturamento.value == '' && form.leituraAnteriorFaturamento.value !=''){
-				alert('Informe Data Anterior');
-			}else{
-				submeterFormPadrao(document.forms[0]);
-			}
-		}
-	}
-}
+
 
 function imovelAnterior(){
  var form = document.forms[0];
@@ -307,7 +343,7 @@ function pesquisaImovelNaColecao(imovel, tipoMedicao){
 												name="LeituraConsumoActionForm"
 												property="instalacaoHidrometro" /></td>
 											<logic:present name="poco">
-												<td align="center">Sim</td>
+												<td align="center"><bean:write name="pocoDescricao"/></td>
 											</logic:present>
 											<logic:notPresent name="poco">
 												<td align="center">Não</td>
@@ -354,7 +390,7 @@ function pesquisaImovelNaColecao(imovel, tipoMedicao){
 									<td height="5">
 									
 									<div align="left">
-										<a href="javascript:abrirPopupComSubmit('exibirConsultarImovelAction.do?idImovel=${idImovel}',400,800);">
+										<a href="javascript:abrirPopup('exibirConsultarImovelAction.do?idImovel=${idImovel}',400,800);">
 											<strong>Consultar Imóvel</strong>
 						 				</a>
 									</div> 	
@@ -485,10 +521,15 @@ function pesquisaImovelNaColecao(imovel, tipoMedicao){
 													</td>
 												</tr>
 												<tr>
+													<td width="53" class="styleFontePeqNegrito">Créd. Gerado :</td>
+													<td><html:text property="creditoGerado"
+														readonly="true"
+														style="background-color:#EFEFEF; border:0;font-size:xx-small"
+														size="5" />
+													</td>
+													
 													<td>&nbsp;</td>
-													<td>&nbsp;</td>
-													<td>&nbsp;</td>
-													<td width="83" class="styleFontePeqNegrito">Créd. Faturado :</td>
+													<td width="73" class="styleFontePeqNegrito">Créd. Faturado :</td>
 													<td><html:text property="creditoFaturado"
 														readonly="true"
 														style="background-color:#EFEFEF; border:0;font-size:xx-small"

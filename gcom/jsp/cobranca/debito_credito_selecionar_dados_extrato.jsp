@@ -14,6 +14,7 @@
 <%@ page import="gcom.faturamento.credito.CreditoARealizar"%>
 <%@ page import="gcom.cobranca.bean.GuiaPagamentoValoresHelper"%>
 <%@ page import="gcom.cobranca.bean.DebitoCreditoParcelamentoHelper"%>
+<%@ page import="gcom.cadastro.cliente.ClienteImovel" isELIgnored="false"%>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
@@ -148,6 +149,12 @@
 		    form.idImovel.value = codigoRegistro;
 		    form.inscricaoImovel.value = descricaoRegistro;
 		    form.inscricaoImovel.style.color = "#000000";
+		    
+			var obj = document.forms[0].idClienteRelacaoImovelSelecionado;
+			if(obj != null && obj != undefined && obj != 'undefined'){
+				document.forms[0].idClienteRelacaoImovelSelecionado.value='';	
+			}
+		    
 	    	reloadImovel();
 	    }
 	}
@@ -356,8 +363,37 @@
 			document.getElementById("checkIndicadorAtualizacaoMonetaria").value = <%=ConstantesSistema.SIM.toString()%>;
 		}
 	}
+	
+	function validaEnterMatriculaImovel() {
+		var obj = document.forms[0].idClienteRelacaoImovelSelecionado;
+		if(obj != null && obj != undefined && obj != 'undefined'){
+			document.forms[0].idClienteRelacaoImovelSelecionado.value='';
+		}
+		
+		validaEnterComMensagem(event, 'exibirDebitoCreditoDadosSelecaoExtratoAction.do?pesquisarImovel=SIM', 'idImovel', 'Matrícula');
+	}	
 
 </SCRIPT>
+
+<logic:present name="indicadorFauramentoTitularDebito" scope="request">
+	<SCRIPT LANGUAGE="JavaScript">
+	<!--
+	
+	  	function marcarClienteOrigemId(objeto) {
+	  		var form = document.forms[0];
+	  		
+			var i = 0;
+			for (i = 0; i < document.forms[0].idClienteImovel.length; i++) { 
+			    if (document.forms[0].idClienteImovel[i].checked == true) {
+			    	form.idClienteRelacaoImovelSelecionado.value = document.forms[0].valorClienteImovel[i].value;
+			    	reloadImovel();
+			    }
+			}	  		
+	  	}
+
+	//-->
+	</SCRIPT>
+</logic:present>
 
 </head>
 
@@ -462,7 +498,7 @@
 			<td><strong>Imóvel:</strong></td>
 			<td>
 				<html:text property="idImovel" size="10" maxlength="10" tabindex="2"
-				onkeypress="validaEnterComMensagem(event, 'exibirDebitoCreditoDadosSelecaoExtratoAction.do?pesquisarImovel=SIM', 'idImovel', 'Matrícula');" /> 
+				onkeypress="validaEnterMatriculaImovel();" /> 
 				<a 
 				href="javascript:chamarPopup('exibirPesquisarImovelAction.do', 'imovel', null, null, 490, 800, '', document.forms[0].idImovel);">
 				<img src="<bean:message key='caminho.imagens'/>pesquisa.gif" width="23" height="21" alt="Pesquisar" border="0">
@@ -492,6 +528,7 @@
 				alt="Apagar" border="0"></a>
 			</td>
 		</tr>
+	
 		
 		<tr>
 			<td><strong>Cliente:</strong></td>
@@ -514,6 +551,65 @@
 			</td>
 		</tr>
 		
+		
+	    <logic:present name="indicadorFauramentoTitularDebito" scope="request">
+	    <tr>
+		<td colspan="3">			    
+			<table width="100%" align="center" bgcolor="#90c7fc" border="0">
+			<tr>
+				<td align="center" ><strong>Clientes com Débitos</strong></td>
+			</tr>
+		    </table>
+	    	<html:hidden property="idClienteRelacaoImovelSelecionado"/>
+			<%int cont = 0;%>
+			<table width="100%" bgcolor="#99CCFF">
+				<tr bgcolor="#90c7fc">
+					<td align="center" width="7%"><strong></strong></td>
+					<td align="center" width="18%"><strong>Tipo de Relação</strong></td>
+					<td align="left" width="75%"><strong>Nome</strong></td>
+				</tr>
+				
+				<logic:notEmpty name="colecaoRelacaoImovel" scope="session">
+				<tr>
+					<td height="100" colspan="3" >
+					<div style="width: 100%; height: 100%; overflow: auto;">
+					<table width="100%">
+						<logic:iterate name="colecaoRelacaoImovel" type="ClienteImovel" id="clienteImovel">
+							<%cont = cont + 1;
+							if (cont % 2 == 0) {%>
+							<tr bgcolor="#cbe5fe" width="100%">
+							<%} else {%>
+							<tr bgcolor="#FFFFFF" width="100%">
+							<%}%>
+			
+							<td align="center" height="20" width="7%">
+								<input type="hidden" name="valorClienteImovel"
+									value="<bean:write name="clienteImovel" property="clienteRelacaoTipo.id"/>.<bean:write name="clienteImovel" property="cliente.id"/>" 
+									 >
+								
+								<input type="radio" id="idClienteImovel" 
+									name="idClienteImovel" 
+									 onclick="javascript:marcarClienteOrigemId(this);">
+
+							</td>
+							<td align="center" height="20" width="18%">
+								<bean:write name="clienteImovel" property="clienteRelacaoTipo.descricao"/>
+							</td>
+							<td align="center" height="20" width="75%">
+								<bean:write name="clienteImovel" property="cliente.descricao"/>
+							</td>																				
+							</tr>
+						</logic:iterate>							
+					</table>
+					</div>
+					</td>
+				</tr>
+				</logic:notEmpty>							
+			</table>			
+		</td>
+		</tr>				       
+	   </logic:present>			
+		
 	</table>
 
 	
@@ -534,7 +630,7 @@
 				
 					<table width="100%" cellpadding="0" cellspacing="0">
 					<tr bgcolor="#79bbfd">
-						<td colspan="6" height="20"><strong>Contas</strong></td>
+						<td colspan="6" height="20" align="center"><strong>Contas</strong></td>
 					</tr>
 					<tr bgcolor="#90c7fc">
 
@@ -809,7 +905,7 @@
 				
 					<table width="100%" cellpadding="0" cellspacing="0">
 					<tr bgcolor="#79bbfd">
-						<td colspan="6" height="20"><strong>Débitos</strong></td>
+						<td colspan="6" height="20" align="center"><strong>Débitos a Cobrar de Serviços</strong></td>
 					</tr>
 					<tr bgcolor="#90c7fc">
 
@@ -969,6 +1065,147 @@
 			</logic:present>
 
 			</table>
+				<table width="100%" cellpadding="0" cellspacing="0">
+				<tr>
+					<td>
+					</td>
+				</tr>
+			</table>
+			
+				<table width="100%" cellpadding="0" cellspacing="0">
+		
+	<tr>
+				<td>
+				
+					<table width="100%" cellpadding="0" cellspacing="0">
+					<tr bgcolor="#79bbfd">
+						<td colspan="6" height="20" align="center"><strong> Debito a Cobrar de Parcelamento</strong></td>
+					</tr>
+					<tr bgcolor="#90c7fc">
+						<td width="16%" height="20">
+							<strong><a href="javascript:marcarCombosParcelas();" id="0">Todos</a></strong>
+						</td>
+						<td width="16%">
+							<div align="center"><strong>Data</strong></div>
+						</td>
+						<td width="16%">
+							<div align="center"><strong>Mes/Ano Ref.</strong></div>
+						</td>
+						<td width="16%">
+							<div align="center"><strong>Mes/Ano Cobr.</strong></div>
+						</td>
+						
+						<td width="16%">
+							<div align="center"><strong>Parc.</strong></div>
+						</td>
+						<td width="16%">
+							<div align="center"><strong>Valor</strong></div>
+						</td>
+					</table>
+
+				</td>
+			</tr>
+			
+			
+			<%BigDecimal valorTotalParcelamento = new BigDecimal("0.00");%>
+
+			<logic:present name="colecaoDebitoCreditoParcelamento">
+			
+			<logic:notEmpty name="colecaoDebitoCreditoParcelamento">
+
+			<tr>
+				<td>
+										
+					<% String cor0 = "#cbe5fe";%>
+
+					<div style="width: 100%; height: 100; overflow: auto;">
+										
+					<table width="100%" align="center" bgcolor="#90c7fc">
+										
+					<logic:iterate name="colecaoDebitoCreditoParcelamento" id="debitoCredito" type="DebitoCreditoParcelamentoHelper">
+																		
+						<%valorTotalParcelamento = valorTotalParcelamento.add(debitoCredito.getValorTotalDebito()); %>
+						
+						<%	if (cor0.equalsIgnoreCase("#cbe5fe")){
+							cor0 = "#FFFFFF";%>
+							<tr bgcolor="#FFFFFF">
+						<%} else{
+							cor0 = "#cbe5fe";%>
+							<tr bgcolor="#cbe5fe">
+						<%}%>						
+						<td align="center" width="16%">
+							<html:select property="idsParcelamento" >
+								<option value="-1">Nenhum</option>
+								<option value="${debitoCredito.parcelamento.id}_todas" <c:if test="${debitoCredito.selecaoPermitida eq false}">disabled="disabled"</c:if>>Todos</option>
+								<c:forEach items="${debitoCredito.quantidadeParcelasAberto}" var="parcelas">
+									<option value="${debitoCredito.parcelamento.id}_${parcelas}" <c:if test="${debitoCredito.selecaoPermitida eq false}">disabled="disabled"</c:if>  >${parcelas}</option>
+								</c:forEach>
+							</html:select>
+						</td>
+						
+						<td width="16%" align="center">
+						
+							<div align="left">
+								<a href="javascript:abrirPopup('exibirConsultarParcelamentoDebitoPopupAction.do?
+								codigoImovel=<bean:define name="debitoCredito" property="parcelamento.imovel" id="imovel" />
+								<bean:write name="imovel" property="id" />
+								&codigoParcelamento=<bean:write name="debitoCredito" property="parcelamento.id" />', 400, 800);">
+								<bean:write name="debitoCredito" property="parcelamento.ultimaAlteracao" formatKey="date.format" /></a>
+							</div>
+						
+						</td>
+						<td width="16%" align="center"><%=Util.formatarMesAnoReferencia(debitoCredito.getParcelamento().getAnoMesReferenciaFaturamento())%></td>
+						<td width="18%" align="center"><%=Util.formatarMesAnoReferencia(debitoCredito.getParcelamento().getAnoMesReferenciaFaturamento())%></td>
+						<td width="10%" align="center"><%=debitoCredito.getParcelamento().getNumeroPrestacoes() - ( debitoCredito.getQuantidadeParcelasAberto() != null ? (debitoCredito.getQuantidadeParcelasAberto().size() +1) : 0) %> / <bean:write name="debitoCredito" property="parcelamento.numeroPrestacoes" /></td>
+						<td width="16%">
+							<div align="right">
+								<span style="color: #000000;">
+									<!-- <%="" + Util.formatarMoedaReal(debitoCredito.getValorTotalDebito()).trim()%> -->
+									<bean:write name="debitoCredito" property="valorTotalDebito" formatKey="money.format" />
+								</span>
+							</div>
+						</td>
+					</tr>
+			
+					</logic:iterate>
+					
+						<%if (cor0.equalsIgnoreCase("#cbe5fe")){
+							cor0 = "#FFFFFF";%>
+							<tr bgcolor="#FFFFFF">
+						<%} else{
+							cor0 = "#cbe5fe";%>
+							<tr bgcolor="#cbe5fe">
+						<%}%>
+
+						<td height="20"></td>
+						<td >
+							<div align="center"><strong>Total:</strong></div>
+						</td>
+						<td width="50%"colspan="4">
+							<div align="right"><strong>
+								<%="" + Util.formatarMoedaReal(valorTotalParcelamento).trim()%>
+							</strong></div>
+						</td>
+
+					</tr>
+										
+					</table>
+										
+					</div>
+					
+				</td>
+			</tr>
+
+			</logic:notEmpty>
+			
+			</logic:present>
+			
+			</table>
+			
+		</td>
+	</tr>
+		</table>
+			
 			
 			<table width="100%" cellpadding="0" cellspacing="0">
 			<tr>
@@ -987,7 +1224,7 @@
 					<tr bgcolor="#90c7fc">
 
 						<td width="5%" height="20">
-							<strong><a href="javascript:facilitador(document.forms[0].checkCredito,'credito');"id="0">Todos</a></strong>
+							<strong>Todos</strong>
 						</td>
 						<td width="30%">
 							<div align="center"><strong>Tipo do Crédito</strong></div>
@@ -1040,12 +1277,9 @@
 						<%}%>																				
 												
 						<td align="center" width="5%">
-							<logic:notEqual name="creditoARealizar" property="creditoTipo.id" value="<%="" + CreditoTipo.DESCONTO_ACRESCIMOS_IMPONTUALIDADE %>">
-								<INPUT TYPE="checkbox" NAME="credito" value="<%="" + creditoARealizar.getId().intValue() %>"/> 
-							</logic:notEqual>
-							<logic:equal name="creditoARealizar" property="creditoTipo.id" value="<%="" + CreditoTipo.DESCONTO_ACRESCIMOS_IMPONTUALIDADE %>">
-								<INPUT TYPE="checkbox" NAME="credito" disabled="disabled"/> 
-							</logic:equal>
+							
+							<input TYPE="checkbox" NAME="credito" disabled="disabled"/> 
+							
 						</td>
 						
 						<td width="30%" align="left">
@@ -1162,7 +1396,7 @@
 				
 					<table width="100%" cellpadding="0" cellspacing="0">
 					<tr bgcolor="#79bbfd">
-						<td colspan="6" height="20"><strong>Guias de Pagamento</strong></td>
+						<td colspan="6" height="20" align="center"><strong>Guias de Pagamento</strong></td>
 					</tr>
 					<tr bgcolor="#90c7fc">
 
@@ -1324,138 +1558,8 @@
 			
 			
 			
-		<table width="100%" cellpadding="0" cellspacing="0">
-			<tr>
-				<td>
-				
-					<table width="100%" cellpadding="0" cellspacing="0">
-					<tr bgcolor="#79bbfd">
-						<td colspan="6" height="20"><strong>Parcelamento</strong></td>
-					</tr>
-					<tr bgcolor="#90c7fc">
-						<td width="16%" height="20">
-							<strong><a href="javascript:marcarCombosParcelas();" id="0">Todos</a></strong>
-						</td>
-						<td width="16%">
-							<div align="center"><strong>Data</strong></div>
-						</td>
-						<td width="16%">
-							<div align="center"><strong>Mes/Ano Ref.</strong></div>
-						</td>
-						<td width="16%">
-							<div align="center"><strong>Mes/Ano Cobr.</strong></div>
-						</td>
-						
-						<td width="16%">
-							<div align="center"><strong>Parc.</strong></div>
-						</td>
-						<td width="16%">
-							<div align="center"><strong>Valor</strong></div>
-						</td>
-					</table>
+	
 
-				</td>
-			</tr>
-			
-			
-			<%BigDecimal valorTotalParcelamento = new BigDecimal("0.00");%>
-
-			<logic:present name="colecaoDebitoCreditoParcelamento">
-			
-			<logic:notEmpty name="colecaoDebitoCreditoParcelamento">
-
-			<tr>
-				<td>
-										
-					<% String cor0 = "#cbe5fe";%>
-
-					<div style="width: 100%; height: 100; overflow: auto;">
-										
-					<table width="100%" align="center" bgcolor="#90c7fc">
-										
-					<logic:iterate name="colecaoDebitoCreditoParcelamento" id="debitoCredito" type="DebitoCreditoParcelamentoHelper">
-																		
-						<%valorTotalParcelamento = valorTotalParcelamento.add(debitoCredito.getValorTotalDebito()); %>
-						
-						<%	if (cor0.equalsIgnoreCase("#cbe5fe")){
-							cor0 = "#FFFFFF";%>
-							<tr bgcolor="#FFFFFF">
-						<%} else{
-							cor0 = "#cbe5fe";%>
-							<tr bgcolor="#cbe5fe">
-						<%}%>						
-						<td align="center" width="16%">
-							<html:select property="idsParcelamento" >
-								<option value="-1">Nenhum</option>
-								<option value="${debitoCredito.parcelamento.id}_todas" <c:if test="${debitoCredito.selecaoPermitida eq false}">disabled="disabled"</c:if>>Todos</option>
-								<c:forEach items="${debitoCredito.quantidadeParcelasAberto}" var="parcelas">
-									<option value="${debitoCredito.parcelamento.id}_${parcelas}" <c:if test="${debitoCredito.selecaoPermitida eq false}">disabled="disabled"</c:if>  >${parcelas}</option>
-								</c:forEach>
-							</html:select>
-						</td>
-						
-						<td width="16%" align="center">
-						
-							<div align="left">
-								<a href="javascript:abrirPopup('exibirConsultarParcelamentoDebitoPopupAction.do?
-								codigoImovel=<bean:define name="debitoCredito" property="parcelamento.imovel" id="imovel" />
-								<bean:write name="imovel" property="id" />
-								&codigoParcelamento=<bean:write name="debitoCredito" property="parcelamento.id" />', 400, 800);">
-								<bean:write name="debitoCredito" property="parcelamento.ultimaAlteracao" formatKey="date.format" /></a>
-							</div>
-						
-						</td>
-						<td width="16%" align="center"><%=Util.formatarMesAnoReferencia(debitoCredito.getParcelamento().getAnoMesReferenciaFaturamento())%></td>
-						<td width="18%" align="center"><%=Util.formatarMesAnoReferencia(debitoCredito.getParcelamento().getAnoMesReferenciaFaturamento())%></td>
-						<td width="10%" align="center"><%=debitoCredito.getParcelamento().getNumeroPrestacoes() - ( debitoCredito.getQuantidadeParcelasAberto() != null ? (debitoCredito.getQuantidadeParcelasAberto().size() +1) : 0) %> / <bean:write name="debitoCredito" property="parcelamento.numeroPrestacoes" /></td>
-						<td width="16%">
-							<div align="right">
-								<span style="color: #000000;">
-									<!-- <%="" + Util.formatarMoedaReal(debitoCredito.getValorTotalDebito()).trim()%> -->
-									<bean:write name="debitoCredito" property="valorTotalDebito" formatKey="money.format" />
-								</span>
-							</div>
-						</td>
-					</tr>
-			
-					</logic:iterate>
-					
-						<%if (cor0.equalsIgnoreCase("#cbe5fe")){
-							cor0 = "#FFFFFF";%>
-							<tr bgcolor="#FFFFFF">
-						<%} else{
-							cor0 = "#cbe5fe";%>
-							<tr bgcolor="#cbe5fe">
-						<%}%>
-
-						<td height="20"></td>
-						<td >
-							<div align="center"><strong>Total:</strong></div>
-						</td>
-						<td width="50%"colspan="4">
-							<div align="right"><strong>
-								<%="" + Util.formatarMoedaReal(valorTotalParcelamento).trim()%>
-							</strong></div>
-						</td>
-
-					</tr>
-										
-					</table>
-										
-					</div>
-					
-				</td>
-			</tr>
-
-			</logic:notEmpty>
-			
-			</logic:present>
-			
-			</table>
-			
-		</td>
-	</tr>
-	</table>
 	
 	<table width="100%" border="0">
 	<tr>
@@ -1673,6 +1777,31 @@
 
 <%@ include file="/jsp/util/rodape.jsp"%>
 
+<logic:present name="indicadorFauramentoTitularDebito" scope="request">
+	<SCRIPT LANGUAGE="JavaScript">
+	<!--
+	
+		if (document.forms[0].idClienteImovel != undefined) {
+			if (document.forms[0].idClienteImovel.length != undefined) {
+				var i = 0;
+				for (i = 0; i < document.forms[0].valorClienteImovel.length; i++) { 
+				    if (document.forms[0].valorClienteImovel[i].value == document.forms[0].idClienteRelacaoImovelSelecionado.value) {
+				    	document.forms[0].idClienteImovel[i].checked = true;
+				    } else {
+				    	document.forms[0].idClienteImovel[i].checked = false;
+				    }
+				}				
+			} else {
+			    if (document.forms[0].valorClienteImovel.value == document.forms[0].idClienteRelacaoImovelSelecionado.value) {
+			    	document.forms[0].idClienteImovel.checked = true;			    	
+			    }				
+			}
+		}
+
+	//-->
+	</SCRIPT>
+</logic:present>
+	
 </html:form>
 
 

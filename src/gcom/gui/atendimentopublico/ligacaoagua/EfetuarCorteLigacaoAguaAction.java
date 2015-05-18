@@ -77,21 +77,19 @@
 package gcom.gui.atendimentopublico.ligacaoagua;
 
 import gcom.atendimentopublico.bean.IntegracaoComercialHelper;
-import gcom.atendimentopublico.ligacaoagua.CorteTipo;
-import gcom.atendimentopublico.ligacaoagua.FiltroMotivoCorte;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAgua;
-import gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao;
-import gcom.atendimentopublico.ligacaoagua.MotivoCorte;
+import gcom.atendimentopublico.ligacaoagua.*;
 import gcom.atendimentopublico.ligacaoagua.bean.DadosEfetuacaoCorteLigacaoAguaHelper;
 import gcom.atendimentopublico.ordemservico.OrdemServico;
 import gcom.atendimentopublico.ordemservico.ServicoNaoCobrancaMotivo;
 import gcom.cadastro.funcionario.Funcionario;
 import gcom.cadastro.imovel.Imovel;
+import gcom.cadastro.imovel.bean.ImovelDadosMedicaoHistoricoHelper;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.interceptor.RegistradorOperacao;
 import gcom.micromedicao.hidrometro.HidrometroInstalacaoHistorico;
+import gcom.micromedicao.medicao.MedicaoTipo;
 import gcom.seguranca.acesso.Operacao;
 import gcom.seguranca.acesso.OperacaoEfetuada;
 import gcom.seguranca.acesso.usuario.Usuario;
@@ -264,13 +262,25 @@ public class EfetuarCorteLigacaoAguaAction
 			}
 
 			// Hidrometro Instalação Histórico
-			if(imovel.getLigacaoAgua().getHidrometroInstalacaoHistorico() != null){
+			if(imovel.getLigacaoAgua() != null && imovel.getLigacaoAgua().getHidrometroInstalacaoHistorico() != null){
 				hidrometroInstalacaoHistorico = imovel.getLigacaoAgua().getHidrometroInstalacaoHistorico();
+
 				// Validar Número de Leitura do Corte / Número do Selo de Corte
 				if(corteLigacaoAguaActionForm.getNumLeituraCorte() != null && !corteLigacaoAguaActionForm.getNumLeituraCorte().equals("")){
 					hidrometroInstalacaoHistorico.setNumeroLeituraCorte(Integer.valueOf(corteLigacaoAguaActionForm.getNumLeituraCorte()));
 				}else{
-					hidrometroInstalacaoHistorico.setNumeroLeituraCorte(null);
+
+					// OC1356300[UC0355][SB0001] - Atualizar Imóvel/Ligação de Água/Histórico de
+					// Instalação de Hidrômetro
+					ImovelDadosMedicaoHistoricoHelper imovelDadosMedicaoHistoricoHelper = new ImovelDadosMedicaoHistoricoHelper();
+					imovelDadosMedicaoHistoricoHelper = fachada.obterDadosMedicaoMaiorReferenciaLeitura(ordemServico.getImovel(),
+									MedicaoTipo.LIGACAO_AGUA);
+
+					if(imovelDadosMedicaoHistoricoHelper != null && imovelDadosMedicaoHistoricoHelper.getLeituraAtual() != null){
+						hidrometroInstalacaoHistorico.setNumeroLeituraCorte(imovelDadosMedicaoHistoricoHelper.getLeituraAtual());
+					}else{
+						hidrometroInstalacaoHistorico.setNumeroLeituraCorte(null);
+					}
 				}
 				hidrometroInstalacaoHistorico.setUltimaAlteracao(new Date());
 			}

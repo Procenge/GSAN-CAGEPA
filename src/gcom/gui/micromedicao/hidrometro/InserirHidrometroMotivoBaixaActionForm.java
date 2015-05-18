@@ -98,10 +98,13 @@ public class InserirHidrometroMotivoBaixaActionForm
 
 	private String descricao;
 
+	private String descricaoAbreviada;
+
 
 	public HidrometroMotivoBaixa setFormValues(HidrometroMotivoBaixa hidrometroMotivoBaixa){
 
 		hidrometroMotivoBaixa.setDescricao(getDescricao());
+		hidrometroMotivoBaixa.setDescricaoAbreviada(getDescricaoAbreviada());
 		hidrometroMotivoBaixa.setUltimaAlteracao(new Date());
 		hidrometroMotivoBaixa.setIndicadorUso(ConstantesSistema.INDICADOR_USO_ATIVO);
 
@@ -116,6 +119,16 @@ public class InserirHidrometroMotivoBaixaActionForm
 	public void setDescricao(String descricao){
 
 		this.descricao = descricao;
+	}
+
+	public String getDescricaoAbreviada(){
+
+		return descricaoAbreviada;
+	}
+
+	public void setDescricaoAbreviada(String descricaoAbreviada){
+
+		this.descricaoAbreviada = descricaoAbreviada;
 	}
 
 }

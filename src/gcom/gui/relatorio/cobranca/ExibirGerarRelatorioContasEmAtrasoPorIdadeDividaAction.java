@@ -158,6 +158,9 @@ public class ExibirGerarRelatorioContasEmAtrasoPorIdadeDividaAction
 				pesquisarSetorComercial(dynaForm, objetoConsulta);
 			}
 		}
+		if(dynaForm.get("formatoRelatorio").equals("")){
+			dynaForm.set("formatoRelatorio", "1");
+		}
 
 		return retorno;
 	}
@@ -173,6 +176,7 @@ public class ExibirGerarRelatorioContasEmAtrasoPorIdadeDividaAction
 		Integer localidadeId = null;
 		String localidadeIdStr = null;
 		Localidade localidade = null;
+
 
 		// Recupera o id da localidade de acordo com a variável objetoConsulta, que indica qual
 		// campo do formulário foi informado para pesquisa

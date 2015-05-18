@@ -79,22 +79,15 @@
 
 package gcom.gui.seguranca.acesso.usuario;
 
-import gcom.cadastro.localidade.FiltroGerenciaRegional;
-import gcom.cadastro.localidade.FiltroLocalidade;
-import gcom.cadastro.localidade.FiltroUnidadeNegocio;
-import gcom.cadastro.localidade.GerenciaRegional;
-import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.localidade.UnidadeNegocio;
+import gcom.cadastro.localidade.*;
 import gcom.fachada.Fachada;
 import gcom.gui.GcomAction;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioAbrangencia;
-import gcom.seguranca.acesso.usuario.Usuario;
-import gcom.seguranca.acesso.usuario.UsuarioAbrangencia;
-import gcom.seguranca.acesso.usuario.UsuarioSituacao;
+import gcom.seguranca.acesso.usuario.*;
 import gcom.util.ConstantesSistema;
 import gcom.util.filtro.ParametroSimples;
 
 import java.util.Collection;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -127,6 +120,9 @@ public class AtualizarUsuarioAcessosUsuarioAction
 
 		// Usuario que vai ser cadastrado no sistema, usado só nessa funcionalidade
 		Usuario usuarioParaAtualizar = (Usuario) sessao.getAttribute("usuarioParaAtualizar");
+
+		form.setIdUsuario(usuarioParaAtualizar.getId().toString());
+
 		if(usuarioParaAtualizar == null) usuarioParaAtualizar = new Usuario();
 
 		if(!"".equals(form.getAbrangencia())){
@@ -231,8 +227,12 @@ public class AtualizarUsuarioAcessosUsuarioAction
 
 		String[] grupo = form.getGrupo();
 
+		Map<String, String[]> requestMap = httpServletRequest.getParameterMap();
+		Collection<UsuarioAcesso> colecaoUsuarioAcesso = Fachada.getInstancia().atualizarHorarioAcessoRestrito(requestMap);
+
 		sessao.setAttribute("grupo", grupo);
 		sessao.setAttribute("usuarioParaAtualizar", usuarioParaAtualizar);
+		sessao.setAttribute("colecaoUsuarioAcesso", colecaoUsuarioAcesso);
 
 		return retorno;
 	}

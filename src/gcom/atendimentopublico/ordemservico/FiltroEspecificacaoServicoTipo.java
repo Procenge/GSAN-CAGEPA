@@ -118,7 +118,9 @@ public class FiltroEspecificacaoServicoTipo
 
 	public final static String SOLICITACAO_TIPO_ESPECIFICACAO_SOLICITACAO_TIPO = "solicitacaoTipoEspecificacao.solicitacaoTipo";
 
-	public final static String SERVICO_TIPO = "servicoTipo.id";
+	public final static String SERVICO_TIPO_ID = "servicoTipo.id";
+
+	public final static String SERVICO_TIPO = "servicoTipo";
 
 	public final static String SERVICO_TIPO_INDICADOR_USO = "servicoTipo.indicadorUso";
 

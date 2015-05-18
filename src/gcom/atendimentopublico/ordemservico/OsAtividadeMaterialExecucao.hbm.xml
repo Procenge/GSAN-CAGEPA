@@ -38,6 +38,13 @@
         column="oame_tmultimaalteracao"
         length="8"
     />
+    
+    <property
+        name="valorMaterial"
+        type="java.math.BigDecimal"
+        column="oame_vlmaterial"
+        length="13"
+    />
 
     <!-- Associations -->
   

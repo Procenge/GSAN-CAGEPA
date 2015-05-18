@@ -238,10 +238,10 @@
                 <td colspan="8" height="23"> <strong>Doa&ccedil;&otilde;es a Entidades Beneficentes:</strong></td>
 			  </tr>
 			  <tr>
-  			    <td colspan="8"></td>
+  			    <td colspan="10"></td>
 			  </tr>
    			  <tr>
-  			    <td colspan="5">
+  			    <td colspan="9">
 			      <table width="100%" bgcolor="#99C7FC" align="center" border="0" cellspacing="0">
 			        <tr>
         		      <td width="40px" align="center">
@@ -249,13 +249,15 @@
 	                  </td>
 	                  <td width="155"  align="center"><strong>Entidade Beneficente</strong></td>
 	                  <td width="60px" align="center"><strong>&nbsp;Valor da Doa&ccedil;&atilde;o Mensal</strong> </td>
+	                  <td width="60px" align="center"><strong>&nbsp;Período de Inicio da Cobrança</strong> </td>
+	                  <td width="60px" align="center"><strong>&nbsp;Período de Final da Cobrança</strong> </td>
 	                  <td width="70px" align="center"><strong>Data de Ades&atilde;o</strong></td>
 	                  <td width="80px" align="center"><strong>&nbsp;Usu&aacute;rio Ades&atilde;o</strong></td>
 	                  <td width="70px" align="center"><strong>Data Cancel.</strong></td>
 	                  <td width="80px" align="center"><strong>Usu&aacute;rio Cancel.</strong></td>
                     </tr>
                     <tr>
-                      <td colspan="7">
+                      <td colspan="9">
                         <%--Esquema de paginação--%>
       				    <%String cor = "#FFFFFF";%>
                   
@@ -284,8 +286,22 @@
 						                        <input type="checkbox" name="idRegistrosRemocao" value="<bean:write name="imovelDoacao" property="id"/>" <%= imovelDoacao.getDataCancelamento() != null ? "disabled" : "" %>/>
    							                  </td>
 						                      <td width="155px" align="center">
-						                        <font color="#000000">${imovelDoacao.entidadeBeneficente.cliente.nome}</font>  
-                                              </td>                             
+						                        <font color="#000000">${imovelDoacao.entidadeBeneficenteContrato.entidadeBeneficente.cliente.nome}</font>  
+                                              </td>   
+                                              
+						                      <td width="60px" align="center">
+						                        <font color="#000000">${imovelDoacao.valorDoacao}</font>  
+                                              </td>  
+                                                                                            
+						                      <td width="60px" align="center">
+						                        <font color="#000000">${imovelDoacao.referenciaInicialFormatada}</font>  
+                                              </td>  
+                                              
+                                              <td width="60px" align="center">
+                                                <font color="#000000">${imovelDoacao.referenciaFinalFormatada}</font>  
+                                              </td>                                                
+                                              
+                                                                                                                      
                                               <td width="60px" align="center">
                                                 <font color="#000000">${imovelDoacao.valorDoacaoAsString}</font>  
                                               </td>                             

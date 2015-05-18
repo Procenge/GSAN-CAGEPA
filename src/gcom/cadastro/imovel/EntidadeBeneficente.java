@@ -77,6 +77,7 @@
 package gcom.cadastro.imovel;
 
 import gcom.cadastro.cliente.Cliente;
+import gcom.cadastro.empresa.Empresa;
 import gcom.faturamento.debito.DebitoTipo;
 import gcom.util.filtro.Filtro;
 import gcom.util.filtro.ParametroSimples;
@@ -114,6 +115,8 @@ public class EntidadeBeneficente
 	/** Não persiste */
 	private String IndicadorUsoDesc;
 
+	private Empresa empresa;
+
 	/** full constructor */
 	public EntidadeBeneficente(short indicadorUso, Date ultimaAlteracao, Cliente cliente, DebitoTipo debitoTipo, Set imovelDoacoes) {
 
@@ -127,6 +130,16 @@ public class EntidadeBeneficente
 	/** default constructor */
 	public EntidadeBeneficente() {
 
+	}
+
+	public Empresa getEmpresa(){
+
+		return this.empresa;
+	}
+
+	public void setEmpresa(Empresa empresa){
+
+		this.empresa = empresa;
 	}
 
 	public Integer getId(){

@@ -82,6 +82,7 @@ import gcom.cadastro.localidade.GerenciaRegional;
 import gcom.cadastro.localidade.Localidade;
 import gcom.cadastro.localidade.UnidadeNegocio;
 import gcom.cadastro.unidade.UnidadeOrganizacional;
+import gcom.interceptor.ControleAlteracao;
 import gcom.interceptor.ObjetoTransacao;
 import gcom.util.ControladorException;
 import gcom.util.SistemaException;
@@ -97,6 +98,7 @@ import java.util.Set;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
+@ControleAlteracao()
 public class Usuario
 				extends ObjetoTransacao
 				implements Serializable {
@@ -106,7 +108,7 @@ public class Usuario
 	/** Constante usada para recuperar o usuário logado no sistema */
 	public static final String USUARIO_LOGADO = "usuarioLogado";
 
-	public static final Integer ID_USUARIO_ADM_SISTEMA = Integer.valueOf(9999);
+	// public static final Integer ID_USUARIO_ADM_SISTEMA = Integer.valueOf(9999);
 
 	public Filtro retornaFiltro(){
 
@@ -143,6 +145,22 @@ public class Usuario
 	/** Operacao de teste */
 	public static final Usuario USUARIO_TESTE = new Usuario();
 
+	public static final int INSERIR = 58; // Operacao.OPERACAO_USUARIO_INSERIR
+
+	public static final int INSERIR_DADOS_GERAIS = 92; // Operacao.OPERACAO_USUARIO_INSERIR_DADOS_GERAIS
+
+	public static final int INSERIR_ACESSOS = 93;// Operacao.OPERACAO_USUARIO_INSERIR_ACESSOS
+
+	public static final int ATUALIZAR = 59; // Operacao.OPERACAO_USUARIO_ATUALIZAR
+
+	public static final int REMOVER = 60; // Operacao.OPERACAO_USUARIO_REMOVER
+
+	public static final int CONTROLAR_ACESSO = 61; // Operacao.OPERACAO_USUARIO_CONTROLAR_ACESSO
+
+	public static final int ATUALIZAR_DADOS_GERAIS = 97; // Operacao.OPERACAO_USUARIO_ATUALIZAR_DADOS_GERAIS
+
+	public static final int ATUALIZAR_ACESSOS = 98; // Operacao.OPERACAO_USUARIO_ATUALIZAR_ACESSOS
+
 	public static void inicializarUsuariosPadroes(){
 
 		// USUARIO BATCH
@@ -174,13 +192,14 @@ public class Usuario
 		usuarioAgenciaVirtualAbrangencia.setId(Integer.valueOf(idUsuarioAgenciaVirtual));
 		USUARIO_AGENCIA_VIRTUAL.setUsuarioAbrangencia(usuarioAgenciaVirtualAbrangencia);
 
-		USUARIO_TESTE.setId(ID_USUARIO_ADM_SISTEMA);
+		USUARIO_TESTE.setId(idUsuarioBatch);
 	}
 
 	/** identifier field */
 	private Integer id;
 
 	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {INSERIR, INSERIR_DADOS_GERAIS, INSERIR_ACESSOS, ATUALIZAR, REMOVER, CONTROLAR_ACESSO, ATUALIZAR_DADOS_GERAIS, ATUALIZAR_ACESSOS})
 	private String login;
 
 	/** nullable persistent field */
@@ -205,9 +224,11 @@ public class Usuario
 	private Date dataCadastroInicio;
 
 	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {INSERIR, ATUALIZAR, CONTROLAR_ACESSO, ATUALIZAR_DADOS_GERAIS, ATUALIZAR_ACESSOS})
 	private Date dataCadastroFim;
 
 	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {INSERIR, ATUALIZAR, CONTROLAR_ACESSO, ATUALIZAR_DADOS_GERAIS, ATUALIZAR_ACESSOS})
 	private String descricaoEmail;
 
 	/** nullable persistent field */
@@ -217,45 +238,57 @@ public class Usuario
 	private Date ultimoAcesso;
 
 	/** persistent field */
+	@ControleAlteracao(funcionalidade = {INSERIR, ATUALIZAR, CONTROLAR_ACESSO, ATUALIZAR_DADOS_GERAIS, ATUALIZAR_ACESSOS})
 	private UnidadeOrganizacional unidadeOrganizacional;
 
 	/** persistent field */
+	@ControleAlteracao(funcionalidade = {INSERIR, ATUALIZAR, CONTROLAR_ACESSO, ATUALIZAR_DADOS_GERAIS, ATUALIZAR_ACESSOS})
 	private UsuarioSituacao usuarioSituacao;
 
 	/** persistent field */
+	@ControleAlteracao(funcionalidade = {INSERIR, ATUALIZAR, CONTROLAR_ACESSO, ATUALIZAR_DADOS_GERAIS, ATUALIZAR_ACESSOS})
 	private Empresa empresa;
 
 	/** persistent field */
+	@ControleAlteracao(funcionalidade = {INSERIR, ATUALIZAR, CONTROLAR_ACESSO, ATUALIZAR_DADOS_GERAIS, ATUALIZAR_ACESSOS})
 	private GerenciaRegional gerenciaRegional;
 
 	/** persistent field */
+	@ControleAlteracao(funcionalidade = {INSERIR, ATUALIZAR, CONTROLAR_ACESSO, ATUALIZAR_DADOS_GERAIS, ATUALIZAR_ACESSOS})
 	private UnidadeNegocio unidadeNegocio;
 
 	/** persistent field */
+	@ControleAlteracao(funcionalidade = {INSERIR, ATUALIZAR, CONTROLAR_ACESSO, ATUALIZAR_DADOS_GERAIS, ATUALIZAR_ACESSOS})
 	private Localidade localidadeElo;
 
 	/** persistent field */
+	@ControleAlteracao(funcionalidade = {INSERIR, ATUALIZAR, CONTROLAR_ACESSO, ATUALIZAR_DADOS_GERAIS, ATUALIZAR_ACESSOS})
 	private Localidade localidade;
 
 	/** persistent field */
+	@ControleAlteracao(funcionalidade = {INSERIR, ATUALIZAR, CONTROLAR_ACESSO, ATUALIZAR_DADOS_GERAIS, ATUALIZAR_ACESSOS})
 	private UsuarioTipo usuarioTipo;
 
 	/** persistent field */
+	@ControleAlteracao(funcionalidade = {INSERIR, ATUALIZAR, CONTROLAR_ACESSO, ATUALIZAR_DADOS_GERAIS, ATUALIZAR_ACESSOS})
 	private UsuarioAbrangencia usuarioAbrangencia;
 
 	/** persistent field */
+	@ControleAlteracao(funcionalidade = {INSERIR, ATUALIZAR, CONTROLAR_ACESSO, ATUALIZAR_DADOS_GERAIS, ATUALIZAR_ACESSOS})
 	private Funcionario funcionario;
 
 	/** persistent field */
 	private String nomeUsuario;
 
 	/** persistent field */
+	@ControleAlteracao(funcionalidade = {INSERIR, ATUALIZAR, CONTROLAR_ACESSO, ATUALIZAR_DADOS_GERAIS, ATUALIZAR_ACESSOS})
 	private Date dataNascimento;
 
 	/** persistent field */
 	private String lembreteSenha;
 
 	/** persistent field */
+	@ControleAlteracao(funcionalidade = {INSERIR, ATUALIZAR, CONTROLAR_ACESSO, ATUALIZAR_DADOS_GERAIS, ATUALIZAR_ACESSOS})
 	private String cpf;
 
 	private Short indicadorTipoRelatorioPadrao;
@@ -361,32 +394,6 @@ public class Usuario
 		this.indicadorTipoRelatorioPadrao = indicadorTipoRelatorioPadrao;
 	}
 
-	/*
-	 * public Usuario(String login, String senha, Integer numeroAcessos, Short
-	 * bloqueioAcesso, Date dataExpiracaoAcesso, Date
-	 * dataPrazoMensagemExpiracao, Date dataCadastroAcesso, Date
-	 * dataCadastroInicio, Date dataCadastroFim, String descricaoEmail, Date
-	 * ultimaAlteracao, Date ultimoAcesso, UnidadeOrganizacional unidadeEmpresa,
-	 * UsuarioSituacao usuarioSituacao, Empresa empresa, GerenciaRegional
-	 * gerenciaRegional, Localidade localidadeElo, Localidade localidade,
-	 * UsuarioTipo usuarioTipo, UsuarioAbrangencia usuarioAbrangencia,
-	 * Funcionario funcionario, String nomeUsuario, Date dataNascimento, String
-	 * lembreteSenha, String cpf) { this.login = login; this.senha = senha;
-	 * this.numeroAcessos = numeroAcessos; this.bloqueioAcesso = bloqueioAcesso;
-	 * this.dataExpiracaoAcesso = dataExpiracaoAcesso;
-	 * this.dataPrazoMensagemExpiracao = dataPrazoMensagemExpiracao;
-	 * this.dataCadastroAcesso = dataCadastroAcesso; this.dataCadastroInicio =
-	 * dataCadastroInicio; this.dataCadastroFim = dataCadastroFim;
-	 * this.descricaoEmail = descricaoEmail; this.ultimaAlteracao =
-	 * ultimaAlteracao; this.ultimoAcesso = ultimoAcesso; this.unidadeEmpresa =
-	 * unidadeEmpresa; this.usuarioSituacao = usuarioSituacao; this.empresa =
-	 * empresa; this.gerenciaRegional = gerenciaRegional; this.localidadeElo =
-	 * localidadeElo; this.localidade = localidade; this.usuarioTipo =
-	 * usuarioTipo; this.usuarioAbrangencia = usuarioAbrangencia;
-	 * this.funcionario = funcionario; this.nomeUsuario = nomeUsuario;
-	 * this.dataNascimento = dataNascimento; this.lembreteSenha = lembreteSenha;
-	 * this.cpf = cpf; }
-	 */
 	/** default constructor */
 	public Usuario() {
 
@@ -709,6 +716,37 @@ public class Usuario
 		}
 
 		return retorno;
+	}
+
+	/**
+	 * @return
+	 */
+
+	public static Integer getIdUsuarioBatchParametro(){
+
+		Integer idUsuarioBatch;
+		try{
+			idUsuarioBatch = Integer.valueOf((String) ParametroGeral.P_USUARIO_BATCH.executar());
+		}catch(ControladorException e){
+			throw new SistemaException(e, e.getMensagem());
+		}
+
+		return idUsuarioBatch;
+
+	}
+
+	@Override
+	public String[] retornarAtributosInformacoesOperacaoEfetuada(){
+
+		String[] labels = {"login"};
+		return labels;
+	}
+
+	@Override
+	public String[] retornarLabelsInformacoesOperacaoEfetuada(){
+
+		String[] labels = {"Login"};
+		return labels;
 	}
 
 }

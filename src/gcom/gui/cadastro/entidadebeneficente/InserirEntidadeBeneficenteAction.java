@@ -42,6 +42,7 @@
 package gcom.gui.cadastro.entidadebeneficente;
 
 import gcom.cadastro.cliente.Cliente;
+import gcom.cadastro.empresa.Empresa;
 import gcom.cadastro.imovel.EntidadeBeneficente;
 import gcom.cadastro.imovel.FiltroEntidadeBeneficente;
 import gcom.fachada.Fachada;
@@ -80,6 +81,10 @@ public class InserirEntidadeBeneficenteAction
 		InserirEntidadeBeneficenteActionForm form = (InserirEntidadeBeneficenteActionForm) actionForm;
 		Fachada fachada = Fachada.getInstancia();
 
+		Integer idEmpresa = null;
+		if(form.getIdEmpresa() != null){
+			idEmpresa = Integer.valueOf(form.getIdEmpresa().toString().trim());
+		}
 		String idCliente = form.getIdCliente();
 		String idDebitoTipo = form.getIdDebitoTipo();
 
@@ -109,6 +114,7 @@ public class InserirEntidadeBeneficenteAction
 
 		EntidadeBeneficente entidadeBeneficente = new EntidadeBeneficente();
 		entidadeBeneficente.setCliente(new Cliente(Integer.parseInt(idCliente)));
+		entidadeBeneficente.setEmpresa(new Empresa(idEmpresa));
 		entidadeBeneficente.setDebitoTipo(new DebitoTipo(Integer.parseInt(idDebitoTipo)));
 		entidadeBeneficente.setIndicadorUso(ConstantesSistema.INDICADOR_USO_ATIVO);
 		entidadeBeneficente.setUltimaAlteracao(new Date());

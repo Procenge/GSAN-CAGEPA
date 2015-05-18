@@ -4,6 +4,7 @@ import gcom.atendimentopublico.registroatendimento.FiltroRegistroAtendimento;
 import gcom.atendimentopublico.registroatendimento.RegistroAtendimento;
 import gcom.cadastro.imovel.FiltroImovel;
 import gcom.cadastro.imovel.Imovel;
+import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.cobranca.CobrancaForma;
 import gcom.fachada.Fachada;
 import gcom.faturamento.FaturamentoGrupo;
@@ -79,12 +80,25 @@ public class InserirDebitoACobrarRateioMacromedidoresAction
 		Collection colecaoFaturamentoGrupo = (Collection) fachada.pesquisar(filtroFaturamentoGrupo, FaturamentoGrupo.class.getName());
 		FaturamentoGrupo faturamentoGrupo = (FaturamentoGrupo) Util.retonarObjetoDeColecao(colecaoFaturamentoGrupo);
 
+		SistemaParametro parametrosDoSistema = fachada.pesquisarParametrosDoSistema();
+		Integer anoMesFaturamentoParametroSistema = parametrosDoSistema.getAnoMesFaturamento();
+
 		Integer anoMesFaturamentoGrupo = faturamentoGrupo.getAnoMesReferencia();
-		boolean verificaAnoMesCobranca = Util.compararAnoMesReferencia(anoMesCobrancaDebito, anoMesFaturamentoGrupo, "<");
 
+		Integer anoMesFaturamentoGrupoMaisUmMes = Util.somaUmMesAnoMesReferencia(anoMesFaturamentoGrupo);
 
-		if(anoMesFaturamentoGrupo.equals(anoMesCobrancaDebito) || verificaAnoMesCobranca){
-			throw new ActionServletException("atencao.ano_mes_imovel_condominio.referencia.superior");
+		boolean verificaAnoMesCobranca = Util.compararAnoMesReferencia(anoMesCobrancaDebito, anoMesFaturamentoGrupoMaisUmMes, "<");
+		boolean verificaSeImovelFaturou = Util.compararAnoMesReferencia(anoMesFaturamentoParametroSistema, anoMesFaturamentoGrupo, "<");
+		boolean verificaSeAMInformadoMenorAMGrupo = Util.compararAnoMesReferencia(anoMesCobrancaDebito, anoMesFaturamentoGrupo, "<");
+
+		if(anoMesFaturamentoGrupo.equals(anoMesFaturamentoParametroSistema) && verificaAnoMesCobranca){
+			throw new ActionServletException("atencao.ano_mes_imovel_condominio.referencia.superior",
+							String.valueOf(anoMesFaturamentoGrupoMaisUmMes));
+		}
+
+		if(verificaSeImovelFaturou && verificaSeAMInformadoMenorAMGrupo){
+			throw new ActionServletException("atencao.ano_mes_imovel_condominio.referencia.superior",
+							String.valueOf(anoMesFaturamentoGrupo));
 		}
 
 		// Obtém os ids de inserção
@@ -99,8 +113,14 @@ public class InserirDebitoACobrarRateioMacromedidoresAction
 		}
 
 		FiltroDebitoTipo filtroDebitoTipo = new FiltroDebitoTipo();
-		filtroDebitoTipo.adicionarParametro(new ParametroSimples(FiltroDebitoTipo.ID, new Integer(parametroDebitoTipoRateio)));
+		filtroDebitoTipo.adicionarParametro(new ParametroSimples(FiltroDebitoTipo.ID, Util.obterInteger(form.getTipoDebitosRateio())));
 		Collection colecaoDebitoTipo = (Collection) fachada.pesquisar(filtroDebitoTipo, DebitoTipo.class.getName());
+
+		if(Util.isVazioOrNulo(colecaoDebitoTipo)){
+
+			throw new ActionServletException("atencao.required", null, "Tipo de débitos de rateio");
+		}
+
 		DebitoTipo debitoTipo = (DebitoTipo) Util.retonarObjetoDeColecao(colecaoDebitoTipo);
 		
 		CobrancaForma cobrancaForma = new CobrancaForma();

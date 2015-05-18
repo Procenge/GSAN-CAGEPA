@@ -49,22 +49,26 @@ function CalendarElaboracaoAcompanhamento(Month, Year, situacao) {
    	}     
 
     for (i=1; i<=days[Month]; i++, column++) {
+    	if(i < 10) i = "0" + i;
+    	var month = Month + 1
+    	if(month < 10) month = "0" + month;
+    	
     	if( column == 0 ){
 	        
 	        if (vetorSituacao[i - 1] == "1"){
-	        	output += '<td width="10%" height="25" bgcolor="#ffffff">' + '<a href="exibirElaborarOrdemServicoRoteiroCriteriosAction.do?menu=sim&dataRoteiro=' + i + "/" +(Month+1) + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#FF0000">' + i + '<\/font><\/a>' +'<\/td>';
+	        	output += '<td width="10%" height="25" bgcolor="#ffffff">' + '<a href="exibirElaborarOrdemServicoRoteiroCriteriosAction.do?menu=sim&dataRoteiro=' + i + "/" + month + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#FF0000">' + i + '<\/font><\/a>' +'<\/td>';
 	        }
 	        else if (vetorSituacao[i - 1] == "2"){
-	        	output += '<td width="10%" height="25" bgcolor="#ffffff">' + '<a href="exibirElaborarOrdemServicoRoteiroCriteriosAction.do?menu=sim&dataRoteiro=' + i + "/" +(Month+1) + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#0000BB">' + i + '<\/font><\/a> <span class="elaboracaoAcompanhamento">R</span>' +'<\/td>';
+	        	output += '<td width="10%" height="25" bgcolor="#ffffff">' + '<a href="exibirElaborarOrdemServicoRoteiroCriteriosAction.do?menu=sim&dataRoteiro=' + i + "/" + month + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#0000BB">' + i + '<\/font><\/a> <span class="elaboracaoAcompanhamento">R</span>' +'<\/td>';
 	        }
 	        else if (vetorSituacao[i - 1] == "3"){
-	        	output += '<td width="10%" height="25" bgcolor="#ffffff">' + '<a href="exibirElaborarOrdemServicoRoteiroCriteriosAction.do?menu=sim&dataRoteiro='  + i + "/" +(Month+1) + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#0000BB">' + i + '<\/font><\/a>' +'<\/td>';
+	        	output += '<td width="10%" height="25" bgcolor="#ffffff">' + '<a href="exibirElaborarOrdemServicoRoteiroCriteriosAction.do?menu=sim&dataRoteiro='  + i + "/" + month + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#0000BB">' + i + '<\/font><\/a>' +'<\/td>';
 	        }
 	        else if (vetorSituacao[i - 1] == "4"){
-	        	output += '<td width="10%" height="25" bgcolor="#ffffff">' + '<a href="exibirAcompanharRoteiroProgramacaoOrdemServicoAction.do?menu=sim&dataRoteiro='  + i + "/" +(Month+1) + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#FF0000">' + i + '<\/font><\/a>' +'<\/td>';
+	        	output += '<td width="10%" height="25" bgcolor="#ffffff">' + '<a href="exibirAcompanharRoteiroProgramacaoOrdemServicoAction.do?menu=sim&dataRoteiro='  + i + "/" + month + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#FF0000">' + i + '<\/font><\/a>' +'<\/td>';
 	        }
 	        else if (vetorSituacao[i - 1] == "5"){
-	        	output += '<td width="10%" height="25" bgcolor="#ffffff">' + '<a href="exibirAcompanharRoteiroProgramacaoOrdemServicoAction.do?menu=sim&dataRoteiro='  + i + "/" +(Month+1) + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#0000BB">' + i + '<\/font><\/a> <span class="elaboracaoAcompanhamento">R</span>' +'<\/td>';
+	        	output += '<td width="10%" height="25" bgcolor="#ffffff">' + '<a href="exibirAcompanharRoteiroProgramacaoOrdemServicoAction.do?menu=sim&dataRoteiro='  + i + "/" + month + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#0000BB">' + i + '<\/font><\/a> <span class="elaboracaoAcompanhamento">R</span>' +'<\/td>';
 	        }
 	        else  if (vetorSituacao[i - 1] == "6"){
 	        	output += '<td width="10%" height="25" bgcolor="#ffffff">' + '<font SIZE=-1 face="ARIAL" color="#0000BB">' + i + '<\/font>' +'<\/td>';
@@ -73,19 +77,19 @@ function CalendarElaboracaoAcompanhamento(Month, Year, situacao) {
     	}else{
     		
     		if (vetorSituacao[i - 1] == "1"){
-	        	output += '<td width="10%" height="25" bgcolor="#cbe5fe">' + '<a href="exibirElaborarOrdemServicoRoteiroCriteriosAction.do?menu=sim&dataRoteiro='  + i + "/" +(Month+1) + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="FF0000">' + i + '<\/font><\/a>' +'<\/td>';
+	        	output += '<td width="10%" height="25" bgcolor="#cbe5fe">' + '<a href="exibirElaborarOrdemServicoRoteiroCriteriosAction.do?menu=sim&dataRoteiro='  + i + "/" + month + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="FF0000">' + i + '<\/font><\/a>' +'<\/td>';
 	        }
 	        else if (vetorSituacao[i - 1] == "2"){
-	        	output += '<td width="10%" height="25" bgcolor="#cbe5fe">' + '<a href="exibirElaborarOrdemServicoRoteiroCriteriosAction.do?menu=sim&dataRoteiro='  + i + "/" +(Month+1) + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#FF0000">' + i + '<\/font><\/a> <span class="elaboracaoAcompanhamento">R</span>' +'<\/td>';
+	        	output += '<td width="10%" height="25" bgcolor="#cbe5fe">' + '<a href="exibirElaborarOrdemServicoRoteiroCriteriosAction.do?menu=sim&dataRoteiro='  + i + "/" + month + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#FF0000">' + i + '<\/font><\/a> <span class="elaboracaoAcompanhamento">R</span>' +'<\/td>';
 	        }
 	        else if (vetorSituacao[i - 1] == "3"){
-	        	output += '<td width="10%" height="25" bgcolor="#cbe5fe">' + '<a href="exibirElaborarOrdemServicoRoteiroCriteriosAction.do?menu=sim&dataRoteiro='  + i + "/" +(Month+1) + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#0000BB">' + i + '<\/font><\/a>' +'<\/td>';
+	        	output += '<td width="10%" height="25" bgcolor="#cbe5fe">' + '<a href="exibirElaborarOrdemServicoRoteiroCriteriosAction.do?menu=sim&dataRoteiro='  + i + "/" + month + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#0000BB">' + i + '<\/font><\/a>' +'<\/td>';
 	        } 
 	        else if (vetorSituacao[i - 1] == "4"){
-	        	output += '<td width="10%" height="25" bgcolor="#cbe5fe">' + '<a href="exibirAcompanharRoteiroProgramacaoOrdemServicoAction.do?menu=sim&dataRoteiro='  + i + "/" +(Month+1) + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#FF0000">' + i + '<\/font><\/a>' +'<\/td>';
+	        	output += '<td width="10%" height="25" bgcolor="#cbe5fe">' + '<a href="exibirAcompanharRoteiroProgramacaoOrdemServicoAction.do?menu=sim&dataRoteiro='  + i + "/" + month + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#FF0000">' + i + '<\/font><\/a>' +'<\/td>';
 	        }
 	        else if (vetorSituacao[i - 1] == "5"){
-	        	output += '<td width="10%" height="25" bgcolor="#cbe5fe">' + '<a href="exibirAcompanharRoteiroProgramacaoOrdemServicoAction.do?menu=sim&dataRoteiro='  + i + "/" +(Month+1) + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#0000BB">' + i + '<\/font><\/a> <span class="elaboracaoAcompanhamento">R</span>' +'<\/td>';
+	        	output += '<td width="10%" height="25" bgcolor="#cbe5fe">' + '<a href="exibirAcompanharRoteiroProgramacaoOrdemServicoAction.do?menu=sim&dataRoteiro='  + i + "/" + month + "/" + Year +'"><font SIZE=-1 face="ARIAL" color="#0000BB">' + i + '<\/font><\/a> <span class="elaboracaoAcompanhamento">R</span>' +'<\/td>';
 	        }
 	        else if (vetorSituacao[i - 1] == "6"){
 	        	output += '<td width="10%" height="25" bgcolor="#cbe5fe">' + '<font SIZE=-1 face="ARIAL" color="#0000BB">' + i + '<\/font>' +'<\/td>';

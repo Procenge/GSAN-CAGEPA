@@ -205,6 +205,8 @@ public class OsSeletivaComando
 
 	private Collection<OrdemServico> ordemServico;
 
+	private Integer referenciaUltimaAfericaoHidrometro;
+
 	/** full constructor */
 	public OsSeletivaComando(Integer id, Date tempoComando, Date tempoRealizacao, Date ultimaAlteracao, Integer quantidadeMaximaOrdens,
 								Integer codigoElo, Integer indicadorImovelCondominio, Integer numeroConsumoEconomia,
@@ -796,6 +798,16 @@ public class OsSeletivaComando
 		String[] retorno = new String[1];
 		retorno[0] = "id";
 		return retorno;
+	}
+
+	public Integer getReferenciaUltimaAfericaoHidrometro(){
+
+		return referenciaUltimaAfericaoHidrometro;
+	}
+
+	public void setReferenciaUltimaAfericaoHidrometro(Integer referenciaUltimaAfericaoHidrometro){
+
+		this.referenciaUltimaAfericaoHidrometro = referenciaUltimaAfericaoHidrometro;
 	}
 
 }

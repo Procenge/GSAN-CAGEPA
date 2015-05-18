@@ -143,6 +143,8 @@ public class FaturamentoSituacaoTipo
 
 	public final static Integer FATURAR_NORMAL = Integer.valueOf(5);
 
+	public final static Integer FATURAR_MENOR_ENTRE_MEDIA_E_CONSUMO = Integer.valueOf(7);
+
 	public final static Integer PERCENTUAL_DE_ESGOTO = Integer.valueOf(8);
 
 	public final static Integer FATURAMENTO_ATE_LIMITE = Integer.valueOf(10);

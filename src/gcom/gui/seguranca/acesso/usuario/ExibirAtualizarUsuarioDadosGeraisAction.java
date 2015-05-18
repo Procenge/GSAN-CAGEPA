@@ -91,15 +91,7 @@ import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.FiltroGrupo;
 import gcom.seguranca.acesso.Grupo;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioAbrangencia;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioGrupo;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioSituacao;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioTipo;
-import gcom.seguranca.acesso.usuario.Usuario;
-import gcom.seguranca.acesso.usuario.UsuarioAbrangencia;
-import gcom.seguranca.acesso.usuario.UsuarioGrupo;
-import gcom.seguranca.acesso.usuario.UsuarioSituacao;
-import gcom.seguranca.acesso.usuario.UsuarioTipo;
+import gcom.seguranca.acesso.usuario.*;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
@@ -674,6 +666,7 @@ public class ExibirAtualizarUsuarioDadosGeraisAction
 			sessao.setAttribute("collUsuarioSituacao", colecaoUsuarioSituacao);
 		}
 
+		form.setIdUsuario(usuarioParaAtualizar.getId().toString());
 		sessao.setAttribute("usuarioParaAtualizar", usuarioParaAtualizar);
 
 		sessao.setAttribute("usuario", usuario);

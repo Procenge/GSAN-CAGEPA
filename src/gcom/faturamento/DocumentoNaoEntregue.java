@@ -103,6 +103,9 @@ public class DocumentoNaoEntregue
 	/** persistent field */
 	private Date ultimaAlteracao;
 
+	
+	private String responsavelEntrega;
+	
 	/** persistent field */
 	private gcom.cadastro.cliente.Cliente cliente;
 
@@ -123,7 +126,9 @@ public class DocumentoNaoEntregue
 
 	/** persistent field */
 	private gcom.faturamento.conta.ContaGeral contaGeral;
+	
 
+	
 	/** full constructor */
 	public DocumentoNaoEntregue(Integer id, Date dataTentativaEntrega, short numeroTentativa, Date ultimaAlteracao,
 								gcom.cadastro.cliente.Cliente cliente, gcom.faturamento.conta.Fatura fatura,
@@ -142,6 +147,40 @@ public class DocumentoNaoEntregue
 		this.motivoNaoEntregaDocumento = motivoNaoEntregaDocumento;
 		this.guiaPagamentoGeral = guiaPagamentoGeral;
 		this.contaGeral = contaGeral;
+
+	}
+
+	/** full constructor */
+	public DocumentoNaoEntregue(Integer id, Date dataTentativaEntrega, short numeroTentativa, Date ultimaAlteracao,
+								gcom.cadastro.cliente.Cliente cliente, gcom.faturamento.conta.Fatura fatura,
+								gcom.cobranca.CobrancaDocumento cobrancaDocumento, gcom.cobranca.DocumentoTipo documentoTipo,
+								gcom.faturamento.conta.MotivoNaoEntregaDocumento motivoNaoEntregaDocumento,
+								gcom.faturamento.GuiaPagamentoGeral guiaPagamentoGeral, gcom.faturamento.conta.ContaGeral contaGeral,
+								String responsavelEntrega) {
+
+		this.id = id;
+		this.dataTentativaEntrega = dataTentativaEntrega;
+		this.numeroTentativa = numeroTentativa;
+		this.ultimaAlteracao = ultimaAlteracao;
+		this.cliente = cliente;
+		this.fatura = fatura;
+		this.cobrancaDocumento = cobrancaDocumento;
+		this.documentoTipo = documentoTipo;
+		this.motivoNaoEntregaDocumento = motivoNaoEntregaDocumento;
+		this.guiaPagamentoGeral = guiaPagamentoGeral;
+		this.contaGeral = contaGeral;
+		this.responsavelEntrega = responsavelEntrega;
+	}
+
+
+	public String getResponsavelEntrega(){
+
+		return responsavelEntrega;
+	}
+
+	public void setResponsavelEntrega(String responsavelEntrega){
+
+		this.responsavelEntrega = responsavelEntrega;
 	}
 
 	/** default constructor */

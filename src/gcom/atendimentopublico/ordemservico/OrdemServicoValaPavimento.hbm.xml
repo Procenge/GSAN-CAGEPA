@@ -72,6 +72,27 @@
         length="8"
     />
     
+    <property
+        name="numeroComprimentoTutulacaoAguaPluvial"
+        type="java.math.BigDecimal"
+        column="osvp_nncomprimtubulaguapluvial"        
+        length="6"
+    />
+   
+   <property
+        name="numeroDiametroTutulacaoAguaPluvial"
+        type="java.math.BigDecimal"
+        column="osvp_nndiametrtubulaguapluvial"        
+        length="6"
+    />
+    
+    <property 
+   		name="quantidadeEntulho"
+   		type="java.lang.Integer"
+   		column="ospv_qtentulho"
+	/>
+	
+    
     <many-to-one
         name="localOcorrencia"
         class="gcom.atendimentopublico.registroatendimento.LocalOcorrencia"
@@ -102,6 +123,14 @@
         not-null="true"
     >
         <column name="orse_id" />
+    </many-to-one>
+   
+   
+	<many-to-one
+        name="entulhoMedida"
+        class="gcom.atendimentopublico.ordemservico.EntulhoMedida"        
+    >
+        <column name="enmd_id" />
     </many-to-one>
    
 </class>

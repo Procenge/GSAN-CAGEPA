@@ -85,22 +85,23 @@ import gcom.util.filtro.ParametroSimples;
 import java.util.Date;
 import java.util.Set;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
-
-/** @author Hibernate CodeGenerator */
 @ControleAlteracao()
 public class ConsumoTarifa
 				extends ObjetoTransacao {
 
 	private static final long serialVersionUID = 1L;
 
+	public static final int ATRIBUTOS_INSERIR_CONSUMO_TARIFA = 367;
+
+	public static final int ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA = 382;
+
 	/** identifier field */
 	private Integer id;
 
-	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
 	private String descricao;
 
-	/** nullable persistent field */
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
 	private Short indicadorUso;
 
 	/** nullable persistent field */
@@ -109,6 +110,7 @@ public class ConsumoTarifa
 	/** nullable persistent field */
 	private Set consumoTarifaVigencias;
 
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_INSERIR_CONSUMO_TARIFA, ATRIBUTOS_ATUALIZAR_CONSUMO_TARIFA})
 	private Short icTarifaEsgotoPropria = ConstantesSistema.NAO;
 
 	public static final Integer CONSUMO_NORMAL = new Integer("1");
@@ -193,25 +195,16 @@ public class ConsumoTarifa
 		this.icTarifaEsgotoPropria = icTarifaEsgotoPropria;
 	}
 
-	public String[] retornarAtributosInformacoesOperacaoEfetuada(){
-
-		String[] atributos = {"descricao"};
-		return atributos;
-	}
-
-	public String[] retornarLabelsInformacoesOperacaoEfetuada(){
-
-		String[] labels = {"Descricao"};
-		return labels;
-	}
-
+	@Override
 	public Filtro retornaFiltro(){
 
-		FiltroConsumoTarifa filtroConsumoTarifa = new FiltroConsumoTarifa();
-		filtroConsumoTarifa.adicionarParametro(new ParametroSimples(FiltroConsumoTarifa.ID, this.getId()));
-		return filtroConsumoTarifa;
+		FiltroConsumoTarifa filtro = new FiltroConsumoTarifa();
+
+		filtro.adicionarParametro(new ParametroSimples(FiltroConsumoTarifa.ID, this.getId()));
+		return filtro;
 	}
 
+	@Override
 	public String[] retornaCamposChavePrimaria(){
 
 		String[] retorno = new String[1];
@@ -219,14 +212,21 @@ public class ConsumoTarifa
 		return retorno;
 	}
 
-	public String toString(){
-
-		return new ToStringBuilder(this).append("id", getId()).toString();
-	}
-
 	@Override
 	public String getDescricaoParaRegistroTransacao(){
 
 		return getId() + " " + getDescricao();
+	}
+
+	public String[] retornarAtributosInformacoesOperacaoEfetuada(){
+
+		String[] atributos = {"id", "descricao"};
+		return atributos;
+	}
+
+	public String[] retornarLabelsInformacoesOperacaoEfetuada(){
+
+		String[] labels = {"Id", "Descricao"};
+		return labels;
 	}
 }

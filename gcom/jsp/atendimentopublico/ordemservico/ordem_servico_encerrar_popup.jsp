@@ -82,8 +82,11 @@ var bCancel = false;
 		var form = document.forms[0];
 		redirecionarSubmit('exibirEncerrarOrdemServicoPopupAction.do?redirecionarPagina=exibirManterDadosAtividades');
 	}
-
-
+	
+	function informarFuncionario() {
+		var form = document.forms[0];
+		redirecionarSubmit('exibirEncerrarOrdemServicoPopupAction.do?redirecionarPagina=pesquisarFuncionario');
+	}
 	
 	function informarOSFiscalizacao() {
 		var form = document.forms[0];
@@ -162,7 +165,55 @@ var bCancel = false;
 		   mensagem = mensagem +  '\nInforme Retorno Vistoria.';
 		 }
 	  }
-	 } 
+	 }
+	 
+	 if(form.indicadorAfericaoServicoTipo.value == '1'){
+		 
+			if(form.idHidrometroCondicao.selectedIndex == 0){
+			     
+				 if(mensagem == ''){
+				 	
+					 mensagem = 'Informe Condição do Hidrômetro para Aferição.';
+				 }else{
+				 	
+					 mensagem = mensagem +  '\nInforme Condição do Hidrômetro para Aferição.';
+				 }
+			}
+			  
+			 if((!form.indicadorResultado[0].checked) && (!form.indicadorResultado[1].checked)){
+			     
+				 if(mensagem == ''){
+				 	
+					 mensagem = 'Informe Resultado.';
+				 }else{
+				 	
+					 mensagem = mensagem +  '\nInforme Resultado.';
+				 }
+			}
+			 
+			if(form.idFuncionario.value == ''){
+			     
+				 if(mensagem == ''){
+				 	
+					 mensagem = 'Informe Funcionário.';
+				 }else{
+				 	
+					 mensagem = mensagem +  '\nInforme Funcionário.';
+				 }
+			}
+			 
+			if((!form.indicadorClienteAcompanhou[0].checked) && (!form.indicadorClienteAcompanhou[1].checked)){
+			     
+				 if(mensagem == ''){
+				 	
+					 mensagem = 'Informe Cliente Acompanhou.';
+				 }else{
+				 	
+					 mensagem = mensagem +  '\nInforme Cliente Acompanhou.';
+				 }
+			}
+	 }
+	 
 	 if(mensagem == ''){
 	   return true;
 	 }else{
@@ -186,6 +237,13 @@ var bCancel = false;
 	 var form = document.forms[0];
 	 form.idServicoTipo.value = '';
 	 form.descricaoServicoTipo.value = '';
+	}
+	
+	function limparPesquisaFuncionario(){
+		 
+		var form = document.forms[0];
+		form.idFuncionario.value = '';
+		form.nomeFuncionario.value = '';
 	}
 	
 	function carregarCamposEncerrarComExecucaoComReferencia(){
@@ -272,7 +330,8 @@ var bCancel = false;
 							<html:hidden property="tipoServicoReferenciaId"/> 
 							<html:hidden property="indicadorDeferimento"/>
 							<html:hidden property="servicoTipoObrigatorio"/>
-							<html:hidden property="indicadorVistoriaServicoTipo"/> 
+							<html:hidden property="indicadorVistoriaServicoTipo"/>
+							<html:hidden property="indicadorAfericaoServicoTipo"/> 
 							
 							
 					<table width="100%" border="0" align="center">
@@ -746,6 +805,85 @@ var bCancel = false;
 													</logic:notEmpty>
 												</logic:notEmpty>
 
+												<logic:notEmpty name="EncerrarOrdemServicoActionForm" property="indicadorAfericaoServicoTipo">
+													<logic:equal name="EncerrarOrdemServicoActionForm" property="indicadorAfericaoServicoTipo" value="<%=""+ServicoTipo.INDICADOR_AFERICAO_SIM%>">
+														 <tr>
+															<td><strong>Condição do Hidrômetro para Aferição:<font
+																color="#ff0000">*</font></strong></td>
+															<td align="left"><html:select property="idHidrometroCondicao">
+																<html:option value="">&nbsp;</html:option>
+																<logic:present name="colecaoHidrometroCondicao" scope="session">
+																	<html:options collection="colecaoHidrometroCondicao"
+																	labelProperty="descricao" property="id" />
+																</logic:present>
+															</html:select></td>
+														</tr>
+														 <tr>
+															<td width="30%"><strong>Resultado:<font
+																color="#ff0000">*</font></strong></td>
+				
+															<td width="69%"><html:radio property="indicadorResultado" value="1"/><strong>Normal </strong>&nbsp;&nbsp;
+															                <html:radio property="indicadorResultado" value="2"/><strong>Anormal </strong>
+															</td>
+														 </tr>
+														 <tr>
+															<td width="30%"><strong>Funcionário:<font
+																color="#ff0000">*</font></strong></td>
+															<td width="69%">
+																<html:text property="idFuncionario"
+																size="8" maxlength="5"
+																onkeypress="validaEnterComMensagem(event, 'exibirEncerrarOrdemServicoAction.do', 'idFuncionario', 'Funcionário');"/>
+																<a 
+																	href="javascript:document.forms[0].idFuncionario.focus();informarFuncionario();">
+																<img src="/gsan/imagens/pesquisa.gif" alt="Pesquisar Funcionario"
+																	border="0" height="21" width="23"></a> 
+																<logic:present
+																	name="corFuncionario">
+											
+																	<logic:equal name="corFuncionario" value="exception">
+																		<html:text property="nomeFuncionario" size="40"
+																			readonly="true"
+																			style="background-color:#EFEFEF; border:0; color: #ff0000"/>
+																	</logic:equal>
+											
+																	<logic:notEqual name="corFuncionario" value="exception">
+																		<html:text property="nomeFuncionario" size="40"
+																			readonly="true"
+																			style="background-color:#EFEFEF; border:0; color: #000000" />
+																	</logic:notEqual>
+											
+																</logic:present> 
+																<logic:notPresent name="corFuncionario">
+											
+																	<logic:empty name="EncerrarOrdemServicoActionForm"
+																		property="idFuncionario">
+																		<html:text property="nomeFuncionario" size="40"
+																			readonly="true"
+																			style="background-color:#EFEFEF; border:0; color: #ff0000" />
+																	</logic:empty>
+																	<logic:notEmpty name="EncerrarOrdemServicoActionForm"
+																		property="idFuncionario">
+																		<html:text property="nomeFuncionario" size="40"
+																			readonly="true"
+																			style="background-color:#EFEFEF; border:0; color: #000000" />
+																	</logic:notEmpty>
+											
+											
+																</logic:notPresent> <a href="javascript:limparPesquisaFuncionario();"> <img
+																	src="<bean:message key='caminho.imagens'/>limparcampo.gif"
+																	alt="Apagar" border="0"></a>
+															</td>
+														</tr>
+														 <tr>
+															<td width="30%"><strong>Cliente Acompanhou:<font
+																color="#ff0000">*</font></strong></td>
+				
+															<td width="69%"><html:radio property="indicadorClienteAcompanhou" value="1"/><strong>Sim </strong>&nbsp;&nbsp;
+															                <html:radio property="indicadorClienteAcompanhou" value="2"/><strong>Não </strong>
+															</td>
+														 </tr>
+													</logic:equal> 
+												</logic:notEmpty>
                                             </logic:equal>
 										</logic:notEmpty>
 										<logic:notEmpty name="EncerrarOrdemServicoActionForm" property="indicadorVistoriaServicoTipo">

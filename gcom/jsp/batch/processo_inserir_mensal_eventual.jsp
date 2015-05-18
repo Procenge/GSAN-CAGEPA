@@ -179,7 +179,7 @@ function validaEnterSemEvent() {
 				<tr>
 					<td width="20%" height="31"><strong>Processo:<font color="#FF0000">*</font></strong></td>
 					<td colspan="2"><html:text property="idProcesso" size="5"
-						maxlength="4" tabindex="1"
+						maxlength="5" tabindex="1"
 						onkeypress="javascript:return validaEnter(event, '/gsan/exibirInserirProcessoMensalEventualAction.do', 'idProcesso');" onblur="javascript:validaEnterSemEvent();"/>
 						
 						<a href="javascript:abrirPopup('exibirPesquisarProcessoAction.do?limparForm=OK&tipoConsulta=processo');">

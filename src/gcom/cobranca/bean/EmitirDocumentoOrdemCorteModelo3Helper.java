@@ -98,10 +98,34 @@ public class EmitirDocumentoOrdemCorteModelo3Helper
 
 	private Integer idOrdemServico;
 
+	private Integer idCliente;
+
+	private String nomeCliente;
+
 	public EmitirDocumentoOrdemCorteModelo3Helper() {
 
 		this.sequencialImpressao = 0;
 		this.totalContasImpressao = 0;
+	}
+
+	public String getNomeCliente(){
+
+		return nomeCliente;
+	}
+
+	public void setNomeCliente(String nomeCliente){
+
+		this.nomeCliente = nomeCliente;
+	}
+
+	public Integer getIdCliente(){
+
+		return idCliente;
+	}
+
+	public void setIdCliente(Integer idCliente){
+
+		this.idCliente = idCliente;
 	}
 
 	public Integer getIdCobrancaDocumento(){

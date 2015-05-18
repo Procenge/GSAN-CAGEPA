@@ -88,12 +88,7 @@ import gcom.gui.faturamento.consumotarifa.bean.CategoriaFaixaConsumoTarifaHelper
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

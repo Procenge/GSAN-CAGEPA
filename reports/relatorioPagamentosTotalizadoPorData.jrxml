@@ -77,6 +77,9 @@
 	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="qtdePagamentosContaFaturamentoContas" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="valorPagamentosContaFaturamentoContas" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="totalizadorMes" isForPrompting="false" class="java.lang.Boolean">
+		<defaultValueExpression ><![CDATA[false]]></defaultValueExpression>
+	</parameter>
 
 	<field name="getTipoDebito" class="java.lang.String"/>
 	<field name="getInscricao" class="java.lang.String"/>
@@ -844,7 +847,7 @@
 			</groupFooter>
 		</group>
 		<group  name="dataPagamento" >
-			<groupExpression><![CDATA[$F{getDataPagamento}]]></groupExpression>
+			<groupExpression><![CDATA[( new Boolean($P{totalizadorMes}) ? $F{getDataPagamento}.substring(3).trim() : $F{getDataPagamento} )   ]]></groupExpression>
 			<groupHeader>
 			<band height="0"  isSplitAllowed="true" >
 			</band>

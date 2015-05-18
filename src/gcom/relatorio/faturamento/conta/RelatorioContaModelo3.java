@@ -92,6 +92,7 @@ public class RelatorioContaModelo3
 		}
 
 		parametros.put("email", sistemaParametro.getDescricaoEmail());
+		parametros.put("foneSecretariaSaude", sistemaParametro.getNumeroTelefoneSecretariaSaude());
 		
 		retorno = gerarRelatorio(ConstantesRelatorios.RELATORIO_CONTA_MODELO_3, parametros, ds, tipoFormatoRelatorio);
 

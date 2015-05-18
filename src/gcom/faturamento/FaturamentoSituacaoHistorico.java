@@ -108,7 +108,7 @@ public class FaturamentoSituacaoHistorico
 	private Integer anoMesFaturamentoSituacaoFim;
 
 	/** nullable persistent field */
-	@ControleAlteracao(funcionalidade = {ATRIBUTOS_VALIDAR_SITUACAO_ESPECIAL_FATURAMENTO})
+
 	private Date ultimaAlteracao;
 
 	/** persistent field */
@@ -128,7 +128,7 @@ public class FaturamentoSituacaoHistorico
 	private Integer anoMesFaturamentoRetirada;
 
 	/** nullable persistent field */
-	@ControleAlteracao(funcionalidade = {ATRIBUTOS_VALIDAR_SITUACAO_ESPECIAL_FATURAMENTO})
+
 	private Usuario usuario;
 
 	/** persistent field */

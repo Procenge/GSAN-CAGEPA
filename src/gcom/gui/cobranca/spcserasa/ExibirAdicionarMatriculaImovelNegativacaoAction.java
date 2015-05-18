@@ -220,14 +220,15 @@ public class ExibirAdicionarMatriculaImovelNegativacaoAction
 				Integer indicadorNotas = Integer.valueOf(2);
 				Integer indicadorGuias = Integer.valueOf(1);
 				Integer indicadorAtualizar = Integer.valueOf(1);
+				int indicadorCalcularAcrescimosSucumbenciaAnterior = 2;
 
 				// Obtendo os débitos do imovel
 				ObterDebitoImovelOuClienteHelper colecaoDebitoImovel = fachada.obterDebitoImovelOuCliente(tipoImovel.intValue(),
 								idImovelDebitos.trim(), null, null, referenciaInicial, referenciaFinal, dataVencimentoInicial,
 								dataVencimentoFinal, indicadorPagamento.intValue(), indicadorConta.intValue(), indicadorDebito.intValue(),
-								indicadorCredito.intValue(), indicadorNotas.intValue(), indicadorGuias.intValue(), indicadorAtualizar
-.intValue(), null, null, null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM,
-								ConstantesSistema.SIM);
+								indicadorCredito.intValue(), indicadorNotas.intValue(), indicadorGuias.intValue(),
+								indicadorAtualizar.intValue(), null, null, null, null, null, ConstantesSistema.SIM, ConstantesSistema.SIM,
+								ConstantesSistema.SIM, indicadorCalcularAcrescimosSucumbenciaAnterior, null);
 
 				Collection<ContaValoresHelper> colecaoContaValores = new ArrayList<ContaValoresHelper>();
 				Collection<ContaValoresHelper> colecaoContaValoresTotal = colecaoDebitoImovel.getColecaoContasValores();

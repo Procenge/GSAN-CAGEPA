@@ -19,14 +19,6 @@
 				path="/jsp/cobranca/documento_cobranca_informar_entrega_filtrar.jsp" />
 		</action>
 		
-		<!--INICIO PESQUISAR QUADRA-->
-		<action name="PesquisarActionForm"
-			type="gcom.gui.cadastro.localidade.ExibirPesquisarQuadraAction"
-			path="/exibirPesquisarQuadraAction">
-			<forward name="pesquisarQuadra"
-				path="/jsp/cadastro/localidade/quadra_resultado_pesquisa.jsp" />
-		</action>
-		
 		<!-- [UC3029] Informar Entrega do Documento Cobrança Entrega Auhtor: Cinthya Cavalcanti Data:14/12/2011-->
 		<action name="FiltrarEntregaDocumentoCobrancaActionForm"
 			type="gcom.gui.cobranca.FiltrarEntregaDocumentoCobrancaAction"

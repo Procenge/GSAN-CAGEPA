@@ -78,6 +78,7 @@ package gcom.gui.faturamento;
 
 import gcom.fachada.Fachada;
 import gcom.faturamento.FaturamentoAtividadeCronograma;
+import gcom.faturamento.FaturamentoGrupo;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 
@@ -116,10 +117,15 @@ public class AtualizarComandoAtividadeFaturamentoRotasAction
 
 			if(!colecaoRotasSelecionadasUsuario.isEmpty()){
 
+				FaturamentoGrupo faturamentoGrupo = (FaturamentoGrupo) fachada.pesquisar(faturamentoAtividadeCronograma
+								.getFaturamentoGrupoCronogramaMensal().getFaturamentoGrupo().getId(), FaturamentoGrupo.class);
+				faturamentoAtividadeCronograma.getFaturamentoGrupoCronogramaMensal().setFaturamentoGrupo(faturamentoGrupo);
+
 				// true = Rotas habilitadas
 				Collection colecaoFaturamentoAtividadeCronogramaRotaHabilitadas = fachada.verificarSituacaoAtividadeRota(
 								colecaoRotasSelecionadasUsuario, faturamentoAtividadeCronograma.getFaturamentoAtividade(),
-								faturamentoAtividadeCronograma.getFaturamentoGrupoCronogramaMensal().getFaturamentoGrupo(), true);
+								faturamentoAtividadeCronograma.getFaturamentoGrupoCronogramaMensal().getFaturamentoGrupo()
+												.getAnoMesReferencia(), true);
 
 				// [FS0003] - Verificar seleção de pelo menos uma rota
 				// habilitada

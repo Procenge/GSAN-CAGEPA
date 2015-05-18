@@ -40,6 +40,7 @@ function limpar(){
 	
 	form.descricao.value = '';
 	form.descricaoAbreviada.value = '';
+	form.valorHora.value = '';
 	form.indicadorAtividadeUnica[1].checked = true;
 }
 
@@ -109,6 +110,14 @@ function validarForm() {
 						<html:text property="descricaoAbreviada" size="8" maxlength="5"/>
 					</td>
 				</tr>
+				<logic:equal name="permiteCobrarHora" value="1" scope="session">
+				<tr>
+					<td width="30%" height="0"><strong>Valor Hora</strong></td>
+					<td colspan="2">
+						<html:text property="valorHora" size="8"maxlength="11" onkeyup="javascript:formataValorMonetario(this, 11)"/>
+					</td>
+				</tr>
+				</logic:equal>
 				
 				<tr>
 					<td><strong>Indicador de Atividade Única:<font color="#FF0000">*</font></strong></td>

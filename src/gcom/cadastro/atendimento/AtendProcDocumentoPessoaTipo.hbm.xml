@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+<!-- 
+    Created by the Middlegen Hibernate plugin 2.1
+
+    http://boss.bekk.no/boss/middlegen/
+    http://www.hibernate.org/
+-->
+
+<class 
+    name="gcom.cadastro.atendimento.AtendProcDocumentoPessoaTipo" 
+    table="ATENDIMENTO_DOCUMENTO_PESSOA"
+    dynamic-insert="true" dynamic-update="true"    
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ATDP_ID"
+    >
+        <generator class="sequence">
+          <param name="sequence">SQ_ATENDIMENTO_DOCMTO_PESSOA</param>
+      	</generator>
+
+    </id>  
+
+    <many-to-one
+        name="atendimentoProcedimento"
+	    class="gcom.cadastro.atendimento.AtendimentoProcedimento">
+    	<column name="ATPR_ID" />
+	</many-to-one> 
+
+    <many-to-one
+        name="atendimentoDocumentoTipo"
+	    class="gcom.cadastro.atendimento.AtendimentoDocumentoTipo"
+	>
+    	<column name="ADTP_ID" />
+	</many-to-one> 
+	
+    <many-to-one
+        name="atendimentoPessoaTipo"
+	    class="gcom.cadastro.atendimento.AtendimentoPessoaTipo"
+		not-null="true"
+	>
+    	<column name="APTP_ID" />
+	</many-to-one> 
+  
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ATDP_TMULTIMAALTERACAO"
+        length="8"
+    />
+
+    <property
+        name="indicadorDocumentoObrigatorio"
+        type="java.lang.Short"
+        column="ATDP_ICDOCUMENTOOBRIGATORIO"
+        length="2"
+    />
+    
+</class>
+</hibernate-mapping>

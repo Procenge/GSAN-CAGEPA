@@ -161,6 +161,11 @@ public class ExibirInserirFaturamentoCronogramaAction
 			sessao.setAttribute("faturamentoAtividades", faturamentoAtividades);
 		}
 
+		if(faturamentoActionForm.getQuantidadeCronogramas() == null || faturamentoActionForm.getQuantidadeCronogramas().equals("")){
+
+			faturamentoActionForm.setQuantidadeCronogramas("1");
+		}
+
 		sessao.setAttribute("FaturamentoActionForm", faturamentoActionForm);
 
 		return retorno;

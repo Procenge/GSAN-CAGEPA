@@ -6639,6 +6639,7 @@ public class ControladorFinanceiro
 
 		}catch(Exception e){
 
+			e.printStackTrace();
 			getControladorBatch().encerrarUnidadeProcessamentoBatch(idUnidadeIniciada, true);
 			sessionContext.setRollbackOnly();
 			throw new EJBException(e);

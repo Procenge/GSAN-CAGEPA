@@ -79,6 +79,7 @@ package gcom.faturamento;
 
 import gcom.cadastro.endereco.ControladorEnderecoLocal;
 import gcom.cadastro.endereco.ControladorEnderecoLocalHome;
+import gcom.cobranca.bean.IntervaloReferenciaHelper;
 import gcom.contabil.ControladorContabilLocal;
 import gcom.contabil.ControladorContabilLocalHome;
 import gcom.micromedicao.Rota;
@@ -86,6 +87,7 @@ import gcom.micromedicao.leitura.LeituraTipo;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -234,9 +236,12 @@ public class ControladorBatchFaturamento
 										(Integer) ((Object[]) objectMessage.getObject())[0]);
 						break;
 					}
-					case (MetodosBatch.AJUSTAR_REGISTROS_CONTA_E_GUIA_DESO): {
+					case (MetodosBatch.EXECUTAR_CONVERSAO_CONTAS_PARA_GUIA_DE_PAGAMENTO):{
 
-						this.getControladorContabil().ajustarRegistrosContaEGuiaDeso();
+						this.getControladorContabil().ajustarRegistrosContaEGuia((Integer) ((Object[]) objectMessage.getObject())[0],
+										(Integer) ((Object[]) objectMessage.getObject())[1],
+										(Collection<IntervaloReferenciaHelper>) ((Object[]) objectMessage.getObject())[2],
+										(BigDecimal) ((Object[]) objectMessage.getObject())[3]);
 						break;
 					}
 					case (MetodosBatch.CANCELAR_DEBITOS): {
@@ -344,6 +349,34 @@ public class ControladorBatchFaturamento
 						break;
 					}
 
+					case (MetodosBatch.AJUSTE_BATIMENTO_VALORES_CALCULAR_CONTA):{
+
+						this.getControladorFaturamento().executarAjusteVerificarBatimentoCalculoValorConta(
+										(Integer) ((Object[]) objectMessage.getObject())[0]);
+						break;
+					}
+
+					case (MetodosBatch.AJUSTE_CLIENTE_DEBITO_A_COBRAR):{
+
+						this.getControladorFaturamento().executarAjusteClienteDebitoACobrar();
+						break;
+					}
+					case (MetodosBatch.AJUSTE_CONTAS_LOCALIDADE_062_DESO):{
+						this.getControladorFaturamento().refaturarContasDESOLocalidade062(
+										(Integer) ((Object[]) objectMessage.getObject())[0]);
+						break;
+					}
+					case (MetodosBatch.AJUSTE_CONVERSAO_ACORDO_TAC):{
+						this.getControladorFaturamento().executarAjusteConversaoAcordoTac();
+						break;
+					}
+
+					case (MetodosBatch.GERAR_CREDITO_A_REALIZAR_AJUSTE):{
+
+						this.getControladorFaturamento().gerarCreditoARealizarAjuste((Integer) ((Object[]) objectMessage.getObject())[0],
+										(String) ((Object[]) objectMessage.getObject())[1]);
+						break;
+					}
 
 
 				}
@@ -406,7 +439,7 @@ public class ControladorBatchFaturamento
 		try{
 			locator = ServiceLocator.getInstancia();
 
-			localHome = (ControladorFaturamentoLocalHome) locator.getLocalHomePorEmpresa(ConstantesJNDI.CONTROLADOR_FATURAMENTO_SEJB);
+			localHome = (ControladorFaturamentoLocalHome) locator.getLocalHome(ConstantesJNDI.CONTROLADOR_FATURAMENTO_SEJB);
 			// guarda a referencia de um objeto capaz de fazer chamadas
 			// objetos remotamente
 			local = localHome.create();

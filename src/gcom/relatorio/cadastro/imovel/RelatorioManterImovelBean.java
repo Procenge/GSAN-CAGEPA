@@ -234,128 +234,8 @@ public class RelatorioManterImovelBean
 
 	private String logradouro;
 
-	/**
-	 * Constructor for the RelatorioManterImovelBean object
-	 * 
-	 * @param idGerenciaRegional
-	 *            Description of the Parameter
-	 * @param nomeGerenciaRegional
-	 *            Description of the Parameter
-	 * @param idLocalidade
-	 *            Description of the Parameter
-	 * @param nomeLocalidade
-	 *            Description of the Parameter
-	 * @param idSetorComercial
-	 *            Description of the Parameter
-	 * @param nomeSetorComercial
-	 *            Description of the Parameter
-	 * @param inscricao
-	 *            Description of the Parameter
-	 * @param matricula
-	 *            Description of the Parameter
-	 * @param codigoCliente
-	 *            Description of the Parameter
-	 * @param nomeCliente
-	 *            Description of the Parameter
-	 * @param endereco
-	 *            Description of the Parameter
-	 * @param indicadorImovelCondominio
-	 *            Description of the Parameter
-	 * @param matriculaImovelCondominio
-	 *            Description of the Parameter
-	 * @param matriculaImovelPrincipal
-	 *            Description of the Parameter
-	 * @param perfilImovel
-	 *            Description of the Parameter
-	 * @param subcategoria
-	 *            Description of the Parameter
-	 * @param situacaoAgua
-	 *            Description of the Parameter
-	 * @param situacaoEsgoto
-	 *            Description of the Parameter
-	 * @param pavimentoCalcada
-	 *            Description of the Parameter
-	 * @param pavimentoRua
-	 *            Description of the Parameter
-	 * @param tipoDespejo
-	 *            Description of the Parameter
-	 * @param volumeReservatorioSuperior
-	 *            Description of the Parameter
-	 * @param volumeReservatorioInferior
-	 *            Description of the Parameter
-	 * @param volumePiscina
-	 *            Description of the Parameter
-	 * @param mediaConsumo
-	 *            Description of the Parameter
-	 * @param areaConstruida
-	 *            Description of the Parameter
-	 * @param numeroMoradores
-	 *            Description of the Parameter
-	 * @param numeroPontos
-	 *            Description of the Parameter
-	 * @param poco
-	 *            Description of the Parameter
-	 * @param dataLigacaoAgua
-	 *            Description of the Parameter
-	 * @param diametroLigacaoAgua
-	 *            Description of the Parameter
-	 * @param materialLigacaoAgua
-	 *            Description of the Parameter
-	 * @param consumoMinimoAgua
-	 *            Description of the Parameter
-	 * @param dataLigacaoEsgoto
-	 *            Description of the Parameter
-	 * @param diametroLigacaoEsgoto
-	 *            Description of the Parameter
-	 * @param materialLigacaoEsgoto
-	 *            Description of the Parameter
-	 * @param percentualColeta
-	 *            Description of the Parameter
-	 * @param percentualEsgoto
-	 *            Description of the Parameter
-	 * @param consumoMinimoEsgoto
-	 *            Description of the Parameter
-	 * @param mumeroHidrometroAgua
-	 *            Description of the Parameter
-	 * @param anoFabricacaoHidrometroAgua
-	 *            Description of the Parameter
-	 * @param capacidadeHidrometroAgua
-	 *            Description of the Parameter
-	 * @param marcaHidrometroAgua
-	 *            Description of the Parameter
-	 * @param diametroHidrometroAgua
-	 *            Description of the Parameter
-	 * @param tipoHidrometroAgua
-	 *            Description of the Parameter
-	 * @param dataInstalacaoHidrometroAgua
-	 *            Description of the Parameter
-	 * @param localInstalacaoHidrometroAgua
-	 *            Description of the Parameter
-	 * @param tipoProtecaoHidrometroAgua
-	 *            Description of the Parameter
-	 * @param indicadorCavaleteHidrometroAgua
-	 *            Description of the Parameter
-	 * @param mumeroHidrometroPoco
-	 *            Description of the Parameter
-	 * @param anoFabricacaoHidrometroPoco
-	 *            Description of the Parameter
-	 * @param capacidadeHidrometroPoco
-	 *            Description of the Parameter
-	 * @param marcaHidrometroPoco
-	 *            Description of the Parameter
-	 * @param diametroHidrometroPoco
-	 *            Description of the Parameter
-	 * @param tipoHidrometroPoco
-	 *            Description of the Parameter
-	 * @param dataInstalacaoHidrometroPoco
-	 *            Description of the Parameter
-	 * @param localInstalacaoHidrometroPoco
-	 *            Description of the Parameter
-	 * @param tipoProtecaoHidrometroPoco
-	 *            Description of the Parameter
-	 * @param indicadorCavaleteHidrometroPoco
-	 *            Description of the Parameter
-	 */
+	private String consumoFixadoPoco;
+
 	public RelatorioManterImovelBean(String idGerenciaRegional, String nomeGerenciaRegional, String idUnidadeNegocio,
 										String nomeUnidadeNegocio, String idLocalidade, String nomeLocalidade, String idSetorComercial,
 										String nomeSetorComercial, String inscricao, String matricula, String codigoCliente,
@@ -376,7 +256,8 @@ public class RelatorioManterImovelBean
 										String anoFabricacaoHidrometroPoco, String capacidadeHidrometroPoco, String marcaHidrometroPoco,
 										String diametroHidrometroPoco, String tipoHidrometroPoco, String dataInstalacaoHidrometroPoco,
 										String localInstalacaoHidrometroPoco, String tipoProtecaoHidrometroPoco,
-										String indicadorCavaleteHidrometroPoco, String rota, String sequencialRota, String logradouro) {
+										String indicadorCavaleteHidrometroPoco, String rota, String sequencialRota, String logradouro,
+										String consumoFixadoPoco) {
 
 		this.idGerenciaRegional = idGerenciaRegional;
 		this.nomeGerenciaRegional = nomeGerenciaRegional;
@@ -445,130 +326,9 @@ public class RelatorioManterImovelBean
 		this.rota = rota;
 		this.sequencialRota = sequencialRota;
 		this.logradouro = logradouro;
+		this.consumoFixadoPoco = consumoFixadoPoco;
 	}
 
-	/**
-	 * Constructor for the RelatorioManterImovelBean object
-	 * 
-	 * @param idGerenciaRegional
-	 *            Description of the Parameter
-	 * @param nomeGerenciaRegional
-	 *            Description of the Parameter
-	 * @param idLocalidade
-	 *            Description of the Parameter
-	 * @param nomeLocalidade
-	 *            Description of the Parameter
-	 * @param idSetorComercial
-	 *            Description of the Parameter
-	 * @param nomeSetorComercial
-	 *            Description of the Parameter
-	 * @param inscricao
-	 *            Description of the Parameter
-	 * @param matricula
-	 *            Description of the Parameter
-	 * @param codigoCliente
-	 *            Description of the Parameter
-	 * @param nomeCliente
-	 *            Description of the Parameter
-	 * @param endereco
-	 *            Description of the Parameter
-	 * @param indicadorImovelCondominio
-	 *            Description of the Parameter
-	 * @param matriculaImovelCondominio
-	 *            Description of the Parameter
-	 * @param matriculaImovelPrincipal
-	 *            Description of the Parameter
-	 * @param perfilImovel
-	 *            Description of the Parameter
-	 * @param subcategoria
-	 *            Description of the Parameter
-	 * @param situacaoAgua
-	 *            Description of the Parameter
-	 * @param situacaoEsgoto
-	 *            Description of the Parameter
-	 * @param pavimentoCalcada
-	 *            Description of the Parameter
-	 * @param pavimentoRua
-	 *            Description of the Parameter
-	 * @param tipoDespejo
-	 *            Description of the Parameter
-	 * @param volumeReservatorioSuperior
-	 *            Description of the Parameter
-	 * @param volumeReservatorioInferior
-	 *            Description of the Parameter
-	 * @param volumePiscina
-	 *            Description of the Parameter
-	 * @param mediaConsumo
-	 *            Description of the Parameter
-	 * @param areaConstruida
-	 *            Description of the Parameter
-	 * @param numeroMoradores
-	 *            Description of the Parameter
-	 * @param numeroPontos
-	 *            Description of the Parameter
-	 * @param poco
-	 *            Description of the Parameter
-	 * @param dataLigacaoAgua
-	 *            Description of the Parameter
-	 * @param diametroLigacaoAgua
-	 *            Description of the Parameter
-	 * @param materialLigacaoAgua
-	 *            Description of the Parameter
-	 * @param consumoMinimoAgua
-	 *            Description of the Parameter
-	 * @param dataLigacaoEsgoto
-	 *            Description of the Parameter
-	 * @param diametroLigacaoEsgoto
-	 *            Description of the Parameter
-	 * @param materialLigacaoEsgoto
-	 *            Description of the Parameter
-	 * @param percentualColeta
-	 *            Description of the Parameter
-	 * @param percentualEsgoto
-	 *            Description of the Parameter
-	 * @param consumoMinimoEsgoto
-	 *            Description of the Parameter
-	 * @param mumeroHidrometroAgua
-	 *            Description of the Parameter
-	 * @param anoFabricacaoHidrometroAgua
-	 *            Description of the Parameter
-	 * @param capacidadeHidrometroAgua
-	 *            Description of the Parameter
-	 * @param marcaHidrometroAgua
-	 *            Description of the Parameter
-	 * @param diametroHidrometroAgua
-	 *            Description of the Parameter
-	 * @param tipoHidrometroAgua
-	 *            Description of the Parameter
-	 * @param dataInstalacaoHidrometroAgua
-	 *            Description of the Parameter
-	 * @param localInstalacaoHidrometroAgua
-	 *            Description of the Parameter
-	 * @param tipoProtecaoHidrometroAgua
-	 *            Description of the Parameter
-	 * @param indicadorCavaleteHidrometroAgua
-	 *            Description of the Parameter
-	 * @param mumeroHidrometroPoco
-	 *            Description of the Parameter
-	 * @param anoFabricacaoHidrometroPoco
-	 *            Description of the Parameter
-	 * @param capacidadeHidrometroPoco
-	 *            Description of the Parameter
-	 * @param marcaHidrometroPoco
-	 *            Description of the Parameter
-	 * @param diametroHidrometroPoco
-	 *            Description of the Parameter
-	 * @param tipoHidrometroPoco
-	 *            Description of the Parameter
-	 * @param dataInstalacaoHidrometroPoco
-	 *            Description of the Parameter
-	 * @param localInstalacaoHidrometroPoco
-	 *            Description of the Parameter
-	 * @param tipoProtecaoHidrometroPoco
-	 *            Description of the Parameter
-	 * @param indicadorCavaleteHidrometroPoco
-	 *            Description of the Parameter
-	 */
 	public RelatorioManterImovelBean(String idGerenciaRegional, String nomeGerenciaRegional, String idUnidadeNegocio,
 										String nomeUnidadeNegocio, String idLocalidade, String nomeLocalidade, String idSetorComercial,
 										String nomeSetorComercial, String inscricao, String matricula, String codigoCliente,
@@ -589,7 +349,7 @@ public class RelatorioManterImovelBean
 										String anoFabricacaoHidrometroPoco, String capacidadeHidrometroPoco, String marcaHidrometroPoco,
 										String diametroHidrometroPoco, String tipoHidrometroPoco, String dataInstalacaoHidrometroPoco,
 										String localInstalacaoHidrometroPoco, String tipoProtecaoHidrometroPoco,
-										String indicadorCavaleteHidrometroPoco, String rota, String sequencialRota) {
+										String indicadorCavaleteHidrometroPoco, String rota, String sequencialRota, String consumoFixadoPoco) {
 
 		this.idGerenciaRegional = idGerenciaRegional;
 		this.nomeGerenciaRegional = nomeGerenciaRegional;
@@ -657,6 +417,7 @@ public class RelatorioManterImovelBean
 		this.indicadorCavaleteHidrometroPoco = indicadorCavaleteHidrometroPoco;
 		this.rota = rota;
 		this.sequencialRota = sequencialRota;
+		this.consumoFixadoPoco = consumoFixadoPoco;
 	}
 
 	/**
@@ -2108,6 +1869,16 @@ public class RelatorioManterImovelBean
 	public void setLogradouro(String logradouro){
 
 		this.logradouro = logradouro;
+	}
+
+	public String getConsumoFixadoPoco(){
+
+		return consumoFixadoPoco;
+	}
+
+	public void setConsumoFixadoPoco(String consumoFixadoPoco){
+
+		this.consumoFixadoPoco = consumoFixadoPoco;
 	}
 
 }

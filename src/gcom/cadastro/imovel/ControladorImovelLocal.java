@@ -97,7 +97,6 @@ import gcom.cobranca.CobrancaSituacao;
 import gcom.cobranca.bean.ObterDebitoImovelOuClienteHelper;
 import gcom.cobranca.bean.SituacaoEspecialCobrancaHelper;
 import gcom.faturamento.FaturamentoGrupo;
-import gcom.faturamento.FaturamentoSituacaoHistorico;
 import gcom.faturamento.VencimentoAlternativo;
 import gcom.faturamento.bean.SituacaoEspecialFaturamentoHelper;
 import gcom.faturamento.consumofaixaareacategoria.ConsumoFaixaAreaCategoria;
@@ -477,8 +476,8 @@ public interface ControladorImovelLocal
 	 * @param usuarioLogado
 	 * @param helperParaSeremRemovidos
 	 */
-	public void atualizarFaturamentoSituacaoTipo(Collection colecaoIdsImoveis, Integer idFaturamentoTipo,
-					Collection<FaturamentoSituacaoHistorico> collectionFaturmentoSituaoHistorico, Usuario usuarioLogado,
+	public void atualizarFaturamentoSituacaoTipo(Integer idFaturamentoTipo,
+					Collection<SituacaoEspecialFaturamentoHelper> helperParaSeremInserirdos, Usuario usuarioLogado,
 					Collection<SituacaoEspecialFaturamentoHelper> helperParaSeremRemovidos)
 					throws ControladorException;
 
@@ -798,7 +797,8 @@ public interface ControladorImovelLocal
 					String idClienteTipo, String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal,
 					String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio,
 					String cdRotaInicial, String cdRotaFinal, String sequencialRotaInicial, String sequencialRotaFinal,
-					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal) throws ControladorException;
+					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal) throws ControladorException;
 
 	/**
 	 * [UC0164] Filtrar Imoveis por Outros Criterios
@@ -823,7 +823,8 @@ public interface ControladorImovelLocal
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, Integer relatorio,
 					String cdRotaInicial, String cdRotaFinal, String sequencialRotaInicial, String sequencialRotaFinal,
-					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal) throws ControladorException;
+					String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal) throws ControladorException;
 
 	/**
 	 * O método abaixo realiza uma pesquisa em imovel e retorna os campos
@@ -910,7 +911,8 @@ public interface ControladorImovelLocal
 					String diaVencimento, String idCliente, String idClienteTipo, String idClienteRelacaoTipo, String numeroPontosInicial,
 					String numeroPontosFinal, String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa,
 					String idUnidadeNegocio, String segmentoInicial, String segmentoFinal, String rotaInicial, String rotaFinal,
-					String sequencialRotaInicial, String sequencialRotaFinal, String subloteInicial, String subloteFinal)
+ String sequencialRotaInicial, String sequencialRotaFinal,
+					String subloteInicial, String subloteFinal, String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal)
 					throws ControladorException;
 
 	/**
@@ -1375,7 +1377,8 @@ public interface ControladorImovelLocal
 	public Integer pesquisarQuantidadeImovel(String idImovel, String idLocalidade, String codigoSetorComercial, String numeroQuadra,
 					String idHidrometroHistInst, String lote, String subLote, String codigoCliente, String idMunicipio, String cep,
 					String idBairro, String idLogradouro, boolean pesquisarImovelManterVinculo, boolean pesquisarImovelCondominio,
-					String numeroHidrometroImovel, String numeroImovel) throws ControladorException;
+					String numeroHidrometroImovel, String numeroImovel)
+					throws ControladorException;
 
 	/**
 	 * Pesquisa o Imovel pelos parametros informados
@@ -1516,7 +1519,8 @@ public interface ControladorImovelLocal
 
 	public Collection pesquisarImoveisTarifaConsumo(String idLocalidadeInicial, String idLocalidadeFinal,
 					String codigoSetorComercialInicial, String codigoSetorComercialFinal, String quadraInicial, String quadraFinal,
-					String loteInicial, String loteFinal, String subLoteInicial, String subLoteFinal, String idTarifaAnterior)
+					String loteInicial, String loteFinal, String subLoteInicial, String subLoteFinal, String idTarifaAnterior,
+					String idsCategorias, String idsSubcategorias)
 					throws ControladorException;
 
 	/**
@@ -1812,7 +1816,8 @@ public interface ControladorImovelLocal
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String rotaInicial,
 					String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal, Short tipoEmpresa, String indicadorOrdenacao)
+					String segmentoFinal, String subloteInicial, String subloteFinal, Short tipoEmpresa, String indicadorOrdenacao,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal)
 					throws ControladorException;
 
 	/**
@@ -1838,7 +1843,8 @@ public interface ControladorImovelLocal
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String rotaInicial,
 					String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal, String indicadorOrdenacao)
+					String segmentoFinal, String subloteInicial, String subloteFinal, String indicadorOrdenacao,
+					String consumoFixadoEsgotoPocoInicial, String consumoFixadoEsgotoPocoFinal)
 					throws ControladorException;
 
 	/**
@@ -2217,7 +2223,8 @@ public interface ControladorImovelLocal
 					String idClienteRelacaoTipo, String numeroPontosInicial, String numeroPontosFinal, String numeroMoradoresInicial,
 					String numeroMoradoresFinal, String idAreaConstruidaFaixa, String idUnidadeNegocio, String rotaInicial,
 					String rotaFinal, String sequencialRotaInicial, String sequencialRotaFinal, String segmentoInicial,
-					String segmentoFinal, String subloteInicial, String subloteFinal) throws ControladorException;
+					String segmentoFinal, String subloteInicial, String subloteFinal, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal) throws ControladorException;
 
 	/**
 	 * [UC0591] - Gerar Relatório de Clientes Especiais
@@ -2518,6 +2525,7 @@ public interface ControladorImovelLocal
 	 */
 	public void validarPermissaoClienteImovel(String cpfCnpjCliente, String matriculaImovel) throws ControladorException, NegocioException;
 
+	public void validarPermissaoClienteImovel(String matriculaImovel) throws ControladorException, NegocioException;
 	/**
 	 * Método responsável por verificar se o usuário tem acesso a impressaão de extrato de débito
 	 * 
@@ -2632,7 +2640,9 @@ public interface ControladorImovelLocal
 					String diaVencimento, String idCliente, String idClienteTipo, String idClienteRelacaoTipo, String numeroPontosInicial,
 					String numeroPontosFinal, String numeroMoradoresInicial, String numeroMoradoresFinal, String idAreaConstruidaFaixa,
 					String idUnidadeNegocio, String cdRotaInicial, String cdRotaFinal, String sequencialRotaInicial,
-					String sequencialRotaFinal, String segmentoInicial, String segmentoFinal, String subloteInicial, String subloteFinal)
+ String sequencialRotaFinal, String segmentoInicial,
+					String segmentoFinal, String subloteInicial, String subloteFinal, String consumoFixadoEsgotoPocoInicial,
+					String consumoFixadoEsgotoPocoFinal)
 					throws ControladorException;
 
 	/**
@@ -2758,4 +2768,59 @@ public interface ControladorImovelLocal
 	 * @date 11/02/2014
 	 */
 	public Collection<Conta> pesquisarContasEmAtrasoPorImovel(Integer idImovel) throws ControladorException;
+
+	/**
+	 * @author Gicevalter Couto
+	 * @date 17/09/2014
+	 */
+	public boolean verificarTipoRelacaoUsuariaAtivo(Collection<ClienteImovel> colecaoClientesImovel) throws ControladorException;
+
+	/**
+	 * @author Gicevalter Couto
+	 * @date 21/09/2014
+	 * @throws ControladorException
+	 */
+	public void ajustarRelacaoUsuarioClienteImovel(int idFuncionalidadeIniciada) throws ControladorException;
+
+	/**
+	 * <p>
+	 * [OC1372979]
+	 * </p>
+	 * 
+	 * @author Magno Silveira (magno.silveira@procenge.com.br)
+	 * @since 22/10/2014
+	 * @param imovelCondominioId
+	 * @return
+	 * @throws ControladorException
+	 */
+	public Collection pesquisarImoveisSubcategoriasParaCondominio(Integer imovelCondominioId) throws ControladorException;
+
+
+	/**
+	 * @author Magno Silveira { @literal <magno.silveira@procenge.com.br> }
+	 * @since 07/10/2014
+	 * @param idFuncionalidadeIniciada
+	 */
+	public void atualizarImoveisComSupressaoDefinitiva(int idFuncionalidadeIniciada) throws ControladorException;
+
+	/**
+	 * @param idImovel
+	 * @throws ControladorException
+	 */
+	public Collection pesquisarImovelSubcategorias(Integer idImovel) throws ControladorException;
+
+	/**
+	 * @param idImovel
+	 * @throws ControladorException
+	 */
+	public void atualizarRotaImovel(Integer idImovel, Integer idRotaAtualizar) throws ControladorException;
+
+	/**
+	 * @param idImovel
+	 * @param anoMesMovimento
+	 * @throws ControladorException
+	 */
+	public Collection<Categoria> obterCategorias(Integer idImovel, Integer anoMesMovimento);
+	
+	public Integer retornarAnoMesReferenciaFaturamentoGrupoImovel(Integer idImovel) throws ControladorException;
 }

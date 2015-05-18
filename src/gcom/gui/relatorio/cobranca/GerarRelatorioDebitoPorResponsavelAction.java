@@ -76,10 +76,12 @@ public class GerarRelatorioDebitoPorResponsavelAction
 
 			filtro.setIndicadorContasEmRevisao(Util.obterShort(form.getIndicadorContasEmRevisao()));
 
+			informouParametro = true;
+
 			// Motivo da Revisão
 			if(Util.verificarIdNaoVazio(form.getIdMotivoRevisao())){
 
-				informouParametro = true;
+
 				filtro.setIdMotivoRevisao(Util.obterInteger(form.getIdMotivoRevisao()));
 			}
 		}

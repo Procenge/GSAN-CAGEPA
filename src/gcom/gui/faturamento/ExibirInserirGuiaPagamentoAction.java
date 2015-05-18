@@ -440,6 +440,7 @@ public class ExibirInserirGuiaPagamentoAction
 								inserirGuiaPagamentoActionForm, colecaoGuiaPrestacoes);
 			}
 
+			
 			if(!Util.isVazioOrNulo(colecaoListaDadosPrestacoesGuia)){
 				Collection<DadosPrestacaoGuiaHelper> colecaoDadosPrestacaoGuiaHelper = new ArrayList<DadosPrestacaoGuiaHelper>();
 				DadosPrestacaoGuiaHelper dadosPrestacaoGuiaHelper = null;
@@ -450,7 +451,11 @@ public class ExibirInserirGuiaPagamentoAction
 					Map<Integer, BigDecimal> mapalistaDadosPrestacoesGuia = listaDadosPrestacaoGuiaHelper
 									.getMapValorDebitoNaPrestacaoPorTipoDebito();
 
+					Map<Integer, Integer> mapalistaNumeroProcessoAdmExecFiscalPrestacoesGuia = listaDadosPrestacaoGuiaHelper
+									.getMapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito();
+
 					Integer[] arrayNumeroPrestacao = new Integer[mapalistaDadosPrestacoesGuia.size()];
+					Integer[] arrayNumeroProcessoAdministrativoExecFiscal = new Integer[mapalistaDadosPrestacoesGuia.size()];
 					Date[] arrayDataVencimentoPrestacao = new Date[mapalistaDadosPrestacoesGuia.size()];
 					String[] arrayidDebitoTipo = new String[mapalistaDadosPrestacoesGuia.size()];
 					String[] arrayDescricaoDebitoTipo = new String[mapalistaDadosPrestacoesGuia.size()];
@@ -469,6 +474,8 @@ public class ExibirInserirGuiaPagamentoAction
 							arrayNumeroPrestacao[i] = listaDadosPrestacaoGuiaHelper.getPrestacao();
 							arrayDataVencimentoPrestacao[i] = listaDadosPrestacaoGuiaHelper.getDataVencimentoPrestacao();
 							arrayidDebitoTipo[i] = debitoTipo.getId().toString();
+							arrayNumeroProcessoAdministrativoExecFiscal[i] = mapalistaNumeroProcessoAdmExecFiscalPrestacoesGuia
+											.get(chaveDebitoTipo);
 							arrayDescricaoDebitoTipo[i] = debitoTipo.getDescricao();
 							arrayValorTipoDebitoNaPrestacao[i] = valorTipoDebitoNaPrestacao.toString();
 						}
@@ -484,6 +491,8 @@ public class ExibirInserirGuiaPagamentoAction
 					dadosPrestacaoGuiaHelper.setIdDebitoTipo(arrayidDebitoTipo);
 					dadosPrestacaoGuiaHelper.setDescricaoDebitoTipo(arrayDescricaoDebitoTipo);
 					dadosPrestacaoGuiaHelper.setValorDebitoNaPrestacao(arrayValorTipoDebitoNaPrestacao);
+					dadosPrestacaoGuiaHelper
+									.setNumeroProcessoAdministrativoExecucaoFiscalArray(arrayNumeroProcessoAdministrativoExecFiscal);
 
 					colecaoDadosPrestacaoGuiaHelper.add(dadosPrestacaoGuiaHelper);
 
@@ -495,6 +504,12 @@ public class ExibirInserirGuiaPagamentoAction
 				// Coloca a coleção das listas de dados gerados
 				sessao.setAttribute("colecaoListaDadosPrestacoesGuia", colecaoListaDadosPrestacoesGuia);
 			}
+		}
+
+		if(fachada.existeProcessoExecucaoFiscal().equals(ConstantesSistema.SIM)){
+			sessao.setAttribute("exibirDividaAtivaColuna", "S");
+		}else{
+			sessao.removeAttribute("exibirDividaAtivaColuna");
 		}
 
 		return retorno;
@@ -632,6 +647,7 @@ public class ExibirInserirGuiaPagamentoAction
 		Collection<ListaDadosPrestacaoGuiaHelper> colecaoListaDadosPrestacaoGuiaHelper = new ArrayList<ListaDadosPrestacaoGuiaHelper>();
 		ListaDadosPrestacaoGuiaHelper listaDadosPrestacaoGuiaHelper = null;
 		Map<Integer, BigDecimal> mapValorDebitoNaPrestacaoPorTipoDebito = null;
+		Map<Integer, Integer> mapValorDebitoNaPrestacaoPorNumeroProcessoAdministrativo = null;
 
 		Date dataVencimentoInicial = null;
 		Date dataVencimentoAnterior = null;
@@ -690,6 +706,7 @@ public class ExibirInserirGuiaPagamentoAction
 				for(GuiaPagamentoPrestacaoHelper guiaPagamentoPrestacaoHelper : colecaoGuiaPrestacaoHelper){
 					// 1.2.3.1. Tipo de Débito (Tipo de Débito);
 					int idTipoDebito = guiaPagamentoPrestacaoHelper.getId().intValue();
+					Integer numeroProcessoAdministrativo = null;
 
 					valorTipoDebitoNaPrestacao = new BigDecimal(0.00);
 
@@ -700,13 +717,27 @@ public class ExibirInserirGuiaPagamentoAction
 					valorTipoDebitoNaPrestacao = Util.calcularValorPrestacao(guiaPagamentoPrestacaoHelper.getValorTipoDebito(),
 									numeroTotalPrestacoes, numeroPrestacao);
 
+					numeroProcessoAdministrativo = guiaPagamentoPrestacaoHelper.getNumeroProcessoAdministrativoExecucaoFiscal();
+
 					// Realiza o acúmulo do valor por Tipo de Débito para a Prestação
 					mapValorDebitoNaPrestacaoPorTipoDebito = listaDadosPrestacaoGuiaHelper.getMapValorDebitoNaPrestacaoPorTipoDebito();
 
+					//
+					mapValorDebitoNaPrestacaoPorNumeroProcessoAdministrativo = listaDadosPrestacaoGuiaHelper
+									.getMapNumeroProcessoAdministrativoExecucaoFiscalNaPrestacaoPorTipoDebito();
+
 					if(!mapValorDebitoNaPrestacaoPorTipoDebito.containsKey(idTipoDebito)){
 						mapValorDebitoNaPrestacaoPorTipoDebito.put(idTipoDebito, valorTipoDebitoNaPrestacao);
+
+						if(numeroProcessoAdministrativo != null){
+							mapValorDebitoNaPrestacaoPorNumeroProcessoAdministrativo.put(idTipoDebito, numeroProcessoAdministrativo);
+						}
 					}else{
 						mapValorDebitoNaPrestacaoPorTipoDebito.put(idTipoDebito, valorTipoDebitoNaPrestacao);
+
+						if(numeroProcessoAdministrativo != null){
+							mapValorDebitoNaPrestacaoPorNumeroProcessoAdministrativo.put(idTipoDebito, numeroProcessoAdministrativo);
+						}
 					}
 				}
 			}

@@ -76,7 +76,8 @@
 
 package gcom.gui.cadastro.imovel;
 
-import gcom.cadastro.imovel.EntidadeBeneficente;
+import gcom.cadastro.imovel.EntidadeBeneficenteContrato;
+import gcom.cadastro.imovel.FiltroEntidadeBeneficenteContrato;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.imovel.ImovelDoacao;
 import gcom.fachada.Fachada;
@@ -88,6 +89,8 @@ import gcom.seguranca.acesso.OperacaoEfetuada;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.seguranca.acesso.usuario.UsuarioAcao;
 import gcom.seguranca.acesso.usuario.UsuarioAcaoUsuarioHelper;
+import gcom.util.Util;
+import gcom.util.filtro.ParametroSimples;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -135,7 +138,6 @@ public class InserirImovelDoacaoAction
 		Usuario usuarioAdesao = null;
 		BigDecimal valorDoacao = null;
 		ImovelDoacao imovelDoacao = null;
-		EntidadeBeneficente entidadeBeneficente = null;
 
 		/*** Procedimentos básicos para execução do método ***/
 		retorno = actionMapping.findForward("telaSucesso");
@@ -147,9 +149,10 @@ public class InserirImovelDoacaoAction
 		valorDoacao = new BigDecimal(imovelDoacaoActionForm.getValorDoacao().replace(",", "."));
 		usuarioAdesao = new Usuario();
 		usuarioAdesao.setId(((Usuario) sessao.getAttribute("usuarioLogado")).getId());
+		usuarioAdesao.setNomeUsuario(((Usuario) sessao.getAttribute("usuarioLogado")).getNomeUsuario()) ;
+		usuarioAdesao.setEmpresa(((Usuario) sessao.getAttribute("usuarioLogado")).getEmpresa()  );
 		dataAdesao = new Date();
-		entidadeBeneficente = new EntidadeBeneficente();
-		entidadeBeneficente.setId(new Integer(imovelDoacaoActionForm.getIdEntidadeBeneficente()));
+
 		imovel = new Imovel();
 		imovel.setId(new Integer(imovelDoacaoActionForm.getIdImovel()));
 
@@ -161,17 +164,86 @@ public class InserirImovelDoacaoAction
 		operacao.setId(Operacao.OPERACAO_CATEGORIA_INSERIR);
 		OperacaoEfetuada operacaoEfetuada = new OperacaoEfetuada();
 		operacaoEfetuada.setOperacao(operacao);
+
 		// ------------ REGISTRAR TRANSAÇÃO ----------------//
+		FiltroEntidadeBeneficenteContrato filtroEntidadeBeneficenteContrato = new FiltroEntidadeBeneficenteContrato();
+		filtroEntidadeBeneficenteContrato
+										.adicionarCaminhoParaCarregamentoEntidade(FiltroEntidadeBeneficenteContrato.ENTIDADE_BENEFICIENTE);
+		filtroEntidadeBeneficenteContrato.adicionarCaminhoParaCarregamentoEntidade(FiltroEntidadeBeneficenteContrato.CLIENTE_ENTIDADE_BENEFICIENTE );
+		filtroEntidadeBeneficenteContrato.adicionarParametro(new ParametroSimples(FiltroEntidadeBeneficenteContrato.ID, new Integer(
+						imovelDoacaoActionForm.getIdEntidadeBeneficenteContrato())));
+		
+		EntidadeBeneficenteContrato entidadeBeneficenteContrato = null;
+		entidadeBeneficenteContrato = (EntidadeBeneficenteContrato) Util.retonarObjetoDeColecao(fachada.pesquisar(
+						filtroEntidadeBeneficenteContrato, EntidadeBeneficenteContrato.class.getName()));
+		if(entidadeBeneficenteContrato == null){
+			throw new ActionServletException("atencao.entidade.contrato.inexistente");
+		}
 
 		/*** Verifica se a associação de imovel e entidade beneficente já existe na base de dados ***/
-		imovelDoacao = fachada.verificarExistenciaImovelDoacao(imovel.getId(), entidadeBeneficente.getId());
-
+		imovelDoacao = fachada
+						.verificarExistenciaImovelDoacao(imovel.getId(), entidadeBeneficenteContrato.getEntidadeBeneficente().getId());
 		if(imovelDoacao != null && imovelDoacao.getId() != 0){
 			throw new ActionServletException("atencao.inserir_imovel_doacao_ja_existe", null, imovelDoacao.getId().toString());
 		}
 
+		if(entidadeBeneficenteContrato.getEntidadeBeneficente().getEmpresa() == null){
+			throw new ActionServletException("atencao.entidade.sem_empresa", entidadeBeneficenteContrato.getEntidadeBeneficente().getCliente().getNome());			
+		}
+		
+		if(usuarioAdesao == null || usuarioAdesao.getEmpresa() == null
+						|| !usuarioAdesao.getEmpresa().equals(entidadeBeneficenteContrato.getEntidadeBeneficente().getEmpresa())){
+			throw new ActionServletException("atencao.inserir_imovel_doacao.usuario_sem_permissao", usuarioAdesao.getNomeUsuario()
+							.toString(), entidadeBeneficenteContrato.getEntidadeBeneficente().getCliente().getNome().toString());
+		}
+		
+		if(entidadeBeneficenteContrato.getValorMinimoDoacao() != null){
+			if(entidadeBeneficenteContrato.getValorMinimoDoacao().compareTo(valorDoacao) > 0){
+				throw new ActionServletException("atencao.inserir_imovel_doacao.valor_menor_contrato", entidadeBeneficenteContrato
+								.getEntidadeBeneficente().getCliente().getNome().toString(), entidadeBeneficenteContrato
+								.getValorMinimoDoacao().toString());
+			}
+		}
+
+		if(entidadeBeneficenteContrato.getValorMaximoDoacao() != null){
+			if(valorDoacao.compareTo(entidadeBeneficenteContrato.getValorMaximoDoacao()) > 0){
+				throw new ActionServletException("atencao.inserir_imovel_doacao.valor_maior_contrato", entidadeBeneficenteContrato
+								.getEntidadeBeneficente().getCliente().getNome().toString(), entidadeBeneficenteContrato
+								.getValorMaximoDoacao().toString());
+			}
+		}
+		
+		Integer anoMesReferenciaFinal = Util.formatarMesAnoParaAnoMes(Integer.valueOf(
+						imovelDoacaoActionForm.getReferenciaFinal().toString().replace("/", "")).intValue());
+		Integer anoMesReferenciaInicial = Util.formatarMesAnoParaAnoMes(Integer.valueOf(
+						imovelDoacaoActionForm.getReferenciaInicial().toString().replace("/", "")).intValue());
+		
+		if (fachada.verificarImovelEmProcessoDeFaturamento(imovel.getId())) {
+			Integer anoMesReferenciaFaturamentoGrupoImovel  = fachada.retornarAnoMesReferenciaFaturamentoGrupoImovel(imovel.getId());
+			
+			if(anoMesReferenciaFaturamentoGrupoImovel == null
+							|| Util.somaMesAnoMesReferencia(anoMesReferenciaFaturamentoGrupoImovel, 1).compareTo(anoMesReferenciaInicial) > 0){
+				throw new ActionServletException("atencao.inserir_imovel_doacao.mes_ano_referencia_posterior",
+								Util.formatarAnoMesParaMesAno(anoMesReferenciaFaturamentoGrupoImovel.toString()));
+			}
+
+		} else {
+			Integer anoMesReferenciaFaturamentoGrupoImovel = fachada.retornarAnoMesReferenciaFaturamentoGrupoImovel(imovel.getId());
+
+			if(anoMesReferenciaFaturamentoGrupoImovel == null
+							|| anoMesReferenciaFaturamentoGrupoImovel.compareTo(anoMesReferenciaInicial) > 0){
+				throw new ActionServletException("atencao.inserir_imovel_doacao.mes_ano_referencia_posterior",
+								Util.formatarAnoMesParaMesAno(anoMesReferenciaFaturamentoGrupoImovel.toString()));
+			}
+			
+		}
+
 		/*** Preenche as informações de imovel doação ***/
-		imovelDoacao = new ImovelDoacao(imovel, valorDoacao, entidadeBeneficente, dataAdesao, usuarioAdesao, new Date());
+		imovelDoacao = new ImovelDoacao(imovel, valorDoacao, entidadeBeneficenteContrato, dataAdesao,
+						usuarioAdesao, new Date());
+
+		imovelDoacao.setReferenciaInicial(anoMesReferenciaInicial);
+		imovelDoacao.setReferenciaFinal(anoMesReferenciaFinal);
 
 		// ------------ REGISTRAR TRANSAÇÃO ----------------//
 		imovelDoacao.setOperacaoEfetuada(operacaoEfetuada);

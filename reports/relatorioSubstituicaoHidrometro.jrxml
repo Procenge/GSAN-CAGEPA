@@ -24,8 +24,8 @@
 	<import value="net.sf.jasperreports.engine.data.*" />
 
 	<parameter name="imagem" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="nomeCompletoEmpresa" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_NM_ESTADO" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NM_EMPRESA" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="solicitacao" class="java.lang.String"/>
 	<field name="endereco" class="java.lang.String"/>
@@ -75,6 +75,20 @@
 	<field name="agenteAssociado" class="java.lang.String"/>
 	<field name="tipoRelacao" class="java.lang.String"/>
 
+	<variable name="mediaMedido" class="java.lang.String" resetType="Report" calculation="Nothing">
+		<variableExpression><![CDATA[(  $F{mediaMedido} == null || $F{mediaMedido}.equals("") || $F{mediaMedido}.equals("null") ? 
+	""
+  : 
+	$F{mediaMedido} 
+)]]></variableExpression>
+	</variable>
+	<variable name="endereco" class="java.lang.String" resetType="Report" calculation="Nothing">
+		<variableExpression><![CDATA[($F{complemento} == null || $F{complemento}.equals("") ? 
+	$F{endereco}+", "+$F{numero}
+ : 
+	$F{endereco}+", "+$F{numero}+", "+ $F{complemento}
+)]]></variableExpression>
+	</variable>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -2421,7 +2435,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Courier New" size="8"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{mediaMedido}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$V{mediaMedido}]]></textFieldExpression>
 				</textField>
 				<rectangle radius="3" >
 					<reportElement
@@ -2769,7 +2783,7 @@
 					<textElement verticalAlignment="Middle">
 						<font fontName="Courier New" size="8"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{endereco}+", "+$F{numero}+", "+ $F{complemento}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$V{endereco}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
@@ -2835,7 +2849,7 @@
 					<textElement>
 						<font fontName="Courier New" size="8"/>
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["Declaro ter tomado conhecimento de que foi realizada na data de hoje a troca do hidrômetro em minha matrícula junto à " + $P{nomeCompletoEmpresa}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA["Declaro ter tomado conhecimento de que foi realizada na data de hoje a troca do hidrômetro em minha matrícula junto à " + $P{P_NM_EMPRESA}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
@@ -3036,7 +3050,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="Courier New" pdfFontName="Courier-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["COMPANHIA DE SANEAMENTO DE "  + $P{P_NM_ESTADO}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NM_EMPRESA}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement

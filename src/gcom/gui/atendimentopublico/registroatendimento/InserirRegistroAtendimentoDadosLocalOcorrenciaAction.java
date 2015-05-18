@@ -91,6 +91,7 @@ import gcom.operacional.DivisaoEsgoto;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
+import gcom.util.FachadaException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
@@ -168,21 +169,39 @@ public class InserirRegistroAtendimentoDadosLocalOcorrenciaAction
 
 		if(httpServletRequest.getParameter("incompleta") != null){
 
-			fachada.validarInserirRegistroAtendimentoDadosGeraisIncompleto(inserirRegistroAtendimentoActionForm.getDataAtendimento(),
+			try{
+				
+				fachada.validarInserirRegistroAtendimentoDadosGeraisIncompleto(inserirRegistroAtendimentoActionForm.getDataAtendimento(),
 							inserirRegistroAtendimentoActionForm.getHora(), inserirRegistroAtendimentoActionForm.getTempoEsperaInicial(),
 							inserirRegistroAtendimentoActionForm.getTempoEsperaFinal(), inserirRegistroAtendimentoActionForm.getUnidade(),
 							inserirRegistroAtendimentoActionForm.getNumeroAtendimentoManual(), inserirRegistroAtendimentoActionForm
 											.getEspecificacao(), inserirRegistroAtendimentoActionForm.getIdRaReiteracao());
+				
+			}catch(FachadaException e){
+				throw new ActionServletException(
+								e.getMessage(),
+								"inserirRegistroAtendimentoWizardAction.do?action=exibirInserirRegistroAtendimentoDadosGeraisAction&pagina=1",
+								e, e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+			}
 
 		}else{
 
-			fachada.validarCamposObrigatoriosRA_2ABA(idImovel, pontoReferencia, idMunicipio, descricaoMunicipio, cdBairro, descricaoBairro,
-							idAreaBairro, idlocalidade, descricaoLocalidade, cdSetorComercial, descricaoSetorComercial, numeroQuadra,
-							idDivisaoEsgoto, idUnidade, descricaoUnidade, idLocalOcorrencia, idPavimentoRua, idPavimentoCalcada,
-							descricaoLocalOcorrencia, imovelObrigatorio, pavimentoRuaObrigatorio, pavimentoCalcadaObrigatorio,
-							solicitacaoTipoRelativoFaltaAgua, solicitacaoTipoRelativoAreaEsgoto, desabilitarMunicipioBairro,
-							indRuaLocalOcorrencia, indCalcadaLocalOcorrencia, Integer.valueOf(idEspecificacao), null, colecaoEnderecos,
-							idCliente, idUnidadeDestino);
+			try{
+
+				fachada.validarCamposObrigatoriosRA_2ABA(idImovel, pontoReferencia, idMunicipio, descricaoMunicipio, cdBairro,
+								descricaoBairro, idAreaBairro, idlocalidade, descricaoLocalidade, cdSetorComercial,
+								descricaoSetorComercial, numeroQuadra, idDivisaoEsgoto, idUnidade, descricaoUnidade, idLocalOcorrencia,
+								idPavimentoRua, idPavimentoCalcada, descricaoLocalOcorrencia, imovelObrigatorio, pavimentoRuaObrigatorio,
+								pavimentoCalcadaObrigatorio, solicitacaoTipoRelativoFaltaAgua, solicitacaoTipoRelativoAreaEsgoto,
+								desabilitarMunicipioBairro, indRuaLocalOcorrencia, indCalcadaLocalOcorrencia,
+								Integer.valueOf(idEspecificacao), null, colecaoEnderecos, idCliente, idUnidadeDestino);
+
+			}catch(FachadaException e){
+				throw new ActionServletException(
+								e.getMessage(),
+								"inserirRegistroAtendimentoWizardAction.do?action=exibirInserirRegistroAtendimentoDadosLocalOcorrenciaAction&pagina=2",
+								e, e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+			}
 
 			// -----------------------------------------------------------------------
 

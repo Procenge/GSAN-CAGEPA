@@ -4,19 +4,9 @@
 
 package gcom.gui.cadastro.unidadeoperacional;
 
-import gcom.arrecadacao.banco.Agencia;
-import gcom.cadastro.geografico.Microrregiao;
-import gcom.cadastro.geografico.Municipio;
-import gcom.cadastro.geografico.RegiaoDesenvolvimento;
-import gcom.cadastro.geografico.UnidadeFederacao;
 import gcom.cadastro.localidade.Localidade;
-import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.cadastro.unidadeoperacional.UnidadeOperacional;
 import gcom.operacional.SistemaAbastecimento;
-import gcom.util.ConstantesSistema;
-import gcom.util.Util;
-
-import java.util.Date;
 
 import org.apache.struts.validator.ValidatorActionForm;
 
@@ -60,6 +50,7 @@ public class InserirUnidadeOperacionalActionForm
 	private String latitude;
 
 	private String longitude;
+
 
 	public String getCodigoUnidadeOperacional(){
 
@@ -210,6 +201,8 @@ public class InserirUnidadeOperacionalActionForm
 
 		this.longitude = longitude;
 	}
+
+
 
 	public UnidadeOperacional setFormValues(UnidadeOperacional unidadeOperacional){
 

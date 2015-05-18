@@ -77,14 +77,7 @@
 package gcom.spcserasa;
 
 import gcom.cadastro.imovel.Imovel;
-import gcom.cobranca.CobrancaDebitoSituacao;
-import gcom.cobranca.NegativacaoComando;
-import gcom.cobranca.NegativacaoCriterio;
-import gcom.cobranca.Negativador;
-import gcom.cobranca.NegativadorContrato;
-import gcom.cobranca.NegativadorMovimento;
-import gcom.cobranca.NegativadorMovimentoReg;
-import gcom.cobranca.NegativadorMovimentoRegItem;
+import gcom.cobranca.*;
 import gcom.cobranca.bean.ComandoNegativacaoHelper;
 import gcom.cobranca.bean.ComandoNegativacaoTipoCriterioHelper;
 import gcom.cobranca.bean.DadosConsultaNegativacaoHelper;
@@ -1139,5 +1132,7 @@ public interface ControladorSpcSerasaLocal
 
 	public void atualizarItemDaNegativacaoDesfazerParcelamento(int referencia, Imovel imovel, Date dataSituacao,
 					Boolean ignorarSituacaoDefinitiva, Short indicadorSituacaoDefinitiva) throws ControladorException;
+
+	public void gerarArquivo(Integer idMovimento, boolean trailler, Integer idNegativador, Usuario usuario) throws ControladorException;
 
 }

@@ -79,6 +79,7 @@ package gcom.faturamento.credito;
 import gcom.arrecadacao.pagamento.PagamentoHistorico;
 import gcom.atendimentopublico.ordemservico.OrdemServico;
 import gcom.atendimentopublico.registroatendimento.RegistroAtendimento;
+import gcom.cadastro.cliente.ClienteCreditoARealizarHistorico;
 import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.localidade.Localidade;
 import gcom.cadastro.localidade.Quadra;
@@ -182,6 +183,8 @@ public class CreditoARealizarHistorico
 	private CreditoARealizarGeral creditoARealizarGeral;
 
 	private Set<CreditoARealizarCategoriaHistorico> creditoARealizarCategoriasHistorico;
+
+	private Set<ClienteCreditoARealizarHistorico> clientesCreditoARealizarHistorico;
 
 	private PagamentoHistorico pagamentoHistorico;
 
@@ -563,6 +566,16 @@ public class CreditoARealizarHistorico
 	public void setPagamentoHistorico(PagamentoHistorico pagamentoHistorico){
 
 		this.pagamentoHistorico = pagamentoHistorico;
+	}
+
+	public Set<ClienteCreditoARealizarHistorico> getClientesCreditoARealizarHistorico(){
+
+		return clientesCreditoARealizarHistorico;
+	}
+
+	public void setClientesCreditoARealizarHistorico(Set<ClienteCreditoARealizarHistorico> clientesCreditoARealizarHistorico){
+
+		this.clientesCreditoARealizarHistorico = clientesCreditoARealizarHistorico;
 	}
 
 }

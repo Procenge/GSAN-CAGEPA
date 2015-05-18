@@ -165,6 +165,8 @@ public class FiltroMedicaoHistoricoSql
 
 	public final static String MH_ANORMALIDADE_FATURADA = "medicaoHistorico.ltan_idleituraanormalidadefatu";
 
+	public final static String MH_ANORMALIDADE_CONSUMO = "consumoHistorico.csan_id";
+
 	public final static String MH_MEDICAO_TIPO_ID = "medicaoHistorico.medt_id";
 
 	public final static String CONSUMO_HISTORICO_CONSUMO_MEDIO = "consumoHistorico.cshi_nnconsumomedio";

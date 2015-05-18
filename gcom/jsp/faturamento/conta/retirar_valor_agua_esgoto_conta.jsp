@@ -240,7 +240,7 @@ function verificarExibirRA(){
 							<td>
 							<div align="left"><input name="ButtonFechar" type="button"
 								class="bottonRightCol" value="Fechar"
-								onclick="javascript:fecharPopup();"></div>
+								onclick="javascript:window.close();"></div>
 							</td>
 
 							<td align="right"><input type="button" name="Button"

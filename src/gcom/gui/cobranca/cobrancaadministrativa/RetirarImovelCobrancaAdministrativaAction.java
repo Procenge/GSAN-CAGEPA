@@ -76,12 +76,14 @@
 
 package gcom.gui.cobranca.cobrancaadministrativa;
 
+import gcom.cadastro.imovel.ImovelCobrancaSituacao;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.util.Util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -112,10 +114,36 @@ public class RetirarImovelCobrancaAdministrativaAction
 		Integer motivoRetirada = Util.converterStringParaInteger(form.getIdMotivoRetirada());
 
 		// Ids dos Imóveis Cobrança Situação Selecionados
-		String[] idRegistrosRetirada = (String[]) this.getSessao(httpServletRequest).getAttribute("idRegistrosRetirada");
+		
+		String[] idRegistrosRetirada = null;
+		if(httpServletRequest.getParameter("todos") == null || httpServletRequest.getParameter("todos").equals("0")){
+			idRegistrosRetirada = (String[]) this.getSessao(httpServletRequest).getAttribute("idRegistrosRetirada");
+		}else{
+			Collection<ImovelCobrancaSituacao> colecaoImovelCobrancaSituacaoTodos = (Collection<ImovelCobrancaSituacao>) this.getSessao(
+							httpServletRequest).getAttribute("colecaoImovelCobrancaSituacaoTodos");
+
+			if(colecaoImovelCobrancaSituacaoTodos != null){
+
+				String[] idRegistrosRetiradaAux = new String[colecaoImovelCobrancaSituacaoTodos.size()];
+
+				int i = 0;
+
+				for(ImovelCobrancaSituacao imovelCobrancaSituacao : colecaoImovelCobrancaSituacaoTodos){
+					if(imovelCobrancaSituacao.getDataRetiradaCobranca() == null){
+						idRegistrosRetiradaAux[i] = imovelCobrancaSituacao.getId().toString();
+						i++;
+					}
+				}
+
+				idRegistrosRetirada = new String[i];
+				for(int j = 0; j < i; j++){
+					idRegistrosRetirada[j] = idRegistrosRetiradaAux[j];
+				}
+
+			}
+		}
 
 		if(Util.isVazioOrNulo(idRegistrosRetirada)){
-
 			throw new ActionServletException("atencao.registros.nao_selecionados");
 		}
 

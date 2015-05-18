@@ -89,6 +89,7 @@ import gcom.util.ControladorException;
 
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 public interface ControladorFaturamentoLocal
@@ -219,5 +220,9 @@ public interface ControladorFaturamentoLocal
 	 * @date 23/04/2014
 	 **/
 	public BigDecimal verificarDebitoTipoValorLocalidade(Integer idImovel, Integer idDebitoTipo) throws ControladorException;
+
+	public List<Object[]> gerarRelatorioTotalContasEmitidasLocalidade(Integer anoMesReferencia) throws ControladorException;
+
+	public Long gerarQuantidadeRelatorioTotalContasEmitidasLocalidade(Integer anoMesReferencia) throws ControladorException;
 
 }

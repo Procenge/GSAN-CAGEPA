@@ -109,6 +109,8 @@ public class OrdemServicoProgramacao
 	/** persistent field */
 	private Date ultimaAlteracao;
 
+	private Date dataHoraVisita;
+
 	/** persistent field */
 	private Equipe equipe;
 
@@ -250,6 +252,16 @@ public class OrdemServicoProgramacao
 	public void setUltimaAlteracao(Date ultimaAlteracao){
 
 		this.ultimaAlteracao = ultimaAlteracao;
+	}
+
+	public Date getDataHoraVisita(){
+
+		return dataHoraVisita;
+	}
+
+	public void setDataHoraVisita(Date dataHoraVisita){
+
+		this.dataHoraVisita = dataHoraVisita;
 	}
 
 	public Usuario getUsuarioFechamento(){

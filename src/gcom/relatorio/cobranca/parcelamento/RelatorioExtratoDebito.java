@@ -77,6 +77,7 @@
 package gcom.relatorio.cobranca.parcelamento;
 
 import gcom.batch.Relatorio;
+import gcom.cadastro.imovel.Imovel;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.cobranca.CobrancaDocumentoItem;
 import gcom.cobranca.bean.CalcularValorDataVencimentoAnteriorHelper;
@@ -92,6 +93,7 @@ import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.agendadortarefas.AgendadorTarefas;
 import gcom.util.parametrizacao.ParametroGeral;
+import gcom.util.parametrizacao.faturamento.ParametroFaturamento;
 
 import java.util.*;
 
@@ -346,9 +348,7 @@ public class RelatorioExtratoDebito
 	 */
 	public Object executar() throws TarefaException{
 
-		// ------------------------------------
 		Integer idFuncionalidadeIniciada = this.getIdFuncionalidadeIniciada();
-		// ------------------------------------
 
 		Fachada fachada = Fachada.getInstancia();
 
@@ -371,6 +371,7 @@ public class RelatorioExtratoDebito
 		String representacaoNumericaCodBarraSemDigito = (String) getParametro("representacaoNumericaCodBarraSemDigito");
 
 		String valorTotalContas = (String) getParametro("valorTotalContas");
+		String valorTotalSucumbencia = (String) getParametro("valorTotalSucumbencia");
 		String valorServicosAtualizacoes = (String) getParametro("valorServicosAtualizacoes");
 		String valorDesconto = (String) getParametro("valorDesconto");
 		String valorTotalComDesconto = (String) getParametro("valorTotalComDesconto");
@@ -379,6 +380,7 @@ public class RelatorioExtratoDebito
 		String quantidadeParcelasDebitos = (String) getParametro("quantidadeParcelasDebitos");
 		Integer quantidadeDebitoACobrar = (Integer) getParametro("quantidadeDebitoACobrar");
 		Integer quantidadeParcelamento = (Integer) getParametro("quantidadeParcelamento");
+		String descricaoSucumbencia = (String) getParametro("descricaoSucumbencia");
 
 		String mensagemPagamentoAVista = (String) getParametro("mensagemPagamentoAVista");
 
@@ -460,7 +462,8 @@ public class RelatorioExtratoDebito
 		
 		// Caso a matrícula tenha a quantidade de dígitos menor do que a cadastrada no parâmetro
 		// P_NUMERO_DIGITOS_MATRICULA_IMOVEL adiciona zeros a esquerda do número
-		String matriculaImovel = Util.retornaMatriculaImovelParametrizada(Integer.valueOf(matricula));
+		String matriculaImovel = Util.retornaMatriculaImovelParametrizada(Integer.valueOf(Imovel
+						.getMatriculaComDigitoVerificador(matricula)));
 
 		parametros.put("matricula", matriculaImovel);
 
@@ -496,6 +499,8 @@ public class RelatorioExtratoDebito
 		}
 
 		// Linha 7
+		parametros.put("descricaoSucumbencia", descricaoSucumbencia);
+		parametros.put("valorTotalSucumbencia", valorTotalSucumbencia);
 		parametros.put("valorTotalContas", valorTotalContas);
 
 		// Linha 8
@@ -530,6 +535,25 @@ public class RelatorioExtratoDebito
 		parametros.put("mensagem3", mensagem3);
 
 		parametros.put("P_NM_EMPRESA", sistemaParametro.getNomeEmpresa());
+
+		String pLabelMatriculaDocumentosPagaveis = null;
+
+		try{
+
+			pLabelMatriculaDocumentosPagaveis = (String) ParametroFaturamento.P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS.executar();
+		}catch(ControladorException e){
+
+			throw new TarefaException(e.getMessage(), e);
+		}
+
+		parametros.put("P_LABEL_MATRICULA_DOCUMENTOS_PAGAVEIS", pLabelMatriculaDocumentosPagaveis.toUpperCase());
+
+		if(pLabelMatriculaDocumentosPagaveis.toUpperCase().equals("CDC-DV")){
+			parametros.put("matriculaFormatada", Imovel.getMatriculaComDigitoVerificadorFormatada(Integer.valueOf(matricula).toString()));
+		}else{
+			parametros.put("matriculaFormatada", matriculaImovel);
+		}
+
 		try{
 			parametros.put("P_ENDERECO", fachada.pesquisarEnderecoFormatadoEmpresa());
 		}catch(ControladorException e1){

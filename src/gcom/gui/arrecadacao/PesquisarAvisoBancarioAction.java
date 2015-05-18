@@ -335,6 +335,8 @@ public class PesquisarAvisoBancarioAction
 
 		filtroAvisoBancario.adicionarCaminhoParaCarregamentoEntidade("arrecadador.cliente");
 
+		filtroAvisoBancario.setCampoOrderBy("id");
+
 		Collection<AvisoBancario> colecaoAvisoBancario = null;
 		Map resultado = controlarPaginacao(httpServletRequest, retorno, filtroAvisoBancario, AvisoBancario.class.getName());
 		colecaoAvisoBancario = (Collection) resultado.get("colecaoRetorno");

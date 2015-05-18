@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2007-2007 the GSAN – Sistema Integrado de Gestão de Serviços de Saneamento
+ * Copyright (C) 2007-2007 the GSAN - Sistema Integrado de Gestão de Serviços de Saneamento
  *
  * This file is part of GSAN, an integrated service management system for Sanitation
  *
@@ -14,11 +14,11 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place – Suite 330, Boston, MA 02111-1307, USA
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
  */
 
 /*
- * GSAN – Sistema Integrado de Gestão de Serviços de Saneamento
+ * GSAN - Sistema Integrado de Gestão de Serviços de Saneamento
  * Copyright (C) <2007> 
  * Adriano Britto Siqueira
  * Alexandre Santos Cabral
@@ -230,7 +230,7 @@ public class EncerrarOrdemServicoAction
 								acaoObrigatoriaProgramacao = "Material";
 							}else if(servicoTipo.getIndicadorPavimento() == ConstantesSistema.SIM.intValue()){
 
-								acaoObrigatoriaProgramacao = "Vala";
+								acaoObrigatoriaProgramacao = "Pavimento";
 							}else if(servicoTipo.getIndicadorRedeRamalAgua() == ConstantesSistema.SIM.intValue()){
 
 								acaoObrigatoriaProgramacao = "Rede/Ramal de Água";
@@ -333,8 +333,6 @@ public class EncerrarOrdemServicoAction
 					FiltroServicoTipo filtroServicoTipo = new FiltroServicoTipo();
 
 					filtroServicoTipo.adicionarParametro(new ParametroSimples(FiltroServicoTipo.ID, idServicoTipo));
-					filtroServicoTipo.adicionarParametro(new ParametroSimples(FiltroServicoTipo.INDICADOR_USO,
-									ConstantesSistema.INDICADOR_USO_ATIVO));
 
 					Collection<ServicoTipo> servicoTipoEncontrado = fachada.pesquisar(filtroServicoTipo, ServicoTipo.class.getName());
 
@@ -362,7 +360,12 @@ public class EncerrarOrdemServicoAction
 														.getDataRoteiro(), encerrarOrdemServicoActionForm.getNumeroRA(),
 										encerrarOrdemServicoActionForm.getIndicadorVistoriaServicoTipo(), encerrarOrdemServicoActionForm
 														.getCodigoRetornoVistoriaOs(),
-										encerrarOrdemServicoActionForm.getHoraEncerramento(), usuarioLogado);
+										encerrarOrdemServicoActionForm.getHoraEncerramento(), usuarioLogado,
+										encerrarOrdemServicoActionForm.getIndicadorAfericaoServicoTipo(),
+										encerrarOrdemServicoActionForm.getIdHidrometroCondicao(),
+										encerrarOrdemServicoActionForm.getIndicadorResultado(),
+										encerrarOrdemServicoActionForm.getIdFuncionario(),
+										encerrarOrdemServicoActionForm.getIndicadorClienteAcompanhou());
 					}catch(FachadaException e){
 						String[] parametros = new String[e.getParametroMensagem().size()];
 						e.getParametroMensagem().toArray(parametros);
@@ -564,6 +567,12 @@ public class EncerrarOrdemServicoAction
 									osEncerramentoHelper.setDimensao1(encerrarOrdemServicoActionForm.getDimensao1());
 									osEncerramentoHelper.setDimensao2(encerrarOrdemServicoActionForm.getDimensao2());
 									osEncerramentoHelper.setDimensao3(encerrarOrdemServicoActionForm.getDimensao3());
+									if(encerrarOrdemServicoActionForm.getIndicadorCobraHorasMateriais() != null){
+										osEncerramentoHelper.setIndicadorCobrarHorasMateriais(encerrarOrdemServicoActionForm
+														.getIndicadorCobraHorasMateriais());
+									}else{
+										osEncerramentoHelper.setIndicadorCobrarHorasMateriais("2");
+									}
 
 									indicadorFormaEncerramento = "encerrarOSComExecucaoSemReferencia";
 
@@ -596,9 +605,31 @@ public class EncerrarOrdemServicoAction
 									osEncerramentoHelper.setDimensao1(encerrarOrdemServicoActionForm.getDimensao1());
 									osEncerramentoHelper.setDimensao2(encerrarOrdemServicoActionForm.getDimensao2());
 									osEncerramentoHelper.setDimensao3(encerrarOrdemServicoActionForm.getDimensao3());
+									if(encerrarOrdemServicoActionForm.getIndicadorCobraHorasMateriais() != null){
+										osEncerramentoHelper.setIndicadorCobrarHorasMateriais(encerrarOrdemServicoActionForm
+														.getIndicadorCobraHorasMateriais());
+									}else{
+										osEncerramentoHelper.setIndicadorCobrarHorasMateriais("2");
+									}
 
 									indicadorFormaEncerramento = "encerrarOSComExecucaoComReferencia";
 
+								}
+
+								// Caso esteja indicado aferição de hidrômetro
+								if(!Util.isVazioOuBranco(encerrarOrdemServicoActionForm.getIndicadorAfericaoServicoTipo())
+												&& encerrarOrdemServicoActionForm.getIndicadorAfericaoServicoTipo().equals(
+																ConstantesSistema.SIM.toString())){
+
+									osEncerramentoHelper.setIndicadorAfericaoServicoTipo(ConstantesSistema.SIM);
+									osEncerramentoHelper.setIdHidrometroCondicao(Util.obterInteger(encerrarOrdemServicoActionForm
+													.getIdHidrometroCondicao()));
+									osEncerramentoHelper.setIndicadorResultado(Util.obterShort(encerrarOrdemServicoActionForm
+													.getIndicadorResultado()));
+									osEncerramentoHelper.setIdFuncionario(Util.obterInteger(encerrarOrdemServicoActionForm
+													.getIdFuncionario()));
+									osEncerramentoHelper.setIndicadorClienteAcompanhou(Util.obterShort(encerrarOrdemServicoActionForm
+													.getIndicadorClienteAcompanhou()));
 								}
 
 								if(servicoAssociadoAutorizacaoHelperList != null && !servicoAssociadoAutorizacaoHelperList.isEmpty()){
@@ -846,11 +877,16 @@ public class EncerrarOrdemServicoAction
 
 				if(sessao.getAttribute("realizandoAcompanhamentoProgramacao") != null){
 
+					String retornoTela = "";
+					if(!Util.isVazioOuBranco(sessao.getAttribute("retornoTela"))){
+						retornoTela = sessao.getAttribute("retornoTela").toString();
+					}
+
 					montarPaginaSucesso(httpServletRequest, "Ordem de Serviço de código "
 									+ encerrarOrdemServicoActionForm.getNumeroOSOriginal() + " encerrada com sucesso.", "Consultar OS",
 									"/exibirConsultarDadosOrdemServicoAction.do?menu=sim&numeroOS="
 													+ encerrarOrdemServicoActionForm.getNumeroOSOriginal(), "", "",
-									"Acompanhamento de Programação de Ordens de Serviço", sessao.getAttribute("retornoTela").toString(),
+									"Acompanhamento de Programação de Ordens de Serviço", retornoTela,
 									"Imprimir Parecer", "/gerarRelatorioParecerEncerramentoOSAction.do");
 
 					// Limpando a sessão

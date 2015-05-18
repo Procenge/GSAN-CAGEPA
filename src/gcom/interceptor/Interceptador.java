@@ -745,7 +745,7 @@ public class Interceptador
 
 			TabelaColuna tabelaColuna = new TabelaColuna();
 			tabelaColuna.setColuna(nomeColuna);
-			tabelaColuna.setDescricaoColuna(nomeColuna);
+			tabelaColuna.setDescricaoColuna(nomeAtributo);
 
 			tabelaLinhaColunaAlteracao = new TabelaLinhaColunaAlteracao();
 			tabelaLinhaColunaAlteracao.setTabelaColuna(tabelaColuna);
@@ -1125,7 +1125,7 @@ public class Interceptador
 			}catch(IllegalArgumentException e){
 				e.printStackTrace();
 			}catch(NoSuchMethodException e){
-				System.out.println("Não existem o caminho de atributos: " + atributo);
+				// System.out.println("Não existem o caminho de atributos: " + atributo);
 				e.printStackTrace();
 			}catch(IllegalAccessException e){
 				e.printStackTrace();
@@ -1414,7 +1414,7 @@ public class Interceptador
 			}else{
 				retorno = new TabelaColuna();
 				retorno.setColuna(nomeColuna);
-				retorno.setDescricaoColuna(nomeColuna);
+				retorno.setDescricaoColuna(nomeAtributo);
 				retorno.setTabela(tabela);
 				retorno.setUltimaAlteracao(new Date(System.currentTimeMillis()));
 				this.getControladorUtil().inserir(retorno);
@@ -1534,15 +1534,20 @@ public class Interceptador
 				String valorPropriedadeString = (String) valorPropriedade;
 
 				if(valorPropriedadeString != null && !valorPropriedadeString.trim().equals("")
-								&& !valorPropriedadeString.matches("[\\w&&[^ÃÕÁÉÍÓÚÀÂÊÔÜÇãõáéíóúàãêôüç]]*")){ // Verifica
+								&& !valorPropriedadeString.matches("[\\w&&[^ùòìèÒÙÌÈûÛîÎñÑ¿ªº°ÄËÏÖäëïöÃÕÁÉÍÓÚÀÂÊÔÜÇãõáéíóúàãêôüç]]*")){ // Verifica
 
 					// Faz o replace para tirar os caracteres especiais da String
-					valorPropriedades[i] = ((String) valorPropriedade).trim().replace('Ã', 'A').replace('Õ', 'O').replace('Á', 'A')
-									.replace('É', 'E').replace('Í', 'I').replace('Ú', 'U').replace('À', 'A').replace('Â', 'A').replace('Ê',
-													'E').replace('Ô', 'O').replace('Ü', 'U').replace('Ç', 'C').replace('ã', 'A').replace(
-													'õ', 'O').replace('á', 'A').replace('é', 'E').replace('í', 'I').replace('ú', 'U')
-									.replace('à', 'A').replace('â', 'A').replace('ê', 'E').replace('ô', 'O').replace('ü', 'U').replace('ç',
-													'C'); // ÃÕÁÉÍÓÚÀÂÊÔÜÇ
+					valorPropriedades[i] = ((String) valorPropriedade).trim().replace('ª', 'a').replace('º', 'o').replace('°', 'o')
+									.replace('¿', 'C').replace('Ä', 'A').replace('Ë', 'E').replace('Ï', 'I').replace('Ö', 'O')
+									.replace('Ü', 'U').replace('ä', 'A').replace('ë', 'E').replace('ï', 'I').replace('ö', 'O')
+									.replace('ü', 'U').replace('Ã', 'A').replace('Õ', 'O').replace('Ñ', 'N').replace('ã', 'A')
+									.replace('õ', 'O').replace('ñ', 'N').replace('Á', 'A').replace('É', 'E').replace('Í', 'I')
+									.replace('Ó', 'O').replace('ó', 'O').replace('Ú', 'U').replace('á', 'A').replace('é', 'E')
+									.replace('í', 'I').replace('ó', 'O').replace('ú', 'U').replace('Â', 'A').replace('Ê', 'E')
+									.replace('Î', 'I').replace('Ô', 'O').replace('Û', 'U').replace('â', 'A').replace('ê', 'E')
+									.replace('î', 'I').replace('ô', 'O').replace('û', 'U').replace('À', 'A').replace('È', 'E')
+									.replace('Ì', 'I').replace('Ò', 'O').replace('Ù', 'U').replace('à', 'A').replace('è', 'E')
+									.replace('ì', 'I').replace('ò', 'O').replace('ù', 'U').replace('Ç', 'C').replace('ç', 'C'); // ÃÕÁÉÍÓÚÀÂÊÔÜÇ
 				}
 			}
 		}
@@ -1656,16 +1661,22 @@ public class Interceptador
 				String valorPropriedadeString = (String) valorPropriedade;
 
 				if(valorPropriedadeString != null && !valorPropriedadeString.trim().equals("")
-								&& !valorPropriedadeString.matches("[\\w&&[^ÃÕÁÉÍÓÚÀÂÊÔÜÇãõáéíóúàãêôüç]]*")){
-					valorPropriedades[i] = ((String) valorPropriedade).trim().replace('Ã', 'A').replace('Õ', 'O').replace('Á', 'A')
-									.replace('É', 'E').replace('Í', 'I').replace('Ú', 'U').replace('À', 'A').replace('Â', 'A').replace('Ê',
-													'E').replace('Ô', 'O').replace('Ü', 'U').replace('Ç', 'C').replace('ã', 'A').replace(
-													'õ', 'O').replace('á', 'A').replace('é', 'E').replace('í', 'I').replace('ú', 'U')
-									.replace('à', 'A').replace('â', 'A').replace('ê', 'E').replace('ô', 'O').replace('ü', 'U').replace('ç',
-													'C'); // ÃÕÁÉÍÓÚÀÂÊÔÜÇ
+								&& !valorPropriedadeString.matches("[\\w&&[^ùòìèÒÙÌÈûÛîÎñÑ¿ªº°ÄËÏÖäëïöÃÕÁÉÍÓÚÀÂÊÔÜÇãõáéíóúàãêôüç]]*")){
+					valorPropriedades[i] = ((String) valorPropriedade).trim().replace('ª', 'a').replace('º', 'o').replace('°', 'o')
+									.replace('¿', 'C').replace('Ä', 'A').replace('Ë', 'E').replace('Ï', 'I').replace('Ö', 'O')
+									.replace('Ü', 'U').replace('ä', 'A').replace('ë', 'E').replace('ï', 'I').replace('ö', 'O')
+									.replace('ü', 'U').replace('Ã', 'A').replace('Õ', 'O').replace('Ñ', 'N').replace('ã', 'A')
+									.replace('õ', 'O').replace('ñ', 'N').replace('Á', 'A').replace('É', 'E').replace('Í', 'I')
+									.replace('Ó', 'O').replace('ó', 'O').replace('Ú', 'U').replace('á', 'A').replace('é', 'E')
+									.replace('í', 'I').replace('ó', 'O').replace('ú', 'U').replace('Â', 'A').replace('Ê', 'E')
+									.replace('Î', 'I').replace('Ô', 'O').replace('Û', 'U').replace('â', 'A').replace('ê', 'E')
+									.replace('î', 'I').replace('ô', 'O').replace('û', 'U').replace('À', 'A').replace('È', 'E')
+									.replace('Ì', 'I').replace('Ò', 'O').replace('Ù', 'U').replace('à', 'A').replace('è', 'E')
+									.replace('ì', 'I').replace('ò', 'O').replace('ù', 'U').replace('Ç', 'C').replace('ç', 'C'); // ÃÕÁÉÍÓÚÀÂÊÔÜÇ
 				}
 			}
 		}
+
 
 		return valorPropriedades;
 	}

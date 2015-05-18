@@ -84,9 +84,18 @@ function enviarDadosSeteParametros(codigoRegistro, descricaoRegistro, tipoConsul
 	    	     	       </a>
 	    	            </logic:notEmpty>
 	    	            <logic:empty name="quadra" property="bairro">
-	    	            	<a href="javascript:enviarDadosQuatroParametros('<bean:write name="quadra" property="id"/>', '', '<bean:write name="quadra" property="numeroQuadra"/>','quadraOrigem');">
-		         	        <bean:write name="quadra" property="numeroQuadra"/>
-	    	     	       </a>
+	    	            	<logic:empty name="caminhoRetornoTelaPesquisaQuadra">
+		    	            	<a href="javascript:enviarDadosQuatroParametros('<bean:write name="quadra" property="id"/>', '', '<bean:write name="quadra" property="numeroQuadra"/>','quadraOrigem');">
+			         	        <bean:write name="quadra" property="numeroQuadra"/>
+		    	     	       </a>
+	    	            	</logic:empty>
+							
+							<logic:notEmpty name="caminhoRetornoTelaPesquisaQuadra">
+		    	            	<a href="javascript:enviarDadosParametros('exibirSituacaoEspecialFaturamentoInformarAction', '<bean:write name="quadra" property="id"/>', '<bean:write name="quadra" property="numeroQuadra"/>','quadraOrigem');">
+			         	        <bean:write name="quadra" property="numeroQuadra"/>
+		    	     	       </a>
+	    	            	</logic:notEmpty>
+	    	            	
 	    	            </logic:empty>
 				  </logic:notPresent>
 	            </logic:notEqual>
@@ -115,6 +124,12 @@ function enviarDadosSeteParametros(codigoRegistro, descricaoRegistro, tipoConsul
 				  </logic:notPresent>
 	            </logic:equal>
            </logic:equal>
+        
+        
+        
+        
+        
+        
            <logic:equal name="tipoPesquisa" value="quadraDestino">
                 <logic:notEqual name="quadra" property="indicadorUso" value="<%=ConstantesSistema.INDICADOR_USO_DESATIVO.toString()%>">            
 				<logic:present name="consulta">
@@ -132,11 +147,30 @@ function enviarDadosSeteParametros(codigoRegistro, descricaoRegistro, tipoConsul
 		    	    	    </a>
 		    	    	</logic:notEmpty>
 		    	    	<logic:empty name="quadra" property="bairro">
-		    	    		<a href="javascript:enviarDadosQuatroParametros('<bean:write name="quadra" property="id"/>', '', '<bean:write name="quadra" property="numeroQuadra"/>','quadraDestino');">
+		    	    		
+		    	    		<logic:empty name="caminhoRetornoTelaPesquisaQuadra">
+		    	            	<a href="javascript:enviarDadosQuatroParametros('<bean:write name="quadra" property="id"/>', '', '<bean:write name="quadra" property="numeroQuadra"/>','quadraDestino');">
 								<font color="#CC0000"> 
 		    		               <bean:write name="quadra" property="numeroQuadra"/>
 	    			            </font>
 		    	    	    </a>
+	    	            	</logic:empty>
+							
+							
+							
+							
+							
+							<logic:notEmpty name="caminhoRetornoTelaPesquisaQuadra">
+		    	            	<a href="javascript:enviarDadosParametros('exibirSituacaoEspecialFaturamentoInformarAction', '<bean:write name="quadra" property="id"/>', '<bean:write name="quadra" property="numeroQuadra"/>','quadraDestino');">
+			         	        <bean:write name="quadra" property="numeroQuadra"/>
+		    	     	       </a>
+	    	            	</logic:notEmpty>
+		    	    		
+		    	    		
+		    	    		
+		    	    		
+		    	    		
+		    	    		
 		    	    	</logic:empty>    
 				</logic:notPresent>
 								
@@ -167,6 +201,8 @@ function enviarDadosSeteParametros(codigoRegistro, descricaoRegistro, tipoConsul
 					</logic:notPresent>
 	            </logic:equal>
            </logic:equal>
+           
+           
            <logic:notEqual name="tipoPesquisa" value="quadraOrigem">
              <logic:notEqual name="tipoPesquisa" value="quadraDestino">
                 <logic:notEqual name="tipoPesquisa" value="setorComercialDestino">
@@ -181,11 +217,11 @@ function enviarDadosSeteParametros(codigoRegistro, descricaoRegistro, tipoConsul
 									</a>
 							</logic:present>
 							  	<logic:empty name="quadra" property="bairro">
-							<logic:notPresent name="consulta">
-									<a href="javascript:enviarDadosParametros('exibirPesquisarRotaAction', '<bean:write name="quadra" property="numeroQuadra"/>', '', 'quadra');">
-					                 <bean:write name="quadra" property="numeroQuadra"/>
-				    	           </a>
-							</logic:notPresent>
+									<logic:notPresent name="consulta">
+											<a href="javascript:enviarDadosParametros('exibirPesquisarRotaAction', '<bean:write name="quadra" property="numeroQuadra"/>', '', 'quadra');">
+							                 <bean:write name="quadra" property="numeroQuadra"/>
+						    	           </a>
+									</logic:notPresent>
 							</logic:empty>
 							
 								<logic:notEmpty name="quadra" property="bairro">
@@ -231,9 +267,18 @@ function enviarDadosSeteParametros(codigoRegistro, descricaoRegistro, tipoConsul
 							</logic:present>
 							  
 							<logic:notPresent name="consulta">
+								<logic:notEmpty name="quadra" property="bairro">
 									<a href="javascript:enviarDadosParametros('exibirPesquisarImovelAction', '<bean:write name="quadra" property="numeroQuadra"/>', '<bean:write name="quadra" property="bairro.nome"/>', 'quadra');">
 					                 <bean:write name="quadra" property="numeroQuadra"/>
-				    	           </a>
+				    	           </a>								
+								</logic:notEmpty>
+								
+								<logic:empty name="quadra" property="bairro">
+									<a href="javascript:enviarDadosParametros('exibirPesquisarImovelAction', '<bean:write name="quadra" property="numeroQuadra"/>', '', 'quadra');">
+					                 <bean:write name="quadra" property="numeroQuadra"/>
+				    	           </a>		
+				    	        </logic:empty>   
+				    	           
 							</logic:notPresent>
 			            </logic:notEqual>
 			            <logic:equal name="quadra" property="indicadorUso" value="<%=ConstantesSistema.INDICADOR_USO_DESATIVO.toString()%>">            
@@ -386,8 +431,17 @@ function enviarDadosSeteParametros(codigoRegistro, descricaoRegistro, tipoConsul
 		</table>
       <table width="100%" border="0">
          <tr>
-          <td height="24"><input type="button" class="bottonRightCol" value="Fechar" onclick="javascript:window.close();"/></td>
+          <td height="24">
+          	<logic:notPresent name="caminhoRetornoTelaPesquisaQuadra">
+          		<input type="button" class="bottonRightCol" value="Fechar" onclick="javascript:window.close();"/>
+          	</logic:notPresent>	
+          	
+          	<logic:present name="caminhoRetornoTelaPesquisaQuadra">
+          		<input type="button" class="bottonRightCol" value="Voltar Pesquisa" onclick="window.location.href='<html:rewrite page="/exibirPesquisarQuadraAction.do?objetoConsulta=1"/>'"/>
+          	</logic:present>          	
+          </td>
         </tr>
+        
       </table>
       </td>
   </tr>

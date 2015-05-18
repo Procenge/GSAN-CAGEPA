@@ -135,6 +135,7 @@ public class ExibirAtualizarTabelaAuxiliarAbreviadaAction
 		String pacoteNomeObjeto = (String) sessao.getAttribute("pacoteNomeObjeto");
 
 		String id = null;
+		int tamMaxCampoDescricaoAbreviada = 3;
 
 		if(httpServletRequest.getParameter("manter") != null){
 			sessao.setAttribute("manter", true);
@@ -183,7 +184,8 @@ public class ExibirAtualizarTabelaAuxiliarAbreviadaAction
 
 			String tela = (String) sessao.getAttribute("tela");
 
-			if(tela.equalsIgnoreCase("banco")){
+			if(tela.equalsIgnoreCase("banco") || tela.equalsIgnoreCase("atendimentoDocumentoTipo")
+							|| tela.equalsIgnoreCase("atendimentoPessoaTipo")){
 
 				if(tabelaAuxiliarAbreviada != null && tabelaAuxiliarAbreviada.getIndicadorUso() != null
 								&& tabelaAuxiliarAbreviada.getIndicadorUso().intValue() == ConstantesSistema.INDICADOR_USO_ATIVO.intValue()){
@@ -193,6 +195,10 @@ public class ExibirAtualizarTabelaAuxiliarAbreviadaAction
 					sessao.setAttribute("indicadorUso", "nao");
 				}
 
+			}
+
+			if(tela.equals("hidrometroProtecao") || tela.equals("leituraSituacao")){
+				tamMaxCampoDescricaoAbreviada = 6;
 			}
 
 			DadosTelaTabelaAuxiliarAbreviada dados = DadosTelaTabelaAuxiliarAbreviada.obterDadosTelaTabelaAuxiliar(tela);
@@ -227,8 +233,8 @@ public class ExibirAtualizarTabelaAuxiliarAbreviadaAction
 
 		}
 
-		int tamMaxCampoDescricaoAbreviada = 3;
-		sessao.setAttribute("tamMaxCampoDescricaoAbreviada", new Integer(tamMaxCampoDescricaoAbreviada));
+
+		httpServletRequest.setAttribute("tamMaxCampoDescricaoAbreviada", new Integer(tamMaxCampoDescricaoAbreviada));
 
 		// Devolve o mapeamento de retorno
 		return retorno;

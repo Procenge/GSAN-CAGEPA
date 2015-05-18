@@ -106,6 +106,18 @@ public class RAFiltroHelper {
 
 	private String servicoOS;
 
+	private Integer quantidadeGuiasPendentes;
+
+	public Integer getQuantidadeGuiasPendentes(){
+
+		return quantidadeGuiasPendentes;
+	}
+
+	public void setQuantidadeGuiasPendentes(Integer quantidadeGuiasPendentes){
+
+		this.quantidadeGuiasPendentes = quantidadeGuiasPendentes;
+	}
+
 	/**
 	 * @return Retorna o campo unidadeDestino.
 	 */

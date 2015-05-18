@@ -3,13 +3,7 @@ package gcom.gui.cobranca;
 
 import gcom.cobranca.FiltroResolucaoDiretoria;
 import gcom.cobranca.ResolucaoDiretoria;
-import gcom.cobranca.bean.ContaValoresHelper;
-import gcom.cobranca.bean.GuiaPagamentoValoresHelper;
-import gcom.cobranca.bean.IndicadoresParcelamentoHelper;
-import gcom.cobranca.bean.NegociacaoDebitoImovelHelper;
-import gcom.cobranca.bean.NegociacaoDebitoOpcoesRDHelper;
-import gcom.cobranca.bean.NegociacaoOpcoesParcelamentoHelper;
-import gcom.cobranca.bean.OpcoesParcelamentoHelper;
+import gcom.cobranca.bean.*;
 import gcom.cobranca.parcelamento.Parcelamento;
 import gcom.cobranca.parcelamento.ParcelamentoPerfil;
 import gcom.fachada.Fachada;
@@ -463,12 +457,18 @@ public class ExibirEfetuarNegociacaoDebitosParcelamentoPopupAction
 		indicadoresParcelamentoHelper.setIndicadorGuiasPagamento(1);
 		indicadoresParcelamentoHelper.setIndicadorAcrescimosImpotualidade(1);
 
+		BigDecimal valorSucumbenciaTotal = BigDecimal.ZERO;
+		Integer quantidadeParcelasSucumbencia = Integer.valueOf("1");
+		BigDecimal valorSucumbenciaAtual = BigDecimal.ZERO;
+		BigDecimal valorDiligencias = BigDecimal.ZERO;
+
 		opcoesParcelamento = fachada.obterOpcoesDeParcelamento(idResolucaoDiretoria, idImovel, valorEntrada, idLigacaoAguaSituacao,
 						idLigacaoEsgotoSituacao, idPerfilImovel, inicioIntervaloParcelamento, indicadorRestabelecimento,
 						colecaoContaValores, valorDebitoTotalAtualizado, valorTotalMulta, valorTotalJurosMora,
 						valorTotalAtualizacaoMonetaria, numeroReparcelamentoConsecutivos, colecaoGuiaPagamentoValores, usuarioLogado,
 						valorTotalRestanteParcelamentosACobrar, anoMesInicialReferenciaDebito, anoMesFinalReferenciaDebito,
-						indicadoresParcelamentoHelper, dataVencimentoEntrada);
+						indicadoresParcelamentoHelper, dataVencimentoEntrada, valorSucumbenciaTotal, quantidadeParcelasSucumbencia,
+						valorSucumbenciaAtual, valorDiligencias);
 
 		return opcoesParcelamento;
 	}

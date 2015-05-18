@@ -25,9 +25,39 @@
 <script language="JavaScript">
 	function ValidarForm(){
 		var formRed = "/gsan/inserirCategoriaFaixaConsumoTarifaAction.do";
-		redirecionarSubmit(formRed);
+		var validado=true;
+		
+     	if (document.forms[0].valorM3Faixa[0].disabled == false || document.forms[0].valorM3Faixa[1].disabled == false) {
+     		if (document.forms[0].valorM3Faixa[0].value == "") {
+     			validado=false;
+     			alert("Informe Valor do m³ da Faixa.");
+     		}
+     	}		
+		
+     	if (document.forms[0].valorM3FaixaEsgoto != undefined &&
+     			document.forms[0].valorM3FaixaEsgoto != 'undefined' &&
+     			document.forms[0].valorM3FaixaEsgoto.disabled == false) {
+     		if (document.forms[0].valorM3FaixaEsgoto.value == "") {
+     			validado=false;
+     			alert("Valor da Tarifa de Esgoto por m³.");
+     		}
+     	}		
+		
+     	if (validado) {
+			redirecionarSubmit(formRed);
+     	}
 	}
 </script>
+
+<script language="JavaScript">	
+  function required () {
+
+     	this.aa = new Array("limiteSuperiorFaixa", "Informe Limite Superior da Faixa.", new Function ("varName", " return this[varName];"));
+
+    }
+</script>	
+
+
 </head>
 <logic:equal name="testeInserir" value="false" scope="request">
 	<body leftmargin="5" topmargin="5"
@@ -76,25 +106,50 @@
 				</tr>
 				<tr>
 					<td height="24"><strong>Valor do m³ da Faixa<font color="#FF0000">*</font>:</strong></td>
-					<td colspan="3"><html:text style="text-align:right;" maxlength="18"
-						property="valorM3Faixa" size="18"
-						onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" />
+					<logic:equal name="pQuantidadeDecimaisValorTarifa" value="4">
+						<td colspan="3"><html:text style="text-align:right;" maxlength="18"
+							property="valorM3Faixa" size="18"
+							onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" />
+						</td>
+					</logic:equal>
+					<logic:equal name="pQuantidadeDecimaisValorTarifa" value="2">
+						<td colspan="3"><html:text style="text-align:right;" maxlength="18"
+							property="valorM3Faixa" size="18"
+							onkeyup="formataValorMonetario(this, 18)" />
+						</td>
+					</logic:equal>
 				</tr>
 				
 				<tr>
 					<td height="24"><strong>Valor da Tarifa de Esgoto por m³:</strong></td>
 				<logic:present name="indicadorTarifaEsgotoPropria" scope="session">
-						<td colspan="3"><html:text style="text-align:right;" maxlength="18"
-							property="valorM3FaixaEsgoto" size="18"
-							onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" />
-						</td>
+						<logic:equal name="pQuantidadeDecimaisValorTarifa" value="4">
+							<td colspan="3"><html:text style="text-align:right;" maxlength="18"
+								property="valorM3FaixaEsgoto" size="18"
+								onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" />
+							</td>
+						</logic:equal>
+						<logic:equal name="pQuantidadeDecimaisValorTarifa" value="2">
+							<td colspan="3"><html:text style="text-align:right;" maxlength="18"
+								property="valorM3FaixaEsgoto" size="18"
+								onkeyup="formataValorMonetario(this, 18)" />
+							</td>
+						</logic:equal>
 				</logic:present>
 				
-				<logic:notPresent name="indicadorTarifaEsgotoPropria" scope="session">					
-					<td colspan="3"><html:text style="text-align:right;" maxlength="18"
-						property="valorM3Faixa" size="18"
-						onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" disabled="true" />
-					</td>
+				<logic:notPresent name="indicadorTarifaEsgotoPropria" scope="session">	
+					<logic:equal name="pQuantidadeDecimaisValorTarifa" value="4">				
+						<td colspan="3"><html:text style="text-align:right;" maxlength="18"
+							property="valorM3Faixa" size="18"
+							onkeyup="formataValorMonetarioQuatroDecimais(this, 18)" disabled="true" />
+						</td>
+					</logic:equal>
+					<logic:equal name="pQuantidadeDecimaisValorTarifa" value="2">				
+						<td colspan="3"><html:text style="text-align:right;" maxlength="18"
+							property="valorM3Faixa" size="18"
+							onkeyup="formataValorMonetario(this, 18)" disabled="true" />
+						</td>
+					</logic:equal>
 				</logic:notPresent>
 				</tr>
 				
@@ -109,10 +164,10 @@
 					<td height="27" colspan="4">
 					<div align="right"><input name="Button" type="button"
 						class="bottonRightCol" value="Inserir"
-						onClick="javascript:if(validateInserirCategoriaFaixaConsumoTarifaActionForm(document.forms[0])){document.forms[0].submit();}"">
+						onClick="javascript:if(validateInserirCategoriaFaixaConsumoTarifaActionForm(document.forms[0])){ValidarForm();}"">
 					<input name="Button2" type="button" class="bottonRightCol"
 						value="Fechar"
-						onClick="javascript:window.location.href='/gsan/exibirInserirCategoriaConsumoTarifaAction.do';"></div>
+						onClick="javascript:redirecionarSubmit('/gsan/exibirInserirCategoriaConsumoTarifaAction.do');"></div>
 					</td>
 				</tr>
 			</table>

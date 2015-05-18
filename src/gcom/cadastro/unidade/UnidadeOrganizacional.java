@@ -149,6 +149,16 @@ public class UnidadeOrganizacional
 	/** persistent field */
 	private gcom.cadastro.unidade.UnidadeOrganizacional unidadeSuperior;
 
+	private String ddd;
+
+	private String telefone;
+
+	private String ramal;
+
+	private String fax;
+
+	private String observacao;
+
 	private transient Integer qtidadeOs = 0;
 
 	/** full constructor */
@@ -176,6 +186,39 @@ public class UnidadeOrganizacional
 		this.indicadorCentralAtendimento = indicadorCentralAtendimento;
 		this.indicadorTarifaSocial = indicadorTarifaSocial;
 
+	}
+
+	public UnidadeOrganizacional(Integer id, short indicadorEsgoto, short indicadorTramite, String descricao, String sigla,
+									Date ultimaAlteracao, Short indicadorAberturaRa, short indicadorUso, Short indicadorCentralAtendimento,
+									short indicadorTarifaSocial, UnidadeTipo unidadeTipo, MeioSolicitacao meioSolicitacao, Empresa empresa,
+									Localidade localidade, GerenciaRegional gerenciaRegional, UnidadeOrganizacional unidadeCentralizadora,
+									UnidadeOrganizacional unidadeSuperior, String ddd, String telefone, String ramal, String fax,
+									String observacao, Integer qtidadeOs) {
+
+		super();
+		this.id = id;
+		this.indicadorEsgoto = indicadorEsgoto;
+		this.indicadorTramite = indicadorTramite;
+		this.descricao = descricao;
+		this.sigla = sigla;
+		this.ultimaAlteracao = ultimaAlteracao;
+		this.indicadorAberturaRa = indicadorAberturaRa;
+		this.indicadorUso = indicadorUso;
+		this.indicadorCentralAtendimento = indicadorCentralAtendimento;
+		this.indicadorTarifaSocial = indicadorTarifaSocial;
+		this.unidadeTipo = unidadeTipo;
+		this.meioSolicitacao = meioSolicitacao;
+		this.empresa = empresa;
+		this.localidade = localidade;
+		this.gerenciaRegional = gerenciaRegional;
+		this.unidadeCentralizadora = unidadeCentralizadora;
+		this.unidadeSuperior = unidadeSuperior;
+		this.ddd = ddd;
+		this.telefone = telefone;
+		this.ramal = ramal;
+		this.fax = fax;
+		this.observacao = observacao;
+		this.qtidadeOs = qtidadeOs;
 	}
 
 	/** default constructor */
@@ -380,6 +423,56 @@ public class UnidadeOrganizacional
 	public void setIndicadorTarifaSocial(short indicadorTarifaSocial){
 
 		this.indicadorTarifaSocial = indicadorTarifaSocial;
+	}
+
+	public String getDdd(){
+
+		return ddd;
+	}
+
+	public void setDdd(String ddd){
+
+		this.ddd = ddd;
+	}
+
+	public String getTelefone(){
+
+		return telefone;
+	}
+
+	public void setTelefone(String telefone){
+
+		this.telefone = telefone;
+	}
+
+	public String getRamal(){
+
+		return ramal;
+	}
+
+	public void setRamal(String ramal){
+
+		this.ramal = ramal;
+	}
+
+	public String getFax(){
+
+		return fax;
+	}
+
+	public void setFax(String fax){
+
+		this.fax = fax;
+	}
+
+	public String getObservacao(){
+
+		return observacao;
+	}
+
+	public void setObservacao(String observacao){
+
+		this.observacao = observacao;
 	}
 
 	public String[] retornaCamposChavePrimaria(){

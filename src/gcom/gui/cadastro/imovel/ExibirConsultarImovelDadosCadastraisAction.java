@@ -76,6 +76,7 @@
 
 package gcom.gui.cadastro.imovel;
 
+import gcom.atendimentopublico.registroatendimento.bean.ObterIndicadorExistenciaHidrometroHelper;
 import gcom.cadastro.imovel.*;
 import gcom.cadastro.localidade.Quadra;
 import gcom.fachada.Fachada;
@@ -214,6 +215,20 @@ public class ExibirConsultarImovelDadosCadastraisAction
 					consultarImovelActionForm.setMatriculaImovelDadosCadastrais(fachada.pesquisarInscricaoImovel(Integer
 									.valueOf(idImovelDadosCadastrais.trim()), true));
 
+					try{
+						if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString()
+										.equals(ConstantesSistema.NAO.toString())){
+							if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+								consultarImovelActionForm.setDigitoVerificadorImovelDadosCadastrais(Imovel
+												.getDigitoVerificadorMatricula(idImovelDadosCadastrais.trim()));
+							}
+						}
+					}catch(ControladorException e1){
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+						throw new ActionServletException(e1.getMessage(), e1);
+					}
+
 					// pesquisa o endereço
 					String enderecoImovelDadosCadastrais = fachada.pesquisarEndereco(Integer.valueOf(idImovelDadosCadastrais.trim()));
 
@@ -225,10 +240,28 @@ public class ExibirConsultarImovelDadosCadastraisAction
 					if(imovel.getLigacaoAguaSituacao() != null){
 						consultarImovelActionForm.setSituacaoAguaDadosCadastrais(imovel.getLigacaoAguaSituacao().getDescricao());
 					}
+
+					if(idImovelDadosCadastrais != null || idImovelDadosCadastrais != ""){
+
+						boolean tipoLigacaoBoolean = false;
+						ObterIndicadorExistenciaHidrometroHelper obterIndicadorExistenciaHidrometroHelper = fachada
+										.obterIndicadorExistenciaHidrometroLigacaoAguaPoco(Util.obterInteger(idImovelDadosCadastrais),
+														tipoLigacaoBoolean);
+						if(obterIndicadorExistenciaHidrometroHelper.getIndicadorLigacaoAgua().intValue() == 1
+										|| obterIndicadorExistenciaHidrometroHelper.getIndicadorPoco().intValue() == 1){
+							consultarImovelActionForm.setTipoLigacao("Hidrometrado");
+						}else{
+							consultarImovelActionForm.setTipoLigacao("Consumo Fixo");
+						}
+
+					}
+
 					// seta a situação de esgoto
 					if(imovel.getLigacaoEsgotoSituacao() != null){
 						consultarImovelActionForm.setSituacaoEsgotoDadosCadastrais(imovel.getLigacaoEsgotoSituacao().getDescricao());
 					}
+
+					// chamar aki o metodo obterIndicadorExistenciaHidrometroLigacaoAguaPoco
 
 					// pesquisar cliente do imovel
 					Collection clientesImovel = fachada.pesquisarClientesImovel(Integer.valueOf(idImovelDadosCadastrais.trim()));
@@ -304,6 +337,9 @@ public class ExibirConsultarImovelDadosCadastraisAction
 					if(imovel.getFotoFachada() != null && imovel.getFotoFachada().length > 0){
 						consultarImovelActionForm.setFotoFachada("" + imovel.getFotoFachada().length);
 					}
+
+
+
 
 					// area construida
 					if(imovel.getAreaConstruida() != null){
@@ -556,6 +592,8 @@ public class ExibirConsultarImovelDadosCadastraisAction
 				sessao.removeAttribute("numeroAdulto");
 				sessao.removeAttribute("numeroCrianca");
 				sessao.removeAttribute("numeroMoradorTrabalhador");
+
+				consultarImovelActionForm.setDigitoVerificadorImovelDadosCadastrais(null);
 				consultarImovelActionForm.setIdImovelDadosCadastrais(null);
 				consultarImovelActionForm.setEnderecoImovelDadosCadastrais(null);
 				consultarImovelActionForm.setSituacaoAguaDadosCadastrais(null);
@@ -587,6 +625,7 @@ public class ExibirConsultarImovelDadosCadastraisAction
 				consultarImovelActionForm.setNumeroBanheiro(null);
 				consultarImovelActionForm.setNumeroMoradorTrabalhador(null);
 				consultarImovelActionForm.setFotoFachada(null);
+				consultarImovelActionForm.setTipoLigacao(null);
 				consultarImovelActionForm.setNumeroQuarto(null);
 				consultarImovelActionForm.setRendaFamiliarFaixa(null);
 				consultarImovelActionForm.setEsgotamento(null);
@@ -614,6 +653,7 @@ public class ExibirConsultarImovelDadosCadastraisAction
 			sessao.removeAttribute("numeroMoradorTrabalhador");
 
 			consultarImovelActionForm.setMatriculaImovelDadosCadastrais(null);
+			consultarImovelActionForm.setDigitoVerificadorImovelDadosCadastrais(null);
 			consultarImovelActionForm.setEnderecoImovelDadosCadastrais(null);
 			consultarImovelActionForm.setSituacaoAguaDadosCadastrais(null);
 			consultarImovelActionForm.setSituacaoEsgotoDadosCadastrais(null);
@@ -644,6 +684,7 @@ public class ExibirConsultarImovelDadosCadastraisAction
 			consultarImovelActionForm.setNumeroBanheiro(null);
 			consultarImovelActionForm.setNumeroMoradorTrabalhador(null);
 			consultarImovelActionForm.setFotoFachada(null);
+			consultarImovelActionForm.setTipoLigacao(null);
 			consultarImovelActionForm.setNumeroQuarto(null);
 			consultarImovelActionForm.setRendaFamiliarFaixa(null);
 			consultarImovelActionForm.setEsgotamento(null);
@@ -655,6 +696,23 @@ public class ExibirConsultarImovelDadosCadastraisAction
 			consultarImovelActionForm.setSetorAbastecimento(null);
 			consultarImovelActionForm.setBacia(null);
 			consultarImovelActionForm.setSubBacia(null);
+		}
+
+		try{
+			if(ParametroCadastro.P_MATRICULA_COM_DIGITO_VERIFICADOR.executar().toString().equals(ConstantesSistema.NAO.toString())){
+				if(ParametroCadastro.P_METODO_CALCULO_DIGITO_VERIFICADOR.executar().toString().equals("1")){
+					httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '1');
+				}else{
+					throw new ControladorException("erro.parametro.nao.informado", null, "P_METODO_CALCULO_DIGITO_VERIFICADOR");
+				}
+
+			}else{
+				httpServletRequest.setAttribute("matriculaSemDigitoVerificador", '0');
+			}
+		}catch(ControladorException e){
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new ActionServletException(e.getMessage(), e);
 		}
 
 		return retorno;
@@ -686,6 +744,7 @@ public class ExibirConsultarImovelDadosCadastraisAction
 		consultarImovelActionForm.setIdImovelParcelamentosDebitos(null);
 		consultarImovelActionForm.setIdImovelRegistroAtendimento(null);
 		consultarImovelActionForm.setMatriculaImovelDadosCadastrais(null);
+		consultarImovelActionForm.setDigitoVerificadorImovelDadosCadastrais(null);
 		consultarImovelActionForm.setDescricaoOpcaoEnvioConta(null);
 		consultarImovelActionForm.setEnderecoImovelDadosCadastrais(null);
 		consultarImovelActionForm.setSituacaoAguaDadosCadastrais(null);
@@ -717,6 +776,7 @@ public class ExibirConsultarImovelDadosCadastraisAction
 		consultarImovelActionForm.setNumeroBanheiro(null);
 		consultarImovelActionForm.setNumeroMoradorTrabalhador(null);
 		consultarImovelActionForm.setFotoFachada(null);
+		// consultarImovelActionForm.setTipoLigacao(null);
 		consultarImovelActionForm.setNumeroQuarto(null);
 		consultarImovelActionForm.setRendaFamiliarFaixa(null);
 		consultarImovelActionForm.setEsgotamento(null);

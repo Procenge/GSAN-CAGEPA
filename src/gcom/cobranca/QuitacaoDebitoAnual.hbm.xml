@@ -50,6 +50,15 @@
         not-null="true"
     />
    
+ <property
+        name="anoReferenciaGeracao"
+        type="java.lang.Integer"
+        column="QADB_AMREFERENCIAGERACAO"
+        length="4"
+        not-null="true"
+    />
+   
+   
     <!-- Associations -->
     
     <!-- bi-directional many-to-one association to Imovel -->
@@ -87,6 +96,8 @@
     >
         <column name="ftgr_id" />
     </many-to-one>
+    
+
   
  </class>
 </hibernate-mapping>

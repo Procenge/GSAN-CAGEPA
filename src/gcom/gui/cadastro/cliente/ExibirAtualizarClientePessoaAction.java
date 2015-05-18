@@ -86,8 +86,11 @@ import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.PermissaoEspecial;
+import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
 import gcom.util.ControladorException;
+import gcom.util.Util;
+import gcom.util.filtro.ComparacaoTexto;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
@@ -157,6 +160,8 @@ public class ExibirAtualizarClientePessoaAction
 		// Obtém a sessão
 		HttpSession sessao = httpServletRequest.getSession(false);
 
+		Usuario usuario = (Usuario) sessao.getAttribute("usuarioLogado");
+
 		if(tipoPessoa != null && tipoPessoa.equals(ClienteTipo.INDICADOR_PESSOA_JURIDICA)){
 
 			// Limpar todo o conteúdo da página de pessoa física
@@ -169,6 +174,54 @@ public class ExibirAtualizarClientePessoaAction
 			clienteActionForm.set("idPessoaSexo", new Integer(ConstantesSistema.NUMERO_NAO_INFORMADO));
 			clienteActionForm.set("nomeMae", "");
 			clienteActionForm.set("idNacionalidade", ConstantesSistema.NUMERO_NAO_INFORMADO);
+
+			String pIndicadorAtividadeEconomicaObrigatorio = null;
+
+			try{
+
+				pIndicadorAtividadeEconomicaObrigatorio = (String) ParametroCadastro.P_CNAE_OBRIGATORIO.executar();
+			}catch(ControladorException e){
+
+				throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(
+								new String[e.getParametroMensagem().size()]));
+			}
+
+			// Atividade Econômica (CNAE)
+			if(pIndicadorAtividadeEconomicaObrigatorio.equals(ConstantesSistema.SIM.toString())){
+
+				sessao.setAttribute("obrigatorioAtividadeEconomica", "true");
+				String codigoAtividadeEconomica = (String) clienteActionForm.get("codigoAtividadeEconomica");
+
+				if(!Util.isVazioOuBranco(codigoAtividadeEconomica)
+								|| (httpServletRequest.getParameter("pesquisaAtividadeEconomica") != null && !httpServletRequest
+												.getParameter("pesquisaAtividadeEconomica").equals(""))){
+
+					if(httpServletRequest.getParameter("pesquisaAtividadeEconomica") != null
+									&& !httpServletRequest.getParameter("pesquisaAtividadeEconomica").equals("")){
+
+						codigoAtividadeEconomica = httpServletRequest.getParameter("pesquisaAtividadeEconomica");
+					}
+
+					FiltroAtividadeEconomica filtroAtividadeEconomica = new FiltroAtividadeEconomica();
+					filtroAtividadeEconomica.adicionarParametro(new ComparacaoTexto(FiltroAtividadeEconomica.CODIGO,
+									codigoAtividadeEconomica));
+					filtroAtividadeEconomica.adicionarParametro(new ParametroSimples(FiltroAtividadeEconomica.INDICADOR_USO,
+									ConstantesSistema.INDICADOR_USO_ATIVO));
+
+					Collection<AtividadeEconomica> colecaoAtividadeEconomica = fachada.pesquisar(filtroAtividadeEconomica,
+									AtividadeEconomica.class.getName());
+
+					// [FS0001 - Verificar existência de dados]
+					if(!Util.isVazioOrNulo(colecaoAtividadeEconomica)){
+
+						AtividadeEconomica atividadeEconomica = (AtividadeEconomica) Util.retonarObjetoDeColecao(colecaoAtividadeEconomica);
+						clienteActionForm.set("codigoAtividadeEconomica", atividadeEconomica.getCodigo());
+					}else{
+
+						throw new ActionServletException("atencao.pesquisa_inexistente");
+					}
+				}
+			}
 
 			// Prepara a página para Pessoa Jurídica
 			retorno = actionMapping.findForward("atualizarClientePessoaJuridica");
@@ -306,6 +359,18 @@ public class ExibirAtualizarClientePessoaAction
 		FiltroEstadoCivil filtroEstadoCivil = new FiltroEstadoCivil();
 		filtroEstadoCivil.adicionarParametro(new ParametroSimples(FiltroEstadoCivil.INDICADOR_USO, ConstantesSistema.SIM));
 
+		// Documento Validado
+		String documentoValidado = (String) clienteActionForm.get("documentoValidado");
+		if(!clienteActionForm.get("documentoValidado").equals("2")){
+
+			httpServletRequest.setAttribute("documentoValidado", documentoValidado);
+			sessao.setAttribute("documentoValidado", documentoValidado);
+		}else{
+			documentoValidado = new String("2");
+			httpServletRequest.setAttribute("documentoValidado", documentoValidado);
+			sessao.setAttribute("documentoValidado", documentoValidado);
+		}
+
 		Collection<EstadoCivil> colecaoEstadoCivil = new ArrayList<EstadoCivil>();
 		colecaoEstadoCivil.addAll(fachada.pesquisar(filtroEstadoCivil, EstadoCivil.class.getName()));
 		httpServletRequest.setAttribute("colecaoEstadoCivil", colecaoEstadoCivil);
@@ -316,6 +381,14 @@ public class ExibirAtualizarClientePessoaAction
 		Collection<Nacionalidade> colecaoNacionalidade = new ArrayList<Nacionalidade>();
 		colecaoNacionalidade.addAll(fachada.pesquisar(filtroNacionalidade, Nacionalidade.class.getName()));
 		httpServletRequest.setAttribute("colecaoNacionalidade", colecaoNacionalidade);
+
+		boolean usuarioPermissaoEspecial = fachada.verificarPermissaoEspecial(PermissaoEspecial.REMOVER_CPF_CLIENTE, usuario);
+
+		if(usuarioPermissaoEspecial){
+			httpServletRequest.setAttribute("usuarioPermissaoEspecialRemoverCPFCliente", ConstantesSistema.SIM);
+		}else{
+			httpServletRequest.setAttribute("usuarioPermissaoEspecialRemoverCPFCliente", ConstantesSistema.NAO);
+		}
 
 		return retorno;
 

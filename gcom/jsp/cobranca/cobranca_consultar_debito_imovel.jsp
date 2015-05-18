@@ -41,6 +41,12 @@ function voltar(){
     form.submit();		
 }
 
+function imprimirCertidaoPositiva(){
+	
+	var form = document.forms[0];
+	toggleBoxCaminho('demodiv',1,'gerarRelatorioCertidaoPositivaAction.do');
+}
+
 
 	function imprimir(escolha){
 		var form = document.forms[0];
@@ -1693,71 +1699,89 @@ function voltar(){
 										</tr>
 										<tr>
 
-										<table width="100%" border="0">
-										<tr>
-											<logic:notPresent name="ehPopup">
-												<td align="left"><input name="Button"
-													type="button" class="bottonRightCol" value="Voltar"
-													onClick="javascript:voltar();">&nbsp; <input
-													name="adicionar" class="bottonRightCol" value="Cancelar"
-													type="button"
-													onClick="javascript:window.location.href='/gsan/telaPrincipal.do'">
-												</td>
-											</logic:notPresent>	
+											<tr>
+												<logic:notPresent name="ehPopup">
+													<td align="left"><input name="Button"
+														type="button" class="bottonRightCol" value="Voltar"
+														onClick="javascript:voltar();">&nbsp; <input
+														name="adicionar" class="bottonRightCol" value="Cancelar"
+														type="button"
+														onClick="javascript:window.location.href='/gsan/telaPrincipal.do'">
+													</td>
+												</logic:notPresent>
+											</tr>
+											
+											
+											<logic:present name="indicadorCertidaoPositivaDebitos" scope="session">
+												<tr>
+													<td align="left">
+														<input name="ButtonImprimirCertidaoPositiva" 
+								                  		type="button" 
+								                  		class="bottonRightCol" 
+														value="Certidão Positiva" 
+														onClick="javascript:imprimirCertidaoPositiva();" >
+													</td>
+												</tr>
+											</logic:present>
+												
 											
 											<logic:present name="indicadorEmiteAvisoEOrdemCorteIndividual" scope="session">
-				<tr>
-					<logic:notPresent name="indicadorGerarArquivoEOrdemCorte">
-						<td colspan="3">
-							<div align="left">
-								<a href="javascript:gerarRelatorioAvisoEOrdemCorteIndividual();">
-										<strong>Emitir Aviso de Corte / Ordem de Corte</strong>
-							 	</a>
-							</div> 	
-						</td>
-					</logic:notPresent>
-					<logic:present name="indicadorGerarArquivoEOrdemCorte">
-						<td colspan="3">
-							<div align="left">
-								<a href="javascript:gerarRelatorioAvisoEOrdemCorteIndividual();" disabled="true" onclick="return false">
-										<strong>Emitir Aviso de Corte / Ordem de Corte</strong>
-							 	</a>
-							</div> 	
-						</td>
-					</logic:present>
-				</tr>
-				</logic:present>
-										<logic:notPresent name="indicadorEmitirCertidaoNegativa">
-											<td align="left">
-												<input name="ButtonImprimirCertidaoNegativa" 
-						                  		type="button" 
-						                  		class="bottonRightCol" 
-												value="Certidão Negativa" 
-												onClick="javascript:imprimir(true);" >
-											</td>
-										</logic:notPresent>
-										<logic:present name="indicadorEmitirCertidaoNegativa">
-											<td align="left">
-												<input name="ButtonImprimirCertidaoNegativa" 
-						                  		type="button" 
-						                  		class="bottonRightCol" 
-												value="Certidão Negativa" 
-												disabled="true" >
-											</td>
-										</logic:present>
-											<logic:present name="ehPopup">
-												<td height="24">
-													<logic:present name="caminhoRetornoTelaConsultaDebito"	scope="request">
-														<input type="button" class="bottonRightCol" value="Voltar"
-															style="width: 70px;" onclick="javascript:history.back();" />
+												<tr>
+													<logic:notPresent name="indicadorGerarArquivoEOrdemCorte">
+														<td colspan="3">
+															<div align="left">
+																<a href="javascript:gerarRelatorioAvisoEOrdemCorteIndividual();">
+																		<strong>Emitir Aviso de Corte / Ordem de Corte</strong>
+															 	</a>
+															</div> 	
+														</td>
+													</logic:notPresent>
+													<logic:present name="indicadorGerarArquivoEOrdemCorte">
+														<td colspan="3">
+															<div align="left">
+																<a href="javascript:gerarRelatorioAvisoEOrdemCorteIndividual();" disabled="true" onclick="return false">
+																		<strong>Emitir Aviso de Corte / Ordem de Corte</strong>
+															 	</a>
+															</div> 	
+														</td>
 													</logic:present>
-												</td>
-												
-												<td align="right" colspan="4">
-													<input name="Button" type="button" class="bottonRightCol" value="Fechar"
-													onClick="javascript:window.close();">
-												</td>
+												</tr>
 											</logic:present>
+										
+											<tr>
+												<logic:notPresent name="indicadorEmitirCertidaoNegativa">
+													<td align="left">
+														<input name="ButtonImprimirCertidaoNegativa" 
+								                  		type="button" 
+								                  		class="bottonRightCol" 
+														value="Certidão Negativa" 
+														onClick="javascript:imprimir(true);" >
+													</td>
+												</logic:notPresent>
+												
+												<logic:present name="indicadorEmitirCertidaoNegativa">
+													<td align="left">
+														<input name="ButtonImprimirCertidaoNegativa" 
+								                  		type="button" 
+								                  		class="bottonRightCol" 
+														value="Certidão Negativa" 
+														disabled="true" >
+													</td>
+												</logic:present>
+												
+												<logic:present name="ehPopup">
+														<td height="24">
+															<logic:present name="caminhoRetornoTelaConsultaDebito"	scope="request">
+																<input type="button" class="bottonRightCol" value="Voltar"
+																	style="width: 70px;" onclick="javascript:history.back();" />
+															</logic:present>
+														</td>
+														
+														<td align="right" colspan="4">
+															<input name="Button" type="button" class="bottonRightCol" value="Fechar"
+															onClick="javascript:window.close();">
+														</td>
+												</logic:present>
 
 											</tr>
 										</table>

@@ -76,6 +76,7 @@
 
 package gcom.gui.faturamento.conta;
 
+import gcom.atendimentopublico.ligacaoagua.LigacaoAguaSituacao;
 import gcom.cadastro.imovel.Categoria;
 import gcom.cadastro.imovel.FiltroImovel;
 import gcom.cadastro.imovel.Imovel;
@@ -85,17 +86,20 @@ import gcom.fachada.Fachada;
 import gcom.faturamento.FaturamentoGrupo;
 import gcom.faturamento.bean.CalcularValoresAguaEsgotoHelper;
 import gcom.faturamento.consumotarifa.ConsumoTarifa;
+import gcom.faturamento.debito.DebitoCobrado;
+import gcom.faturamento.debito.DebitoTipo;
+import gcom.faturamento.debito.FiltroDebitoTipo;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
 import gcom.seguranca.acesso.usuario.Usuario;
 import gcom.util.ConstantesSistema;
+import gcom.util.ControladorException;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
+import gcom.util.parametrizacao.micromedicao.ParametroMicromedicao;
 
 import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -126,6 +130,7 @@ public class CalcularValoresContaAction
 		String imovelID = inserirContaActionForm.getIdImovel();
 		String mesAnoConta = inserirContaActionForm.getMesAnoConta();
 		Integer situacaoAguaConta = new Integer(inserirContaActionForm.getSituacaoAguaConta());
+		Imovel imovel = new Imovel();
 
 		if(!Util.isVazioOuBranco(imovelID) && !Util.isVazioOuBranco(mesAnoConta)){
 
@@ -139,13 +144,14 @@ public class CalcularValoresContaAction
 
 			FiltroImovel filtroImovel = new FiltroImovel();
 			filtroImovel.adicionarCaminhoParaCarregamentoEntidade("faturamentoSituacaoTipo");
+			filtroImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroImovel.ROTA_FATURAMENTO_GRUPO);
 			filtroImovel.adicionarParametro(new ParametroSimples(FiltroImovel.ID, Util.obterInteger(imovelID)));
 
-			Imovel imovelFaturamentoSituacaoTipo = (Imovel) Util.retonarObjetoDeColecao(getFachada().pesquisar(filtroImovel,
+			imovel = (Imovel) Util.retonarObjetoDeColecao(getFachada().pesquisar(filtroImovel,
 							Imovel.class.getName()));
 
-			if(imovelFaturamentoSituacaoTipo.getFaturamentoSituacaoTipo() != null
-							&& imovelFaturamentoSituacaoTipo.getFaturamentoSituacaoTipo().getIndicadorFaturamentoParalisacaoEsgoto()
+			if(imovel.getFaturamentoSituacaoTipo() != null
+							&& imovel.getFaturamentoSituacaoTipo().getIndicadorFaturamentoParalisacaoEsgoto()
 											.equals(ConstantesSistema.SIM)){
 				throw new ActionServletException("atencao.inclusao_conta_indevido_faturamento_suspenso");
 			}
@@ -168,7 +174,6 @@ public class CalcularValoresContaAction
 		}
 
 		// Criação do consumo tarifa
-		Imovel imovel = new Imovel();
 		ConsumoTarifa consumoTarifa = new ConsumoTarifa();
 		consumoTarifa.setId(consumoTarifaID);
 		imovel.setConsumoTarifa(consumoTarifa);
@@ -274,6 +279,118 @@ public class CalcularValoresContaAction
 				inserirContaActionForm.setConsumoEsgoto(consumoEsgoto2.toString());
 			}else{
 				inserirContaActionForm.setConsumoEsgoto("");
+			}
+		}
+
+		String pAcumularConsumoEsgotoPoco = null;
+		try{
+
+			pAcumularConsumoEsgotoPoco = ParametroMicromedicao.P_ACUMULA_CONSUMO_ESGOTO_POCO.executar();
+		}catch(ControladorException e){
+
+			throw new ActionServletException(e.getMessage(), e.getParametroMensagem().toArray(new String[e.getParametroMensagem().size()]));
+		}
+
+		// Caso a empresa não acumule o volume do poço com o volume da ligação de água para cálculo
+		// do valor de esgoto
+		if(pAcumularConsumoEsgotoPoco.equals(ConstantesSistema.NAO.toString())){
+
+			String consumoFixoPoco = inserirContaActionForm.getConsumoFixoPoco();
+			BigDecimal valorDebitoPoco = BigDecimal.ZERO;
+
+			if(!Util.isVazioOuBranco(consumoFixoPoco)){
+
+				Collection<CalcularValoresAguaEsgotoHelper> valoresContaPoco = fachada.calcularValoresConta(mesAnoConta, imovelID,
+								LigacaoAguaSituacao.POTENCIAL, situacaoEsgotoConta, colecaoCategoriaOUSubcategoria, "0", consumoFixoPoco,
+								percentualEsgoto, Util.obterInteger(inserirContaActionForm.getTarifaID()), usuarioLogado, null, null);
+
+				for(Iterator iteratorValoresPoco = valoresContaPoco.iterator(); iteratorValoresPoco.hasNext();){
+
+					CalcularValoresAguaEsgotoHelper calcularValoresAguaEsgotoHelperPoco = (CalcularValoresAguaEsgotoHelper) iteratorValoresPoco
+									.next();
+
+					if(calcularValoresAguaEsgotoHelperPoco.getValorFaturadoEsgotoCategoria() != null){
+
+						valorDebitoPoco = valorDebitoPoco.add(calcularValoresAguaEsgotoHelperPoco.getValorFaturadoEsgotoCategoria());
+					}
+				}
+			}
+
+			if(valorDebitoPoco.compareTo(BigDecimal.ZERO) == 1){
+
+				String mesAnoDebito = mesAnoConta;
+
+				DebitoCobrado debitoCobradoPoco = new DebitoCobrado();
+				debitoCobradoPoco.setUltimaAlteracao(new Date());
+
+				if(!Util.isVazioOuBranco(mesAnoDebito)){
+
+					// [FS0002] - Validar ano e mês de referência
+					if(!Util.validarMesAno(mesAnoDebito)){
+						throw new ActionServletException("atencao.adicionar_debito_ano_mes_referencia_invalido");
+					}
+
+					// Quando o ano for menor que 1985 (ANO_LIMITE) exibir a mensagem,
+					// "Ano de referência não deve ser menor que 1985".
+					if(Integer.valueOf(mesAnoDebito.substring(3, 7)).intValue() < ConstantesSistema.ANO_LIMITE.intValue()){
+
+						throw new ActionServletException("atencao.ano_mes_referencia_menor", null,
+										String.valueOf(ConstantesSistema.ANO_LIMITE.intValue()));
+					}
+
+					// Invertendo o formato para yyyyMM (sem a barra)
+					mesAnoDebito = Util.formatarMesAnoParaAnoMesSemBarra(mesAnoDebito);
+					debitoCobradoPoco.setAnoMesReferenciaDebito(new Integer(mesAnoDebito));
+					debitoCobradoPoco.setAnoMesCobrancaDebito(new Integer(mesAnoDebito));
+
+				}else{
+
+					SistemaParametro sistemaParametro = fachada.pesquisarParametrosDoSistema();
+					debitoCobradoPoco.setAnoMesReferenciaDebito(sistemaParametro.getAnoMesFaturamento());
+					debitoCobradoPoco.setAnoMesCobrancaDebito(sistemaParametro.getAnoMesFaturamento());
+				}
+
+				debitoCobradoPoco.setValorPrestacao(valorDebitoPoco);
+
+				// Realizando consulta para obter os dados do tipo do débito selecionado
+				FiltroDebitoTipo filtroDebitoTipo = new FiltroDebitoTipo();
+				filtroDebitoTipo.adicionarCaminhoParaCarregamentoEntidade(FiltroDebitoTipo.LANCAMENTO_ITEM_CONTABIL);
+				filtroDebitoTipo.adicionarParametro(new ParametroSimples(FiltroDebitoTipo.ID, DebitoTipo.ESGOTO_ESPECIAL));
+				filtroDebitoTipo.adicionarParametro(new ParametroSimples(FiltroDebitoTipo.INDICADOR_USO,
+								ConstantesSistema.INDICADOR_USO_ATIVO));
+
+				Collection colecaoDebitoTipo = fachada.pesquisar(filtroDebitoTipo, DebitoTipo.class.getName());
+
+				if(colecaoDebitoTipo == null || colecaoDebitoTipo.isEmpty()){
+
+					throw new ActionServletException("atencao.pesquisa.nenhum_registro_tabela", null, "DEBITO_TIPO");
+				}else{
+
+					DebitoTipo objDebitoTipo = (DebitoTipo) Util.retonarObjetoDeColecao(colecaoDebitoTipo);
+					debitoCobradoPoco.setDebitoTipo(objDebitoTipo);
+				}
+
+				debitoCobradoPoco.setNumeroPrestacao(new Short("1").shortValue());
+				debitoCobradoPoco.setNumeroPrestacaoDebito(new Short("1").shortValue());
+
+				// Colocando o objeto gerado na coleção que ficará na sessão
+				if(sessao.getAttribute("colecaoDebitoCobrado") == null){
+
+					colecaoDebitoCobrado = new Vector();
+					colecaoDebitoCobrado.add(debitoCobradoPoco);
+					sessao.setAttribute("colecaoDebitoCobrado", colecaoDebitoCobrado);
+					valorTotalDebitosConta = valorTotalDebitosConta.add(valorDebitoPoco);
+
+				}else{
+
+					// [FS0014] - Verificar débito já existente
+					if(!verificarDebitoJaExistente(colecaoDebitoCobrado, debitoCobradoPoco)){
+
+						colecaoDebitoCobrado.add(debitoCobradoPoco);
+						sessao.setAttribute("colecaoDebitoCobrado", colecaoDebitoCobrado);
+						valorTotalDebitosConta = valorTotalDebitosConta.add(valorDebitoPoco);
+					}
+				}
 			}
 		}
 
@@ -408,6 +525,24 @@ public class CalcularValoresContaAction
 		}
 
 		return qtdEconnomia;
+	}
+
+	private boolean verificarDebitoJaExistente(Collection colecaoDebitoCobrado, DebitoCobrado debitoCobradoInsert){
+
+		boolean retorno = false;
+
+		Iterator colecaoDebitoCobradoIt = colecaoDebitoCobrado.iterator();
+		DebitoCobrado debitoCobradoColecao;
+
+		while(colecaoDebitoCobradoIt.hasNext()){
+			debitoCobradoColecao = (DebitoCobrado) colecaoDebitoCobradoIt.next();
+			if(debitoCobradoColecao.getDebitoTipo().getId().equals(debitoCobradoInsert.getDebitoTipo().getId())){
+				retorno = true;
+				break;
+			}
+		}
+
+		return retorno;
 	}
 
 }

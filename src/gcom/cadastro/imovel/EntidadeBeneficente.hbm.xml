@@ -74,5 +74,14 @@
         <column name="dbtp_id" />
     </many-to-one>
 
+	<!-- bi-directional many-to-one association to DebitoTipo -->
+    <many-to-one
+        name="empresa"
+        class="gcom.cadastro.empresa.Empresa"
+        not-null="true"
+    >
+        <column name="empr_id" />
+    </many-to-one>
+
 </class>
 </hibernate-mapping>

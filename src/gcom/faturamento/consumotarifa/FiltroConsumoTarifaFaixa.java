@@ -134,4 +134,10 @@ public class FiltroConsumoTarifaFaixa
 
 	public final static String CONSUMO_TARIFA_CATEGORIA_ID = "consumoTarifaCategoria.id";
 
+	public final static String CONSUMO_TARIFA_CATEGORIA = "consumoTarifaCategoria";
+
+	public final static String CONSUMO_TARIFA_CATEGORIA_CONSUMO_TARIFA_VIGENCIA_CONSUMO_TARIFA = "consumoTarifaCategoria.consumoTarifaVigencia.consumoTarifa";
+
+	public final static String CONSUMO_TARIFA_CATEGORIA_CONSUMO_TARIFA_VIGENCIA = "consumoTarifaCategoria.consumoTarifaVigencia";
+
 }

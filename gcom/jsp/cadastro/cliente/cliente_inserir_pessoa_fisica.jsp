@@ -171,11 +171,26 @@ function DateValidations () {
 	this.aa = new Array("dataEmissao", "Data de Emissão inválida.", new Function ("varName", "this.datePattern='dd/MM/yyyy';  return this[varName];"));
 	this.ab = new Array("dataNascimento", "Data de Nascimento inválida.", new Function ("varName", "this.datePattern='dd/MM/yyyy';  return this[varName];"));
 }
+
+function verificarCheckDocumentoValidado(){
+    var form = document.forms[0];
+    
+    if(form.documentoValidado.value == "1"){
+    	
+    	form.documentoValidado.checked = true;
+    	form.documentoValidado.value = "1";
+    }else{
+    	
+    	form.documentoValidado.checked = false;
+    	form.documentoValidado.value = "2";
+    }
+}
+
 -->
 </script>
 </head>
 <body leftmargin="5" topmargin="5"
-	onload="setarFoco('${requestScope.nomeCampo}');">
+	onload="setarFoco('${requestScope.nomeCampo}');verificarCheckDocumentoValidado();">
 <div id="formDiv">
 <html:form action="/inserirClienteWizardAction" method="post">
 	<jsp:include page="/jsp/util/wizard/navegacao_abas_wizard_valida_avancar.jsp?numeroPagina=2" />
@@ -251,8 +266,12 @@ function DateValidations () {
 					</td>
 					<td width="82%">
 						<html:text property="cpf" size="11" maxlength="11" tabindex="1" onkeypress="return isCampoNumerico(event);"/>
+						<strong> Documento Validado:<font color="#FF0000">*</font></strong>
+						<html:radio property="documentoValidado" value="<%=ConstantesSistema.SIM.toString()%>" disabled="false" /><strong>Sim</strong>
+						<html:radio property="documentoValidado" value="<%=ConstantesSistema.NAO.toString()%>" disabled="false" /><strong>Não</strong>
 					</td>
 				</tr>
+				
 				<tr>
 					<td height="24" colspan="2">
 					<hr>

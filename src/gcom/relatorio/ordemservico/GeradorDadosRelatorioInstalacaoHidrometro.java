@@ -132,17 +132,25 @@ public class GeradorDadosRelatorioInstalacaoHidrometro
 
 					// Logradouro
 					if(imovel.getLogradouroBairro().getLogradouro() != null){
-						dadosRelatorio.setEndereco(imovel.getLogradouroBairro().getLogradouro().getNome());
+						if(!imovel.getLogradouroBairro().getLogradouro().getNome().trim().equals("")){
+							dadosRelatorio.setEndereco(imovel.getLogradouroBairro().getLogradouro().getNome());
+						}
 					}
 
 					// Bairro
 					if(imovel.getLogradouroBairro().getBairro() != null){
-						dadosRelatorio.setBairro(imovel.getLogradouroBairro().getBairro().getNome());
+						if(!imovel.getLogradouroBairro().getBairro().getNome().trim().equals("")){
+							dadosRelatorio.setBairro(imovel.getLogradouroBairro().getBairro().getNome());
+						}
 					}
 
 					// Complemento
 					if(imovel.getComplementoEndereco() != null){
-						dadosRelatorio.setComplemento(", " + imovel.getComplementoEndereco());
+						if(!imovel.getComplementoEndereco().trim().equals("")){
+							dadosRelatorio.setComplemento(", " + imovel.getComplementoEndereco());
+						}else{
+							dadosRelatorio.setComplemento("");
+						}
 					}else{
 						dadosRelatorio.setComplemento("");
 					}

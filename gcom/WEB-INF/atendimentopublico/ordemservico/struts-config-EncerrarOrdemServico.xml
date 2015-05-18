@@ -34,6 +34,11 @@
 			<forward 
 				name="processoAutorizacaoServicosAssociados"
 				path="/jsp/atendimentopublico/ordemservico/ordem_servico_encerrar.jsp" />
+			<forward name="pesquisarFuncionario"
+				path="/exibirPesquisarFuncionarioAction.do?caminhoRetornoTelaPesquisaMaterial=exibirEncerrarOrdemServicoAction" />	
+				
+			<forward name="inserirEquipeComponente"
+				path="/jsp/atendimentopublico/ordemservico/ordem_servico_dados_atividades_manter_adicionar_equipe_componente_popup.jsp" />
 		</action>
 		
 		<action 

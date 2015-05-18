@@ -151,6 +151,8 @@ public class RelatorioContasEmRevisaoBean
 
 	private String descricaoPerfilImovel;
 
+	private String existePagamento;
+
 	public RelatorioContasEmRevisaoBean(String gerenciaRegional, String elo, String localidade, String inscricao, String imovel,
 										String usuario, String telefone, String mesAnoFatura, String dataReclamacao, String valorConta,
 										String motivoReclamacao, String qtdeTotalContasEmRevisaoLocalidade,
@@ -160,7 +162,7 @@ public class RelatorioContasEmRevisaoBean
 										String totaisPorFaixaGerenciaRegional, String qtdeTotalContasEmRevisaoGeral,
 										String valorTotalContasEmRevisaoGeral, String totaisPorFaixaGeral, String imprimeElo,
 										String imprimeGerenciaRegional, String unidadeNegocio, String totalizadorPorMotivo,
-										String idPerfilImovel, String descricaoPerfilImovel) {
+										String idPerfilImovel, String descricaoPerfilImovel, String existePagamento) {
 
 		this.gerenciaRegional = gerenciaRegional;
 		this.elo = elo;
@@ -191,7 +193,7 @@ public class RelatorioContasEmRevisaoBean
 		this.totalizadorPorMotivo = totalizadorPorMotivo;
 		this.idPerfilImovel = idPerfilImovel;
 		this.descricaoPerfilImovel = descricaoPerfilImovel;
-
+		this.existePagamento = existePagamento;
 	}
 
 	public RelatorioContasEmRevisaoBean(String gerenciaRegional, String elo, String localidade, String mesAnoFatura, String qtdeContas,
@@ -739,4 +741,13 @@ public class RelatorioContasEmRevisaoBean
 		this.descricaoPerfilImovel = descricaoPerfilImovel;
 	}
 
+	public String getExistePagamento(){
+
+		return existePagamento;
+	}
+
+	public void setExistePagamento(String existePagamento){
+
+		this.existePagamento = existePagamento;
+	}
 }

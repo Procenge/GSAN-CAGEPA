@@ -45,12 +45,12 @@ pageContext.setAttribute("numeroPaginaPosterior", numeroPaginaPosterior);
 			<%StatusWizard.StatusWizardItem item = statusWizard
 					.retornarItemWizard(Integer.parseInt(numeroPaginaAnterior));%>
 			<td align="right"  width="53%">
-				<a href="javascript:document.forms[0].action='/gsan/<bean:write name="statusWizard" property="caminhoActionPrincipalWizard"/>.do?action=<%=item.getCaminhoActionInicial()%>';document.forms[0].submit();">
+				<a href="javascript:document.forms[0].action='/gsan/<bean:write name="statusWizard" property="caminhoActionPrincipalWizard"/>.do?action=<%=item.getCaminhoActionInicial()%>&paginaAnterior=<bean:write name="numeroPaginaAnterior"/>';document.forms[0].submit();">
 					<img src="imagens/voltar.gif" border="0"></a>
 			</td>
 			<td align="left" width="47%">
 				<input name="voltar" type="button" class="buttonAbaRodape" value="  Voltar  "
-					onClick="javascript:document.forms[0].action='/gsan/<bean:write name="statusWizard" property="caminhoActionPrincipalWizard"/>.do?action=<%=item.getCaminhoActionInicial()%>';document.forms[0].submit();" />
+					onClick="javascript:document.forms[0].action='/gsan/<bean:write name="statusWizard" property="caminhoActionPrincipalWizard"/>.do?action=<%=item.getCaminhoActionInicial()%>&paginaAnterior=<bean:write name="numeroPaginaAnterior"/>';document.forms[0].submit();" />
 			</td>
    			&nbsp;&nbsp;
    		</logic:equal>
@@ -75,12 +75,12 @@ pageContext.setAttribute("numeroPaginaPosterior", numeroPaginaPosterior);
 						.retornarItemWizard(Integer.parseInt(numeroPaginaAnterior));%>
 				<td align="right"  width="45%"></td>
 				<td align="right"  width="10%">
-					<a href="javascript:document.forms[0].action='/gsan/<bean:write name="statusWizard" property="caminhoActionPrincipalWizard"/>.do?action=<%=item2.getCaminhoActionInicial()%>';document.forms[0].submit();">
+					<a href="javascript:document.forms[0].action='/gsan/<bean:write name="statusWizard" property="caminhoActionPrincipalWizard"/>.do?action=<%=item2.getCaminhoActionInicial()%>&paginaAnterior=<bean:write name="numeroPaginaAnterior"/>';document.forms[0].submit();">
 						<img src="imagens/voltar.gif" border="0"></a>
 				</td>
 				<td align="left" width="10%">
 					<input name="voltar" type="button" class="buttonAbaRodape" value="  Voltar  "
-						onClick="javascript:document.forms[0].action='/gsan/<bean:write name="statusWizard" property="caminhoActionPrincipalWizard"/>.do?action=<%=item2.getCaminhoActionInicial()%>';document.forms[0].submit();" />
+						onClick="javascript:document.forms[0].action='/gsan/<bean:write name="statusWizard" property="caminhoActionPrincipalWizard"/>.do?action=<%=item2.getCaminhoActionInicial()%>&paginaAnterior=<bean:write name="numeroPaginaAnterior"/>';document.forms[0].submit();" />
 				</td>
 	   			&nbsp;&nbsp;
 				<td align="right" width="10%">

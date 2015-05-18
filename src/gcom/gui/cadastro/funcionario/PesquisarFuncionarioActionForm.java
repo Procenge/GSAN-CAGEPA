@@ -91,6 +91,8 @@ public class PesquisarFuncionarioActionForm
 
 	private String descricaoUnidadeEmpresa;
 
+	private String idEquipeTipo;
+
 	public String getDescricaoUnidadeEmpresa(){
 
 		return descricaoUnidadeEmpresa;
@@ -129,6 +131,16 @@ public class PesquisarFuncionarioActionForm
 	public void setNome(String nome){
 
 		this.nome = nome;
+	}
+
+	public String getIdEquipeTipo(){
+
+		return idEquipeTipo;
+	}
+
+	public void setIdEquipeTipo(String idEquipeTipo){
+
+		this.idEquipeTipo = idEquipeTipo;
 	}
 
 }

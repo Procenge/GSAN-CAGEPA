@@ -19,6 +19,10 @@ public class ParametroOrdemServico
 
 	public static final Parametro P_LAYOUT_ROTEIRO_PROGRAMACAO = new ParametroOrdemServico("P_LAYOUT_ROTEIRO_PROGRAMACAO");
 
+	public static final Parametro P_SIT_AGUA_PERMIT_OS_SELETIVA_CORTE = new ParametroOrdemServico("P_SIT_AGUA_PERMIT_OS_SELETIVA_CORTE");
+
+	public static final Parametro P_SERVICO_TIPO_REPARO = new ParametroOrdemServico("P_SERVICO_TIPO_REPARO");
+
 	private ParametroOrdemServico(String parametro) {
 
 		super(parametro);

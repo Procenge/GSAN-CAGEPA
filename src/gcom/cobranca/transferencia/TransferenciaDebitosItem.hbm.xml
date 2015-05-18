@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+	<!-- 
+		Created by the Middlegen Hibernate plugin 2.1
+		
+		http://boss.bekk.no/boss/middlegen/
+		http://www.hibernate.org/
+	-->
+	<class name="gcom.cobranca.transferencia.TransferenciaDebitosItem"
+		table="TRANSFERENCIA_DEBITOS_ITEM">
+		
+		<id column="TRDI_ID" name="id" type="java.lang.Integer">
+			<generator class="sequence">
+				<param name="sequence">
+					SQ_TRANSFERENCIA_DEBITOS_ITEM
+				</param>
+			</generator>
+		</id>
+		
+		<property column="TRDI_TMULTIMAALTERACAO" generated="never"
+			lazy="false" length="8" name="ultimaAlteracao" not-null="true"
+			type="java.sql.Timestamp" />
+
+		<many-to-one class="gcom.cobranca.transferencia.TransferenciaDebitos"
+			name="transferenciaDebitos" not-null="true">
+			<column name="TRDB_ID" />
+		</many-to-one>
+		
+	    <many-to-one
+	        name="clienteOrigem"
+	        class="gcom.cadastro.cliente.Cliente"
+	        not-null="true"
+	    >
+	        <column name="CLIE_IDORIGEM" />
+	    </many-to-one>
+	    
+	    <many-to-one
+	        name="clienteRelacaoTipoOrigem"
+	        class="gcom.cadastro.cliente.ClienteRelacaoTipo"
+	        not-null="true"
+	    >
+	        <column name="CRTP_ID" />
+	    </many-to-one>	   
+	    		
+		<many-to-one class="gcom.cobranca.DocumentoTipo"
+			name="documentoTipo" not-null="true">
+			<column name="DOTP_ID" />
+		</many-to-one>
+		
+	    <many-to-one class="gcom.faturamento.conta.Conta"
+			name="conta" not-null="true">
+			<column name="CNTA_ID" />
+		</many-to-one> 		
+		
+		<many-to-one class="gcom.arrecadacao.pagamento.GuiaPagamento"
+			name="guiaPagamento" not-null="true">
+			<column name="GPAG_ID" />
+		</many-to-one>		
+		
+		<many-to-one class="gcom.faturamento.debito.DebitoACobrar"
+			name="debitoACobrar" not-null="true">
+			<column name="DBAC_ID" />
+		</many-to-one>		
+		
+		<many-to-one
+			class="gcom.faturamento.credito.CreditoARealizar"
+			name="creditoARealizar" not-null="true">
+			<column name="CRAR_ID" />
+		</many-to-one>
+	</class>
+</hibernate-mapping>

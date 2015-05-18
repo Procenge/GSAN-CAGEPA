@@ -185,6 +185,12 @@ public class ExibirAtualizarGuiaPagamentoAction
 
 					clienteGuia = guiaPagamentoGeral.getGuiaPagamento().getCliente();
 				}
+
+				if(guiaPagamentoGeral.getGuiaPagamento().getRegistroAtendimento() != null){
+					formulario.setIdRegistroAtendimento(guiaPagamentoGeral.getGuiaPagamento().getRegistroAtendimento().getId().toString());
+				}else{
+					formulario.setIdRegistroAtendimento("");
+				}
 			}else{
 
 				if(guiaPagamentoGeral.getGuiaPagamentoHistorico().getImovel() != null){
@@ -195,6 +201,13 @@ public class ExibirAtualizarGuiaPagamentoAction
 				if(guiaPagamentoGeral.getGuiaPagamentoHistorico().getCliente() != null){
 
 					clienteGuia = guiaPagamentoGeral.getGuiaPagamentoHistorico().getCliente();
+				}
+
+				if(guiaPagamentoGeral.getGuiaPagamentoHistorico().getRegistroAtendimento() != null){
+					formulario.setIdRegistroAtendimento(guiaPagamentoGeral.getGuiaPagamentoHistorico().getRegistroAtendimento().getId()
+									.toString());
+				}else{
+					formulario.setIdRegistroAtendimento("");
 				}
 			}
 
@@ -361,6 +374,12 @@ public class ExibirAtualizarGuiaPagamentoAction
 				sessao.setAttribute("caminhoRetornoVoltar", "/gsan/exibirFiltrarGuiaPagamentoAction.do");
 			}
 
+		}
+
+		if(fachada.existeProcessoExecucaoFiscal().equals(ConstantesSistema.SIM)){
+			sessao.setAttribute("exibirDividaAtivaColuna", "S");
+		}else{
+			sessao.removeAttribute("exibirDividaAtivaColuna");
 		}
 
 		return retorno;

@@ -76,6 +76,8 @@
 
 package gcom.gui.atendimentopublico.registroatendimento;
 
+import gcom.atendimentopublico.ordemservico.EspecificacaoServicoTipo;
+import gcom.atendimentopublico.ordemservico.FiltroEspecificacaoServicoTipo;
 import gcom.atendimentopublico.registroatendimento.*;
 import gcom.atendimentopublico.registroatendimento.bean.DefinirDataPrevistaUnidadeDestinoEspecificacaoHelper;
 import gcom.cadastro.geografico.FiltroMunicipio;
@@ -129,6 +131,8 @@ public class ExibirInserirRegistroAtendimentoDadosGeraisAction
 		SistemaParametro sistemaParametro = fachada.pesquisarParametrosDoSistema();
 
 		Usuario usuarioLogado = (Usuario) sessao.getAttribute("usuarioLogado");
+
+
 
 		// Verifica se o conteúdo dos campos foram modificados.
 		// Caso o usuário volte a tela não perde as informações
@@ -392,9 +396,56 @@ public class ExibirInserirRegistroAtendimentoDadosGeraisAction
 			}else{
 				sessao.setAttribute("colecaoSolicitacaoTipoEspecificacao", colecaoSolicitacaoTipoEspecificacao);
 			}
+
 		}
 
 		sessao.setAttribute("passouPrimeiraVez", true);
+
+		// [SB0042] - Exibir Serviços Associados à Especificação
+		if(inserirRegistroAtendimentoActionForm.getEspecificacao() != null
+						&& !inserirRegistroAtendimentoActionForm.getEspecificacao().equalsIgnoreCase(
+										String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO))){
+
+			FiltroEspecificacaoServicoTipo filtroEspecificacaoServicoTipo = new FiltroEspecificacaoServicoTipo();
+			filtroEspecificacaoServicoTipo.adicionarParametro(new ParametroSimples(
+							FiltroEspecificacaoServicoTipo.SOLICITACAO_TIPO_ESPECIFICACAO_ID, inserirRegistroAtendimentoActionForm
+											.getEspecificacao()));
+			filtroEspecificacaoServicoTipo.adicionarParametro(new ParametroSimples(
+							FiltroEspecificacaoServicoTipo.SERVICO_TIPO_INDICADOR_USO, ConstantesSistema.SIM));
+			filtroEspecificacaoServicoTipo
+							.adicionarCaminhoParaCarregamentoEntidade(FiltroEspecificacaoServicoTipo.SOLICITACAO_TIPO_ESPECIFICACAO);
+
+			filtroEspecificacaoServicoTipo.adicionarCaminhoParaCarregamentoEntidade(FiltroEspecificacaoServicoTipo.SERVICO_TIPO);
+
+			Collection colecaoEspecificacaoServicoTipo = fachada.pesquisar(filtroEspecificacaoServicoTipo,
+							EspecificacaoServicoTipo.class.getName());
+
+			if(!Util.isVazioOrNulo(colecaoEspecificacaoServicoTipo)){
+				sessao.setAttribute("exibirBotaoServicoAssociado", true);
+
+				Boolean encontrouServicoTipo = false;
+				for(EspecificacaoServicoTipo especificacaoServicoTipo : (Collection<EspecificacaoServicoTipo>) colecaoEspecificacaoServicoTipo){
+					if(especificacaoServicoTipo.getServicoTipo() != null
+									&& especificacaoServicoTipo.getServicoTipo().getIndicadorPagamentoAntecipado() == ConstantesSistema.SIM
+													.intValue()
+									&& especificacaoServicoTipo.getIndicadorGeracaoAutomatica().equals(ConstantesSistema.SIM)){
+						sessao.setAttribute("habilitarPrestacaoGuia", "S");
+						encontrouServicoTipo = true;
+					}
+				}
+
+				if(!encontrouServicoTipo){
+					inserirRegistroAtendimentoActionForm.setQuantidadePrestacoesGuiaPagamento("");
+					sessao.removeAttribute("habilitarPrestacaoGuia");
+				}
+			}else{
+				sessao.setAttribute("exibirBotaoServicoAssociado", false);
+
+				inserirRegistroAtendimentoActionForm.setQuantidadePrestacoesGuiaPagamento("");
+				sessao.removeAttribute("habilitarPrestacaoGuia");
+			}
+
+		}
 
 		/*
 		 * Data Prevista - (exibir a data prevista calculada no SB0003 e não permitir alteração).

@@ -39,6 +39,7 @@
 		var form = document.forms[0];
 
 		if(validateRequired(form) && confirm('Confirma retirada?')){
+			form.action = form.action + "?todos=" + document.getElementById("todos");
 			form.submit();
 		}
 	}
@@ -60,7 +61,9 @@
 	name="RetirarImovelCobrancaAdministrativaActionForm"
 	type="gcom.gui.cobranca.cobrancaadministrativa.RetirarImovelCobrancaAdministrativaActionForm"
 	method="post">
-
+	
+	<input type="hidden" id="todos" value="<%= request.getParameter("todos").toString() %>" />
+	
 	<table width="450" border="0" cellspacing="5" cellpadding="0">
 		<tr>
 			<td width="450" valign="top" class="centercoltext">

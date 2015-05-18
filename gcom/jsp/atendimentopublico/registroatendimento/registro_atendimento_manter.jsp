@@ -47,6 +47,17 @@ function gerarOS(objeto) {
 	}
 }
 
+function cancelarRA(objeto) {
+	var form = document.forms[0];
+	
+	if (CheckboxNaoVazioMensagemGenerico("Selecione pelo menos um registro de atendimento para ser Cancelada!",objeto)){
+		if (confirm ("Cancelar RA('s) selecionada(s)?")) {
+			form.action = 'exibirCancelarRegistroAtendimentoAction.do?telaManterRA=sim&caminhoRetorno=filtrarRegistroAtendimentoAction.do&numerosRAs='+ obterValorCheckboxMarcadoPorNome("idRegistrosRAGerarOrdemServico");
+			form.submit();
+		 }
+	}
+}
+
 -->
 </script>
 </head>
@@ -139,6 +150,7 @@ function gerarOS(objeto) {
 								<td width="30%"><div align="center"><strong>Endere&ccedil;o da Ocorr&ecirc;ncia</strong></div></td>									
 								<td width="5%"><div align="center"><strong>Serv</strong></div></td>
 								<td width="5%"><div align="center"><strong>Sit.OS</strong></div></td>
+								<td width="5%"><div align="center"><strong>Pend.$</strong></div></td>
 			                </tr>
 			                <tr>
 							<pg:pager isOffset="true" maxIndexPages="10" export="currentPageNumber=pageNumber;pageOffset" 
@@ -420,6 +432,22 @@ function gerarOS(objeto) {
 										</logic:notEqual>		
 											
 									
+										<td bordercolor="#90c7fc" align="center">
+				                        	<div>
+												<font color="#000000" style="font-size:9px" face="Verdana, Arial, Helvetica, sans-serif">
+														
+													 <logic:equal name="helper" property="quantidadeGuiasPendentes" value="0">
+													 	Não
+													 </logic:equal> 
+													 
+													 <logic:notEqual name="helper" property="quantidadeGuiasPendentes" value="0">
+													 	Sim
+													 </logic:notEqual> 													 
+													
+													
+												</font>
+											</div>
+										</td>									
 									
 										
 									</tr>
@@ -455,7 +483,13 @@ function gerarOS(objeto) {
 													value="Voltar Filtro" 
 													onclick="window.location.href='<html:rewrite page="/exibirFiltrarRegistroAtendimentoAction.do"/>'" align="left" style="width: 80px;">
 						                  	</td>
-						                  	<td colspan="6" align="right"> 
+						                  	
+						                  	<td colspan="6" align="right">
+												<input name="button" 
+													type="button" 
+													class="bottonRightCol" 
+													value="Cancelar" 
+													onclick="javascript:cancelarRA(document.forms[0].idRegistrosRAGerarOrdemServico);" align="left" style="width: 80px;">
 							                  	<input name="ButtonOrdemSer" 
 							                  		type="button" 
 							                  		class="bottonRightCol" 

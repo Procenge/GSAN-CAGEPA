@@ -77,7 +77,9 @@
 package gcom.atendimentopublico.ordemservico;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 /** @author Hibernate CodeGenerator */
@@ -107,6 +109,8 @@ public class Atividade
 
 	/** nullable persistent field */
 	private Short indicadorAtividadeUnica;
+
+	private BigDecimal valorHora;
 
 	/** full constructor */
 	public Atividade(String descricao, String descricaoAbreviada, short indicadorUso, Date ultimaAlteracao, Short indicadorAtividadeUnica) {
@@ -188,6 +192,16 @@ public class Atividade
 	public void setIndicadorAtividadeUnica(Short indicadorAtividadeUnica){
 
 		this.indicadorAtividadeUnica = indicadorAtividadeUnica;
+	}
+
+	public BigDecimal getValorHora(){
+
+		return valorHora;
+	}
+
+	public void setValorHora(BigDecimal valorHora){
+
+		this.valorHora = valorHora;
 	}
 
 	public String toString(){

@@ -73,27 +73,24 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  * 02111-1307, USA.
  */
-package gcom.relatorio.cobranca.spcserasa;
 
-import java.math.BigDecimal;
+package gcom.relatorio.cobranca.spcserasa;
 
 import gcom.relatorio.RelatorioBean;
 
+import java.math.BigDecimal;
+
 /**
  * <p>
- * 
  * Title: GCOM
  * </p>
  * <p>
- * 
  * Description: Sistema de Gestão Comercial
  * </p>
  * <p>
- * 
  * Copyright: Copyright (c) 2004
  * </p>
  * <p>
- * 
  * Company: COMPESA - Companhia Pernambucana de Saneamento
  * </p>
  * 
@@ -102,7 +99,8 @@ import gcom.relatorio.RelatorioBean;
  * @version 1.0
  */
 
-public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
+public class RelatorioNegativacoesExcluidasBean
+				implements RelatorioBean {
 
 	private String idNegativador;
 
@@ -127,25 +125,28 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 	private String localidade;
 
 	private String idLocalidade;
-	
+
 	private BigDecimal valorParceladoEntrada;
-	
-	private BigDecimal valorParcelado;	
-	
+
+	private BigDecimal valorParcelado;
+
 	private BigDecimal valorPago;
 
 	private BigDecimal valorParceladoPago;
-	
+
 	private BigDecimal valorParceladoEntradaPago;
 
-	public RelatorioNegativacoesExcluidasBean(String nomeCliente,
-			String matricula, String cpfCnpj, BigDecimal valorNegativado,
-			String motivoExclusao, String periodoEnvioNegativacao,
-			String localidade, String idLocalidade, String idNegativador,
-			String negativador, String dataSituacaoDebito, String dataExclusao,
-			BigDecimal valorParceladoEntrada,
-			BigDecimal valorParcelado, BigDecimal valorPago,
-			BigDecimal valorParceladoPago, BigDecimal valorParceladoEntradaPago) {
+	private Integer idCobrancaDebitoSituacao;
+
+	private BigDecimal valorCancelado;
+
+	public RelatorioNegativacoesExcluidasBean(String nomeCliente, String matricula, String cpfCnpj, BigDecimal valorNegativado,
+												String motivoExclusao, String periodoEnvioNegativacao, String localidade,
+												String idLocalidade, String idNegativador, String negativador, String dataSituacaoDebito,
+												String dataExclusao, BigDecimal valorParceladoEntrada, BigDecimal valorParcelado,
+												BigDecimal valorPago, BigDecimal valorParceladoPago, BigDecimal valorParceladoEntradaPago,
+												BigDecimal valorCancelado, Integer idCobrancaDebitoSituacao) {
+
 		super();
 		// TODO Auto-generated constructor stub
 		this.nomeCliente = nomeCliente;
@@ -165,12 +166,17 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 		this.valorPago = valorPago;
 		this.valorParceladoPago = valorParceladoPago;
 		this.valorParceladoEntradaPago = valorParceladoEntradaPago;
+
+		this.valorCancelado = valorCancelado;
+
+		this.idCobrancaDebitoSituacao = idCobrancaDebitoSituacao;
 	}
 
 	/**
 	 * @return Retorna o campo valorPago.
 	 */
-	public BigDecimal getValorPago() {
+	public BigDecimal getValorPago(){
+
 		return valorPago;
 	}
 
@@ -178,14 +184,16 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 	 * @param valorPago
 	 *            O valorPago a ser setado.
 	 */
-	public void setValorPago(BigDecimal valorPago) {
+	public void setValorPago(BigDecimal valorPago){
+
 		this.valorPago = valorPago;
 	}
 
 	/**
 	 * @return Retorna o campo valorParcelado.
 	 */
-	public BigDecimal getValorParcelado() {
+	public BigDecimal getValorParcelado(){
+
 		return valorParcelado;
 	}
 
@@ -193,14 +201,16 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 	 * @param valorParcelado
 	 *            O valorParcelado a ser setado.
 	 */
-	public void setValorParcelado(BigDecimal valorParcelado) {
+	public void setValorParcelado(BigDecimal valorParcelado){
+
 		this.valorParcelado = valorParcelado;
 	}
 
 	/**
 	 * @return Retorna o campo cpfCnpj.
 	 */
-	public String getCpfCnpj() {
+	public String getCpfCnpj(){
+
 		return cpfCnpj;
 	}
 
@@ -208,14 +218,16 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 	 * @param cpfCnpj
 	 *            O cpfCnpj a ser setado.
 	 */
-	public void setCpfCnpj(String cpfCnpj) {
+	public void setCpfCnpj(String cpfCnpj){
+
 		this.cpfCnpj = cpfCnpj;
 	}
 
 	/**
 	 * @return Retorna o campo idLocalidade.
 	 */
-	public String getIdLocalidade() {
+	public String getIdLocalidade(){
+
 		return idLocalidade;
 	}
 
@@ -223,14 +235,16 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 	 * @param idLocalidade
 	 *            O idLocalidade a ser setado.
 	 */
-	public void setIdLocalidade(String idLocalidade) {
+	public void setIdLocalidade(String idLocalidade){
+
 		this.idLocalidade = idLocalidade;
 	}
 
 	/**
 	 * @return Retorna o campo matricula.
 	 */
-	public String getMatricula() {
+	public String getMatricula(){
+
 		return matricula;
 	}
 
@@ -238,14 +252,16 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 	 * @param matricula
 	 *            O matricula a ser setado.
 	 */
-	public void setMatricula(String matricula) {
+	public void setMatricula(String matricula){
+
 		this.matricula = matricula;
 	}
 
 	/**
 	 * @return Retorna o campo nomeCliente.
 	 */
-	public String getNomeCliente() {
+	public String getNomeCliente(){
+
 		return nomeCliente;
 	}
 
@@ -253,14 +269,16 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 	 * @param nomeCliente
 	 *            O nomeCliente a ser setado.
 	 */
-	public void setNomeCliente(String nomeCliente) {
+	public void setNomeCliente(String nomeCliente){
+
 		this.nomeCliente = nomeCliente;
 	}
 
 	/**
 	 * @return Retorna o campo localidade.
 	 */
-	public String getLocalidade() {
+	public String getLocalidade(){
+
 		return localidade;
 	}
 
@@ -268,14 +286,16 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 	 * @param localidade
 	 *            O localidade a ser setado.
 	 */
-	public void setLocalidade(String localidade) {
+	public void setLocalidade(String localidade){
+
 		this.localidade = localidade;
 	}
 
 	/**
 	 * @return Retorna o campo periodoEnvioNegativacao.
 	 */
-	public String getPeriodoEnvioNegativacao() {
+	public String getPeriodoEnvioNegativacao(){
+
 		return periodoEnvioNegativacao;
 	}
 
@@ -283,14 +303,16 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 	 * @param periodoEnvioNegativacao
 	 *            O periodoEnvioNegativacao a ser setado.
 	 */
-	public void setPeriodoEnvioNegativacao(String periodoEnvioNegativacao) {
+	public void setPeriodoEnvioNegativacao(String periodoEnvioNegativacao){
+
 		this.periodoEnvioNegativacao = periodoEnvioNegativacao;
 	}
 
 	/**
 	 * @return Retorna o campo valorNegativado.
 	 */
-	public BigDecimal getValorNegativado() {
+	public BigDecimal getValorNegativado(){
+
 		return valorNegativado;
 	}
 
@@ -298,14 +320,16 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 	 * @param valorNegativado
 	 *            O valorNegativado a ser setado.
 	 */
-	public void setValorNegativado(BigDecimal valorNegativado) {
+	public void setValorNegativado(BigDecimal valorNegativado){
+
 		this.valorNegativado = valorNegativado;
 	}
 
 	/**
 	 * @return Retorna o campo idNegativador.
 	 */
-	public String getIdNegativador() {
+	public String getIdNegativador(){
+
 		return idNegativador;
 	}
 
@@ -313,14 +337,16 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 	 * @param idNegativador
 	 *            O idNegativador a ser setado.
 	 */
-	public void setIdNegativador(String idNegativador) {
+	public void setIdNegativador(String idNegativador){
+
 		this.idNegativador = idNegativador;
 	}
 
 	/**
 	 * @return Retorna o campo negativador.
 	 */
-	public String getNegativador() {
+	public String getNegativador(){
+
 		return negativador;
 	}
 
@@ -328,14 +354,16 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 	 * @param negativador
 	 *            O negativador a ser setado.
 	 */
-	public void setNegativador(String negativador) {
+	public void setNegativador(String negativador){
+
 		this.negativador = negativador;
 	}
 
 	/**
 	 * @return Retorna o campo motivoExclusao.
 	 */
-	public String getMotivoExclusao() {
+	public String getMotivoExclusao(){
+
 		return motivoExclusao;
 	}
 
@@ -343,14 +371,16 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 	 * @param motivoExclusao
 	 *            O motivoExclusao a ser setado.
 	 */
-	public void setMotivoExclusao(String motivoExclusao) {
+	public void setMotivoExclusao(String motivoExclusao){
+
 		this.motivoExclusao = motivoExclusao;
 	}
 
 	/**
 	 * @return Retorna o campo dataSituacaoDebito.
 	 */
-	public String getDataSituacaoDebito() {
+	public String getDataSituacaoDebito(){
+
 		return dataSituacaoDebito;
 	}
 
@@ -358,14 +388,16 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 	 * @param dataSituacaoDebito
 	 *            O dataSituacaoDebito a ser setado.
 	 */
-	public void setDataSituacaoDebito(String dataSituacaoDebito) {
+	public void setDataSituacaoDebito(String dataSituacaoDebito){
+
 		this.dataSituacaoDebito = dataSituacaoDebito;
 	}
 
 	/**
 	 * @return Retorna o campo dataExclusao.
 	 */
-	public String getDataExclusao() {
+	public String getDataExclusao(){
+
 		return dataExclusao;
 	}
 
@@ -373,38 +405,66 @@ public class RelatorioNegativacoesExcluidasBean implements RelatorioBean {
 	 * @param dataExclusao
 	 *            O dataExclusao a ser setado.
 	 */
-	public void setDataExclusao(String dataExclusao) {
+	public void setDataExclusao(String dataExclusao){
+
 		this.dataExclusao = dataExclusao;
 	}
 
 	/**
 	 * @return Retorna o campo valorParceladoEntrada.
 	 */
-	public BigDecimal getValorParceladoEntrada() {
+	public BigDecimal getValorParceladoEntrada(){
+
 		return valorParceladoEntrada;
 	}
 
 	/**
-	 * @param valorParceladoEntrada O valorParceladoEntrada a ser setado.
+	 * @param valorParceladoEntrada
+	 *            O valorParceladoEntrada a ser setado.
 	 */
-	public void setValorParceladoEntrada(BigDecimal valorParceladoEntrada) {
+	public void setValorParceladoEntrada(BigDecimal valorParceladoEntrada){
+
 		this.valorParceladoEntrada = valorParceladoEntrada;
 	}
 
-	public BigDecimal getValorParceladoEntradaPago() {
+	public BigDecimal getValorParceladoEntradaPago(){
+
 		return valorParceladoEntradaPago;
 	}
 
-	public void setValorParceladoEntradaPago(BigDecimal valorParceladoEntradaPago) {
+	public void setValorParceladoEntradaPago(BigDecimal valorParceladoEntradaPago){
+
 		this.valorParceladoEntradaPago = valorParceladoEntradaPago;
 	}
 
-	public BigDecimal getValorParceladoPago() {
+	public BigDecimal getValorParceladoPago(){
+
 		return valorParceladoPago;
 	}
 
-	public void setValorParceladoPago(BigDecimal valorParceladoPago) {
+	public void setValorParceladoPago(BigDecimal valorParceladoPago){
+
 		this.valorParceladoPago = valorParceladoPago;
+	}
+
+	public Integer getIdCobrancaDebitoSituacao(){
+
+		return idCobrancaDebitoSituacao;
+	}
+
+	public void setIdCobrancaDebitoSituacao(Integer idCobrancaDebitoSituacao){
+
+		this.idCobrancaDebitoSituacao = idCobrancaDebitoSituacao;
+	}
+
+	public BigDecimal getValorCancelado(){
+
+		return valorCancelado;
+	}
+
+	public void setValorCancelado(BigDecimal valorCancelado){
+
+		this.valorCancelado = valorCancelado;
 	}
 
 }

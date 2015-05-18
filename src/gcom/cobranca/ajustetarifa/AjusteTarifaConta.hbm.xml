@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+    
+<hibernate-mapping>
+
+<class 
+    name="gcom.cobranca.ajustetarifa.AjusteTarifaConta" 
+    table="ajuste_tarifa_conta"
+>
+
+    <id
+        name="id"
+        type="java.lang.Integer"
+        column="ajtc_id"
+    >
+        <generator class="sequence">
+			<param name="sequence">
+				sq_ajuste_tarifa_conta
+			</param>
+		</generator>
+    </id>
+    
+    <property
+         name="valorAguaAnterior"
+         type="java.math.BigDecimal"
+         column="ajtc_vlaguaanterior"
+         length="15"
+     />
+     
+     <property
+         name="valorAguaAtual"
+         type="java.math.BigDecimal"
+         column="ajtc_vlaguaatual"
+         length="15"
+     />
+     
+     <property
+         name="valorEsgotoAnterior"
+         type="java.math.BigDecimal"
+         column="ajtc_vlesgotoanterior"
+         length="15"
+     />
+     
+     <property
+         name="valorEsgotoAtual"
+         type="java.math.BigDecimal"
+         column="ajtc_vlesgotoatual"
+         length="15"
+     />
+     
+     <property
+         name="valorEsgotoEspecialAnterior"
+         type="java.math.BigDecimal"
+         column="ajtc_vlesgotoeeanterior"
+         length="15"
+     />
+     
+     <property
+         name="valorEsgotoEspecialAtual"
+         type="java.math.BigDecimal"
+         column="ajtc_vlesgotoeeatual"
+         length="15"
+     />
+     
+     <property
+        name="indicadorProcessado"
+        type="java.lang.String"
+        column="ajtc_icprocessado"
+        length="1"
+    />
+    
+    <property
+        name="descricaoProcessado"
+        type="java.lang.String"
+        column="ajtc_dsprocessado"
+        length="300"
+    />
+    
+    <property
+        name="dataVencimento"
+        type="java.sql.Date"
+        column="ajtc_dtvencimento"
+        length="6"
+    />
+    
+    <property
+        name="quantidadeDiasVecimento"
+        type="java.lang.Integer"
+        column="ajtc_qtdiasvencimento"
+        length="9"
+    />
+    
+    <property
+        name="indicadorPagamento"
+        type="java.lang.String"
+        column="ajtc_icpagamento"
+        length="2"
+    />
+     
+    <property
+        name="ultimaAlteracao"
+        type="java.sql.Timestamp"
+        column="ajtc_tmultimaalteracao"
+        not-null="true"
+        length="8"
+    />
+   
+    <!-- Associations -->
+    <many-to-one
+        name="ajusteTarifa"
+        class="gcom.cobranca.ajustetarifa.AjusteTarifa"
+        not-null="true"
+    >
+        <column name="ajta_id" />
+    </many-to-one>
+    
+    <many-to-one
+        name="contaGeral"
+        class="gcom.faturamento.conta.ContaGeral"
+        not-null="true"
+    >
+        <column name="cnta_id" />
+    </many-to-one>
+    
+
+</class>
+</hibernate-mapping>

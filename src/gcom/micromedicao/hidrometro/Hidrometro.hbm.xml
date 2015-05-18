@@ -33,6 +33,17 @@
         not-null="true"
         length="10"
     />
+    
+    
+    <property
+        name="loteEntrega"
+        type="java.lang.String"
+        column="hidr_nnloteentrega"
+        not-null="false"
+        length="10"
+    />
+    
+    
     <property
         name="dataAquisicao"
         type="java.sql.Date"
@@ -105,6 +116,14 @@
         column="hidr_cdformatonumeracao"
         not-null="true"
         length="4"
+    />
+    
+    <property
+        name="numeroNotaFiscal"
+        type="java.lang.Integer"
+        column="hidr_nnnotafiscal"
+        not-null="false"
+        length="9"
     />
 
     <!-- associations -->
@@ -208,6 +227,15 @@
         not-null="false"
     >
         <column name="hdtt_id" />
+    </many-to-one>
+    
+    <!-- bi-directional many-to-one association to Empresa -->
+    <many-to-one
+        name="empresaUltimaAfericao"
+        class="gcom.cadastro.empresa.Empresa"
+        not-null="false"
+    >
+        <column name="empr_idultimaafericao" />
     </many-to-one>
 
 </class>

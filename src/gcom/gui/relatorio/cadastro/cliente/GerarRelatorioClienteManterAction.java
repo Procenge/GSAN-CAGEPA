@@ -76,25 +76,8 @@
 
 package gcom.gui.relatorio.cadastro.cliente;
 
-import gcom.cadastro.cliente.Cliente;
-import gcom.cadastro.cliente.ClienteEndereco;
-import gcom.cadastro.cliente.ClienteImovel;
-import gcom.cadastro.cliente.ClienteTipo;
-import gcom.cadastro.cliente.FiltroCliente;
-import gcom.cadastro.cliente.FiltroClienteTipo;
-import gcom.cadastro.cliente.FiltroOrgaoExpedidorRg;
-import gcom.cadastro.cliente.FiltroPessoaSexo;
-import gcom.cadastro.cliente.FiltroProfissao;
-import gcom.cadastro.cliente.FiltroRamoAtividade;
-import gcom.cadastro.cliente.OrgaoExpedidorRg;
-import gcom.cadastro.cliente.PessoaSexo;
-import gcom.cadastro.cliente.Profissao;
-import gcom.cadastro.cliente.RamoAtividade;
-import gcom.cadastro.endereco.Cep;
-import gcom.cadastro.endereco.FiltroLogradouro;
-import gcom.cadastro.endereco.Logradouro;
-import gcom.cadastro.endereco.LogradouroBairro;
-import gcom.cadastro.endereco.LogradouroCep;
+import gcom.cadastro.cliente.*;
+import gcom.cadastro.endereco.*;
 import gcom.cadastro.geografico.Bairro;
 import gcom.cadastro.geografico.FiltroBairro;
 import gcom.cadastro.geografico.FiltroMunicipio;
@@ -422,50 +405,6 @@ public class GerarRelatorioClienteManterAction
 		}else{
 
 			DynaValidatorForm pesquisarActionForm = (DynaValidatorForm) actionForm;
-
-			// Como só vai precisar de uma coleção de clientes passar o valor da
-			// coleção de clientesOutrosCriterios para clientes
-
-			// clientes = clientesOutrosCriterios;
-			//
-			// Iterator colecaoClienteSessao = clientes.iterator();
-			// Cliente cliente;
-			//
-			// while (colecaoClienteSessao.hasNext()) {
-			// cliente = (Cliente) colecaoClienteSessao.next();
-			//
-			// if (cliente.getId() != null && !cliente.getId().equals("")) {
-			// FiltroClienteEndereco filtroClienteEndereco = new
-			// FiltroClienteEndereco();
-			//
-			// filtroClienteEndereco
-			// .adicionarParametro(new ParametroSimples(
-			// FiltroClienteEndereco.CLIENTE_ID, cliente
-			// .getId()));
-			//
-			// Collection clientesEnderecos = fachada.pesquisar(
-			// filtroClienteEndereco, ClienteEndereco.class
-			// .getName());
-			//
-			// if (clientesEnderecos != null
-			// && !clientesEnderecos.isEmpty()) {
-			// // O Endereço foi encontrado
-			// Iterator clienteEnderecoIterator = clientesEnderecos
-			// .iterator();
-			// while (clienteEnderecoIterator.hasNext()) {
-			// clienteEndereco = (ClienteEndereco) clienteEnderecoIterator
-			// .next();
-			//
-			// if (clienteEndereco
-			// .getIndicadorEnderecoCorrespondencia()
-			// .equals(new Short("1"))) {
-			// break;
-			// }
-			// }
-			// }
-			// }
-			// }
-			// Inicio da parte que vai mandar os parametros para o relatório
 
 			String cpf = null;
 			String cpfPesquisado = (String) pesquisarActionForm.get("cpf");
@@ -822,8 +761,16 @@ public class GerarRelatorioClienteManterAction
 				indicadorDeUso = new Short("" + pesquisarActionForm.get("indicadorUso"));
 			}
 
+			Short documentoValidado = null;
+
+			if(pesquisarActionForm.get("documentoValidado") != null && !pesquisarActionForm.get("documentoValidado").equals("")){
+
+				documentoValidado = new Short("" + pesquisarActionForm.get("documentoValidado"));
+			}
+
 			// seta os parametros que serão mostrados no relatório
 
+			clienteParametros.setDocumentoValidado(documentoValidado);
 			clienteParametros.setCpf(cpf);
 			clienteParametros.setClienteTipo(clienteTipo);
 			clienteParametros.setEmail(email);

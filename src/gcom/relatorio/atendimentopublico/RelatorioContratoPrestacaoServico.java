@@ -101,6 +101,7 @@ import gcom.util.filtro.ParametroNulo;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.ParametroGeral;
 import gcom.util.parametrizacao.atendimentopublico.ParametroAtendimentoPublico;
+import gcom.util.parametrizacao.cadastro.ParametroCadastro;
 
 import java.text.DateFormat;
 import java.util.*;
@@ -151,8 +152,11 @@ public class RelatorioContratoPrestacaoServico
 		Integer idImovel = (Integer) getParametro("idImovel");
 
 		String parametroContratoRa = null;
+		String siteEmpresa = null;
 		try{
 			parametroContratoRa = ParametroAtendimentoPublico.P_LAYOUT_CONTRATO_PESTACAO_SERVICO.executar();
+
+			siteEmpresa = ParametroCadastro.P_SITE_EMPRESA.executar();
 		}catch(ControladorException e){
 			e.printStackTrace();
 		}
@@ -402,7 +406,7 @@ public class RelatorioContratoPrestacaoServico
 				String matriculaAtendente = "";
 				if(usuarioLogado != null){
 					nomeAtendente = usuarioLogado.getNomeUsuario();
-					matriculaAtendente = usuarioLogado.getId().toString();
+					matriculaAtendente = usuarioLogado.getLogin().toString();
 				}
 
 				// nomeClienteProprietario
@@ -763,6 +767,8 @@ public class RelatorioContratoPrestacaoServico
 		RelatorioDataSource ds = new RelatorioDataSource(relatorioBeans);
 
 		if(parametroContratoRa.equals(ConstantesSistema.SIM.toString())){
+			parametros.put("siteEmpresa", siteEmpresa);
+
 			retorno = gerarRelatorio(ConstantesRelatorios.RELATORIO_CONTRATO_PRESTACAO_SERVICO_CAERD, parametros, ds, tipoFormatoRelatorio);
 		}else{
 			retorno = gerarRelatorio(ConstantesRelatorios.RELATORIO_CONTRATO_PRESTACAO_SERVICO, parametros, ds, tipoFormatoRelatorio);

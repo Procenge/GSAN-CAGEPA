@@ -76,11 +76,7 @@
 
 package gcom.atendimentopublico.ordemservico.bean;
 
-import gcom.atendimentopublico.ordemservico.Atividade;
-import gcom.atendimentopublico.ordemservico.Equipe;
-import gcom.atendimentopublico.ordemservico.Material;
-import gcom.atendimentopublico.ordemservico.MaterialUnidade;
-import gcom.atendimentopublico.ordemservico.OsExecucaoEquipe;
+import gcom.atendimentopublico.ordemservico.*;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -112,6 +108,10 @@ public class ObterDadosAtividadesOSHelper {
 	private Date dataFim = null;
 
 	private Equipe equipe = null;
+	
+	private BigDecimal materialValor;
+	
+	private BigDecimal valorAtividadePeriodo;
 
 	private Collection<OsExecucaoEquipe> osExecucaoEquipe = null;
 
@@ -218,4 +218,25 @@ public class ObterDadosAtividadesOSHelper {
 
 		this.isPeriodo = isPeriodo;
 	}
+
+	public BigDecimal getMaterialValor(){
+
+		return materialValor;
+	}
+
+	public void setMaterialValor(BigDecimal materialValor){
+
+		this.materialValor = materialValor;
+	}
+
+	public BigDecimal getValorAtividadePeriodo(){
+
+		return valorAtividadePeriodo;
+	}
+
+	public void setValorAtividadePeriodo(BigDecimal valorAtividadePeriodo){
+
+		this.valorAtividadePeriodo = valorAtividadePeriodo;
+	}
+
 }

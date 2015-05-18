@@ -79,6 +79,7 @@
 
 package gcom.gui.cadastro.funcionario;
 
+import gcom.atendimentopublico.ordemservico.EquipeTipo;
 import gcom.cadastro.empresa.Empresa;
 import gcom.cadastro.funcionario.Funcionario;
 import gcom.cadastro.unidade.FiltroUnidadeOrganizacional;
@@ -163,6 +164,16 @@ public class AtualizarFuncionarioAction
 			funcionario.setDescricaoCargo(form.getDescricaoCargo());
 
 			funcionario.setNome(form.getNome());
+
+			funcionario.setNomeResumido(form.getNomeResumido());
+			funcionario.setJornadaTipo(form.getJornadaTipo() != null ? Integer.parseInt(form.getJornadaTipo()) : Integer
+							.parseInt(ConstantesSistema.SIM
+							.toString()));
+			EquipeTipo equipeTipo = new EquipeTipo();
+			equipeTipo.setId(form.getIdEquipeTipo());
+			if(equipeTipo.getId() != null && equipeTipo.getId() != 0){
+				funcionario.setEquipeTipo(equipeTipo);
+			}
 
 			String idEmpresa = form.getEmpresa();
 

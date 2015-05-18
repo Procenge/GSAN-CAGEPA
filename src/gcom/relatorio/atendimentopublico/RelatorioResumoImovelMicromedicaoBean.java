@@ -108,6 +108,15 @@ public class RelatorioResumoImovelMicromedicaoBean
 
 	private String consumoMedido;
 
+	// OC0970503
+	private String categorias;
+
+	private String numeroEconomias;
+
+	private String numeroHidrometro;
+
+	//
+
 	public String getConsumoMedido(){
 
 		return consumoMedido;
@@ -271,10 +280,42 @@ public class RelatorioResumoImovelMicromedicaoBean
 		this.sitLeituraAtual = sitLeituraAtual;
 	}
 
+
+	
+	public String getCategorias(){
+
+		return categorias;
+	}
+
+	public void setCategorias(String categorias){
+
+		this.categorias = categorias;
+	}
+
+	public String getNumeroEconomias(){
+
+		return numeroEconomias;
+	}
+
+	public void setNumeroEconomias(String numeroEconomias){
+
+		this.numeroEconomias = numeroEconomias;
+	}
+
+	public String getNumeroHidrometro(){
+
+		return numeroHidrometro;
+	}
+
+	public void setNumeroHidrometro(String numeroHidrometro){
+
+		this.numeroHidrometro = numeroHidrometro;
+	}
+
 	public RelatorioResumoImovelMicromedicaoBean(String mesAno, String dataLeituraInformada, String leituraInformada,
 													String dataLeituraFaturada, String leituraFaturada, String consumo,
 													String anormalidadeConsumo, String anormalidadeLeitura, String sitLeituraAtual,
-													String consumoMedido) {
+													String consumoMedido, String categorias, String numeroEconomias, String numeroHidrometro) {
 
 		this.mesAno = mesAno;
 		this.dataLeituraInformada = dataLeituraInformada;
@@ -286,6 +327,9 @@ public class RelatorioResumoImovelMicromedicaoBean
 		this.anormalidadeLeitura = anormalidadeLeitura;
 		this.sitLeituraAtual = sitLeituraAtual;
 		this.consumoMedido = consumoMedido;
+		this.categorias = categorias;
+		this.numeroEconomias = numeroEconomias;
+		this.numeroHidrometro = numeroHidrometro;
 	}
 
 }

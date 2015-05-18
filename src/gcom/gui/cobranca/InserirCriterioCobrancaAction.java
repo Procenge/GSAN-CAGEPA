@@ -236,9 +236,15 @@ public class InserirCriterioCobrancaAction
 		}
 
 		if(criterioCobrancaActionForm.getOpcaoContasRevisao() != null && !criterioCobrancaActionForm.getOpcaoContasRevisao().equals("")){
-			cobrancaCriterio.setIndicadorEmissaoContaRevisao(Short.valueOf(criterioCobrancaActionForm.getOpcaoAcaoImovelSitEspecial()));
+			cobrancaCriterio.setIndicadorEmissaoContaRevisao(Short.valueOf(criterioCobrancaActionForm.getOpcaoContasRevisao()));
 		}else{
 			throw new ActionServletException("atencao.required", null, "Considerar Contas em Revisão");
+		}
+
+		if(criterioCobrancaActionForm.getOpcaoDividaAtiva() != null && !criterioCobrancaActionForm.getOpcaoDividaAtiva().equals("")){
+			cobrancaCriterio.setIndicadorDividaAtiva(Short.valueOf(criterioCobrancaActionForm.getOpcaoDividaAtiva()));
+		}else{
+			throw new ActionServletException("atencao.required", null, "Considerar Debitos em Divida Ativa");
 		}
 
 		if(criterioCobrancaActionForm.getOpcaoAcaoImovelDebitoMesConta() != null
@@ -276,6 +282,12 @@ public class InserirCriterioCobrancaAction
 			cobrancaCriterio.setIndicadorComTelefone(Short.valueOf(criterioCobrancaActionForm.getComTelefone()));
 		}else{
 			throw new ActionServletException("atencao.required", null, "Com Telefone");
+		}
+
+		if(criterioCobrancaActionForm.getCriterioCobranca() != null && !criterioCobrancaActionForm.getCriterioCobranca().equals("")){
+			cobrancaCriterio.setIndicadorCriterioCobranca(Short.valueOf(criterioCobrancaActionForm.getCriterioCobranca()));
+		}else{
+			throw new ActionServletException("atencao.required", null, "Criterio de Cobranca");
 		}
 
 		// Verificando se ha algum item de situação de cobrança selecionado, caso nao, selecionar

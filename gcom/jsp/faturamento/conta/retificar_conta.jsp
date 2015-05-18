@@ -180,6 +180,12 @@ function validarForm(form, retificar){
 						form.consumoEsgoto.value = form.consumoAgua.value;
 						form.consumoEsgoto.focus();
 				}
+				else if (form.habilitarConsumoFixoPoco.value == 1 && (form.consumoFixoPoco.value.length == 0 || form.consumoFixoPoco.value == '' || form.consumoFixoPoco.value == '0')
+						&& indicadorEsgotoFaturavel == 1){
+					
+					alert("Informe Consumo de Poço.");
+					form.consumoFixoPoco.focus();
+				}
 				else if( form.existeColecao.value == 1 ){
 					alert("Informe Categorias e Economias.");
 				}else if (validarCamposDinamicos(form)) {
@@ -287,7 +293,6 @@ function validarForm(form, retificar){
 		var form = document.forms[0];
 		
 		AjaxService.validarMotivoRetificacaoInformado( form.motivoRetificacaoID.value, form.idImovel.value, function(erro){
-			
 			if(erro){
 				form.action = "exibirRetificarContaAction.do?idMotivoRetificacao="+form.motivoRetificacaoID.value;
 				form.submit();
@@ -479,6 +484,12 @@ function removerCategoria(idCategoria){
 			form.consumoEsgoto.disabled = false;
 			form.percentualEsgoto.disabled = false;
 			form.ligacaoEsgotoPerfilId.disabled = false;
+			
+			if (form.habilitarConsumoFixoPoco.value == 1){
+				
+				form.consumoFixoPoco.disabled = false;
+			}
+			
 	 	}else{
 
 			form.consumoEsgoto.value = "";
@@ -489,6 +500,12 @@ function removerCategoria(idCategoria){
 			
 			form.ligacaoEsgotoPerfilId.disabled = true;
 			form.ligacaoEsgotoPerfilId.value = 0;
+			
+			if (form.habilitarConsumoFixoPoco.value == 1){
+				
+				form.consumoFixoPoco.value = "";
+				form.consumoFixoPoco.disabled = true;
+			}
 	  	}
 	  	
 	}
@@ -631,6 +648,7 @@ function removerCategoria(idCategoria){
 <html:hidden property="indicadorAguaFaturavel"/>
 <html:hidden property="indicadorPermissaoAlterarPercentualEsgoto"/>
 <html:hidden property="vencimentoContaAnterior"/>
+<html:hidden property="habilitarConsumoFixoPoco"/>
 
 <%@ include file="/jsp/util/cabecalho.jsp"%>
 <%@ include file="/jsp/util/menu.jsp" %>
@@ -1093,6 +1111,21 @@ function removerCategoria(idCategoria){
 							<td>
 								<html:text property="valorEsgoto" size="18" readonly="true" style="background-color:#EFEFEF; border:0; text-align: right;"/>
 							</td>
+						</tr>
+						<tr>
+						</tr>
+						<tr>
+							<td height="10"><strong>Consumo de Poço:</strong></td>
+							<logic:equal name="RetificarContaActionForm" property="habilitarConsumoFixoPoco" value="1">
+								<td><html:text property="consumoFixoPoco" size="10" maxlength="10"
+									style="text-align: right;" /></td>
+							</logic:equal>
+							<logic:equal name="RetificarContaActionForm" property="habilitarConsumoFixoPoco" value="2">
+								<td><html:text property="consumoFixoPoco" size="10" maxlength="10"
+									readonly="true" disabled="true"
+									style="text-align: right;" /></td>
+							</logic:equal>
+								
 						</tr>
 						<tr> 
 							<td height="10"><strong>Percentual de Esgoto:</strong></td>

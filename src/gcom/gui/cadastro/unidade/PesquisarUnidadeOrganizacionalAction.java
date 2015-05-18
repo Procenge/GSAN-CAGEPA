@@ -152,6 +152,8 @@ public class PesquisarUnidadeOrganizacionalAction
 
 		filtroUnidadeOrganizacional.setCampoOrderBy(FiltroUnidadeOrganizacional.DESCRICAO);
 
+		filtroUnidadeOrganizacional.adicionarParametro(new ParametroSimples(FiltroUnidadeOrganizacional.INDICADOR_USO,
+						ConstantesSistema.SIM));
 		boolean peloMenosUmParametroInformado = false;
 
 		// Insere os parâmetros informados no filtro
@@ -227,7 +229,7 @@ public class PesquisarUnidadeOrganizacionalAction
 							unidadeCentralizadora));
 		}
 
-		if(unidadeEsgoto != null && !unidadeEsgoto.trim().equals("") && !unidadeEsgoto.trim().equals("3")){
+		if(unidadeEsgoto != null && !unidadeEsgoto.trim().equals("")){
 
 			peloMenosUmParametroInformado = true;
 
@@ -238,7 +240,7 @@ public class PesquisarUnidadeOrganizacionalAction
 			}
 		}
 
-		if(unidadeAbreRegistro != null && !unidadeAbreRegistro.trim().equals("") && !unidadeEsgoto.trim().equals("3")){
+		if(unidadeAbreRegistro != null && !unidadeAbreRegistro.trim().equals("")){
 
 			peloMenosUmParametroInformado = true;
 
@@ -249,7 +251,7 @@ public class PesquisarUnidadeOrganizacionalAction
 
 		}
 
-		if(unidadeAceita != null && !unidadeAceita.trim().equals("") && !unidadeEsgoto.trim().equals("3")){
+		if(unidadeAceita != null && !unidadeAceita.trim().equals("")){
 
 			peloMenosUmParametroInformado = true;
 

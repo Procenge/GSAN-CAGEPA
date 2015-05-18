@@ -80,29 +80,15 @@ import gcom.cadastro.sistemaparametro.SistemaParametro;
 import gcom.fachada.Fachada;
 import gcom.gui.ActionServletException;
 import gcom.gui.GcomAction;
-import gcom.seguranca.acesso.FiltroGrupoFuncionalidadeOperacao;
-import gcom.seguranca.acesso.Funcionalidade;
-import gcom.seguranca.acesso.FuncionalidadeCategoria;
-import gcom.seguranca.acesso.Grupo;
-import gcom.seguranca.acesso.GrupoFuncionalidadeOperacao;
-import gcom.seguranca.acesso.GrupoFuncionalidadeOperacaoPK;
-import gcom.seguranca.acesso.usuario.FiltroUsuario;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioFavorito;
-import gcom.seguranca.acesso.usuario.FiltroUsuarioGrupoRestricao;
-import gcom.seguranca.acesso.usuario.Usuario;
-import gcom.seguranca.acesso.usuario.UsuarioFavorito;
-import gcom.seguranca.acesso.usuario.UsuarioGrupoRestricao;
-import gcom.seguranca.acesso.usuario.UsuarioSituacao;
+import gcom.seguranca.acesso.*;
+import gcom.seguranca.acesso.usuario.*;
 import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.FiltroParametro;
 import gcom.util.filtro.ParametroSimples;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -252,6 +238,25 @@ public class EfetuarLoginAction
 						}
 					}
 
+					// [FS0013] Verificar horários de acesso
+					this.verificarUsuarioAcessoRestrito(login, usuarioLogado.getId());
+
+					Calendar dataAtualSistema = Calendar.getInstance();
+					dataAtualSistema.setTime(new Date());
+					dataAtualSistema.set(Calendar.HOUR_OF_DAY, 00);
+					dataAtualSistema.set(Calendar.MINUTE, 00);
+					dataAtualSistema.set(Calendar.SECOND, 00);
+
+					Calendar dataCadastroFinal = Calendar.getInstance();
+					dataCadastroFinal.setTime(usuarioLogado.getDataCadastroFim());
+					dataCadastroFinal.set(Calendar.HOUR_OF_DAY, 00);
+					dataCadastroFinal.set(Calendar.MINUTE, 00);
+					dataCadastroFinal.set(Calendar.SECOND, 01);
+
+					if(usuarioLogado.getDataCadastroFim() != null && dataAtualSistema.getTime().after(dataCadastroFinal.getTime())){
+						throw new ActionServletException("atencao.usuario.expirou.acesso", login);
+					}
+
 					// [SB0005] Efetuar Controle de Alteração de Senha
 					boolean disponibilizarAlteracaoSenha = false;
 					Date dataExpiracaoAcesso = usuarioLogado.getDataExpiracaoAcesso();
@@ -388,8 +393,8 @@ public class EfetuarLoginAction
 					// Cria a data atual e seta essa data na sessão
 					data = new Date();
 					SimpleDateFormat formatterDataAtual = new SimpleDateFormat("dd/MM/yyyy");
-					String dataAtual = formatterDataAtual.format(data);
-					sessao.setAttribute("dataAtual", dataAtual);
+					String dataAtualFormatado = formatterDataAtual.format(data);
+					sessao.setAttribute("dataAtual", dataAtualFormatado);
 
 					// Coloca na sessão a mensagem informando quantos dias falta para
 					// a senha do usuário expirar
@@ -657,4 +662,50 @@ public class EfetuarLoginAction
 		// Retorna o html de uma lista contendo as funcionalidades últimas acessadas pelo usuário
 		return retorno;
 	}
+
+	/**
+	 * Verificar se existem retrições de horário de acesso ao sistema para o usuário.
+	 * [FS0013] Verificar horários de acesso
+	 * 
+	 * @author Saulo Lima
+	 * @date 20/09/2014
+	 */
+	private void verificarUsuarioAcessoRestrito(String login, Integer idUsuario){
+
+		Calendar dataAtual = Calendar.getInstance();
+		int diaAtual = dataAtual.get(Calendar.DAY_OF_WEEK);
+		String hora = "" + dataAtual.get(Calendar.HOUR_OF_DAY);
+		String minuto = "" + dataAtual.get(Calendar.MINUTE);
+		String horaAtual = Util.formatarHoraSemSegundos(hora + ":" + minuto);
+
+		Collection<UsuarioAcesso> colecao = Fachada.getInstancia().pesquisarUsuarioAcesso(idUsuario);
+
+		if(!Util.isVazioOrNulo(colecao)){
+
+			boolean achou = false;
+			for(UsuarioAcesso usuarioAcesso : colecao){
+
+				if(usuarioAcesso.getDiaSemana().intValue() == diaAtual){
+
+					Date inicio = usuarioAcesso.getHoraInicio();
+					String horaInicio = Util.formatarHoraMinutos(inicio);
+
+					Date fim = usuarioAcesso.getHoraFim();
+					String horaFim = Util.formatarHoraMinutos(fim);
+
+					if(Util.compararHoraMinuto(horaAtual, horaInicio, "=") || Util.compararHoraMinuto(horaAtual, horaFim, "=")){
+						achou = true;
+					}else if(Util.compararHoraMinuto(horaAtual, horaInicio, ">") && Util.compararHoraMinuto(horaAtual, horaFim, "<")){
+						achou = true;
+					}
+				}
+			}
+
+			if(!achou){
+				throw new ActionServletException("atencao.acesso_restrito_bloqueado", login, Util.obterDiaSemanaDescricao(diaAtual),
+								horaAtual);
+			}
+		}
+	}
+
 }

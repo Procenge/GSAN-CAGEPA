@@ -41,6 +41,12 @@
         length="4"
     />
     <property
+        name="dataPrevistaFimRelacao"
+        type="java.sql.Date"
+        column="clim_dtprevistarelacaofim"
+        length="4"
+    />    
+    <property
         name="ultimaAlteracao"
         type="java.sql.Timestamp"
         column="clim_tmultimaalteracao"

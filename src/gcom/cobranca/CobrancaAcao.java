@@ -240,6 +240,10 @@ public class CobrancaAcao
 	@ControleAlteracao(funcionalidade = {ATRIBUTOS_COBRANCA_ACAO_INSERIR, ATRIBUTOS_COBRANCA_ACAO_REMOVER, ATRIBUTOS_COBRANCA_ACAO_ATUALIZAR})
 	private CobrancaSituacao cobrancaSituacao;
 
+	/** persistent field */
+	@ControleAlteracao(funcionalidade = {ATRIBUTOS_COBRANCA_ACAO_INSERIR, ATRIBUTOS_COBRANCA_ACAO_REMOVER, ATRIBUTOS_COBRANCA_ACAO_ATUALIZAR})
+	private String descricaoMensagemDocumento;
+
 	private String codigoConstante;
 
 	private Short indicadorEmpresaObrigatoria;
@@ -321,6 +325,8 @@ public class CobrancaAcao
 	public final static Integer NEGATIVACAO_SPC_BRASIL = 35;
 
 	public final static Integer CARTA_COM_OPCOES_DE_PAGAMENTO = 61;
+
+	public final static Integer NOTIFICACAO_AMIGAVEL = 246;
 
 	// ---- Indicadores.
 
@@ -846,6 +852,16 @@ public class CobrancaAcao
 	public void setQtdDiasRealizacao(Short qtdDiasRealizacao){
 
 		this.qtdDiasRealizacao = qtdDiasRealizacao;
+	}
+
+	public String getDescricaoMensagemDocumento(){
+
+		return descricaoMensagemDocumento;
+	}
+
+	public void setDescricaoMensagemDocumento(String descricaoMensagemDocumento){
+
+		this.descricaoMensagemDocumento = descricaoMensagemDocumento;
 	}
 
 	public String getCodigoConstante(){

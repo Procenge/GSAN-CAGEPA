@@ -189,6 +189,12 @@ public class ElaborarOrdemServicoRoteiroCriteriosAction
 				idsTipoServicoSelecionado = null;
 			}
 		}
+
+		Integer quantidadeDiasUnidade = null;
+
+		if(elaborarActionForm.getQuantidadeDiasUnidade() != null && !elaborarActionForm.getQuantidadeDiasUnidade().equals("")){
+			quantidadeDiasUnidade = Integer.valueOf(elaborarActionForm.getQuantidadeDiasUnidade());
+		}
 		// Data de Atraso
 		Date dataAtrasoInicial = null;
 		Date dataAtrasoFinal = null;
@@ -329,6 +335,7 @@ public class ElaborarOrdemServicoRoteiroCriteriosAction
 		pesquisarOrdemServicoHelper.setDataPrevisaoAgenciaFinal(dataAgenciaFinal);
 		pesquisarOrdemServicoHelper.setUnidadeLotacao(idUnidadeLotacao);
 		pesquisarOrdemServicoHelper.setIndicadorProcessoAdmJud(indicadorProcessoAdmJud);
+		pesquisarOrdemServicoHelper.setQuantidadeDiasUnidade(quantidadeDiasUnidade);
 
 		return pesquisarOrdemServicoHelper;
 	}

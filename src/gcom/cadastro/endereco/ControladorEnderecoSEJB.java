@@ -87,9 +87,7 @@ import gcom.atendimentopublico.registroatendimento.ControladorRegistroAtendiment
 import gcom.atendimentopublico.registroatendimento.ControladorRegistroAtendimentoLocalHome;
 import gcom.atendimentopublico.registroatendimento.RegistroAtendimento;
 import gcom.atendimentopublico.registroatendimento.RegistroAtendimentoSolicitante;
-import gcom.cadastro.cliente.ClienteEndereco;
-import gcom.cadastro.cliente.ControladorClienteLocal;
-import gcom.cadastro.cliente.ControladorClienteLocalHome;
+import gcom.cadastro.cliente.*;
 import gcom.cadastro.endereco.bean.AtualizarLogradouroBairroHelper;
 import gcom.cadastro.endereco.bean.AtualizarLogradouroCepHelper;
 import gcom.cadastro.geografico.*;
@@ -97,6 +95,8 @@ import gcom.cadastro.imovel.*;
 import gcom.cadastro.localidade.ControladorLocalidadeLocal;
 import gcom.cadastro.localidade.ControladorLocalidadeLocalHome;
 import gcom.cadastro.sistemaparametro.SistemaParametro;
+import gcom.faturamento.ControladorFaturamentoLocal;
+import gcom.faturamento.ControladorFaturamentoLocalHome;
 import gcom.interceptor.RegistradorOperacao;
 import gcom.seguranca.acesso.Operacao;
 import gcom.seguranca.acesso.OperacaoEfetuada;
@@ -105,6 +105,7 @@ import gcom.seguranca.acesso.usuario.UsuarioAcao;
 import gcom.seguranca.acesso.usuario.UsuarioAcaoUsuarioHelper;
 import gcom.util.*;
 import gcom.util.filtro.ComparacaoTextoCompleto;
+import gcom.util.filtro.ParametroNulo;
 import gcom.util.filtro.ParametroSimples;
 import gcom.util.parametrizacao.ParametroGeral;
 
@@ -166,6 +167,29 @@ public class ControladorEnderecoSEJB
 	 */
 	public void ejbPassivate(){
 
+	}
+
+	protected ControladorFaturamentoLocal getControladorFaturamento(){
+
+		ControladorFaturamentoLocalHome localHome = null;
+		ControladorFaturamentoLocal local = null;
+		ServiceLocator locator = null;
+
+		try{
+
+			locator = ServiceLocator.getInstancia();
+			localHome = (ControladorFaturamentoLocalHome) locator.getLocalHome(ConstantesJNDI.CONTROLADOR_FATURAMENTO_SEJB);
+			local = localHome.create();
+
+			return local;
+
+		}catch(CreateException e){
+
+			throw new SistemaException(e);
+		}catch(ServiceLocatorException e){
+
+			throw new SistemaException(e);
+		}
 	}
 
 	/**
@@ -2214,7 +2238,7 @@ public class ControladorEnderecoSEJB
 				imovel.setComplementoEndereco("" + arrayEndereco[18]);
 			}
 
-			endereco = imovel.obterEnderecoFormatado(limiteTamanhoEndereco);
+			endereco = imovel.obterEnderecoFormatadoSemBairroCEP(limiteTamanhoEndereco);
 		}else{
 
 			FiltroImovelEnderecoAnterior filtroImovelEnderecoAnterior = new FiltroImovelEnderecoAnterior();
@@ -2276,7 +2300,7 @@ public class ControladorEnderecoSEJB
 	 */
 	public Object[] pesquisarEnderecoFormatadoLista(Integer idImovel) throws ControladorException{
 
-		Object[] retorno = new Object[5];
+		Object[] retorno = new Object[9];
 
 		Object[] retornoCompleto = pesquisarEnderecoFormatadoLista(idImovel, 0);
 
@@ -2285,6 +2309,10 @@ public class ControladorEnderecoSEJB
 		retorno[2] = retornoCompleto[2];
 		retorno[3] = retornoCompleto[3];
 		retorno[4] = retornoCompleto[4];
+		retorno[5] = retornoCompleto[5];
+		retorno[6] = retornoCompleto[8];
+		retorno[7] = retornoCompleto[9];
+		retorno[8] = retornoCompleto[10];
 
 		return retorno;
 	}
@@ -2313,9 +2341,12 @@ public class ControladorEnderecoSEJB
 		String numeroImovel = null;
 		String cepImovel = "";
 		String nomeMunicipio = "";
-		Object[] retorno = new Object[8];
+		String idMunicipio = "";
+		String bairroImovel = null;
+		Object[] retorno = new Object[11];
 		String[] enderecoParticionado = new String[2];
 		Collection colecaoEndereco = null;
+		String siglaUnidadeFederacao = null;
 
 		try{
 			colecaoEndereco = repositorioEndereco.pesquisarEnderecoFormatado(idImovel);
@@ -2401,6 +2432,7 @@ public class ControladorEnderecoSEJB
 						municipio.setId((Integer) arrayEndereco[5]);
 						nomeMunicipio = "" + arrayEndereco[6];
 						municipio.setNome(nomeMunicipio);
+						idMunicipio = arrayEndereco[5].toString();
 
 						// id da unidade federação
 						if(arrayEndereco[7] != null){
@@ -2408,12 +2440,15 @@ public class ControladorEnderecoSEJB
 							unidadeFederacao.setId((Integer) arrayEndereco[7]);
 							unidadeFederacao.setSigla("" + arrayEndereco[8]);
 							municipio.setUnidadeFederacao(unidadeFederacao);
+							siglaUnidadeFederacao = unidadeFederacao.getSigla();
 						}
 
 						bairro.setMunicipio(municipio);
 					}
 
 					logradouroBairro.setBairro(bairro);
+
+					bairroImovel = bairro.getNome();
 				}
 
 				imovel.setLogradouroBairro(logradouroBairro);
@@ -2486,6 +2521,9 @@ public class ControladorEnderecoSEJB
 		retorno[5] = nomeMunicipio;
 		retorno[6] = enderecoParticionado[0];
 		retorno[7] = enderecoParticionado[1];
+		retorno[8] = bairroImovel;
+		retorno[9] = siglaUnidadeFederacao;
+		retorno[10] = idMunicipio;
 		return retorno;
 	}
 
@@ -2644,8 +2682,10 @@ public class ControladorEnderecoSEJB
 		String bairroEntrega = "";
 		String cepEntrega = "";
 		String municipioEntrega = "";
+		String idMunicipioEntrega = "";
+		String siglaUnidadeFederacaoEntrega = "";
 
-		Object[] retorno = new Object[6];
+		Object[] retorno = new Object[8];
 
 		Collection colecaoEndereco = null;
 		try{
@@ -2683,6 +2723,7 @@ public class ControladorEnderecoSEJB
 						municipio.setId((Integer) arrayEndereco[5]);
 						municipio.setNome("" + arrayEndereco[6]);
 						municipioEntrega = municipio.getNome();
+						idMunicipioEntrega = arrayEndereco[5].toString();
 
 						// id da unidade federação
 						if(arrayEndereco[7] != null){
@@ -2690,6 +2731,7 @@ public class ControladorEnderecoSEJB
 							unidadeFederacao.setId((Integer) arrayEndereco[7]);
 							unidadeFederacao.setSigla("" + arrayEndereco[8]);
 							municipio.setUnidadeFederacao(unidadeFederacao);
+							siglaUnidadeFederacaoEntrega = unidadeFederacao.getSigla();
 						}
 
 						logradouro.setMunicipio(municipio);
@@ -2746,6 +2788,7 @@ public class ControladorEnderecoSEJB
 					municipio.setId((Integer) arrayEndereco[25]);
 					municipio.setNome("" + arrayEndereco[26]);
 					municipioEntrega = municipio.getNome();
+					idMunicipioEntrega = arrayEndereco[25].toString();
 
 					// id da unidade federação
 					if(arrayEndereco[27] != null){
@@ -2753,6 +2796,7 @@ public class ControladorEnderecoSEJB
 						unidadeFederacao.setId((Integer) arrayEndereco[27]);
 						unidadeFederacao.setSigla("" + arrayEndereco[28]);
 						municipio.setUnidadeFederacao(unidadeFederacao);
+						siglaUnidadeFederacaoEntrega = unidadeFederacao.getSigla();
 					}
 
 					bairro.setMunicipio(municipio);
@@ -2795,6 +2839,8 @@ public class ControladorEnderecoSEJB
 		retorno[3] = bairroEntrega;
 		retorno[4] = cepEntrega;
 		retorno[5] = municipioEntrega;
+		retorno[6] = siglaUnidadeFederacaoEntrega;
+		retorno[7] = idMunicipioEntrega;
 
 		return retorno;
 	}
@@ -3590,6 +3636,11 @@ public class ControladorEnderecoSEJB
 				registroAtendimento.setComplementoEndereco("" + arrayEndereco[16]);
 			}
 
+			// número do imóvel
+			if(arrayEndereco.length >= 23 && arrayEndereco[22] != null){
+
+				registroAtendimento.setNumeroImovel("" + arrayEndereco[22]);
+			}
 		}
 
 		return registroAtendimento;
@@ -5046,4 +5097,153 @@ public class ControladorEnderecoSEJB
 			throw new ControladorException("erro.sistema", e);
 		}
 	}
+
+	/**
+	 * [UC0083] Gerar Dados para Leitura
+	 * [SB0001] - Gerar Arquivo Convencional
+	 * [SB0010] - Gerar Arquivo - Modelo 2
+	 * <<Inclui>> [UC3148 - Obter Endereço de Entrega]
+	 * 
+	 * @author Anderson Italo
+	 * @throws ControladorException
+	 * @date 27/05/2014
+	 */
+	public Object[] obterEnderecoEntrega(Integer idImovel, Integer idImovelContaEnvio) throws ControladorException{
+
+		Object[] retorno = new Object[12];
+		String enderecoEntrega = "";
+		Integer idLogradouroEntrega = null;
+		String numeroImovelEntrega = null;
+		String bairroImovelEntrega = null;
+		String cepImovelEntrega = null;
+		String municipioEntrega = null;
+		String idMunicipioEntrega = null;
+		String siglaUnidadeFederacaoEntrega = null;
+		String indicadorEnderecoEntregaConta = null;
+		String idImovelVinculadoEnderecoEntrega = null;
+		String codigoRotaImovelVinculadoEnderecoEntrega = null;
+		String idFaturamentoGrupoImovelVinculadoEnderecoEntrega = null;
+
+		// Endereço do imóvel
+		Object[] arrayDadosEnderecoImovel = this.pesquisarEnderecoFormatadoLista(idImovel);
+		enderecoEntrega = (String) arrayDadosEnderecoImovel[0];
+		idLogradouroEntrega = (Integer) arrayDadosEnderecoImovel[1];
+		numeroImovelEntrega = (String) arrayDadosEnderecoImovel[2];
+		municipioEntrega = (String) arrayDadosEnderecoImovel[5];
+		idMunicipioEntrega = (String) arrayDadosEnderecoImovel[8];
+		siglaUnidadeFederacaoEntrega = (String) arrayDadosEnderecoImovel[7];
+		indicadorEnderecoEntregaConta = ConstantesSistema.INDICADOR_ENDERECO_ENTREGA_CONTA_IMOVEL;
+
+		if(arrayDadosEnderecoImovel[6] != null){
+
+			bairroImovelEntrega = (String) arrayDadosEnderecoImovel[6];
+		}
+
+		if(arrayDadosEnderecoImovel[3] != null){
+
+			cepImovelEntrega = (String) arrayDadosEnderecoImovel[3];
+		}
+
+		// Caso o endereço de entrega não seja o do imóvel, verifica se tem endereço
+		// alternativo
+		if(idImovelContaEnvio != null && !idImovelContaEnvio.equals(ImovelContaEnvio.ENVIAR_IMOVEL)
+						&& !idImovelContaEnvio.equals(ImovelContaEnvio.PAGAVEL_PARA_IMOVEL_E_NAO_PAGAVEL_PARA_RESPOSAVEL)
+						&& !idImovelContaEnvio.equals(ImovelContaEnvio.PAGAVEL_PARA_IMOVEL_E_PAGAVEL_PARA_RESPONSAVEL)){
+
+			Collection<ClienteImovel> colecaoClienteImovel = null;
+			FiltroClienteImovel filtroClienteImovel = new FiltroClienteImovel();
+			filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.IMOVEL_ID, idImovel));
+			filtroClienteImovel.adicionarParametro(new ParametroNulo(FiltroClienteImovel.DATA_FIM_RELACAO));
+			filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteImovel.CLIENTE);
+			filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteImovel.CLIENTE_ENDERECOS);
+
+			if(idImovelContaEnvio.intValue() == ImovelContaEnvio.ENVIAR_CLIENTE_RESPONSAVEL
+							|| idImovelContaEnvio.intValue() == ImovelContaEnvio.NAO_PAGAVEL_IMOVEL_PAGAVEL_RESPONSAVEL){
+
+				filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.CLIENTE_RELACAO_TIPO_ID,
+								ClienteRelacaoTipo.RESPONSAVEL));
+
+			}else if(idImovelContaEnvio.intValue() == ImovelContaEnvio.ENVIAR_PARA_CLIENTE_PROPRIETARIO){
+
+				filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.CLIENTE_RELACAO_TIPO_ID,
+								ClienteRelacaoTipo.PROPRIETARIO));
+			}else{
+
+				filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.CLIENTE_RELACAO_TIPO_ID,
+								ClienteRelacaoTipo.USUARIO));
+			}
+
+			colecaoClienteImovel = getControladorUtil().pesquisar(filtroClienteImovel, ClienteImovel.class.getName());
+
+			if(!Util.isVazioOrNulo(colecaoClienteImovel)){
+
+				ClienteImovel clienteImovel = (ClienteImovel) Util.retonarObjetoDeColecao(colecaoClienteImovel);
+
+				Collection<ClienteEndereco> clienteEnderecos = clienteImovel.getCliente().getClienteEnderecos();
+
+				for(ClienteEndereco clienteEndereco : clienteEnderecos){
+
+					if(clienteEndereco.getIndicadorEnderecoCorrespondencia().intValue() == ClienteEndereco.INDICADOR_ENDERECO_CORRESPONDENCIA){
+
+						Imovel imovelEnderecoCorrespondencia = null;
+
+						if(clienteEndereco.getImovel() != null){
+
+							FiltroClienteEndereco filtroClienteEndereco = new FiltroClienteEndereco();
+							filtroClienteEndereco
+											.adicionarParametro(new ParametroSimples(FiltroClienteEndereco.ID, clienteEndereco.getId()));
+							filtroClienteEndereco.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteEndereco.IMOVEL);
+							filtroClienteEndereco.adicionarCaminhoParaCarregamentoEntidade(FiltroClienteEndereco.IMOVEL_ROTA);
+
+							Collection<ClienteEndereco> colecaoClienteEndereco = getControladorUtil().pesquisar(filtroClienteEndereco,
+											ClienteEndereco.class.getName());
+
+							ClienteEndereco clienteEnderecoCorrespondencia = colecaoClienteEndereco.iterator().next();
+							imovelEnderecoCorrespondencia = clienteEnderecoCorrespondencia.getImovel();
+						}
+
+						// [UC0085]Obter Endereco
+						Object[] arrayDadosEnderecoCliente = this.pesquisarEnderecoClienteAbreviadoLista(clienteEndereco.getCliente()
+										.getId(), false);
+
+						enderecoEntrega = (String) arrayDadosEnderecoCliente[0];
+						idLogradouroEntrega = (Integer) arrayDadosEnderecoCliente[1];
+						numeroImovelEntrega = (String) arrayDadosEnderecoCliente[2];
+						bairroImovelEntrega = (String) arrayDadosEnderecoCliente[3];
+						cepImovelEntrega = (String) arrayDadosEnderecoCliente[4];
+						municipioEntrega = (String) arrayDadosEnderecoCliente[5];
+						idMunicipioEntrega = (String) arrayDadosEnderecoCliente[7];
+						siglaUnidadeFederacaoEntrega = (String) arrayDadosEnderecoCliente[6];
+
+						if(imovelEnderecoCorrespondencia != null){
+
+							idImovelVinculadoEnderecoEntrega = imovelEnderecoCorrespondencia.getId().toString();
+							codigoRotaImovelVinculadoEnderecoEntrega = imovelEnderecoCorrespondencia.getRota().getCodigo().toString();
+							idFaturamentoGrupoImovelVinculadoEnderecoEntrega = imovelEnderecoCorrespondencia.getRota()
+											.getFaturamentoGrupo().getId().toString();
+						}
+
+						indicadorEnderecoEntregaConta = ConstantesSistema.INDICADOR_ENDERECO_ENTREGA_CONTA_CLIENTE;
+						break;
+					}
+				}
+			}
+		}
+
+		retorno[0] = enderecoEntrega;
+		retorno[1] = idLogradouroEntrega;
+		retorno[2] = numeroImovelEntrega;
+		retorno[3] = bairroImovelEntrega;
+		retorno[4] = cepImovelEntrega;
+		retorno[5] = municipioEntrega;
+		retorno[6] = siglaUnidadeFederacaoEntrega;
+		retorno[7] = indicadorEnderecoEntregaConta;
+		retorno[8] = idMunicipioEntrega;
+		retorno[9] = idImovelVinculadoEnderecoEntrega;
+		retorno[10] = codigoRotaImovelVinculadoEnderecoEntrega;
+		retorno[11] = idFaturamentoGrupoImovelVinculadoEnderecoEntrega;
+
+		return retorno;
+
+}
 }

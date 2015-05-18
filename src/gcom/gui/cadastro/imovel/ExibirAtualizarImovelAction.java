@@ -156,38 +156,131 @@ public class ExibirAtualizarImovelAction
 								"exibirManterImovelAction", "exibirAtualizarImovelAction.do", idImovel);
 			}
 
-			if(!fachada.verificarPermissaoFuncionalidadeUsuario(usuario.getId(), "atualizarImovelLocalidadeAction.do",
-							"exibirFiltrarImovelAction.do")){
-
-				sessao.setAttribute("ExibirAbaLocalidade", "N");
-
-				statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(1, "LocalidadeD.gif", "LocalidadeD.gif",
-								"exibirAtualizarImovelLocalidadeAction", "atualizarImovelLocalidadeEndereco"));
-				statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(2, "EnderecoA.gif", "EnderecoD.gif",
-								"exibirAtualizarImovelEnderecoAction", "atualizarImovelEnderecoAction"));
-				statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(3, "ClienteA.gif", "ClienteD.gif",
-								"exibirAtualizarImovelClienteAction", "atualizarImovelClienteAction"));
-				statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(4, "SubcategoriaA.gif", "SubcategoriaD.gif",
-								"exibirAtualizarImovelSubCategoriaAction", "atualizarImovelSubCategoriaAction"));
-				statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(5, "CaracteristicaA.gif", "CaracteristicaD.gif",
-								"exibirAtualizarImovelCaracteristicasAction", "atualizarImovelCaracteristicasAction"));
-				statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(6, "ConclusaoA.gif", "ConclusaoD.gif",
-								"exibirAtualizarImovelConclusaoAction", "atualizarImovelConclusaoAction"));
+			// Imovel
+			if(fachada.verificarPermissaoFuncionalidadeUsuario(usuario.getId(), "atualizarImovelAction.do", "exibirFiltrarImovelAction.do")){
+				sessao.setAttribute("permitirAtualizarImovel", "S");
 			}else{
-				statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(1, "LocalidadeA.gif", "LocalidadeD.gif",
-								"exibirAtualizarImovelLocalidadeAction", "atualizarImovelLocalidadeAction"));
-				statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(2, "EnderecoA.gif", "EnderecoD.gif",
-								"exibirAtualizarImovelEnderecoAction", "atualizarImovelEnderecoAction"));
-				statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(3, "ClienteA.gif", "ClienteD.gif",
-								"exibirAtualizarImovelClienteAction", "atualizarImovelClienteAction"));
-				statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(4, "SubcategoriaA.gif", "SubcategoriaD.gif",
-								"exibirAtualizarImovelSubCategoriaAction", "atualizarImovelSubCategoriaAction"));
-				statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(5, "CaracteristicaA.gif", "CaracteristicaD.gif",
-								"exibirAtualizarImovelCaracteristicasAction", "atualizarImovelCaracteristicasAction"));
-				statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(6, "ConclusaoA.gif", "ConclusaoD.gif",
-								"exibirAtualizarImovelConclusaoAction", "atualizarImovelConclusaoAction"));
+				sessao.removeAttribute("permitirAtualizarImovel");
 			}
 
+			// Localidade
+			if(fachada.verificarPermissaoFuncionalidadeUsuario(usuario.getId(), "atualizarImovelLocalidadeAction.do",
+							"exibirFiltrarImovelAction.do")){
+				// sessao.setAttribute("ExibirAbaLocalidade", "N");
+				sessao.setAttribute("permitirAtualizarLocalidade", "S");
+			}else{
+				sessao.removeAttribute("permitirAtualizarLocalidade");
+			}
+
+			// Endereco
+			if(fachada.verificarPermissaoFuncionalidadeUsuario(usuario.getId(), "inserirEnderecoAction.do", "exibirFiltrarImovelAction.do")){
+				sessao.setAttribute("permitirInserirEndereco", "S");
+			}else{
+				sessao.removeAttribute("permitirInserirEndereco");
+			}
+
+			if(fachada.verificarPermissaoFuncionalidadeUsuario(usuario.getId(), "atualizarImovelEnderecoAction.do",
+							"exibirFiltrarImovelAction.do")){
+				sessao.setAttribute("permitirAtualizarEndereco", "S");
+			}else{
+				sessao.removeAttribute("permitirAtualizarEndereco");
+			}
+
+			if(fachada.verificarPermissaoFuncionalidadeUsuario(usuario.getId(), "removerAtualizarImovelColecaoEnderecoAction.do",
+							"exibirFiltrarImovelAction.do")){
+				sessao.setAttribute("permitirRemoverEndereco", "S");
+			}else{
+				sessao.removeAttribute("permitirRemoverEndereco");
+			}
+
+			// Cliente
+			if(fachada.verificarPermissaoFuncionalidadeUsuario(usuario.getId(), "adicionarAtualizarImovelClienteAction.do",
+							"exibirFiltrarImovelAction.do")){
+				sessao.setAttribute("permitirInserirCliente", "S");
+			}else{
+				sessao.removeAttribute("permitirInserirCliente");
+			}
+
+			if(fachada.verificarPermissaoFuncionalidadeUsuario(usuario.getId(), "atualizarImovelClienteAction.do",
+							"exibirFiltrarImovelAction.do")){
+				sessao.setAttribute("permitirAtualizarCliente", "S");
+			}else{
+				sessao.removeAttribute("permitirAtualizarCliente");
+			}
+
+			if(fachada.verificarPermissaoFuncionalidadeUsuario(usuario.getId(), "removerAtualizarImovelClienteAction.do",
+							"exibirFiltrarImovelAction.do")){
+				sessao.setAttribute("permitirRemoverCliente", "S");
+			}else{
+				sessao.removeAttribute("permitirRemoverCliente");
+			}
+
+			// SubCategoria
+			if(fachada.verificarPermissaoFuncionalidadeUsuario(usuario.getId(), "atualizarImovelSubCategoriaAction.do",
+							"exibirFiltrarImovelAction.do")){
+				sessao.setAttribute("permitirAtualizarSubCategoria", "S");
+			}else{
+				sessao.removeAttribute("permitirAtualizarSubCategoria");
+			}
+
+			if(fachada.verificarPermissaoFuncionalidadeUsuario(usuario.getId(), "removerAtualizarImovelSubCategoriaAction.do",
+							"exibirFiltrarImovelAction.do")){
+				sessao.setAttribute("permitirRemoverSubCategoria", "S");
+			}else{
+				sessao.removeAttribute("permitirRemoverSubCategoria");
+			}
+
+			// Caracteristicas
+			if(fachada.verificarPermissaoFuncionalidadeUsuario(usuario.getId(), "atualizarImovelCaracteristicasAction.do",
+							"exibirFiltrarImovelAction.do")){
+				sessao.setAttribute("permitirAtualizarCaracteristicas", "S");
+			}else{
+				sessao.removeAttribute("permitirAtualizarCaracteristicas");
+			}
+
+			// Conclusao
+			if(fachada.verificarPermissaoFuncionalidadeUsuario(usuario.getId(), "atualizarImovelConclusaoAction.do",
+							"exibirFiltrarImovelAction.do")){
+				sessao.setAttribute("permitirAtualizarConclusao", "S");
+			}else{
+				sessao.removeAttribute("permitirAtualizarConclusao");
+			}
+
+			
+			statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(1, "LocalidadeD.gif", "LocalidadeD.gif",
+							"exibirManterImovelAction", "exibirManterImovelAction"));
+			statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(2, "EnderecoA.gif", "EnderecoD.gif",
+							"exibirManterImovelAction", "exibirManterImovelAction"));
+			statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(3, "ClienteA.gif", "ClienteD.gif",
+							"exibirManterImovelAction", "exibirManterImovelAction"));
+			statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(4, "SubcategoriaA.gif", "SubcategoriaD.gif",
+							"exibirManterImovelAction", "exibirManterImovelAction"));
+			statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(5, "CaracteristicaA.gif", "CaracteristicaD.gif",
+							"exibirManterImovelAction", "exibirManterImovelAction"));
+			statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(6, "ConclusaoA.gif", "ConclusaoD.gif",
+							"exibirAtualizarImovelConclusaoAction", "atualizarImovelConclusaoAction"));
+
+			// }else{
+			// statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(1,
+			// "LocalidadeA.gif", "LocalidadeD.gif",
+			// "exibirAtualizarImovelLocalidadeAction", "atualizarImovelLocalidadeAction"));
+			// statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(2,
+			// "EnderecoA.gif", "EnderecoD.gif",
+			// "exibirAtualizarImovelEnderecoAction", "atualizarImovelEnderecoAction"));
+			// statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(3,
+			// "ClienteA.gif", "ClienteD.gif",
+			// "exibirAtualizarImovelClienteAction", "atualizarImovelClienteAction"));
+			// statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(4,
+			// "SubcategoriaA.gif", "SubcategoriaD.gif",
+			// "exibirAtualizarImovelSubCategoriaAction", "atualizarImovelSubCategoriaAction"));
+			// statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(5,
+			// "CaracteristicaA.gif", "CaracteristicaD.gif",
+			// "exibirAtualizarImovelCaracteristicasAction",
+			// "atualizarImovelCaracteristicasAction"));
+			// statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(6,
+			// "ConclusaoA.gif", "ConclusaoD.gif",
+			// "exibirAtualizarImovelConclusaoAction", "atualizarImovelConclusaoAction"));
+			// }
 
 
 			// statusWizard.inserirNumeroPaginaCaminho(statusWizard.new StatusWizardItem(1,
@@ -224,6 +317,7 @@ public class ExibirAtualizarImovelAction
 		sessao.removeAttribute("imovelAtualizacao");
 		sessao.removeAttribute("colecaoImovelSubCategorias");
 		sessao.removeAttribute("colecaoImovelSubcategoriasRemoviadas");
+		sessao.removeAttribute("colecaoClientesImoveisRemovidos");
 
 		// Seta um atributo na sessao para ser utilizado nas abas
 		sessao.setAttribute("nomeUnicoWizard", ConstantesSistema.NOME_WIZARD_ALTERAR_IMOVEL);
@@ -748,12 +842,15 @@ public class ExibirAtualizarImovelAction
 		// Objetos que serão retornados pelo Hibernate
 		filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade("cliente");
 		filtroClienteImovel.adicionarCaminhoParaCarregamentoEntidade("clienteRelacaoTipo");
-
 		filtroClienteImovel.adicionarParametro(new ParametroNulo(FiltroClienteImovel.DATA_FIM_RELACAO));
 		filtroClienteImovel.adicionarParametro(new ParametroSimples(FiltroClienteImovel.IMOVEL_ID, Integer.valueOf(idImovel)));
 
 		Collection imoveisCliente = fachada.pesquisar(filtroClienteImovel, ClienteImovel.class.getName());
 		sessao.setAttribute("imovelClientesNovos", imoveisCliente);
+
+		sessao.removeAttribute("idClienteImovelProprietario");
+		sessao.removeAttribute("idClienteImovelUsuario");
+		sessao.removeAttribute("idClienteImovelResponsavel");
 
 		if(imoveisCliente != null && !imoveisCliente.isEmpty()){
 			Iterator iteratorClientes = imoveisCliente.iterator();

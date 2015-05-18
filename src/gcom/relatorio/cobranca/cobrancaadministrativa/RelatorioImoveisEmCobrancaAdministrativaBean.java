@@ -100,6 +100,18 @@ public class RelatorioImoveisEmCobrancaAdministrativaBean
 	// Valor Parcial dos Débito a Cobrar
 	private String valorParcialDebitoACobrar;
 
+	// Nome
+	private String nome;
+
+	// cpf/cnpj
+	private String cpfCnpj;
+
+	// fone
+	private String telefone;
+
+	// endereco
+	private String endereco;
+
 	public String getIdImovel(){
 
 		return idImovel;
@@ -419,6 +431,62 @@ public class RelatorioImoveisEmCobrancaAdministrativaBean
 	public void setValorParcialDebitoACobrar(String valorParcialDebitoACobrar){
 
 		this.valorParcialDebitoACobrar = valorParcialDebitoACobrar;
+	}
+
+	public String getCpfCnpj(){
+
+		return cpfCnpj;
+	}
+
+	public void setCpfCnpj(String cpfCnpj){
+
+		this.cpfCnpj = cpfCnpj;
+	}
+
+	public String getTelefone(){
+
+		return telefone;
+	}
+
+	public void setTelefone(String telefone){
+
+		this.telefone = telefone;
+	}
+
+	public String getEndereco(){
+
+		return endereco;
+	}
+
+	public void setEndereco(String endereco){
+
+		this.endereco = endereco;
+	}
+
+	public String getNome(){
+
+		return nome;
+	}
+
+	public void setNome(String nome){
+
+		this.nome = nome;
+	}
+
+	public RelatorioImoveisEmCobrancaAdministrativaBean(String idImovel, String valorTotalDebitoConta, String nome, String cpfCnpj,
+														String telefone, String endereco) {
+
+		super();
+		this.idImovel = idImovel;
+		this.valorTotalDebitoConta = valorTotalDebitoConta;
+		this.nome = nome;
+		this.cpfCnpj = cpfCnpj;
+		this.telefone = telefone;
+		this.endereco = endereco;
+	}
+
+	public RelatorioImoveisEmCobrancaAdministrativaBean() {
+
 	}
 
 }

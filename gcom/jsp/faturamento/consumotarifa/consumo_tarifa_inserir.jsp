@@ -4,8 +4,9 @@
 <%@ taglib uri="/WEB-INF/struts-html.tld" prefix="html"%>
 <%@page import="gcom.util.ConstantesSistema"%>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<head>
 <html:html>
+<head>
+
 <%@ include file="/jsp/util/titulo.jsp"%>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet"
@@ -99,12 +100,14 @@ function reload() {
 </script>
 </head>
 
-<body leftmargin="5" topmargin="5" onload="javascript:setarFoco('${requestScope.descTarifa}');">
 <html:form action="/inserirConsumoTarifaAction"
 	name="InserirConsumoTarifaActionForm"
 	onsubmit="return validateInserirConsumoTarifaActionForm(this);"
 	type="gcom.gui.faturamento.consumotarifa.InserirConsumoTarifaActionForm"
 	method="post">
+	
+<body leftmargin="5" topmargin="5" onload="javascript:setarFoco('${requestScope.descTarifa}');">
+
 
 	<%@ include file="/jsp/util/cabecalho.jsp"%>
 	<%@ include file="/jsp/util/menu.jsp"%>
@@ -199,6 +202,14 @@ function reload() {
 				</tr>
 				
 				<tr>
+					<td width="184" class="style1"><strong>Ato Administrativo:</strong></td>
+					<td width="210" class="style1">
+						<html:text maxlength="30"
+							property="descricaoAtoAdministrativo" size="30"/>
+					</td>
+				</tr>
+				
+				<tr>
 					<td width="30%"><strong>Tarifa de Esgoto Própria:<font color="#FF0000">*</font></strong></td>
 					<td width="70%"><span class="style1">
 					<input type="radio" name="inTarifaEsgotoPropria" value="1"><strong>SIM</strong>
@@ -216,6 +227,29 @@ function reload() {
 					</html:select></td>
 				</tr>
 				
+				<%
+					String qtdColunaCategoriaEconomica = "5";
+					
+					String larguraColunaRemover = "9%"; 
+					String larguraColunaCategoria = "34%";
+					String larguraColunaConsumoMinimo = "19%";
+					String larguraColunaTarifaMinina = "23%";
+					String larguraQtdFaixa = "15%";
+					String larguraColunaSubCategoria = "0%";
+					
+					if (session.getAttribute("indicadorTarifaCosumoPorSubCategoria") != null) {
+						larguraColunaRemover = "9%"; 
+						larguraColunaCategoria = "20%";
+						larguraColunaConsumoMinimo = "19%";
+						larguraColunaTarifaMinina = "20%";
+						larguraQtdFaixa = "12%";
+						larguraColunaSubCategoria = "20%";
+						
+						qtdColunaCategoriaEconomica = "6";
+					}
+					
+				%>
+				
 				<tr>
 					<td class="style1" colspan="2"><strong>Categorias e Economias:<font
 						color="#FF0000">*</font></strong></td>
@@ -227,24 +261,33 @@ function reload() {
 					</td>
 				</tr>
 				<tr>
-					<td colspan="5">
+					<td colspan="<%= qtdColunaCategoriaEconomica%>">
 					<table width="100%" bgcolor="#99CCFF">
 						<!--header da tabela interna -->
 						<tr bordercolor="#FFFFFF" bgcolor="#99CCFF">
-							<td width="9%">
+							<td width="<%= larguraColunaRemover%>">
 							<div align="center" class="style9"><strong>Remover</strong></div>
 							</td>
-							<td width="34%">
+							<td width="<%= larguraColunaCategoria%>">
 							<div align="center" class="style9"><strong>Categoria</strong></div>
 							</td>
-							<td width="19%">
+							
+							<logic:present name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+								<td width="<%= larguraColunaSubCategoria%>" >
+									<div align="center" >
+										<strong>SubCategoria</strong>
+									</div>
+								</td>				
+							</logic:present>								
+							
+							<td width="<%= larguraColunaConsumoMinimo%>">
 							<div align="center" class="style9"><strong>Consumo M&iacute;nimo
 							</strong></div>
 							</td>
-							<td width="23%">
+							<td width="<%= larguraColunaTarifaMinina%>">
 							<div align="center"><strong>Tarifa M&iacute;nima</strong></div>
 							</td>
-							<td width="15%">
+							<td width="<%= larguraQtdFaixa%>">
 							<div align="center"><strong>Qtd. Faixas</strong></div>
 							</td>
 						</tr>
@@ -272,6 +315,13 @@ function reload() {
 									<div align="center" class="style9"><bean:write
 										name="helper" property="consumoTarifaCategoria.categoria.descricao" /></div>
 									</td>
+									
+									<logic:present name="indicadorTarifaCosumoPorSubCategoria" scope="session">
+										<td>
+											<div align="center" class="style9">
+												<bean:write	name="helper" property="consumoTarifaCategoria.subCategoria.descricao" /></div>
+										</td>				
+									</logic:present>									
 
 									<td>
 									<div align="center" class="style9"><INPUT type="text"
@@ -282,13 +332,26 @@ function reload() {
 										name="helper" property="consumoTarifaCategoria.numeroConsumoMinimo" />"></div>
 									</td>
 									<td>
-									<div align="center" class="style9"><INPUT type="text" style="text-align:right;" size="18"
-										disabled="disabled"
-										maxlength="18"
-										name="ValorTarMin.<bean:write
-										name="helper" property="consumoTarifaCategoria.categoria.descricao" />"
-										value="<bean:write
-										name="helper" property="consumoTarifaCategoria.valorTarifaMinima" formatKey="money.quatrodecimais.format"/>"></div>
+										<logic:equal name="pQuantidadeDecimaisValorTarifa" value="4">
+											<div align="center" class="style9"><INPUT type="text" style="text-align:right;" size="18"
+												disabled="disabled"
+												maxlength="18"
+												name="ValorTarMin.<bean:write
+												name="helper" property="consumoTarifaCategoria.categoria.descricao" />"
+												value="<bean:write
+												name="helper" property="consumoTarifaCategoria.valorTarifaMinima" formatKey="money.quatrodecimais.format"/>">
+											</div>
+										</logic:equal>
+										<logic:equal name="pQuantidadeDecimaisValorTarifa" value="2">
+											<div align="center" class="style9"><INPUT type="text" style="text-align:right;" size="18"
+												disabled="disabled"
+												maxlength="18"
+												name="ValorTarMin.<bean:write
+												name="helper" property="consumoTarifaCategoria.categoria.descricao" />"
+												value="<bean:write
+												name="helper" property="consumoTarifaCategoria.valorTarifaMinima" formatKey="money.format"/>">
+											</div>
+										</logic:equal>
 									</td>
 									<td>
 									<div align="center" class="style9"><bean:write
@@ -332,8 +395,9 @@ function reload() {
 		</tr>
 	</table>
 	<%@ include file="/jsp/util/rodape.jsp"%>
-	</html:form>
+	
 </body>
+</html:form>
 
 <script language="JavaScript">
 <!-- Begin

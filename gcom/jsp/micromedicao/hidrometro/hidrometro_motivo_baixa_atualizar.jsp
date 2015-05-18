@@ -108,6 +108,14 @@
 				  		<html:text  property="descricaoMotivoBaixaHidrometro" size="35" maxlength="20" tabindex="1"/></span></b></strong>
 				  		</td>
 				</tr>	
+				
+					<tr>
+			  <td  width="30%" class="style3"><strong>Descrição Abreviada:</strong></td>
+			  <td  width="70%" colspan="2"><strong><b><span class="style2"> 
+			  		<html:text  property="descricaoAbreviada" size="5" maxlength="5" tabindex="2"/> </span></b></strong></td>
+			</tr>
+				
+				
 				<tr>
 					<td><strong>Indicador de uso:<font color="#FF0000">*</font></strong></td>
 						<td><html:radio property="indicadorUso" value="1" tabindex="5"/><strong>Ativo

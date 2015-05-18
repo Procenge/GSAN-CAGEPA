@@ -17,6 +17,9 @@
 		 whenNoDataType="NoPages"
 		 isTitleNewPage="false"
 		 isSummaryNewPage="false">
+	<property name="ireport.zoom" value="1.7715610000000015" />
+	<property name="ireport.x" value="0" />
+	<property name="ireport.y" value="20" />
 	<property name="ireport.scriptlethandling" value="0" />
 	<property name="ireport.encoding" value="UTF-8" />
 	<import value="java.util.*" />
@@ -26,6 +29,7 @@
 	<parameter name="nomeSubRelatorioTipoServico" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="tituloTipoServico" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="P_NM_ESTADO" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="P_NM_EMPRESA" isForPrompting="false" class="java.lang.String"/>
 
 	<field name="numeroOS" class="java.lang.String"/>
 	<field name="inscricaoImovel" class="java.lang.String"/>
@@ -68,7 +72,7 @@
 		<group  name="codigoBarras" >
 			<groupExpression><![CDATA[$F{exibirCodigoBarras}]]></groupExpression>
 			<groupHeader>
-			<band height="0"  isSplitAllowed="false" >
+			<band height="0"  isSplitAllowed="true" >
 			</band>
 			</groupHeader>
 			<groupFooter>
@@ -94,7 +98,7 @@
 		<group  name="radape" >
 			<groupExpression><![CDATA[$F{exibirRodapePadrao}]]></groupExpression>
 			<groupHeader>
-			<band height="0"  isSplitAllowed="false" >
+			<band height="0"  isSplitAllowed="true" >
 			</band>
 			</groupHeader>
 			<groupFooter>
@@ -105,7 +109,7 @@
 						x="23"
 						y="4"
 						width="548"
-						height="0"
+						height="1"
 						key="line-34"/>
 					<graphicElement stretchType="NoStretch"/>
 				</line>
@@ -133,7 +137,7 @@
 					<reportElement
 						x="297"
 						y="4"
-						width="0"
+						width="1"
 						height="58"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -751,7 +755,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="Courier New" pdfFontName="Courier-Bold" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA["COMPANHIA DE SANEAMENTO DE  "  + $P{P_NM_ESTADO}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{P_NM_EMPRESA}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
@@ -946,7 +950,7 @@
 					<reportElement
 						x="488"
 						y="6"
-						width="0"
+						width="1"
 						height="60"
 						key="line-20"/>
 					<graphicElement stretchType="NoStretch"/>
@@ -955,7 +959,7 @@
 					<reportElement
 						x="114"
 						y="6"
-						width="0"
+						width="1"
 						height="60"
 						key="line-21"/>
 					<graphicElement stretchType="NoStretch"/>
@@ -1872,7 +1876,7 @@
 						x="23"
 						y="70"
 						width="548"
-						height="0"
+						height="1"
 						key="line-30"/>
 					<graphicElement stretchType="NoStretch"/>
 				</line>
@@ -1880,7 +1884,7 @@
 					<reportElement
 						x="571"
 						y="70"
-						width="0"
+						width="1"
 						height="130"
 						key="line-31"/>
 					<graphicElement stretchType="NoStretch"/>
@@ -1889,7 +1893,7 @@
 					<reportElement
 						x="22"
 						y="70"
-						width="0"
+						width="1"
 						height="130"
 						key="line-32"/>
 					<graphicElement stretchType="NoStretch"/>
@@ -1899,7 +1903,7 @@
 						x="22"
 						y="200"
 						width="550"
-						height="0"
+						height="1"
 						key="line-33"/>
 					<graphicElement stretchType="NoStretch"/>
 				</line>
@@ -1946,7 +1950,7 @@
 			</band>
 		</detail>
 		<columnFooter>
-			<band height="0"  isSplitAllowed="false" >
+			<band height="0"  isSplitAllowed="true" >
 			</band>
 		</columnFooter>
 		<pageFooter>

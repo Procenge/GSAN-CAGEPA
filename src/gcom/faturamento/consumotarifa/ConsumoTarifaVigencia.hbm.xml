@@ -38,6 +38,13 @@
         column="cstv_tmultimaalteracao"
         length="8"
     />
+    
+    <property
+        name="descricaoAtoAdministrativo"
+        type="java.lang.String"
+        column="cstv_dsatoadministrativo"
+        length="30"
+    />
 
     <!-- associations -->
     <!-- bi-directional one-to-many association to ConsumoTarifaCategoria -->

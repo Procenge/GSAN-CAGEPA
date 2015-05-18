@@ -79,14 +79,7 @@
 
 package gcom.gui.arrecadacao.pagamento;
 
-import gcom.arrecadacao.pagamento.FiltroGuiaPagamento;
-import gcom.arrecadacao.pagamento.FiltroGuiaPagamentoHistorico;
-import gcom.arrecadacao.pagamento.FiltroPagamentoHistorico;
-import gcom.arrecadacao.pagamento.GuiaPagamento;
-import gcom.arrecadacao.pagamento.GuiaPagamentoHistorico;
-import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacao;
-import gcom.arrecadacao.pagamento.GuiaPagamentoPrestacaoHistorico;
-import gcom.arrecadacao.pagamento.PagamentoHistorico;
+import gcom.arrecadacao.pagamento.*;
 import gcom.fachada.Fachada;
 import gcom.faturamento.debito.DebitoCreditoSituacao;
 import gcom.faturamento.debito.DebitoTipo;
@@ -98,11 +91,7 @@ import gcom.util.ConstantesSistema;
 import gcom.util.Util;
 import gcom.util.filtro.ParametroSimples;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -314,6 +303,12 @@ public class ExibirConsultarGuiaPagamentoAction
 		if(httpServletRequest.getParameter("caminhoRetornoTelaConsultaGuiaPagamento") != null){
 			sessao.setAttribute("caminhoRetornoTelaConsultaGuiaPagamento", httpServletRequest
 							.getParameter("caminhoRetornoTelaConsultaGuiaPagamento"));
+		}
+
+		if(fachada.existeProcessoExecucaoFiscal().equals(ConstantesSistema.SIM)){
+			sessao.setAttribute("exibirDividaAtivaColuna", "S");
+		}else{
+			sessao.removeAttribute("exibirDividaAtivaColuna");
 		}
 
 		return retorno;

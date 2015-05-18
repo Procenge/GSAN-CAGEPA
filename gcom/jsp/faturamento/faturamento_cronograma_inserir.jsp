@@ -157,6 +157,10 @@ function validarCamposDinamicos(form){
                     &nbsp; mm/aaaa</td>
                 </tr>
                 <tr>
+                  <td><strong>Quantidade de Cronogramas:<font color="#FF0000">*</font></strong></td>
+                  <td><html:text maxlength="8" property="quantidadeCronogramas" size="8"/></td>
+                </tr>
+                <tr>
                   <td>&nbsp;</td>
                   <td align="left"><font color="#FF0000">*</font> Campo Obrigat&oacute;rio
                   </td>
@@ -276,6 +280,6 @@ function validarCamposDinamicos(form){
         </tr>
    </table>
 <%@ include file="/jsp/util/rodape.jsp"%>
-</body>
 </html:form>
+</body>
 </html:html>

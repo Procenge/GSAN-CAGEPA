@@ -159,6 +159,7 @@ public class FiltrarClienteOutrosCriteriosAction
 		String indicadorUso = (String) pesquisarActionForm.get("indicadorUso");
 		String sexo = (String) pesquisarActionForm.get("sexo");
 		String inscricaoEstadual = (String) pesquisarActionForm.get("inscricaoEstadual");
+		String documentoValidado = (String) pesquisarActionForm.get("documentoValidado");
 
 		// cria o filtro para Tabela Auxiliar
 		FiltroCliente filtroCliente = new FiltroCliente();
@@ -260,6 +261,10 @@ public class FiltrarClienteOutrosCriteriosAction
 		if(sexo != null && !sexo.equals(String.valueOf(ConstantesSistema.NUMERO_NAO_INFORMADO)) && !sexo.equals("")){
 			peloMenosUmParametroInformado = true;
 			filtroCliente.adicionarParametro(new ParametroSimples(FiltroCliente.SEXO_ID, sexo));
+		}
+		if(documentoValidado != null && !documentoValidado.equals("")){
+			peloMenosUmParametroInformado = true;
+			filtroCliente.adicionarParametro(new ParametroSimples(FiltroCliente.DOCUMENTO_VALIDADO, documentoValidado));
 		}
 		// Erro caso o usuário mandou filtrar sem nenhum parâmetro
 		if(!peloMenosUmParametroInformado){

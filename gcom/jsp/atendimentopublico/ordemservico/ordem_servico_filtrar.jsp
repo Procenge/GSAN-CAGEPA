@@ -126,7 +126,7 @@
 		form.periodoAtendimentoInicial.value="";
 		form.periodoAtendimentoFinal.value="";
 		form.periodoGeracaoInicial.value="";
-		form.periodoGeracaoFinal.value="";
+		form.periodoGeracaoFinal.value="";		
 		limparImovel();
 		limparCliente();
 		limparUnidadeGeracao();
@@ -144,7 +144,7 @@
 		MoverTodosDadosSelectMenu2PARAMenu1('FiltrarOrdemServicoActionForm', 'tipoServico', 'tipoServicoSelecionados');
 		form.desabilitaCampos.value = null;
 
-		form.action = "/gsan/exibirFiltrarOrdemServicoAction.do?menu=sim";
+		form.action = "/gsan/exibirFiltrarOrdemServicoAction.do?menu=sim&limpar=sim";
 		form.submit();
 	}
 
@@ -809,6 +809,33 @@
 				
 										</td>
 								</tr>
+										<tr>
+									<td>
+										<strong>Situa&ccedil;&atilde;o de Débito do Documento de Cobrança:</strong>
+									</td>
+				
+									<td>
+										<strong>
+										<html:select property="situacaoDocumentoCobranca" style="width: 300px;" onchange="javascript:validaForm();">
+				
+											<html:option
+												value="<%=""+ConstantesSistema.NUMERO_NAO_INFORMADO%>">&nbsp;
+											</html:option>
+				
+											<html:option
+												value="1">PENDENTE
+											</html:option>
+				
+											<html:option
+												value="2">NÃO PENDENTE
+											</html:option>
+											<html:option
+												value="0">AMBOS
+											</html:option>
+										</html:select> 													
+										</strong>
+									</td>
+								</tr>
 				
 				           		<tr>
 				             		<td height="10" colspan="3"> 
@@ -962,6 +989,17 @@
 									</table>
 									</td>
 								</tr>
+								
+								<tr>
+									<td width="110">
+										<strong>OSs com serviço de reparo:</strong>					
+									</td>																  		
+				                     <td>
+				                     	<html:radio property="indicadorReparo" value="1" onclick="javascript:reload();" >Gerado</html:radio>
+				                    	<html:radio property="indicadorReparo" value="2" onclick="javascript:reload();" >Não Gerado</html:radio>
+				                    	<html:radio property="indicadorReparo" value="3" onclick="javascript:reload();" >Ambos</html:radio>
+				 			  		</td>
+							    </tr>
 				
 				           		<tr>
 				             		<td height="10" colspan="3"> 
@@ -1492,12 +1530,68 @@
 					                  	</span>
 					              	</td>
 				              	</tr>
+				              	<tr>
+					                <td>
+					                	<strong>Per&iacute;odo de Previsão para Cliente:</strong>
+					                </td>
+				                
+					                <td colspan="6">
+					                	<span class="style2">
+					                	
+					                	<strong> 
+											
+											<html:text property="periodoPrevisaoInicial" 
+												size="11" 
+												maxlength="10" 
+												tabindex="3" 
+												onkeyup="mascaraData(this, event);replicaDataExecucao();"/>
+											
+											<a href="javascript:chamarCalendario('periodoPrevisaoInicial',document.forms[0].periodoPrevisaoInicial,'periodoPrevisaoFinal');">
+												<img border="0" 
+													src="<bean:message key='caminho.imagens'/>calendario.gif" 
+													width="16" 
+													height="15" 
+													border="0" 
+													alt="Exibir Calendário" />
+											</a>
+
+											a 
+											
+											<html:text property="periodoPrevisaoFinal" 
+												size="11" 
+												maxlength="10" 
+												tabindex="3" 
+												onkeyup="mascaraData(this, event)"/>
+											
+											<a href="javascript:chamarCalendario('periodoPrevisaoFinal',document.forms[0].periodoPrevisaooFinal,'');">
+											<img border="0" 
+												src="<bean:message key='caminho.imagens'/>calendario.gif" 
+												width="16" 
+												height="15" 
+												border="0" 
+												alt="Exibir Calendário"/>
+											</a>
+											
+											</strong>(dd/mm/aaaa)<strong> 
+					                  	</strong>
+					                  	</span>
+					              	</td>
+				              	</tr>
 				              	
 				              <tr>
 				              <td width="110"><strong>Dias de Atraso:</strong></td>
 				                <td colspan="6">
 				                <strong>
 				                <html:text property="diasAtraso" size="9" maxlength="9" onkeypress="return isCampoNumerico(event);" />
+				                </strong>
+				              </td>
+				              </tr>
+				              
+				              <tr>
+				              <td width="110"><strong>Dias na Unidade:</strong></td>
+				                <td colspan="6">
+				                <strong>
+				                <html:text property="quantidadeDiasUnidade" size="9" maxlength="9" onkeypress="return isCampoNumerico(event);" />
 				                </strong>
 				              </td>
 				              </tr>
@@ -1653,6 +1747,26 @@
 												title="Apagar" /></a>
 									</td>
 								</tr>
+								<tr>
+				             		<td height="10" colspan="3"> 
+					             		<div align="right"> 
+					                 		<hr>
+					               		</div>
+					               		<div align="right"> </div>
+				               		</td>
+				           		</tr>
+								
+								<tr>
+									<td width="100%" ><strong>Ordenação do Relatório: </strong></td>
+									<td>
+									    <input type="radio" name="ordenador" value="1"><strong>Imóvel</strong> 
+										<input type="radio" name="ordenador" value="2"><strong>Logradouro</strong> 
+										<input type="radio" name="ordenador" value="3"><strong>Solicitante</strong>
+										<input type="radio" name="ordenador" value="4"><strong>Data OS</strong>  
+									</td>
+								</tr>
+													
+								
 							</table>			
 						</div>
 					</td>
